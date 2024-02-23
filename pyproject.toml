@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "palworld_pal_editor"
+version = "0.1.0"
+description = "Yet Another Palworld Pal Editor."
+authors = [
+    { name = "_connlost", email = "4348524953.h@gmail.com" },
+]
+readme = "README.md"

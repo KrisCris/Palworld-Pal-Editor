@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Module - palworld_pal_editor",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "palworld_pal_editor.save_manager",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            },
+            "args": [
+                // Any arguments your script needs go here
+            ]
+        }
+    ]
+}
