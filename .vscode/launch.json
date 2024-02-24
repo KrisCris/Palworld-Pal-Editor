@@ -7,9 +7,9 @@
             "request": "launch",
             "module": "palworld_pal_editor",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
+                "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
                 // Any arguments your script needs go here

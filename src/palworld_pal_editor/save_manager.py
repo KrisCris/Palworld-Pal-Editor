@@ -12,10 +12,10 @@ from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
 
-from .pal_objects import get_attr_value, toUUID
-from .player_entity import PlayerEntity
-from .pal_entity import PalEntity
-from .utils import Logger
+from palworld_pal_editor.pal_objects import get_attr_value, toUUID
+from palworld_pal_editor.player_entity import PlayerEntity
+from palworld_pal_editor.pal_entity import PalEntity
+from palworld_pal_editor.utils import Logger
 
 LOGGER = Logger()
 

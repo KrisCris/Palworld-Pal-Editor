@@ -1,9 +1,9 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
-from .utils import Logger
-from .readonly_data import DataAccessor
-from .pal_objects import get_attr_value, PalObjects
+from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.readonly_data import DataAccessor
+from palworld_pal_editor.pal_objects import get_attr_value, PalObjects
 
 LOGGER = Logger()
 

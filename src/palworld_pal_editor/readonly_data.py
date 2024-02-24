@@ -1,12 +1,23 @@
 from functools import wraps
 import json
 from pathlib import Path
+import sys
 from typing import Any, Callable, Optional
 
 from .config import Config
 
-def load_json(filename: str):
-    path = Path(f"./palworld_pal_editor/assets/data/{filename}").resolve()
+# def load_json(filename: str):
+#     path = Path(f"./src/palworld_pal_editor/assets/data/{filename}").resolve()
+#     with path.open("r") as file:
+#         return json.load(file)
+
+def load_json(filename: str) -> Any:
+    if getattr(sys, 'frozen', False):
+        base_path = Path(sys._MEIPASS)
+    else:
+        base_path = Path(__file__).parent
+
+    path = base_path / "assets/data" / filename
     with path.open("r") as file:
         return json.load(file)
 

@@ -35,8 +35,6 @@ Write-Host "Using $($PYTHON_CMD) (version $($majorVersion).$($minorVersion))"
 # Install dependencies
 pip install -r requirements.txt
 
-# Install your package in editable mode
-pip install -e .
+pip install pyinstaller
 
-# Run your package in interactive mode
-python -m palworld_pal_editor
+pyinstaller --onefile --add-data="src/palworld_pal_editor/assets;assets" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor

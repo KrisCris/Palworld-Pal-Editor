@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
-from .utils import Logger
+from palworld_pal_editor.utils import Logger
 
 LOGGER = Logger()
 

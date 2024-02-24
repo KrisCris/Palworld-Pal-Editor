@@ -3,10 +3,31 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "palworld_pal_editor"
-version = "0.1.0"
+name = "palworld-pal-editor"
 description = "Yet Another Palworld Pal Editor."
 authors = [
     { name = "_connlost", email = "4348524953.h@gmail.com" },
 ]
+keywords = ["palworld", "editor", "pal"]
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
 readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "customtkinter==5.2.2",
+    "setuptools==69.1.0",
+    "palworld_save_tools==0.19.0",
+    "wheel==0.42.0"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/KrisCris/Palworld-Pal-Editor"
+Documentation = "https://github.com/KrisCris/Palworld-Pal-Editor"
+Repository = "https://github.com/KrisCris/Palworld-Pal-Editor.git"
+Issues = "https://github.com/KrisCris/Palworld-Pal-Editor/issues"
+Changelog = "https://github.com/KrisCris/Palworld-Pal-Editor"
