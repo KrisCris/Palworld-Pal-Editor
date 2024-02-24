@@ -12,7 +12,7 @@ from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
 
-from .pal_objects import get_attr_value
+from .pal_objects import get_attr_value, toUUID
 from .player_entity import PlayerEntity
 from .pal_entity import PalEntity
 from .utils import Logger
@@ -129,9 +129,24 @@ class SaveManager:
             # self.entities_list: Optional[list[dict]] = None
             # self.player_list: Optional[list[PlayerEntity]] = None
 
+    def list_players(self) -> list[PlayerEntity]:
+        player_list = []
+        for player in self.player_mapping.values():
+            LOGGER.info(player)
+            player_list.append(player)
+        return player_list
+    
+    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+        guid = str(guid)
+        if guid in self.player_mapping:
+            player = self.player_mapping[guid]
+            LOGGER.info(player)
+            return player
+        LOGGER.warning(f"Player {guid} not exist")
+
     def _load_entities(self):
         self.player_mapping = {}
-        temp_player_pal_mapping: dict[str, set[PalEntity]] = {}
+        temp_player_pal_mapping: dict[str, dict[str, PalEntity]] = {}
         for entity in self.entities_list:
             entity_struct = entity["value"]["RawData"]["value"]["object"]["SaveParameter"]
             if entity_struct['struct_type'] != 'PalIndividualCharacterSaveParameter':
@@ -147,7 +162,7 @@ class SaveManager:
                         player_entity = PlayerEntity(entity, temp_player_pal_mapping[uid_str])
                         del temp_player_pal_mapping[uid_str]
                     else:
-                        player_entity = PlayerEntity(entity, set())
+                        player_entity = PlayerEntity(entity, dict())
 
                     if uid_str in self.player_mapping:
                         LOGGER.error("Duplicated player found: \n\t%s\n\t%s\n\tskipping" % 
@@ -164,7 +179,7 @@ class SaveManager:
                         if owner_str in self.player_mapping:
                             self.player_mapping[owner_str].add_pal(pal_entity)
                         else:
-                            temp_player_pal_mapping.setdefault(owner_str, set()).add(pal_entity)
+                            temp_player_pal_mapping.setdefault(owner_str, dict())[pal_entity.InstanceId] = pal_entity
                         LOGGER.info("Found pal: %s" % str(pal_entity))
 
                     else:
@@ -177,18 +192,18 @@ class SaveManager:
         
         for player_str_uid in self.player_mapping:
             player = self.player_mapping[player_str_uid]
+            LOGGER.nextline()
             LOGGER.info("%s" % (player))
-            for pal in player.palbox:
+            for pal in player.palbox.values():
                 LOGGER.info("\t%s" % (pal))
 
         for uid_str in temp_player_pal_mapping:
             pal_list = temp_player_pal_mapping[uid_str]
+            LOGGER.nextline()
             LOGGER.warning(f"Dangling pals found of non-existing user {uid_str}")
-            for pal in pal_list:
+            for pal in pal_list.values():
                 LOGGER.warning("\t%s", str(pal))
                 
-
-
     def open(self, file_path: str) -> Optional[GvasFile]:
         self._file_path = Path(file_path).resolve()
         if not self._file_path.exists():

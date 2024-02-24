@@ -8,7 +8,7 @@ LOGGER = Logger()
 from .pal_objects import get_attr_value, PalObjects
 
 class PlayerEntity:
-    def __init__(self, player_obj: dict, palbox: set[PalEntity]) -> None:
+    def __init__(self, player_obj: dict, palbox: dict[str, PalEntity]) -> None:
         self._player_obj: dict = player_obj
         self.palbox = palbox
 
@@ -46,7 +46,24 @@ class PlayerEntity:
         return get_attr_value(self._player_param, "NickName")
     
     def add_pal(self, pal_entity: PalEntity) -> bool:
-        if pal_entity in self.palbox:
+        pal_guid = str(pal_entity.InstanceId)
+        if pal_guid in self.palbox:
             return False
-        self.palbox.add(pal_entity)
+        self.palbox[pal_guid] = pal_entity
         return True
+    
+    def list_pals(self) -> list[PalEntity]:
+        pal_list = []
+        for pal in self.palbox.values():
+            LOGGER.info(pal)
+            pal_list.append(pal)
+        return pal_list
+    
+    def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+        guid = str(guid)
+        if guid in self.palbox:
+            pal = self.palbox[guid]
+            LOGGER.info(pal)
+            return pal
+        LOGGER.warning(f"Pal {guid} not exist")
+

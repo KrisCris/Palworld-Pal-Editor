@@ -54,6 +54,9 @@ class Logger:
             console_handler.setFormatter(console_formatter)
             self.logger.addHandler(console_handler)
 
+    def nextline(self):
+        print("")
+
     def debug(self, message: str):
         self.logger.debug(message)
 

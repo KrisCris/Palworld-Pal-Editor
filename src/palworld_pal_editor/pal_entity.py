@@ -15,11 +15,14 @@ class PalEntity:
         self._pal_key: dict = self._pal_obj['key']
         self._pal_param: dict = self._pal_obj['value']['RawData']['value']['object']['SaveParameter']['value']
 
+        if self.InstanceId is None:
+            raise Exception(f"No GUID, skipping {self}")
+
         if get_attr_value(self._pal_param, "IsPlayer"):
             raise TypeError("Expecting pal_obj, received player_obj: %s - %s - %s" % (self.NickName, self.PlayerUId, self.InstanceId))
 
     def __str__(self) -> str:
-        return "%s - %s - %s - %s - %s" % (self.CharacterID, self.NickName, self.OwnerPlayerUId, self.PlayerUId, self.InstanceId)
+        return "%s - %s - %s - %s" % (self.CharacterID, self.NickName, self.OwnerPlayerUId, self.InstanceId)
     
     def __hash__(self) -> int:
         return self.InstanceId.__hash__()
@@ -90,3 +93,20 @@ class PalEntity:
             self._pal_param["HP"] = PalObjects.FixedPoint64(value)
         else:
             self._pal_param["HP"]["value"]["Value"]["value"] = value
+
+
+    def pprint_pal_stats(self):
+        line = ""
+        for key in self._pal_param:
+            line += f" - {key}: "
+            container = self._pal_param[key]
+            value = PalObjects.get_container_value(container)
+            if value is None:
+                line += "print not yet supported"
+            elif isinstance(value, list):
+                line += "\n\t" + "\n\t".join(map(str, value))
+            else:
+                line += str(value)
+
+            line += "\n"
+        LOGGER.info(line)

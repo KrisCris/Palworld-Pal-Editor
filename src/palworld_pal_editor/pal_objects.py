@@ -41,12 +41,40 @@ def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = Non
             raise KeyError(f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}.")
     
     except Exception as e:
-        LOGGER.warning(e)
+        # LOGGER.warning(e)
         return None
 
 
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
+    
+    @staticmethod
+    def StrProperty(value: str):
+        return {"id": None, "type": "StrProperty", "value": value}
+    
+    @staticmethod
+    def NameProperty(value: str):
+        return {"id": None, "type": "NameProperty", "value": value}
+    
+    @staticmethod
+    def IntProperty(value: int):
+        return {"id": None, "type": "IntProperty", "value": value}
+    
+    @staticmethod
+    def Int64Property(value: int):
+        return {"id": None, "type": "Int64Property", "value": value}
+    
+    @staticmethod
+    def FloatProperty(value: float):
+        return {'id': None, 'type': 'FloatProperty', 'value': value}
+    
+    @staticmethod
+    def get_BaseType(container: dict) -> str | int | float:
+        return container["value"]
+    
+    @staticmethod
+    def set_BaseType(container: dict, value: str | int | float):
+        container["value"] = value
 
     @staticmethod
     def Guid(value: str | UUID):
@@ -57,11 +85,35 @@ class PalObjects:
             "value":toUUID(value),
             "type":"StructProperty"
         }
+
+    @staticmethod
+    def EnumProperty(type: str, value: str):
+        """
+        Example:
+        >>> "Gender":{
+                "id":"None",
+                "value": {
+                    "type":"EPalGenderType",
+                    "value":"EPalGenderType::Female"
+                },
+                "type":"EnumProperty"
+            },
+        """
+
+        return {
+            'id': None, 'type': 'EnumProperty', 'value': {
+                'type': type,
+                'value': value
+            }}
     
     @staticmethod
-    def StrProperty(value: str):
-        return {"id": None, "type": "StrProperty", "value": value}
+    def get_EnumProperty(container: dict):
+        return container["value"]["value"]
     
+    @staticmethod
+    def set_EnumProperty(container: dict, value: str):
+        container["value"]["value"] = value
+
     @staticmethod
     def ArrayProperty(array_type: str, value: dict, custom_type: Optional[str]=None):
         """
@@ -73,7 +125,34 @@ class PalObjects:
                 "type":"ArrayProperty",
                 "custom_type":".worldSaveData.CharacterSaveParameterMap.Value.RawData"
             }
+
+        >>> "EquipWaza":{
+                "array_type":"EnumProperty",
+                "id":"None",
+                "value":{
+                    "values":[
+                        "EPalWazaID::DarkBall",
+                        "EPalWazaID::DarkWave",
+                        "EPalWazaID::SandTornado"
+                    ]
+                },
+                "type":"ArrayProperty"
+            },
+
+        >>> "PassiveSkillList":{
+                "array_type":"NameProperty",
+                "id":"None",
+                "value":{
+                    "values":[
+                        "TrainerATK_UP_1",
+                        "MoveSpeed_up_2",
+                        "ElementBoost_Ice_1_PAL"
+                    ]
+                },
+                "type":"ArrayProperty"
+            },
         """
+
         struct = {
             "array_type": array_type,
             "id": "None",
@@ -85,19 +164,32 @@ class PalObjects:
             struct["custom_type"] = custom_type
 
     @staticmethod
-    def IntProperty(value: int):
-        return {"id": None, "type": "IntProperty", "value": value}
+    def get_ArrayProperty(container: dict) -> list[Any]:
+        return container["value"]["values"]
     
     @staticmethod
-    def Int64Property(value: int):
-        return {"id": None, "type": "Int64Property", "value": value}
-    
-    # @staticmethod
-    # def GetInt64PropertyValue(data: dict) -> int:
+    def add_ArrayProperty(container: dict, value: Any):
+        PalObjects.get_ArrayProperty(container).append(value)
 
-    
     @staticmethod
     def FixedPoint64(value: int):
+        """
+        Example:
+        >>> "HP":{
+            "struct_type":"FixedPoint64",
+            "struct_id":"00000000-0000-0000-0000-000000000000",
+            "id":"None",
+            "value":{
+                "Value":{
+                    "id":"None",
+                    "value":1690000,
+                    "type":"Int64Property"
+                }
+            },
+            "type":"StructProperty"
+        },
+        """
+
         return {
             "struct_type": "FixedPoint64",
             "struct_id": PalObjects.EMPTY_UUID,
@@ -107,3 +199,27 @@ class PalObjects:
             },
             "type": "StructProperty"
         }
+
+    @staticmethod
+    def get_FixedPoint64(container: dict) -> int:
+        return PalObjects.get_BaseType(container["value"]["Value"])
+    
+    @staticmethod
+    def set_FixedPoint64(container: dict, value: int):
+        PalObjects.set_BaseType(container["value"]["Value"], value)
+
+    @staticmethod
+    def get_container_value(container: dict) -> Optional[Any]:
+        case_1 = {"StrProperty", "NameProperty", "IntProperty", "Int64Property", "FloatProperty"}
+        match container:
+            case {"type": type_str, **rest} if type_str in case_1:
+                return PalObjects.get_BaseType(container)
+            case {"type": "StructProperty", "struct_type": "Guid", **rest}:
+                return PalObjects.get_BaseType(container)
+            case {"type": "EnumProperty", **rest}:
+                return PalObjects.get_EnumProperty(container)
+            case {"type": "ArrayProperty", **rest}:
+                return PalObjects.get_ArrayProperty(container)
+            case {"type": "StructProperty", "struct_type": "FixedPoint64", **rest}:
+                return PalObjects.get_FixedPoint64(container)
+        return None

@@ -11,4 +11,4 @@ pip install -r requirements.txt
 pip install -e .
 
 # Run your package
-python -m palworld_pal_editor
+python -i -m palworld_pal_editor
