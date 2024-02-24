@@ -69,11 +69,15 @@ class PalObjects:
         return {'id': None, 'type': 'FloatProperty', 'value': value}
     
     @staticmethod
-    def get_BaseType(container: dict) -> str | int | float:
+    def BoolProperty(value: bool):
+        return {"value":value, "id":"None", "type":"BoolProperty"}
+
+    @staticmethod
+    def get_BaseType(container: dict) -> str | int | float | bool | UUID:
         return container["value"]
     
     @staticmethod
-    def set_BaseType(container: dict, value: str | int | float):
+    def set_BaseType(container: dict, value: str | int | float | bool | UUID):
         container["value"] = value
 
     @staticmethod
@@ -210,7 +214,7 @@ class PalObjects:
 
     @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
-        case_1 = {"StrProperty", "NameProperty", "IntProperty", "Int64Property", "FloatProperty"}
+        case_1 = {"StrProperty", "NameProperty", "IntProperty", "Int64Property", "FloatProperty", "BoolProperty"}
         match container:
             case {"type": type_str, **rest} if type_str in case_1:
                 return PalObjects.get_BaseType(container)

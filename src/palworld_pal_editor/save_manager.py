@@ -136,10 +136,14 @@ class SaveManager:
             player_list.append(player)
         return player_list
     
-    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+    def _get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
         guid = str(guid)
         if guid in self.player_mapping:
             player = self.player_mapping[guid]
+            return player
+    
+    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+        if player := self._get_player(guid):
             LOGGER.info(player)
             return player
         LOGGER.warning(f"Player {guid} not exist")

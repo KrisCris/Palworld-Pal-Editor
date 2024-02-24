@@ -2,6 +2,7 @@ venv/
 logs/
 gamesave/
 test_outputs/
+unused_data/
 
 #Byte-compiled / optimized / DLL files
 __pycache__/

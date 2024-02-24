@@ -2732,7 +2732,8 @@
             "DEF": 70
         },
         "i18n": {
-            "en": "Gumoss (Special)"
+            "en": "Gumoss (Special)",
+            "zh-CN": "叶泥泥 (Special)"
         },
         "sorting_key": {
             "paldeck": "13S"
@@ -3746,7 +3747,7 @@
             "en": "Dragostrophe"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "ElecLion": {
@@ -3764,7 +3765,7 @@
             "en": "Boltmane"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "DarkMutant": {
@@ -3783,7 +3784,7 @@
             "en": "Dark Mutant"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "GYM_ThunderDragonMan": {
@@ -3874,7 +3875,7 @@
             "zh-CN": "Black Marketeer"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "FireCult_FlameThrower": {
@@ -3889,7 +3890,7 @@
             "zh-CN": "Brothers of the Eternal Pyre Martyr"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "FireCult_Rifle": {
@@ -3903,7 +3904,7 @@
             "en": "Brothers of the Eternal Pyre Rifleman"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Male_Soldier01": {
@@ -3918,7 +3919,7 @@
             "zh-CN": "Burly Merc"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Female_Soldier01": {
@@ -3933,7 +3934,7 @@
             "zh-CN": "Expedition Survivor"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Believer_CrossBow": {
@@ -3948,7 +3949,7 @@
             "zh-CN": "Free Pal Alliance Devout"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Believer_Bat": {
@@ -3962,7 +3963,7 @@
             "en": "Free Pal Alliance Thug"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Male_Scientist01_LaserRifle": {
@@ -3977,7 +3978,7 @@
             "zh-CN": "PAL Genetic Research Unit Executioner"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "PalDealer": {
@@ -3992,7 +3993,7 @@
             "zh-CN": "Pal Merchant"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Police_Handgun": {
@@ -4007,7 +4008,7 @@
             "zh-CN": "PIDF Guard"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Bat": {
@@ -4022,7 +4023,7 @@
             "zh-CN": "Syndicate Thug (Bat)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_FlameThrower": {
@@ -4037,7 +4038,7 @@
             "zh-CN": "Syndicate Cleaner"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Fat_GatlingGun": {
@@ -4052,7 +4053,7 @@
             "zh-CN": "Syndicate Crusher"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_RocketLauncher": {
@@ -4067,7 +4068,7 @@
             "zh-CN": "Syndicate Elite"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Grenade": {
@@ -4082,7 +4083,7 @@
             "zh-CN": "Syndicate Grenadier"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Rifle": {
@@ -4097,7 +4098,7 @@
             "zh-CN": "Syndicate Gunner"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Shotgun": {
@@ -4112,7 +4113,7 @@
             "zh-CN": "Syndicate Hunter"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Hunter_Handgun": {
@@ -4127,7 +4128,7 @@
             "zh-CN": "Syndicate Thug (Handgun)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "SalesPerson": {
@@ -4142,7 +4143,7 @@
             "zh-CN": "Wandering Merchant"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "SalesPerson_Desert": {
@@ -4156,7 +4157,7 @@
             "en": "Wandering Merchant (Desert)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "SalesPerson_Desert2": {
@@ -4170,7 +4171,7 @@
             "en": "Wandering Merchant (Desert)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "SalesPerson_Volcano": {
@@ -4184,7 +4185,7 @@
             "en": "Wandering Merchant (Volcano)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "SalesPerson_Volcano2": {
@@ -4198,7 +4199,7 @@
             "en": "Wandering Merchant (Volcano)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Female_DesertPeople02": {
@@ -4212,7 +4213,7 @@
             "en": "Female Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Female_People02": {
@@ -4226,7 +4227,7 @@
             "en": "Female Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Female_People03": {
@@ -4240,7 +4241,7 @@
             "en": "Female Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Male_DesertPeople01": {
@@ -4254,7 +4255,7 @@
             "en": "Male Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Male_People02": {
@@ -4268,7 +4269,7 @@
             "en": "Male Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Male_People03": {
@@ -4282,7 +4283,7 @@
             "en": "Male Villager"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "MobuCitizen": {
@@ -4296,7 +4297,7 @@
             "en": "Islander"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "MobuCitizen_Male": {
@@ -4310,7 +4311,7 @@
             "en": "Male Islander"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Guard_Rifle": {
@@ -4324,7 +4325,7 @@
             "en": "Guard"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Guard_Shotgun": {
@@ -4338,7 +4339,7 @@
             "en": "PIDF Goody Two-Shoes"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "PalDealer_Desert": {
@@ -4352,7 +4353,7 @@
             "en": "Pal Merchant (Desert)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "PalDealer_Volcano": {
@@ -4366,7 +4367,7 @@
             "en": "Pal Merchant (Volcano)"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Police_Rifle": {
@@ -4380,7 +4381,7 @@
             "en": "PIDF Infantry"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     },
     "Police_Shotgun": {
@@ -4394,7 +4395,7 @@
             "en": "PIDF Elite"
         },
         "sorting_key": {
-            "paldeck": "null"
+
         }
     }
 }

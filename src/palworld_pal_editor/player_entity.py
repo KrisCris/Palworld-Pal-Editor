@@ -45,7 +45,14 @@ class PlayerEntity:
     def NickName(self) -> Optional[str]:
         return get_attr_value(self._player_param, "NickName")
     
+    def new_pal(self, pal_entity: PalEntity) -> bool:
+        raise NotImplementedError()
+
     def add_pal(self, pal_entity: PalEntity) -> bool:
+        """
+        This method only inserts player's pals to `self.palbox`.\n
+        Do not confuse with `self.new_pal()`, which is planned for creating pals. 
+        """
         pal_guid = str(pal_entity.InstanceId)
         if pal_guid in self.palbox:
             return False
