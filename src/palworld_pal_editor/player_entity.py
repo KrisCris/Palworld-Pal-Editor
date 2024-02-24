@@ -8,11 +8,11 @@ LOGGER = Logger()
 from .pal_objects import get_attr_value, PalObjects
 
 class PlayerEntity:
-    def __init__(self, player_obj: dict, palbox: set[PalEntity] = set()) -> None:
+    def __init__(self, player_obj: dict, palbox: set[PalEntity]) -> None:
         self._player_obj: dict = player_obj
         self.palbox = palbox
 
-        if self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"] != "PalIndividualCharacterSaveParameter":
+        if self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"]['struct_type'] != "PalIndividualCharacterSaveParameter":
             raise Exception("%s's save param is not PalIndividualCharacterSaveParameter" % self._player_obj)
 
         self._player_key: dict = self._player_obj['key']
@@ -43,7 +43,7 @@ class PlayerEntity:
     
     @property
     def NickName(self) -> Optional[str]:
-        return get_attr_value("NickName")
+        return get_attr_value(self._player_param, "NickName")
     
     def add_pal(self, pal_entity: PalEntity) -> bool:
         if pal_entity in self.palbox:

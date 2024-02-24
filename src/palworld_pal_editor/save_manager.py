@@ -12,6 +12,9 @@ from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
 
+from .pal_objects import get_attr_value
+from .player_entity import PlayerEntity
+from .pal_entity import PalEntity
 from .utils import Logger
 
 LOGGER = Logger()
@@ -55,7 +58,6 @@ def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
 def skip_encode(writer: FArchiveWriter, property_type: str, properties: dict) -> int:
     if "skip_type" not in properties:
         if properties["custom_type"] in PALWORLD_CUSTOM_PROPERTIES is not None:
-            # print("process parent encoder -> ", properties['custom_type'])
             return PALWORLD_CUSTOM_PROPERTIES[properties["custom_type"]][1](
                 writer, property_type, properties
             )
@@ -92,32 +94,25 @@ def skip_encode(writer: FArchiveWriter, property_type: str, properties: dict) ->
 
 
 PALEDITOR_CUSTOM_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSaveData"] = (
-    skip_decode,
-    skip_encode,
-)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.FoliageGridSaveDataMap"] = (
-    skip_decode,
-    skip_encode,
-)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSpawnerInStageSaveData"] = (
-    skip_decode,
-    skip_encode,
-)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DynamicItemSaveData"] = (
-    skip_decode,
-    skip_encode,
-)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (
-    skip_decode,
-    skip_encode,
-)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.FoliageGridSaveDataMap"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSpawnerInStageSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DynamicItemSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
 
 class SaveManager:
+    # Although these are class attrs, SaveManager itself is singleton.
     _instance = None
+    _file_path: Optional[Path]
+    _raw_gvas: Optional[bytes]
+    _compression_times: Optional[int]
+
+    gvas_file: Optional[GvasFile]
+    entities_list: Optional[list[dict]]
+    player_mapping: Optional[dict[str, PlayerEntity]]
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -126,17 +121,79 @@ class SaveManager:
 
     def __init__(self):
         if not hasattr(self, "initialized"):
-            self._file_path = None
-            self._raw_gvas = None
-            self._compression_times = 0x31
-            self.gvas_file = None
+            self.initialized = True
+            # self._file_path: Optional[Path] = None
+            # self._raw_gvas: Optional[bytes] = None
+            # self._compression_times: Optional[int] = None
+            # self.gvas_file: Optional[GvasFile] = None
+            # self.entities_list: Optional[list[dict]] = None
+            # self.player_list: Optional[list[PlayerEntity]] = None
+
+    def _load_entities(self):
+        self.player_mapping = {}
+        temp_player_pal_mapping: dict[str, set[PalEntity]] = {}
+        for entity in self.entities_list:
+            entity_struct = entity["value"]["RawData"]["value"]["object"]["SaveParameter"]
+            if entity_struct['struct_type'] != 'PalIndividualCharacterSaveParameter':
+                LOGGER.warning(f"Non-player/pal data found in CharacterSaveParameterMap, skipping {entity}")
+                continue
+
+            entity_param = entity_struct['value']
+            try: 
+                if get_attr_value(entity_param, "IsPlayer"):
+                    uid_str = str(get_attr_value(entity['key'], "PlayerUId"))
+
+                    if uid_str in temp_player_pal_mapping:
+                        player_entity = PlayerEntity(entity, temp_player_pal_mapping[uid_str])
+                        del temp_player_pal_mapping[uid_str]
+                    else:
+                        player_entity = PlayerEntity(entity, set())
+
+                    if uid_str in self.player_mapping:
+                        LOGGER.error("Duplicated player found: \n\t%s\n\t%s\n\tskipping" % 
+                                       (self.player_mapping[uid_str], player_entity))
+                        continue
+                
+                    self.player_mapping[uid_str] = player_entity
+                    LOGGER.info("Found player: %s" % str(player_entity))
+                else:
+                    pal_entity = PalEntity(entity)
+                    owner = pal_entity.OwnerPlayerUId
+                    if owner:
+                        owner_str = str(owner)
+                        if owner_str in self.player_mapping:
+                            self.player_mapping[owner_str].add_pal(pal_entity)
+                        else:
+                            temp_player_pal_mapping.setdefault(owner_str, set()).add(pal_entity)
+                        LOGGER.info("Found pal: %s" % str(pal_entity))
+
+                    else:
+                        LOGGER.error("Found dangling pal object: %s, skipping", str(pal_entity))
+                        continue
+
+            except Exception as e:
+                LOGGER.error("Error occured while init'in object: %s, skipping" % e)
+                continue
+        
+        for player_str_uid in self.player_mapping:
+            player = self.player_mapping[player_str_uid]
+            LOGGER.info("%s" % (player))
+            for pal in player.palbox:
+                LOGGER.info("\t%s" % (pal))
+
+        for uid_str in temp_player_pal_mapping:
+            pal_list = temp_player_pal_mapping[uid_str]
+            LOGGER.warning(f"Dangling pals found of non-existing user {uid_str}")
+            for pal in pal_list:
+                LOGGER.warning("\t%s", str(pal))
+                
 
 
     def open(self, file_path: str) -> Optional[GvasFile]:
         self._file_path = Path(file_path).resolve()
         if not self._file_path.exists():
             LOGGER.error(f"Save file does not exist: {self._file_path}.")
-            return False
+            return None
 
         LOGGER.info(f"Opening {self._file_path}")
         with self._file_path.open("rb") as file:
@@ -146,19 +203,33 @@ class SaveManager:
                 LOGGER.info("Decompressing sav")
                 self._raw_gvas, self._compression_times = decompress_sav_to_gvas(data)
             except Exception as e:
-                LOGGER.error(
-                    f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}"
-                )
+                LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
                 return None
             
-            LOGGER.info("Reading gvas file")
+            LOGGER.info("Reading GVAS file")
             self.gvas_file = GvasFile.read(
                 self._raw_gvas, PALWORLD_TYPE_HINTS, PALEDITOR_CUSTOM_PROPERTIES
             )
+
+            try:
+                self.entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
+            except Exception as e:
+                LOGGER.error(f"Unable to retrieve pal data: {e}")
+                return None
+
+            self._load_entities()
+
             LOGGER.info("Done")
-        return True
+        return self.gvas_file
 
     def save(self, file_path: str, _create_dir=False) -> bool:
+        if self.gvas_file is None:
+            LOGGER.error("No gvas_file stored in save manager, aborting")
+            return False
+        if self._compression_times is None:
+            LOGGER.warning("_compression_times is None, aborting")
+            return False
+
         output_path = Path(file_path).resolve()
 
         if not output_path.parent.exists():
@@ -178,9 +249,4 @@ class SaveManager:
         with output_path.open("wb") as file:
             file.write(sav_data)
         LOGGER.info(f"Saved to {output_path}")
-
-
-if __name__ == "__main__":
-    sm = SaveManager()
-    sm.open(input())
-    sm.save(input())
+        return True

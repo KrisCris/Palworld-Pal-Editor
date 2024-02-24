@@ -9,7 +9,7 @@ class PalEntity:
     def __init__(self, pal_obj: dict) -> None:
         self._pal_obj: dict = pal_obj
 
-        if self._pal_obj["value"]["RawData"]["value"]["object"]["SaveParameter"] != "PalIndividualCharacterSaveParameter":
+        if self._pal_obj["value"]["RawData"]["value"]["object"]["SaveParameter"]['struct_type'] != "PalIndividualCharacterSaveParameter":
             raise Exception("%s's save param is not PalIndividualCharacterSaveParameter" % self._pal_obj)
 
         self._pal_key: dict = self._pal_obj['key']
@@ -19,7 +19,7 @@ class PalEntity:
             raise TypeError("Expecting pal_obj, received player_obj: %s - %s - %s" % (self.NickName, self.PlayerUId, self.InstanceId))
 
     def __str__(self) -> str:
-        return "%s - %s - %s - %s - %s" % self.CharacterID, self.NickName, self.OwnerPlayerUId, self.PlayerUId, self.InstanceId
+        return "%s - %s - %s - %s - %s" % (self.CharacterID, self.NickName, self.OwnerPlayerUId, self.PlayerUId, self.InstanceId)
     
     def __hash__(self) -> int:
         return self.InstanceId.__hash__()

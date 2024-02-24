@@ -1,4 +1,3 @@
-import traceback
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
@@ -26,19 +25,23 @@ def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = Non
         if data_container is None:
             raise TypeError("Expected dict, get None.")
         attr = data_container.get(attr_name)
-        if attr and nested_keys:
+
+        if attr is None:
+            raise IndexError(f"Providing dict does not have `{attr_name}` attribute.")
+
+        if nested_keys:
             for key in nested_keys:
                 attr = attr.get(key, None)
                 if attr is None:
-                    raise KeyError(f"key {key} not found in dict {data_container}.")
+                    raise KeyError(f"trying to get attr `{attr_name}`, but nested key `{key}` not found in dict {data_container}.")
         
         if attr and "value" in attr:
             return attr["value"]
-        
-        raise IndexError(f"Unable to index {attr} with key `value`")
+        else:
+            raise KeyError(f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}.")
     
     except Exception as e:
-        LOGGER.warning((e, traceback.format_exc()))
+        LOGGER.warning(e)
         return None
 
 

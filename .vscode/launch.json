@@ -5,7 +5,7 @@
             "name": "Python: Module - palworld_pal_editor",
             "type": "debugpy",
             "request": "launch",
-            "module": "palworld_pal_editor.save_manager",
+            "module": "palworld_pal_editor",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/src",
             "env": {
