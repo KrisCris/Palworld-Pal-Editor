@@ -32,7 +32,7 @@ class Logger:
         return cls._instance
 
     def __init__(self, name="PalEditor", log_directory="logs", level=logging.DEBUG):
-        if not hasattr(self, 'initialized'):  # This check prevents reinitialization
+        if not hasattr(self, 'initialized'):
             self.initialized = True
             self.log_directory = log_directory
             os.makedirs(self.log_directory, exist_ok=True)
