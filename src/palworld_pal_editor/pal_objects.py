@@ -5,10 +5,21 @@ from palworld_pal_editor.utils import Logger
 
 LOGGER = Logger()
 
-def toUUID(uuid_str):
+def isUUIDStr(uuid_str: str) -> Optional[UUID]:
+        try:
+            uuid = UUID.from_str(str(uuid_str))
+            if str(uuid) == uuid_str.lower():
+                return uuid
+            raise Exception(f"{uuid_str} is not a valid UUID")
+        except Exception:
+            LOGGER.warning("isUUIDStr: {e}")
+            return None
+
+def toUUID(uuid_str: str) -> Optional[UUID]:
     if isinstance(uuid_str, UUID):
         return uuid_str
-    return UUID.from_str(str(uuid_str))
+    return isUUIDStr(uuid_str)
+
 
 def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = None) -> Optional[Any]:
     """

@@ -12,7 +12,8 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                // Any arguments your script needs go here
+                "--cli",
+                "--language=zh-CN"
             ]
         }
     ]

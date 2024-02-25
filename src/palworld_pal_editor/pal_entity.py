@@ -2,7 +2,7 @@ from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.utils import Logger
-from palworld_pal_editor.readonly_data import DataAccessor
+from palworld_pal_editor.data_provider import DataProvider
 from palworld_pal_editor.pal_objects import get_attr_value, PalObjects
 
 LOGGER = Logger()
@@ -48,7 +48,7 @@ class PalEntity:
     @property
     def OwnerName(self) -> str:
         from .save_manager import SaveManager
-        player = SaveManager()._get_player(self.OwnerPlayerUId)
+        player = SaveManager().get_player(self.OwnerPlayerUId)
         if player:
             nickname = player.NickName
             return nickname if nickname else self.OwnerPlayerUId
@@ -70,13 +70,18 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
     
     @property
-    def DataAccessKey(self) -> Optional[str]:
+    def _RawSpecieKey(self) -> Optional[str]:
         key = self.CharacterID
-        if self.IsBOSS or self.IsRarePal:
+        if self._IsBOSS:
             if "Boss_" in key:
                 key = key.split("Boss_")[1]
             else:
                 key = key.split("BOSS_")[1]
+        return key
+
+    @property
+    def DataAccessKey(self) -> Optional[str]:
+        key = self._RawSpecieKey
         match key:
             case "SheepBall":
                 key = "Sheepball"
@@ -86,7 +91,7 @@ class PalEntity:
     
     @property
     def DisplayName(self) -> str:
-        name = DataAccessor.get_pal_specie_name(self.DataAccessKey)
+        name = DataProvider.get_pal_specie_name(self.DataAccessKey)
         name = name if name else self.DataAccessKey
         name += f" ({self.NickName})" if self.NickName else ""
         if self.IsRarePal:
@@ -96,27 +101,49 @@ class PalEntity:
         return name
     
     @property
-    def IsBOSS(self) -> bool:
-        if self.IsRarePal:
-            return False
+    def PalDeckID(self) -> str:
+        key = DataProvider.get_pal_sorting_key(self.DataAccessKey)
+        return key if key else self.DataAccessKey
+
+    @property
+    def _IsBOSS(self) -> bool:
+        """
+        Check if CharacterID has BOSS_ or Boss_ prefix.
+        """
         if "BOSS_" in self.CharacterID or "Boss_" in self.CharacterID:
             return True
-        return False
+        
+    @_IsBOSS.setter
+    def _IsBOSS(self, value: bool) -> None:
+        if not value:
+            self.CharacterID = self._RawSpecieKey
+        elif not self._IsBOSS and value:
+            self.CharacterID = f"BOSS_{self._RawSpecieKey}"
+    
+    @property
+    def IsBOSS(self) -> bool:
+        """
+        Check if the pal is diaplayed as BOSS in game.
+        """
+        if self.IsRarePal:
+            return False
+        return self._IsBOSS
     
     @IsBOSS.setter
     def IsBOSS(self, value: bool) -> None:
+        character_id = self.CharacterID
+        is_boss = self.IsBOSS
+        is_rare_pal = self.IsRarePal
+
         if self.IsRarePal and value:
             self.IsRarePal = False
-        old_character_id = self.CharacterID
-        old_isBOSS = self.IsBOSS
-        if not value:
-            self.CharacterID = self.DataAccessKey
-        elif not self.IsBOSS and value:
-            self.CharacterID = f"BOSS_{self.CharacterID}"
-        else:
-            return
-        LOGGER.info(f"{self} - CharacterID: {old_character_id} -> {self.CharacterID}")
-        LOGGER.info(f"{self} - IsBOSS: {old_isBOSS} -> {self.IsBOSS}")
+        self._IsBOSS = value
+
+        LOGGER.info(f"{self} - CharacterID: {character_id} -> {self.CharacterID}")
+        LOGGER.info(f"{self} - IsBOSS: {is_boss} -> {self.IsBOSS}")
+        LOGGER.info(f"{self} - IsRarePal: {is_rare_pal} -> {self.CharacterID}")
+
+        # TODO Update MaxHP
 
     @property
     def IsRarePal(self) -> bool:
@@ -130,9 +157,7 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["IsRarePal"], value)
         
         # from my observation, all rare pals are named BOSS_PalCharacterId
-        if value:
-            if "BOSS_" in self.CharacterID or "Boss_" in self.CharacterID:
-                return
+        if value and not self._IsBOSS:
             self.CharacterID = "BOSS_" + self.CharacterID
     
     @property
@@ -156,6 +181,9 @@ class PalEntity:
             self._pal_param["Level"] = PalObjects.IntProperty(value)
         else:
             self._pal_param["Level"]["value"] = value
+        
+        # TODO Update MaxHP
+        # TODO Update Exp
 
     @property
     def Exp(self) -> Optional[int]:

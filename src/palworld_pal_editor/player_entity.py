@@ -1,6 +1,6 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
-from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.utils import Logger, alphanumeric_key
 from palworld_pal_editor.pal_entity import PalEntity
 
 LOGGER = Logger()
@@ -59,12 +59,10 @@ class PlayerEntity:
         self.palbox[pal_guid] = pal_entity
         return True
     
-    def list_pals(self) -> list[PalEntity]:
-        pal_list = []
+    def get_pals(self) -> list[PalEntity]:
         for pal in self.palbox.values():
             LOGGER.info(pal)
-            pal_list.append(pal)
-        return pal_list
+        return self.palbox.values()
     
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         guid = str(guid)
@@ -74,3 +72,8 @@ class PlayerEntity:
             return pal
         LOGGER.warning(f"Pal {guid} not exist")
 
+    def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
+        match sorting_key:
+            case "paldeck": 
+                return sorted(self.get_pals(), key=lambda pal: alphanumeric_key(pal.PalDeckID))
+        

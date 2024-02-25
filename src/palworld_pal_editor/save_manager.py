@@ -1,7 +1,3 @@
-import logging
-import json
-import uuid
-import math
 import copy
 from pathlib import Path
 from typing import Optional
@@ -129,24 +125,24 @@ class SaveManager:
             # self.entities_list: Optional[list[dict]] = None
             # self.player_list: Optional[list[PlayerEntity]] = None
 
-    def list_players(self) -> list[PlayerEntity]:
-        player_list = []
-        for player in self.player_mapping.values():
-            LOGGER.info(player)
-            player_list.append(player)
-        return player_list
+    def get_players(self) -> list[PlayerEntity]:
+        return self.player_mapping.values()
     
-    def _get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
         guid = str(guid)
         if guid in self.player_mapping:
             player = self.player_mapping[guid]
             return player
-    
-    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
-        if player := self._get_player(guid):
-            LOGGER.info(player)
-            return player
         LOGGER.warning(f"Player {guid} not exist")
+
+    def get_players_by_name(self, name: str) -> list[PlayerEntity]:
+        return [player for player in self.get_players() if player.NickName == name]
+    
+    def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+        for player in self.get_players():
+            if pal := player.get_pal(guid):
+                return pal
+        LOGGER.warning(f"Can't find pal {guid}")
 
     def _load_entities(self):
         self.player_mapping = {}

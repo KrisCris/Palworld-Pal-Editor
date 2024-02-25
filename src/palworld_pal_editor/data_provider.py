@@ -44,33 +44,16 @@ def none_guard(data_source: dict | list, key_arg_position: int, subkey: Optional
         return wrapper
     return decorator
 
-class DataAccessor:
+class DataProvider:
     @none_guard(data_source=PAL_DATA, key_arg_position=0, subkey="i18n")
     @staticmethod
     def get_pal_specie_name(key: str) -> Optional[str]:    
-        # if key not in PAL_DATA:
-        #     return None
-        
-        # pal_data:dict = PAL_DATA[key]
-
-        # # Check if 'i18n' key exists and has at least one entry
-        # if 'i18n' not in pal_data or not pal_data['i18n']:
-        #     return None
-        # access i18n list and return the preferred language or default to English
         i18n_list: dict = PAL_DATA[key]['i18n']
         return i18n_list.get(Config.i18n, i18n_list.get('en', None))
     
     @none_guard(data_source=PAL_DATA, key_arg_position=0, subkey="Scaling")
     @staticmethod
     def get_pal_hp_scaling(key: str, is_boss: bool) -> Optional[int]:
-        # if key not in PAL_DATA:
-        #     return None
-        
-        # pal_data:dict = PAL_DATA[key]
-
-        # if "Scaling" not in pal_data or not pal_data["Scaling"]:
-        #     return None
-        
         scaling_list: dict = PAL_DATA[key]["Scaling"]
         if is_boss and "HP_BOSS" in scaling_list:
             return scaling_list["HP_BOSS"]
@@ -80,6 +63,6 @@ class DataAccessor:
     @staticmethod
     def get_pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
         sorting_key_list: dict = PAL_DATA[key]["sorting_key"]
-        sorting_key_list.get(sorting_key, None)
+        return sorting_key_list.get(sorting_key, None)
 
     
