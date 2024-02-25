@@ -44,7 +44,7 @@ class Logger:
             self.logger.setLevel(level)
 
             file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-            file_handler = logging.FileHandler(log_path)
+            file_handler = logging.FileHandler(log_path, encoding='utf-8')
             file_handler.setLevel(level)
             file_handler.setFormatter(file_formatter)
             self.logger.addHandler(file_handler)

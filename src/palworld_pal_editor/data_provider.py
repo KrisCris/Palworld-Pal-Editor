@@ -19,7 +19,7 @@ def load_json(filename: str) -> Any:
         base_path = Path(__file__).parent
 
     path = base_path / "assets/data" / filename
-    with path.open("r") as file:
+    with path.open("r", encoding='utf8') as file:
         return json.load(file)
 
 PAL_ATTACKS:dict[str, dict] = load_json("pal_attacks.json")

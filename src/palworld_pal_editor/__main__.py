@@ -1,5 +1,3 @@
-import code
-import sys
 import argparse
 
 from palworld_pal_editor.save_manager import SaveManager
@@ -32,4 +30,7 @@ def main():
         raise NotImplementedError("NO GUI Mode Yet, run with --cli.")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        LOGGER.error(f"Exception caught on __main__: {e}")
