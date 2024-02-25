@@ -1,11 +1,9 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
-from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.utils import LOGGER, clamp
 from palworld_pal_editor.data_provider import DataProvider
-from palworld_pal_editor.pal_objects import get_attr_value, PalObjects
-
-LOGGER = Logger()
+from palworld_pal_editor.pal_objects import get_attr_value, PalObjects, PalGender, PalRank
 
 
 class PalEntity:
@@ -63,6 +61,7 @@ class PalEntity:
         return get_attr_value(self._pal_param, "CharacterID")
     
     @CharacterID.setter
+    @LOGGER.change_logger('CharacterID')
     def CharacterID(self, value: str) -> None:
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
@@ -80,6 +79,12 @@ class PalEntity:
         return key
 
     @property
+    def IconAccessKey(self) -> Optional[str]:
+        if DataProvider.pal_is_human(self.DataAccessKey):
+            return "Human"
+        return self.DataAccessKey
+
+    @property
     def DataAccessKey(self) -> Optional[str]:
         key = self._RawSpecieKey
         match key:
@@ -91,19 +96,34 @@ class PalEntity:
     
     @property
     def DisplayName(self) -> str:
-        name = DataProvider.get_pal_specie_name(self.DataAccessKey)
+        name = DataProvider.pal_specie_name(self.DataAccessKey)
         name = name if name else self.DataAccessKey
         name += f" ({self.NickName})" if self.NickName else ""
         if self.IsRarePal:
             name = "✨" + name
         if self.IsBOSS:
             name = "💀" + name
+        match self.Gender:
+            case PalGender.FEMALE.value: name += "♀"
+            case PalGender.MALE.value: name += "♂"
         return name
     
     @property
     def PalDeckID(self) -> str:
-        key = DataProvider.get_pal_sorting_key(self.DataAccessKey)
+        key = DataProvider.pal_sorting_key(self.DataAccessKey)
         return key if key else self.DataAccessKey
+    
+    @property
+    def Gender(self) -> Optional[str]:
+        return PalGender.from_value(get_attr_value(self._pal_param, "Gender", ["value"]))
+    
+    @Gender.setter
+    @LOGGER.change_logger('Gender')
+    def Gender(self, gender: PalGender) -> None:
+        if not self.Gender:
+            LOGGER.warning("This pal has no gender.")
+            return
+        PalObjects.set_EnumProperty(self._pal_param["Gender"], gender.value)
 
     @property
     def _IsBOSS(self) -> bool:
@@ -130,18 +150,11 @@ class PalEntity:
         return self._IsBOSS
     
     @IsBOSS.setter
+    @LOGGER.change_logger('IsBOSS')
     def IsBOSS(self, value: bool) -> None:
-        character_id = self.CharacterID
-        is_boss = self.IsBOSS
-        is_rare_pal = self.IsRarePal
-
         if self.IsRarePal and value:
             self.IsRarePal = False
         self._IsBOSS = value
-
-        LOGGER.info(f"{self} - CharacterID: {character_id} -> {self.CharacterID}")
-        LOGGER.info(f"{self} - IsBOSS: {is_boss} -> {self.IsBOSS}")
-        LOGGER.info(f"{self} - IsRarePal: {is_rare_pal} -> {self.CharacterID}")
 
         # TODO Update MaxHP
 
@@ -150,6 +163,7 @@ class PalEntity:
         return get_attr_value(self._pal_param, "IsRarePal")
     
     @IsRarePal.setter
+    @LOGGER.change_logger('IsRarePal')
     def IsRarePal(self, value: bool) -> None:
         if self.IsRarePal is None:
             self._pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
@@ -165,6 +179,7 @@ class PalEntity:
         return get_attr_value(self._pal_param, "NickName")
     
     @NickName.setter
+    @LOGGER.change_logger('NickName')
     def NickName(self, value: str) -> None:
         if self.NickName is None:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
@@ -176,20 +191,22 @@ class PalEntity:
         return get_attr_value(self._pal_param, "Level")
     
     @Level.setter
+    @LOGGER.change_logger('Level')
     def Level(self, value: int) -> None:
+        value = clamp(1, 50, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.IntProperty(value)
         else:
             self._pal_param["Level"]["value"] = value
-        
+        self.Exp = DataProvider.pal_level_to_xp(self.Level)
         # TODO Update MaxHP
-        # TODO Update Exp
 
     @property
     def Exp(self) -> Optional[int]:
         return get_attr_value(self._pal_param, "Exp")
     
     @Exp.setter
+    @LOGGER.change_logger('Exp')
     def Exp(self, value: int) -> None:
         if self.Exp is None:
             self._pal_param["Exp"] = PalObjects.IntProperty(value)
@@ -197,10 +214,25 @@ class PalEntity:
             self._pal_param["Exp"]["value"] = value
 
     @property
+    def Rank(self) -> Optional[PalRank]:
+        return PalRank.from_value(get_attr_value(self._pal_param, "Rank"))
+
+    @Rank.setter
+    @LOGGER.change_logger('Rank')
+    def Rank(self, rank: PalRank) -> None:
+        if self.Rank is None:
+            self._pal_param["Rank"] = PalObjects.IntProperty(rank.value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["Rank"], rank.value)
+        # TODO
+        # Update MaxHP
+
+    @property
     def HP(self) -> Optional[int]:
         return get_attr_value(self._pal_param, "HP", nested_keys=["value", "Value"])
     
     @HP.setter
+    @LOGGER.change_logger('HP')
     def HP(self, value: int) -> None:
         if self.HP is None:
             self._pal_param["HP"] = PalObjects.FixedPoint64(value)

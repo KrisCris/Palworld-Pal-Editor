@@ -15,9 +15,9 @@ PYTHON_VERSION=$(${PYTHON_CMD} --version | awk '{print $2}')
 PYTHON_MAJOR_VERSION=$(echo ${PYTHON_VERSION} | cut -d. -f1)
 PYTHON_MINOR_VERSION=$(echo ${PYTHON_VERSION} | cut -d. -f2)
 
-# Check if Python version is 3.10 or newer
-if [ "${PYTHON_MAJOR_VERSION}" -lt 3 ] || { [ "${PYTHON_MAJOR_VERSION}" -eq 3 ] && [ "${PYTHON_MINOR_VERSION}" -lt 10 ]; }; then
-    echo "Python version 3.10 or newer is required."
+# Check if Python version is 3.11 or newer
+if [ "${PYTHON_MAJOR_VERSION}" -lt 3 ] || { [ "${PYTHON_MAJOR_VERSION}" -eq 3 ] && [ "${PYTHON_MINOR_VERSION}" -lt 11 ]; }; then
+    echo "Python version 3.11 or newer is required."
     exit 1
 fi
 

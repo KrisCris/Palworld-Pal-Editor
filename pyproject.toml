@@ -10,7 +10,7 @@ authors = [
 ]
 keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [

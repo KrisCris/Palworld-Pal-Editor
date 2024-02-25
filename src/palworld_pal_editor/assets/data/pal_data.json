@@ -4314,6 +4314,20 @@
 
         }
     },
+    "MobuCitizen_Female": {
+        "CodeName": "MobuCitizen_Female",
+        "Type": [
+            "None"
+        ],
+        "Moveset": {},
+        "Human": true,
+        "i18n": {
+            "en": "Female Islander"
+        },
+        "sorting_key": {
+
+        }
+    },
     "Guard_Rifle": {
         "CodeName": "Guard_Rifle",
         "Type": [

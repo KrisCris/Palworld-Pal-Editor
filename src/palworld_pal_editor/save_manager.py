@@ -11,9 +11,7 @@ from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TY
 from palworld_pal_editor.pal_objects import get_attr_value, toUUID
 from palworld_pal_editor.player_entity import PlayerEntity
 from palworld_pal_editor.pal_entity import PalEntity
-from palworld_pal_editor.utils import Logger
-
-LOGGER = Logger()
+from palworld_pal_editor.utils import LOGGER
 
 
 def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):

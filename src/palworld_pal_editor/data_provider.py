@@ -4,7 +4,8 @@ from pathlib import Path
 import sys
 from typing import Any, Callable, Optional
 
-from .config import Config
+from palworld_pal_editor.config import Config
+from palworld_pal_editor.utils import LOGGER
 
 # def load_json(filename: str):
 #     path = Path(f"./src/palworld_pal_editor/assets/data/{filename}").resolve()
@@ -29,7 +30,7 @@ PAL_XP_THRESHOLDS:list[int] = load_json("pal_xp_thresholds.json")
 I18N_LIST = ['en', 'zh-CN']
 
 
-def none_guard(data_source: dict | list, key_arg_position: int, subkey: Optional[str] = None):
+def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Optional[str] = None):
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> Optional[Any]:
@@ -45,24 +46,35 @@ def none_guard(data_source: dict | list, key_arg_position: int, subkey: Optional
     return decorator
 
 class DataProvider:
-    @none_guard(data_source=PAL_DATA, key_arg_position=0, subkey="i18n")
+    @none_guard(data_source=PAL_DATA, subkey="i18n")
     @staticmethod
-    def get_pal_specie_name(key: str) -> Optional[str]:    
+    def pal_specie_name(key: str) -> Optional[str]:    
         i18n_list: dict = PAL_DATA[key]['i18n']
         return i18n_list.get(Config.i18n, i18n_list.get('en', None))
     
-    @none_guard(data_source=PAL_DATA, key_arg_position=0, subkey="Scaling")
+    @none_guard(data_source=PAL_DATA, subkey="Scaling")
     @staticmethod
-    def get_pal_hp_scaling(key: str, is_boss: bool) -> Optional[int]:
+    def pal_hp_scaling(key: str, is_boss: bool) -> Optional[int]:
         scaling_list: dict = PAL_DATA[key]["Scaling"]
         if is_boss and "HP_BOSS" in scaling_list:
             return scaling_list["HP_BOSS"]
         return scaling_list["HP"]
 
-    @none_guard(data_source=PAL_DATA, key_arg_position=0, subkey="sorting_key")
+    @none_guard(data_source=PAL_DATA, subkey="sorting_key")
     @staticmethod
-    def get_pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
+    def pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
         sorting_key_list: dict = PAL_DATA[key]["sorting_key"]
         return sorting_key_list.get(sorting_key, None)
 
+    @none_guard(data_source=PAL_DATA)
+    @staticmethod
+    def pal_is_human(key: str) -> Optional[bool]:
+        return PAL_DATA[key].get("Human", False)
+    
+    def pal_level_to_xp(lv: int) -> Optional[int]:
+        try:
+            return PAL_XP_THRESHOLDS[lv]
+        except IndexError:
+            LOGGER.warning(f"Level {lv} is out of bounds.")
+            return None
     

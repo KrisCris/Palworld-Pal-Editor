@@ -1,11 +1,10 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
-from palworld_pal_editor.utils import Logger, alphanumeric_key
+
+from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.pal_entity import PalEntity
+from palworld_pal_editor.pal_objects import get_attr_value, PalObjects
 
-LOGGER = Logger()
-
-from .pal_objects import get_attr_value, PalObjects
 
 class PlayerEntity:
     def __init__(self, player_obj: dict, palbox: dict[str, PalEntity]) -> None:
@@ -70,7 +69,7 @@ class PlayerEntity:
             pal = self.palbox[guid]
             LOGGER.info(pal)
             return pal
-        LOGGER.warning(f"Pal {guid} not exist")
+        LOGGER.warning(f"Player {self} has no pal {guid}.")
 
     def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
         match sorting_key:

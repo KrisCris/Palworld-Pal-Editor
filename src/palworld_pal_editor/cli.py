@@ -2,11 +2,10 @@ import code
 from typing import Optional
 from palworld_pal_editor.pal_entity import PalEntity
 from palworld_pal_editor.player_entity import PlayerEntity
-from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.pal_objects import isUUIDStr
 
-LOGGER = Logger()
 
 def main():
     from palworld_pal_editor.save_manager import SaveManager

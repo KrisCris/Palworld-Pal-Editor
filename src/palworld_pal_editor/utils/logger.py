@@ -1,3 +1,4 @@
+from enum import Enum
 import logging
 import os
 from datetime import datetime
@@ -57,6 +58,9 @@ class Logger:
     def nextline(self):
         print("")
 
+    def _print_change(self, entity, val_name, old_val, new_val):
+        self.info(f"{entity} | {val_name}: {old_val} -> {new_val}")
+
     def debug(self, message: str):
         self.logger.debug(message)
 
@@ -69,29 +73,17 @@ class Logger:
     def error(self, message: str):
         self.logger.error(message)
 
-if __name__ == "__main__":
-    logger = Logger()
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')
-    logger = Logger()
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')    
-    logger = Logger()
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')    
-    logger = Logger()
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')    
-    logger = Logger()
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')
+    def change_logger(self, attr_name: str, enum: Enum = None):
+        """A decorator for logging changes to a property, applicable to any class instance method."""
+        def decorator(func):
+            def wrapper(instance, new_value):
+                # Retrieve the old value of the attribute
+                old_value = getattr(instance, attr_name)
+                # Call the original function (setter) with the new value
+                func(instance, new_value)
+                # Retrieve the updated value of the attribute
+                updated_value = getattr(instance, attr_name)
+                # Log the change using a logging mechanism (LOGGER needs to be defined)
+                self._print_change(instance, attr_name, old_value, updated_value)
+            return wrapper  # type: ignore
+        return decorator

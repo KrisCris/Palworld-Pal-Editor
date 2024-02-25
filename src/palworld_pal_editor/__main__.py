@@ -3,16 +3,16 @@ import sys
 import argparse
 
 from palworld_pal_editor.save_manager import SaveManager
-from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.data_provider import I18N_LIST
 
-LOGGER = Logger()
 
 def setup_config_from_args():
     parser = argparse.ArgumentParser(description="Your application description here.")
     parser.add_argument('--language', type=str, help=f'Language for the application, options: {", ".join(I18N_LIST)}..', default='en')
-    parser.add_argument('--cli', action='store_true', help='Enable CLI mode.')
+    # TODO remove default=True
+    parser.add_argument('--cli', action='store_true', help='Enable CLI mode.', default=True)
 
     args = parser.parse_args()
 

@@ -20,9 +20,9 @@ $versionNumbers = $versionOutput -replace "Python ", "" -split "\."
 $majorVersion = [int]$versionNumbers[0]
 $minorVersion = [int]$versionNumbers[1]
 
-# Ensure Python version is at least 3.10
-if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 10)) {
-    Write-Host "Python version 3.10 or newer is required."
+# Ensure Python version is at least 3.11
+if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 11)) {
+    Write-Host "Python version 3.11 or newer is required."
     exit
 }
 

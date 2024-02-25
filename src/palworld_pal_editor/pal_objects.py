@@ -1,9 +1,10 @@
+from enum import Enum
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
-from palworld_pal_editor.utils import Logger
+from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils.util import clamp
 
-LOGGER = Logger()
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
         try:
@@ -54,6 +55,39 @@ def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = Non
     except Exception as e:
         # LOGGER.warning(e)
         return None
+
+class PalGender(Enum):
+    MALE = "EPalGenderType::Male"
+    FEMALE = "EPalGenderType::Female"
+
+    @staticmethod
+    def from_value(value: str):
+        if value is None:
+            return None
+        try:
+            return PalGender(value)
+        except:
+            LOGGER.warning(f"{value} is not a valid PalGender")
+
+
+class PalRank(Enum):
+    Rank0 = 1
+    Rank1 = 2
+    Rank2 = 3
+    Rank3 = 4
+    Rank4 = 5
+
+    def zero_indexed(self) -> int:
+        self.value - 1
+
+    @staticmethod
+    def from_value(value: int):
+        if value is None:
+            return None
+        try:
+            return PalRank(value)
+        except:
+            LOGGER.warning(f"{value} is not a valid PalRank")
 
 
 class PalObjects:
@@ -122,7 +156,7 @@ class PalObjects:
             }}
     
     @staticmethod
-    def get_EnumProperty(container: dict):
+    def get_EnumProperty(container: dict) -> str:
         return container["value"]["value"]
     
     @staticmethod
