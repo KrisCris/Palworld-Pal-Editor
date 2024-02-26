@@ -39,6 +39,7 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
             
             # if key not in data_source, or if subkey not in data source, or sub_data[subkey] is empty
             if key not in data_source or (subkey and (subkey not in data_source[key] or not data_source[key][subkey])):
+                LOGGER.warning(f"Key: {key} or subkey: {subkey} were not found in the data source.")
                 return None
             
             return func(*args, **kwargs)
@@ -48,7 +49,7 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
 class DataProvider:
     @none_guard(data_source=PAL_DATA, subkey="i18n")
     @staticmethod
-    def pal_specie_name(key: str) -> Optional[str]:    
+    def pal_i18n(key: str) -> Optional[str]:    
         i18n_list: dict = PAL_DATA[key]['i18n']
         return i18n_list.get(Config.i18n, i18n_list.get('en', None))
     
@@ -68,13 +69,32 @@ class DataProvider:
 
     @none_guard(data_source=PAL_DATA)
     @staticmethod
-    def pal_is_human(key: str) -> Optional[bool]:
+    def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
     
     def pal_level_to_xp(lv: int) -> Optional[int]:
         try:
-            return PAL_XP_THRESHOLDS[lv]
+            return PAL_XP_THRESHOLDS[lv - 1]
         except IndexError:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
+        
+    @none_guard(data_source=PAL_ATTACKS)
+    @staticmethod
+    def attack_i18n(key: str) -> Optional[str]:
+        i18n_list: dict = PAL_ATTACKS[key]["i18n"]
+        return i18n_list.get(Config.i18n, i18n_list.get('en', None))
     
+    @staticmethod
+    def has_attack(key: str) -> bool:
+        return key in PAL_ATTACKS
+    
+    @staticmethod
+    def get_sorted_attacks() -> list[dict]:
+        sorted_list = sorted(PAL_ATTACKS.values(), key=lambda item: (item['Type'], item['Power']))
+        return sorted_list
+    
+    @none_guard(data_source=PAL_ATTACKS)
+    @staticmethod
+    def attack_has_skill_fruit(key: str) -> bool:
+        return True if PAL_ATTACKS[key].get("skill_fruit", None) else False

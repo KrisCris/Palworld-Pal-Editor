@@ -138,7 +138,7 @@ class SaveManager:
     
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         for player in self.get_players():
-            if pal := player.get_pal(guid):
+            if pal := player.palbox.get(guid, None):
                 return pal
         LOGGER.warning(f"Can't find pal {guid}")
 
@@ -188,11 +188,11 @@ class SaveManager:
                 LOGGER.error("Error occured while init'in object: %s, skipping" % e)
                 continue
         
-        for player_str_uid in self.player_mapping:
-            player = self.player_mapping[player_str_uid]
+        for player in self.player_mapping.values():
             LOGGER.nextline()
             LOGGER.info("%s" % (player))
-            for pal in player.palbox.values():
+            sorted_palbox = player.get_sorted_pals()
+            for pal in sorted_palbox:
                 LOGGER.info("\t%s" % (pal))
 
         for uid_str in temp_player_pal_mapping:

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
@@ -55,6 +56,23 @@ def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = Non
     except Exception as e:
         # LOGGER.warning(e)
         return None
+
+def get_nested_attr(container: dict, keys: list) -> Optional[Any]:
+    """
+    Retrieve a value from a nested dictionary using a sequence of keys.
+
+    :param container: The dictionary to search through.
+    :param keys: A tuple of keys representing the path to the desired value.
+    :return: The value found at the end of the keys path, or None if any key is missing.
+    """
+    current_level = container
+    for key in keys:
+        try:
+            current_level = current_level[key]
+        except Exception as e:
+            # LOGGER.warning(e)
+            return None
+    return current_level
 
 class PalGender(Enum):
     MALE = "EPalGenderType::Male"
@@ -118,11 +136,11 @@ class PalObjects:
         return {"value":value, "id":"None", "type":"BoolProperty"}
 
     @staticmethod
-    def get_BaseType(container: dict) -> str | int | float | bool | UUID:
-        return container["value"]
+    def get_BaseType(container: dict) -> Optional[Any]:
+        return get_nested_attr(container, ["value"])
     
     @staticmethod
-    def set_BaseType(container: dict, value: str | int | float | bool | UUID):
+    def set_BaseType(container: dict, value: Any):
         container["value"] = value
 
     @staticmethod
@@ -156,8 +174,8 @@ class PalObjects:
             }}
     
     @staticmethod
-    def get_EnumProperty(container: dict) -> str:
-        return container["value"]["value"]
+    def get_EnumProperty(container: dict) -> Optional[str]:
+        return get_nested_attr(container, ["value", "value"])
     
     @staticmethod
     def set_EnumProperty(container: dict, value: str):
@@ -213,12 +231,19 @@ class PalObjects:
             struct["custom_type"] = custom_type
 
     @staticmethod
-    def get_ArrayProperty(container: dict) -> list[Any]:
-        return container["value"]["values"]
+    def get_ArrayProperty(container: dict) -> Optional[list[Any]]:
+        """
+        Please note that custom_type is unsupported!
+        """
+        return get_nested_attr(container, ["value", "values"])
     
     @staticmethod
     def add_ArrayProperty(container: dict, value: Any):
         PalObjects.get_ArrayProperty(container).append(value)
+
+    @staticmethod
+    def pop_ArrayProperty(container: dict, index: Any) -> Any:
+        return PalObjects.get_ArrayProperty(container).pop(index)
 
     @staticmethod
     def FixedPoint64(value: int):
@@ -250,8 +275,9 @@ class PalObjects:
         }
 
     @staticmethod
-    def get_FixedPoint64(container: dict) -> int:
-        return PalObjects.get_BaseType(container["value"]["Value"])
+    def get_FixedPoint64(container: dict) -> Optional[int]:
+        int64: Optional[dict] = get_nested_attr(container, ["value", "Value"])
+        return PalObjects.get_BaseType(int64)
     
     @staticmethod
     def set_FixedPoint64(container: dict, value: int):
@@ -271,4 +297,6 @@ class PalObjects:
                 return PalObjects.get_ArrayProperty(container)
             case {"type": "StructProperty", "struct_type": "FixedPoint64", **rest}:
                 return PalObjects.get_FixedPoint64(container)
+
+        LOGGER.warning(f"Unhandled Pal Object Type: {container}")
         return None

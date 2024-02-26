@@ -59,15 +59,12 @@ class PlayerEntity:
         return True
     
     def get_pals(self) -> list[PalEntity]:
-        for pal in self.palbox.values():
-            LOGGER.info(pal)
         return self.palbox.values()
     
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         guid = str(guid)
         if guid in self.palbox:
             pal = self.palbox[guid]
-            LOGGER.info(pal)
             return pal
         LOGGER.warning(f"Player {self} has no pal {guid}.")
 

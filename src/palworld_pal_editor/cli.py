@@ -5,17 +5,20 @@ from palworld_pal_editor.player_entity import PlayerEntity
 from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.pal_objects import isUUIDStr
+from palworld_pal_editor.data_provider import DataProvider
 
 
 def main():
     from palworld_pal_editor.save_manager import SaveManager
+
     LOGGER.info("Palworld Pal Editor, made by _connlost with ❤.")
-    LOGGER.info("> Please provide the path to Level.sav")
-    input_path = input("> ")
-    sm = SaveManager()
-    sm.open(input_path)
-    # if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    banner_message = f"\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object."
+    while True:
+        LOGGER.info("> Please provide the path to Level.sav")
+        input_path = input("> ")
+        save_manager = SaveManager()
+        if save_manager.open(input_path) is not None:
+            break
+
     def list_player() -> list[PlayerEntity]:
         """
         List all players.
@@ -57,12 +60,33 @@ def main():
         for pal in pals:
             LOGGER.info(f" - {pal}")
         return pals
-    
+
     def get_pal(guid: str) -> Optional[PalEntity]:
-        return SaveManager().get_pal(guid)
+        pal = SaveManager().get_pal(guid)
+        LOGGER.info(f" - {pal}")
+        return pal
+
+    def list_attacks():
+        sorted_list = DataProvider.get_sorted_attacks()
+        for item in sorted_list:
+            LOGGER.info(
+                " - [%s][%s]%s %s: %s "
+                % (
+                    item["Type"],
+                    item["Power"],
+                    (
+                        "[🍎]"
+                        if DataProvider.attack_has_skill_fruit(item["CodeName"])
+                        else ""
+                    ),
+                    DataProvider.attack_i18n(item["CodeName"]),
+                    item["CodeName"],
+                )
+            )
 
     def pal_help():
-        LOGGER.info("""
+        LOGGER.info(
+            """
             - class SaveManager:
             > Singleton Class so you can call SaveManager() multiple times.
             -     `SaveManager()`: Get the SaveManager Instance
@@ -96,16 +120,21 @@ def main():
             - `pal_entity.pprint_pal_stats()`: print out stats
 
             - ** Functions You May Want to Try First **
+            - pal_help()
             - list_player()
             - get_player(uid: str) -> PlayerEntity
             - get_player_by_name(name: str) -> list[PlayerEntity]
             - list_player_pals(player: PlayerEntity | str) -> list[PalEntity]
             - get_pal(guid: str) -> Optional[PalEntity]
-        """) 
+            - list_attacks(): print out all sorted pal attacks
+        """
+        )
+    
+    # interactive mode?
+    # if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    banner_message = f"\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object."
+
     code.interact(banner=banner_message, local=locals())
-
-
-
 
     # player_list = sm.list_players()
     # random_player = sm.get_player(player_list[0].PlayerUId)

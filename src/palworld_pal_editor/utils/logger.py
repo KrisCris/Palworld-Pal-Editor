@@ -1,7 +1,10 @@
 from enum import Enum
+from functools import wraps
 import logging
 import os
 from datetime import datetime
+import copy
+from typing import Callable
 
 class ColorConsoleFormatter(logging.Formatter):
     """Custom formatter for adding colors to console output only."""
@@ -73,17 +76,22 @@ class Logger:
     def error(self, message: str):
         self.logger.error(message)
 
-    def change_logger(self, attr_name: str, enum: Enum = None):
+    def change_logger(self, attr_name: str):
         """A decorator for logging changes to a property, applicable to any class instance method."""
-        def decorator(func):
-            def wrapper(instance, new_value):
+        def decorator(func: Callable) -> Callable:
+            @wraps(func)
+            def wrapper(instance, *args, **kwargs):
                 # Retrieve the old value of the attribute
+                # copy for ref'd objects
                 old_value = getattr(instance, attr_name)
+                if isinstance(old_value, (list, dict)):
+                    old_value = copy.copy(old_value)
                 # Call the original function (setter) with the new value
-                func(instance, new_value)
+                og_retval = func(instance, *args, **kwargs)
                 # Retrieve the updated value of the attribute
                 updated_value = getattr(instance, attr_name)
                 # Log the change using a logging mechanism (LOGGER needs to be defined)
                 self._print_change(instance, attr_name, old_value, updated_value)
+                return og_retval
             return wrapper  # type: ignore
         return decorator
