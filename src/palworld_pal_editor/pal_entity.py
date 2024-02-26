@@ -163,7 +163,8 @@ class PalEntity:
         if self.IsRarePal and value:
             self.IsRarePal = False
         self._IsBOSS = value
-        # TODO Update MaxHP
+        # Update MaxHP
+        self.MaxHP = self.ComputedMaxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
@@ -213,7 +214,8 @@ class PalEntity:
         else:
             self._pal_param["Level"]["value"] = value
         self.Exp = DataProvider.pal_level_to_xp(self.Level)
-        # TODO Update MaxHP
+        # Update MaxHP
+        self.MaxHP = self.ComputedMaxHP
 
     @property
     def Exp(self) -> Optional[int]:
@@ -244,8 +246,8 @@ class PalEntity:
             self._pal_param["Rank"] = PalObjects.IntProperty(rank.value)
         else:
             PalObjects.set_BaseType(self._pal_param["Rank"], rank.value)
-        # TODO
         # Update MaxHP
+        self.MaxHP = self.ComputedMaxHP
 
     @property
     def Rank_HP(self) -> Optional[int]:
@@ -267,7 +269,8 @@ class PalEntity:
     @LOGGER.change_logger('Rank_HP')
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
-        # TODO maxhp
+        # Update MaxHP
+        self.MaxHP = self.ComputedMaxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
@@ -389,6 +392,8 @@ class PalEntity:
         
         self.PassiveSkillList.append(skill)
         LOGGER.info(f"Added {DataProvider.passive_i18n(skill)[0]} to PassiveSkillList")
+        # Update MaxHP, but no such skill atm.
+        # self.MaxHP = self.ComputedMaxHP
         return True
     
     @LOGGER.change_logger('PassiveSkillList')
@@ -398,6 +403,8 @@ class PalEntity:
                 idx = self.PassiveSkillList.index(item)
             skill = self.PassiveSkillList.pop(int(idx))
             LOGGER.info(f"Removed {DataProvider.passive_i18n(skill)[0]} from PassiveSkillList")
+            # Update MaxHP, but no such skill atm.
+            # self.MaxHP = self.ComputedMaxHP
             return skill
         except Exception as e:
             LOGGER.warning(f"{e}")
