@@ -109,7 +109,7 @@ class PalEntity:
     
     @property
     def PalDeckID(self) -> str:
-        key = DataProvider.pal_sorting_key(self.DataAccessKey)
+        key = DataProvider.get_pal_sorting_key(self.DataAccessKey)
         return key if key else self.DataAccessKey
     
     @property
@@ -213,9 +213,11 @@ class PalEntity:
             self._pal_param["Level"] = PalObjects.IntProperty(value)
         else:
             self._pal_param["Level"]["value"] = value
-        self.Exp = DataProvider.pal_level_to_xp(self.Level)
+        self.Exp = DataProvider.get_level_xp(self.Level)
         # Update MaxHP
         self.MaxHP = self.ComputedMaxHP
+        # Learn Attacks
+        self.learn_attacks_on_leveling()
 
     @property
     def Exp(self) -> Optional[int]:
@@ -293,19 +295,19 @@ class PalEntity:
         Credit to https://www.reddit.com/r/Palworld/comments/1afyau4/pal_stat_mechanics_hidden_ivs_levelup_stats_and/
         """
         Level = self.Level or 1
-        HP_Stat = DataProvider.pal_scaling(self.DataAccessKey, "HP", self.IsBOSS) or self._derived_hp_scaling
+        HP_Stat = DataProvider.get_pal_scaling(self.DataAccessKey, "HP", self.IsBOSS) or self._derived_hp_scaling
         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
         HP_Bonus = self._get_passive_buff("b_HP") # 0
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
         return math.floor(math.floor(500 + 5 * Level + HP_Stat * .5 * Level * (1 + HP_IV)) \
-            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus))
+            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)) * 1000
 
     @property
     def ComputedAttack(self) -> Optional[int]:
         Level = self.Level or 1
-        Attack_Stat = DataProvider.pal_scaling(self.DataAccessKey, "ATK", self.IsBOSS)
+        Attack_Stat = DataProvider.get_pal_scaling(self.DataAccessKey, "ATK", self.IsBOSS)
         if Attack_Stat is None:
             return None
         Attack_IV = (self.Talent_Shot or 0) * 0.3 / 100 # 30% of Talent
@@ -319,7 +321,7 @@ class PalEntity:
     @property
     def ComputedDefense(self) -> Optional[int]:
         Level = self.Level or 1
-        Defense_Stat = DataProvider.pal_scaling(self.DataAccessKey, "DEF", self.IsBOSS)
+        Defense_Stat = DataProvider.get_pal_scaling(self.DataAccessKey, "DEF", self.IsBOSS)
         if Defense_Stat is None:
             return None
         Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100 # 30% of Talent
@@ -391,7 +393,7 @@ class PalEntity:
             return False
         
         self.PassiveSkillList.append(skill)
-        LOGGER.info(f"Added {DataProvider.passive_i18n(skill)[0]} to PassiveSkillList")
+        LOGGER.info(f"Added {DataProvider.get_passive_i18n(skill)[0]} to PassiveSkillList")
         # Update MaxHP, but no such skill atm.
         # self.MaxHP = self.ComputedMaxHP
         return True
@@ -402,7 +404,7 @@ class PalEntity:
             if item is not None:
                 idx = self.PassiveSkillList.index(item)
             skill = self.PassiveSkillList.pop(int(idx))
-            LOGGER.info(f"Removed {DataProvider.passive_i18n(skill)[0]} from PassiveSkillList")
+            LOGGER.info(f"Removed {DataProvider.get_passive_i18n(skill)[0]} from PassiveSkillList")
             # Update MaxHP, but no such skill atm.
             # self.MaxHP = self.ComputedMaxHP
             return skill
@@ -438,7 +440,7 @@ class PalEntity:
         if waza not in self.MasteredWaza:
             self.add_MasteredWaza(waza)
 
-        LOGGER.info(f"Added {DataProvider.attack_i18n(waza)} to EquipWaza")
+        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to EquipWaza")
         return True
     
     @LOGGER.change_logger('EquipWaza')
@@ -447,7 +449,7 @@ class PalEntity:
             if item is not None:
                 idx = self.EquipWaza.index(item)
             waza = self.EquipWaza.pop(int(idx))
-            LOGGER.info(f"Removed {DataProvider.attack_i18n(waza)} from EquipWaza")
+            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)} from EquipWaza")
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
@@ -480,7 +482,7 @@ class PalEntity:
         
         self.MasteredWaza.append(waza)
         # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
-        LOGGER.info(f"Added {DataProvider.attack_i18n(waza)} to MasteredWaza")
+        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to MasteredWaza")
         return True
 
     @LOGGER.change_logger('MasteredWaza')
@@ -492,7 +494,7 @@ class PalEntity:
             if waza in self.EquipWaza:
                 self.pop_EquipWaza(item=waza)
             # return PalObjects.pop_ArrayProperty(self._pal_param["MasteredWaza"], idx)
-            LOGGER.info(f"Removed {DataProvider.attack_i18n(waza)} from MasteredWaza")
+            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)} from MasteredWaza")
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
@@ -611,6 +613,15 @@ class PalEntity:
         
             
     # TODO ADD PAL, DEL PAL, CHANGE OWNER?
+        
+    def learn_attacks_on_leveling(self):
+        for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level):
+            if atk not in self.MasteredWaza:
+                self.add_MasteredWaza(atk)
+
+        # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
+        #     if atk in self.MasteredWaza:
+        #         self.pop_MasteredWaza(atk)
 
     def print_stats(self):
         lines = [f"{self}: "]
@@ -657,7 +668,7 @@ class PalEntity:
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
-            species_name = DataProvider.pal_i18n(self.DataAccessKey) or self.DataAccessKey
+            species_name = DataProvider.get_pal_i18n(self.DataAccessKey) or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
             boss_prefix = "💀" if self.IsBOSS else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
@@ -680,15 +691,25 @@ class PalEntity:
         return bonus
     
     def _derive_hp_scaling(self) -> int:
+        def adjust_number(n):
+            last_digit = n % 10
+            if last_digit in [4, 6]:
+                return n - last_digit + 5
+            elif last_digit == 9:
+                return n + 1
+            elif last_digit == 1:
+                return n - 1
+            else:
+                return n
         Level = self.Level or 1
         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
         HP_Bonus = self._get_passive_buff("b_HP") # 0
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
         
-        HP_No_Bonus = self.MaxHP / (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)
-        HP_Stat = (HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV))
-        return HP_Stat
+        HP_No_Bonus = math.ceil(self.MaxHP / 1000 / ((1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)))
+        HP_Stat = math.ceil((HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV)))
+        return adjust_number(HP_Stat)
 
     def _save(self) -> None:
         # clean up and delete empty / unused entries

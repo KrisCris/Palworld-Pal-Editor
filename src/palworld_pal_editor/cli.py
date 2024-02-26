@@ -87,17 +87,17 @@ def list_attacks():
                 item["Power"],
                 (
                     "[🍎]"
-                    if DataProvider.attack_has_skill_fruit(item["CodeName"])
+                    if DataProvider.has_skill_fruit(item["CodeName"])
                     else ""
                 ),
-                DataProvider.attack_i18n(item["CodeName"]),
+                DataProvider.get_attack_i18n(item["CodeName"]),
                 item["CodeName"]))
 
 def list_passives():
     sorted_list = DataProvider.get_sorted_passives()
     for item in sorted_list:
         codename = item["CodeName"]
-        name, desc = DataProvider.passive_i18n(item["CodeName"])
+        name, desc = DataProvider.get_passive_i18n(item["CodeName"])
         LOGGER.info(
             " -  {}  |  {}  |  {}"
             .format(name, codename, desc))

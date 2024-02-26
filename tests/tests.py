@@ -1,0 +1,42 @@
+import unittest
+from pathlib import Path
+
+from palworld_pal_editor.data_provider import DataProvider
+from palworld_pal_editor.save_manager import SaveManager
+from palworld_pal_editor.utils import LOGGER
+
+class Tests(unittest.TestCase):
+    def setUp(self):
+        self.input_path = "./gamesave/Level.sav"
+        self.output_path = "./test_outputs/Level.sav"       
+
+    def _test_pal_num(self):
+        sm = SaveManager()
+        sm.open(self.input_path) 
+        players = sm.get_players()
+        player_num = len(players)
+        pal_num = sum(len(player.get_pals()) for player in players)
+        self.assertEqual(len(sm.entities_list), player_num + pal_num)
+
+    def test_hp_scaling_calc(self):
+        sm = SaveManager()
+        sm.open(self.input_path) 
+        players = sm.get_players()
+        for player in players:
+            for pal in player.get_pals():
+                computed_scaling = pal._derived_hp_scaling
+                scaling = DataProvider.get_pal_scaling(pal.DataAccessKey, "HP", pal.IsBOSS)
+                if scaling is None:
+                    LOGGER.info(f" - {pal}: Computed Scaling = {computed_scaling}")
+                    continue
+                if scaling != computed_scaling:
+                    LOGGER.info(f" - {pal}   :   {computed_scaling} : {scaling}")
+
+
+    def tearDown(self) -> None:
+        Path(self.output_path).unlink(missing_ok=True)
+        return super().tearDown()
+    
+
+if __name__ == '__main__':
+    unittest.main()

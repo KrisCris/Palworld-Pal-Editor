@@ -49,13 +49,13 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
 class DataProvider:
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
-    def pal_i18n(key: str) -> Optional[str]:    
+    def get_pal_i18n(key: str) -> Optional[str]:    
         i18n_list: dict = PAL_DATA[key]['I18n']
         return i18n_list.get(Config.i18n, i18n_list.get('en'))
     
     @none_guard(data_source=PAL_DATA, subkey="Scaling")
     @staticmethod
-    def pal_scaling(pal: str, scaling_type: str, is_boss: bool) -> Optional[int]:
+    def get_pal_scaling(pal: str, scaling_type: str, is_boss: bool) -> Optional[int]:
         if scaling_type not in {'HP', 'ATK', 'DEF'}: return None
 
         scaling_list: dict = PAL_DATA[pal]["Scaling"]
@@ -65,7 +65,7 @@ class DataProvider:
 
     @none_guard(data_source=PAL_DATA, subkey="SortingKey")
     @staticmethod
-    def pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
+    def get_pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
         sorting_key_list: dict = PAL_DATA[key]["SortingKey"]
         return sorting_key_list.get(sorting_key)
 
@@ -74,8 +74,13 @@ class DataProvider:
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
     
+    @none_guard(data_source=PAL_DATA, subkey="Attacks")
+    def get_pal_attacks(pal: str) -> Optional[list[str]]:
+        return PAL_DATA[pal]["Attacks"]
+
+
     @staticmethod
-    def pal_level_to_xp(lv: int) -> Optional[int]:
+    def get_level_xp(lv: int) -> Optional[int]:
         try:
             return PAL_XP_THRESHOLDS[lv - 1]
         except IndexError:
@@ -84,7 +89,7 @@ class DataProvider:
         
     @none_guard(data_source=PAL_ATTACKS, subkey="I18n")
     @staticmethod
-    def attack_i18n(key: str) -> Optional[str]:
+    def get_attack_i18n(key: str) -> Optional[str]:
         i18n_list: dict = PAL_ATTACKS[key]["I18n"]
         return i18n_list.get(Config.i18n, i18n_list.get('en'))
     
@@ -99,12 +104,12 @@ class DataProvider:
     
     @none_guard(data_source=PAL_ATTACKS)
     @staticmethod
-    def attack_has_skill_fruit(key: str) -> bool:
-        return True if PAL_ATTACKS[key].get("SkillFruit") else False
-    
+    def has_skill_fruit(attack: str) -> bool:
+        return True if PAL_ATTACKS[attack].get("SkillFruit") else False
+
     @none_guard(data_source=PAL_PASSIVES, subkey="i18n")
     @staticmethod
-    def passive_i18n(key: str) -> Optional[tuple[str, str]]:
+    def get_passive_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_PASSIVES[key]["i18n"]
         i18n: dict = i18n_list.get(Config.i18n, i18n_list.get('en'))
         return (i18n.get("Name"), i18n.get("Description"))
@@ -121,5 +126,18 @@ class DataProvider:
     @staticmethod
     def get_passive_buff(key: str, buff_key: str) -> float:
         return PAL_PASSIVES.get(key, {}).get("Buff", {}).get(buff_key, 0)
-
+    
+    @staticmethod
+    def get_attacks_to_learn(pal: str, level: int) -> list[str]:
+        attacks = DataProvider.get_pal_attacks(pal)
+        if attacks is None: 
+            return []
+        return [attack for attack in attacks if attacks[attack] <= level]
+    
+    @staticmethod
+    def get_attacks_to_forget(pal: str, level: int) -> list[str]:
+        attacks = DataProvider.get_pal_attacks(pal)
+        if attacks is None: 
+            return []
+        return [attack for attack in attacks if attacks[attack] > level and not DataProvider.has_skill_fruit(attack)]
     
