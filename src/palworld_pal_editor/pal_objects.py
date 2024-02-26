@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID

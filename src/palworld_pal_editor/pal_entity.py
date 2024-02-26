@@ -1,5 +1,6 @@
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
+from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp
 from palworld_pal_editor.data_provider import DataProvider
@@ -559,7 +560,7 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param[property_name], rank)
 
     def _get_display_name(self) -> str:
-        cache_key = (self.DataAccessKey, self.NickName, self.IsRarePal, self.IsBOSS, self.Gender)
+        cache_key = (Config.i18n, self.DataAccessKey, self.NickName, self.IsRarePal, self.IsBOSS, self.Gender)
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
