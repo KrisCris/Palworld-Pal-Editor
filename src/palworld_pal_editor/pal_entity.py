@@ -294,7 +294,8 @@ class PalEntity:
 
     @property
     def HP(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "HP", nested_keys=["value", "Value"])
+        return PalObjects.get_FixedPoint64(self._pal_param.get("HP"))
+        # return get_attr_value(self._pal_param, "HP", nested_keys=["value", "Value"])
     
     @HP.setter
     @LOGGER.change_logger('HP')
@@ -302,7 +303,8 @@ class PalEntity:
         if self.HP is None:
             self._pal_param["HP"] = PalObjects.FixedPoint64(value)
         else:
-            self._pal_param["HP"]["value"]["Value"]["value"] = value
+            PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
+            # self._pal_param["HP"]["value"]["Value"]["value"] = value
 
     @property
     def EquipWaza(self) -> Optional[list[str]]:
@@ -394,6 +396,135 @@ class PalEntity:
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
+    # TODO IV
+    # "Talent_HP":{
+    #    "id":"None",
+    #    "value":97,
+    #    "type":"IntProperty"
+    # },
+    # "Talent_Melee":{
+    #    "id":"None",
+    #    "value":100,
+    #    "type":"IntProperty"
+    # },
+    # "Talent_Shot":{
+    #    "id":"None",
+    #    "value":100,
+    #    "type":"IntProperty"
+    # },
+    # "Talent_Defense":{
+    #    "id":"None",
+    #    "value":100,
+    #    "type":"IntProperty"
+    # },
+    
+    # TODO PASSIVE SKILLS
+    # "PassiveSkillList":{
+    #     "array_type":"NameProperty",
+    #     "id":"None",
+    #     "value":{
+    #         "values":[
+    #             "PAL_ALLAttack_up2",
+    #             "ElementBoost_Fire_2_PAL",
+    #             "Noukin",
+    #             "Legend"
+    #         ]
+    #     },
+    #     "type":"ArrayProperty"
+    # },
+            
+    # TODO
+    # "MaxHP":{
+    #     "struct_type":"FixedPoint64",
+    #     "struct_id":"palworld_save_tools.archive.UUID(""00000000-0000-0000-0000-000000000000"")",
+    #     "id":"None",
+    #     "value":{
+    #         "Value":{
+    #             "id":"None",
+    #             "value":5405000,
+    #             "type":"Int64Property"
+    #         }
+    #     },
+    #     "type":"StructProperty"
+    # },
+    
+    # REALLY? Stored in Save??
+    # "CraftSpeed":{
+    #     "id":"None",
+    #     "value":70,
+    #     "type":"IntProperty"
+    # },
+            
+    # TODO PAL HEALTH
+    # Set to 100
+    # "SanityValue":{
+    #     "id":"None",
+    #     "value":97.90009307861328,
+    #     "type":"FloatProperty"
+    # },
+    # Full Stomach -> MaxFullStomach
+    # "MaxFullStomach":{
+    #     "id":"None",
+    #     "value":400.0,
+    #     "type":"FloatProperty"
+    # },
+    # "FullStomach":{
+    #     "id":"None",
+    #     "value":315.49505615234375,
+    #     "type":"FloatProperty"
+    # },
+    # Just delete the entry:
+    # "WorkerSick":{
+    #     "id":"None",
+    #     "value":{
+    #         "type":"EPalBaseCampWorkerSickType",
+    #         "value":"EPalBaseCampWorkerSickType::DepressionSprain"
+    #     },
+    #     "type":"EnumProperty"
+    # },
+    # Guess empty value is good?
+    # "DecreaseFullStomachRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCF40>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },
+    # "AffectSanityRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCFD0>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },
+    # "CraftSpeedRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CD000>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },
+            
+    ## FOOD BUFF?
+    # "FoodWithStatusEffect":{
+    #     "id":"None",
+    #     "value":"Pancake",
+    #     "type":"NameProperty"
+    # },
+    # "Tiemr_FoodWithStatusEffect":{
+    #     "id":"None",
+    #     "value":448,
+    #     "type":"IntProperty"
+    # },
+        
+            
+    # TODO ADD PAL, DEL PAL, CHANGE OWNER?
 
     def print_stats(self):
         lines = [f"{self}: "]
