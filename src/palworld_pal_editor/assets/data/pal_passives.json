@@ -1,32 +1,4 @@
 {
-    "UNKNOWN": {
-        "CodeName": "UNKNOWN",
-        "Rating": null,
-        "i18n": {
-            "en": {
-                "Name": "Unknown",
-                "Description": " does not exist or is not in our database yet"
-            },
-            "zh-CN": {
-                "Name": "未知",
-                "Description": "不存在或不在我们的数据库中"
-            }
-        }
-    },
-    "NONE": {
-        "CodeName": "NONE",
-        "Rating": null,
-        "i18n": {
-            "en": {
-                "Name": "None",
-                "Description": "The pal has no skill in this slot"
-            },
-            "zh-CN": {
-                "Name": "空",
-                "Description": "此帕鲁在该槽位没有技能"
-            }
-        }
-    },
     "ElementResist_Normal_1_PAL": {
         "CodeName": "ElementResist_Normal_1_PAL",
         "Rating": 1,
@@ -445,6 +417,12 @@
                 "Name": "胆小",
                 "Description": "攻击-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": -0.1,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_ALLAttack_down2": {
@@ -459,6 +437,12 @@
                 "Name": "消极主义",
                 "Description": "攻击-20%"
             }
+        },
+        "Buff": {
+            "b_Attack": -0.2,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "Deffence_up1": {
@@ -473,6 +457,12 @@
                 "Name": "坚硬皮肤",
                 "Description": "防御+10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0.1,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "Deffence_up2": {
@@ -487,6 +477,12 @@
                 "Name": "顽强肉体",
                 "Description": "防御+20%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0.2,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "Deffence_down1": {
@@ -501,6 +497,12 @@
                 "Name": "弱不禁风",
                 "Description": "防御-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": -0.1,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "Deffence_down2": {
@@ -515,6 +517,12 @@
                 "Name": "骨质疏松",
                 "Description": "防御-20%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": -0.2,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "TrainerMining_up1": {
@@ -711,6 +719,12 @@
                 "Name": "认真",
                 "Description": "工作速度+20%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0.2,
+            "b_MoveSpeed": 0
         }
     },
     "CraftSpeed_up2": {
@@ -725,6 +739,12 @@
                 "Name": "工匠精神",
                 "Description": "工作速度+50%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0.5,
+            "b_MoveSpeed": 0
         }
     },
     "CraftSpeed_down1": {
@@ -739,6 +759,12 @@
                 "Name": "笨手笨脚",
                 "Description": "工作速度-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": -0.1,
+            "b_MoveSpeed": 0
         }
     },
     "CraftSpeed_down2": {
@@ -753,6 +779,12 @@
                 "Name": "偷懒成瘾",
                 "Description": "工作速度-30%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": -0.3,
+            "b_MoveSpeed": 0
         }
     },
     "MoveSpeed_up_1": {
@@ -767,6 +799,12 @@
                 "Name": "灵活",
                 "Description": "移动速度+10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0.1
         }
     },
     "MoveSpeed_up_2": {
@@ -781,6 +819,12 @@
                 "Name": "运动健将",
                 "Description": "移动速度+20%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0.2
         }
     },
     "MoveSpeed_up_3": {
@@ -795,6 +839,12 @@
                 "Name": "神速",
                 "Description": "移动速度+30%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0.3
         }
     },
     "PAL_CorporateSlave": {
@@ -809,6 +859,12 @@
                 "Name": "社畜",
                 "Description": "工作速度+30%，攻击-30%"
             }
+        },
+        "Buff": {
+            "b_Attack": -0.3,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0.3,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_rude": {
@@ -823,6 +879,12 @@
                 "Name": "粗暴",
                 "Description": "攻击+15%，工作速度-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.15,
+            "b_Defense": 0,
+            "b_CraftSpeed": -0.1,
+            "b_MoveSpeed": 0
         }
     },
     "Noukin": {
@@ -837,6 +899,12 @@
                 "Name": "脑筋",
                 "Description": "攻击+30%，工作速度-50%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.3,
+            "b_Defense": 0,
+            "b_CraftSpeed": -0.5,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_oraora": {
@@ -851,6 +919,12 @@
                 "Name": "强势",
                 "Description": "攻击+10%，防御-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.1,
+            "b_Defense": -0.1,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_conceited": {
@@ -865,6 +939,12 @@
                 "Name": "自恋狂",
                 "Description": "工作速度+10%，防御-10%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0,
+            "b_Defense": -0.1,
+            "b_CraftSpeed": 0.1,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_masochist": {
@@ -879,6 +959,12 @@
                 "Name": "受虐狂",
                 "Description": "防御+15%，攻击-15%"
             }
+        },
+        "Buff": {
+            "b_Attack": -0.15,
+            "b_Defense": 0.15,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_sadist": {
@@ -893,6 +979,12 @@
                 "Name": "虐待狂",
                 "Description": "攻击+15%，防御-15%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.15,
+            "b_Defense": -0.15,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "Rare": {
@@ -907,6 +999,12 @@
                 "Name": "稀有",
                 "Description": "工作速度+15%，攻击+15%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.15,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0.15,
+            "b_MoveSpeed": 0
         }
     },
     "Legend": {
@@ -921,6 +1019,12 @@
                 "Name": "传说",
                 "Description": "攻击+20%，防御+20%，移动速度+15%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.2,
+            "b_Defense": 0.2,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0.15
         }
     }
 }

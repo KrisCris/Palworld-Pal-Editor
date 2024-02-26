@@ -35,7 +35,7 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
         @wraps(func)
         def wrapper(*args, **kwargs) -> Optional[Any]:
             # Extract key from positional or keyword arguments
-            key = args[key_arg_position] if len(args) > key_arg_position else kwargs.get('key', None)
+            key = args[key_arg_position] if len(args) > key_arg_position else kwargs.get('key')
             
             # if key not in data_source, or if subkey not in data source, or sub_data[subkey] is empty
             if key not in data_source or (subkey and (subkey not in data_source[key] or not data_source[key][subkey])):
@@ -47,31 +47,34 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
     return decorator
 
 class DataProvider:
-    @none_guard(data_source=PAL_DATA, subkey="i18n")
+    @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
     def pal_i18n(key: str) -> Optional[str]:    
-        i18n_list: dict = PAL_DATA[key]['i18n']
-        return i18n_list.get(Config.i18n, i18n_list.get('en', None))
+        i18n_list: dict = PAL_DATA[key]['I18n']
+        return i18n_list.get(Config.i18n, i18n_list.get('en'))
     
     @none_guard(data_source=PAL_DATA, subkey="Scaling")
     @staticmethod
-    def pal_hp_scaling(key: str, is_boss: bool) -> Optional[int]:
-        scaling_list: dict = PAL_DATA[key]["Scaling"]
-        if is_boss and "HP_BOSS" in scaling_list:
-            return scaling_list["HP_BOSS"]
-        return scaling_list["HP"]
+    def pal_scaling(pal: str, scaling_type: str, is_boss: bool) -> Optional[int]:
+        if scaling_type not in {'HP', 'ATK', 'DEF'}: return None
 
-    @none_guard(data_source=PAL_DATA, subkey="sorting_key")
+        scaling_list: dict = PAL_DATA[pal]["Scaling"]
+        if is_boss and f"{scaling_type}_BOSS" in scaling_list:
+            return scaling_list[f"{scaling_type}_BOSS"]
+        return scaling_list[scaling_type]
+
+    @none_guard(data_source=PAL_DATA, subkey="SortingKey")
     @staticmethod
     def pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:
-        sorting_key_list: dict = PAL_DATA[key]["sorting_key"]
-        return sorting_key_list.get(sorting_key, None)
+        sorting_key_list: dict = PAL_DATA[key]["SortingKey"]
+        return sorting_key_list.get(sorting_key)
 
     @none_guard(data_source=PAL_DATA)
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
     
+    @staticmethod
     def pal_level_to_xp(lv: int) -> Optional[int]:
         try:
             return PAL_XP_THRESHOLDS[lv - 1]
@@ -79,11 +82,11 @@ class DataProvider:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
         
-    @none_guard(data_source=PAL_ATTACKS)
+    @none_guard(data_source=PAL_ATTACKS, subkey="I18n")
     @staticmethod
     def attack_i18n(key: str) -> Optional[str]:
-        i18n_list: dict = PAL_ATTACKS[key]["i18n"]
-        return i18n_list.get(Config.i18n, i18n_list.get('en', None))
+        i18n_list: dict = PAL_ATTACKS[key]["I18n"]
+        return i18n_list.get(Config.i18n, i18n_list.get('en'))
     
     @staticmethod
     def has_attack(key: str) -> bool:
@@ -97,4 +100,26 @@ class DataProvider:
     @none_guard(data_source=PAL_ATTACKS)
     @staticmethod
     def attack_has_skill_fruit(key: str) -> bool:
-        return True if PAL_ATTACKS[key].get("skill_fruit", None) else False
+        return True if PAL_ATTACKS[key].get("SkillFruit") else False
+    
+    @none_guard(data_source=PAL_PASSIVES, subkey="i18n")
+    @staticmethod
+    def passive_i18n(key: str) -> Optional[tuple[str, str]]:
+        i18n_list: dict = PAL_PASSIVES[key]["i18n"]
+        i18n: dict = i18n_list.get(Config.i18n, i18n_list.get('en'))
+        return (i18n.get("Name"), i18n.get("Description"))
+
+    @staticmethod
+    def has_passive_skill(key: str) -> bool:
+        return key in PAL_PASSIVES
+    
+    @staticmethod
+    def get_sorted_passives() -> list[dict]:
+        sorted_list = sorted(PAL_PASSIVES.values(), key=lambda item: (item['Rating'], item['CodeName']))
+        return sorted_list
+    
+    @staticmethod
+    def get_passive_buff(key: str, buff_key: str) -> float:
+        return PAL_PASSIVES.get(key, {}).get("Buff", {}).get(buff_key, 0)
+
+    
