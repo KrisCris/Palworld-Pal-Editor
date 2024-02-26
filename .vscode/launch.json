@@ -13,7 +13,7 @@
             },
             "args": [
                 "--cli",
-                "--language=zh-CN",
+                "--lang=zh-CN",
                 "--debug"
             ]
         }

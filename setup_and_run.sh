@@ -36,4 +36,4 @@ pip install -r requirements.txt
 pip install -e .
 
 # Run your package
-python -i -m palworld_pal_editor --cli --language=en
+python -i -m palworld_pal_editor --cli --lang=en
