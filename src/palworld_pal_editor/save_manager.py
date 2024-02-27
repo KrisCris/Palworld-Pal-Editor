@@ -206,25 +206,25 @@ class SaveManager:
                 continue
         
         for player in self.player_mapping.values():
-            LOGGER.nextline()
+            LOGGER.newline()
             LOGGER.info(f"{player}")
             sorted_palbox = player.get_sorted_pals()
             for pal in sorted_palbox:
                 LOGGER.info(f"\t{pal}")
         
-        LOGGER.nextline()
+        LOGGER.newline()
         LOGGER.info("Pals possibly working at the base: ")
         for pal in self.get_working_pals():
             LOGGER.info(f"\t{pal}")
 
-        LOGGER.nextline()
+        LOGGER.newline()
         LOGGER.info("Dangling Pals (No OwnerID and OldOwnerID): ")
         for pal in self._dangling_pals.values():
             LOGGER.warning(f"\t{pal}")
 
         for uid_str in temp_player_pal_mapping:
             pal_list = temp_player_pal_mapping[uid_str]
-            LOGGER.nextline()
+            LOGGER.newline()
             LOGGER.warning(f"Found dangling pals owned by non-existing user {uid_str}")
             for pal in pal_list.values():
                 self._dangling_pals[pal.InstanceId] = pal

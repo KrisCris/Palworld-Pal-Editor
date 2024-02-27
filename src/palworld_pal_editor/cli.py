@@ -12,14 +12,17 @@ from palworld_pal_editor.save_manager import SaveManager
 def main():
     LOGGER.info("Palworld Pal Editor, made by _connlost with ❤.")
     save_manager = SaveManager()
-    while True:
-        LOGGER.info("> Please provide the path to Level.sav")
-        input_path = input("> ")
-        try:
-            if save_manager.open(input_path) is not None:
-                break
-        except Exception as e:
-            LOGGER.warning(f"{e}")
+    try:
+        if Config.path and save_manager.open(f"{Config.path}/Level.sav"):
+            pass
+        else:
+            while True:
+                LOGGER.info("> Please provide the path to Level.sav")
+                input_path = input("> ")
+                if save_manager.open(input_path) is not None:
+                    break
+    except Exception as e:
+        LOGGER.warning(f"{e}")
     
     banner_message = f"\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object."
 
@@ -48,7 +51,7 @@ def get_player(uid: str) -> PlayerEntity:
     LOGGER.info(f" - {player}")
     return player
 
-def get_player_by_name(name: str) -> list[PlayerEntity]:
+def get_players_by_name(name: str) -> list[PlayerEntity]:
     """
     Try get players by name, can be duplicated, or empty.
     """

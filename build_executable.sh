@@ -1,26 +1,3 @@
-#!/bin/bash
-
-# modified for the use of docker image
-# Default values
-LANG="zh-CN"
-PORT=58080
-MODE="--cli"  # Default mode set to CLI
-SAVE_PATH=""
-
-# Process command-line arguments
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --lang) LANG="$2"; shift ;;
-        --port) PORT="$2"; shift ;;
-        --path) SAVE_PATH="--path \"$2\""; shift ;;
-        --web|--cli|--gui)
-            MODE="$1"
-            ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
-    esac
-    shift
-done
-
 # Check for Python 3.x and set the appropriate command
 if which python3 > /dev/null; then
     PYTHON_CMD=python3
@@ -53,13 +30,6 @@ source venv/bin/activate
 # Install packages from requirements.txt
 pip install -r requirements.txt
 
-# Install your package in editable mode
-pip install -e .
+pip install pyinstaller
 
-COMMAND_ARGS="$MODE --lang=$LANG --port=$PORT $SAVE_PATH"
-
-# Log the arguments before invoking Python
-echo "Running command: python -i -m palworld_pal_editor $COMMAND_ARGS"
-
-# Use eval to correctly handle spaces in paths and other arguments
-eval python -i -m palworld_pal_editor $COMMAND_ARGS
+pyinstaller --onefile --add-data="src/palworld_pal_editor/assets:assets" ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor

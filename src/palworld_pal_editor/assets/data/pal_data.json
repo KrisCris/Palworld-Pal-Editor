@@ -3876,6 +3876,9 @@
         },
         "SortingKey": {
 
+        },
+        "Scaling": {
+            "HP": 1000
         }
     },
     "FireCult_FlameThrower": {

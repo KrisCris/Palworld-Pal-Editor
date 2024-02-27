@@ -58,7 +58,7 @@ class Logger:
             console_handler.setFormatter(console_formatter)
             self.logger.addHandler(console_handler)
 
-    def nextline(self):
+    def newline(self):
         print("")
 
     def _print_change(self, entity, val_name, old_val, new_val):
