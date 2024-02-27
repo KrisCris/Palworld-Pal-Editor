@@ -7,18 +7,20 @@ from palworld_pal_editor.utils import LOGGER
 
 class Tests(unittest.TestCase):
     def setUp(self):
-        self.input_path = "./gamesave/Level.sav"
+        self.input_path = r"\\10.0.0.250\home\ContainerFiles\GameServers\Palworld-Proton\server\PalServer\Pal\Saved\SaveGames\\0\AF518B19A47340B8A55BC58137981393\Level.sav"
         self.output_path = "./test_outputs/Level.sav"       
 
-    def _test_pal_num(self):
+    def test_pal_num(self):
         sm = SaveManager()
         sm.open(self.input_path) 
         players = sm.get_players()
         player_num = len(players)
         pal_num = sum(len(player.get_pals()) for player in players)
-        self.assertEqual(len(sm.entities_list), player_num + pal_num)
+        worker_num = len(sm.get_working_pals())
+        dangling = len(sm._dangling_pals.values())
+        self.assertEqual(len(sm.entities_list), player_num + pal_num + worker_num + dangling)
 
-    def test_hp_scaling_calc(self):
+    def _test_hp_scaling_calc(self):
         sm = SaveManager()
         sm.open(self.input_path) 
         players = sm.get_players()

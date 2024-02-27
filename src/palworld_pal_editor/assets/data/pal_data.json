@@ -3797,7 +3797,7 @@
         "Tower": true,
         "I18n": {
             "en": "Axel & Orserk",
-            "zh-CN": "Axel & Orserk"
+            "zh-CN": "阿克塞尔 & 波鲁杰克斯"
         },
         "SortingKey": {
             "paldeck": "106T"
@@ -3812,7 +3812,7 @@
         "Tower": true,
         "I18n": {
             "en": "Lily & Lyleen",
-            "zh-CN": "Lily & Lyleen"
+            "zh-CN": "莉莉 & 百合女王"
         },
         "SortingKey": {
             "paldeck": "104T"
@@ -3827,7 +3827,7 @@
         "Tower": true,
         "I18n": {
             "en": "Marus & Faleris",
-            "zh-CN": "Marus & Faleris"
+            "zh-CN": "马库斯 & 荷鲁斯"
         },
         "SortingKey": {
             "paldeck": "105T"
@@ -3842,7 +3842,7 @@
         "Tower": true,
         "I18n": {
             "en": "Victor & Shadowbeak",
-            "zh-CN": "Victor & Shadowbeak"
+            "zh-CN": "维克托 & 异构格里芬"
         },
         "SortingKey": {
             "paldeck": "107T"
@@ -3857,7 +3857,7 @@
         "Tower": true,
         "I18n": {
             "en": "Zoe & Grizzbolt",
-            "zh-CN": "Zoe & Grizzbolt"
+            "zh-CN": "佐伊 & 暴电熊"
         },
         "SortingKey": {
             "paldeck": "103T"
@@ -3872,7 +3872,7 @@
         "Human": true,
         "I18n": {
             "en": "Black Marketeer",
-            "zh-CN": "Black Marketeer"
+            "zh-CN": "黑市商人"
         },
         "SortingKey": {
 
@@ -3960,7 +3960,7 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Free Pal Alliance Thug"
+            "en": "帕鲁保护团体-支持者"
         },
         "SortingKey": {
 
@@ -3990,7 +3990,7 @@
         "Human": true,
         "I18n": {
             "en": "Pal Merchant",
-            "zh-CN": "Pal Merchant"
+            "zh-CN": "帕鲁商人"
         },
         "SortingKey": {
 
@@ -4050,7 +4050,7 @@
         "Human": true,
         "I18n": {
             "en": "Syndicate Crusher",
-            "zh-CN": "Syndicate Crusher"
+            "zh-CN": "盗猎集团-粉碎者"
         },
         "SortingKey": {
 
@@ -4140,7 +4140,22 @@
         "Human": true,
         "I18n": {
             "en": "Wandering Merchant",
-            "zh-CN": "Wandering Merchant"
+            "zh-CN": "流浪商人"
+        },
+        "SortingKey": {
+
+        }
+    },
+    "SalesPerson_Wander": {
+        "CodeName": "SalesPerson_Wander",
+        "Elements": [
+            "None"
+        ],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Wander)",
+            "zh-CN": "流浪商人 (Wander)"
         },
         "SortingKey": {
 
@@ -4154,7 +4169,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Wandering Merchant (Desert)"
+            "en": "Wandering Merchant (Desert)",
+            "zh-CN": "流浪商人 (Desert)"
         },
         "SortingKey": {
 
@@ -4168,7 +4184,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Wandering Merchant (Desert)"
+            "en": "Wandering Merchant (Desert2)",
+            "zh-CN": "流浪商人 (Desert)"
         },
         "SortingKey": {
 
@@ -4182,7 +4199,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Wandering Merchant (Volcano)"
+            "en": "Wandering Merchant (Volcano)",
+            "zh-CN": "流浪商人 (Volcano)"
         },
         "SortingKey": {
 
@@ -4196,7 +4214,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Wandering Merchant (Volcano)"
+            "en": "Wandering Merchant (Volcano2)",
+            "zh-CN": "流浪商人 (Volcano2)"
         },
         "SortingKey": {
 
@@ -4406,7 +4425,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "PIDF Elite"
+            "en": "PIDF Elite",
+            "zh-CN": "自卫队-精英"
         },
         "SortingKey": {
 

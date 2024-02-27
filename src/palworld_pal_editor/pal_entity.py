@@ -53,17 +53,21 @@ class PalEntity:
         return get_attr_value(self._pal_param, "OwnerPlayerUId")
     
     @property
+    def LastOwnerPlayerUId(self) -> Optional[UUID]:
+        if self.OldOwnerPlayerUIds:
+            return self.OldOwnerPlayerUIds[-1]
+    
+    @property
     def OwnerName(self) -> str:
         from .save_manager import SaveManager
         player = SaveManager().get_player(self.OwnerPlayerUId)
-        if player:
-            nickname = player.NickName
-            return nickname if nickname else self.OwnerPlayerUId
+        if player and player.NickName:
+            return player.NickName
         return self.OwnerPlayerUId
     
     @property
     def OldOwnerPlayerUIds(self) -> Optional[list[UUID]]:
-        return get_attr_value(self._pal_param, "OldOwnerPlayerUIds")
+        return PalObjects.get_ArrayProperty(self._pal_param.get("OldOwnerPlayerUIds"))
     
     @property
     def CharacterID(self) -> Optional[str]:
@@ -85,6 +89,8 @@ class PalEntity:
                 key = key.split("Boss_")[1]
             else:
                 key = key.split("BOSS_")[1]
+        if self.IsTower:
+            key = key.split("GYM_")[1]
         return key
 
     @property
@@ -127,6 +133,18 @@ class PalEntity:
             return
         PalObjects.set_EnumProperty(self._pal_param["Gender"], gender.value)
             
+    @property
+    def IsTower(self) -> bool:
+        if "GYM_" in self.CharacterID:
+            return True
+        return False
+    
+    @IsTower.setter
+    def SetTower(self, value: bool) -> None:
+        if not value:
+            self.CharacterID = self._RawSpecieKey
+        elif not self._IsBOSS and value:
+            self.CharacterID = f"GYM_{self._RawSpecieKey}"
 
     @property
     def _IsBOSS(self) -> bool:
@@ -271,7 +289,6 @@ class PalEntity:
     @LOGGER.change_logger('Rank_HP')
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
-        # Update MaxHP
         self.MaxHP = self.ComputedMaxHP
 
     @Rank_Attack.setter
@@ -301,6 +318,7 @@ class PalEntity:
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
+        # slightly off but not a big deal i suppose
         return math.floor(math.floor(500 + 5 * Level + HP_Stat * .5 * Level * (1 + HP_IV)) \
             * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)) * 1000
 
@@ -315,8 +333,11 @@ class PalEntity:
         Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
-        return math.floor(math.floor(100 + Attack_Stat * .075 * Level * (1 + Attack_IV)) \
-            * (1 + Attack_Bonus) * (1 + Attack_SoulBonus) * (1 + CondenserBonus))
+        # slightly off when soul / condenser bonus presents...
+        base_attack = math.floor(math.floor(100 + Attack_Stat * 0.075 * Level * (1 + Attack_IV)) * (1 + Attack_SoulBonus) * (1 + CondenserBonus))
+        return math.floor(base_attack * (1 + Attack_Bonus))
+        # return math.floor(math.floor(100 + Attack_Stat * .075 * Level * (1 + Attack_IV)) \
+        #     * (1 + Attack_Bonus) * (1 + Attack_SoulBonus) * (1 + CondenserBonus))
     
     @property
     def ComputedDefense(self) -> Optional[int]:
@@ -329,8 +350,11 @@ class PalEntity:
         Defense_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
-        return math.floor(math.floor(100 + Defense_Stat * .075 * Level * (1 + Defense_IV)) \
-            * (1 + Defense_Bonus) * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
+        # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong
+        base_defense = math.floor(math.floor(50 + math.ceil(Defense_Stat * 0.075 * Level) * (1 + Defense_IV)) * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
+        return math.floor(base_defense * (1 + Defense_Bonus))
+        # return math.floor(math.floor(50 + Defense_Stat * 0.075 * Level * (1 + Defense_IV))
+        #     * (1 + Defense_Bonus)  * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
 
     @property
     def HP(self) -> Optional[int]:
@@ -356,20 +380,8 @@ class PalEntity:
             self._pal_param["MaxHP"] = PalObjects.FixedPoint64(val)
         else:
             PalObjects.set_FixedPoint64(self._pal_param["MaxHP"], val)
-    # TODO
-    # "MaxHP":{
-    #     "struct_type":"FixedPoint64",
-    #     "struct_id":"palworld_save_tools.archive.UUID(""00000000-0000-0000-0000-000000000000"")",
-    #     "id":"None",
-    #     "value":{
-    #         "Value":{
-    #             "id":"None",
-    #             "value":5405000,
-    #             "type":"Int64Property"
-    #         }
-    #     },
-    #     "type":"StructProperty"
-    # },
+
+        self.HP = self.MaxHP
 
     @property
     def PassiveSkillList(self) -> Optional[list[str]]:
@@ -664,13 +676,14 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param[property_name], iv)
 
     def _get_display_name(self) -> str:
-        cache_key = (Config.i18n, self.DataAccessKey, self.NickName, self.IsRarePal, self.IsBOSS, self.Gender)
+        cache_key = (Config.i18n, self.DataAccessKey, self.NickName, self.IsRarePal, self.IsBOSS, self.IsTower, self.Gender)
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
             species_name = DataProvider.get_pal_i18n(self.DataAccessKey) or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
             boss_prefix = "💀" if self.IsBOSS else ""
+            tower_prefix = "🏰" if self.IsTower else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
             gender_suffix = ""
@@ -679,7 +692,7 @@ class PalEntity:
             elif self.Gender == PalGender.MALE:
                 gender_suffix = "♂"
 
-            name = f"{rare_prefix}{boss_prefix}{species_name}{nickname_suffix}{gender_suffix}"
+            name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}{gender_suffix}"
             self._display_name_cache[cache_key] = name
             return name
         

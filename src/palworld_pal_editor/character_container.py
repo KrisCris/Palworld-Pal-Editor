@@ -1,0 +1,2 @@
+class CharacterContainer:
+    pass

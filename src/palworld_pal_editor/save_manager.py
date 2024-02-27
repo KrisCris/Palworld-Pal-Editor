@@ -93,7 +93,7 @@ PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.FoliageGridSaveDataMap"] = (skip_dec
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSpawnerInStageSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DynamicItemSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (skip_decode, skip_encode)
-PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
+# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
 
@@ -107,6 +107,9 @@ class SaveManager:
     gvas_file: Optional[GvasFile]
     entities_list: Optional[list[dict]]
     player_mapping: Optional[dict[str, PlayerEntity]]
+    baseworker_mapping: Optional[dict[str, PalEntity]]
+    _dangling_pals: Optional[dict[str, PalEntity]]
+    
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -127,6 +130,7 @@ class SaveManager:
         return self.player_mapping.values()
     
     def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+        if guid is None: return
         guid = str(guid)
         if guid in self.player_mapping:
             player = self.player_mapping[guid]
@@ -140,10 +144,19 @@ class SaveManager:
         for player in self.get_players():
             if pal := player.palbox.get(guid, None):
                 return pal
+        if guid in self.baseworker_mapping:
+            return self.baseworker_mapping[guid]
+        if guid in self._dangling_pals:
+            return self._dangling_pals[guid]
         LOGGER.warning(f"Can't find pal {guid}")
+
+    def get_working_pals(self) -> list[PalEntity]:
+        return self.baseworker_mapping.values()
 
     def _load_entities(self):
         self.player_mapping = {}
+        self._dangling_pals = {}
+        self.baseworker_mapping = {}
         temp_player_pal_mapping: dict[str, dict[str, PalEntity]] = {}
         for entity in self.entities_list:
             entity_struct = entity["value"]["RawData"]["value"]["object"]["SaveParameter"]
@@ -163,12 +176,12 @@ class SaveManager:
                         player_entity = PlayerEntity(entity, dict())
 
                     if uid_str in self.player_mapping:
-                        LOGGER.error("Duplicated player found: \n\t%s\n\t%s\n\tskipping" % 
-                                       (self.player_mapping[uid_str], player_entity))
+                        LOGGER.error("Duplicated player found: \n\t{}\n\t{}\n\tskipping".format(
+                                self.player_mapping[uid_str], player_entity))
                         continue
                 
                     self.player_mapping[uid_str] = player_entity
-                    LOGGER.info("Found player: %s" % str(player_entity))
+                    LOGGER.info(f"Found player: {player_entity}")
                 else:
                     pal_entity = PalEntity(entity)
                     owner = pal_entity.OwnerPlayerUId
@@ -178,29 +191,44 @@ class SaveManager:
                             self.player_mapping[owner_str].add_pal(pal_entity)
                         else:
                             temp_player_pal_mapping.setdefault(owner_str, dict())[pal_entity.InstanceId] = pal_entity
-                        LOGGER.info("Found pal: %s" % str(pal_entity))
+                        LOGGER.info(f"Found pal: {pal_entity}")
 
                     else:
-                        LOGGER.error("Found dangling pal object: %s, skipping", str(pal_entity))
+                        if pal_entity.OldOwnerPlayerUIds:
+                            self.baseworker_mapping[pal_entity.InstanceId] = pal_entity
+                            continue
+                        self._dangling_pals[pal_entity.InstanceId] = pal_entity
+                        LOGGER.error(f"Found dangling pal object: {pal_entity}, skipping")
                         continue
 
             except Exception as e:
-                LOGGER.error("Error occured while init'in object: %s, skipping" % e)
+                LOGGER.error(f"Error occured while init'in object: {e}, skipping")
                 continue
         
         for player in self.player_mapping.values():
             LOGGER.nextline()
-            LOGGER.info("%s" % (player))
+            LOGGER.info(f"{player}")
             sorted_palbox = player.get_sorted_pals()
             for pal in sorted_palbox:
-                LOGGER.info("\t%s" % (pal))
+                LOGGER.info(f"\t{pal}")
+        
+        LOGGER.nextline()
+        LOGGER.info("Pals possibly working at the base: ")
+        for pal in self.get_working_pals():
+            LOGGER.info(f"\t{pal}")
+
+        LOGGER.nextline()
+        LOGGER.info("Dangling Pals (No OwnerID and OldOwnerID): ")
+        for pal in self._dangling_pals.values():
+            LOGGER.warning(f"\t{pal}")
 
         for uid_str in temp_player_pal_mapping:
             pal_list = temp_player_pal_mapping[uid_str]
             LOGGER.nextline()
-            LOGGER.warning(f"Dangling pals found of non-existing user {uid_str}")
+            LOGGER.warning(f"Found dangling pals owned by non-existing user {uid_str}")
             for pal in pal_list.values():
-                LOGGER.warning("\t%s", str(pal))
+                self._dangling_pals[pal.InstanceId] = pal
+                LOGGER.warning(f"\t{pal}")
                 
     def open(self, file_path: str) -> Optional[GvasFile]:
         self._file_path = Path(file_path).resolve()

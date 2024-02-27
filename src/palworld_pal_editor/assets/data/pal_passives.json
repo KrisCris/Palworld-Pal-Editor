@@ -403,6 +403,12 @@
                 "Name": "凶猛",
                 "Description": "攻击+20%"
             }
+        },
+        "Buff": {
+            "b_Attack": 0.2,
+            "b_Defense": 0,
+            "b_CraftSpeed": 0,
+            "b_MoveSpeed": 0
         }
     },
     "PAL_ALLAttack_down1": {

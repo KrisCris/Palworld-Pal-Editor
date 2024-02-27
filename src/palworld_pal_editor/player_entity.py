@@ -12,19 +12,19 @@ class PlayerEntity:
         self.palbox = palbox
 
         if self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"]['struct_type'] != "PalIndividualCharacterSaveParameter":
-            raise Exception("%s's save param is not PalIndividualCharacterSaveParameter" % self._player_obj)
+            raise Exception(f"{self._player_obj}'s save param is not PalIndividualCharacterSaveParameter")
 
         self._player_key: dict = self._player_obj['key']
         self._player_param: dict = self._player_obj['value']['RawData']['value']['object']['SaveParameter']['value']
 
         if not get_attr_value(self._player_param, "IsPlayer"):
             raise TypeError(
-                "Expecting player_obj, received pal_obj: %s - %s - %s - %s" % 
-                (get_attr_value(self._player_param, "CharacterID"), self.NickName, self.PlayerUId, self.InstanceId)
+                "Expecting player_obj, received pal_obj: {} - {} - {} - {}".format(
+                    get_attr_value(self._player_param, "CharacterID"), self.NickName, self.PlayerUId, self.InstanceId)
             )
 
     def __str__(self) -> str:
-        return "%s - %s - %s" % (self.NickName, self.PlayerUId, self.InstanceId)
+        return "{} - {} - {}".format(self.NickName, self.PlayerUId, self.InstanceId)
     
     def __hash__(self) -> int:
         return hash((self.InstanceId.__hash__(), self.PlayerUId.__hash__()))
