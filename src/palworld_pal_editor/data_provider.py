@@ -7,11 +7,6 @@ from typing import Any, Callable, Optional
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.utils import LOGGER
 
-# def load_json(filename: str):
-#     path = Path(f"./src/palworld_pal_editor/assets/data/{filename}").resolve()
-#     with path.open("r") as file:
-#         return json.load(file)
-
 def load_json(filename: str) -> Any:
     if getattr(sys, 'frozen', False):
         base_path = Path(sys._MEIPASS)

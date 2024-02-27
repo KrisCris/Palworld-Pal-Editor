@@ -359,7 +359,6 @@ class PalEntity:
     @property
     def HP(self) -> Optional[int]:
         return PalObjects.get_FixedPoint64(self._pal_param.get("HP"))
-        # return get_attr_value(self._pal_param, "HP", nested_keys=["value", "Value"])
     
     @HP.setter
     @LOGGER.change_logger('HP')
@@ -368,7 +367,7 @@ class PalEntity:
             self._pal_param["HP"] = PalObjects.FixedPoint64(value)
         else:
             PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
-            # self._pal_param["HP"]["value"]["Value"]["value"] = value
+
     @property
     def MaxHP(self) -> Optional[int]:
         return PalObjects.get_FixedPoint64(self._pal_param.get("MaxHP"))
@@ -531,7 +530,7 @@ class PalEntity:
     @LOGGER.change_logger("Talent_HP")
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
-        # TODO maxhp
+        self.MaxHP = self.ComputedMaxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
@@ -548,92 +547,88 @@ class PalEntity:
     def Talent_Defense(self, value: int):
         self._set_iv("Talent_Defense", value)
     
-    # REALLY? Stored in Save??
-    # "CraftSpeed":{
-    #     "id":"None",
-    #     "value":70,
-    #     "type":"IntProperty"
-    # },
+    @property
+    def CraftSpeed(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._pal_param.get("CraftSpeed"))
             
-    # TODO PAL HEALTH
-    # Set to 100
-    # "SanityValue":{
-    #     "id":"None",
-    #     "value":97.90009307861328,
-    #     "type":"FloatProperty"
-    # },
-    # Full Stomach -> MaxFullStomach
-    # "MaxFullStomach":{
-    #     "id":"None",
-    #     "value":400.0,
-    #     "type":"FloatProperty"
-    # },
-    # "FullStomach":{
-    #     "id":"None",
-    #     "value":315.49505615234375,
-    #     "type":"FloatProperty"
-    # },
-    # Just delete the entry:
-    # "WorkerSick":{
-    #     "id":"None",
-    #     "value":{
-    #         "type":"EPalBaseCampWorkerSickType",
-    #         "value":"EPalBaseCampWorkerSickType::DepressionSprain"
-    #     },
-    #     "type":"EnumProperty"
-    # },
-    # Guess empty value is good?
-    # "DecreaseFullStomachRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCF40>,
-    #     "id":"None",
-    #     "value":{
+    @property
+    def SanityValue(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._pal_param.get("SanityValue"))
+    
+    @property
+    def MaxFullStomach(self) -> Optional[float]:
+        return PalObjects.get_BaseType(self._pal_param.get("MaxFullStomach"))
+    
+    @property
+    def FullStomach(self) -> Optional[float]:
+        return PalObjects.get_BaseType(self._pal_param.get("FullStomach"))
+    
+    @FullStomach.setter
+    @LOGGER.change_logger("FullStomach")
+    def FullStomach(self, val: float):
+        if self.FullStomach is None:
+            self._pal_param["HP"] = PalObjects.FloatProperty(val)
+        else:
+            PalObjects.set_BaseType(self._pal_param['FullStomach'], val)
             
-    #     },
-    #     "type":"StructProperty"
-    # },
-    # "AffectSanityRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCFD0>,
-    #     "id":"None",
-    #     "value":{
-            
-    #     },
-    #     "type":"StructProperty"
-    # },
-    # "CraftSpeedRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CD000>,
-    #     "id":"None",
-    #     "value":{
-            
-    #     },
-    #     "type":"StructProperty"
-    # },
-            
-    ## FOOD BUFF?
-    # "FoodWithStatusEffect":{
-    #     "id":"None",
-    #     "value":"Pancake",
-    #     "type":"NameProperty"
-    # },
-    # "Tiemr_FoodWithStatusEffect":{
-    #     "id":"None",
-    #     "value":448,
-    #     "type":"IntProperty"
-    # },
-        
-            
-    # TODO ADD PAL, DEL PAL, CHANGE OWNER?
+    @property
+    def WorkerSick(self) -> Optional[str]:
+        """
+        I thought this would be ArrayProperty...
+        ```json
+        "WorkerSick":{
+            "id":"None",
+            "value":{
+                "type":"EPalBaseCampWorkerSickType",
+                "value":"EPalBaseCampWorkerSickType::DepressionSprain"
+            },
+            "type":"EnumProperty"
+        },
+        ```
+        """
+        return PalObjects.get_EnumProperty(self._pal_param.get("WorkerSick"))
+    
+    @property
+    def FoodWithStatusEffect(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("FoodWithStatusEffect"))
+    
+    @property
+    def Timer_FoodWithStatusEffect(self) -> Optional[int]:
+        """
+        Tiemr_FoodWithStatusEffect is NOT a typo. This is how it coded in the save.
+        ```json
+        "Tiemr_FoodWithStatusEffect":{
+            "id":"None",
+            "value":448,
+            "type":"IntProperty"
+        },
+        ```
+        """
+        return PalObjects.get_BaseType(self._pal_param.get("Tiemr_FoodWithStatusEffect"))
+
+    @Timer_FoodWithStatusEffect.setter
+    @LOGGER.change_logger("Timer_FoodWithStatusEffect")
+    def Timer_FoodWithStatusEffect(self, val: int) -> bool:
+        if self.FoodWithStatusEffect is None or self.Timer_FoodWithStatusEffect is None:
+            LOGGER.warning("Trying to set food effect timer when there is no food eaten.")
+            return False
+        PalObjects.set_BaseType(self._pal_param['Tiemr_FoodWithStatusEffect'], val)
         
     def learn_attacks_on_leveling(self):
         for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level):
             if atk not in self.MasteredWaza:
                 self.add_MasteredWaza(atk)
-
         # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
+
+    def clear_worker_sick(self):
+        self._pal_param.pop("WorkerSick", None)
+
+    def max_lv_exp(self):
+        exp = DataProvider.get_level_xp(self.Level)
+        if isinstance(exp, int):
+            self.Exp = exp - 1
 
     def print_stats(self):
         lines = [f"{self}: "]
@@ -705,15 +700,12 @@ class PalEntity:
     
     def _derive_hp_scaling(self) -> int:
         def adjust_number(n):
-            last_digit = n % 10
-            if last_digit in [4, 6]:
-                return n - last_digit + 5
-            elif last_digit == 9:
-                return n + 1
-            elif last_digit == 1:
-                return n - 1
+            last_digit = n % 5
+            if last_digit < 3:
+                return n - last_digit
             else:
-                return n
+                return n - last_digit + 5
+
         Level = self.Level or 1
         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
         HP_Bonus = self._get_passive_buff("b_HP") # 0
@@ -725,7 +717,38 @@ class PalEntity:
         return adjust_number(HP_Stat)
 
     def _save(self) -> None:
+        # unused
         # clean up and delete empty / unused entries
-        # Rank_type = 0, Rank = PalRank.Rank0
-        # nickname? etc
+        # soulrank, rank, etc
         pass
+
+    # TODO ADD PAL, DEL PAL, CHANGE OWNER?
+
+    # TODO Guess empty value is good?
+    # "DecreaseFullStomachRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCF40>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },
+    # "AffectSanityRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCFD0>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },
+    # "CraftSpeedRates":{
+    #     "struct_type":"FloatContainer",
+    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CD000>,
+    #     "id":"None",
+    #     "value":{
+            
+    #     },
+    #     "type":"StructProperty"
+    # },

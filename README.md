@@ -36,11 +36,13 @@
 - [x] Change Pal Passive Skills
 - [x] Change Pal IV
 - [x] Calculate MaxHP
+- [x] Remove Pal Sicks
+- [x] Edit Food Buff Timer (Only if the pal has food buff)
 
 #### Not Yet Available
 
-- [ ] Remove Pal Sicks
-- [ ] Food Buff?
+***This means all the features mentioned above has to be done in CLI mode***
+
 - [ ] GUI
 
 ### Change Language?
@@ -52,13 +54,13 @@
 
 (old, but you get the idea) <https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113>
 
-## Roadmap
+## Possible Roadmap
 
 ***This tool is still in early stage, and only works in an Python interactive mode.***
 
-- [ ] Remove Pal Sicks
-- [ ] Food Buff?
 - [ ] GUI
+- [ ] Add / Remove Pal
+- [ ] Move Pal to Different Slots?
 - [ ] More Stuff...
 
 ## Thanks
@@ -76,7 +78,9 @@
 
 1. I made the tool for my friends who spent time playing this game with me ❤.
 2. For practicing of my 2-year-untouched Python skills.
-3. After PR'd several times to PalEdit (and MagicBear's fork, which eventually merged to the upstream), I just don't feel like contributing to that project anymore. ***Reasons?***
-   1. I've helped enough bug fixings, but there're always severe bugs popping up in the ***release*** build, and no ASAP hotfixs for most of the time.
-   2. I am tired of dealing with badly structured code. Without reconstructing the entire project, I am literally adding extra layers of shit to it.
-   3. I've never been credited for fixing those game-breaking bugs, but I never cared. However the author treated me like a dumb fuck when I pointed out an obvious bug on Discord, even after I PR'd a fix, and clarified the reason with video and screenshots. They just never borther check it :/ Update: After I convinced this guy that the bug was true, they fixed it sliently after a week, leaving my PR open, even though the changes are exact the same, interesting.
+3. I don't want to rely on tools with no proper logging, or indication of modification. I had no idea what and when have my pal data been modified without looking into the code. I had a really bad time fixing my save due to some of the bugs caused by it, i.e. pal passives copying, stats saved to wrong pals, wrong maxHP, losing pal movesets :/.  
+4. After I PR'd several times fixing most of the mentioned bugs above, to PalEdit, and MagicBear's fork, which eventually merged to the upstream, I just don't feel like to contribute to that project anymore for several reasons.
+   1. The author isn't actively pushing code to Github, instead, they like to push a whole bunch of code every other week, so I have no idea how to contribute.
+   2. I've helped enough with bug fixings, but there're always new bugs popping up in the release build, and often no ASAP hotfixs.
+   3. I am tired of dealing with badly structured code. Without reconstructing the entire project, I am literally adding extra layers of shit to it. (And I have to be honest, producing code at the same quality as the original project isn't my fault, I just want to get the bugs fixed so people won't be suffering from them.)
+   4. I've never been credited for fixing those game-breaking bugs, but I never cared. However the author treated me like a dumb fuck when I pointed out an obvious bug on Discord, even though I had already PR'd a fix with detailed explanation on how and why it was bugged, with video and screenshots. They just never borther check it :/ **Update**: After I convinced them that the bug was true, they fixed it sliently after a week more (so I guess many pals' maxHP has been messed up), and left my PR open, even though the fixes are the exact same, interesting.
