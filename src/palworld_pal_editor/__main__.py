@@ -8,7 +8,7 @@ from palworld_pal_editor.data_provider import I18N_LIST
 def setup_config_from_args():
     parser = argparse.ArgumentParser(description="Your application description here.")
     parser.add_argument('--lang', type=str, help=f'Language for the application, options: {", ".join(I18N_LIST)}..', default='en')
-    parser.add_argument('--cli', action='store_true', help='Enable CLI mode.', default=True) # TODO remove default=True
+    parser.add_argument('--cli', action='store_true', help='Enable CLI mode.') # TODO remove default=True
     parser.add_argument('--debug', action='store_true', help='Debug option, mimic interactive mode for VSCode debug launch.')
     parser.add_argument('--path', type=str, help='Path to the save folder, the one contains Level.sav', default=None)
     # Unused:
@@ -36,7 +36,8 @@ def main():
         from palworld_pal_editor.cli import main as cli_main
         globals().update(cli_main())
     elif Config.gui:
-        raise NotImplementedError("No GUI Mode Yet, Run with --cli.")
+        from palworld_pal_editor.gui import main as gui_main
+        gui_main()
     elif Config.web:
         raise NotImplementedError("No WebUI Mode Yet, Run with --cli.")
     else:

@@ -12,7 +12,7 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--cli",
+                "--gui",
                 "--lang=zh-CN",
                 "--debug"
             ]
