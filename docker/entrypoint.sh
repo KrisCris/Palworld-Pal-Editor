@@ -16,5 +16,5 @@ fi
 chown -R appuser:appuser /app
 
 # Execute setup_and_run script with environment variables as arguments
-exec gosu appuser ./setup_and_run.sh --lang $APP_LANG --port $APP_PORT "--$MODE" --path "$SAVE_PATH"
+exec gosu appuser ./setup_and_run.sh --lang $APP_LANG --port $APP_PORT "--$MODE" --path "$SAVE_PATH" "$PY_INTERACTIVE_FLAG"
 

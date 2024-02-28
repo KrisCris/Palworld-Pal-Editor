@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>If you want to make a webapp for the pal editor, let me know : )</h1>
   </div>
 </template>
 

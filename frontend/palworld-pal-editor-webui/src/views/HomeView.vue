@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <h1>Hello there, I once wanted to make a web app for the frontend of palworld pal editor. But...</h1>
   </main>
 </template>

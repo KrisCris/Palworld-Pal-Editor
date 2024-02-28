@@ -3,7 +3,7 @@ services:
   palworld-pal-editor:
     image: docker.io/library/palworld-pal-editor
     container_name: palworld-pal-editor
-    stdin_open: true  # or tty: true, to keep cli mode running
+    stdin_open: true  # or tty: true, to keep cli py interactive mode running
     ports:
       - 58080:58080
     environment:
@@ -13,6 +13,7 @@ services:
       - APP_PORT=58080
       - APP_LANG=zh-CN
       - MODE=cli # [cli, web], webui not available yet
+      - PY_INTERACTIVE_FLAG=--i # default to "--i", set empty if you are not running cli mode
       - SAVE_PATH=/mnt/gamesave
     volumes:
       - "/Users/connlost/Coding/Palworld-Pal-Editor/tests/game save:/mnt/gamesave"

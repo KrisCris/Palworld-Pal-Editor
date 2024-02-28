@@ -1,0 +1,1 @@
+import{_ as e,c as o,o as t,a}from"./index-DHkf_z5J.js";const s={},c={class:"about"},n=a("h1",null,"If you want to make a webapp for the pal editor, let me know : )",-1),_=[n];function r(d,i){return t(),o("div",c,_)}const f=e(s,[["render",r]]);export{f as default};
