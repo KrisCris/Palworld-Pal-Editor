@@ -8,4 +8,4 @@ save_blueprint = Blueprint('save', __name__)
 @save_blueprint.route('/load')
 def load():
     if Config.path and SaveManager.open(Config.path):
-        return jsonify(SaveManager.get_players())
+        return jsonify(SaveManager.get_players()) # just an example
