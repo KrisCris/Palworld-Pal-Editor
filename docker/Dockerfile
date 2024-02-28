@@ -10,6 +10,7 @@ ENV TZ=UTC \
     LANG=C.UTF-8 \
     PYTHONUNBUFFERED=1 \
     MODE=--cli \
+    PY_INTERACTIVE_FLAG="--i" \
     SAVE_PATH="/mnt/gamesave"
 
 # Set the working directory in the container
