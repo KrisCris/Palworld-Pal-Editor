@@ -6,10 +6,12 @@ LANG="zh-CN"
 PORT=58080
 MODE="--cli"  # Default mode set to CLI
 SAVE_PATH=""
+PY_INTERACTIVE_MODE = ""
 
 # Process command-line arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        --i) PY_INTERACTIVE_MODE="-i"; shift ;;
         --lang) LANG="$2"; shift ;;
         --port) PORT="$2"; shift ;;
         --path) SAVE_PATH="--path \"$2\""; shift ;;
@@ -59,7 +61,7 @@ pip install -e .
 COMMAND_ARGS="$MODE --lang=$LANG --port=$PORT $SAVE_PATH"
 
 # Log the arguments before invoking Python
-echo "Running command: python -i -m palworld_pal_editor $COMMAND_ARGS"
+echo "Running command: python $PY_INTERACTIVE_MODE -m palworld_pal_editor $COMMAND_ARGS"
 
 # Use eval to correctly handle spaces in paths and other arguments
-eval python -i -m palworld_pal_editor $COMMAND_ARGS
+eval python $PY_INTERACTIVE_MODE -m palworld_pal_editor $COMMAND_ARGS

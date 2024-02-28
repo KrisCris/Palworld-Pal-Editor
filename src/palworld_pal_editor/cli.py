@@ -1,13 +1,10 @@
 import code
 import sys
 from typing import Optional
-from palworld_pal_editor.pal_entity import PalEntity
-from palworld_pal_editor.player_entity import PlayerEntity
+from palworld_pal_editor.core import PalEntity, PlayerEntity, PalObjects, PalGender, PalRank, SaveManager
 from palworld_pal_editor.utils import *
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.pal_objects import PalObjects, PalGender, PalRank, isUUIDStr, toUUID
-from palworld_pal_editor.data_provider import DataProvider, I18N_LIST
-from palworld_pal_editor.save_manager import SaveManager
+from palworld_pal_editor.core.pal_objects import isUUIDStr, toUUID
 
 def main():
     LOGGER.info("Palworld Pal Editor, made by _connlost with ❤.")
@@ -67,7 +64,7 @@ def list_player_pals(player: PlayerEntity | str) -> list[PalEntity]:
     """
     if isinstance(player, PlayerEntity):
         pass
-    elif players := get_player_by_name(player):
+    elif players := get_players_by_name(player):
         player = players[0]
     elif isUUIDStr(player):
         player = get_player(player)
@@ -106,10 +103,10 @@ def list_passives():
             .format(name, codename, desc))
 
 def lang(i18n_code):
-    if i18n_code in I18N_LIST:
+    if DataProvider.is_valid_i18n(i18n_code):
         Config.i18n = i18n_code
     else:
-        LOGGER.warning(f"I18n code {i18n_code} not available. Select from {I18N_LIST}")
+        LOGGER.warning(f"I18n code {i18n_code} not available. Select from {DataProvider.get_i18n_options()}")
 
 def pal_help():
     LOGGER.info(

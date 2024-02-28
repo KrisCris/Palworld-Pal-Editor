@@ -1,13 +1,12 @@
 import argparse
 
-from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.data_provider import I18N_LIST
 
 
 def setup_config_from_args():
     parser = argparse.ArgumentParser(description="Your application description here.")
-    parser.add_argument('--lang', type=str, help=f'Language for the application, options: {", ".join(I18N_LIST)}..', default='en')
+    parser.add_argument('--lang', type=str, help=f'Language for the application, options: {", ".join(DataProvider.get_i18n_options())}..', default='en')
     parser.add_argument('--cli', action='store_true', help='Enable CLI mode.') # TODO remove default=True
     parser.add_argument('--debug', action='store_true', help='Debug option, mimic interactive mode for VSCode debug launch.')
     parser.add_argument('--path', type=str, help='Path to the save folder, the one contains Level.sav', default=None)
@@ -26,8 +25,8 @@ def setup_config_from_args():
     Config.debug = args.debug
     Config.path = args.path
 
-    if args.lang not in I18N_LIST:
-        Config.i18n = I18N_LIST[0]
+    if not DataProvider.is_valid_i18n(args.lang):
+        Config.i18n = DataProvider.default_i18n
 
 def main():
     setup_config_from_args()
@@ -35,13 +34,14 @@ def main():
     if Config.cli:
         from palworld_pal_editor.cli import main as cli_main
         globals().update(cli_main())
-    elif Config.gui:
-        from palworld_pal_editor.gui import main as gui_main
-        gui_main()
-    elif Config.web:
-        raise NotImplementedError("No WebUI Mode Yet, Run with --cli.")
+    # elif Config.gui:
+    #     from palworld_pal_editor.gui import main as gui_main
+    #     gui_main()
     else:
-        raise NotImplementedError("Unimplemented Mode.")
+        from palworld_pal_editor.webui import main as webui_main
+        webui_main()
+    # else:
+    #     raise NotImplementedError("Unimplemented Mode.")
 
 if __name__ == "__main__":
     try:

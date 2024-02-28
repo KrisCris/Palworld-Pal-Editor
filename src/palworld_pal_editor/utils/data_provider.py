@@ -11,7 +11,7 @@ def load_json(filename: str) -> Any:
     if getattr(sys, 'frozen', False):
         base_path = Path(sys._MEIPASS)
     else:
-        base_path = Path(__file__).parent
+        base_path = Path(__file__).parent.parent
 
     path = base_path / "assets/data" / filename
     with path.open("r", encoding='utf8') as file:
@@ -42,6 +42,10 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
     return decorator
 
 class DataProvider:
+    @property
+    def default_i18n() -> str:
+        return I18N_LIST[0]
+    
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
     def get_pal_i18n(key: str) -> Optional[str]:    
@@ -136,3 +140,10 @@ class DataProvider:
             return []
         return [attack for attack in attacks if attacks[attack] > level and not DataProvider.has_skill_fruit(attack)]
     
+    @staticmethod
+    def is_valid_i18n(key: str):
+        return key in I18N_LIST
+    
+    @staticmethod
+    def get_i18n_options() -> list[str]:
+        return I18N_LIST

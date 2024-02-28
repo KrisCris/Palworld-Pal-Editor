@@ -2,8 +2,7 @@ from enum import Enum
 from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
-from palworld_pal_editor.utils import LOGGER
-from palworld_pal_editor.utils.util import clamp
+from palworld_pal_editor.utils import LOGGER, clamp
 
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
