@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module - palworld_pal_editor",
+            "name": "Python: CLI",
             "type": "debugpy",
             "request": "launch",
             "module": "palworld_pal_editor",
@@ -12,9 +12,24 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--gui",
+                "--cli",
                 "--lang=zh-CN",
                 "--debug"
+            ]
+        },
+        {
+            "name": "Python: WEB",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "palworld_pal_editor",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--web",
+                "--lang=zh-CN",
             ]
         }
     ]

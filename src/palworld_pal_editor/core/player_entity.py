@@ -2,8 +2,8 @@ from typing import Any, Optional
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
-from palworld_pal_editor.pal_entity import PalEntity
-from palworld_pal_editor.pal_objects import get_attr_value, PalObjects
+from palworld_pal_editor.core.pal_entity import PalEntity
+from palworld_pal_editor.core.pal_objects import get_attr_value
 
 
 class PlayerEntity:

@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from palworld_pal_editor.data_provider import DataProvider
-from palworld_pal_editor.save_manager import SaveManager
+from palworld_pal_editor.utils import DataProvider
+from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER
 
 class Tests(unittest.TestCase):

@@ -32,4 +32,4 @@ pip install -r requirements.txt
 
 pip install pyinstaller
 
-pyinstaller --onefile --add-data="src/palworld_pal_editor/assets:assets" ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor
+pyinstaller --onefile --add-data="src/palworld_pal_editor/assets:assets" --add-data="src/palworld_pal_editor/webui:webui"  ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor
