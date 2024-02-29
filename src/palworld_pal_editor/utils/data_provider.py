@@ -3,24 +3,37 @@ import json
 from pathlib import Path
 import sys
 from typing import Any, Callable, Optional
+from PIL import Image
 
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.utils import LOGGER
 
-def load_json(filename: str) -> Any:
-    if getattr(sys, 'frozen', False):
-        base_path = Path(sys._MEIPASS)
-    else:
-        base_path = Path(__file__).parent.parent
+BASE_PATH = Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).parent.parent
 
-    path = base_path / "assets/data" / filename
+def load_json(filename: str) -> Any:
+    path = BASE_PATH / "assets/data" / filename
     with path.open("r", encoding='utf8') as file:
         return json.load(file)
+    
+def load_icons(sub_path: str) -> dict[str]:
+    icons = {}
+    valid_extensions = {'.jpg', '.jpeg', '.png'}
+    path = BASE_PATH / "assets/icons" / sub_path
+    for img_path in path.iterdir():
+        if img_path.suffix.lower() in valid_extensions:
+            try: 
+                img = Image.open(img_path)
+                icons[img_path.stem] = img
+            except IOError as e:
+                LOGGER.error(f"Error opening {img_path}: {e}")
+    return icons
 
-PAL_ATTACKS:dict[str, dict] = load_json("pal_attacks.json")
-PAL_DATA:dict[str, dict] = load_json("pal_data.json")
-PAL_PASSIVES:dict[str, dict] = load_json("pal_passives.json")
-PAL_XP_THRESHOLDS:list[int] = load_json("pal_xp_thresholds.json")
+PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
+PAL_DATA: dict[str, dict] = load_json("pal_data.json")
+PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
+PAL_XP_THRESHOLDS: list[int] = load_json("pal_xp_thresholds.json")
+
+PAL_ICONS: dict[str] = load_icons("pals")
 
 I18N_LIST = ['en', 'zh-CN']
 
@@ -42,9 +55,18 @@ def none_guard(data_source: dict | list, key_arg_position: int = 0, subkey: Opti
     return decorator
 
 class DataProvider:
+    icon_cache = {}
+
     @property
     def default_i18n() -> str:
         return I18N_LIST[0]
+    
+    @staticmethod
+    def get_pal_icon(key: str) -> Optional[Any]:
+        if key not in PAL_ICONS:
+            LOGGER.warning(f"Pal icon {key} doesn't exist.")
+            return 
+        return PAL_ICONS[key]
     
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod

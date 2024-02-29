@@ -1,6 +1,6 @@
 import re
 from functools import wraps
-from typing import Callable, get_type_hints
+from typing import Callable, Optional, get_type_hints
 
 
 def alphanumeric_key(key: str):

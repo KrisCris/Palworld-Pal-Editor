@@ -109,6 +109,10 @@ class PalEntity:
         return key
     
     @property
+    def I18nName(self) -> Optional[str]:
+        return DataProvider.get_pal_i18n(self.DataAccessKey)
+
+    @property
     def DisplayName(self) -> str:
         return self._get_display_name()
     
@@ -674,7 +678,7 @@ class PalEntity:
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
-            species_name = DataProvider.get_pal_i18n(self.DataAccessKey) or self.DataAccessKey
+            species_name = self.I18nName or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
             boss_prefix = "💀" if self.IsBOSS else ""
             tower_prefix = "🏰" if self.IsTower else ""
