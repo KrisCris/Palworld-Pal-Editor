@@ -21,6 +21,7 @@ div.flex {
     overflow-y: scroll;
     height: 96vh;
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
     padding-right:1rem;
 }
@@ -37,6 +38,7 @@ div.flex {
 
 img.palIcon {
     width: 2rem;
+    border-radius: 50%;
 }
 
 button {

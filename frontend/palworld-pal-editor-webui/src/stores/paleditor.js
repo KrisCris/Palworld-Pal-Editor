@@ -219,7 +219,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_DATA.value = null;
     SELECTED_PAL_ID.value = null;
 
-    if (!pal_data.dirty) {
+    if (pal_data.dirty) {
       let retval = await updatePalData(
         BASE_PAL_BTN_CLK_FLAG.value
           ? PAL_BASE_WORKER_BTN.value
@@ -233,6 +233,38 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     SELECTED_PAL_DATA.value = PAL_MAP.value.get(palid);
     SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+  }
+
+  async function updatePal(e) {
+    SELECTED_PAL_DATA.value.dirty = true
+    let value = e.target.value
+    let name = e.target.name
+    let id = e.target.id
+    console.log(`Modify: Target ${SELECTED_PAL_DATA} name=${name}, value=${value}, id=${id}`)
+
+    const response = await fetch("/api/pal/paldata", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key: name,
+        value: value,
+        PlayerUId: BASE_PAL_BTN_CLK_FLAG.value ? PAL_BASE_WORKER_BTN.value : SELECTED_PLAYER_ID.value,
+        PalGuid: SELECTED_PAL_ID.value,
+      }),
+    })
+      .then((r) => r.json())
+      .catch((error) => {
+        return error;
+      });
+    
+    if (response.status != 0) {
+      return response.msg
+    }
+    // const new_pal_data = new PalData(response.data)
+    // SELECTED_PAL_DATA.value = new_pal_data
+    // PAL_MAP.value.set(SELECTED_PAL_ID, new_pal_data)
   }
 
   return {
@@ -250,5 +282,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     loadSave,
     selectPlayer,
     selectPal,
+    updatePal
   };
 });
