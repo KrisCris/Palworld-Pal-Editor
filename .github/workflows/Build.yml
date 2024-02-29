@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - dev_webui
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.11.3
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.12.2
+
+    - name: Create venv
+      run: python -m venv venv
+
+    - name: Run Windows Builder Script
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./build_executable.ps1
+
+    - name: Run Unix-like Builder Script
+      if: runner.os != 'Windows'
+      shell: bash
+      run: ./build_executable.sh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: AutoBangumi_${{ matrix.os }}_artifact
+        path: ./dist/
