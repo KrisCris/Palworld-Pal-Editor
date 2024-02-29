@@ -11,7 +11,7 @@ from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TY
 from palworld_pal_editor.core.pal_objects import get_attr_value, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 
 
 def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
@@ -140,6 +140,9 @@ class SaveManager:
     def get_players_by_name(self, name: str) -> list[PlayerEntity]:
         return [player for player in self.get_players() if player.NickName == name]
     
+    def get_working_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+        return self.baseworker_mapping.get(str(guid), None)
+
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         for player in self.get_players():
             if pal := player.palbox.get(guid, None):
@@ -151,7 +154,7 @@ class SaveManager:
         LOGGER.warning(f"Can't find pal {guid}")
 
     def get_working_pals(self) -> list[PalEntity]:
-        return self.baseworker_mapping.values()
+        return sorted(self.baseworker_mapping.values(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
 
     def _load_entities(self):
         self.player_mapping = {}
@@ -190,14 +193,14 @@ class SaveManager:
                         if owner_str in self.player_mapping:
                             self.player_mapping[owner_str].add_pal(pal_entity)
                         else:
-                            temp_player_pal_mapping.setdefault(owner_str, dict())[pal_entity.InstanceId] = pal_entity
+                            temp_player_pal_mapping.setdefault(owner_str, dict())[str(pal_entity.InstanceId)] = pal_entity
                         LOGGER.info(f"Found pal: {pal_entity}")
 
                     else:
                         if pal_entity.OldOwnerPlayerUIds:
-                            self.baseworker_mapping[pal_entity.InstanceId] = pal_entity
+                            self.baseworker_mapping[str(pal_entity.InstanceId)] = pal_entity
                             continue
-                        self._dangling_pals[pal_entity.InstanceId] = pal_entity
+                        self._dangling_pals[str(pal_entity.InstanceId)] = pal_entity
                         LOGGER.error(f"Found dangling pal object: {pal_entity}, skipping")
                         continue
 
@@ -227,7 +230,7 @@ class SaveManager:
             LOGGER.newline()
             LOGGER.warning(f"Found dangling pals owned by non-existing user {uid_str}")
             for pal in pal_list.values():
-                self._dangling_pals[pal.InstanceId] = pal
+                self._dangling_pals[str(pal.InstanceId)] = pal
                 LOGGER.warning(f"\t{pal}")
                 
     def open(self, file_path: str) -> Optional[GvasFile]:

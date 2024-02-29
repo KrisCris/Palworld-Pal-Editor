@@ -3801,6 +3801,9 @@
         },
         "SortingKey": {
             "paldeck": "106T"
+        },
+        "Scaling": {
+            "HP": 6500
         }
     },
     "GYM_LilyQueen": {
@@ -3816,6 +3819,9 @@
         },
         "SortingKey": {
             "paldeck": "104T"
+        },
+        "Scaling": {
+            "HP": 5500
         }
     },
     "GYM_Horus": {
@@ -3826,11 +3832,14 @@
         "Attacks": {},
         "Tower": true,
         "I18n": {
-            "en": "Marus & Faleris",
+            "en": "Marcus & Faleris",
             "zh-CN": "马库斯 & 荷鲁斯"
         },
         "SortingKey": {
             "paldeck": "105T"
+        },
+        "Scaling": {
+            "HP": 6500
         }
     },
     "GYM_BlackGriffon": {
@@ -3846,6 +3855,9 @@
         },
         "SortingKey": {
             "paldeck": "107T"
+        },
+        "Scaling": {
+            "HP": 8000
         }
     },
     "GYM_ElecPanda": {
@@ -3861,6 +3873,9 @@
         },
         "SortingKey": {
             "paldeck": "103T"
+        },
+        "Scaling": {
+            "HP": 6000
         }
     },
     "Male_DarkTrader01": {

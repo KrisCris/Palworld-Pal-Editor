@@ -19,9 +19,9 @@ function loadSave() {
         <p>(The parent folder of Level.sav)</p>
         <br>
         <div>
-            <p>{{ palStore.palSavePath }}</p>
-            <input type="text" v-model="palStore.palSavePath">
-            <button @click="palStore.loadSave">Load Save</button>
+            <p>{{ palStore.PAL_SAVE_PATH }}</p>
+            <input type="text" v-model="palStore.PAL_SAVE_PATH">
+            <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">Load Save</button>
         </div>
     </div>
 </template>

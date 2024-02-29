@@ -14,11 +14,17 @@ def load():
     path = request.json.get("SavePath", None)
     path = path or Config.path
     if path and SaveManager().open(f"{path}/Level.sav"):
+        workingpals = SaveManager().get_working_pals()
         return reply(
             0,
-            [
-                {"id": str(player.PlayerUId), "name": player.NickName}
-                for player in SaveManager().get_players()
-            ],
+            {
+                "players": [
+                    {"id": str(player.PlayerUId), "name": player.NickName}
+                    for player in SaveManager().get_players()
+                ],
+                "hasWorkingPal": (
+                    True if len(workingpals) else False
+                ),
+            },
         )
-    return reply(0, None, "Failed to load, check path")
+    return reply(1, None, "Failed to load, check path")

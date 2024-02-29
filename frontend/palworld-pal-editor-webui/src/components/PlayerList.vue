@@ -1,54 +1,63 @@
 <script setup>
-import {usePalEditorStore} from '@/stores/paleditor'
+import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
 </script>
 
 <template>
-<button v-for="player in palStore.playerMap.values()" :value="player.id" @click="palStore.selectPlayer">
-  {{ player.name }}
-</button>
+  <div>
+    <button v-if="palStore.HAS_WORKING_PAL_FLAG" @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG" :value="palStore.PAL_BASE_WORKER_BTN">
+      Base Pals
+    </button>
+    <button class="player" v-for="player in palStore.PLAYER_MAP.values()" :value="player.id" @click="palStore.selectPlayer"
+      :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
+      {{ player.name }}
+    </button>
+  </div>
 </template>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
+div {
+    overflow-y:scroll;
+    height: 96vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    margin-right: 1rem;
 }
 
-h3 {
+button {
+  margin-bottom: .5rem;
+  max-width: 20vw;
+  max-height: 5rem;
+  padding: .5rem 1rem;
+  background-color: #ce9716;
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
   font-size: 1.2rem;
+  transition: all 0.3s ease-in-out;
 }
 
-h1,
-h3 {
-  text-align: center;
+button:hover {
+  background-color: #9b7210;
+  transition: all 0.3s ease-in-out;
 }
 
-@media (min-width: 1024px) {
-  h1,
-  h3 {
-    text-align: left;
-  }
+button.player {
+  background-color: #3365da;
 }
 
-button{
-    margin-bottom: 1rem;
-    width: 100%;
-    height: 3rem;
-    background-color: #3365da;
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    transition: all 0.3s ease-in-out;
+button.player:hover {
+  background-color: #1b49b4;
 }
 
-button:hover{
-    background-color: #1b49b4;
-    transition: all 0.3s ease-in-out;
+button:disabled {
+  background-color: #8a8a8a;
+}
+
+button:disabled:hover {
+  background-color: #8a8a8a;
 }
 </style>

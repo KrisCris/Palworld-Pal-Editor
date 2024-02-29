@@ -100,6 +100,8 @@ class PalEntity:
 
     @property
     def DataAccessKey(self) -> Optional[str]:
+        if self.IsTower:
+            return self.CharacterID
         key = self._RawSpecieKey
         match key:
             case "SheepBall":
@@ -143,10 +145,10 @@ class PalEntity:
         return False
     
     @IsTower.setter
-    def SetTower(self, value: bool) -> None:
+    def IsTower(self, value: bool) -> None:
         if not value:
             self.CharacterID = self._RawSpecieKey
-        elif not self._IsBOSS and value:
+        else:
             self.CharacterID = f"GYM_{self._RawSpecieKey}"
 
     @property

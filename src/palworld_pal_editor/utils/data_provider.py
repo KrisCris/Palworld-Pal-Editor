@@ -82,7 +82,7 @@ class DataProvider:
         scaling_list: dict = PAL_DATA[pal]["Scaling"]
         if is_boss and f"{scaling_type}_BOSS" in scaling_list:
             return scaling_list[f"{scaling_type}_BOSS"]
-        return scaling_list[scaling_type]
+        return scaling_list.get(scaling_type, None)
 
     @none_guard(data_source=PAL_DATA, subkey="SortingKey")
     @staticmethod
