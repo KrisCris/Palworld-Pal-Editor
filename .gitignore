@@ -5,6 +5,7 @@ logs/
 gamesave/
 test_outputs/
 unused_data/
+src/palworld_pal_editor/webui/
 
 #Byte-compiled / optimized / DLL files
 __pycache__/

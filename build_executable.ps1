@@ -11,6 +11,25 @@ function Get-PythonCommand {
     exit
 }
 
+# Check if npm is available
+$npmCmd = Get-Command npm -ErrorAction SilentlyContinue
+if ($null -ne $npmCmd) {
+    $NPM_CMD = "npm"
+} else {
+    Write-Host "Node is not installed."
+    Exit 1
+}
+
+# Install dependencies and build the project
+cd ".\frontend\palworld-pal-editor-webui"
+& $NPM_CMD install
+& $NPM_CMD run build
+
+cd "..\..\"
+# Move the build directory
+Move-Item -Path ".\frontend\palworld-pal-editor-webui\dist" -Destination ".\src\palworld_pal_editor\webui" -Force
+
+
 # Determine the appropriate Python command
 $PYTHON_CMD = Get-PythonCommand
 

@@ -1,10 +1,7 @@
 import os
 from pathlib import Path
 import sys
-import threading
-import webbrowser
 from flask import Flask, send_from_directory
-from flaskwebgui import FlaskUI
 
 
 from palworld_pal_editor.config import Config

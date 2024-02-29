@@ -13,15 +13,17 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up Python 3.11.3
-      uses: actions/setup-python@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
         python-version: 3.12.2
 
-    - name: Create venv
-      run: python -m venv venv
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
     - name: Run Windows Builder Script
       if: runner.os == 'Windows'
@@ -36,5 +38,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: AutoBangumi_${{ matrix.os }}_artifact
+        name: Palworld_Pal_Editor_${{ matrix.os }}_artifact
         path: ./dist/
