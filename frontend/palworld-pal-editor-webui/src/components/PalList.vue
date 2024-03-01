@@ -7,7 +7,7 @@ const palStore = usePalEditorStore()
 <template>
     <div class="flex">
         <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
-            <button :class="[{ 'male': pal.Gender == 'PalGender.MALE', 'female': pal.Gender == 'PalGender.FEMALE' }]"
+            <button :class="[{ 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️' }]"
                 :value="pal.InstanceId" @click="palStore.selectPal" :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId">
                 <img class="palIcon" :src="`/image/pals/${pal.IconAccessKey}`">
                 {{ pal.DisplayName }}

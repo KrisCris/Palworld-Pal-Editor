@@ -17,9 +17,15 @@ def patch_paldata():
         pal_entity = SaveManager().get_working_pal(PalGuid)
     else:
         pal_entity = SaveManager().get_player(PlayerUId).get_pal(PalGuid)
-
-    setattr(pal_entity, key, value)
-    return reply(0, _pal_data(pal_entity))
+    try:
+        if key == "HasWorkerSick":
+            pal_entity.clear_worker_sick()
+        elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
+            return reply(1, None, f"Error in patch_paldata {err}")
+    except Exception as e:
+        LOGGER.warning(f"Error in patch_paldata {e}")
+        return reply(1, None, f"Error in patch_paldata {e}")
+    return reply(0)
 
 
 @pal_blueprint.route("/paldata", methods=["POST"])
@@ -58,7 +64,10 @@ def _pal_data(pal: PalEntity):
         "DataAccessKey": pal.DataAccessKey or None,
         "I18nName": pal.I18nName or None,
         "DisplayName": pal.DisplayName or None,
-        "Gender": str(pal.Gender) if pal.Gender else None,
+        "HasTowerVariant": pal.HasTowerVariant,
+        "IsPal": pal.IsPal,
+        "IsHuman": pal.IsHuman,
+        "Gender": pal.Gender.value if pal.Gender else None,
         "IsTower": pal.IsTower or False,
         "IsBOSS": pal.IsBOSS or False,
         "IsRarePal": pal.IsRarePal or False,
@@ -78,4 +87,5 @@ def _pal_data(pal: PalEntity):
         "Talent_Melee": pal.Talent_Melee or 0,
         "Talent_Shot": pal.Talent_Shot or 0,
         "Talent_Defense": pal.Talent_Defense or 0,
+        "HasWorkerSick": pal.HasWorkerSick
     }

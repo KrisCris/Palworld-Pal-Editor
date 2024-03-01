@@ -90,6 +90,10 @@ class DataProvider:
         sorting_key_list: dict = PAL_DATA[key]["SortingKey"]
         return sorting_key_list.get(sorting_key)
 
+    @staticmethod
+    def has_tower_variant_pal(key: str) -> bool:
+        return f"GYM_{key}" in PAL_DATA
+
     @none_guard(data_source=PAL_DATA)
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
