@@ -122,6 +122,14 @@ const palStore = usePalEditorStore()
 </template>
 
 <style scoped>
+.grid {
+  display: flex;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+  flex-wrap: wrap;
+  align-items: flex-start
+}
+
 hr {
   border: 0;
   /* Remove the default border */
@@ -137,20 +145,6 @@ hr {
 p.cat {
   margin-top: -.8rem;
   margin-left: -.5rem;
-}
-
-.grid {
-  display: flex;
-  /* grid-template-columns: repeat(auto-fill, minmax(25vh, 1fr)); */
-  /* This is better for small screens, once min() is better supported */
-  /* grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); */
-  /* gap: 1rem;
-
-  padding-right: 2rem; */
-  height: calc(100vh - 4rem);
-  overflow-y: auto;
-  flex-wrap: wrap;
-  align-items: flex-start
 }
 
 div {
@@ -207,6 +201,7 @@ div.editField {
   border-width: 1px;
   border-color: white; */
   /* width: 100%; */
+  flex-wrap: nowrap;
   gap: 5px
 }
 

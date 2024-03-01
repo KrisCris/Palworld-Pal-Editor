@@ -6,7 +6,7 @@ from palworld_pal_editor.utils import LOGGER
 
 pal_blueprint = Blueprint("pal", __name__)
 
-
+# Update Pal Data
 @pal_blueprint.route("/paldata", methods=["PATCH"])
 def patch_paldata():
     PalGuid = request.json.get("PalGuid")
@@ -29,7 +29,7 @@ def patch_paldata():
         return reply(1, None, f"Error in patch_paldata {e}")
     return reply(0)
 
-
+# Get Pal Data
 @pal_blueprint.route("/paldata", methods=["POST"])
 def paldata():
     InstanceId = request.json.get("InstanceId")
@@ -56,7 +56,7 @@ def paldata():
         1, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
     )
 
-
+# Just some dumb shit
 def _pal_data(pal: PalEntity):
     return {
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,

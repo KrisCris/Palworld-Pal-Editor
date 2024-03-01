@@ -83,24 +83,24 @@ def list_attacks():
     for item in sorted_list:
         LOGGER.info(
             " - [{}][{}]{} {}: {} ".format(
-                item["Type"],
+                item["Element"],
                 item["Power"],
                 (
                     "[🍎]"
-                    if DataProvider.has_skill_fruit(item["CodeName"])
+                    if DataProvider.has_skill_fruit(item["InternalName"])
                     else ""
                 ),
-                DataProvider.get_attack_i18n(item["CodeName"]),
-                item["CodeName"]))
+                DataProvider.get_attack_i18n(item["InternalName"]),
+                item["InternalName"]))
 
 def list_passives():
     sorted_list = DataProvider.get_sorted_passives()
     for item in sorted_list:
-        codename = item["CodeName"]
-        name, desc = DataProvider.get_passive_i18n(item["CodeName"])
+        internal_name = item["InternalName"]
+        name, desc = DataProvider.get_passive_i18n(item["InternalName"])
         LOGGER.info(
             " -  {}  |  {}  |  {}"
-            .format(name, codename, desc))
+            .format(name, internal_name, desc))
 
 def lang(i18n_code):
     if DataProvider.is_valid_i18n(i18n_code):

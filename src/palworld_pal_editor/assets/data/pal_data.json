@@ -1,6 +1,6 @@
 {
     "Alpaca": {
-        "CodeName": "Alpaca",
+        "InternalName": "Alpaca",
         "Elements": [
             "Neutral"
         ],
@@ -27,7 +27,7 @@
         }
     },
     "AmaterasuWolf": {
-        "CodeName": "AmaterasuWolf",
+        "InternalName": "AmaterasuWolf",
         "Elements": [
             "Fire"
         ],
@@ -54,7 +54,7 @@
         }
     },
     "Anubis": {
-        "CodeName": "Anubis",
+        "InternalName": "Anubis",
         "Elements": [
             "Ground"
         ],
@@ -81,7 +81,7 @@
         }
     },
     "Baphomet": {
-        "CodeName": "Baphomet",
+        "InternalName": "Baphomet",
         "Elements": [
             "Fire",
             "Dark"
@@ -109,7 +109,7 @@
         }
     },
     "Baphomet_Dark": {
-        "CodeName": "Baphomet_Dark",
+        "InternalName": "Baphomet_Dark",
         "Elements": [
             "Dark"
         ],
@@ -136,7 +136,7 @@
         }
     },
     "Bastet": {
-        "CodeName": "Bastet",
+        "InternalName": "Bastet",
         "Elements": [
             "Dark"
         ],
@@ -163,7 +163,7 @@
         }
     },
     "Bastet_Ice": {
-        "CodeName": "Bastet_Ice",
+        "InternalName": "Bastet_Ice",
         "Elements": [
             "Ice"
         ],
@@ -190,7 +190,7 @@
         }
     },
     "BerryGoat": {
-        "CodeName": "BerryGoat",
+        "InternalName": "BerryGoat",
         "Elements": [
             "Grass"
         ],
@@ -217,7 +217,7 @@
         }
     },
     "BirdDragon": {
-        "CodeName": "BirdDragon",
+        "InternalName": "BirdDragon",
         "Elements": [
             "Fire",
             "Dark"
@@ -245,7 +245,7 @@
         }
     },
     "BirdDragon_Ice": {
-        "CodeName": "BirdDragon_Ice",
+        "InternalName": "BirdDragon_Ice",
         "Elements": [
             "Ice",
             "Dark"
@@ -273,7 +273,7 @@
         }
     },
     "BlackCentaur": {
-        "CodeName": "BlackCentaur",
+        "InternalName": "BlackCentaur",
         "Elements": [
             "Dark"
         ],
@@ -301,7 +301,7 @@
         }
     },
     "BlackGriffon": {
-        "CodeName": "BlackGriffon",
+        "InternalName": "BlackGriffon",
         "Elements": [
             "Dark"
         ],
@@ -328,7 +328,7 @@
         }
     },
     "BlackMetalDragon": {
-        "CodeName": "BlackMetalDragon",
+        "InternalName": "BlackMetalDragon",
         "Elements": [
             "Dragon",
             "Dark"
@@ -356,7 +356,7 @@
         }
     },
     "BlueDragon": {
-        "CodeName": "BlueDragon",
+        "InternalName": "BlueDragon",
         "Elements": [
             "Water",
             "Dragon"
@@ -384,7 +384,7 @@
         }
     },
     "BluePlatypus": {
-        "CodeName": "BluePlatypus",
+        "InternalName": "BluePlatypus",
         "Elements": [
             "Water"
         ],
@@ -411,7 +411,7 @@
         }
     },
     "Boar": {
-        "CodeName": "Boar",
+        "InternalName": "Boar",
         "Elements": [
             "Ground"
         ],
@@ -438,7 +438,7 @@
         }
     },
     "CaptainPenguin": {
-        "CodeName": "CaptainPenguin",
+        "InternalName": "CaptainPenguin",
         "Elements": [
             "Water",
             "Ice"
@@ -466,7 +466,7 @@
         }
     },
     "Carbunclo": {
-        "CodeName": "Carbunclo",
+        "InternalName": "Carbunclo",
         "Elements": [
             "Grass"
         ],
@@ -493,7 +493,7 @@
         }
     },
     "CatBat": {
-        "CodeName": "CatBat",
+        "InternalName": "CatBat",
         "Elements": [
             "Dark"
         ],
@@ -520,7 +520,7 @@
         }
     },
     "CatMage": {
-        "CodeName": "CatMage",
+        "InternalName": "CatMage",
         "Elements": [
             "Dark"
         ],
@@ -547,7 +547,7 @@
         }
     },
     "CatVampire": {
-        "CodeName": "CatVampire",
+        "InternalName": "CatVampire",
         "Elements": [
             "Dark"
         ],
@@ -574,7 +574,7 @@
         }
     },
     "ChickenPal": {
-        "CodeName": "ChickenPal",
+        "InternalName": "ChickenPal",
         "Elements": [
             "Neutral"
         ],
@@ -601,7 +601,7 @@
         }
     },
     "ColorfulBird": {
-        "CodeName": "ColorfulBird",
+        "InternalName": "ColorfulBird",
         "Elements": [
             "Neutral"
         ],
@@ -628,7 +628,7 @@
         }
     },
     "CowPal": {
-        "CodeName": "CowPal",
+        "InternalName": "CowPal",
         "Elements": [
             "Neutral"
         ],
@@ -655,7 +655,7 @@
         }
     },
     "CuteButterfly": {
-        "CodeName": "CuteButterfly",
+        "InternalName": "CuteButterfly",
         "Elements": [
             "Grass"
         ],
@@ -682,7 +682,7 @@
         }
     },
     "CuteFox": {
-        "CodeName": "CuteFox",
+        "InternalName": "CuteFox",
         "Elements": [
             "Neutral"
         ],
@@ -709,7 +709,7 @@
         }
     },
     "CuteMole": {
-        "CodeName": "CuteMole",
+        "InternalName": "CuteMole",
         "Elements": [
             "Ground"
         ],
@@ -736,7 +736,7 @@
         }
     },
     "DarkCrow": {
-        "CodeName": "DarkCrow",
+        "InternalName": "DarkCrow",
         "Elements": [
             "Dark"
         ],
@@ -763,7 +763,7 @@
         }
     },
     "DarkScorpion": {
-        "CodeName": "DarkScorpion",
+        "InternalName": "DarkScorpion",
         "Elements": [
             "Dark",
             "Ground"
@@ -791,7 +791,7 @@
         }
     },
     "Deer": {
-        "CodeName": "Deer",
+        "InternalName": "Deer",
         "Elements": [
             "Neutral"
         ],
@@ -818,7 +818,7 @@
         }
     },
     "Deer_Ground": {
-        "CodeName": "Deer_Ground",
+        "InternalName": "Deer_Ground",
         "Elements": [
             "Ground"
         ],
@@ -845,7 +845,7 @@
         }
     },
     "DreamDemon": {
-        "CodeName": "DreamDemon",
+        "InternalName": "DreamDemon",
         "Elements": [
             "Dark"
         ],
@@ -872,7 +872,7 @@
         }
     },
     "DrillGame": {
-        "CodeName": "DrillGame",
+        "InternalName": "DrillGame",
         "Elements": [
             "Ground"
         ],
@@ -899,7 +899,7 @@
         }
     },
     "Eagle": {
-        "CodeName": "Eagle",
+        "InternalName": "Eagle",
         "Elements": [
             "Neutral"
         ],
@@ -926,7 +926,7 @@
         }
     },
     "ElecCat": {
-        "CodeName": "ElecCat",
+        "InternalName": "ElecCat",
         "Elements": [
             "Electric"
         ],
@@ -953,7 +953,7 @@
         }
     },
     "ElecPanda": {
-        "CodeName": "ElecPanda",
+        "InternalName": "ElecPanda",
         "Elements": [
             "Electric"
         ],
@@ -980,7 +980,7 @@
         }
     },
     "FairyDragon": {
-        "CodeName": "FairyDragon",
+        "InternalName": "FairyDragon",
         "Elements": [
             "Dragon"
         ],
@@ -1007,7 +1007,7 @@
         }
     },
     "FairyDragon_Water": {
-        "CodeName": "FairyDragon_Water",
+        "InternalName": "FairyDragon_Water",
         "Elements": [
             "Dragon",
             "Water"
@@ -1035,7 +1035,7 @@
         }
     },
     "FengyunDeeper": {
-        "CodeName": "FengyunDeeper",
+        "InternalName": "FengyunDeeper",
         "Elements": [
             "Neutral"
         ],
@@ -1062,7 +1062,7 @@
         }
     },
     "FireKirin": {
-        "CodeName": "FireKirin",
+        "InternalName": "FireKirin",
         "Elements": [
             "Fire"
         ],
@@ -1089,7 +1089,7 @@
         }
     },
     "FireKirin_Dark": {
-        "CodeName": "FireKirin_Dark",
+        "InternalName": "FireKirin_Dark",
         "Elements": [
             "Fire",
             "Dark"
@@ -1117,7 +1117,7 @@
         }
     },
     "FlameBambi": {
-        "CodeName": "FlameBambi",
+        "InternalName": "FlameBambi",
         "Elements": [
             "Fire"
         ],
@@ -1144,7 +1144,7 @@
         }
     },
     "FlameBuffalo": {
-        "CodeName": "FlameBuffalo",
+        "InternalName": "FlameBuffalo",
         "Elements": [
             "Fire"
         ],
@@ -1171,7 +1171,7 @@
         }
     },
     "FlowerDinosaur": {
-        "CodeName": "FlowerDinosaur",
+        "InternalName": "FlowerDinosaur",
         "Elements": [
             "Grass",
             "Dragon"
@@ -1199,7 +1199,7 @@
         }
     },
     "FlowerDinosaur_Electric": {
-        "CodeName": "FlowerDinosaur_Electric",
+        "InternalName": "FlowerDinosaur_Electric",
         "Elements": [
             "Electric",
             "Dragon"
@@ -1227,7 +1227,7 @@
         }
     },
     "FlowerDoll": {
-        "CodeName": "FlowerDoll",
+        "InternalName": "FlowerDoll",
         "Elements": [
             "Grass"
         ],
@@ -1254,7 +1254,7 @@
         }
     },
     "FlowerRabbit": {
-        "CodeName": "FlowerRabbit",
+        "InternalName": "FlowerRabbit",
         "Elements": [
             "Grass"
         ],
@@ -1281,7 +1281,7 @@
         }
     },
     "FlyingManta": {
-        "CodeName": "FlyingManta",
+        "InternalName": "FlyingManta",
         "Elements": [
             "Water"
         ],
@@ -1308,7 +1308,7 @@
         }
     },
     "FoxMage": {
-        "CodeName": "FoxMage",
+        "InternalName": "FoxMage",
         "Elements": [
             "Fire"
         ],
@@ -1335,7 +1335,7 @@
         }
     },
     "Ganesha": {
-        "CodeName": "Ganesha",
+        "InternalName": "Ganesha",
         "Elements": [
             "Water"
         ],
@@ -1362,7 +1362,7 @@
         }
     },
     "Garm": {
-        "CodeName": "Garm",
+        "InternalName": "Garm",
         "Elements": [
             "Neutral"
         ],
@@ -1389,7 +1389,7 @@
         }
     },
     "GhostBeast": {
-        "CodeName": "GhostBeast",
+        "InternalName": "GhostBeast",
         "Elements": [
             "Dark"
         ],
@@ -1416,7 +1416,7 @@
         }
     },
     "Gorilla": {
-        "CodeName": "Gorilla",
+        "InternalName": "Gorilla",
         "Elements": [
             "Neutral"
         ],
@@ -1443,7 +1443,7 @@
         }
     },
     "GrassMammoth": {
-        "CodeName": "GrassMammoth",
+        "InternalName": "GrassMammoth",
         "Elements": [
             "Grass"
         ],
@@ -1470,7 +1470,7 @@
         }
     },
     "GrassMammoth_Ice": {
-        "CodeName": "GrassMammoth_Ice",
+        "InternalName": "GrassMammoth_Ice",
         "Elements": [
             "Ice"
         ],
@@ -1497,7 +1497,7 @@
         }
     },
     "GrassPanda": {
-        "CodeName": "GrassPanda",
+        "InternalName": "GrassPanda",
         "Elements": [
             "Grass"
         ],
@@ -1524,7 +1524,7 @@
         }
     },
     "GrassPanda_Electric": {
-        "CodeName": "GrassPanda_Electric",
+        "InternalName": "GrassPanda_Electric",
         "Elements": [
             "Electric"
         ],
@@ -1551,7 +1551,7 @@
         }
     },
     "GrassRabbitMan": {
-        "CodeName": "GrassRabbitMan",
+        "InternalName": "GrassRabbitMan",
         "Elements": [
             "Grass"
         ],
@@ -1578,7 +1578,7 @@
         }
     },
     "HadesBird": {
-        "CodeName": "HadesBird",
+        "InternalName": "HadesBird",
         "Elements": [
             "Dark"
         ],
@@ -1605,7 +1605,7 @@
         }
     },
     "HawkBird": {
-        "CodeName": "HawkBird",
+        "InternalName": "HawkBird",
         "Elements": [
             "Neutral"
         ],
@@ -1632,7 +1632,7 @@
         }
     },
     "Hedgehog": {
-        "CodeName": "Hedgehog",
+        "InternalName": "Hedgehog",
         "Elements": [
             "Electric"
         ],
@@ -1659,7 +1659,7 @@
         }
     },
     "Hedgehog_Ice": {
-        "CodeName": "Hedgehog_Ice",
+        "InternalName": "Hedgehog_Ice",
         "Elements": [
             "Ice"
         ],
@@ -1686,7 +1686,7 @@
         }
     },
     "HerculesBeetle": {
-        "CodeName": "HerculesBeetle",
+        "InternalName": "HerculesBeetle",
         "Elements": [
             "Ground",
             "Grass"
@@ -1714,7 +1714,7 @@
         }
     },
     "Horus": {
-        "CodeName": "Horus",
+        "InternalName": "Horus",
         "Elements": [
             "Fire"
         ],
@@ -1741,7 +1741,7 @@
         }
     },
     "IceDeer": {
-        "CodeName": "IceDeer",
+        "InternalName": "IceDeer",
         "Elements": [
             "Ice"
         ],
@@ -1768,7 +1768,7 @@
         }
     },
     "IceFox": {
-        "CodeName": "IceFox",
+        "InternalName": "IceFox",
         "Elements": [
             "Ice"
         ],
@@ -1795,7 +1795,7 @@
         }
     },
     "IceHorse": {
-        "CodeName": "IceHorse",
+        "InternalName": "IceHorse",
         "Elements": [
             "Ice"
         ],
@@ -1823,7 +1823,7 @@
         }
     },
     "IceHorse_Dark": {
-        "CodeName": "IceHorse_Dark",
+        "InternalName": "IceHorse_Dark",
         "Elements": [
             "Dark"
         ],
@@ -1850,7 +1850,7 @@
         }
     },
     "JetDragon": {
-        "CodeName": "JetDragon",
+        "InternalName": "JetDragon",
         "Elements": [
             "Dragon"
         ],
@@ -1878,7 +1878,7 @@
         }
     },
     "Kelpie": {
-        "CodeName": "Kelpie",
+        "InternalName": "Kelpie",
         "Elements": [
             "Water"
         ],
@@ -1905,7 +1905,7 @@
         }
     },
     "Kelpie_Fire": {
-        "CodeName": "Kelpie_Fire",
+        "InternalName": "Kelpie_Fire",
         "Elements": [
             "Fire"
         ],
@@ -1932,7 +1932,7 @@
         }
     },
     "KingAlpaca": {
-        "CodeName": "KingAlpaca",
+        "InternalName": "KingAlpaca",
         "Elements": [
             "Neutral"
         ],
@@ -1959,7 +1959,7 @@
         }
     },
     "KingAlpaca_Ice": {
-        "CodeName": "KingAlpaca_Ice",
+        "InternalName": "KingAlpaca_Ice",
         "Elements": [
             "Ice"
         ],
@@ -1986,7 +1986,7 @@
         }
     },
     "KingBahamut": {
-        "CodeName": "KingBahamut",
+        "InternalName": "KingBahamut",
         "Elements": [
             "Fire"
         ],
@@ -2013,7 +2013,7 @@
         }
     },
     "Kirin": {
-        "CodeName": "Kirin",
+        "InternalName": "Kirin",
         "Elements": [
             "Electric"
         ],
@@ -2040,7 +2040,7 @@
         }
     },
     "Kitsunebi": {
-        "CodeName": "Kitsunebi",
+        "InternalName": "Kitsunebi",
         "Elements": [
             "Fire"
         ],
@@ -2067,7 +2067,7 @@
         }
     },
     "LavaGirl": {
-        "CodeName": "LavaGirl",
+        "InternalName": "LavaGirl",
         "Elements": [
             "Fire"
         ],
@@ -2094,7 +2094,7 @@
         }
     },
     "LazyCatfish": {
-        "CodeName": "LazyCatfish",
+        "InternalName": "LazyCatfish",
         "Elements": [
             "Ground"
         ],
@@ -2113,7 +2113,7 @@
         }
     },
     "LazyDragon": {
-        "CodeName": "LazyDragon",
+        "InternalName": "LazyDragon",
         "Elements": [
             "Dragon",
             "Water"
@@ -2141,7 +2141,7 @@
         }
     },
     "LazyDragon_Electric": {
-        "CodeName": "LazyDragon_Electric",
+        "InternalName": "LazyDragon_Electric",
         "Elements": [
             "Dragon",
             "Electric"
@@ -2169,7 +2169,7 @@
         }
     },
     "LilyQueen": {
-        "CodeName": "LilyQueen",
+        "InternalName": "LilyQueen",
         "Elements": [
             "Grass"
         ],
@@ -2196,7 +2196,7 @@
         }
     },
     "LilyQueen_Dark": {
-        "CodeName": "LilyQueen_Dark",
+        "InternalName": "LilyQueen_Dark",
         "Elements": [
             "Dark"
         ],
@@ -2223,7 +2223,7 @@
         }
     },
     "LittleBriarRose": {
-        "CodeName": "LittleBriarRose",
+        "InternalName": "LittleBriarRose",
         "Elements": [
             "Grass"
         ],
@@ -2250,7 +2250,7 @@
         }
     },
     "LizardMan": {
-        "CodeName": "LizardMan",
+        "InternalName": "LizardMan",
         "Elements": [
             "Dark"
         ],
@@ -2277,7 +2277,7 @@
         }
     },
     "LizardMan_Fire": {
-        "CodeName": "LizardMan_Fire",
+        "InternalName": "LizardMan_Fire",
         "Elements": [
             "Fire"
         ],
@@ -2304,7 +2304,7 @@
         }
     },
     "Manticore": {
-        "CodeName": "Manticore",
+        "InternalName": "Manticore",
         "Elements": [
             "Fire"
         ],
@@ -2331,7 +2331,7 @@
         }
     },
     "Manticore_Dark": {
-        "CodeName": "Manticore_Dark",
+        "InternalName": "Manticore_Dark",
         "Elements": [
             "Fire",
             "Dark"
@@ -2359,7 +2359,7 @@
         }
     },
     "Monkey": {
-        "CodeName": "Monkey",
+        "InternalName": "Monkey",
         "Elements": [
             "Grass"
         ],
@@ -2386,7 +2386,7 @@
         }
     },
     "MopBaby": {
-        "CodeName": "MopBaby",
+        "InternalName": "MopBaby",
         "Elements": [
             "Ice"
         ],
@@ -2413,7 +2413,7 @@
         }
     },
     "MopKing": {
-        "CodeName": "MopKing",
+        "InternalName": "MopKing",
         "Elements": [
             "Ice"
         ],
@@ -2440,7 +2440,7 @@
         }
     },
     "Mutant": {
-        "CodeName": "Mutant",
+        "InternalName": "Mutant",
         "Elements": [
             "Neutral"
         ],
@@ -2467,7 +2467,7 @@
         }
     },
     "NaughtyCat": {
-        "CodeName": "NaughtyCat",
+        "InternalName": "NaughtyCat",
         "Elements": [
             "Neutral"
         ],
@@ -2494,7 +2494,7 @@
         }
     },
     "NegativeKoala": {
-        "CodeName": "NegativeKoala",
+        "InternalName": "NegativeKoala",
         "Elements": [
             "Dark"
         ],
@@ -2521,7 +2521,7 @@
         }
     },
     "NegativeOctopus": {
-        "CodeName": "NegativeOctopus",
+        "InternalName": "NegativeOctopus",
         "Elements": [
             "Dark"
         ],
@@ -2548,7 +2548,7 @@
         }
     },
     "NightFox": {
-        "CodeName": "NightFox",
+        "InternalName": "NightFox",
         "Elements": [
             "Dark"
         ],
@@ -2575,7 +2575,7 @@
         }
     },
     "Penguin": {
-        "CodeName": "Penguin",
+        "InternalName": "Penguin",
         "Elements": [
             "Water",
             "Ice"
@@ -2603,7 +2603,7 @@
         }
     },
     "PinkCat": {
-        "CodeName": "PinkCat",
+        "InternalName": "PinkCat",
         "Elements": [
             "Neutral"
         ],
@@ -2630,7 +2630,7 @@
         }
     },
     "PinkLizard": {
-        "CodeName": "PinkLizard",
+        "InternalName": "PinkLizard",
         "Elements": [
             "Neutral"
         ],
@@ -2657,7 +2657,7 @@
         }
     },
     "PinkRabbit": {
-        "CodeName": "PinkRabbit",
+        "InternalName": "PinkRabbit",
         "Elements": [
             "Neutral"
         ],
@@ -2684,7 +2684,7 @@
         }
     },
     "PlantSlime": {
-        "CodeName": "PlantSlime",
+        "InternalName": "PlantSlime",
         "Elements": [
             "Grass",
             "Ground"
@@ -2712,7 +2712,7 @@
         }
     },
     "PlantSlime_Flower": {
-        "CodeName": "PlantSlime_Flower",
+        "InternalName": "PlantSlime_Flower",
         "Elements": [
             "Grass",
             "Ground"
@@ -2740,7 +2740,7 @@
         }
     },
     "QueenBee": {
-        "CodeName": "QueenBee",
+        "InternalName": "QueenBee",
         "Elements": [
             "Grass"
         ],
@@ -2767,7 +2767,7 @@
         }
     },
     "RaijinDaughter": {
-        "CodeName": "RaijinDaughter",
+        "InternalName": "RaijinDaughter",
         "Elements": [
             "Electric"
         ],
@@ -2794,7 +2794,7 @@
         }
     },
     "RedArmorBird": {
-        "CodeName": "RedArmorBird",
+        "InternalName": "RedArmorBird",
         "Elements": [
             "Fire"
         ],
@@ -2821,7 +2821,7 @@
         }
     },
     "RobinHood": {
-        "CodeName": "RobinHood",
+        "InternalName": "RobinHood",
         "Elements": [
             "Grass"
         ],
@@ -2848,7 +2848,7 @@
         }
     },
     "RobinHood_Ground": {
-        "CodeName": "RobinHood_Ground",
+        "InternalName": "RobinHood_Ground",
         "Elements": [
             "Grass",
             "Ground"
@@ -2876,7 +2876,7 @@
         }
     },
     "Ronin": {
-        "CodeName": "Ronin",
+        "InternalName": "Ronin",
         "Elements": [
             "Fire"
         ],
@@ -2903,7 +2903,7 @@
         }
     },
     "SaintCentaur": {
-        "CodeName": "SaintCentaur",
+        "InternalName": "SaintCentaur",
         "Elements": [
             "Neutral"
         ],
@@ -2931,7 +2931,7 @@
         }
     },
     "SakuraSaurus": {
-        "CodeName": "SakuraSaurus",
+        "InternalName": "SakuraSaurus",
         "Elements": [
             "Grass"
         ],
@@ -2958,7 +2958,7 @@
         }
     },
     "SakuraSaurus_Water": {
-        "CodeName": "SakuraSaurus_Water",
+        "InternalName": "SakuraSaurus_Water",
         "Elements": [
             "Grass",
             "Water"
@@ -2986,7 +2986,7 @@
         }
     },
     "Serpent": {
-        "CodeName": "Serpent",
+        "InternalName": "Serpent",
         "Elements": [
             "Water"
         ],
@@ -3013,7 +3013,7 @@
         }
     },
     "Serpent_Ground": {
-        "CodeName": "Serpent_Ground",
+        "InternalName": "Serpent_Ground",
         "Elements": [
             "Ground"
         ],
@@ -3040,7 +3040,7 @@
         }
     },
     "SharkKid": {
-        "CodeName": "SharkKid",
+        "InternalName": "SharkKid",
         "Elements": [
             "Water"
         ],
@@ -3067,7 +3067,7 @@
         }
     },
     "SharkKid_Fire": {
-        "CodeName": "SharkKid_Fire",
+        "InternalName": "SharkKid_Fire",
         "Elements": [
             "Fire"
         ],
@@ -3094,7 +3094,7 @@
         }
     },
     "Sheepball": {
-        "CodeName": "Sheepball",
+        "InternalName": "Sheepball",
         "Elements": [
             "Neutral"
         ],
@@ -3121,7 +3121,7 @@
         }
     },
     "SkyDragon": {
-        "CodeName": "SkyDragon",
+        "InternalName": "SkyDragon",
         "Elements": [
             "Dragon"
         ],
@@ -3148,7 +3148,7 @@
         }
     },
     "SoldierBee": {
-        "CodeName": "SoldierBee",
+        "InternalName": "SoldierBee",
         "Elements": [
             "Grass"
         ],
@@ -3175,7 +3175,7 @@
         }
     },
     "Suzaku": {
-        "CodeName": "Suzaku",
+        "InternalName": "Suzaku",
         "Elements": [
             "Fire"
         ],
@@ -3202,7 +3202,7 @@
         }
     },
     "Suzaku_Water": {
-        "CodeName": "Suzaku_Water",
+        "InternalName": "Suzaku_Water",
         "Elements": [
             "Water"
         ],
@@ -3229,7 +3229,7 @@
         }
     },
     "SweetsSheep": {
-        "CodeName": "SweetsSheep",
+        "InternalName": "SweetsSheep",
         "Elements": [
             "Neutral"
         ],
@@ -3256,7 +3256,7 @@
         }
     },
     "ThunderBird": {
-        "CodeName": "ThunderBird",
+        "InternalName": "ThunderBird",
         "Elements": [
             "Electric"
         ],
@@ -3283,7 +3283,7 @@
         }
     },
     "ThunderDog": {
-        "CodeName": "ThunderDog",
+        "InternalName": "ThunderDog",
         "Elements": [
             "Electric"
         ],
@@ -3310,7 +3310,7 @@
         }
     },
     "ThunderDragonMan": {
-        "CodeName": "ThunderDragonMan",
+        "InternalName": "ThunderDragonMan",
         "Elements": [
             "Dragon",
             "Electric"
@@ -3338,7 +3338,7 @@
         }
     },
     "Umihebi": {
-        "CodeName": "Umihebi",
+        "InternalName": "Umihebi",
         "Elements": [
             "Dragon",
             "Water"
@@ -3366,7 +3366,7 @@
         }
     },
     "Umihebi_Fire": {
-        "CodeName": "Umihebi_Fire",
+        "InternalName": "Umihebi_Fire",
         "Elements": [
             "Dragon",
             "Fire"
@@ -3394,7 +3394,7 @@
         }
     },
     "VioletFairy": {
-        "CodeName": "VioletFairy",
+        "InternalName": "VioletFairy",
         "Elements": [
             "Grass"
         ],
@@ -3421,7 +3421,7 @@
         }
     },
     "VolcanicMonster": {
-        "CodeName": "VolcanicMonster",
+        "InternalName": "VolcanicMonster",
         "Elements": [
             "Fire",
             "Ground"
@@ -3449,7 +3449,7 @@
         }
     },
     "VolcanicMonster_Ice": {
-        "CodeName": "VolcanicMonster_Ice",
+        "InternalName": "VolcanicMonster_Ice",
         "Elements": [
             "Ice",
             "Ground"
@@ -3477,7 +3477,7 @@
         }
     },
     "WeaselDragon": {
-        "CodeName": "WeaselDragon",
+        "InternalName": "WeaselDragon",
         "Elements": [
             "Ice",
             "Dragon"
@@ -3505,7 +3505,7 @@
         }
     },
     "Werewolf": {
-        "CodeName": "Werewolf",
+        "InternalName": "Werewolf",
         "Elements": [
             "Dark"
         ],
@@ -3532,7 +3532,7 @@
         }
     },
     "WhiteMoth": {
-        "CodeName": "WhiteMoth",
+        "InternalName": "WhiteMoth",
         "Elements": [
             "Ice"
         ],
@@ -3559,7 +3559,7 @@
         }
     },
     "WhiteTiger": {
-        "CodeName": "WhiteTiger",
+        "InternalName": "WhiteTiger",
         "Elements": [
             "Ice"
         ],
@@ -3586,7 +3586,7 @@
         }
     },
     "WindChimes": {
-        "CodeName": "WindChimes",
+        "InternalName": "WindChimes",
         "Elements": [
             "Ground"
         ],
@@ -3605,7 +3605,7 @@
         }
     },
     "WindChimes_Ice": {
-        "CodeName": "WindChimes_Ice",
+        "InternalName": "WindChimes_Ice",
         "Elements": [
             "Ice"
         ],
@@ -3624,7 +3624,7 @@
         }
     },
     "WizardOwl": {
-        "CodeName": "WizardOwl",
+        "InternalName": "WizardOwl",
         "Elements": [
             "Dark"
         ],
@@ -3651,7 +3651,7 @@
         }
     },
     "WoolFox": {
-        "CodeName": "WoolFox",
+        "InternalName": "WoolFox",
         "Elements": [
             "Neutral"
         ],
@@ -3678,7 +3678,7 @@
         }
     },
     "Yeti": {
-        "CodeName": "Yeti",
+        "InternalName": "Yeti",
         "Elements": [
             "Ice"
         ],
@@ -3705,7 +3705,7 @@
         }
     },
     "Yeti_Grass": {
-        "CodeName": "Yeti_Grass",
+        "InternalName": "Yeti_Grass",
         "Elements": [
             "Grass"
         ],
@@ -3732,7 +3732,7 @@
         }
     },
     "BlackFurDragon": {
-        "CodeName": "BlackFurDragon",
+        "InternalName": "BlackFurDragon",
         "Elements": [
             "Dark",
             "Dragon"
@@ -3751,7 +3751,7 @@
         }
     },
     "ElecLion": {
-        "CodeName": "ElecLion",
+        "InternalName": "ElecLion",
         "Elements": [
             "Electric"
         ],
@@ -3769,7 +3769,7 @@
         }
     },
     "DarkMutant": {
-        "CodeName": "DarkMutant",
+        "InternalName": "DarkMutant",
         "Elements": [
             "Dark",
             "Dragon"
@@ -3788,7 +3788,7 @@
         }
     },
     "GYM_ThunderDragonMan": {
-        "CodeName": "GYM_ThunderDragonMan",
+        "InternalName": "GYM_ThunderDragonMan",
         "Elements": [
             "Dragon",
             "Electric"
@@ -3807,7 +3807,7 @@
         }
     },
     "GYM_LilyQueen": {
-        "CodeName": "GYM_LilyQueen",
+        "InternalName": "GYM_LilyQueen",
         "Elements": [
             "Grass"
         ],
@@ -3825,7 +3825,7 @@
         }
     },
     "GYM_Horus": {
-        "CodeName": "GYM_Horus",
+        "InternalName": "GYM_Horus",
         "Elements": [
             "Fire"
         ],
@@ -3843,7 +3843,7 @@
         }
     },
     "GYM_BlackGriffon": {
-        "CodeName": "GYM_BlackGriffon",
+        "InternalName": "GYM_BlackGriffon",
         "Elements": [
             "Dark"
         ],
@@ -3861,7 +3861,7 @@
         }
     },
     "GYM_ElecPanda": {
-        "CodeName": "GYM_ElecPanda",
+        "InternalName": "GYM_ElecPanda",
         "Elements": [
             "Electric"
         ],
@@ -3879,7 +3879,7 @@
         }
     },
     "Male_DarkTrader01": {
-        "CodeName": "Male_DarkTrader01",
+        "InternalName": "Male_DarkTrader01",
         "Elements": [
             "None"
         ],
@@ -3897,7 +3897,7 @@
         }
     },
     "FireCult_FlameThrower": {
-        "CodeName": "FireCult_FlameThrower",
+        "InternalName": "FireCult_FlameThrower",
         "Elements": [
             "None"
         ],
@@ -3912,7 +3912,7 @@
         }
     },
     "FireCult_Rifle": {
-        "CodeName": "FireCult_Rifle",
+        "InternalName": "FireCult_Rifle",
         "Elements": [
             "None"
         ],
@@ -3926,7 +3926,7 @@
         }
     },
     "Male_Soldier01": {
-        "CodeName": "Male_Soldier01",
+        "InternalName": "Male_Soldier01",
         "Elements": [
             "None"
         ],
@@ -3941,7 +3941,7 @@
         }
     },
     "Female_Soldier01": {
-        "CodeName": "Female_Soldier01",
+        "InternalName": "Female_Soldier01",
         "Elements": [
             "None"
         ],
@@ -3956,7 +3956,7 @@
         }
     },
     "Believer_CrossBow": {
-        "CodeName": "Believer_CrossBow",
+        "InternalName": "Believer_CrossBow",
         "Elements": [
             "None"
         ],
@@ -3971,7 +3971,7 @@
         }
     },
     "Believer_Bat": {
-        "CodeName": "Believer_Bat",
+        "InternalName": "Believer_Bat",
         "Elements": [
             "None"
         ],
@@ -3985,7 +3985,7 @@
         }
     },
     "Male_Scientist01_LaserRifle": {
-        "CodeName": "Male_Scientist01_LaserRifle",
+        "InternalName": "Male_Scientist01_LaserRifle",
         "Elements": [
             "None"
         ],
@@ -4000,7 +4000,7 @@
         }
     },
     "PalDealer": {
-        "CodeName": "PalDealer",
+        "InternalName": "PalDealer",
         "Elements": [
             "None"
         ],
@@ -4015,7 +4015,7 @@
         }
     },
     "Police_Handgun": {
-        "CodeName": "Police_Handgun",
+        "InternalName": "Police_Handgun",
         "Elements": [
             "None"
         ],
@@ -4030,7 +4030,7 @@
         }
     },
     "Hunter_Bat": {
-        "CodeName": "Hunter_Bat",
+        "InternalName": "Hunter_Bat",
         "Elements": [
             "None"
         ],
@@ -4045,7 +4045,7 @@
         }
     },
     "Hunter_FlameThrower": {
-        "CodeName": "Hunter_FlameThrower",
+        "InternalName": "Hunter_FlameThrower",
         "Elements": [
             "None"
         ],
@@ -4060,7 +4060,7 @@
         }
     },
     "Hunter_Fat_GatlingGun": {
-        "CodeName": "Hunter_Fat_GatlingGun",
+        "InternalName": "Hunter_Fat_GatlingGun",
         "Elements": [
             "None"
         ],
@@ -4075,7 +4075,7 @@
         }
     },
     "Hunter_RocketLauncher": {
-        "CodeName": "Hunter_RocketLauncher",
+        "InternalName": "Hunter_RocketLauncher",
         "Elements": [
             "None"
         ],
@@ -4090,7 +4090,7 @@
         }
     },
     "Hunter_Grenade": {
-        "CodeName": "Hunter_Grenade",
+        "InternalName": "Hunter_Grenade",
         "Elements": [
             "None"
         ],
@@ -4105,7 +4105,7 @@
         }
     },
     "Hunter_Rifle": {
-        "CodeName": "Hunter_Rifle",
+        "InternalName": "Hunter_Rifle",
         "Elements": [
             "None"
         ],
@@ -4120,7 +4120,7 @@
         }
     },
     "Hunter_Shotgun": {
-        "CodeName": "Hunter_Shotgun",
+        "InternalName": "Hunter_Shotgun",
         "Elements": [
             "None"
         ],
@@ -4135,7 +4135,7 @@
         }
     },
     "Hunter_Handgun": {
-        "CodeName": "Hunter_Handgun",
+        "InternalName": "Hunter_Handgun",
         "Elements": [
             "None"
         ],
@@ -4150,7 +4150,7 @@
         }
     },
     "SalesPerson": {
-        "CodeName": "SalesPerson",
+        "InternalName": "SalesPerson",
         "Elements": [
             "None"
         ],
@@ -4165,7 +4165,7 @@
         }
     },
     "SalesPerson_Wander": {
-        "CodeName": "SalesPerson_Wander",
+        "InternalName": "SalesPerson_Wander",
         "Elements": [
             "None"
         ],
@@ -4180,7 +4180,7 @@
         }
     },
     "SalesPerson_Desert": {
-        "CodeName": "SalesPerson_Desert",
+        "InternalName": "SalesPerson_Desert",
         "Elements": [
             "None"
         ],
@@ -4195,7 +4195,7 @@
         }
     },
     "SalesPerson_Desert2": {
-        "CodeName": "SalesPerson_Desert2",
+        "InternalName": "SalesPerson_Desert2",
         "Elements": [
             "None"
         ],
@@ -4210,7 +4210,7 @@
         }
     },
     "SalesPerson_Volcano": {
-        "CodeName": "SalesPerson_Volcano",
+        "InternalName": "SalesPerson_Volcano",
         "Elements": [
             "None"
         ],
@@ -4225,7 +4225,7 @@
         }
     },
     "SalesPerson_Volcano2": {
-        "CodeName": "SalesPerson_Volcano2",
+        "InternalName": "SalesPerson_Volcano2",
         "Elements": [
             "None"
         ],
@@ -4240,7 +4240,7 @@
         }
     },
     "Female_DesertPeople02": {
-        "CodeName": "Female_DesertPeople02",
+        "InternalName": "Female_DesertPeople02",
         "Elements": [
             "None"
         ],
@@ -4254,7 +4254,7 @@
         }
     },
     "Female_People02": {
-        "CodeName": "Female_People02",
+        "InternalName": "Female_People02",
         "Elements": [
             "None"
         ],
@@ -4268,7 +4268,7 @@
         }
     },
     "Female_People03": {
-        "CodeName": "Female_People03",
+        "InternalName": "Female_People03",
         "Elements": [
             "None"
         ],
@@ -4282,7 +4282,7 @@
         }
     },
     "Male_DesertPeople01": {
-        "CodeName": "Male_DesertPeople01",
+        "InternalName": "Male_DesertPeople01",
         "Elements": [
             "None"
         ],
@@ -4296,7 +4296,7 @@
         }
     },
     "Male_People02": {
-        "CodeName": "Male_People02",
+        "InternalName": "Male_People02",
         "Elements": [
             "None"
         ],
@@ -4310,7 +4310,7 @@
         }
     },
     "Male_People03": {
-        "CodeName": "Male_People03",
+        "InternalName": "Male_People03",
         "Elements": [
             "None"
         ],
@@ -4324,7 +4324,7 @@
         }
     },
     "MobuCitizen": {
-        "CodeName": "MobuCitizen",
+        "InternalName": "MobuCitizen",
         "Elements": [
             "None"
         ],
@@ -4338,7 +4338,7 @@
         }
     },
     "MobuCitizen_Male": {
-        "CodeName": "MobuCitizen_Male",
+        "InternalName": "MobuCitizen_Male",
         "Elements": [
             "None"
         ],
@@ -4352,7 +4352,7 @@
         }
     },
     "MobuCitizen_Female": {
-        "CodeName": "MobuCitizen_Female",
+        "InternalName": "MobuCitizen_Female",
         "Elements": [
             "None"
         ],
@@ -4366,7 +4366,7 @@
         }
     },
     "Guard_Rifle": {
-        "CodeName": "Guard_Rifle",
+        "InternalName": "Guard_Rifle",
         "Elements": [
             "None"
         ],
@@ -4380,7 +4380,7 @@
         }
     },
     "Guard_Shotgun": {
-        "CodeName": "Guard_Shotgun",
+        "InternalName": "Guard_Shotgun",
         "Elements": [
             "None"
         ],
@@ -4394,7 +4394,7 @@
         }
     },
     "PalDealer_Desert": {
-        "CodeName": "PalDealer_Desert",
+        "InternalName": "PalDealer_Desert",
         "Elements": [
             "None"
         ],
@@ -4408,7 +4408,7 @@
         }
     },
     "PalDealer_Volcano": {
-        "CodeName": "PalDealer_Volcano",
+        "InternalName": "PalDealer_Volcano",
         "Elements": [
             "None"
         ],
@@ -4422,7 +4422,7 @@
         }
     },
     "Police_Rifle": {
-        "CodeName": "Police_Rifle",
+        "InternalName": "Police_Rifle",
         "Elements": [
             "None"
         ],
@@ -4436,7 +4436,7 @@
         }
     },
     "Police_Shotgun": {
-        "CodeName": "Police_Shotgun",
+        "InternalName": "Police_Shotgun",
         "Elements": [
             "None"
         ],

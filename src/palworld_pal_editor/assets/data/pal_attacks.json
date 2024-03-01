@@ -1,7 +1,7 @@
 {
     "EPalWazaID::AcidRain": {
-        "CodeName": "EPalWazaID::AcidRain",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::AcidRain",
+        "Element": "Water",
         "Power": 80,
         "I18n": {
             "en": "Acid Rain",
@@ -10,8 +10,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::AirCanon": {
-        "CodeName": "EPalWazaID::AirCanon",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::AirCanon",
+        "Element": "Neutral",
         "Power": 25,
         "I18n": {
             "en": "Air Cannon",
@@ -20,8 +20,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Deer_PushupHorn": {
-        "CodeName": "EPalWazaID::Unique_Deer_PushupHorn",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Deer_PushupHorn",
+        "Element": "Neutral",
         "Power": 50,
         "I18n": {
             "en": "Antler Uppercut",
@@ -29,8 +29,8 @@
         }
     },
     "EPalWazaID::WaterBall": {
-        "CodeName": "EPalWazaID::WaterBall",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::WaterBall",
+        "Element": "Water",
         "Power": 100,
         "I18n": {
             "en": "Aqua Burst",
@@ -39,8 +39,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::WaterGun": {
-        "CodeName": "EPalWazaID::WaterGun",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::WaterGun",
+        "Element": "Water",
         "Power": 40,
         "I18n": {
             "en": "Aqua Gun",
@@ -49,8 +49,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_JetDragon_JumpBeam": {
-        "CodeName": "EPalWazaID::Unique_JetDragon_JumpBeam",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::Unique_JetDragon_JumpBeam",
+        "Element": "Dragon",
         "Power": 140,
         "I18n": {
             "en": "Beam Comet",
@@ -58,8 +58,8 @@
         }
     },
     "EPalWazaID::SelfDestruct_Bee": {
-        "CodeName": "EPalWazaID::SelfDestruct_Bee",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::SelfDestruct_Bee",
+        "Element": "Neutral",
         "Power": 200,
         "I18n": {
             "en": "Bee Quiet",
@@ -67,8 +67,8 @@
         }
     },
     "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch": {
-        "CodeName": "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch",
+        "Element": "Electric",
         "Power": 85,
         "I18n": {
             "en": "Blast Punch",
@@ -76,8 +76,8 @@
         }
     },
     "EPalWazaID::Unique_FlameBuffalo_FlameHorn": {
-        "CodeName": "EPalWazaID::Unique_FlameBuffalo_FlameHorn",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_FlameBuffalo_FlameHorn",
+        "Element": "Fire",
         "Power": 50,
         "I18n": {
             "en": "Blazing Horn",
@@ -85,8 +85,8 @@
         }
     },
     "EPalWazaID::IcicleThrow": {
-        "CodeName": "EPalWazaID::IcicleThrow",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::IcicleThrow",
+        "Element": "Ice",
         "Power": 130,
         "I18n": {
             "en": "Blizzard Spike",
@@ -95,8 +95,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_FlowerDinosaur_Whip": {
-        "CodeName": "EPalWazaID::Unique_FlowerDinosaur_Whip",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::Unique_FlowerDinosaur_Whip",
+        "Element": "Grass",
         "Power": 60,
         "I18n": {
             "en": "Botanical Smash",
@@ -104,8 +104,8 @@
         }
     },
     "EPalWazaID::BubbleShot": {
-        "CodeName": "EPalWazaID::BubbleShot",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::BubbleShot",
+        "Element": "Water",
         "Power": 65,
         "I18n": {
             "en": "Bubble Blast",
@@ -114,8 +114,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_NaughtyCat_CatPress": {
-        "CodeName": "EPalWazaID::Unique_NaughtyCat_CatPress",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_NaughtyCat_CatPress",
+        "Element": "Neutral",
         "Power": 60,
         "I18n": {
             "en": "Cat Press",
@@ -123,8 +123,8 @@
         }
     },
     "EPalWazaID::Unique_ChickenPal_ChickenPeck": {
-        "CodeName": "EPalWazaID::Unique_ChickenPal_ChickenPeck",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_ChickenPal_ChickenPeck",
+        "Element": "Neutral",
         "Power": 30,
         "I18n": {
             "en": "Chicken Rush",
@@ -132,8 +132,8 @@
         }
     },
     "EPalWazaID::Unique_FengyunDeeper_CloudTempest": {
-        "CodeName": "EPalWazaID::Unique_FengyunDeeper_CloudTempest",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_FengyunDeeper_CloudTempest",
+        "Element": "Neutral",
         "Power": 0,
         "I18n": {
             "en": "Cloud Tempest",
@@ -141,8 +141,8 @@
         }
     },
     "EPalWazaID::CrossThunder": {
-        "CodeName": "EPalWazaID::CrossThunder",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::CrossThunder",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Cross Lightning",
@@ -150,8 +150,8 @@
         }
     },
     "EPalWazaID::Unique_GrassPanda_MusclePunch": {
-        "CodeName": "EPalWazaID::Unique_GrassPanda_MusclePunch",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::Unique_GrassPanda_MusclePunch",
+        "Element": "Grass",
         "Power": 85,
         "I18n": {
             "en": "Crushing Punch",
@@ -159,8 +159,8 @@
         }
     },
     "EPalWazaID::FrostBreath": {
-        "CodeName": "EPalWazaID::FrostBreath",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::FrostBreath",
+        "Element": "Ice",
         "Power": 90,
         "I18n": {
             "en": "Cryst Breath",
@@ -169,8 +169,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_IceHorse_IceBladeAttack": {
-        "CodeName": "EPalWazaID::Unique_IceHorse_IceBladeAttack",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::Unique_IceHorse_IceBladeAttack",
+        "Element": "Ice",
         "Power": 110,
         "I18n": {
             "en": "Crystal Wing",
@@ -178,8 +178,8 @@
         }
     },
     "EPalWazaID::Unique_AmaterasuWolf_FireCharge": {
-        "CodeName": "EPalWazaID::Unique_AmaterasuWolf_FireCharge",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_AmaterasuWolf_FireCharge",
+        "Element": "Fire",
         "Power": 75,
         "I18n": {
             "en": "Daring Flames",
@@ -187,8 +187,8 @@
         }
     },
     "EPalWazaID::DarkBall": {
-        "CodeName": "EPalWazaID::DarkBall",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::DarkBall",
+        "Element": "Dark",
         "Power": 40,
         "I18n": {
             "en": "Dark Ball",
@@ -196,8 +196,8 @@
         }
     },
     "EPalWazaID::Unique_FireKirin_Dark_DarkTossin": {
-        "CodeName": "EPalWazaID::Unique_FireKirin_Dark_DarkTossin",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Unique_FireKirin_Dark_DarkTossin",
+        "Element": "Dark",
         "Power": 85,
         "I18n": {
             "en": "Dark Charge",
@@ -205,8 +205,8 @@
         }
     },
     "EPalWazaID::DarkLaser": {
-        "CodeName": "EPalWazaID::DarkLaser",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::DarkLaser",
+        "Element": "Dark",
         "Power": 150,
         "I18n": {
             "en": "Dark Laser",
@@ -215,8 +215,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::DarkLegion": {
-        "CodeName": "EPalWazaID::DarkLegion",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::DarkLegion",
+        "Element": "Dark",
         "Power": 0,
         "I18n": {
             "en": "Dark Whisp",
@@ -224,8 +224,8 @@
         }
     },
     "EPalWazaID::Unique_BlackGriffon_TackleLaser": {
-        "CodeName": "EPalWazaID::Unique_BlackGriffon_TackleLaser",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Unique_BlackGriffon_TackleLaser",
+        "Element": "Dark",
         "Power": 160,
         "I18n": {
             "en": "Divine Disaster",
@@ -233,8 +233,8 @@
         }
     },
     "EPalWazaID::DragonBreath": {
-        "CodeName": "EPalWazaID::DragonBreath",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::DragonBreath",
+        "Element": "Dragon",
         "Power": 70,
         "I18n": {
             "en": "Draconic Breath",
@@ -243,8 +243,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::DragonWave": {
-        "CodeName": "EPalWazaID::DragonWave",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::DragonWave",
+        "Element": "Dragon",
         "Power": 55,
         "I18n": {
             "en": "Dragon Burst",
@@ -253,8 +253,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::DragonCanon": {
-        "CodeName": "EPalWazaID::DragonCanon",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::DragonCanon",
+        "Element": "Dragon",
         "Power": 30,
         "I18n": {
             "en": "Dragon Cannon",
@@ -263,8 +263,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::DragonMeteor": {
-        "CodeName": "EPalWazaID::DragonMeteor",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::DragonMeteor",
+        "Element": "Dragon",
         "Power": 150,
         "I18n": {
             "en": "Dragon Meteor",
@@ -273,8 +273,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Grassmammoth_Earthquake": {
-        "CodeName": "EPalWazaID::Unique_Grassmammoth_Earthquake",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_Grassmammoth_Earthquake",
+        "Element": "Ground",
         "Power": 100,
         "I18n": {
             "en": "Earth Impact",
@@ -282,8 +282,8 @@
         }
     },
     "EPalWazaID::ThunderBall": {
-        "CodeName": "EPalWazaID::ThunderBall",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::ThunderBall",
+        "Element": "Electric",
         "Power": 50,
         "I18n": {
             "en": "Electric Ball",
@@ -292,8 +292,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_CaptainPenguin_BodySlide": {
-        "CodeName": "EPalWazaID::Unique_CaptainPenguin_BodySlide",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::Unique_CaptainPenguin_BodySlide",
+        "Element": "Ice",
         "Power": 70,
         "I18n": {
             "en": "Emperor Slide",
@@ -301,8 +301,8 @@
         }
     },
     "EPalWazaID::Unique_Garm_Bite": {
-        "CodeName": "EPalWazaID::Unique_Garm_Bite",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Garm_Bite",
+        "Element": "Neutral",
         "Power": 45,
         "I18n": {
             "en": "Fierce Fang",
@@ -310,8 +310,8 @@
         }
     },
     "EPalWazaID::FireBall": {
-        "CodeName": "EPalWazaID::FireBall",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::FireBall",
+        "Element": "Fire",
         "Power": 150,
         "I18n": {
             "en": "Fire Ball",
@@ -320,8 +320,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::FlareArrow": {
-        "CodeName": "EPalWazaID::FlareArrow",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::FlareArrow",
+        "Element": "Fire",
         "Power": 55,
         "I18n": {
             "en": "Flare Arrow",
@@ -330,8 +330,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::FlareTornado": {
-        "CodeName": "EPalWazaID::FlareTornado",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::FlareTornado",
+        "Element": "Fire",
         "Power": 80,
         "I18n": {
             "en": "Flare Storm",
@@ -340,8 +340,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Alpaca_Tackle": {
-        "CodeName": "EPalWazaID::Unique_Alpaca_Tackle",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Alpaca_Tackle",
+        "Element": "Neutral",
         "Power": 40,
         "I18n": {
             "en": "Fluffy Tackle",
@@ -349,8 +349,8 @@
         }
     },
     "EPalWazaID::Unique_RobinHood_BowSnipe": {
-        "CodeName": "EPalWazaID::Unique_RobinHood_BowSnipe",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::Unique_RobinHood_BowSnipe",
+        "Element": "Grass",
         "Power": 65,
         "I18n": {
             "en": "Focus Shot",
@@ -358,8 +358,8 @@
         }
     },
     "EPalWazaID::Unique_Anubis_Tackle": {
-        "CodeName": "EPalWazaID::Unique_Anubis_Tackle",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_Anubis_Tackle",
+        "Element": "Ground",
         "Power": 120,
         "I18n": {
             "en": "Forceful Charge",
@@ -367,8 +367,8 @@
         }
     },
     "EPalWazaID::Unique_IceDeer_IceHorn": {
-        "CodeName": "EPalWazaID::Unique_IceDeer_IceHorn",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::Unique_IceDeer_IceHorn",
+        "Element": "Ice",
         "Power": 65,
         "I18n": {
             "en": "Freezing Charge",
@@ -376,8 +376,8 @@
         }
     },
     "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": {
-        "CodeName": "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack",
+        "Element": "Ice",
         "Power": 100,
         "I18n": {
             "en": "Frost Burst",
@@ -385,8 +385,8 @@
         }
     },
     "EPalWazaID::Unique_Eagle_GlidingNail": {
-        "CodeName": "EPalWazaID::Unique_Eagle_GlidingNail",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Eagle_GlidingNail",
+        "Element": "Neutral",
         "Power": 60,
         "I18n": {
             "en": "Gale Claw",
@@ -394,8 +394,8 @@
         }
     },
     "EPalWazaID::Unique_HerculesBeetle_BeetleTackle": {
-        "CodeName": "EPalWazaID::Unique_HerculesBeetle_BeetleTackle",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_HerculesBeetle_BeetleTackle",
+        "Element": "Ground",
         "Power": 75,
         "I18n": {
             "en": "Giga Horn",
@@ -403,8 +403,8 @@
         }
     },
     "EPalWazaID::GrassTornado": {
-        "CodeName": "EPalWazaID::GrassTornado",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::GrassTornado",
+        "Element": "Grass",
         "Power": 80,
         "I18n": {
             "en": "Grass Tornado",
@@ -413,8 +413,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Gorilla_GroundPunch": {
-        "CodeName": "EPalWazaID::Unique_Gorilla_GroundPunch",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Gorilla_GroundPunch",
+        "Element": "Neutral",
         "Power": 85,
         "I18n": {
             "en": "Ground Pound",
@@ -422,8 +422,8 @@
         }
     },
     "EPalWazaID::Unique_Anubis_GroundPunch": {
-        "CodeName": "EPalWazaID::Unique_Anubis_GroundPunch",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_Anubis_GroundPunch",
+        "Element": "Ground",
         "Power": 140,
         "I18n": {
             "en": "Ground Smash",
@@ -431,8 +431,8 @@
         }
     },
     "EPalWazaID::Unique_Baphomet_SwallowKite": {
-        "CodeName": "EPalWazaID::Unique_Baphomet_SwallowKite",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_Baphomet_SwallowKite",
+        "Element": "Fire",
         "Power": 70,
         "I18n": {
             "en": "Hellfire Claw",
@@ -440,8 +440,8 @@
         }
     },
     "EPalWazaID::AquaJet": {
-        "CodeName": "EPalWazaID::AquaJet",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::AquaJet",
+        "Element": "Water",
         "Power": 30,
         "I18n": {
             "en": "Hydro Jet",
@@ -450,8 +450,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::HydroPump": {
-        "CodeName": "EPalWazaID::HydroPump",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::HydroPump",
+        "Element": "Water",
         "Power": 150,
         "I18n": {
             "en": "Hydro Laser",
@@ -460,8 +460,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Ronin_Iai": {
-        "CodeName": "EPalWazaID::Unique_Ronin_Iai",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_Ronin_Iai",
+        "Element": "Fire",
         "Power": 65,
         "I18n": {
             "en": "Iaigiri",
@@ -469,8 +469,8 @@
         }
     },
     "EPalWazaID::IceMissile": {
-        "CodeName": "EPalWazaID::IceMissile",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::IceMissile",
+        "Element": "Ice",
         "Power": 30,
         "I18n": {
             "en": "Ice Missile",
@@ -479,8 +479,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::BlizzardLance": {
-        "CodeName": "EPalWazaID::BlizzardLance",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::BlizzardLance",
+        "Element": "Ice",
         "Power": 70,
         "I18n": {
             "en": "Iceberg",
@@ -489,8 +489,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::IceBlade": {
-        "CodeName": "EPalWazaID::IceBlade",
-        "Type": "Ice",
+        "InternalName": "EPalWazaID::IceBlade",
+        "Element": "Ice",
         "Power": 55,
         "I18n": {
             "en": "Icicle Cutter",
@@ -499,8 +499,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::FireBlast": {
-        "CodeName": "EPalWazaID::FireBlast",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::FireBlast",
+        "Element": "Fire",
         "Power": 30,
         "I18n": {
             "en": "Ignis Blast",
@@ -509,8 +509,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Flamethrower": {
-        "CodeName": "EPalWazaID::Flamethrower",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Flamethrower",
+        "Element": "Fire",
         "Power": 70,
         "I18n": {
             "en": "Ignis Breath",
@@ -519,8 +519,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Inferno": {
-        "CodeName": "EPalWazaID::Inferno",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Inferno",
+        "Element": "Fire",
         "Power": 120,
         "I18n": {
             "en": "Ignis Rage",
@@ -529,8 +529,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_FireKirin_Tackle": {
-        "CodeName": "EPalWazaID::Unique_FireKirin_Tackle",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_FireKirin_Tackle",
+        "Element": "Fire",
         "Power": 85,
         "I18n": {
             "en": "Ignis Slam",
@@ -538,8 +538,8 @@
         }
     },
     "EPalWazaID::SelfDestruct": {
-        "CodeName": "EPalWazaID::SelfDestruct",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::SelfDestruct",
+        "Element": "Neutral",
         "Power": 180,
         "I18n": {
             "en": "Implode",
@@ -548,8 +548,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Intimidate": {
-        "CodeName": "EPalWazaID::Intimidate",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Intimidate",
+        "Element": "Neutral",
         "Power": 0,
         "I18n": {
             "en": "Intimidate",
@@ -557,8 +557,8 @@
         }
     },
     "EPalWazaID::Unique_Werewolf_Scratch": {
-        "CodeName": "EPalWazaID::Unique_Werewolf_Scratch",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Unique_Werewolf_Scratch",
+        "Element": "Dark",
         "Power": 55,
         "I18n": {
             "en": "Jumping Claw",
@@ -566,8 +566,8 @@
         }
     },
     "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": {
-        "CodeName": "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack",
+        "Element": "Electric",
         "Power": 100,
         "I18n": {
             "en": "Kerauno",
@@ -575,8 +575,8 @@
         }
     },
     "EPalWazaID::Unique_KingAlpaca_BodyPress": {
-        "CodeName": "EPalWazaID::Unique_KingAlpaca_BodyPress",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_KingAlpaca_BodyPress",
+        "Element": "Neutral",
         "Power": 100,
         "I18n": {
             "en": "Kingly Slam",
@@ -584,8 +584,8 @@
         }
     },
     "EPalWazaID::Thunderbolt": {
-        "CodeName": "EPalWazaID::Thunderbolt",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::Thunderbolt",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Lightning Bolt",
@@ -594,8 +594,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_ElecPanda_ElecScratch": {
-        "CodeName": "EPalWazaID::Unique_ElecPanda_ElecScratch",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::Unique_ElecPanda_ElecScratch",
+        "Element": "Electric",
         "Power": 90,
         "I18n": {
             "en": "Lightning Claw",
@@ -603,8 +603,8 @@
         }
     },
     "EPalWazaID::ThunderRain": {
-        "CodeName": "EPalWazaID::ThunderRain",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::ThunderRain",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Lightning Rain",
@@ -612,8 +612,8 @@
         }
     },
     "EPalWazaID::LineThunder": {
-        "CodeName": "EPalWazaID::LineThunder",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::LineThunder",
+        "Element": "Electric",
         "Power": 75,
         "I18n": {
             "en": "Lightning Streak",
@@ -622,8 +622,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::LightningStrike": {
-        "CodeName": "EPalWazaID::LightningStrike",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::LightningStrike",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Lightning Strike",
@@ -632,8 +632,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_Kirin_LightningTackle": {
-        "CodeName": "EPalWazaID::Unique_Kirin_LightningTackle",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::Unique_Kirin_LightningTackle",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Lightning Tackle",
@@ -641,8 +641,8 @@
         }
     },
     "EPalWazaID::LockonLaser": {
-        "CodeName": "EPalWazaID::LockonLaser",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::LockonLaser",
+        "Element": "Electric",
         "Power": 0,
         "I18n": {
             "en": "Lock-on Laser",
@@ -651,8 +651,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SelfExplosion": {
-        "CodeName": "EPalWazaID::SelfExplosion",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::SelfExplosion",
+        "Element": "Neutral",
         "Power": 0,
         "I18n": {
             "en": "Megaton Implode",
@@ -660,8 +660,8 @@
         }
     },
     "EPalWazaID::SpecialCutter": {
-        "CodeName": "EPalWazaID::SpecialCutter",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::SpecialCutter",
+        "Element": "Grass",
         "Power": 0,
         "I18n": {
             "en": "Multicutter",
@@ -669,8 +669,8 @@
         }
     },
     "EPalWazaID::Unique_SakuraSaurus_SideTackle": {
-        "CodeName": "EPalWazaID::Unique_SakuraSaurus_SideTackle",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_SakuraSaurus_SideTackle",
+        "Element": "Neutral",
         "Power": 80,
         "I18n": {
             "en": "Muscle Slam",
@@ -678,8 +678,8 @@
         }
     },
     "EPalWazaID::Unique_FairyDragon_FairyTornado": {
-        "CodeName": "EPalWazaID::Unique_FairyDragon_FairyTornado",
-        "Type": "Dragon",
+        "InternalName": "EPalWazaID::Unique_FairyDragon_FairyTornado",
+        "Element": "Dragon",
         "Power": 70,
         "I18n": {
             "en": "Mystic Whirlwind",
@@ -687,8 +687,8 @@
         }
     },
     "EPalWazaID::ShadowBall": {
-        "CodeName": "EPalWazaID::ShadowBall",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::ShadowBall",
+        "Element": "Dark",
         "Power": 100,
         "I18n": {
             "en": "Nightmare Ball",
@@ -697,8 +697,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::HyperBeam": {
-        "CodeName": "EPalWazaID::HyperBeam",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::HyperBeam",
+        "Element": "Neutral",
         "Power": 150,
         "I18n": {
             "en": "Pal Blast",
@@ -707,8 +707,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_DarkCrow_TelePoke": {
-        "CodeName": "EPalWazaID::Unique_DarkCrow_TelePoke",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Unique_DarkCrow_TelePoke",
+        "Element": "Dark",
         "Power": 55,
         "I18n": {
             "en": "Phantom Peck",
@@ -716,8 +716,8 @@
         }
     },
     "EPalWazaID::Unique_Horus_FlareBird": {
-        "CodeName": "EPalWazaID::Unique_Horus_FlareBird",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_Horus_FlareBird",
+        "Element": "Fire",
         "Power": 135,
         "I18n": {
             "en": "Phoenix Flare",
@@ -725,8 +725,8 @@
         }
     },
     "EPalWazaID::ThunderFunnel": {
-        "CodeName": "EPalWazaID::ThunderFunnel",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::ThunderFunnel",
+        "Element": "Electric",
         "Power": 65,
         "I18n": {
             "en": "Plasma Tornado",
@@ -735,8 +735,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::PoisonShot": {
-        "CodeName": "EPalWazaID::PoisonShot",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::PoisonShot",
+        "Element": "Dark",
         "Power": 30,
         "I18n": {
             "en": "Poison Blast",
@@ -745,8 +745,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::PoisonFog": {
-        "CodeName": "EPalWazaID::PoisonFog",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::PoisonFog",
+        "Element": "Dark",
         "Power": 0,
         "I18n": {
             "en": "Poison Fog",
@@ -754,8 +754,8 @@
         }
     },
     "EPalWazaID::PowerBall": {
-        "CodeName": "EPalWazaID::PowerBall",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::PowerBall",
+        "Element": "Neutral",
         "Power": 70,
         "I18n": {
             "en": "Power Bomb",
@@ -764,8 +764,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::PowerShot": {
-        "CodeName": "EPalWazaID::PowerShot",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::PowerShot",
+        "Element": "Neutral",
         "Power": 35,
         "I18n": {
             "en": "Power Shot",
@@ -774,8 +774,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Psychokinesis": {
-        "CodeName": "EPalWazaID::Psychokinesis",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Psychokinesis",
+        "Element": "Dark",
         "Power": 0,
         "I18n": {
             "en": "Psycho Gravity",
@@ -783,8 +783,8 @@
         }
     },
     "EPalWazaID::Human_Punch": {
-        "CodeName": "EPalWazaID::Human_Punch",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Human_Punch",
+        "Element": "Neutral",
         "Power": 0,
         "I18n": {
             "en": "Punch",
@@ -792,8 +792,8 @@
         }
     },
     "EPalWazaID::Unique_PinkCat_CatPunch": {
-        "CodeName": "EPalWazaID::Unique_PinkCat_CatPunch",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_PinkCat_CatPunch",
+        "Element": "Neutral",
         "Power": 40,
         "I18n": {
             "en": "Punch Flurry",
@@ -801,8 +801,8 @@
         }
     },
     "EPalWazaID::Unique_Boar_Tackle": {
-        "CodeName": "EPalWazaID::Unique_Boar_Tackle",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_Boar_Tackle",
+        "Element": "Neutral",
         "Power": 55,
         "I18n": {
             "en": "Reckless Charge",
@@ -810,8 +810,8 @@
         }
     },
     "EPalWazaID::RockLance": {
-        "CodeName": "EPalWazaID::RockLance",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::RockLance",
+        "Element": "Ground",
         "Power": 150,
         "I18n": {
             "en": "Rock Lance",
@@ -820,8 +820,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_SheepBall_Roll": {
-        "CodeName": "EPalWazaID::Unique_SheepBall_Roll",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_SheepBall_Roll",
+        "Element": "Neutral",
         "Power": 35,
         "I18n": {
             "en": "Roly Poly",
@@ -829,8 +829,8 @@
         }
     },
     "EPalWazaID::MudShot": {
-        "CodeName": "EPalWazaID::MudShot",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::MudShot",
+        "Element": "Ground",
         "Power": 40,
         "I18n": {
             "en": "Sand Blast",
@@ -839,8 +839,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SandTornado": {
-        "CodeName": "EPalWazaID::SandTornado",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::SandTornado",
+        "Element": "Ground",
         "Power": 80,
         "I18n": {
             "en": "Sand Tornado",
@@ -849,8 +849,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SeedMachinegun": {
-        "CodeName": "EPalWazaID::SeedMachinegun",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::SeedMachinegun",
+        "Element": "Grass",
         "Power": 50,
         "I18n": {
             "en": "Seed Machine Gun",
@@ -859,8 +859,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SeedMine": {
-        "CodeName": "EPalWazaID::SeedMine",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::SeedMine",
+        "Element": "Grass",
         "Power": 65,
         "I18n": {
             "en": "Seed Mine",
@@ -869,8 +869,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::DarkWave": {
-        "CodeName": "EPalWazaID::DarkWave",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::DarkWave",
+        "Element": "Dark",
         "Power": 55,
         "I18n": {
             "en": "Shadow Burst",
@@ -879,8 +879,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_DrillGame_ShellAttack": {
-        "CodeName": "EPalWazaID::Unique_DrillGame_ShellAttack",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_DrillGame_ShellAttack",
+        "Element": "Ground",
         "Power": 65,
         "I18n": {
             "en": "Shell Spin",
@@ -888,8 +888,8 @@
         }
     },
     "EPalWazaID::ElecWave": {
-        "CodeName": "EPalWazaID::ElecWave",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::ElecWave",
+        "Element": "Electric",
         "Power": 40,
         "I18n": {
             "en": "Shockwave",
@@ -898,8 +898,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SolarBeam": {
-        "CodeName": "EPalWazaID::SolarBeam",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::SolarBeam",
+        "Element": "Grass",
         "Power": 150,
         "I18n": {
             "en": "Solar Blast",
@@ -908,8 +908,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::SpreadPulse": {
-        "CodeName": "EPalWazaID::SpreadPulse",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::SpreadPulse",
+        "Element": "Electric",
         "Power": 30,
         "I18n": {
             "en": "Spark Blast",
@@ -918,8 +918,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_SaintCentaur_OneSpearRushes": {
-        "CodeName": "EPalWazaID::Unique_SaintCentaur_OneSpearRushes",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_SaintCentaur_OneSpearRushes",
+        "Element": "Neutral",
         "Power": 120,
         "I18n": {
             "en": "Spear Thrust",
@@ -927,8 +927,8 @@
         }
     },
     "EPalWazaID::RootAttack": {
-        "CodeName": "EPalWazaID::RootAttack",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::RootAttack",
+        "Element": "Grass",
         "Power": 95,
         "I18n": {
             "en": "Spine Vine",
@@ -937,8 +937,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_QueenBee_SpinLance": {
-        "CodeName": "EPalWazaID::Unique_QueenBee_SpinLance",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::Unique_QueenBee_SpinLance",
+        "Element": "Grass",
         "Power": 70,
         "I18n": {
             "en": "Spinning Lance",
@@ -946,8 +946,8 @@
         }
     },
     "EPalWazaID::Unique_Anubis_LowRoundKick": {
-        "CodeName": "EPalWazaID::Unique_Anubis_LowRoundKick",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::Unique_Anubis_LowRoundKick",
+        "Element": "Ground",
         "Power": 100,
         "I18n": {
             "en": "Spinning Roundhouse",
@@ -955,8 +955,8 @@
         }
     },
     "EPalWazaID::FireSeed": {
-        "CodeName": "EPalWazaID::FireSeed",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::FireSeed",
+        "Element": "Fire",
         "Power": 45,
         "I18n": {
             "en": "Spirit Fire",
@@ -965,8 +965,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::GhostFlame": {
-        "CodeName": "EPalWazaID::GhostFlame",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::GhostFlame",
+        "Element": "Dark",
         "Power": 75,
         "I18n": {
             "en": "Spirit Flame",
@@ -975,8 +975,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::StoneShotgun": {
-        "CodeName": "EPalWazaID::StoneShotgun",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::StoneShotgun",
+        "Element": "Ground",
         "Power": 55,
         "I18n": {
             "en": "Stone Blast",
@@ -985,8 +985,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::ThrowRock": {
-        "CodeName": "EPalWazaID::ThrowRock",
-        "Type": "Ground",
+        "InternalName": "EPalWazaID::ThrowRock",
+        "Element": "Ground",
         "Power": 70,
         "I18n": {
             "en": "Stone Cannon",
@@ -995,8 +995,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_BluePlatypus_Toboggan": {
-        "CodeName": "EPalWazaID::Unique_BluePlatypus_Toboggan",
-        "Type": "Water",
+        "InternalName": "EPalWazaID::Unique_BluePlatypus_Toboggan",
+        "Element": "Water",
         "Power": 0,
         "I18n": {
             "en": "Surfing Slam",
@@ -1004,8 +1004,8 @@
         }
     },
     "EPalWazaID::Unique_HawkBird_Storm": {
-        "CodeName": "EPalWazaID::Unique_HawkBird_Storm",
-        "Type": "Neutral",
+        "InternalName": "EPalWazaID::Unique_HawkBird_Storm",
+        "Element": "Neutral",
         "Power": 65,
         "I18n": {
             "en": "Tornado Attack",
@@ -1013,8 +1013,8 @@
         }
     },
     "EPalWazaID::ThreeThunder": {
-        "CodeName": "EPalWazaID::ThreeThunder",
-        "Type": "Electric",
+        "InternalName": "EPalWazaID::ThreeThunder",
+        "Element": "Electric",
         "Power": 90,
         "I18n": {
             "en": "Tri-Lightning",
@@ -1023,8 +1023,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::Unique_BlackCentaur_TwoSpearRushes": {
-        "CodeName": "EPalWazaID::Unique_BlackCentaur_TwoSpearRushes",
-        "Type": "Dark",
+        "InternalName": "EPalWazaID::Unique_BlackCentaur_TwoSpearRushes",
+        "Element": "Dark",
         "Power": 120,
         "I18n": {
             "en": "Twin Spears",
@@ -1032,8 +1032,8 @@
         }
     },
     "EPalWazaID::Unique_VolcanicMonster_MagmaAttack": {
-        "CodeName": "EPalWazaID::Unique_VolcanicMonster_MagmaAttack",
-        "Type": "Fire",
+        "InternalName": "EPalWazaID::Unique_VolcanicMonster_MagmaAttack",
+        "Element": "Fire",
         "Power": 100,
         "I18n": {
             "en": "Volcanic Burst",
@@ -1041,8 +1041,8 @@
         }
     },
     "EPalWazaID::WindCutter": {
-        "CodeName": "EPalWazaID::WindCutter",
-        "Type": "Grass",
+        "InternalName": "EPalWazaID::WindCutter",
+        "Element": "Grass",
         "Power": 30,
         "I18n": {
             "en": "Wind Cutter",
@@ -1051,8 +1051,8 @@
         "SkillFruit": true
     },
     "EPalWazaID::WaterWave": {
-        "CodeName": "EPalWazaID::WaterWave",
-        "Type": "",
+        "InternalName": "EPalWazaID::WaterWave",
+        "Element": "",
         "Power": 0,
         "I18n": {
             "en": "(Invalid) EPalWazaID::WaterWave",

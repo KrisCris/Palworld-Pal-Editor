@@ -124,7 +124,7 @@ class DataProvider:
     
     @staticmethod
     def get_sorted_attacks() -> list[dict]:
-        sorted_list = sorted(PAL_ATTACKS.values(), key=lambda item: (item['Type'], item['Power']))
+        sorted_list = sorted(PAL_ATTACKS.values(), key=lambda item: (item["Element"], item['Power']))
         return sorted_list
     
     @none_guard(data_source=PAL_ATTACKS)
@@ -132,10 +132,10 @@ class DataProvider:
     def has_skill_fruit(attack: str) -> bool:
         return True if PAL_ATTACKS[attack].get("SkillFruit") else False
 
-    @none_guard(data_source=PAL_PASSIVES, subkey="i18n")
+    @none_guard(data_source=PAL_PASSIVES, subkey="I18n")
     @staticmethod
     def get_passive_i18n(key: str) -> Optional[tuple[str, str]]:
-        i18n_list: dict = PAL_PASSIVES[key]["i18n"]
+        i18n_list: dict = PAL_PASSIVES[key]["I18n"]
         i18n: dict = i18n_list.get(Config.i18n, i18n_list.get('en'))
         return (i18n.get("Name"), i18n.get("Description"))
 
@@ -145,7 +145,7 @@ class DataProvider:
     
     @staticmethod
     def get_sorted_passives() -> list[dict]:
-        sorted_list = sorted(PAL_PASSIVES.values(), key=lambda item: (item['Rating'], item['CodeName']))
+        sorted_list = sorted(PAL_PASSIVES.values(), key=lambda item: (item['Rating'], item['InternalName']))
         return sorted_list
     
     @staticmethod

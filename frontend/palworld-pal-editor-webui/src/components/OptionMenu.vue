@@ -15,7 +15,7 @@ const palStore = usePalEditorStore()
 div#OptionMenu {
     width: 90vw;
     height: 2.5rem;
-    background-color: red;
-    /* border-radius: 1rem; */
+    background-color: rgb(76, 76, 76);
+    border-radius: 1rem;
 }
 </style>

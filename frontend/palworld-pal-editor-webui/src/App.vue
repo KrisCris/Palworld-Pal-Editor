@@ -3,7 +3,6 @@ import EntryView from './views/EntryView.vue';
 import {usePalEditorStore} from '@/stores/paleditor'
 import EditorView from './views/EditorView.vue';
 import LoadingIndicator from './components/ LoadingIndicator.vue';
-import OptionMenu from './components/OptionMenu.vue';
 const palStore = usePalEditorStore()
 
 
@@ -12,7 +11,6 @@ const palStore = usePalEditorStore()
 <template>
     <!-- <LoadingIndicator></LoadingIndicator> -->
     <div id="mainContainer">
-      <OptionMenu></OptionMenu>
       <EntryView v-if="!palStore.SAVE_LOADED_FLAG"></EntryView>
       <EditorView v-else></EditorView>
     </div>
@@ -21,12 +19,12 @@ const palStore = usePalEditorStore()
 <style>
 
 #app {
-  /* margin: 0 0;
+  margin: 0 0;
   padding: 2vh;
   padding-right: 0;
   font-weight: normal;
   display: flex;
-  align-items:flex-start */
+  align-items:flex-start
 }
 
 button:disabled {

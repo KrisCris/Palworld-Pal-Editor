@@ -31,7 +31,6 @@ div.flex {
 
 .overflow-container {
     display: flex;
-    align-items: center;
     width: 15rem;
     /* Fixed width smaller than the button's content */
     overflow-x: auto;

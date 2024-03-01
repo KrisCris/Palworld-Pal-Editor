@@ -51,14 +51,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     displaySpecialType() {
-      if (this.IsTower) return "🗼"
-      if (this.IsBOSS) return "💀"
-      if (this.IsRarePal) return "✨"
-      return "N/A"
+      if (this.IsTower) return "🗼";
+      if (this.IsBOSS) return "💀";
+      if (this.IsRarePal) return "✨";
+      return "N/A";
     }
 
     getRank() {
-      return this.Rank - 1
+      return this.Rank - 1;
     }
 
     swapTower() {
@@ -78,14 +78,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     levelDown() {
       if (this.Level > 1) {
-        this.Level -= 1
+        this.Level -= 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
     levelUp() {
       if (this.Level < 50) {
-        this.Level += 1
+        this.Level += 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
@@ -110,15 +110,21 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     removePassiveSkill(e) {
-      const skill = e.target.name
-      updatePal({target: {
-        name: "DelPassiveSkill", value: skill
-      }})
+      const skill = e.target.name;
+      updatePal({
+        target: {
+          name: "DelPassiveSkill",
+          value: skill,
+        },
+      });
     }
   }
 
   const PAL_BASE_WORKER_BTN = ref("PAL_BASE_WORKER_BTN");
   const msg = ref("");
+  // i18n mapping of passive and active skills
+  let passive_skills = {};
+  let active_skills = {};
 
   // flags
   const LOADING_FLAG = ref(false);
@@ -138,10 +144,27 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SELECTED_PLAYER_ID = ref(null);
   const SELECTED_PAL_ID = ref(null);
 
-  // EL
-  let SELECTED_PAL_EL = null
+  // selected pal EL, only for the use of scrollTo when out of window
+  let SELECTED_PAL_EL = null;
   // save path
   const PAL_SAVE_PATH = ref(localStorage.getItem("PAL_SAVE_PATH") || "");
+
+  async function fetch_skill_data() {
+    const passive_skills_raw = await fetch("/api/save/passive_skills")
+      .then((r) => r.json())
+      .catch((error) => {
+        return error;
+      });
+    passive_skills = passive_skills_raw.data;
+    const active_skills_raw = await fetch("/api/save/active_skills")
+      .then((r) => r.json())
+      .catch((error) => {
+        return error;
+      });
+    active_skills = active_skills_raw.data;
+    console.log(passive_skills, active_skills);
+    return true;
+  }
 
   function reset_flags() {
     LOADING_FLAG.value = false;
@@ -188,6 +211,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG) {
       alert("No Player Found in the Gamesave");
+    }
+    if ((await fetch_skill_data()) !== true) {
+      alert("Failed fetching data...");
     }
     SAVE_LOADED_FLAG.value = true;
     localStorage.setItem("PAL_SAVE_PATH", PAL_SAVE_PATH.value);
@@ -284,14 +310,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     return true;
   }
 
-  async function selectPal(e, manual=false) {
-    SELECTED_PAL_EL = e.target
+  async function selectPal(e, manual = false) {
+    SELECTED_PAL_EL = e.target;
     let palid = e.target.value;
     let pal_data = PAL_MAP.value.get(palid);
     console.log(
       `Pal ${pal_data.DisplayName} - ${pal_data.InstanceId} selected.`
     );
-    
+
     if (!manual) {
       SELECTED_PAL_DATA.value = null;
       SELECTED_PAL_ID.value = null;
@@ -319,17 +345,18 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   function isElementInViewport(el) {
     const rect = el.getBoundingClientRect();
     return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
-}
+  }
 
   async function updatePal(e) {
     let key = e.target.name;
     // let value = SELECTED_PAL_DATA.value[key];
-    let value = e.target.value
+    let value = e.target.value;
     console.log(
       `Modify: Target ${SELECTED_PAL_DATA.value.DisplayName} key=${key}, value=${value}`
     );
