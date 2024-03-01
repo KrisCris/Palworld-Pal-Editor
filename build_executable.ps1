@@ -1,3 +1,4 @@
+$ErrorActionPreference = 'Continue'
 # Function to check and return the available Python command
 function Get-PythonCommand {
     $commands = @('python3', 'python')

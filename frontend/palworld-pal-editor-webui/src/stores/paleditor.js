@@ -1,5 +1,7 @@
 import { ref, computed, reactive } from "vue";
 import { defineStore } from "pinia";
+import { SET } from '@vue/reactivity';
+
 
 class Player {
   constructor(obj) {
@@ -57,8 +59,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const BASE_PAL_MAP = ref(new Map());
   const PLAYER_MAP = ref(new Map());
   // display data
+  const SELECTED_PAL_DATA = computed(() => PAL_MAP.value.get(SELECTED_PAL_ID.value))
   const PAL_MAP = ref();
-  const SELECTED_PAL_DATA = ref();
+  // const SELECTED_PAL_DATA = ref();
 
   // selected id
   const SELECTED_PLAYER_ID = ref(null);
@@ -69,7 +72,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   // EDIT PAL INFO
 
-  // const specie = computed(() => palData[palRawSpecieName.value])
+
 
   function reset_flags() {
     LOADING_FLAG.value = false;
@@ -162,7 +165,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     BASE_PAL_BTN_CLK_FLAG.value = false;
     // clear pal selection
     SELECTED_PAL_ID.value = null;
-    SELECTED_PAL_DATA.value = null;
+    // SELECTED_PAL_DATA.value = null;
 
     // if data not present
     if (
@@ -216,7 +219,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       `Pal ${pal_data.DisplayName} - ${pal_data.InstanceId} selected.`
     );
 
-    SELECTED_PAL_DATA.value = null;
+    // SELECTED_PAL_DATA.value = null;
     SELECTED_PAL_ID.value = null;
 
     if (pal_data.dirty) {
@@ -231,16 +234,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       }
     }
 
-    SELECTED_PAL_DATA.value = PAL_MAP.value.get(palid);
-    SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+    // SELECTED_PAL_DATA.value = PAL_MAP.value.get(palid);
+    // SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+    SELECTED_PAL_ID.value = palid
   }
 
   async function updatePal(e) {
     SELECTED_PAL_DATA.value.dirty = true
-    let value = e.target.value
     let name = e.target.name
     let id = e.target.id
-    console.log(`Modify: Target ${SELECTED_PAL_DATA} name=${name}, value=${value}, id=${id}`)
+    let value = SELECTED_PAL_DATA.value[name]
+    console.log(`Modify: Target ${SELECTED_PAL_DATA.value.DisplayName} name=${name}, value=${value}, id=${id}`)
 
     const response = await fetch("/api/pal/paldata", {
       method: "PATCH",
@@ -262,9 +266,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response.status != 0) {
       return response.msg
     }
-    // const new_pal_data = new PalData(response.data)
-    // SELECTED_PAL_DATA.value = new_pal_data
-    // PAL_MAP.value.set(SELECTED_PAL_ID, new_pal_data)
+
+  //   const new_pal_data = new PalData(response.data)
+  //   new_pal_data.NickName = "UPDATED"
+  //   // SELECTED_PAL_DATA.value = new_pal_data
+  //   const old_pal_obj = PAL_MAP.value.get(SELECTED_PAL_ID)
+  //   for (const key in new_pal_data) {
+  //     set(old_pal_obj, key, new_pal_data[key]);
+  // }
+  //   value = SELECTED_PAL_DATA.value[name]
+  //   console.log(value)
   }
 
   return {
