@@ -20,6 +20,8 @@ def patch_paldata():
     try:
         if key == "HasWorkerSick":
             pal_entity.clear_worker_sick()
+        elif key == "DelPassiveSkill":
+            pal_entity.pop_PassiveSkillList(item=value)
         elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
             return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:

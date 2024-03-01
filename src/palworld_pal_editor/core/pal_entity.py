@@ -416,7 +416,7 @@ class PalEntity:
             return None
         Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100 # 30% of Talent
         Defense_Bonus = self._get_passive_buff("b_Defense") # 0
-        Defense_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
+        Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
         # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong

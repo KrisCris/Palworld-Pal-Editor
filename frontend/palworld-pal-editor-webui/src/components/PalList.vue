@@ -18,14 +18,15 @@ const palStore = usePalEditorStore()
 
 <style scoped>
 div.flex {
+    padding-top: .5rem;
     overflow-y: scroll;
-    height: 96vh;
+    height: calc(100vh - 4rem);
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
     padding-right:0.3rem;
     margin-right: .7rem;
-    margin-top: -0.25rem;
+    /* margin-top: -0.25rem; */
 }
 
 .overflow-container {

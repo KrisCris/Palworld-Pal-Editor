@@ -14,15 +14,6 @@ a,
   }
 }
 
-#app {
-  margin: 0 auto;
-  padding: 2vh;
-  padding-right: 0;
-  font-weight: normal;
-  display: flex;
-  align-items:flex-start
-}
-
 /* Customize website's scrollbar like Mac OS
 Not supports in Firefox and IE */
 

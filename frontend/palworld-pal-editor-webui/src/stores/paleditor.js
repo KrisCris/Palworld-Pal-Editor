@@ -16,22 +16,28 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.Talent_Shot = obj.Talent_Shot;
       this.Talent_Melee = obj.Talent_Melee;
       this.Talent_HP = obj.Talent_HP;
-      this.MasteredWaza = obj.MasteredWaza;
-      this.PassiveSkillList = obj.PassiveSkillList;
-      this.ComputedDefense = obj.ComputedDefense;
-      this.ComputedAttack = obj.ComputedAttack;
-      this.MaxHP = obj.MaxHP;
+
       this.Rank_CraftSpeed = obj.Rank_CraftSpeed;
       this.Rank_Defence = obj.Rank_Defence;
       this.Rank_Attack = obj.Rank_Attack;
       this.Rank_HP = obj.Rank_HP;
       this.Rank = obj.Rank;
+
       this.Level = obj.Level;
       this.NickName = obj.NickName;
       this.IsRarePal = obj.IsRarePal;
       this.IsBOSS = obj.IsBOSS;
       this.IsTower = obj.IsTower;
       this.Gender = obj.Gender;
+      this.HasWorkerSick = obj.HasWorkerSick;
+
+      this.ComputedDefense = obj.ComputedDefense;
+      this.ComputedAttack = obj.ComputedAttack;
+      this.MaxHP = obj.MaxHP;
+
+      this.MasteredWaza = obj.MasteredWaza;
+      this.PassiveSkillList = obj.PassiveSkillList;
+
       this.DisplayName = obj.DisplayName;
       this.I18nName = obj.I18nName;
       this.DataAccessKey = obj.DataAccessKey;
@@ -42,7 +48,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.HasTowerVariant = obj.HasTowerVariant;
       this.IsPal = obj.IsPal;
       this.IsHuman = obj.IsHuman;
-      this.HasWorkerSick = obj.HasWorkerSick;
     }
 
     displaySpecialType() {
@@ -58,30 +63,30 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     swapTower() {
       this.IsTower = !this.IsTower;
-      updatePal({ target: { name: "IsTower" } });
+      updatePal({ target: { name: "IsTower", value: this.IsTower } });
     }
 
     swapBoss() {
       this.IsBOSS = !this.IsBOSS;
-      updatePal({ target: { name: "IsBOSS" } });
+      updatePal({ target: { name: "IsBOSS", value: this.IsBOSS } });
     }
 
     swapRare() {
       this.IsRarePal = !this.IsRarePal;
-      updatePal({ target: { name: "IsRarePal" } });
+      updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
     }
 
     levelDown() {
       if (this.Level > 1) {
         this.Level -= 1
-        updatePal({ target: { name: "Level" } });
+        updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
     levelUp() {
       if (this.Level < 50) {
         this.Level += 1
-        updatePal({ target: { name: "Level" } });
+        updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
@@ -101,7 +106,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       } else if (this.Gender == "EPalGenderType::Male") {
         this.Gender = "EPalGenderType::Female";
       } else return;
-      updatePal({ target: { name: "Gender" } });
+      updatePal({ target: { name: "Gender", value: this.Gender } });
+    }
+
+    removePassiveSkill(e) {
+      const skill = e.target.name
+      updatePal({target: {
+        name: "DelPassiveSkill", value: skill
+      }})
     }
   }
 
@@ -316,7 +328,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   async function updatePal(e) {
     let key = e.target.name;
-    let value = SELECTED_PAL_DATA.value[key];
+    // let value = SELECTED_PAL_DATA.value[key];
+    let value = e.target.value
     console.log(
       `Modify: Target ${SELECTED_PAL_DATA.value.DisplayName} key=${key}, value=${value}`
     );
