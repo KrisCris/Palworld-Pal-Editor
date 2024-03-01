@@ -27,6 +27,7 @@ cd ".\frontend\palworld-pal-editor-webui"
 
 cd "..\..\"
 # Move the build directory
+Remove-Item ".\src\palworld_pal_editor\webui" -Recurse -Force
 Move-Item -Path ".\frontend\palworld-pal-editor-webui\dist" -Destination ".\src\palworld_pal_editor\webui" -Force
 
 
@@ -56,4 +57,4 @@ pip install -r requirements.txt
 
 pip install pyinstaller
 
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets;assets" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor
+pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets;assets" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO

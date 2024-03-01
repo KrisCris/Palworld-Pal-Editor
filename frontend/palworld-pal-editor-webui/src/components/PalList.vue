@@ -23,17 +23,22 @@ div.flex {
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
-    padding-right:1rem;
+    padding-right:0.3rem;
+    margin-right: .7rem;
+    margin-top: -0.25rem;
 }
 
 .overflow-container {
+    display: flex;
+    align-items: center;
     width: 15rem;
     /* Fixed width smaller than the button's content */
     overflow-x: auto;
     /* Enable horizontal scrolling */
     white-space: nowrap;
     /* Prevent content from wrapping */
-    min-height: 3.2rem;
+    min-height: 3.5rem;
+    /* padding-bottom: 1rem; */
 }
 
 img.palIcon {
@@ -47,11 +52,10 @@ button {
     justify-content: left;
 
     white-space: nowrap;
-    /* margin-bottom: .5rem; */
-    width: 100%;
+    min-width: 100%;
     /* max-width: 10vw; */
-    max-height: 5rem;
-    padding: .3rem 0rem;
+    max-height: 3.5rem;
+    padding: 0rem;
     padding-left: .3rem;
     min-height: 3rem;
     background-color: #323232;

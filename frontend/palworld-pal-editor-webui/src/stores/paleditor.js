@@ -93,7 +93,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       .then((r) => r.json())
       .catch((error) => {
         alert("Error occured, please check backend:", error);
-        LOADING_FLAG = false;
+        LOADING_FLAG.value = false;
       });
 
     LOADING_FLAG.value = false;

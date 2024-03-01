@@ -11,8 +11,8 @@ def setup_config_from_args():
     parser.add_argument('--debug', action='store_true', help='Debug option, mimic interactive mode for VSCode debug launch.')
     parser.add_argument('--path', type=str, help='Path to the save folder, the one contains Level.sav', default=None)
     # Unused:
-    parser.add_argument('--gui', action='store_true', help='Enable GUI mode.', default=True)
-    parser.add_argument('--web', action='store_true', help='Enable WebUI.')
+    parser.add_argument('--gui', action='store_true', help='Enable GUI mode.')
+    parser.add_argument('--web', action='store_true', help='Enable WebUI.', default=True)
     parser.add_argument('--port', type=int, help='Port used for WebUI mode.', default=58080)
 
     args = parser.parse_args()

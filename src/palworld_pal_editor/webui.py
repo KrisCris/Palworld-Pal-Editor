@@ -1,12 +1,15 @@
 import os
 from pathlib import Path
 import sys
+import threading
+import webbrowser
 from flask import Flask, send_from_directory
 
 
 from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.api import *
+from palworld_pal_editor.utils import LOGGER
 
 BASE_PATH = Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).parent
 
@@ -37,8 +40,11 @@ def serve(path):
 
 def main():
     # if Config.gui:
-    #     # FlaskUI(app=app, server="flask").run()
+        # FlaskUI(app=app, server="flask").run()
+    # try:
     #     threading.Timer(1.25, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()
+    # except:
+    #     LOGGER.info("Failed to launch browser.")
     # from waitress import serve
-    # serve(app, host='0.0.0.0', port=8080)
+    # serve(app, host='0.0.0.0', port=Config.port, threads=6)
     app.run(use_reloader=True, port=Config.port, threaded=True)

@@ -5,30 +5,48 @@ const palStore = usePalEditorStore()
 </script>
 
 <template>
-  <div>
-    <button v-if="palStore.HAS_WORKING_PAL_FLAG" @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG" :value="palStore.PAL_BASE_WORKER_BTN">
-      Base Pals
+  <div class="flex">
+    <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
+      <button @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG" :value="palStore.PAL_BASE_WORKER_BTN">
+      BASE PAL
     </button>
-    <button class="player" v-for="player in palStore.PLAYER_MAP.values()" :value="player.id" @click="palStore.selectPlayer"
+    </div>
+    <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
+      <button class="player"  :value="player.id" @click="palStore.selectPlayer"
       :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
       {{ player.name }}
     </button>
+    </div>
+
   </div>
 </template>
 
 <style scoped>
-div {
-    overflow-y:scroll;
+div.flex {
+    overflow-y: scroll;
     height: 96vh;
+    min-width: 10rem;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    margin-right: 1rem;
+    padding-right:0.3rem;
+    margin-right: .7rem;
+}
+
+div.overflow-container {
+    display: flex;
+    align-items: center;
+    width: 10rem;
+    /* Fixed width smaller than the button's content */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    white-space: nowrap;
+    /* Prevent content from wrapping */
+    min-height: 3rem;
 }
 
 button {
-  margin-bottom: .5rem;
-  max-width: 20vw;
+  min-width: 100%;
   max-height: 5rem;
   padding: .5rem 1rem;
   background-color: #ce9716;
