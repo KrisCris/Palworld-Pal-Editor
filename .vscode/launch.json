@@ -18,6 +18,22 @@
             ]
         },
         {
+            "name": "Python: GUI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "palworld_pal_editor",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--gui",
+                "--lang=zh-CN",
+                "--debug"
+            ]
+        },
+        {
             "name": "Python: WEB",
             "type": "debugpy",
             "request": "launch",

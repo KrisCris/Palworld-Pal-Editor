@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         tini \
         gosu \
         tzdata \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 # Create the appuser user and group before setting permissions

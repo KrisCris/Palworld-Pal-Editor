@@ -1,9 +1,9 @@
-name: Build
+name: Main Build
 
 on:
   push:
     branches:
-      - dev_webui
+      - main
 jobs:
   build:
     strategy:
