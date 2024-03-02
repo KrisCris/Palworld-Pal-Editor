@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from palworld_pal_editor.api.util import reply
 
 from palworld_pal_editor.core import SaveManager, PalEntity
@@ -8,6 +9,7 @@ pal_blueprint = Blueprint("pal", __name__)
 
 # Update Pal Data
 @pal_blueprint.route("/paldata", methods=["PATCH"])
+@jwt_required()
 def patch_paldata():
     PalGuid = request.json.get("PalGuid")
     PlayerUId = request.json.get("PlayerUId")
@@ -22,6 +24,14 @@ def patch_paldata():
             pal_entity.clear_worker_sick()
         elif key == "DelPassiveSkill":
             pal_entity.pop_PassiveSkillList(item=value)
+        elif key == "AddPassiveSkill":
+            if not pal_entity.add_PassiveSkillList(value):
+                return reply(1, None, f"Passive {value} already exists!")
+        elif key == "DelActiveSkill":
+            pal_entity.pop_MasteredWaza(item=value)
+        elif key == "AddActiveSkill":
+            if not pal_entity.add_MasteredWaza(value):
+                return reply(1, None, f"Attack {value} already exists!")
         elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
             return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:
@@ -31,6 +41,7 @@ def patch_paldata():
 
 # Get Pal Data
 @pal_blueprint.route("/paldata", methods=["POST"])
+@jwt_required()
 def paldata():
     InstanceId = request.json.get("InstanceId")
     PlayerUId = request.json.get("PlayerUId")
@@ -83,6 +94,7 @@ def _pal_data(pal: PalEntity):
         "MaxHP": pal.MaxHP or None,
         "ComputedAttack": pal.ComputedAttack or None,
         "ComputedDefense": pal.ComputedDefense or None,
+        "ComputedCraftSpeed": pal.ComputedCraftSpeed or None,
         "PassiveSkillList": pal.PassiveSkillList or [],
         "MasteredWaza": pal.MasteredWaza or [],
         "Talent_HP": pal.Talent_HP or 0,

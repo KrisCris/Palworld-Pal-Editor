@@ -1,26 +1,22 @@
-import customtkinter
+import sys
+import threading
+import time
+from tkinter import messagebox
 
-class App(customtkinter.CTk):
-    def __init__(self):
-        super().__init__()
+import webview
+from palworld_pal_editor.config import Config
+from palworld_pal_editor.webui import main as web_main
 
-        self.title("my app")
-        self.geometry("400x150")
-        self.grid_columnconfigure((0, 1), weight=1)
-
-        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)
-        self.button.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
-        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")
-        self.checkbox_1.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")
-        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")
-        self.checkbox_2.grid(row=1, column=1, padx=20, pady=(0, 20), sticky="w")
-        
-    def button_callback(self):
-        print("button pressed")
 
 def main():
-    app = App()
-    app.mainloop()
+    t = threading.Thread(target=web_main)
+    t.daemon = True
+    t.start()
+    time.sleep(3)
+    webview.create_window("Palworld Pal Editor, developed by _connlost with ❤️.", url=f"http://localhost:{Config.port}/", width=1280, height=800, min_size=(960, 600))
+    webview.start()
+    sys.exit()
+
 
 if __name__ == "__main__":
     main()

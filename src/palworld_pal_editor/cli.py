@@ -10,11 +10,11 @@ def main():
     LOGGER.info("Palworld Pal Editor, made by _connlost with ❤.")
     save_manager = SaveManager()
     try:
-        if Config.path and save_manager.open(f"{Config.path}/Level.sav"):
+        if Config.path and save_manager.open(Config.path):
             pass
         else:
             while True:
-                LOGGER.info("> Please provide the path to Level.sav")
+                LOGGER.info("> Please provide the path to the dir containing Level.sav")
                 input_path = input("> ")
                 if save_manager.open(input_path) is not None:
                     break

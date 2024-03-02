@@ -140,15 +140,6 @@
             "zh-CN": "阴云之岚 [云海鹿]"
         }
     },
-    "EPalWazaID::CrossThunder": {
-        "InternalName": "EPalWazaID::CrossThunder",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Cross Lightning",
-            "zh-CN": "十字雷击"
-        }
-    },
     "EPalWazaID::Unique_GrassPanda_MusclePunch": {
         "InternalName": "EPalWazaID::Unique_GrassPanda_MusclePunch",
         "Element": "Grass",
@@ -219,8 +210,8 @@
         "Element": "Dark",
         "Power": 0,
         "I18n": {
-            "en": "Dark Whisp",
-            "zh-CN": "黑暗之拥"
+            "en": "Dark Whisp [Victor & Shadowbeak]",
+            "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]"
         }
     },
     "EPalWazaID::Unique_BlackGriffon_TackleLaser": {
@@ -655,8 +646,8 @@
         "Element": "Neutral",
         "Power": 0,
         "I18n": {
-            "en": "Megaton Implode",
-            "zh-CN": "超自爆"
+            "en": "Megaton Implode [Tocotoco]",
+            "zh-CN": "超自爆 [炸蛋鸟]"
         }
     },
     "EPalWazaID::SpecialCutter": {
@@ -664,8 +655,8 @@
         "Element": "Grass",
         "Power": 0,
         "I18n": {
-            "en": "Multicutter",
-            "zh-CN": "多重利刃"
+            "en": "Multicutter [Lily & Lyleen]",
+            "zh-CN": "多重利刃 [莉莉 & 百合女王]"
         }
     },
     "EPalWazaID::Unique_SakuraSaurus_SideTackle": {
@@ -749,8 +740,8 @@
         "Element": "Dark",
         "Power": 0,
         "I18n": {
-            "en": "Poison Fog",
-            "zh-CN": "毒雾"
+            "en": "Poison Fog [Lily & Lyleen / Vaelet / Cinnamoth]",
+            "zh-CN": "毒雾 [莉莉 & 百合女王 / 薇莉塔 / 幻悦蝶]"
         }
     },
     "EPalWazaID::PowerBall": {
@@ -773,22 +764,13 @@
         },
         "SkillFruit": true
     },
-    "EPalWazaID::Psychokinesis": {
-        "InternalName": "EPalWazaID::Psychokinesis",
-        "Element": "Dark",
-        "Power": 0,
-        "I18n": {
-            "en": "Psycho Gravity",
-            "zh-CN": "念动引力"
-        }
-    },
     "EPalWazaID::Human_Punch": {
         "InternalName": "EPalWazaID::Human_Punch",
         "Element": "Neutral",
         "Power": 0,
         "I18n": {
-            "en": "Punch",
-            "zh-CN": "击打"
+            "en": "Punch [Human]",
+            "zh-CN": "击打 [人类]"
         }
     },
     "EPalWazaID::Unique_PinkCat_CatPunch": {
@@ -1050,6 +1032,26 @@
         },
         "SkillFruit": true
     },
+    "EPalWazaID::Psychokinesis": {
+        "InternalName": "EPalWazaID::Psychokinesis",
+        "Element": "Dark",
+        "Power": 0,
+        "I18n": {
+            "en": "(Invalid) Psycho Gravity",
+            "zh-CN": "(无效条目) 念动引力"
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::CrossThunder": {
+        "InternalName": "EPalWazaID::CrossThunder",
+        "Element": "Electric",
+        "Power": 0,
+        "I18n": {
+            "en": "(Invalid) Cross Lightning",
+            "zh-CN": "(无效条目) 十字雷击"
+        },
+        "Invalid": true
+    },
     "EPalWazaID::WaterWave": {
         "InternalName": "EPalWazaID::WaterWave",
         "Element": "",
@@ -1057,6 +1059,7 @@
         "I18n": {
             "en": "(Invalid) EPalWazaID::WaterWave",
             "zh-CN": "(无效条目) EPalWazaID::WaterWave"
-        }
+        },
+        "Invalid": true
     }
 }

@@ -1,6 +1,6 @@
 @import './base.css';
 
-a,
+/* a,
 .green {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
@@ -13,6 +13,25 @@ a,
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
+
+#app {
+  margin: 0 auto;
+  padding: 2vh;
+  padding-right: 0;
+  font-weight: normal;
+  display: flex;
+  align-items:flex-start
+} */
+
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
 
 /* Customize website's scrollbar like Mac OS
 Not supports in Firefox and IE */

@@ -1,50 +1,64 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import { ref, computed, reactive, onMounted, nextTick } from "vue";
 const palStore = usePalEditorStore()
-
+const playerListContainer = ref(null);
+onMounted(async () => {
+  await nextTick(); // Wait for the DOM to update with the dynamic buttons
+  const buttons = playerListContainer.value.querySelectorAll('button:not(:disabled)');
+  if (buttons.length > 0) {
+    buttons[0].click(); // Simulate a click on the first enabled button
+  }
+});
 </script>
 
 <template>
   <div class="flex">
-    <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
-      <button @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG"
-        :value="palStore.PAL_BASE_WORKER_BTN">
-        BASE PAL
-      </button>
+    <p>PLAYER LIST</p>
+    <div class="overflow-list" ref="playerListContainer">
+      <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
+        <button @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG"
+          :value="palStore.PAL_BASE_WORKER_BTN">
+          BASE PAL
+        </button>
+      </div>
+      <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
+        <button class="player" :value="player.id" @click="palStore.selectPlayer"
+          :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
+          {{ player.name }}
+        </button>
+      </div>
     </div>
-    <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
-      <button class="player" :value="player.id" @click="palStore.selectPlayer"
-        :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
-        {{ player.name }}
-      </button>
-    </div>
-
   </div>
 </template>
 
 <style scoped>
 div.flex {
-  padding-top: .5rem;
-  overflow-y: scroll;
-  height: calc(100vh - 4rem);
-  min-width: 10rem;
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  height: var(--sub-height);
+  min-width: 10rem;
   padding-right: 0.3rem;
-  margin-right: .7rem;
+  /* scrollbar */
+}
+
+div.overflow-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  gap: .2rem 0rem;
 }
 
 div.overflow-container {
-  display: flex;
   align-items: center;
-  width: 10rem;
-  /* Fixed width smaller than the button's content */
+  display: flex;
   overflow-x: auto;
-  /* Enable horizontal scrolling */
   white-space: nowrap;
-  /* Prevent content from wrapping */
-  min-height: 3rem;
+  max-height: 3.5rem;
+  flex-shrink: 0;
+  padding-bottom: 0.1rem;
+  /* scrollbar */
 }
 
 button {
@@ -57,12 +71,13 @@ button {
   outline: none;
   border-radius: 0.5rem;
   font-size: 1.2rem;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
 }
 
 button:hover {
   background-color: #9b7210;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 button.player {

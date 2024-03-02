@@ -1,60 +1,87 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import { ref, computed, reactive, onMounted, nextTick, watch } from "vue";
+
 const palStore = usePalEditorStore()
 
+const palListContainer = ref(null);
+
+onMounted(async () => {
+    await nextTick();
+    await nextTick(); // Wait for the DOM to update with the dynamic buttons
+    const button = palListContainer.value.querySelector('button:not(:disabled)');
+    if (button) {
+        button.click(); // Simulate a click on the first enabled button
+    }
+    watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+        await nextTick(); // Wait for the DOM to update with the dynamic buttons
+        const button = palListContainer.value.querySelector('button:not(:disabled)');
+        if (button) {
+            button.click(); // Simulate a click on the first enabled button
+        }
+    })
+});
 
 </script>
 <template>
     <div class="flex">
-        <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
-            <button :class="[{ 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️' }]"
-                :value="pal.InstanceId" @click="palStore.selectPal" :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId">
-                <img class="palIcon" :src="`/image/pals/${pal.IconAccessKey}`">
-                {{ pal.DisplayName }}
-            </button>
+        <p>PAL LIST</p>
+        <div class="overflow-list" ref="palListContainer">
+            <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
+                <button :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️' }]"
+                    :value="pal.InstanceId" @click="palStore.selectPal"
+                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
+                    <img class="palIcon" :src="`/image/pals/${pal.IconAccessKey}`">
+                    {{ pal.DisplayName }}
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
 div.flex {
-    padding-top: .5rem;
-    overflow-y: scroll;
-    height: calc(100vh - 4rem);
     display: flex;
-    flex-shrink: 0;
     flex-direction: column;
-    padding-right:0.3rem;
-    margin-right: .7rem;
-    /* margin-top: -0.25rem; */
+    flex-shrink: 0;
+    width: 15rem;
+    height: var(--sub-height);
+    padding-right: 0.3rem;
+    /* scrollbar */
+}
+
+div.overflow-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    gap: .2rem 0rem;
 }
 
 .overflow-container {
     display: flex;
-    width: 15rem;
-    /* Fixed width smaller than the button's content */
     overflow-x: auto;
-    /* Enable horizontal scrolling */
     white-space: nowrap;
-    /* Prevent content from wrapping */
-    min-height: 3.5rem;
-    /* padding-bottom: 1rem; */
+    max-height: 3.5rem;
+    flex-shrink: 0;
+    padding-bottom: 0.1rem;
+    /* scrollbar */
+    width: 100%;
 }
 
 img.palIcon {
     width: 2rem;
     border-radius: 50%;
 }
-
 button {
+    cursor: pointer;
+}
+button.pal {
     display: flex;
     align-items: center;
     justify-content: left;
-
     white-space: nowrap;
     min-width: 100%;
-    /* max-width: 10vw; */
-    max-height: 3.5rem;
+    max-height: 3rem;
     padding: 0rem;
     padding-left: .3rem;
     min-height: 3rem;
@@ -65,39 +92,48 @@ button {
     border-radius: 0.5rem;
     font-size: 1rem;
     text-align: left;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.15s ease-in-out;
 }
 
-button:hover {
+button.pal:hover {
     background-color: #686868;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.15s ease-in-out;
 }
 
-button.male {
+button.pal:disabled {
+    background-color: #8a8a8a;
+}
+
+button.pal:disabled:hover {
+    background-color: #8a8a8a;
+}
+
+button.pal.male {
     /* background-color: #095594; */
     border-color: #095594;
     border-style: solid;
     border-width: 0.15rem;
 }
 
-button.male:hover {
+button.pal.male:hover {
     background-color: #023b69;
 }
 
-button.male:disabled {
+button.pal.male:disabled {
     background-color: #023b69;
 }
 
-button.female {
+button.pal.female {
     border-color: #a13268;
     border-style: solid;
     border-width: 0.15rem;
 }
 
-button.female:hover {
+button.pal.female:hover {
     background-color: #5d0b32;
 }
 
-button.female:disabled {
+button.pal.female:disabled {
     background-color: #5d0b32;
-}</style>
+}
+</style>

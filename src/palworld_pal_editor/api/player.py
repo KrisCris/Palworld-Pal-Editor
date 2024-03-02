@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from palworld_pal_editor.api.util import reply
 
 from palworld_pal_editor.core import SaveManager
@@ -7,6 +8,7 @@ from palworld_pal_editor.utils import DataProvider
 player_blueprint = Blueprint("player", __name__)
 
 @player_blueprint.route("/player_pals", methods=["POST"])
+@jwt_required()
 def get_player_pals():
     id = request.json.get("PlayerUId")
     if id == "PAL_BASE_WORKER_BTN":
@@ -24,7 +26,7 @@ def get_player_pals():
         # "OwnerName": pal.OwnerName or None,
         "IconAccessKey": pal.IconAccessKey or None,
         "DataAccessKey": pal.DataAccessKey or None,
-        # "I18nName": pal.I18nName or None,
+        "I18nName": pal.I18nName or None,
         "DisplayName": pal.DisplayName or None,
         "Gender": pal.Gender.value if pal.Gender else None,
         # "IsTower": pal.IsTower or False,

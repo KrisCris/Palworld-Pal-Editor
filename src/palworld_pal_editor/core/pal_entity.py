@@ -76,12 +76,13 @@ class PalEntity:
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
     def CharacterID(self, value: str) -> None:
+        # TODO Need to test if SheepBall and Sheepball are identical
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
         else:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
 
-        ## TODO Remove / Add Gender
+        # Remove / Add Gender
         match self.DataAccessKey:
             case "GYM_ThunderDragonMan": self.Gender = PalGender.MALE
             case "GYM_LilyQueen": self.Gender = PalGender.FEMALE
@@ -93,6 +94,9 @@ class PalEntity:
         elif not self.Gender and self.IsPal:
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
+        
+        self.remove_all_attacks()
+        self.learn_attacks()
     
     @property
     def _RawSpecieKey(self) -> Optional[str]:
@@ -293,7 +297,7 @@ class PalEntity:
         # Update MaxHP
         self.MaxHP = self.ComputedMaxHP
         # Learn Attacks
-        self.learn_attacks_on_leveling()
+        self.learn_attacks()
 
     @property
     def Exp(self) -> Optional[int]:
@@ -398,7 +402,7 @@ class PalEntity:
         if Attack_Stat is None:
             return None
         Attack_IV = (self.Talent_Shot or 0) * 0.3 / 100 # 30% of Talent
-        Attack_Bonus = self._get_passive_buff("b_Attack") # 0
+        Attack_Bonus = self._get_passive_buff("b_Attack")
         Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
@@ -415,7 +419,7 @@ class PalEntity:
         if Defense_Stat is None:
             return None
         Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100 # 30% of Talent
-        Defense_Bonus = self._get_passive_buff("b_Defense") # 0
+        Defense_Bonus = self._get_passive_buff("b_Defense")
         Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
@@ -424,6 +428,15 @@ class PalEntity:
         return math.floor(base_defense * (1 + Defense_Bonus))
         # return math.floor(math.floor(50 + Defense_Stat * 0.075 * Level * (1 + Defense_IV))
         #     * (1 + Defense_Bonus)  * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
+
+    @property
+    def ComputedCraftSpeed(self) -> Optional[int]:
+        Base_CraftSpeed = self.CraftSpeed
+        if self.CraftSpeed is None: return None
+        CraftSpeed_SoulBonus = (self.Rank_CraftSpeed or 0) * 0.03 # 3% per incr Rank_HP
+        Defense_Bonus = self._get_passive_buff("b_CraftSpeed")
+        return math.floor(math.floor(Base_CraftSpeed * (1 + CraftSpeed_SoulBonus)) * (1 + Defense_Bonus))
+
 
     @property
     def HP(self) -> Optional[int]:
@@ -625,8 +638,16 @@ class PalEntity:
         return PalObjects.get_BaseType(self._pal_param.get("CraftSpeed"))
             
     @property
-    def SanityValue(self) -> Optional[int]:
+    def SanityValue(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("SanityValue"))
+    
+    @SanityValue.setter
+    @LOGGER.change_logger("SanityValue")
+    def SanityValue(self, val: float):
+        if self.SanityValue is None:
+            self._pal_param["SanityValue"] = PalObjects.FloatProperty(val)
+        else:
+            PalObjects.set_BaseType(self._pal_param.get("SanityValue"), val)
     
     @property
     def MaxFullStomach(self) -> Optional[float]:
@@ -691,17 +712,24 @@ class PalEntity:
             return False
         PalObjects.set_BaseType(self._pal_param['Tiemr_FoodWithStatusEffect'], val)
         
-    def learn_attacks_on_leveling(self):
+    def learn_attacks(self):
         for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level):
             if atk not in self.MasteredWaza:
                 self.add_MasteredWaza(atk)
         # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
+                
+    def remove_all_attacks(self):
+        atks = self.MasteredWaza.copy()
+        if not atks: return
+        for atk in atks:
+            self.pop_MasteredWaza(item=atk)
 
     @LOGGER.change_logger("WorkerSick")
     def clear_worker_sick(self):
         self._pal_param.pop("WorkerSick", None)
+        self.SanityValue = 100.0
 
     def max_lv_exp(self):
         exp = DataProvider.get_level_xp(self.Level)

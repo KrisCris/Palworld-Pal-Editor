@@ -3793,7 +3793,17 @@
             "Dragon",
             "Electric"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": 1,
+            "EPalWazaID::LightningStrike": 1,
+            "EPalWazaID::DragonWave": 1,
+            "EPalWazaID::DragonBreath": 1,
+            "EPalWazaID::LineThunder": 1,
+            "EPalWazaID::DragonCanon": 1,
+            "EPalWazaID::Thunderbolt": 1,
+            "EPalWazaID::AcidRain": 1,
+            "EPalWazaID::DragonMeteor": 1
+        },
         "Tower": true,
         "I18n": {
             "en": "Axel & Orserk",
@@ -3811,7 +3821,15 @@
         "Elements": [
             "Grass"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::PoisonFog": 1,
+            "EPalWazaID::BubbleShot": 1,
+            "EPalWazaID::SeedMine": 1,
+            "EPalWazaID::WaterBall": 1,
+            "EPalWazaID::SpecialCutter": 1,
+            "EPalWazaID::GrassTornado": 1,
+            "EPalWazaID::RootAttack": 1
+        },
         "Tower": true,
         "I18n": {
             "en": "Lily & Lyleen",
@@ -3829,7 +3847,19 @@
         "Elements": [
             "Fire"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_Horus_FlareBird": 1,
+            "EPalWazaID::FlareArrow": 1,
+            "EPalWazaID::RockLance": 1,
+            "EPalWazaID::Flamethrower": 1,
+            "EPalWazaID::ThreeThunder": 1,
+            "EPalWazaID::Inferno": 1,
+            "EPalWazaID::FireBall": 1,
+            "EPalWazaID::LightningStrike": 1,
+            "EPalWazaID::Thunderbolt": 1,
+            "EPalWazaID::FireSeed": 1,
+            "EPalWazaID::FireBlast": 1
+        },
         "Tower": true,
         "I18n": {
             "en": "Marcus & Faleris",
@@ -3847,7 +3877,19 @@
         "Elements": [
             "Dark"
         ],
-        "Attacks": {},
+        "Attacks": {         
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,                                       
+            "EPalWazaID::DarkLegion": 1,
+            "EPalWazaID::GhostFlame": 1,
+            "EPalWazaID::ShadowBall": 1,
+            "EPalWazaID::IcicleThrow": 1,
+            "EPalWazaID::BlizzardLance": 1,
+            "EPalWazaID::DarkLaser": 1,
+            "EPalWazaID::FrostBreath": 1,
+            "EPalWazaID::HyperBeam": 1,
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::IceBlade": 1
+        },
         "Tower": true,
         "I18n": {
             "en": "Victor & Shadowbeak",
@@ -3865,7 +3907,15 @@
         "Elements": [
             "Electric"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_ElecPanda_ElecScratch": 1,
+            "EPalWazaID::SpreadPulse": 1,
+            "EPalWazaID::ElecWave": 1,
+            "EPalWazaID::ThunderBall": 1,
+            "EPalWazaID::ThunderFunnel": 1,
+            "EPalWazaID::LineThunder": 1,
+            "EPalWazaID::LockonLaser": 1
+        },
         "Tower": true,
         "I18n": {
             "en": "Zoe & Grizzbolt",

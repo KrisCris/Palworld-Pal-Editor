@@ -1,5 +1,7 @@
 import copy
+from datetime import datetime
 from pathlib import Path
+import shutil
 from typing import Optional
 
 from palworld_save_tools.gvas import GvasFile
@@ -119,12 +121,6 @@ class SaveManager:
     def __init__(self):
         if not hasattr(self, "initialized"):
             self.initialized = True
-            # self._file_path: Optional[Path] = None
-            # self._raw_gvas: Optional[bytes] = None
-            # self._compression_times: Optional[int] = None
-            # self.gvas_file: Optional[GvasFile] = None
-            # self.entities_list: Optional[list[dict]] = None
-            # self.player_list: Optional[list[PlayerEntity]] = None
 
     def get_players(self) -> list[PlayerEntity]:
         return self.player_mapping.values()
@@ -235,12 +231,15 @@ class SaveManager:
                 
     def open(self, file_path: str) -> Optional[GvasFile]:
         self._file_path = Path(file_path).resolve()
-        if not self._file_path.exists():
-            LOGGER.error(f"Save file does not exist: {self._file_path}.")
+        
+        level_sav_path = self._file_path / "Level.sav"
+
+        if not level_sav_path.exists():
+            LOGGER.error(f"Save file does not exist: {level_sav_path}.")
             return None
 
-        LOGGER.info(f"Opening {self._file_path}")
-        with self._file_path.open("rb") as file:
+        LOGGER.info(f"Opening {level_sav_path}")
+        with level_sav_path.open("rb") as file:
             data = file.read()
 
             try:
@@ -266,7 +265,7 @@ class SaveManager:
             LOGGER.info("Done")
         return self.gvas_file
 
-    def save(self, file_path: str, _create_dir=False) -> bool:
+    def save(self, file_path: str) -> bool:
         if self.gvas_file is None:
             LOGGER.error("No gvas_file stored in save manager, aborting")
             return False
@@ -274,23 +273,41 @@ class SaveManager:
             LOGGER.warning("_compression_times is None, aborting")
             return False
 
-        output_path = Path(file_path).resolve()
+        # save level.sav
+        output_path = Path(file_path).resolve() 
 
-        if not output_path.parent.exists():
-            LOGGER.error(f"Path does not exist: {output_path.parent}")
-            if _create_dir:
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                LOGGER.debug(f"Path {output_path.parent} created")
+        if not output_path.exists():
+            LOGGER.error(f"Path does not exist: {output_path}")
+            if output_path.parent.exists():
+                output_path.mkdir(parents=True, exist_ok=True)
+                LOGGER.debug(f"Path {output_path} created")
             else:
+                LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
                 return False
+            
+        file_path: Path = output_path / "Level.sav"
+
+        if file_path.exists():
+            backup_dir = output_path.parent / f"{output_path.name}_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            try:
+                if output_path.exists():
+                    LOGGER.info(f"Backing up {output_path} to {backup_dir}")
+                    shutil.copytree(output_path, backup_dir)
+                else:
+                    LOGGER.info(f"No existing directory to backup: {output_path}")
+            except Exception as e:
+                LOGGER.error(f"Error backing up directory: {e}")
+                return False
+
 
         LOGGER.info("Compressing GVAS file")
         sav_data = compress_gvas_to_sav(
             self.gvas_file.write(PALEDITOR_CUSTOM_PROPERTIES), self._compression_times
         )
 
-        LOGGER.info(f"Saving to {output_path}")
-        with output_path.open("wb") as file:
+        # level.sav for now
+        LOGGER.info(f"Saving to {file_path}")
+        with file_path.open("wb") as file:
             file.write(sav_data)
-        LOGGER.info(f"Saved to {output_path}")
+        LOGGER.info(f"Saved to {file_path}")
         return True
