@@ -139,7 +139,7 @@ const palStore = usePalEditorStore()
       <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
         <select class="PassiveSkill selector" name="AddPassiveSkill" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
           <option class="PassiveSkill" value="" key="">Add Skills</option>
-          <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS" :value="skill.InternalName"
+          <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
             :key="skill.InternalName" :title="skill.I18n[1]">{{ skill.I18n[0] }}</option>
         </select>
         <button class="edit" @click="palStore.SELECTED_PAL_DATA.addPassiveSkill" name="AddPassiveSkill"

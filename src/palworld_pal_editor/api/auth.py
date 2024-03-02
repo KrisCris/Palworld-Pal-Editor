@@ -16,7 +16,7 @@ def auth():
 def login():
     password = request.json.get("password", "")
 
-    if not check_password_hash(Config.password_hash, password):
+    if not check_password_hash(Config._password_hash, password):
         return reply(2, None, "Bad password"), 401
 
     access_token = create_access_token(identity=password, expires_delta=False)

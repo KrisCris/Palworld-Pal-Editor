@@ -10,6 +10,35 @@
 
 ***LET ME KNOW IF ANY BUG PRESENTS.***
 
+## What You Can Do
+
+- [x] List Players and Pals
+- [x] Inspect Pal Stats
+- [x] Change Pal Gender
+- [x] Toggle BOSS / Rare / Tower
+- [x] Change Pal NickName
+- [x] Add / Remove Pal Learned Attacks
+- [x] Add / Remove Pal Equipped Attacks
+- [x] Change Pal Level / Exp
+- [x] Change Pal Condenser Level
+- [x] Change Pal Soul Levels
+- [x] Change CharacterID (Pal Species)
+- [x] Change Pal Passive Skills
+- [x] Change Pal IV
+- [x] Calculate MaxHP
+- [x] Remove Pal Sicks
+- [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
+
+## Video
+
+- GUI / WEB
+  
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-401e-b8a1-987ac3e6b02d
+
+- CLI: (old, but you get the idea)
+
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
+
 ## How to use
 
 ### 1. Directly Run the Code
@@ -37,31 +66,37 @@
 2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
 3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
 
-### What You Can Do
+### Config File
 
-- [x] List Players and Pals
-- [x] Inspect Pal Stats
-- [x] Change Pal Gender
-- [x] Toggle BOSS / Rare / Tower
-- [x] Change Pal NickName
-- [x] Add / Remove Pal Learned Attacks
-- [x] Add / Remove Pal Equipped Attacks
-- [x] Change Pal Level / Exp
-- [x] Change Pal Condenser Level
-- [x] Change Pal Soul Levels
-- [x] Change CharacterID (Pal Species)
-- [x] Change Pal Passive Skills
-- [x] Change Pal IV
-- [x] Calculate MaxHP
-- [x] Remove Pal Sicks
-- [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
+Default:
 
-## Video
+```json
+// config.json
+{
+    "i18n": "en",
+    "mode": "web",
+    "port": 58080,
+    "debug": false,
+    "path": null,
+    "password": null,
+    "JWT_SECRET_KEY": "X2Nvbm5sb3N0"
+}
+```
 
-- CLI:
-  - (old, but you get the idea) <https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113>
-- GUI / WEB
-  - 
+Custom:
+
+```json
+// config.json
+{
+    "i18n": "zh-CN",
+    "mode": "gui",
+    "port": 12345,
+    "debug": false,
+    "path": "/path/to/save/folder",
+    "password": "YOUR PASSWORD",
+    "JWT_SECRET_KEY": "YOUR SECRETS"
+}
+```
 
 ## Possible Roadmap? (NO ETA)
 

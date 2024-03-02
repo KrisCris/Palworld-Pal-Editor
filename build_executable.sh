@@ -7,7 +7,6 @@ fi
 cd "./frontend/palworld-pal-editor-webui"
 ${NPM_CMD} install
 ${NPM_CMD} run build
-
 cd ../../
 
 rm -rf "./src/palworld_pal_editor/webui"
