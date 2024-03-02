@@ -1,8 +1,6 @@
 import sys
 import threading
 import time
-from tkinter import messagebox
-
 import webview
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.webui import main as web_main

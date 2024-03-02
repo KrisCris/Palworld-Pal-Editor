@@ -2,7 +2,7 @@
 .DS_Store
 venv/
 logs/
-gamesave/
+gamesave*/
 test_outputs/
 unused_data/
 src/palworld_pal_editor/webui/
@@ -168,3 +168,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 frontend/palworld-pal-editor-webui/dev-dist/
+
+config.json

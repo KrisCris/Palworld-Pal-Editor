@@ -15,6 +15,7 @@ fi
 # Ensure the working directory is owned by the appuser, adjusting permissions as necessary
 chown -R appuser:appuser /app
 
+echo "launching..."
 # Execute setup_and_run script with environment variables as arguments
-exec gosu appuser ./setup_and_run.sh --lang $APP_LANG --port $APP_PORT "--$MODE" --path "$SAVE_PATH" "$PY_INTERACTIVE_FLAG"
+exec gosu appuser ./setup_and_run.sh --lang "$APP_LANG" --port $APP_PORT --mode "$MODE" --path "$SAVE_PATH" --password "$PASSWORD" "$PY_INTERACTIVE_FLAG"
 

@@ -30,6 +30,7 @@
             "args": [
                 "--web",
                 "--lang=zh-CN",
+                "--debug"
             ]
         }
     ]

@@ -6,6 +6,7 @@ fi
 
 ${NPM_CMD} install --prefix "./frontend/palworld-pal-editor-webui"
 ${NPM_CMD} run --prefix "./frontend/palworld-pal-editor-webui" build
+rm -r "./src/palworld_pal_editor/webui"
 mv "./frontend/palworld-pal-editor-webui/dist" "./src/palworld_pal_editor/webui"
 
 # Check for Python 3.x and set the appropriate command
