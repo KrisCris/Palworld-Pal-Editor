@@ -1,5 +1,6 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# FROM python:3.11-slim
+FROM nikolaik/python-nodejs:python3.12-nodejs21-slim
 
 # Define environment variables for customization
 ENV TZ=UTC \
@@ -22,17 +23,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         tini \
         gosu \
         tzdata \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
+    # && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    # && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
 
+# https://github.com/nikolaik/docker-python-nodejs
+# All images have a default user `pn`` with uid 1000 and gid 1000.
 # Create the appuser user and group before setting permissions
-RUN groupadd -g 1000 appuser && \
-    useradd -m -u 1000 -g appuser -s /bin/bash appuser
+# RUN groupadd -g 1000 appuser && \
+#     useradd -m -u 1000 -g appuser -s /bin/bash appuser
 
 # Copy the application's requirements.txt and setup script, then install Python dependencies
-COPY ./requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# COPY ./requirements.txt ./
+# RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application's source code
 COPY ./ /app

@@ -97,6 +97,7 @@ class PalEntity:
         
         self.remove_all_attacks()
         self.learn_attacks()
+        self.MaxHP = self.ComputedMaxHP
     
     @property
     def _RawSpecieKey(self) -> Optional[str]:

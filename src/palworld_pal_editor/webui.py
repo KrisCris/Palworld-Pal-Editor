@@ -23,9 +23,6 @@ app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)
 
-Config.password_hash = generate_password_hash(Config.password or "")
-
-
 @app.route('/image/<icon_type>/<filename>')
 def serve_image(icon_type, filename):
     image_path = BASE_PATH / 'assets/icons' / icon_type / f"{filename}.png"
@@ -60,6 +57,7 @@ def missing_token_callback(error_string):
 
 
 def main():
+    Config._password_hash = generate_password_hash(Config.password)
     if Config.mode == "web" and not Config.debug:
         try:
             threading.Timer(3, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()

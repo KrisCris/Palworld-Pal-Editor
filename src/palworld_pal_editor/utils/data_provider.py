@@ -64,9 +64,9 @@ def none_guard(
                 subkey
                 and (subkey not in data_source[key] or not data_source[key][subkey])
             ):
-                LOGGER.warning(
-                    f"Key: {key} or subkey: {subkey} were not found in the data source."
-                )
+                # LOGGER.warning(
+                #     f"Key: {key} or subkey: {subkey} were not found in the data source."
+                # )
                 return None
 
             return func(*args, **kwargs)

@@ -12,7 +12,7 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--cli",
+                "--mode=cli",
                 "--lang=zh-CN",
                 "--debug"
             ]
@@ -28,7 +28,7 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--gui",
+                "--mode=gui",
                 "--lang=zh-CN",
                 "--debug"
             ]
@@ -44,7 +44,7 @@
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
-                "--web",
+                "--mode=web",
                 "--lang=zh-CN",
                 "--debug"
             ]

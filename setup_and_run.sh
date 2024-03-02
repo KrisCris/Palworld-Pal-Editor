@@ -2,27 +2,22 @@
 
 # modified for the use of docker image
 # Default values
-LANG="zh-CN"
-PORT=58080
-# MODE="--cli"  # Default mode set to CLI
-MODE="web"
+PY_INTERACTIVE_MODE=""
+LANG=""
+PORT=""
+MODE=""
 SAVE_PATH=""
 PASSWORD=""
-PY_INTERACTIVE_MODE=""
 
 # Process command-line arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --i) PY_INTERACTIVE_MODE="-i"; shift ;;
-        --lang) LANG="$2"; shift ;;
-        --lang) LANG="$2"; shift ;;
-        --port) PORT="$2"; shift ;;
-        --mode) MODE="$2"; shift ;;
+        --lang) LANG="--lang \"$2\""; shift ;;
+        --port) PORT="--port \"$2\""; shift ;;
+        --mode) MODE="--mode \"$2\""; shift ;;
         --path) SAVE_PATH="--path \"$2\""; shift ;;
         --password) PASSWORD="--password \"$2\""; shift ;;
-        # --web|--cli|--gui)
-        #     MODE="$1"
-        #     ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -34,8 +29,10 @@ else
     echo "Node is not installed."
 fi
 
-${NPM_CMD} install --prefix "./frontend/palworld-pal-editor-webui"
-${NPM_CMD} run --prefix "./frontend/palworld-pal-editor-webui" build
+cd "./frontend/palworld-pal-editor-webui"
+${NPM_CMD} install
+${NPM_CMD} run build
+cd "../../"
 rm -r "./src/palworld_pal_editor/webui"
 mv "./frontend/palworld-pal-editor-webui/dist" "./src/palworld_pal_editor/webui"
 
@@ -74,7 +71,7 @@ pip install -r requirements.txt
 # Install your package in editable mode
 pip install -e .
 
-COMMAND_ARGS="--mode=$MODE --lang=$LANG --port=$PORT $SAVE_PATH $PASSWORD"
+COMMAND_ARGS="$MODE $LANG $PORT $SAVE_PATH $PASSWORD"
 
 # Log the arguments before invoking Python
 echo "Running command: python $PY_INTERACTIVE_MODE -m palworld_pal_editor $COMMAND_ARGS"
