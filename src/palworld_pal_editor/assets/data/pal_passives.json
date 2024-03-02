@@ -1,8 +1,8 @@
 {
     "ElementResist_Normal_1_PAL": {
-        "CodeName": "ElementResist_Normal_1_PAL",
+        "InternalName": "ElementResist_Normal_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Abnormal",
                 "Description": "-10% damage received from Neutral attacks"
@@ -14,9 +14,9 @@
         }
     },
     "ElementResist_Dark_1_PAL": {
-        "CodeName": "ElementResist_Dark_1_PAL",
+        "InternalName": "ElementResist_Dark_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Cheery",
                 "Description": "-10% damage received from Dark attacks"
@@ -28,9 +28,9 @@
         }
     },
     "ElementResist_Dragon_1_PAL": {
-        "CodeName": "ElementResist_Dragon_1_PAL",
+        "InternalName": "ElementResist_Dragon_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Dragonkiller",
                 "Description": "-10% damage received from Dragon attacks"
@@ -42,9 +42,9 @@
         }
     },
     "ElementResist_Ice_1_PAL": {
-        "CodeName": "ElementResist_Ice_1_PAL",
+        "InternalName": "ElementResist_Ice_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Heated Body",
                 "Description": "-10% damage received from Ice attacks"
@@ -56,9 +56,9 @@
         }
     },
     "ElementResist_Fire_1_PAL": {
-        "CodeName": "ElementResist_Fire_1_PAL",
+        "InternalName": "ElementResist_Fire_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Suntan Lover",
                 "Description": "-10% damage received from Fire attacks"
@@ -70,9 +70,9 @@
         }
     },
     "ElementResist_Leaf_1_PAL": {
-        "CodeName": "ElementResist_Leaf_1_PAL",
+        "InternalName": "ElementResist_Leaf_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Botanical Barrier",
                 "Description": "-10% damage received from Grass attacks"
@@ -84,9 +84,9 @@
         }
     },
     "ElementResist_Earth_1_PAL": {
-        "CodeName": "ElementResist_Earth_1_PAL",
+        "InternalName": "ElementResist_Earth_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Earthquake Resistant",
                 "Description": "-10% damage received from Ground attacks"
@@ -98,9 +98,9 @@
         }
     },
     "ElementResist_Thunder_1_PAL": {
-        "CodeName": "ElementResist_Thunder_1_PAL",
+        "InternalName": "ElementResist_Thunder_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Insulated Body",
                 "Description": "-10% damage received from Electric attacks"
@@ -112,9 +112,9 @@
         }
     },
     "ElementResist_Aqua_1_PAL": {
-        "CodeName": "ElementResist_Aqua_1_PAL",
+        "InternalName": "ElementResist_Aqua_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Waterproof",
                 "Description": "-10% damage received from Water attacks"
@@ -126,9 +126,9 @@
         }
     },
     "ElementBoost_Normal_1_PAL": {
-        "CodeName": "ElementBoost_Normal_1_PAL",
+        "InternalName": "ElementBoost_Normal_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Zen Mind",
                 "Description": "+10% damage dealt with Neutral attacks"
@@ -140,9 +140,9 @@
         }
     },
     "ElementBoost_Dark_1_PAL": {
-        "CodeName": "ElementBoost_Dark_1_PAL",
+        "InternalName": "ElementBoost_Dark_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Veil of Darkness",
                 "Description": "+10% damage dealt with Dark attacks"
@@ -154,9 +154,9 @@
         }
     },
     "ElementBoost_Dragon_1_PAL": {
-        "CodeName": "ElementBoost_Dragon_1_PAL",
+        "InternalName": "ElementBoost_Dragon_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Blood of the Dragon",
                 "Description": "+10% damage dealt with Dragon attacks"
@@ -168,9 +168,9 @@
         }
     },
     "ElementBoost_Ice_1_PAL": {
-        "CodeName": "ElementBoost_Ice_1_PAL",
+        "InternalName": "ElementBoost_Ice_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Coldblooded",
                 "Description": "+10% damage dealt with Ice attacks"
@@ -182,9 +182,9 @@
         }
     },
     "ElementBoost_Fire_1_PAL": {
-        "CodeName": "ElementBoost_Fire_1_PAL",
+        "InternalName": "ElementBoost_Fire_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Pyromaniac",
                 "Description": "+10% damage dealt with Fire attacks"
@@ -196,9 +196,9 @@
         }
     },
     "ElementBoost_Leaf_1_PAL": {
-        "CodeName": "ElementBoost_Leaf_1_PAL",
+        "InternalName": "ElementBoost_Leaf_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Fragrant Foliage",
                 "Description": "+10% damage dealt with Grass attacks"
@@ -210,9 +210,9 @@
         }
     },
     "ElementBoost_Earth_1_PAL": {
-        "CodeName": "ElementBoost_Earth_1_PAL",
+        "InternalName": "ElementBoost_Earth_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Power of Gaia",
                 "Description": "+10% damage dealt with Ground attacks"
@@ -224,9 +224,9 @@
         }
     },
     "ElementBoost_Thunder_1_PAL": {
-        "CodeName": "ElementBoost_Thunder_1_PAL",
+        "InternalName": "ElementBoost_Thunder_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Capacitor",
                 "Description": "+10% damage dealt with Electric attacks"
@@ -238,9 +238,9 @@
         }
     },
     "ElementBoost_Aqua_1_PAL": {
-        "CodeName": "ElementBoost_Aqua_1_PAL",
+        "InternalName": "ElementBoost_Aqua_1_PAL",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Hydromaniac",
                 "Description": "+10% damage dealt with Water attacks"
@@ -252,9 +252,9 @@
         }
     },
     "ElementBoost_Normal_2_PAL": {
-        "CodeName": "ElementBoost_Normal_2_PAL",
+        "InternalName": "ElementBoost_Normal_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Celestial Emperor",
                 "Description": "+20% damage dealt with Neutral attacks; Paladius' signature ability"
@@ -266,9 +266,9 @@
         }
     },
     "ElementBoost_Dark_2_PAL": {
-        "CodeName": "ElementBoost_Dark_2_PAL",
+        "InternalName": "ElementBoost_Dark_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Lord of the Underworld",
                 "Description": "+20% damage dealt with Dark attacks; Necromus' signature ability"
@@ -280,9 +280,9 @@
         }
     },
     "ElementBoost_Dragon_2_PAL": {
-        "CodeName": "ElementBoost_Dragon_2_PAL",
+        "InternalName": "ElementBoost_Dragon_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Divine Dragon",
                 "Description": "+20% damage dealt with Dragon attacks; Jetragon's signature ability"
@@ -294,9 +294,9 @@
         }
     },
     "ElementBoost_Ice_2_PAL": {
-        "CodeName": "ElementBoost_Ice_2_PAL",
+        "InternalName": "ElementBoost_Ice_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Ice Emperor",
                 "Description": "+20% damage dealt with Ice attacks; Frostallion's signature ability"
@@ -308,9 +308,9 @@
         }
     },
     "ElementBoost_Fire_2_PAL": {
-        "CodeName": "ElementBoost_Fire_2_PAL",
+        "InternalName": "ElementBoost_Fire_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Flame Emperor",
                 "Description": "+20% damage dealt with Fire attacks; Blazamut's signature ability"
@@ -322,9 +322,9 @@
         }
     },
     "ElementBoost_Leaf_2_PAL": {
-        "CodeName": "ElementBoost_Leaf_2_PAL",
+        "InternalName": "ElementBoost_Leaf_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Spirit Emperor",
                 "Description": "+20% damage dealt with Grass attacks; Lyleen's signature ability"
@@ -336,9 +336,9 @@
         }
     },
     "ElementBoost_Earth_2_PAL": {
-        "CodeName": "ElementBoost_Earth_2_PAL",
+        "InternalName": "ElementBoost_Earth_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Earth Emperor",
                 "Description": "+20% damage dealt with Ground attacks; Anubis' signature ability"
@@ -350,9 +350,9 @@
         }
     },
     "ElementBoost_Thunder_2_PAL": {
-        "CodeName": "ElementBoost_Thunder_2_PAL",
+        "InternalName": "ElementBoost_Thunder_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Lord of Lightning",
                 "Description": "+20% damage dealt with Electric attacks; Orserk's signature ability"
@@ -364,9 +364,9 @@
         }
     },
     "ElementBoost_Aqua_2_PAL": {
-        "CodeName": "ElementBoost_Aqua_2_PAL",
+        "InternalName": "ElementBoost_Aqua_2_PAL",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Lord of the Sea",
                 "Description": "+20% damage dealt with Water attacks; Jormuntide's signature ability"
@@ -378,9 +378,9 @@
         }
     },
     "PAL_ALLAttack_up1": {
-        "CodeName": "PAL_ALLAttack_up1",
+        "InternalName": "PAL_ALLAttack_up1",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Brave",
                 "Description": "+10% to Attack stat"
@@ -392,9 +392,9 @@
         }
     },
     "PAL_ALLAttack_up2": {
-        "CodeName": "PAL_ALLAttack_up2",
+        "InternalName": "PAL_ALLAttack_up2",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Ferocious",
                 "Description": "+20% to Attack stat"
@@ -412,9 +412,9 @@
         }
     },
     "PAL_ALLAttack_down1": {
-        "CodeName": "PAL_ALLAttack_down1",
+        "InternalName": "PAL_ALLAttack_down1",
         "Rating": -1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Coward",
                 "Description": "-10% to Attack stat"
@@ -432,9 +432,9 @@
         }
     },
     "PAL_ALLAttack_down2": {
-        "CodeName": "PAL_ALLAttack_down2",
+        "InternalName": "PAL_ALLAttack_down2",
         "Rating": -3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Pacifist",
                 "Description": "-20% to Attack stat"
@@ -452,9 +452,9 @@
         }
     },
     "Deffence_up1": {
-        "CodeName": "Deffence_up1",
+        "InternalName": "Deffence_up1",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Hard Skin",
                 "Description": "+10% to Defence stat"
@@ -472,9 +472,9 @@
         }
     },
     "Deffence_up2": {
-        "CodeName": "Deffence_up2",
+        "InternalName": "Deffence_up2",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Burly Body",
                 "Description": "+20% to Defence stat"
@@ -492,9 +492,9 @@
         }
     },
     "Deffence_down1": {
-        "CodeName": "Deffence_down1",
+        "InternalName": "Deffence_down1",
         "Rating": -1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Downtrodden",
                 "Description": "-10% to Defence stat"
@@ -512,9 +512,9 @@
         }
     },
     "Deffence_down2": {
-        "CodeName": "Deffence_down2",
+        "InternalName": "Deffence_down2",
         "Rating": -3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Brittle",
                 "Description": "-20% to Defence stat"
@@ -532,9 +532,9 @@
         }
     },
     "TrainerMining_up1": {
-        "CodeName": "TrainerMining_up1",
+        "InternalName": "TrainerMining_up1",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Mine Foreman",
                 "Description": "+25% to Player mining efficiency"
@@ -546,9 +546,9 @@
         }
     },
     "TrainerLogging_up1": {
-        "CodeName": "TrainerLogging_up1",
+        "InternalName": "TrainerLogging_up1",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Logging Foreman",
                 "Description": "+25% to Player logging efficiency"
@@ -560,9 +560,9 @@
         }
     },
     "TrainerATK_UP_1": {
-        "CodeName": "TrainerATK_UP_1",
+        "InternalName": "TrainerATK_UP_1",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Vanguard",
                 "Description": "+10% to Player attack stat"
@@ -574,9 +574,9 @@
         }
     },
     "TrainerWorkSpeed_UP_1": {
-        "CodeName": "TrainerWorkSpeed_UP_1",
+        "InternalName": "TrainerWorkSpeed_UP_1",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Motivational Leader",
                 "Description": "+25% to Player move speed"
@@ -588,9 +588,9 @@
         }
     },
     "TrainerDEF_UP_1": {
-        "CodeName": "TrainerDEF_UP_1",
+        "InternalName": "TrainerDEF_UP_1",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Stronghold Strategist",
                 "Description": "+10% to Player defence stat"
@@ -602,9 +602,9 @@
         }
     },
     "PAL_Sanity_Down_1": {
-        "CodeName": "PAL_Sanity_Down_1",
+        "InternalName": "PAL_Sanity_Down_1",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Positive Thinker",
                 "Description": "Sanity drops 10% slower"
@@ -616,9 +616,9 @@
         }
     },
     "PAL_Sanity_Down_2": {
-        "CodeName": "PAL_Sanity_Down_2",
+        "InternalName": "PAL_Sanity_Down_2",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Workaholic",
                 "Description": "Sanity drops 15% slower"
@@ -630,9 +630,9 @@
         }
     },
     "PAL_Sanity_Up_1": {
-        "CodeName": "PAL_Sanity_Up_1",
+        "InternalName": "PAL_Sanity_Up_1",
         "Rating": -1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Unstable",
                 "Description": "Sanity drops 10% faster"
@@ -644,9 +644,9 @@
         }
     },
     "PAL_Sanity_Up_2": {
-        "CodeName": "PAL_Sanity_Up_2",
+        "InternalName": "PAL_Sanity_Up_2",
         "Rating": -2,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Destructive",
                 "Description": "Sanity drops 15% faster"
@@ -658,9 +658,9 @@
         }
     },
     "PAL_FullStomach_Down_1": {
-        "CodeName": "PAL_FullStomach_Down_1",
+        "InternalName": "PAL_FullStomach_Down_1",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Dainty Eater",
                 "Description": "Hunger drops 10% slower"
@@ -672,9 +672,9 @@
         }
     },
     "PAL_FullStomach_Down_2": {
-        "CodeName": "PAL_FullStomach_Down_2",
+        "InternalName": "PAL_FullStomach_Down_2",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Diet Lover",
                 "Description": "Chance to lose hunger -15%"
@@ -686,9 +686,9 @@
         }
     },
     "PAL_FullStomach_Up_1": {
-        "CodeName": "PAL_FullStomach_Up_1",
+        "InternalName": "PAL_FullStomach_Up_1",
         "Rating": -1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Glutton",
                 "Description": "Hunger drops 10% faster"
@@ -700,9 +700,9 @@
         }
     },
     "PAL_FullStomach_Up_2": {
-        "CodeName": "PAL_FullStomach_Up_2",
+        "InternalName": "PAL_FullStomach_Up_2",
         "Rating": -2,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Bottomless Stomach",
                 "Description": "Hunger drops 15% faster"
@@ -714,9 +714,9 @@
         }
     },
     "CraftSpeed_up1": {
-        "CodeName": "CraftSpeed_up1",
+        "InternalName": "CraftSpeed_up1",
         "Rating": 2,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Serious",
                 "Description": "+20% work speed"
@@ -734,9 +734,9 @@
         }
     },
     "CraftSpeed_up2": {
-        "CodeName": "CraftSpeed_up2",
+        "InternalName": "CraftSpeed_up2",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Artisan",
                 "Description": "+50% work speed"
@@ -754,9 +754,9 @@
         }
     },
     "CraftSpeed_down1": {
-        "CodeName": "CraftSpeed_down1",
+        "InternalName": "CraftSpeed_down1",
         "Rating": -1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Clumsy",
                 "Description": "-10% work speed"
@@ -774,9 +774,9 @@
         }
     },
     "CraftSpeed_down2": {
-        "CodeName": "CraftSpeed_down2",
+        "InternalName": "CraftSpeed_down2",
         "Rating": -3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Slacker",
                 "Description": "-30% work speed"
@@ -794,9 +794,9 @@
         }
     },
     "MoveSpeed_up_1": {
-        "CodeName": "MoveSpeed_up_1",
+        "InternalName": "MoveSpeed_up_1",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Nimble",
                 "Description": "+10% movement speed"
@@ -814,9 +814,9 @@
         }
     },
     "MoveSpeed_up_2": {
-        "CodeName": "MoveSpeed_up_2",
+        "InternalName": "MoveSpeed_up_2",
         "Rating": 2,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Runner",
                 "Description": "+20% movement speed"
@@ -834,9 +834,9 @@
         }
     },
     "MoveSpeed_up_3": {
-        "CodeName": "MoveSpeed_up_3",
+        "InternalName": "MoveSpeed_up_3",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Swift",
                 "Description": "+30% movement speed"
@@ -854,9 +854,9 @@
         }
     },
     "PAL_CorporateSlave": {
-        "CodeName": "PAL_CorporateSlave",
+        "InternalName": "PAL_CorporateSlave",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Work Slave",
                 "Description": "+30% work speed, -30% attack"
@@ -874,9 +874,9 @@
         }
     },
     "PAL_rude": {
-        "CodeName": "PAL_rude",
+        "InternalName": "PAL_rude",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Hooligan",
                 "Description": "+15% attack, -10% work speed"
@@ -894,9 +894,9 @@
         }
     },
     "Noukin": {
-        "CodeName": "Noukin",
+        "InternalName": "Noukin",
         "Rating": 2,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Musclehead",
                 "Description": "+30% attack, -50% work speed"
@@ -914,9 +914,9 @@
         }
     },
     "PAL_oraora": {
-        "CodeName": "PAL_oraora",
+        "InternalName": "PAL_oraora",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Aggressive",
                 "Description": "+10% attack, -20% defence"
@@ -934,9 +934,9 @@
         }
     },
     "PAL_conceited": {
-        "CodeName": "PAL_conceited",
+        "InternalName": "PAL_conceited",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Conceited",
                 "Description": "+10% work speed, -20% defence"
@@ -954,9 +954,9 @@
         }
     },
     "PAL_masochist": {
-        "CodeName": "PAL_masochist",
+        "InternalName": "PAL_masochist",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Masochist",
                 "Description": "+15% defence, -15% attack"
@@ -974,9 +974,9 @@
         }
     },
     "PAL_sadist": {
-        "CodeName": "PAL_sadist",
+        "InternalName": "PAL_sadist",
         "Rating": 1,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Sadist",
                 "Description": "+15% attack, +15% defence"
@@ -994,9 +994,9 @@
         }
     },
     "Rare": {
-        "CodeName": "Rare",
+        "InternalName": "Rare",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Lucky",
                 "Description": "+15% attack, +15% work speed"
@@ -1014,9 +1014,9 @@
         }
     },
     "Legend": {
-        "CodeName": "Legend",
+        "InternalName": "Legend",
         "Rating": 3,
-        "i18n": {
+        "I18n": {
             "en": {
                 "Name": "Legend",
                 "Description": "+20% attack, +20% defence, +15% move speed"

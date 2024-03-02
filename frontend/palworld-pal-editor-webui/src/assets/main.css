@@ -1,13 +1,6 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
+/* a,
 .green {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
@@ -21,15 +14,62 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+#app {
+  margin: 0 auto;
+  padding: 2vh;
+  padding-right: 0;
+  font-weight: normal;
+  display: flex;
+  align-items:flex-start
+} */
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
+
+/* Customize website's scrollbar like Mac OS
+Not supports in Firefox and IE */
+
+/* total width */
+::-webkit-scrollbar {
+  background-color: rgba(0,0,0,0);
+  width: 8px;
+  height: 8px;
+  z-index: 999999;
+}
+
+/* background of the scrollbar except button or resizer */
+::-webkit-scrollbar-track {
+  background-color: rgba(0,0,0,0);
+}
+
+/* scrollbar itself */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0);
+  border-radius:8px;
+  border:0px solid #fff;
+}
+
+/* set button(top and bottom of the scrollbar) */
+::-webkit-scrollbar-button {
+  display:none;
+}
+
+
+/* scrollbar when element is hovered */
+:hover::-webkit-scrollbar-thumb {
+  background-color: #a0a0a5;
+  border:0px solid #fff;
+}
+
+/* scrollbar when scrollbar is hovered */
+::-webkit-scrollbar-thumb:hover {
+    background-color:#a0a0a5;
+    border:0px solid #f4f4f4
 }

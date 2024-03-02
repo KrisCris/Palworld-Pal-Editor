@@ -71,5 +71,5 @@ class PlayerEntity:
     def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
         match sorting_key:
             case "paldeck": 
-                return sorted(self.get_pals(), key=lambda pal: alphanumeric_key(pal.PalDeckID))
+                return sorted(self.get_pals(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
         

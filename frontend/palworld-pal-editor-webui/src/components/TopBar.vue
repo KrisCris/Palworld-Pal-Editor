@@ -1,23 +1,10 @@
 <script setup>
-import EntryView from './views/EntryView.vue';
 import { usePalEditorStore } from '@/stores/paleditor'
-import EditorView from './views/EditorView.vue';
-import TopBar from './components/TopBar.vue'
-import AuthView from './views/AuthView.vue';
 import { watch, ref, onMounted } from 'vue';
 const palStore = usePalEditorStore()
 
 const loadingWidth = ref(0); // Start with 0% width
 
-onMounted(async () => {
-  await palStore.fetch_config()
-  if (!palStore.HAS_PASSWORD) {
-    await palStore.login({ target: { value: "" } })
-  }
-  await palStore.auth()
-})
-
-// Simulate loading progress
 const interval = setInterval(() => {
   // Only proceed if loading is true and width is less than 90% to leave room for "completion"
   if (palStore.LOADING_FLAG && loadingWidth.value < 90) {
@@ -34,11 +21,10 @@ watch(palStore.LOADING_FLAG, (newValue) => {
     }, 500); // Short delay to show completion
   }
 });
-
 </script>
 
 <template>
-  <!-- <div v-if="palStore.LOADING_FLAG" class="loading-bar" :style="{ width: loadingWidth + '%' }"></div>
+  <div v-if="palStore.LOADING_FLAG" class="loading-bar" :style="{ width: loadingWidth + '%' }"></div>
   <div class="SaveDiv" v-if="palStore.SAVE_LOADED_FLAG">
     <p>💾</p>
     <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH" :placeholder="palStore.PAL_GAME_SAVE_PATH">
@@ -49,21 +35,10 @@ watch(palStore.LOADING_FLAG, (newValue) => {
     <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n" :disabled="palStore.LOADING_FLAG">
       <option :value="key" v-for="translated, key in palStore.I18nList">{{ translated }}</option>
     </select>
-  </div> -->
-  <TopBar></TopBar>
-  <AuthView v-if="palStore.IS_LOCKED"></AuthView>
-  <div v-else>
-    <EntryView v-if="!palStore.SAVE_LOADED_FLAG"></EntryView>
-    <EditorView v-else></EditorView>
   </div>
 </template>
 
 <style>
-body {
-  display: flex;
-  align-items: center;
-}
-
 div.loading-bar {
   position: fixed;
   top: 0;

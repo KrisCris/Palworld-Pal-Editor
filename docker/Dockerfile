@@ -11,7 +11,8 @@ ENV TZ=UTC \
     PYTHONUNBUFFERED=1 \
     MODE=--cli \
     PY_INTERACTIVE_FLAG="--i" \
-    SAVE_PATH="/mnt/gamesave"
+    SAVE_PATH="/mnt/gamesave" \
+    PASSWORD=null
 
 # Set the working directory in the container
 WORKDIR /app

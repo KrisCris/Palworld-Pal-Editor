@@ -1,7 +1,7 @@
 .git
 venv/
 logs/
-gamesave/
+gamesave*/
 test_outputs/
 unused_data/
 docker/

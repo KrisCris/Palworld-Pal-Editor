@@ -5,6 +5,7 @@ from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
 from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value
+from palworld_pal_editor.utils.util import type_guard
 
 
 class PalEntity:
@@ -75,10 +76,27 @@ class PalEntity:
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
     def CharacterID(self, value: str) -> None:
+        # TODO Need to test if SheepBall and Sheepball are identical
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
         else:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
+
+        # Remove / Add Gender
+        match self.DataAccessKey:
+            case "GYM_ThunderDragonMan": self.Gender = PalGender.MALE
+            case "GYM_LilyQueen": self.Gender = PalGender.FEMALE
+            case "GYM_Horus": self.Gender = PalGender.MALE
+            case "GYM_BlackGriffon": self.Gender = PalGender.MALE
+            case "GYM_ElecPanda": self.Gender = PalGender.FEMALE
+        if self.Gender and self.IsHuman:
+            self.del_Gender()
+        elif not self.Gender and self.IsPal:
+            # well, just randomly picked lol
+            self.Gender = PalGender.FEMALE
+        
+        self.remove_all_attacks()
+        self.learn_attacks()
     
     @property
     def _RawSpecieKey(self) -> Optional[str]:
@@ -91,15 +109,34 @@ class PalEntity:
         if self.IsTower:
             key = key.split("GYM_")[1]
         return key
+    
+    @property
+    def IsHuman(self):
+        return DataProvider.is_pal_human(self.DataAccessKey)
+            
+    @property
+    def IsPal(self):
+        if DataProvider.get_pal_sorting_key(self.DataAccessKey) and not self.IsHuman:
+            return True
+        return False
+    
+    @property
+    def HasTowerVariant(self) -> bool:
+        if self.IsTower: return True
+        if DataProvider.has_tower_variant_pal(self.DataAccessKey):
+            return True
+        return False
 
     @property
     def IconAccessKey(self) -> Optional[str]:
-        if DataProvider.is_pal_human(self.DataAccessKey):
+        if self.IsHuman:
             return "Human"
         return self.DataAccessKey
 
     @property
     def DataAccessKey(self) -> Optional[str]:
+        if self.IsTower:
+            return self.CharacterID
         key = self._RawSpecieKey
         match key:
             case "SheepBall":
@@ -108,6 +145,10 @@ class PalEntity:
                 key = "LazyCatfish"
         return key
     
+    @property
+    def I18nName(self) -> Optional[str]:
+        return DataProvider.get_pal_i18n(self.DataAccessKey)
+
     @property
     def DisplayName(self) -> str:
         return self._get_display_name()
@@ -118,20 +159,32 @@ class PalEntity:
         return key if key else self.DataAccessKey
     
     @property
-    def Gender(self) -> Optional[str]:
-        return PalGender.from_value(get_attr_value(self._pal_param, "Gender", ["value"]))
-    
+    def Gender(self) -> Optional[PalGender]:
+        return PalGender.from_value(PalObjects.get_EnumProperty(self._pal_param.get("Gender")))
+        
     @Gender.setter
     @LOGGER.change_logger('Gender')
-    def Gender(self, gender: PalGender) -> None:
-        if not isinstance(gender, PalGender):
-            LOGGER.warning(f"Invalid gender value: {gender}")
-            return
-        if not self.Gender:
+    @type_guard
+    def Gender(self, gender: PalGender | str) -> None:
+        if not self.Gender and not self.IsPal:
             LOGGER.warning("This pal has no gender.")
             return
-        PalObjects.set_EnumProperty(self._pal_param["Gender"], gender.value)
-            
+        if isinstance(gender, PalGender):
+            pal_gender = gender
+        else:
+            pal_gender = PalGender.from_value(gender)
+            if not pal_gender:
+                return
+        if self.Gender is None:
+            self._pal_param["Gender"] = PalObjects.EnumProperty("EPalGenderType", pal_gender.value)
+        else:
+            PalObjects.set_EnumProperty(self._pal_param["Gender"], pal_gender.value)
+
+    @LOGGER.change_logger('Gender')
+    def del_Gender(self):
+        if self.IsHuman or not self.IsPal:
+            self._pal_param.pop("Gender", None)
+
     @property
     def IsTower(self) -> bool:
         if "GYM_" in self.CharacterID:
@@ -139,11 +192,13 @@ class PalEntity:
         return False
     
     @IsTower.setter
-    def SetTower(self, value: bool) -> None:
+    @type_guard
+    def IsTower(self, value: bool) -> None:
         if not value:
             self.CharacterID = self._RawSpecieKey
-        elif not self._IsBOSS and value:
+        else:
             self.CharacterID = f"GYM_{self._RawSpecieKey}"
+        self.MaxHP = self.ComputedMaxHP
 
     @property
     def _IsBOSS(self) -> bool:
@@ -156,6 +211,7 @@ class PalEntity:
         
     @_IsBOSS.setter
     @LOGGER.change_logger("_IsBOSS")
+    @type_guard
     def _IsBOSS(self, value: bool) -> None:
         if not value:
             self.CharacterID = self._RawSpecieKey
@@ -173,6 +229,7 @@ class PalEntity:
     
     @IsBOSS.setter
     @LOGGER.change_logger('IsBOSS')
+    @type_guard
     def IsBOSS(self, value: bool) -> None:
         # Boss and Rare can only exist one
         if self.IsRarePal and not value:
@@ -189,6 +246,7 @@ class PalEntity:
     
     @IsRarePal.setter
     @LOGGER.change_logger('IsRarePal')
+    @type_guard
     def IsRarePal(self, value: bool) -> None:
         # Boss and Rare can only exist one
         if self.IsBOSS and not value:
@@ -212,11 +270,15 @@ class PalEntity:
     
     @NickName.setter
     @LOGGER.change_logger('NickName')
+    @type_guard
     def NickName(self, value: str) -> None:
         if self.NickName is None:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
             self._pal_param["NickName"]["value"] = value
+        # clear up
+        if not self.NickName:
+            self._pal_param.pop("NickName", None)
 
     @property
     def Level(self) -> Optional[int]:
@@ -224,6 +286,7 @@ class PalEntity:
     
     @Level.setter
     @LOGGER.change_logger('Level')
+    @type_guard
     def Level(self, value: int) -> None:
         value = clamp(1, 50, value)
         if self.Level is None:
@@ -234,7 +297,7 @@ class PalEntity:
         # Update MaxHP
         self.MaxHP = self.ComputedMaxHP
         # Learn Attacks
-        self.learn_attacks_on_leveling()
+        self.learn_attacks()
 
     @property
     def Exp(self) -> Optional[int]:
@@ -242,6 +305,7 @@ class PalEntity:
     
     @Exp.setter
     @LOGGER.change_logger('Exp')
+    @type_guard
     def Exp(self, value: int) -> None:
         if self.Exp is None:
             self._pal_param["Exp"] = PalObjects.IntProperty(value)
@@ -254,19 +318,25 @@ class PalEntity:
 
     @Rank.setter
     @LOGGER.change_logger('Rank')
-    def Rank(self, rank: PalRank) -> None:
-        if not isinstance(rank, PalRank):
-            LOGGER.warning(f"Invalid rank value {rank}")
-            return
-        # if rank == PalRank.Rank0:
-        #     self._pal_param.pop('Rank', None)
-        #     return
-        if self.Rank is None:
-            self._pal_param["Rank"] = PalObjects.IntProperty(rank.value)
+    @type_guard
+    def Rank(self, rank: PalRank | int) -> None:
+        if isinstance(rank, PalRank):
+            pal_rank = rank
         else:
-            PalObjects.set_BaseType(self._pal_param["Rank"], rank.value)
-        # Update MaxHP
+            pal_rank = PalRank.from_value(rank)
+            if not pal_rank:
+                LOGGER.warning(f"Invalid rank value {rank}")
+                return
+
+        if self.Rank is None:
+            self._pal_param["Rank"] = PalObjects.IntProperty(pal_rank.value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
+
         self.MaxHP = self.ComputedMaxHP
+
+        if self.Rank == PalRank.Rank0:
+            self._pal_param.pop("Rank", None)
 
     @property
     def Rank_HP(self) -> Optional[int]:
@@ -286,22 +356,26 @@ class PalEntity:
     
     @Rank_HP.setter
     @LOGGER.change_logger('Rank_HP')
+    @type_guard
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
         self.MaxHP = self.ComputedMaxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
+    @type_guard
     def Rank_Attack(self, rank: int) -> None:
         self._set_soul_rank('Rank_Attack', rank)
 
     @Rank_Defence.setter
     @LOGGER.change_logger('Rank_Defence')
+    @type_guard
     def Rank_Defence(self, rank: int) -> None:
         self._set_soul_rank('Rank_Defence', rank)
 
     @Rank_CraftSpeed.setter
     @LOGGER.change_logger('Rank_CraftSpeed')
+    @type_guard
     def Rank_CraftSpeed(self, rank: int) -> None:
         self._set_soul_rank('Rank_CraftSpeed', rank)
 
@@ -328,7 +402,7 @@ class PalEntity:
         if Attack_Stat is None:
             return None
         Attack_IV = (self.Talent_Shot or 0) * 0.3 / 100 # 30% of Talent
-        Attack_Bonus = self._get_passive_buff("b_Attack") # 0
+        Attack_Bonus = self._get_passive_buff("b_Attack")
         Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
@@ -345,8 +419,8 @@ class PalEntity:
         if Defense_Stat is None:
             return None
         Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100 # 30% of Talent
-        Defense_Bonus = self._get_passive_buff("b_Defense") # 0
-        Defense_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
+        Defense_Bonus = self._get_passive_buff("b_Defense")
+        Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
         # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong
@@ -354,6 +428,15 @@ class PalEntity:
         return math.floor(base_defense * (1 + Defense_Bonus))
         # return math.floor(math.floor(50 + Defense_Stat * 0.075 * Level * (1 + Defense_IV))
         #     * (1 + Defense_Bonus)  * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
+
+    @property
+    def ComputedCraftSpeed(self) -> Optional[int]:
+        Base_CraftSpeed = self.CraftSpeed
+        if self.CraftSpeed is None: return None
+        CraftSpeed_SoulBonus = (self.Rank_CraftSpeed or 0) * 0.03 # 3% per incr Rank_HP
+        Defense_Bonus = self._get_passive_buff("b_CraftSpeed")
+        return math.floor(math.floor(Base_CraftSpeed * (1 + CraftSpeed_SoulBonus)) * (1 + Defense_Bonus))
+
 
     @property
     def HP(self) -> Optional[int]:
@@ -527,22 +610,26 @@ class PalEntity:
     
     @Talent_HP.setter
     @LOGGER.change_logger("Talent_HP")
+    @type_guard
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
         self.MaxHP = self.ComputedMaxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
+    @type_guard
     def Talent_Melee(self, value: int):
         self._set_iv("Talent_Melee", value)
 
     @Talent_Shot.setter
     @LOGGER.change_logger("Talent_Shot")
+    @type_guard
     def Talent_Shot(self, value: int):
         self._set_iv("Talent_Shot", value)
 
     @Talent_Defense.setter
     @LOGGER.change_logger("Talent_Defense")
+    @type_guard
     def Talent_Defense(self, value: int):
         self._set_iv("Talent_Defense", value)
     
@@ -551,8 +638,16 @@ class PalEntity:
         return PalObjects.get_BaseType(self._pal_param.get("CraftSpeed"))
             
     @property
-    def SanityValue(self) -> Optional[int]:
+    def SanityValue(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("SanityValue"))
+    
+    @SanityValue.setter
+    @LOGGER.change_logger("SanityValue")
+    def SanityValue(self, val: float):
+        if self.SanityValue is None:
+            self._pal_param["SanityValue"] = PalObjects.FloatProperty(val)
+        else:
+            PalObjects.set_BaseType(self._pal_param.get("SanityValue"), val)
     
     @property
     def MaxFullStomach(self) -> Optional[float]:
@@ -588,6 +683,10 @@ class PalEntity:
         return PalObjects.get_EnumProperty(self._pal_param.get("WorkerSick"))
     
     @property
+    def HasWorkerSick(self) -> bool:
+        return self.WorkerSick is not None
+    
+    @property
     def FoodWithStatusEffect(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("FoodWithStatusEffect"))
     
@@ -613,16 +712,24 @@ class PalEntity:
             return False
         PalObjects.set_BaseType(self._pal_param['Tiemr_FoodWithStatusEffect'], val)
         
-    def learn_attacks_on_leveling(self):
+    def learn_attacks(self):
         for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level):
             if atk not in self.MasteredWaza:
                 self.add_MasteredWaza(atk)
         # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
+                
+    def remove_all_attacks(self):
+        atks = self.MasteredWaza.copy()
+        if not atks: return
+        for atk in atks:
+            self.pop_MasteredWaza(item=atk)
 
+    @LOGGER.change_logger("WorkerSick")
     def clear_worker_sick(self):
         self._pal_param.pop("WorkerSick", None)
+        self.SanityValue = 100.0
 
     def max_lv_exp(self):
         exp = DataProvider.get_level_xp(self.Level)
@@ -653,14 +760,13 @@ class PalEntity:
 
     def _set_soul_rank(self, property_name: str, rank: int):
         rank = clamp(0, 10, rank)
-        # if rank == 0:
-        #     self._pal_param.pop(property_name, None)
-        #     return
         if getattr(self, property_name) is None:
-        # if self.Rank is None:
             self._pal_param[property_name] = PalObjects.IntProperty(rank)
         else:
             PalObjects.set_BaseType(self._pal_param[property_name], rank)
+
+        if getattr(self, property_name) == 0:
+            self._pal_param.pop(property_name, None)
 
     def _set_iv(self, property_name: str, value: int):
         iv = clamp(0, 100, value)
@@ -674,10 +780,10 @@ class PalEntity:
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
-            species_name = DataProvider.get_pal_i18n(self.DataAccessKey) or self.DataAccessKey
+            species_name = self.I18nName or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
             boss_prefix = "💀" if self.IsBOSS else ""
-            tower_prefix = "🏰" if self.IsTower else ""
+            tower_prefix = "🗼" if self.IsTower else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
             gender_suffix = ""
@@ -715,11 +821,6 @@ class PalEntity:
         HP_Stat = math.ceil((HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV)))
         return adjust_number(HP_Stat)
 
-    def _save(self) -> None:
-        # unused
-        # clean up and delete empty / unused entries
-        # soulrank, rank, etc
-        pass
 
     # TODO ADD PAL, DEL PAL, CHANGE OWNER?
 
