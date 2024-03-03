@@ -1,5 +1,15 @@
 # Palworld Pal Editor
 
+<p align="center">
+   <strong>English</strong> | <a href="/README.cn.md">简体中文</a>
+</p>
+
+<p align='center'>
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge">&nbsp;&nbsp;
+<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
+<img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
+</p>
+
 ## What is this?
 
 ### A Palworld Pal Editor developed by _connlost with ❤️ ~~(yeah i am just too lazy to change github username)~~
@@ -12,7 +22,19 @@
 
 <img width="720" alt="Screenshot 2024-03-03 at 1 39 32 PM" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/b6259622-707a-4634-abea-c280dc7060d4">
 
-## What You Can Do
+---
+
+- [Palworld Pal Editor](#palworld-pal-editor)
+  - [What This Tool Can Do](#whatthistoolcando)
+  - [Videos](#videos)
+  - [Usage](#usage)
+    - [Run The Code](#code)
+    - [Executable](#exec)
+    - [Docker](#docker)
+    - [Config](#config)
+  - [Thanks](#thanks)
+
+## <a name="whatthistoolcando"></a>What This Tool Can Do
 
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -29,9 +51,10 @@
 - [x] Change Pal IV
 - [x] Calculate MaxHP
 - [x] Remove Pal Sicks
+- [x] Revive Pals
 - [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
 
-## Video
+## <a name="videos"></a>Videos
 
 - DOCKER
 
@@ -45,9 +68,9 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-40
 
 https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
 
-## How to use
+## <a name="usage"></a>Usage
 
-### 1. Directly Run the Code
+### <a name="code"></a>1. Directly Run the Code
 
 1. Install Python 3.11+
 2. Clone / Download the code
@@ -61,18 +84,18 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
    - `--i` for enable interactive mode, you may want to use with `cli` mode.
 5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
 
-### 2. Use Pre-Built Binary
+### <a name="exec"></a>2. Use Pre-Built Binary
 
 1. Download from GitHub Release Page, may not be bundled with the latest code.
 2. Also support command line arguments mentioned above.
 
-### 3. Docker Container
+### <a name="docker"></a>3. Docker Container
 
 1. Clone the code.
 2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
 3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
 
-### Config File
+### <a name="config"></a>Config File
 
 Default:
 
@@ -112,7 +135,7 @@ Custom:
 - [ ] Move Pal to Different Slots?
 - [ ] More Stuff...
 
-## Thanks
+## <a name="thanks"></a>Thanks
 
 - Fast game save loading code by [MagicBear](https://github.com/magicbear).
 - Save conversion between GVAS and `.sav` by [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools).
