@@ -4027,8 +4027,9 @@
         ],
         "Attacks": {},
         "Human": true,
-        "I18n": {
-            "en": "帕鲁保护团体-支持者"
+        "I18n": {            
+            "en": "Free Pal Alliance Thug",
+            "zh-CN": "帕鲁保护团体-支持者"
         },
         "SortingKey": {
 

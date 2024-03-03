@@ -57,7 +57,7 @@ def missing_token_callback(error_string):
 
 
 def main():
-    Config._password_hash = generate_password_hash(Config.password)
+    Config._password_hash = generate_password_hash(Config.password or "")
     if Config.mode == "web" and not Config.debug:
         try:
             threading.Timer(3, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()

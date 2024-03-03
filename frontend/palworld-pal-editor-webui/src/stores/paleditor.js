@@ -500,6 +500,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     if (response.status == 0) {
       alert(`Changes saved to ${PAL_WRITE_BACK_PATH.value}`);
+      // YOU HAVE TO RELOAD FOR NOW, THIS HOW MY BACKEND WORKS.
+      reset()
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;

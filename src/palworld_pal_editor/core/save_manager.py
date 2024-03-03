@@ -288,11 +288,12 @@ class SaveManager:
         file_path: Path = output_path / "Level.sav"
 
         if file_path.exists():
-            backup_dir = output_path.parent / f"{output_path.name}_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
+            backup_dir = output_path / BK_FOLDER_NAME / f"{output_path.name}_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             try:
                 if output_path.exists():
                     LOGGER.info(f"Backing up {output_path} to {backup_dir}")
-                    shutil.copytree(output_path, backup_dir)
+                    shutil.copytree(output_path, backup_dir, ignore=lambda dir, contents: ['Palworld-Pal-Editor-Backup'])
                 else:
                     LOGGER.info(f"No existing directory to backup: {output_path}")
             except Exception as e:
