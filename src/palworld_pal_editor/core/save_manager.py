@@ -95,7 +95,7 @@ PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.FoliageGridSaveDataMap"] = (skip_dec
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.MapObjectSpawnerInStageSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DynamicItemSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
 
@@ -299,10 +299,18 @@ class SaveManager:
             except Exception as e:
                 LOGGER.error(f"Error backing up directory: {e}")
                 return False
-        
+
         LOGGER.info("Compressing GVAS file")
+        gvas_file = copy.deepcopy(self.gvas_file)
+
+        # if "Pal.PalWorldSaveGame" in gvas_file.header.save_game_class_name \
+        #     or "Pal.PalLocalWorldSaveGame" in gvas_file.header.save_game_class_name:
+        #     save_type = 0x32
+        # else:
+        #     save_type = 0x31
+
         sav_data = compress_gvas_to_sav(
-            self.gvas_file.write(PALEDITOR_CUSTOM_PROPERTIES), self._compression_times
+            gvas_file.write(PALEDITOR_CUSTOM_PROPERTIES), self._compression_times
         )
 
         # level.sav for now

@@ -22,22 +22,40 @@ def patch_paldata():
     else:
         pal_entity = SaveManager().get_player(PlayerUId).get_pal(PalGuid)
     try:
-        if key == "HasWorkerSick":
-            pal_entity.clear_worker_sick()
-        elif key == "IsFaintedPal":
-            pal_entity.heal_pal()
-        elif key == "DelPassiveSkill":
-            pal_entity.pop_PassiveSkillList(item=value)
-        elif key == "AddPassiveSkill":
-            if not pal_entity.add_PassiveSkillList(value):
-                return reply(1, None, f"Passive {value} already exists!")
-        elif key == "DelActiveSkill":
-            pal_entity.pop_MasteredWaza(item=value)
-        elif key == "AddActiveSkill":
-            if not pal_entity.add_MasteredWaza(value):
-                return reply(1, None, f"Attack {value} already exists!")
-        elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
-            return reply(1, None, f"Error in patch_paldata {err}")
+        match key:
+            case "HasWorkerSick": pal_entity.clear_worker_sick()
+            case "IsFaintedPal": pal_entity.heal_pal()
+            case "pop_PassiveSkillList": pal_entity.pop_PassiveSkillList(item=value)
+            case "pop_MasteredWaza": pal_entity.pop_MasteredWaza(item=value)
+            case "pop_EquipWaza": pal_entity.pop_EquipWaza(item=value)
+            case "add_PassiveSkillList": 
+                if not pal_entity.add_PassiveSkillList(value):
+                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+            case "add_MasteredWaza": 
+                if not pal_entity.add_MasteredWaza(value):
+                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+            case "add_EquipWaza": 
+                if not pal_entity.add_EquipWaza(value):
+                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+            case _:
+                if isinstance(err:=setattr(pal_entity, key, value), TypeError):
+                    return reply(1, None, f"Error in patch_paldata {err}")
+        # if key == "HasWorkerSick":
+        #     pal_entity.clear_worker_sick()
+        # elif key == "IsFaintedPal":
+        #     pal_entity.heal_pal()
+        # elif key == "DelPassiveSkill":
+        #     pal_entity.pop_PassiveSkillList(item=value)
+        # elif key == "AddPassiveSkill":
+        #     if not pal_entity.add_PassiveSkillList(value):
+        #         return reply(1, None, f"Passive {value} already exists!")
+        # elif key == "DelActiveSkill":
+        #     pal_entity.pop_MasteredWaza(item=value)
+        # elif key == "AddActiveSkill":
+        #     if not pal_entity.add_MasteredWaza(value):
+        #         return reply(1, None, f"Attack {value} already exists!")
+        # elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
+        #     return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")
@@ -101,6 +119,7 @@ def _pal_data(pal: PalEntity):
         "ComputedDefense": pal.ComputedDefense or None,
         "ComputedCraftSpeed": pal.ComputedCraftSpeed or None,
         "PassiveSkillList": pal.PassiveSkillList or [],
+        "EquipWaza": pal.EquipWaza or [],
         "MasteredWaza": pal.MasteredWaza or [],
         "Talent_HP": pal.Talent_HP or 0,
         "Talent_Melee": pal.Talent_Melee or 0,

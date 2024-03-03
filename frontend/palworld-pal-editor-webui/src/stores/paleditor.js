@@ -39,6 +39,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.MaxHP = obj.MaxHP;
 
       this.MasteredWaza = obj.MasteredWaza;
+      this.EquipWaza = obj.EquipWaza;
       this.PassiveSkillList = obj.PassiveSkillList;
 
       this.DisplayName = obj.DisplayName;
@@ -58,6 +59,41 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       if (this.IsBOSS) return "💀";
       if (this.IsRarePal) return "✨";
       return "N/A";
+    }
+
+    // displayElement(element) {
+    //   str = ""
+    //   if (element == "Water") str += "💧"
+    //   if (element == "Fire") str += "🔥"
+    //   if (element == "Dragon") str += "🐉"
+    //   if (element == "Grass") str += "☘️"
+    //   if (element == "Ground") str += "🪨"
+    //   if (element == "Ice") str += "❄️"
+    //   if (element == "Electric") str += "⚡"
+    //   if (element == "Neutral") str += "😐"
+    //   if (element == "Dark") str += "🌑"
+    //   return str
+    // }
+
+    displayElement(element) {
+      const elementEmojis = {
+        Water: "💧",
+        Fire: "🔥",
+        Dragon: "🐉",
+        Grass: "☘️",
+        Ground: "🪨",
+        Ice: "❄️",
+        Electric: "⚡",
+        Neutral: "😐",
+        Dark: "🌑"
+      };
+    
+      return elementEmojis[element] || "";
+    }
+
+    displayRating(rating) {
+      if (rating < 0) return "👎";
+      if (rating > 0) return "👍"
     }
 
     getRank() {
@@ -112,17 +148,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       updatePal({ target: { name: "Gender", value: this.Gender } });
     }
 
-    removePassiveSkill(e) {
+    pop_PassiveSkillList(e) {
       const skill = e.target.name;
       updatePal({
         target: {
-          name: "DelPassiveSkill",
+          name: "pop_PassiveSkillList",
           value: skill,
         },
       });
     }
 
-    addPassiveSkill() {
+    add_PassiveSkillList() {
       const skill = PAL_PASSIVE_SELECTED_ITEM.value;
       if (!PASSIVE_SKILLS.value[skill]) {
         alert("Select a skill first!");
@@ -134,23 +170,59 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       }
       updatePal({
         target: {
-          name: "AddPassiveSkill",
+          name: "add_PassiveSkillList",
           value: skill,
         },
       });
     }
 
-    removeActiveSkill(e) {
+    isEquippedPassiveSkill(skill) {
+      return this.PassiveSkillList.includes(skill)
+    }
+
+    isEquippedSkill(skill) {
+      return this.EquipWaza.includes(skill)
+    }
+
+    isMasteredSkill(skill) {
+      return this.MasteredWaza.includes(skill)
+    }
+
+    isEquipSkillFull() {
+      return this.EquipWaza.length >= 3
+    }
+
+    pop_EquipWaza(e) {
       const skill = e.target.name;
       updatePal({
         target: {
-          name: "DelActiveSkill",
+          name: "pop_EquipWaza",
           value: skill,
         },
       });
     }
 
-    addActiveSkill() {
+    add_EquipWaza(e) {
+      const skill = e.target.name;
+      updatePal({
+        target: {
+          name: "add_EquipWaza",
+          value: skill,
+        },
+      });
+    }
+
+    pop_MasteredWaza(e) {
+      const skill = e.target.name;
+      updatePal({
+        target: {
+          name: "pop_MasteredWaza",
+          value: skill,
+        },
+      });
+    }
+
+    add_MasteredWaza() {
       const skill = PAL_ACTIVE_SELECTED_ITEM.value;
       if (!ACTIVE_SKILLS.value[skill]) {
         alert("Select a skill first!");
@@ -158,7 +230,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       }
       updatePal({
         target: {
-          name: "AddActiveSkill",
+          name: "add_MasteredWaza",
           value: skill,
         },
       });
@@ -511,7 +583,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response.status == 0) {
       alert(`Changes saved to ${PAL_WRITE_BACK_PATH.value}`);
       // YOU HAVE TO RELOAD FOR NOW, THIS HOW MY BACKEND WORKS.
-      loadSave()
+      // loadSave()
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;

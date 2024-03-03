@@ -154,18 +154,37 @@ class DataProvider:
     @staticmethod
     def has_attack(key: str) -> bool:
         return key in PAL_ATTACKS
+    
+    @staticmethod
+    def has_skill_fruit(attack: str) -> bool:
+        if attack not in PAL_ATTACKS: return False
+        if PAL_ATTACKS[attack].get("SkillFruit"): return True
+        return False
+
+    @staticmethod
+    def is_invalid_attacks(key: str) -> bool:
+        if key not in PAL_ATTACKS: return True
+        power = PAL_ATTACKS[key].get("Power")
+        if power is None or power == -1: return True 
+        return False
+
+    @staticmethod
+    def is_unique_attacks(key: str) -> bool:
+        if key not in PAL_ATTACKS: return False
+        if PAL_ATTACKS[key].get("UniqueSkill"): return True
+        return False
 
     @staticmethod
     def get_sorted_attacks() -> list[dict]:
         sorted_list = sorted(
-            PAL_ATTACKS.values(), key=lambda item: (item["Element"], item["Power"])
+            PAL_ATTACKS.values(), key=lambda item: (
+                DataProvider.is_invalid_attacks(item["InternalName"]),
+                item["Element"], 
+                DataProvider.has_skill_fruit(item["InternalName"]),
+                item["Power"])
         )
         return sorted_list
 
-    @none_guard(data_source=PAL_ATTACKS)
-    @staticmethod
-    def has_skill_fruit(attack: str) -> bool:
-        return True if PAL_ATTACKS[attack].get("SkillFruit") else False
 
     @none_guard(data_source=PAL_PASSIVES, subkey="I18n")
     @staticmethod

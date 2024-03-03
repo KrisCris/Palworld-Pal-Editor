@@ -137,31 +137,32 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">{{ palStore.PASSIVE_SKILLS[skill].I18n[0]
+              <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">{{ 
+              palStore.PASSIVE_SKILLS[skill].I18n[0]
                 }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill].I18n[1] }}</span>
             </div>
 
-            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.removePassiveSkill" :name="skill"
+            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
-            <select class="PassiveSkill selector" name="AddPassiveSkill" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
+            <select class="PassiveSkill selector" name="add_PassiveSkillList" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
               <option class="PassiveSkill" value="" key="">Add Skills</option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
                 :key="skill.InternalName" :title="skill.I18n[1]">{{ skill.I18n[0] }}</option>
             </select>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.addPassiveSkill" name="AddPassiveSkill"
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
               :disabled="palStore.LOADING_FLAG">➕</button>
           </div>
         </div>
       </div>
       <hr>
-      <p class="cat">ACTIVE SKILLS</p>
+      <p class="cat">EQUIPPED ACTIVE SKILLS</p>
       <div class="flex-h">
         <div class="editField skillList">
-          <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
+          <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.ACTIVE_SKILLS[skill].I18n
                 }}
@@ -173,16 +174,41 @@ const palStore = usePalEditorStore()
               </span>
             </div>
 
-            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.removeActiveSkill" :name="skill"
+            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
+              :disabled="palStore.LOADING_FLAG">❌</button>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <p class="cat">MASTERED ACTIVE SKILLS</p>
+      <div class="flex-h">
+        <div class="editField skillList">
+          <div v-if="palStore.SELECTED_PAL_DATA.MasteredWaza" v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
+            <div class="tooltip-container">
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.ACTIVE_SKILLS[skill].I18n
+                }}
+              </p>
+              <span class="tooltip-text">
+                <p>{{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
+                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }}</p>
+                <p>Element: {{ palStore.ACTIVE_SKILLS[skill].Element }}</p>
+              </span>
+            </div>
+            <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) && !palStore.SELECTED_PAL_DATA.isEquipSkillFull()" class="edit" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+              :disabled="palStore.LOADING_FLAG">🔼</button>
+            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
           <div class="editField">
-            <select class="selector" name="AddActiveSkill" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
+            <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
               <option value="" key="">Add Skills</option>
               <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
-                :title="skill.I18n">{{ `${skill.Element} - ${skill.I18n} - ATK: ${skill.Power}` }}</option>
+                :title="skill.I18n">
+                <!-- {{ `${palStore.SELECTED_PAL_DATA.displayElement(skill.Element)} - ${skill.I18n} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }} -->
+                {{ `${skill.I18n} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+              </option>
             </select>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.addActiveSkill" name="AddActiveSkill"
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
               :disabled="palStore.LOADING_FLAG">➕</button>
           </div>
         </div>

@@ -1,438 +1,8 @@
 {
-    "EPalWazaID::AcidRain": {
-        "InternalName": "EPalWazaID::AcidRain",
-        "Element": "Water",
-        "Power": 80,
-        "I18n": {
-            "en": "Acid Rain",
-            "zh-CN": "酸雨"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::AirCanon": {
-        "InternalName": "EPalWazaID::AirCanon",
-        "Element": "Neutral",
-        "Power": 25,
-        "I18n": {
-            "en": "Air Cannon",
-            "zh-CN": "空气炮"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_Deer_PushupHorn": {
-        "InternalName": "EPalWazaID::Unique_Deer_PushupHorn",
-        "Element": "Neutral",
-        "Power": 50,
-        "I18n": {
-            "en": "Antler Uppercut",
-            "zh-CN": "尖角顶击 [紫霞/祇岳鹿]"
-        }
-    },
-    "EPalWazaID::WaterBall": {
-        "InternalName": "EPalWazaID::WaterBall",
-        "Element": "Water",
-        "Power": 100,
-        "I18n": {
-            "en": "Aqua Burst",
-            "zh-CN": "爆裂水球"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::WaterGun": {
-        "InternalName": "EPalWazaID::WaterGun",
-        "Element": "Water",
-        "Power": 40,
-        "I18n": {
-            "en": "Aqua Gun",
-            "zh-CN": "水枪"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_JetDragon_JumpBeam": {
-        "InternalName": "EPalWazaID::Unique_JetDragon_JumpBeam",
-        "Element": "Dragon",
-        "Power": 140,
-        "I18n": {
-            "en": "Beam Comet",
-            "zh-CN": "光束彗星 [空涡龙]"
-        }
-    },
-    "EPalWazaID::SelfDestruct_Bee": {
-        "InternalName": "EPalWazaID::SelfDestruct_Bee",
-        "Element": "Neutral",
-        "Power": 200,
-        "I18n": {
-            "en": "Bee Quiet",
-            "zh-CN": "蜂！蜂！蜂！ [骑士蜂]"
-        }
-    },
-    "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch": {
-        "InternalName": "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch",
-        "Element": "Electric",
-        "Power": 85,
-        "I18n": {
-            "en": "Blast Punch",
-            "zh-CN": "爆裂拳击 [雷胖达]"
-        }
-    },
-    "EPalWazaID::Unique_FlameBuffalo_FlameHorn": {
-        "InternalName": "EPalWazaID::Unique_FlameBuffalo_FlameHorn",
-        "Element": "Fire",
-        "Power": 50,
-        "I18n": {
-            "en": "Blazing Horn",
-            "zh-CN": "炽热角击 [炽焰牛]"
-        }
-    },
-    "EPalWazaID::IcicleThrow": {
-        "InternalName": "EPalWazaID::IcicleThrow",
-        "Element": "Ice",
-        "Power": 130,
-        "I18n": {
-            "en": "Blizzard Spike",
-            "zh-CN": "钻石星辰"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_FlowerDinosaur_Whip": {
-        "InternalName": "EPalWazaID::Unique_FlowerDinosaur_Whip",
-        "Element": "Grass",
-        "Power": 60,
-        "I18n": {
-            "en": "Botanical Smash",
-            "zh-CN": "植物猛击 [花冠龙]"
-        }
-    },
-    "EPalWazaID::BubbleShot": {
-        "InternalName": "EPalWazaID::BubbleShot",
-        "Element": "Water",
-        "Power": 65,
-        "I18n": {
-            "en": "Bubble Blast",
-            "zh-CN": "泡沫射击"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_NaughtyCat_CatPress": {
-        "InternalName": "EPalWazaID::Unique_NaughtyCat_CatPress",
-        "Element": "Neutral",
-        "Power": 60,
-        "I18n": {
-            "en": "Cat Press",
-            "zh-CN": "猫咪扑击 [笑魇猫]"
-        }
-    },
-    "EPalWazaID::Unique_ChickenPal_ChickenPeck": {
-        "InternalName": "EPalWazaID::Unique_ChickenPal_ChickenPeck",
-        "Element": "Neutral",
-        "Power": 30,
-        "I18n": {
-            "en": "Chicken Rush",
-            "zh-CN": "皮皮冲鸡 [皮皮鸡]"
-        }
-    },
-    "EPalWazaID::Unique_FengyunDeeper_CloudTempest": {
-        "InternalName": "EPalWazaID::Unique_FengyunDeeper_CloudTempest",
-        "Element": "Neutral",
-        "Power": 0,
-        "I18n": {
-            "en": "Cloud Tempest",
-            "zh-CN": "阴云之岚 [云海鹿]"
-        }
-    },
-    "EPalWazaID::Unique_GrassPanda_MusclePunch": {
-        "InternalName": "EPalWazaID::Unique_GrassPanda_MusclePunch",
-        "Element": "Grass",
-        "Power": 85,
-        "I18n": {
-            "en": "Crushing Punch",
-            "zh-CN": "筋肉重拳 [叶胖达]"
-        }
-    },
-    "EPalWazaID::FrostBreath": {
-        "InternalName": "EPalWazaID::FrostBreath",
-        "Element": "Ice",
-        "Power": 90,
-        "I18n": {
-            "en": "Cryst Breath",
-            "zh-CN": "凛冬之息"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_IceHorse_IceBladeAttack": {
-        "InternalName": "EPalWazaID::Unique_IceHorse_IceBladeAttack",
-        "Element": "Ice",
-        "Power": 110,
-        "I18n": {
-            "en": "Crystal Wing",
-            "zh-CN": "冰晶之翼 [唤冬/夜兽]"
-        }
-    },
-    "EPalWazaID::Unique_AmaterasuWolf_FireCharge": {
-        "InternalName": "EPalWazaID::Unique_AmaterasuWolf_FireCharge",
-        "Element": "Fire",
-        "Power": 75,
-        "I18n": {
-            "en": "Daring Flames",
-            "zh-CN": "风林火山 [苍焰狼]"
-        }
-    },
-    "EPalWazaID::DarkBall": {
-        "InternalName": "EPalWazaID::DarkBall",
-        "Element": "Dark",
-        "Power": 40,
-        "I18n": {
-            "en": "Dark Ball",
-            "zh-CN": "暗黑球"
-        }
-    },
-    "EPalWazaID::Unique_FireKirin_Dark_DarkTossin": {
-        "InternalName": "EPalWazaID::Unique_FireKirin_Dark_DarkTossin",
-        "Element": "Dark",
-        "Power": 85,
-        "I18n": {
-            "en": "Dark Charge",
-            "zh-CN": "暗影冲撞 [邪麒麟]"
-        }
-    },
-    "EPalWazaID::DarkLaser": {
-        "InternalName": "EPalWazaID::DarkLaser",
-        "Element": "Dark",
-        "Power": 150,
-        "I18n": {
-            "en": "Dark Laser",
-            "zh-CN": "暗黑镭射"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::DarkLegion": {
-        "InternalName": "EPalWazaID::DarkLegion",
-        "Element": "Dark",
-        "Power": 0,
-        "I18n": {
-            "en": "Dark Whisp [Victor & Shadowbeak]",
-            "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]"
-        }
-    },
-    "EPalWazaID::Unique_BlackGriffon_TackleLaser": {
-        "InternalName": "EPalWazaID::Unique_BlackGriffon_TackleLaser",
-        "Element": "Dark",
-        "Power": 160,
-        "I18n": {
-            "en": "Divine Disaster",
-            "zh-CN": "神圣灾祸 [异构格里芬]"
-        }
-    },
-    "EPalWazaID::DragonBreath": {
-        "InternalName": "EPalWazaID::DragonBreath",
-        "Element": "Dragon",
-        "Power": 70,
-        "I18n": {
-            "en": "Draconic Breath",
-            "zh-CN": "龙息"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::DragonWave": {
-        "InternalName": "EPalWazaID::DragonWave",
-        "Element": "Dragon",
-        "Power": 55,
-        "I18n": {
-            "en": "Dragon Burst",
-            "zh-CN": "龙之波动"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::DragonCanon": {
-        "InternalName": "EPalWazaID::DragonCanon",
-        "Element": "Dragon",
-        "Power": 30,
-        "I18n": {
-            "en": "Dragon Cannon",
-            "zh-CN": "龙息弹"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::DragonMeteor": {
-        "InternalName": "EPalWazaID::DragonMeteor",
-        "Element": "Dragon",
-        "Power": 150,
-        "I18n": {
-            "en": "Dragon Meteor",
-            "zh-CN": "龙彗星"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_Grassmammoth_Earthquake": {
-        "InternalName": "EPalWazaID::Unique_Grassmammoth_Earthquake",
-        "Element": "Ground",
-        "Power": 100,
-        "I18n": {
-            "en": "Earth Impact",
-            "zh-CN": "地震 [森/雪猛犸]"
-        }
-    },
-    "EPalWazaID::ThunderBall": {
-        "InternalName": "EPalWazaID::ThunderBall",
-        "Element": "Electric",
-        "Power": 50,
-        "I18n": {
-            "en": "Electric Ball",
-            "zh-CN": "闪电球"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_CaptainPenguin_BodySlide": {
-        "InternalName": "EPalWazaID::Unique_CaptainPenguin_BodySlide",
-        "Element": "Ice",
-        "Power": 70,
-        "I18n": {
-            "en": "Emperor Slide",
-            "zh-CN": "王者滑击 [企丸王]"
-        }
-    },
-    "EPalWazaID::Unique_Garm_Bite": {
-        "InternalName": "EPalWazaID::Unique_Garm_Bite",
-        "Element": "Neutral",
-        "Power": 45,
-        "I18n": {
-            "en": "Fierce Fang",
-            "zh-CN": "狂野獠牙 [猎狼]"
-        }
-    },
-    "EPalWazaID::FireBall": {
-        "InternalName": "EPalWazaID::FireBall",
-        "Element": "Fire",
-        "Power": 150,
-        "I18n": {
-            "en": "Fire Ball",
-            "zh-CN": "烈焰球"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::FlareArrow": {
-        "InternalName": "EPalWazaID::FlareArrow",
-        "Element": "Fire",
-        "Power": 55,
-        "I18n": {
-            "en": "Flare Arrow",
-            "zh-CN": "烈焰箭"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::FlareTornado": {
-        "InternalName": "EPalWazaID::FlareTornado",
-        "Element": "Fire",
-        "Power": 80,
-        "I18n": {
-            "en": "Flare Storm",
-            "zh-CN": "烈焰风暴"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_Alpaca_Tackle": {
-        "InternalName": "EPalWazaID::Unique_Alpaca_Tackle",
-        "Element": "Neutral",
-        "Power": 40,
-        "I18n": {
-            "en": "Fluffy Tackle",
-            "zh-CN": "绒毛冲撞 [美露帕]"
-        }
-    },
-    "EPalWazaID::Unique_RobinHood_BowSnipe": {
-        "InternalName": "EPalWazaID::Unique_RobinHood_BowSnipe",
-        "Element": "Grass",
-        "Power": 65,
-        "I18n": {
-            "en": "Focus Shot",
-            "zh-CN": "精准狙击 [羽箭/山岳射手]"
-        }
-    },
-    "EPalWazaID::Unique_Anubis_Tackle": {
-        "InternalName": "EPalWazaID::Unique_Anubis_Tackle",
-        "Element": "Ground",
-        "Power": 120,
-        "I18n": {
-            "en": "Forceful Charge",
-            "zh-CN": "巨力冲锋 [阿努比斯]"
-        }
-    },
-    "EPalWazaID::Unique_IceDeer_IceHorn": {
-        "InternalName": "EPalWazaID::Unique_IceDeer_IceHorn",
-        "Element": "Ice",
-        "Power": 65,
-        "I18n": {
-            "en": "Freezing Charge",
-            "zh-CN": "霜角猛攻 [严冬鹿]"
-        }
-    },
-    "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": {
-        "InternalName": "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack",
-        "Element": "Ice",
-        "Power": 100,
-        "I18n": {
-            "en": "Frost Burst",
-            "zh-CN": "霜冻爆裂 [寒霜兽]"
-        }
-    },
-    "EPalWazaID::Unique_Eagle_GlidingNail": {
-        "InternalName": "EPalWazaID::Unique_Eagle_GlidingNail",
-        "Element": "Neutral",
-        "Power": 60,
-        "I18n": {
-            "en": "Gale Claw",
-            "zh-CN": "滑空爪 [天擒鸟]"
-        }
-    },
-    "EPalWazaID::Unique_HerculesBeetle_BeetleTackle": {
-        "InternalName": "EPalWazaID::Unique_HerculesBeetle_BeetleTackle",
-        "Element": "Ground",
-        "Power": 75,
-        "I18n": {
-            "en": "Giga Horn",
-            "zh-CN": "终极角击 [铠格力斯]"
-        }
-    },
-    "EPalWazaID::GrassTornado": {
-        "InternalName": "EPalWazaID::GrassTornado",
-        "Element": "Grass",
-        "Power": 80,
-        "I18n": {
-            "en": "Grass Tornado",
-            "zh-CN": "绿野飓风"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_Gorilla_GroundPunch": {
-        "InternalName": "EPalWazaID::Unique_Gorilla_GroundPunch",
-        "Element": "Neutral",
-        "Power": 85,
-        "I18n": {
-            "en": "Ground Pound",
-            "zh-CN": "猩猩连打 [铁拳猿]"
-        }
-    },
-    "EPalWazaID::Unique_Anubis_GroundPunch": {
-        "InternalName": "EPalWazaID::Unique_Anubis_GroundPunch",
-        "Element": "Ground",
-        "Power": 140,
-        "I18n": {
-            "en": "Ground Smash",
-            "zh-CN": "粉碎大地 [阿努比斯]"
-        }
-    },
-    "EPalWazaID::Unique_Baphomet_SwallowKite": {
-        "InternalName": "EPalWazaID::Unique_Baphomet_SwallowKite",
-        "Element": "Fire",
-        "Power": 70,
-        "I18n": {
-            "en": "Hellfire Claw",
-            "zh-CN": "狱火爪 [炎/暗魔羊]"
-        }
-    },
     "EPalWazaID::AquaJet": {
         "InternalName": "EPalWazaID::AquaJet",
         "Element": "Water",
+        "CT": 2,
         "Power": 30,
         "I18n": {
             "en": "Hydro Jet",
@@ -440,9 +10,54 @@
         },
         "SkillFruit": true
     },
+    "EPalWazaID::WaterGun": {
+        "InternalName": "EPalWazaID::WaterGun",
+        "Element": "Water",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Aqua Gun",
+            "zh-CN": "水枪"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::BubbleShot": {
+        "InternalName": "EPalWazaID::BubbleShot",
+        "Element": "Water",
+        "CT": 13,
+        "Power": 65,
+        "I18n": {
+            "en": "Bubble Blast",
+            "zh-CN": "泡沫射击"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::AcidRain": {
+        "InternalName": "EPalWazaID::AcidRain",
+        "Element": "Water",
+        "CT": 18,
+        "Power": 80,
+        "I18n": {
+            "en": "Acid Rain",
+            "zh-CN": "酸雨"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::WaterBall": {
+        "InternalName": "EPalWazaID::WaterBall",
+        "Element": "Water",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": "Aqua Burst",
+            "zh-CN": "爆裂水球"
+        },
+        "SkillFruit": true
+    },
     "EPalWazaID::HydroPump": {
         "InternalName": "EPalWazaID::HydroPump",
         "Element": "Water",
+        "CT": 55,
         "Power": 150,
         "I18n": {
             "en": "Hydro Laser",
@@ -450,313 +65,24 @@
         },
         "SkillFruit": true
     },
-    "EPalWazaID::Unique_Ronin_Iai": {
-        "InternalName": "EPalWazaID::Unique_Ronin_Iai",
-        "Element": "Fire",
-        "Power": 65,
-        "I18n": {
-            "en": "Iaigiri",
-            "zh-CN": "居合斩 [浪刃武士]"
-        }
-    },
-    "EPalWazaID::IceMissile": {
-        "InternalName": "EPalWazaID::IceMissile",
-        "Element": "Ice",
-        "Power": 30,
-        "I18n": {
-            "en": "Ice Missile",
-            "zh-CN": "冰雪发射"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::BlizzardLance": {
-        "InternalName": "EPalWazaID::BlizzardLance",
-        "Element": "Ice",
-        "Power": 70,
-        "I18n": {
-            "en": "Iceberg",
-            "zh-CN": "冰刺"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::IceBlade": {
-        "InternalName": "EPalWazaID::IceBlade",
-        "Element": "Ice",
-        "Power": 55,
-        "I18n": {
-            "en": "Icicle Cutter",
-            "zh-CN": "冰刃"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::FireBlast": {
-        "InternalName": "EPalWazaID::FireBlast",
-        "Element": "Fire",
-        "Power": 30,
-        "I18n": {
-            "en": "Ignis Blast",
-            "zh-CN": "烈焰射击"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Flamethrower": {
-        "InternalName": "EPalWazaID::Flamethrower",
-        "Element": "Fire",
-        "Power": 70,
-        "I18n": {
-            "en": "Ignis Breath",
-            "zh-CN": "烈焰放射"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Inferno": {
-        "InternalName": "EPalWazaID::Inferno",
-        "Element": "Fire",
-        "Power": 120,
-        "I18n": {
-            "en": "Ignis Rage",
-            "zh-CN": "地狱火"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_FireKirin_Tackle": {
-        "InternalName": "EPalWazaID::Unique_FireKirin_Tackle",
-        "Element": "Fire",
-        "Power": 85,
-        "I18n": {
-            "en": "Ignis Slam",
-            "zh-CN": "烈焰冲撞 [火/邪麒麟]"
-        }
-    },
-    "EPalWazaID::SelfDestruct": {
-        "InternalName": "EPalWazaID::SelfDestruct",
+    
+    
+
+    "EPalWazaID::AirCanon": {
+        "InternalName": "EPalWazaID::AirCanon",
         "Element": "Neutral",
-        "Power": 180,
+        "CT": 2,
+        "Power": 25,
         "I18n": {
-            "en": "Implode",
-            "zh-CN": "自爆"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Intimidate": {
-        "InternalName": "EPalWazaID::Intimidate",
-        "Element": "Neutral",
-        "Power": 0,
-        "I18n": {
-            "en": "Intimidate",
-            "zh-CN": "恐吓"
-        }
-    },
-    "EPalWazaID::Unique_Werewolf_Scratch": {
-        "InternalName": "EPalWazaID::Unique_Werewolf_Scratch",
-        "Element": "Dark",
-        "Power": 55,
-        "I18n": {
-            "en": "Jumping Claw",
-            "zh-CN": "飞跃爪击 [月镰魔]"
-        }
-    },
-    "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": {
-        "InternalName": "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack",
-        "Element": "Electric",
-        "Power": 100,
-        "I18n": {
-            "en": "Kerauno",
-            "zh-CN": "雷神之枪 [波鲁杰克斯]"
-        }
-    },
-    "EPalWazaID::Unique_KingAlpaca_BodyPress": {
-        "InternalName": "EPalWazaID::Unique_KingAlpaca_BodyPress",
-        "Element": "Neutral",
-        "Power": 100,
-        "I18n": {
-            "en": "Kingly Slam",
-            "zh-CN": "泰山压顶 [君王/冰帝美露帕]"
-        }
-    },
-    "EPalWazaID::Thunderbolt": {
-        "InternalName": "EPalWazaID::Thunderbolt",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Lightning Bolt",
-            "zh-CN": "闪电伏特"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_ElecPanda_ElecScratch": {
-        "InternalName": "EPalWazaID::Unique_ElecPanda_ElecScratch",
-        "Element": "Electric",
-        "Power": 90,
-        "I18n": {
-            "en": "Lightning Claw",
-            "zh-CN": "霹雳连爪 [暴电熊]"
-        }
-    },
-    "EPalWazaID::ThunderRain": {
-        "InternalName": "EPalWazaID::ThunderRain",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Lightning Rain",
-            "zh-CN": "雷雨"
-        }
-    },
-    "EPalWazaID::LineThunder": {
-        "InternalName": "EPalWazaID::LineThunder",
-        "Element": "Electric",
-        "Power": 75,
-        "I18n": {
-            "en": "Lightning Streak",
-            "zh-CN": "雷击"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::LightningStrike": {
-        "InternalName": "EPalWazaID::LightningStrike",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Lightning Strike",
-            "zh-CN": "闪电冲击"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_Kirin_LightningTackle": {
-        "InternalName": "EPalWazaID::Unique_Kirin_LightningTackle",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Lightning Tackle",
-            "zh-CN": "疾风迅雷 [雷角马]"
-        }
-    },
-    "EPalWazaID::LockonLaser": {
-        "InternalName": "EPalWazaID::LockonLaser",
-        "Element": "Electric",
-        "Power": 0,
-        "I18n": {
-            "en": "Lock-on Laser",
-            "zh-CN": "锁定雷射"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::SelfExplosion": {
-        "InternalName": "EPalWazaID::SelfExplosion",
-        "Element": "Neutral",
-        "Power": 0,
-        "I18n": {
-            "en": "Megaton Implode [Tocotoco]",
-            "zh-CN": "超自爆 [炸蛋鸟]"
-        }
-    },
-    "EPalWazaID::SpecialCutter": {
-        "InternalName": "EPalWazaID::SpecialCutter",
-        "Element": "Grass",
-        "Power": 0,
-        "I18n": {
-            "en": "Multicutter [Lily & Lyleen]",
-            "zh-CN": "多重利刃 [莉莉 & 百合女王]"
-        }
-    },
-    "EPalWazaID::Unique_SakuraSaurus_SideTackle": {
-        "InternalName": "EPalWazaID::Unique_SakuraSaurus_SideTackle",
-        "Element": "Neutral",
-        "Power": 80,
-        "I18n": {
-            "en": "Muscle Slam",
-            "zh-CN": "铁山靠 [连理/海誓龙]"
-        }
-    },
-    "EPalWazaID::Unique_FairyDragon_FairyTornado": {
-        "InternalName": "EPalWazaID::Unique_FairyDragon_FairyTornado",
-        "Element": "Dragon",
-        "Power": 70,
-        "I18n": {
-            "en": "Mystic Whirlwind",
-            "zh-CN": "神秘旋风 [精灵/水灵龙]"
-        }
-    },
-    "EPalWazaID::ShadowBall": {
-        "InternalName": "EPalWazaID::ShadowBall",
-        "Element": "Dark",
-        "Power": 100,
-        "I18n": {
-            "en": "Nightmare Ball",
-            "zh-CN": "恶魔球"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::HyperBeam": {
-        "InternalName": "EPalWazaID::HyperBeam",
-        "Element": "Neutral",
-        "Power": 150,
-        "I18n": {
-            "en": "Pal Blast",
-            "zh-CN": "帕鲁光束"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_DarkCrow_TelePoke": {
-        "InternalName": "EPalWazaID::Unique_DarkCrow_TelePoke",
-        "Element": "Dark",
-        "Power": 55,
-        "I18n": {
-            "en": "Phantom Peck",
-            "zh-CN": "幻影突袭 [黑鸦隐士]"
-        }
-    },
-    "EPalWazaID::Unique_Horus_FlareBird": {
-        "InternalName": "EPalWazaID::Unique_Horus_FlareBird",
-        "Element": "Fire",
-        "Power": 135,
-        "I18n": {
-            "en": "Phoenix Flare",
-            "zh-CN": "凤凰翔波 [荷鲁斯]"
-        }
-    },
-    "EPalWazaID::ThunderFunnel": {
-        "InternalName": "EPalWazaID::ThunderFunnel",
-        "Element": "Electric",
-        "Power": 65,
-        "I18n": {
-            "en": "Plasma Tornado",
-            "zh-CN": "等离子浮游炮"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::PoisonShot": {
-        "InternalName": "EPalWazaID::PoisonShot",
-        "Element": "Dark",
-        "Power": 30,
-        "I18n": {
-            "en": "Poison Blast",
-            "zh-CN": "剧毒射击"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::PoisonFog": {
-        "InternalName": "EPalWazaID::PoisonFog",
-        "Element": "Dark",
-        "Power": 0,
-        "I18n": {
-            "en": "Poison Fog [Lily & Lyleen / Vaelet / Cinnamoth]",
-            "zh-CN": "毒雾 [莉莉 & 百合女王 / 薇莉塔 / 幻悦蝶]"
-        }
-    },
-    "EPalWazaID::PowerBall": {
-        "InternalName": "EPalWazaID::PowerBall",
-        "Element": "Neutral",
-        "Power": 70,
-        "I18n": {
-            "en": "Power Bomb",
-            "zh-CN": "元气弹"
+            "en": "Air Cannon",
+            "zh-CN": "空气炮"
         },
         "SkillFruit": true
     },
     "EPalWazaID::PowerShot": {
         "InternalName": "EPalWazaID::PowerShot",
         "Element": "Neutral",
+        "CT": 4,
         "Power": 35,
         "I18n": {
             "en": "Power Shot",
@@ -764,75 +90,235 @@
         },
         "SkillFruit": true
     },
-    "EPalWazaID::Human_Punch": {
-        "InternalName": "EPalWazaID::Human_Punch",
+    "EPalWazaID::PowerBall": {
+        "InternalName": "EPalWazaID::PowerBall",
         "Element": "Neutral",
-        "Power": 0,
+        "CT": 15,
+        "Power": 70,
         "I18n": {
-            "en": "Punch [Human]",
-            "zh-CN": "击打 [人类]"
-        }
-    },
-    "EPalWazaID::Unique_PinkCat_CatPunch": {
-        "InternalName": "EPalWazaID::Unique_PinkCat_CatPunch",
-        "Element": "Neutral",
-        "Power": 40,
-        "I18n": {
-            "en": "Punch Flurry",
-            "zh-CN": "喵喵拳 [捣蛋猫]"
-        }
-    },
-    "EPalWazaID::Unique_Boar_Tackle": {
-        "InternalName": "EPalWazaID::Unique_Boar_Tackle",
-        "Element": "Neutral",
-        "Power": 55,
-        "I18n": {
-            "en": "Reckless Charge",
-            "zh-CN": "猪突猛进 [草莽猪]"
-        }
-    },
-    "EPalWazaID::RockLance": {
-        "InternalName": "EPalWazaID::RockLance",
-        "Element": "Ground",
-        "Power": 150,
-        "I18n": {
-            "en": "Rock Lance",
-            "zh-CN": "岩石锐矛"
+            "en": "Power Bomb",
+            "zh-CN": "元气弹"
         },
         "SkillFruit": true
+    },
+    "EPalWazaID::HyperBeam": {
+        "InternalName": "EPalWazaID::HyperBeam",
+        "Element": "Neutral",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Pal Blast",
+            "zh-CN": "帕鲁光束"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::SelfDestruct": {
+        "InternalName": "EPalWazaID::SelfDestruct",
+        "Element": "Neutral",
+        "CT": 55,
+        "Power": 180,
+        "I18n": {
+            "en": "Implode",
+            "zh-CN": "自爆"
+        },
+        "SkillFruit": true
+    },
+
+    
+    "EPalWazaID::Unique_ChickenPal_ChickenPeck": {
+        "InternalName": "EPalWazaID::Unique_ChickenPal_ChickenPeck",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 30,
+        "I18n": {
+            "en": "Chicken Rush",
+            "zh-CN": "皮皮冲鸡 [皮皮鸡]"
+        },
+        "UniqueSkill": true
     },
     "EPalWazaID::Unique_SheepBall_Roll": {
         "InternalName": "EPalWazaID::Unique_SheepBall_Roll",
         "Element": "Neutral",
+        "CT": 1,
         "Power": 35,
         "I18n": {
             "en": "Roly Poly",
             "zh-CN": "滚滚毛球 [棉悠悠]"
-        }
+        },
+        "UniqueSkill": true
     },
-    "EPalWazaID::MudShot": {
-        "InternalName": "EPalWazaID::MudShot",
-        "Element": "Ground",
+    "EPalWazaID::Unique_PinkCat_CatPunch": {
+        "InternalName": "EPalWazaID::Unique_PinkCat_CatPunch",
+        "Element": "Neutral",
+        "CT": 1,
         "Power": 40,
         "I18n": {
-            "en": "Sand Blast",
-            "zh-CN": "泥浆投掷"
+            "en": "Punch Flurry",
+            "zh-CN": "喵喵拳 [捣蛋猫]"
         },
-        "SkillFruit": true
+        "UniqueSkill": true
     },
-    "EPalWazaID::SandTornado": {
-        "InternalName": "EPalWazaID::SandTornado",
-        "Element": "Ground",
+    "EPalWazaID::Unique_Alpaca_Tackle": {
+        "InternalName": "EPalWazaID::Unique_Alpaca_Tackle",
+        "Element": "Neutral",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Fluffy Tackle",
+            "zh-CN": "绒毛冲撞 [美露帕]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Garm_Bite": {
+        "InternalName": "EPalWazaID::Unique_Garm_Bite",
+        "Element": "Neutral",
+        "CT": 2,
+        "Power": 45,
+        "I18n": {
+            "en": "Fierce Fang",
+            "zh-CN": "狂野獠牙 [猎狼]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Deer_PushupHorn": {
+        "InternalName": "EPalWazaID::Unique_Deer_PushupHorn",
+        "Element": "Neutral",
+        "CT": 5,
+        "Power": 50,
+        "I18n": {
+            "en": "Antler Uppercut",
+            "zh-CN": "尖角顶击 [紫霞/祇岳鹿]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Boar_Tackle": {
+        "InternalName": "EPalWazaID::Unique_Boar_Tackle",
+        "Element": "Neutral",
+        "CT": 2,
+        "Power": 55,
+        "I18n": {
+            "en": "Reckless Charge",
+            "zh-CN": "猪突猛进 [草莽猪]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Eagle_GlidingNail": {
+        "InternalName": "EPalWazaID::Unique_Eagle_GlidingNail",
+        "Element": "Neutral",
+        "CT": 8,
+        "Power": 60,
+        "I18n": {
+            "en": "Gale Claw",
+            "zh-CN": "滑空爪 [天擒鸟]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_NaughtyCat_CatPress": {
+        "InternalName": "EPalWazaID::Unique_NaughtyCat_CatPress",
+        "Element": "Neutral",
+        "CT": 9,
+        "Power": 60,
+        "I18n": {
+            "en": "Cat Press",
+            "zh-CN": "喵咪扑击 [笑魇猫]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_HawkBird_Storm": {
+        "InternalName": "EPalWazaID::Unique_HawkBird_Storm",
+        "Element": "Neutral",
+        "CT": 13,
+        "Power": 65,
+        "I18n": {
+            "en": "Tornado Attack",
+            "zh-CN": "龙卷风 [疾风隼]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_SakuraSaurus_SideTackle": {
+        "InternalName": "EPalWazaID::Unique_SakuraSaurus_SideTackle",
+        "Element": "Neutral",
+        "CT": 12,
         "Power": 80,
         "I18n": {
-            "en": "Sand Tornado",
-            "zh-CN": "砂砾飓风"
+            "en": "Muscle Slam",
+            "zh-CN": "铁山靠 [连理/海誓龙]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Gorilla_GroundPunch": {
+        "InternalName": "EPalWazaID::Unique_Gorilla_GroundPunch",
+        "Element": "Neutral",
+        "CT": 14,
+        "Power": 85,
+        "I18n": {
+            "en": "Ground Pound",
+            "zh-CN": "猩猩连打 [铁拳猿]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_FengyunDeeper_CloudTempest": {
+        "InternalName": "EPalWazaID::Unique_FengyunDeeper_CloudTempest",
+        "Element": "Neutral",
+        "CT": 15,
+        "Power": 90,
+        "I18n": {
+            "en": "Cloud Tempest",
+            "zh-CN": "阴云之岚 [云海鹿]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_KingAlpaca_BodyPress": {
+        "InternalName": "EPalWazaID::Unique_KingAlpaca_BodyPress",
+        "Element": "Neutral",
+        "CT": 21,
+        "Power": 100,
+        "I18n": {
+            "en": "Kingly Slam",
+            "zh-CN": "泰山压顶 [君王/冰帝美露帕]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_SaintCentaur_OneSpearRushes": {
+        "InternalName": "EPalWazaID::Unique_SaintCentaur_OneSpearRushes",
+        "Element": "Neutral",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": "Spear Thrust",
+            "zh-CN": "闪枪冲锋 [圣光骑士]"
+        },
+        "UniqueSkill": true
+    },
+
+    "EPalWazaID::SelfExplosion": {
+        "InternalName": "EPalWazaID::SelfExplosion",
+        "Element": "Neutral",
+        "CT": 55,
+        "Power": 500,
+        "I18n": {
+            "en": "Megaton Implode [Tocotoco]",
+            "zh-CN": "超自爆 [炸蛋鸟]"
+        }
+    },
+
+
+
+    "EPalWazaID::WindCutter": {
+        "InternalName": "EPalWazaID::WindCutter",
+        "Element": "Grass",
+        "CT": 2,
+        "Power": 30,
+        "I18n": {
+            "en": "Wind Cutter",
+            "zh-CN": "风刃"
         },
         "SkillFruit": true
     },
     "EPalWazaID::SeedMachinegun": {
         "InternalName": "EPalWazaID::SeedMachinegun",
         "Element": "Grass",
+        "CT": 9,
         "Power": 50,
         "I18n": {
             "en": "Seed Machine Gun",
@@ -843,6 +329,7 @@
     "EPalWazaID::SeedMine": {
         "InternalName": "EPalWazaID::SeedMine",
         "Element": "Grass",
+        "CT": 13,
         "Power": 65,
         "I18n": {
             "en": "Seed Mine",
@@ -850,67 +337,21 @@
         },
         "SkillFruit": true
     },
-    "EPalWazaID::DarkWave": {
-        "InternalName": "EPalWazaID::DarkWave",
-        "Element": "Dark",
-        "Power": 55,
-        "I18n": {
-            "en": "Shadow Burst",
-            "zh-CN": "暗影波动"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_DrillGame_ShellAttack": {
-        "InternalName": "EPalWazaID::Unique_DrillGame_ShellAttack",
-        "Element": "Ground",
-        "Power": 65,
-        "I18n": {
-            "en": "Shell Spin",
-            "zh-CN": "甲壳回旋 [碎岩龟]"
-        }
-    },
-    "EPalWazaID::ElecWave": {
-        "InternalName": "EPalWazaID::ElecWave",
-        "Element": "Electric",
-        "Power": 40,
-        "I18n": {
-            "en": "Shockwave",
-            "zh-CN": "冲击波"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::SolarBeam": {
-        "InternalName": "EPalWazaID::SolarBeam",
+    "EPalWazaID::GrassTornado": {
+        "InternalName": "EPalWazaID::GrassTornado",
         "Element": "Grass",
-        "Power": 150,
+        "CT": 18,
+        "Power": 80,
         "I18n": {
-            "en": "Solar Blast",
-            "zh-CN": "太阳光束"
+            "en": "Grass Tornado",
+            "zh-CN": "绿野飓风"
         },
         "SkillFruit": true
-    },
-    "EPalWazaID::SpreadPulse": {
-        "InternalName": "EPalWazaID::SpreadPulse",
-        "Element": "Electric",
-        "Power": 30,
-        "I18n": {
-            "en": "Spark Blast",
-            "zh-CN": "电火花"
-        },
-        "SkillFruit": true
-    },
-    "EPalWazaID::Unique_SaintCentaur_OneSpearRushes": {
-        "InternalName": "EPalWazaID::Unique_SaintCentaur_OneSpearRushes",
-        "Element": "Neutral",
-        "Power": 120,
-        "I18n": {
-            "en": "Spear Thrust",
-            "zh-CN": "闪枪冲锋 [圣光骑士]"
-        }
     },
     "EPalWazaID::RootAttack": {
         "InternalName": "EPalWazaID::RootAttack",
         "Element": "Grass",
+        "CT": 25,
         "Power": 95,
         "I18n": {
             "en": "Spine Vine",
@@ -918,27 +359,205 @@
         },
         "SkillFruit": true
     },
+    "EPalWazaID::SolarBeam": {
+        "InternalName": "EPalWazaID::SolarBeam",
+        "Element": "Grass",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Solar Blast",
+            "zh-CN": "太阳光束"
+        },
+        "SkillFruit": true
+    },
+
+
+    "EPalWazaID::Unique_FlowerDinosaur_Whip": {
+        "InternalName": "EPalWazaID::Unique_FlowerDinosaur_Whip",
+        "Element": "Grass",
+        "CT": 8,
+        "Power": 60,
+        "I18n": {
+            "en": "Botanical Smash",
+            "zh-CN": "植物猛击 [花冠龙]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_RobinHood_BowSnipe": {
+        "InternalName": "EPalWazaID::Unique_RobinHood_BowSnipe",
+        "Element": "Grass",
+        "CT": 9,
+        "Power": 65,
+        "I18n": {
+            "en": "Focus Shot",
+            "zh-CN": "精准狙击 [羽箭/山岳射手]"
+        },
+        "UniqueSkill": true
+    },
     "EPalWazaID::Unique_QueenBee_SpinLance": {
         "InternalName": "EPalWazaID::Unique_QueenBee_SpinLance",
         "Element": "Grass",
+        "CT": 9,
         "Power": 70,
         "I18n": {
             "en": "Spinning Lance",
             "zh-CN": "回旋矛 [女皇蜂]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_GrassPanda_MusclePunch": {
+        "InternalName": "EPalWazaID::Unique_GrassPanda_MusclePunch",
+        "Element": "Grass",
+        "CT": 18,
+        "Power": 85,
+        "I18n": {
+            "en": "Crushing Punch",
+            "zh-CN": "筋肉重拳 [叶胖达]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::SpecialCutter": {
+        "InternalName": "EPalWazaID::SpecialCutter",
+        "Element": "Grass",
+        "CT": 12,
+        "Power": 60,
+        "I18n": {
+            "en": "Multicutter [Lily & Lyleen]",
+            "zh-CN": "多重利刃 [莉莉 & 百合女王]"
+        },
+        "UniqueSkill": true
+    },
+
+    "EPalWazaID::SelfDestruct_Bee": {
+        "InternalName": "EPalWazaID::SelfDestruct_Bee",
+        "Element": "Neutral",
+        "CT": 55,
+        "Power": 250,
+        "I18n": {
+            "en": "Bee Quiet",
+            "zh-CN": "蜂！蜂！蜂！ [骑士蜂]"
         }
     },
-    "EPalWazaID::Unique_Anubis_LowRoundKick": {
-        "InternalName": "EPalWazaID::Unique_Anubis_LowRoundKick",
-        "Element": "Ground",
+
+
+    "EPalWazaID::IceMissile": {
+        "InternalName": "EPalWazaID::IceMissile",
+        "Element": "Ice",
+        "CT": 3,
+        "Power": 30,
+        "I18n": {
+            "en": "Ice Missile",
+            "zh-CN": "冰雪飞弹"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::IceBlade": {
+        "InternalName": "EPalWazaID::IceBlade",
+        "Element": "Ice",
+        "CT": 10,
+        "Power": 55,
+        "I18n": {
+            "en": "Icicle Cutter",
+            "zh-CN": "冰刃"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::BlizzardLance": {
+        "InternalName": "EPalWazaID::BlizzardLance",
+        "Element": "Ice",
+        "CT": 15,
+        "Power": 70,
+        "I18n": {
+            "en": "Iceberg",
+            "zh-CN": "冰刺"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::FrostBreath": {
+        "InternalName": "EPalWazaID::FrostBreath",
+        "Element": "Ice",
+        "CT": 22,
+        "Power": 90,
+        "I18n": {
+            "en": "Cryst Breath",
+            "zh-CN": "凛冬之息"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::IcicleThrow": {
+        "InternalName": "EPalWazaID::IcicleThrow",
+        "Element": "Ice",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": "Blizzard Spike",
+            "zh-CN": "钻石星辰"
+        },
+        "SkillFruit": true
+    },
+
+
+    "EPalWazaID::Unique_IceDeer_IceHorn": {
+        "InternalName": "EPalWazaID::Unique_IceDeer_IceHorn",
+        "Element": "Ice",
+        "CT": 9,
+        "Power": 65,
+        "I18n": {
+            "en": "Freezing Charge",
+            "zh-CN": "霜角猛攻 [严冬鹿]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_CaptainPenguin_BodySlide": {
+        "InternalName": "EPalWazaID::Unique_CaptainPenguin_BodySlide",
+        "Element": "Ice",
+        "CT": 10,
+        "Power": 70,
+        "I18n": {
+            "en": "Emperor Slide",
+            "zh-CN": "王者滑击 [企丸王]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": {
+        "InternalName": "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack",
+        "Element": "Ice",
+        "CT": 45,
         "Power": 100,
         "I18n": {
-            "en": "Spinning Roundhouse",
-            "zh-CN": "回旋踢 [阿努比斯]"
-        }
+            "en": "Frost Burst",
+            "zh-CN": "霜冻爆裂 [寒霜兽]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_IceHorse_IceBladeAttack": {
+        "InternalName": "EPalWazaID::Unique_IceHorse_IceBladeAttack",
+        "Element": "Ice",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": "Crystal Wing",
+            "zh-CN": "冰晶之翼 [唤冬/夜兽]"
+        },
+        "UniqueSkill": true
+    },
+
+
+    "EPalWazaID::FireBlast": {
+        "InternalName": "EPalWazaID::FireBlast",
+        "Element": "Fire",
+        "CT": 2, 
+        "Power": 30,
+        "I18n": {
+            "en": "Ignis Blast",
+            "zh-CN": "烈焰射击"
+        },
+        "SkillFruit": true
     },
     "EPalWazaID::FireSeed": {
         "InternalName": "EPalWazaID::FireSeed",
         "Element": "Fire",
+        "CT": 7,
         "Power": 45,
         "I18n": {
             "en": "Spirit Fire",
@@ -946,19 +565,295 @@
         },
         "SkillFruit": true
     },
-    "EPalWazaID::GhostFlame": {
-        "InternalName": "EPalWazaID::GhostFlame",
-        "Element": "Dark",
+    "EPalWazaID::FlareArrow": {
+        "InternalName": "EPalWazaID::FlareArrow",
+        "Element": "Fire",
+        "CT": 10,
+        "Power": 55,
+        "I18n": {
+            "en": "Flare Arrow",
+            "zh-CN": "烈焰箭"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::Flamethrower": {
+        "InternalName": "EPalWazaID::Flamethrower",
+        "Element": "Fire",
+        "CT": 15,
+        "Power": 70,
+        "I18n": {
+            "en": "Ignis Breath",
+            "zh-CN": "烈焰放射"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::FlareTornado": {
+        "InternalName": "EPalWazaID::FlareTornado",
+        "Element": "Fire",
+        "CT": 18,
+        "Power": 80,
+        "I18n": {
+            "en": "Flare Storm",
+            "zh-CN": "烈焰风暴"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::Inferno": {
+        "InternalName": "EPalWazaID::Inferno",
+        "Element": "Fire",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": "Ignis Rage",
+            "zh-CN": "地狱火"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::FireBall": {
+        "InternalName": "EPalWazaID::FireBall",
+        "Element": "Fire",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Fire Ball",
+            "zh-CN": "烈焰球"
+        },
+        "SkillFruit": true
+    },
+
+
+    "EPalWazaID::Unique_FlameBuffalo_FlameHorn": {
+        "InternalName": "EPalWazaID::Unique_FlameBuffalo_FlameHorn",
+        "Element": "Fire",
+        "CT": 9,
+        "Power": 50,
+        "I18n": {
+            "en": "Blazing Horn",
+            "zh-CN": "炽热角击 [炽焰牛]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Ronin_Iai": {
+        "InternalName": "EPalWazaID::Unique_Ronin_Iai",
+        "Element": "Fire",
+        "CT": 9, 
+        "Power": 65,
+        "I18n": {
+            "en": "Iaigiri",
+            "zh-CN": "居合斩 [浪刃武士]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Baphomet_SwallowKite": {
+        "InternalName": "EPalWazaID::Unique_Baphomet_SwallowKite",
+        "Element": "Fire",
+        "CT": 10, 
+        "Power": 70,
+        "I18n": {
+            "en": "Hellfire Claw",
+            "zh-CN": "狱火爪 [炎/暗魔羊]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_AmaterasuWolf_FireCharge": {
+        "InternalName": "EPalWazaID::Unique_AmaterasuWolf_FireCharge",
+        "Element": "Fire",
+        "CT": 10,
         "Power": 75,
         "I18n": {
-            "en": "Spirit Flame",
-            "zh-CN": "鬼火"
+            "en": "Daring Flames",
+            "zh-CN": "风林火山 [苍焰狼]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_FireKirin_Tackle": {
+        "InternalName": "EPalWazaID::Unique_FireKirin_Tackle",
+        "Element": "Fire",
+        "CT": 14,
+        "Power": 85,
+        "I18n": {
+            "en": "Ignis Slam",
+            "zh-CN": "烈焰冲撞 [火/邪麒麟]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_VolcanicMonster_MagmaAttack": {
+        "InternalName": "EPalWazaID::Unique_VolcanicMonster_MagmaAttack",
+        "Element": "Fire",
+        "CT": 45,
+        "Power": 100,
+        "I18n": {
+            "en": "Volcanic Burst",
+            "zh-CN": "火山爆发 [熔岩兽]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Horus_FlareBird": {
+        "InternalName": "EPalWazaID::Unique_Horus_FlareBird",
+        "Element": "Fire",
+        "CT": 28,
+        "Power": 135,
+        "I18n": {
+            "en": "Phoenix Flare",
+            "zh-CN": "凤凰翔波 [荷鲁斯]"
+        },
+        "UniqueSkill": true
+    },
+
+
+    "EPalWazaID::SpreadPulse": {
+        "InternalName": "EPalWazaID::SpreadPulse",
+        "Element": "Electric",
+        "CT": 2,
+        "Power": 30,
+        "I18n": {
+            "en": "Spark Blast",
+            "zh-CN": "电火花"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ElecWave": {
+        "InternalName": "EPalWazaID::ElecWave",
+        "Element": "Electric",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Shockwave",
+            "zh-CN": "冲击波"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThunderBall": {
+        "InternalName": "EPalWazaID::ThunderBall",
+        "Element": "Electric",
+        "CT": 50,
+        "Power": 50,
+        "I18n": {
+            "en": "Electric Ball",
+            "zh-CN": "闪电球"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThunderFunnel": {
+        "InternalName": "EPalWazaID::ThunderFunnel",
+        "Element": "Electric",
+        "CT": 13,
+        "Power": 65,
+        "I18n": {
+            "en": "Plasma Tornado",
+            "zh-CN": "等离子浮游炮"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::LockonLaser": {
+        "InternalName": "EPalWazaID::LockonLaser",
+        "Element": "Electric",
+        "CT": 15,
+        "Power": 70,
+        "I18n": {
+            "en": "Lock-on Laser",
+            "zh-CN": "锁定雷射"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::LineThunder": {
+        "InternalName": "EPalWazaID::LineThunder",
+        "Element": "Electric",
+        "CT": 16,
+        "Power": 75,
+        "I18n": {
+            "en": "Lightning Streak",
+            "zh-CN": "雷击"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThreeThunder": {
+        "InternalName": "EPalWazaID::ThreeThunder",
+        "Element": "Electric",
+        "CT": 22,
+        "Power": 90,
+        "I18n": {
+            "en": "Tri-Lightning",
+            "zh-CN": "三重雷击"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::LightningStrike": {
+        "InternalName": "EPalWazaID::LightningStrike",
+        "Element": "Electric",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": "Lightning Strike",
+            "zh-CN": "闪电冲击"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::Thunderbolt": {
+        "InternalName": "EPalWazaID::Thunderbolt",
+        "Element": "Electric",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Lightning Bolt",
+            "zh-CN": "闪电伏特"
+        },
+        "SkillFruit": true
+    },
+
+
+    "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch": {
+        "InternalName": "EPalWazaID::Unique_GrassPanda_Electric_ElectricPunch",
+        "Element": "Electric",
+        "CT": 14,
+        "Power": 85,
+        "I18n": {
+            "en": "Blast Punch",
+            "zh-CN": "爆裂拳击 [雷胖达]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_ElecPanda_ElecScratch": {
+        "InternalName": "EPalWazaID::Unique_ElecPanda_ElecScratch",
+        "Element": "Electric",
+        "CT": 22,
+        "Power": 90,
+        "I18n": {
+            "en": "Lightning Claw",
+            "zh-CN": "霹雳连爪 [暴电熊]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": {
+        "InternalName": "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack",
+        "Element": "Electric",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": "Kerauno",
+            "zh-CN": "雷神之枪 [波鲁杰克斯]"
+        },
+        "UniqueSkill": true
+    },
+
+
+
+
+    "EPalWazaID::MudShot": {
+        "InternalName": "EPalWazaID::MudShot",
+        "Element": "Ground",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Sand Blast",
+            "zh-CN": "泥浆投掷"
         },
         "SkillFruit": true
     },
     "EPalWazaID::StoneShotgun": {
         "InternalName": "EPalWazaID::StoneShotgun",
         "Element": "Ground",
+        "CT": 10,
         "Power": 55,
         "I18n": {
             "en": "Stone Blast",
@@ -969,97 +864,503 @@
     "EPalWazaID::ThrowRock": {
         "InternalName": "EPalWazaID::ThrowRock",
         "Element": "Ground",
+        "CT": 15,
         "Power": 70,
         "I18n": {
             "en": "Stone Cannon",
             "zh-CN": "投石"
         },
         "SkillFruit": true
-    },
-    "EPalWazaID::Unique_BluePlatypus_Toboggan": {
-        "InternalName": "EPalWazaID::Unique_BluePlatypus_Toboggan",
-        "Element": "Water",
-        "Power": 0,
+    },    
+    "EPalWazaID::SandTornado": {
+        "InternalName": "EPalWazaID::SandTornado",
+        "Element": "Ground",
+        "CT": 18,
+        "Power": 80,
         "I18n": {
-            "en": "Surfing Slam",
-            "zh-CN": "乘风破浪 [冲浪鸭]"
-        }
-    },
-    "EPalWazaID::Unique_HawkBird_Storm": {
-        "InternalName": "EPalWazaID::Unique_HawkBird_Storm",
-        "Element": "Neutral",
-        "Power": 65,
-        "I18n": {
-            "en": "Tornado Attack",
-            "zh-CN": "龙卷风 [疾风隼]"
-        }
-    },
-    "EPalWazaID::ThreeThunder": {
-        "InternalName": "EPalWazaID::ThreeThunder",
-        "Element": "Electric",
-        "Power": 90,
-        "I18n": {
-            "en": "Tri-Lightning",
-            "zh-CN": "三重雷击"
+            "en": "Sand Tornado",
+            "zh-CN": "砂砾飓风"
         },
         "SkillFruit": true
+    },
+    "EPalWazaID::RockLance": {
+        "InternalName": "EPalWazaID::RockLance",
+        "Element": "Ground",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Rock Lance",
+            "zh-CN": "岩石锐矛"
+        },
+        "SkillFruit": true
+    },
+
+
+
+
+    "EPalWazaID::Unique_DrillGame_ShellAttack": {
+        "InternalName": "EPalWazaID::Unique_DrillGame_ShellAttack",
+        "Element": "Ground",
+        "CT": 9,
+        "Power": 65,
+        "I18n": {
+            "en": "Shell Spin",
+            "zh-CN": "甲壳回旋 [碎岩龟]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_HerculesBeetle_BeetleTackle": {
+        "InternalName": "EPalWazaID::Unique_HerculesBeetle_BeetleTackle",
+        "Element": "Ground",
+        "CT": 11,
+        "Power": 75,
+        "I18n": {
+            "en": "Giga Horn",
+            "zh-CN": "终极角击 [铠格力斯]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Anubis_LowRoundKick": {
+        "InternalName": "EPalWazaID::Unique_Anubis_LowRoundKick",
+        "Element": "Ground",
+        "CT": 21,
+        "Power": 100,
+        "I18n": {
+            "en": "Spinning Roundhouse",
+            "zh-CN": "回旋踢 [阿努比斯]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Grassmammoth_Earthquake": {
+        "InternalName": "EPalWazaID::Unique_Grassmammoth_Earthquake",
+        "Element": "Ground",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": "Earth Impact",
+            "zh-CN": "地震 [森/雪猛犸]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Anubis_Tackle": {
+        "InternalName": "EPalWazaID::Unique_Anubis_Tackle",
+        "Element": "Ground",
+        "CT": 28,
+        "Power": 120,
+        "I18n": {
+            "en": "Forceful Charge",
+            "zh-CN": "巨力冲锋 [阿努比斯]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Anubis_GroundPunch": {
+        "InternalName": "EPalWazaID::Unique_Anubis_GroundPunch",
+        "Element": "Ground",
+        "CT": 35,
+        "Power": 140,
+        "I18n": {
+            "en": "Ground Smash",
+            "zh-CN": "粉碎大地 [阿努比斯]"
+        },
+        "UniqueSkill": true
+    },
+
+
+
+
+    "EPalWazaID::DragonCanon": {
+        "InternalName": "EPalWazaID::DragonCanon",
+        "Element": "Dragon",
+        "CT": 2,
+        "Power": 30,
+        "I18n": {
+            "en": "Dragon Cannon",
+            "zh-CN": "龙息弹"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::DragonWave": {
+        "InternalName": "EPalWazaID::DragonWave",
+        "Element": "Dragon",
+        "CT": 10,
+        "Power": 55,
+        "I18n": {
+            "en": "Dragon Burst",
+            "zh-CN": "龙之波动"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::DragonBreath": {
+        "InternalName": "EPalWazaID::DragonBreath",
+        "Element": "Dragon",
+        "CT": 15,
+        "Power": 70,
+        "I18n": {
+            "en": "Draconic Breath",
+            "zh-CN": "龙息"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::DragonMeteor": {
+        "InternalName": "EPalWazaID::DragonMeteor",
+        "Element": "Dragon",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Dragon Meteor",
+            "zh-CN": "龙彗星"
+        },
+        "SkillFruit": true
+    },
+
+
+    "EPalWazaID::Unique_FairyDragon_FairyTornado": {
+        "InternalName": "EPalWazaID::Unique_FairyDragon_FairyTornado",
+        "Element": "Dragon",
+        "CT": 10,
+        "Power": 70,
+        "I18n": {
+            "en": "Mystic Whirlwind",
+            "zh-CN": "神秘旋风 [精灵/水灵龙]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_JetDragon_JumpBeam": {
+        "InternalName": "EPalWazaID::Unique_JetDragon_JumpBeam",
+        "Element": "Dragon",
+        "CT": 50,
+        "Power": 140,
+        "I18n": {
+            "en": "Beam Comet",
+            "zh-CN": "光束彗星 [空涡龙]"
+        },
+        "UniqueSkill": true
+    },
+
+
+
+    "EPalWazaID::PoisonShot": {
+        "InternalName": "EPalWazaID::PoisonShot",
+        "Element": "Dark",
+        "CT": 2,
+        "Power": 30,
+        "I18n": {
+            "en": "Poison Blast",
+            "zh-CN": "剧毒射击"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::DarkWave": {
+        "InternalName": "EPalWazaID::DarkWave",
+        "Element": "Dark",
+        "CT": 10,
+        "Power": 55,
+        "I18n": {
+            "en": "Shadow Burst",
+            "zh-CN": "暗影波动"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::GhostFlame": {
+        "InternalName": "EPalWazaID::GhostFlame",
+        "Element": "Dark",
+        "CT": 16,
+        "Power": 75,
+        "I18n": {
+            "en": "Spirit Flame",
+            "zh-CN": "鬼火"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ShadowBall": {
+        "InternalName": "EPalWazaID::ShadowBall",
+        "Element": "Dark",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": "Nightmare Ball",
+            "zh-CN": "恶梦球"
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::DarkLaser": {
+        "InternalName": "EPalWazaID::DarkLaser",
+        "Element": "Dark",
+        "CT": 55,
+        "Power": 150,
+        "I18n": {
+            "en": "Dark Laser",
+            "zh-CN": "暗黑镭射"
+        },
+        "SkillFruit": true
+    },
+
+
+
+
+    "EPalWazaID::Unique_DarkCrow_TelePoke": {
+        "InternalName": "EPalWazaID::Unique_DarkCrow_TelePoke",
+        "Element": "Dark",
+        "CT": 7,
+        "Power": 55,
+        "I18n": {
+            "en": "Phantom Peck",
+            "zh-CN": "幻影突袭 [黑鸦隐士]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_Werewolf_Scratch": {
+        "InternalName": "EPalWazaID::Unique_Werewolf_Scratch",
+        "Element": "Dark",
+        "CT": 7,
+        "Power": 55,
+        "I18n": {
+            "en": "Jumping Claw",
+            "zh-CN": "飞跃爪击 [月镰魔]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_FireKirin_Dark_DarkTossin": {
+        "InternalName": "EPalWazaID::Unique_FireKirin_Dark_DarkTossin",
+        "Element": "Dark",
+        "CT": 14,
+        "Power": 85,
+        "I18n": {
+            "en": "Dark Charge",
+            "zh-CN": "暗影冲撞 [邪麒麟]"
+        },
+        "UniqueSkill": true
     },
     "EPalWazaID::Unique_BlackCentaur_TwoSpearRushes": {
         "InternalName": "EPalWazaID::Unique_BlackCentaur_TwoSpearRushes",
         "Element": "Dark",
+        "CT": 40,
         "Power": 120,
         "I18n": {
             "en": "Twin Spears",
             "zh-CN": "双枪一闪 [混沌骑士]"
-        }
-    },
-    "EPalWazaID::Unique_VolcanicMonster_MagmaAttack": {
-        "InternalName": "EPalWazaID::Unique_VolcanicMonster_MagmaAttack",
-        "Element": "Fire",
-        "Power": 100,
-        "I18n": {
-            "en": "Volcanic Burst",
-            "zh-CN": "火山爆发 [熔岩兽]"
-        }
-    },
-    "EPalWazaID::WindCutter": {
-        "InternalName": "EPalWazaID::WindCutter",
-        "Element": "Grass",
-        "Power": 30,
-        "I18n": {
-            "en": "Wind Cutter",
-            "zh-CN": "风刃"
         },
-        "SkillFruit": true
+        "UniqueSkill": true
     },
-    "EPalWazaID::Psychokinesis": {
-        "InternalName": "EPalWazaID::Psychokinesis",
+    "EPalWazaID::Unique_BlackGriffon_TackleLaser": {
+        "InternalName": "EPalWazaID::Unique_BlackGriffon_TackleLaser",
         "Element": "Dark",
+        "CT": 45,
+        "Power": 160,
+        "I18n": {
+            "en": "Divine Disaster",
+            "zh-CN": "神圣灾祸 [异构格里芬]"
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::DarkLegion": {
+        "InternalName": "EPalWazaID::DarkLegion",
+        "Element": "Dark",
+        "CT": 45,
+        "Power": 160,
+        "I18n": {
+            "en": "Dark Whisp [Victor & Shadowbeak]",
+            "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]"
+        },
+        "UniqueSkill": true
+    },
+
+
+    "EPalWazaID::PoisonFog": {
+        "InternalName": "EPalWazaID::PoisonFog",
+        "Element": "Dark",
+        "CT": 30,
         "Power": 0,
         "I18n": {
-            "en": "(Invalid) Psycho Gravity",
-            "zh-CN": "(无效条目) 念动引力"
-        },
-        "Invalid": true
+            "en": "Poison Fog",
+            "zh-CN": "毒雾"
+        }
+    },
+    "EPalWazaID::DarkBall": {
+        "InternalName": "EPalWazaID::DarkBall",
+        "Element": "Dark",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Dark Ball",
+            "zh-CN": "暗黑球"
+        }
+    },
+
+
+
+
+
+
+
+    "EPalWazaID::WorkAttack": {
+        "InternalName": "EPalWazaID::WorkAttack",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::WorkAttack",
+            "zh-CN": "EPalWazaID::WorkAttack"
+        }
+    },
+    "EPalWazaID::SnowStorm": {
+        "InternalName": "EPalWazaID::SnowStorm",
+        "Element": "Ice",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::SnowStorm",
+            "zh-CN": "EPalWazaID::SnowStorm"
+        }
+    },
+    "EPalWazaID::Funnel_RaijinDaughter": {
+        "InternalName": "EPalWazaID::Funnel_RaijinDaughter",
+        "Element": "Electric",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Funnel_RaijinDaughter",
+            "zh-CN": "EPalWazaID::Funnel_RaijinDaughter"
+        }
+    },
+    "EPalWazaID::Scratch": {
+        "InternalName": "EPalWazaID::Scratch",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Scratch",
+            "zh-CN": "EPalWazaID::Scratch"
+        }
+    },
+    "EPalWazaID::Funnel_DreamDemon": {
+        "InternalName": "EPalWazaID::Funnel_DreamDemon",
+        "Element": "Dark",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Funnel_DreamDemon",
+            "zh-CN": "EPalWazaID::Funnel_DreamDemon"
+        }
     },
     "EPalWazaID::CrossThunder": {
         "InternalName": "EPalWazaID::CrossThunder",
         "Element": "Electric",
-        "Power": 0,
+        "CT": -1,
+        "Power": -1,
         "I18n": {
-            "en": "(Invalid) Cross Lightning",
-            "zh-CN": "(无效条目) 十字雷击"
-        },
-        "Invalid": true
+            "en": "EPalWazaID::CrossThunder",
+            "zh-CN": "EPalWazaID::CrossThunder"
+        }
+    },
+    "EPalWazaID::EnergyShot": {
+        "InternalName": "EPalWazaID::EnergyShot",
+        "Element": "Electric",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::EnergyShot",
+            "zh-CN": "EPalWazaID::EnergyShot"
+        }
+    },
+    "EPalWazaID::Unique_BluePlatypus_Toboggan": {
+        "InternalName": "EPalWazaID::Unique_BluePlatypus_Toboggan",
+        "Element": "Water",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Unique_BluePlatypus_Toboggan",
+            "zh-CN": "EPalWazaID::Unique_BluePlatypus_Toboggan"
+        }
+    },
+    "EPalWazaID::Psychokinesis": {
+        "InternalName": "EPalWazaID::Psychokinesis",
+        "Element": "Dark",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Psychokinesis",
+            "zh-CN": "EPalWazaID::Psychokinesis"
+        }
+    },
+    "EPalWazaID::Human_Punch": {
+        "InternalName": "EPalWazaID::Human_Punch",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Human_Punch",
+            "zh-CN": "EPalWazaID::Human_Punch"
+        }
+    },
+    "EPalWazaID::Throw": {
+        "InternalName": "EPalWazaID::Throw",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Throw",
+            "zh-CN": "EPalWazaID::Throw"
+        }
+    },
+    "EPalWazaID::ThunderRain": {
+        "InternalName": "EPalWazaID::ThunderRain",
+        "Element": "Electric",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::ThunderRain",
+            "zh-CN": "EPalWazaID::ThunderRain"
+        }
+    },
+    "EPalWazaID::Unique_Kirin_LightningTackle": {
+        "InternalName": "EPalWazaID::Unique_Kirin_LightningTackle",
+        "Element": "Electric",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Unique_Kirin_LightningTackle",
+            "zh-CN": "EPalWazaID::Unique_Kirin_LightningTackle"
+        }
     },
     "EPalWazaID::WaterWave": {
         "InternalName": "EPalWazaID::WaterWave",
-        "Element": "",
-        "Power": 0,
+        "Element": "Water",
+        "CT": -1,
+        "Power": -1,
         "I18n": {
-            "en": "(Invalid) EPalWazaID::WaterWave",
-            "zh-CN": "(无效条目) EPalWazaID::WaterWave"
-        },
-        "Invalid": true
+            "en": "EPalWazaID::WaterWave",
+            "zh-CN": "EPalWazaID::WaterWave"
+        }
+    },
+    "EPalWazaID::TidalWave": {
+        "InternalName": "EPalWazaID::TidalWave",
+        "Element": "Water",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::TidalWave",
+            "zh-CN": "EPalWazaID::TidalWave"
+        }
+    },
+    "EPalWazaID::Unique_WeaselDragon_FlyingTackle": {
+        "InternalName": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
+            "zh-CN": "EPalWazaID::Unique_WeaselDragon_FlyingTackle"
+        }
+    },
+    "EPalWazaID::Intimidate": {
+        "InternalName": "EPalWazaID::Intimidate",
+        "Element": "Neutral",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Intimidate",
+            "zh-CN": "EPalWazaID::Intimidate"
+        }
     }
 }

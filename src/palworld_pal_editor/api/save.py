@@ -89,15 +89,32 @@ def get_active_skills():
             continue
         data = {
             "InternalName": attack["InternalName"],
-            "I18n": DataProvider.get_attack_i18n(attack["InternalName"])
-            or attack["InternalName"],
+            "I18n": f'[{displayElement(attack["Element"])}] ' \
+                    f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
+                    f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
+                    f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
             "Power": attack["Power"],
             "Element": attack["Element"],
+            "CT": attack["CT"]
         }
         atk_dict[attack["InternalName"]] = data
         atk_arr.append(data)
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
 
+
+def displayElement(element):
+      elementEmojis = {
+        'Water': "💧",
+        'Fire': "🔥",
+        'Dragon': "🐉",
+        'Grass': "☘️",
+        'Ground': "🪨",
+        'Ice': "❄️",
+        'Electric': "⚡",
+        'Neutral': "😐",
+        'Dark': "🌑"
+      }
+      return elementEmojis.get(element) or "❓"
 
 @save_blueprint.route("/i18n", methods=["PATCH"])
 # @jwt_required()

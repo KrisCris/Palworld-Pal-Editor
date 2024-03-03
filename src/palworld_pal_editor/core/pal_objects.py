@@ -131,7 +131,7 @@ class PalObjects:
     
     @staticmethod
     def BoolProperty(value: bool):
-        return {"value":value, "id":"None", "type":"BoolProperty"}
+        return {"value":value, "id": None, "type":"BoolProperty"}
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
@@ -146,7 +146,7 @@ class PalObjects:
         return {
             "struct_type":"Guid",
             "struct_id": PalObjects.EMPTY_UUID,
-            "id":"None",
+            "id": None,
             "value":toUUID(value),
             "type":"StructProperty"
         }
@@ -156,7 +156,7 @@ class PalObjects:
         """
         Example:
         >>> "Gender":{
-                "id":"None",
+                "id":None,
                 "value": {
                     "type":"EPalGenderType",
                     "value":"EPalGenderType::Female"
@@ -185,7 +185,7 @@ class PalObjects:
         Example:
         >>> "RawData":{
                 "array_type":"ByteProperty",
-                "id":"None",
+                "id":None,
                 "value":{...},
                 "type":"ArrayProperty",
                 "custom_type":".worldSaveData.CharacterSaveParameterMap.Value.RawData"
@@ -193,7 +193,7 @@ class PalObjects:
 
         >>> "EquipWaza":{
                 "array_type":"EnumProperty",
-                "id":"None",
+                "id":None,
                 "value":{
                     "values":[
                         "EPalWazaID::DarkBall",
@@ -206,7 +206,7 @@ class PalObjects:
 
         >>> "PassiveSkillList":{
                 "array_type":"NameProperty",
-                "id":"None",
+                "id":None,
                 "value":{
                     "values":[
                         "TrainerATK_UP_1",
@@ -220,7 +220,7 @@ class PalObjects:
 
         struct = {
             "array_type": array_type,
-            "id": "None",
+            "id": None,
             "value": value,
             "type": "ArrayProperty"
         }
@@ -252,10 +252,10 @@ class PalObjects:
         >>> "HP":{
             "struct_type":"FixedPoint64",
             "struct_id":"00000000-0000-0000-0000-000000000000",
-            "id":"None",
+            "id":None,
             "value":{
                 "Value":{
-                    "id":"None",
+                    "id":None,
                     "value":1690000,
                     "type":"Int64Property"
                 }

@@ -1,3 +1,4 @@
+import copy
 import math
 from typing import Optional
 from palworld_save_tools.archive import UUID
@@ -522,7 +523,6 @@ class PalEntity:
         
         if self.EquipWaza is None:
             self._pal_param["EquipWaza"] = PalObjects.ArrayProperty("EnumProperty", {"values": []})
-        
         if waza in self.EquipWaza:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
@@ -562,11 +562,11 @@ class PalEntity:
     def MasteredWaza(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("MasteredWaza"))
 
-    @property
-    def MasteredWazaSet(self) -> Optional[set[str]]:
-        # Unused
-        # We need a way to cache it, otherwise it's no better than idx into a list
-        return set(self.MasteredWaza) if self.MasteredWaza is not None else None
+    # @property
+    # def MasteredWazaSet(self) -> Optional[set[str]]:
+    #     # Unused
+    #     # We need a way to cache it, otherwise it's no better than idx into a list
+    #     return set(self.MasteredWaza) if self.MasteredWaza is not None else None
 
     @LOGGER.change_logger('MasteredWaza')
     def add_MasteredWaza(self, waza: str) -> bool:
@@ -587,8 +587,9 @@ class PalEntity:
         self.MasteredWaza.append(waza)
         # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
         LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to MasteredWaza")
-        if self.num_EmptyEquipWaza > 0:
-            self.add_EquipWaza(waza)
+        
+        # if self.num_EmptyEquipWaza > 0:
+        #     self.add_EquipWaza(waza)
         return True
 
     @LOGGER.change_logger('MasteredWaza')
