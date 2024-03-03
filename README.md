@@ -12,7 +12,9 @@
 
 ## What is this?
 
-### A Palworld Pal Editor developed by _connlost with ❤️ ~~(yeah i am just too lazy to change github username)~~
+### A Palworld Pal Editor developed by _connlost with ❤️
+
+ ~~(yeah i am just too lazy to change github username)~~
 
 ***I've only tested this tool on my save, it may not work properly for you.***
 
@@ -25,16 +27,24 @@
 ---
 
 - [Palworld Pal Editor](#palworld-pal-editor)
-  - [What This Tool Can Do](#whatthistoolcando)
-  - [Videos](#videos)
+  - [What is this?](#what-is-this)
+    - [A Palworld Pal Editor developed by \_connlost with ❤️](#a-palworld-pal-editor-developed-by-_connlost-with-️)
+  - [What This Tool Can Do](#what-this-tool-can-do)
   - [Usage](#usage)
-    - [Run The Code](#code)
-    - [Executable](#exec)
-    - [Docker](#docker)
-    - [Config](#config)
+    - [1. Directly Run the Code](#1-directly-run-the-code)
+    - [2. Use Pre-Built Binary](#2-use-pre-built-binary)
+    - [3. Docker Container](#3-docker-container)
+    - [Config File](#config-file)
+  - [Videos](#videos)
+  - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
+  - [Contribution](#contribution)
+  - [Sponsor](#sponsor)
   - [Thanks](#thanks)
+  - [Why?](#why)
 
-## <a name="whatthistoolcando"></a>What This Tool Can Do
+---
+
+## What This Tool Can Do
 
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -54,23 +64,9 @@
 - [x] Revive Pals
 - [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
 
-## <a name="videos"></a>Videos
+## Usage
 
-- DOCKER
-
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/d7008b22-a2ff-4a2c-8903-32bab0922b32
-
-- GUI / WEB
-  
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-401e-b8a1-987ac3e6b02d
-
-- CLI: (old, but you get the idea)
-
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
-
-## <a name="usage"></a>Usage
-
-### <a name="code"></a>1. Directly Run the Code
+### 1. Directly Run the Code
 
 1. Install Python 3.11+
 2. Clone / Download the code
@@ -84,18 +80,18 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
    - `--i` for enable interactive mode, you may want to use with `cli` mode.
 5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
 
-### <a name="exec"></a>2. Use Pre-Built Binary
+### 2. Use Pre-Built Binary
 
 1. Download from GitHub Release Page, may not be bundled with the latest code.
 2. Also support command line arguments mentioned above.
 
-### <a name="docker"></a>3. Docker Container
+### 3. Docker Container
 
 1. Clone the code.
 2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
 3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
 
-### <a name="config"></a>Config File
+### Config File
 
 Default:
 
@@ -127,15 +123,40 @@ Custom:
 }
 ```
 
+## Videos
+
+- DOCKER
+
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/d7008b22-a2ff-4a2c-8903-32bab0922b32
+
+- GUI / WEB
+  
+
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-401e-b8a1-987ac3e6b02d
+
+- CLI: (old, but you get the idea)
+
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
+
 ## Possible Roadmap? (NO ETA)
 
 - [ ] Improve WebUI (I am bad at frontend dev, sorry! Contribution appreciated.)
 - [ ] Real GUI, or maybe just a Terminal GUI using [Textual](https://textualize.io/).
 - [ ] Add / Remove Pal (I mean, you can just catch a pal and set it to something else.)
-- [ ] Move Pal to Different Slots?
+- [ ] Move Pal to Different Slots? Change owner? IDK...
 - [ ] More Stuff...
 
-## <a name="thanks"></a>Thanks
+## Contribution
+
+1. If you found a bug, or want a feature, please check [Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues) first.
+2. If you want to contribute code, please checkout the latest branch.
+3. Open a PR so everyone knows what you are going to contribute.
+
+## Sponsor
+
+THANK YOU ❤️, BUT THIS IS YET TBD.
+
+## Thanks
 
 - Fast game save loading code by [MagicBear](https://github.com/magicbear).
 - Save conversion between GVAS and `.sav` by [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools).
@@ -144,10 +165,7 @@ Custom:
 
 ## Why?
 
-**Q: There is already a pal editor called PalEdit, is there any need to make another one?**
-
-**A: I made this tool for many reasons:**
-
 1. I made the tool for my friends who spent time playing this game with me ❤.
-2. For practicing my 2-year-untouched Python skills.
-3. FUN, I AM JUST TOO BORING THESE DAYS.
+2. For practicing my 2-year untouched Python skills.
+3. Fun, I am just too boring these days.
+4. This guy had a really bad time fixing both his corrupted game save, and bugs of a similar tool.

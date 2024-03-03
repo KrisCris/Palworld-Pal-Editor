@@ -13,11 +13,11 @@ const palStore = usePalEditorStore()
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
         <div class="editField">
-          <p class="const"> Specie: {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey].I18n }}
+          <p class="const"> Specie: {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey].I18n }}
           </p>
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n">{{ pal.I18n }}</option>
+              :key="pal.InternalName" :title="pal.I18n">{{palStore.displayPalElement(pal.InternalName)}} {{ pal.I18n }}</option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
@@ -54,8 +54,8 @@ const palStore = usePalEditorStore()
               :disabled="palStore.LOADING_FLAG">🔼</button>
           </div>
         </div>
-        <p class="const">Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
-        <p class="const">Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
+        <p class="const">🆔 Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
+        <p class="const">🗿 Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
           <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
           <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
@@ -78,18 +78,18 @@ const palStore = usePalEditorStore()
     <div class="EditorItem flex-v item left">
       <p class="cat">IVs</p>
       <div class="editField spaceBetween">
-        <p class="const">HP IV: {{ palStore.SELECTED_PAL_DATA.Talent_HP }}</p>
+        <p class="const">❤️ HP IV: {{ palStore.SELECTED_PAL_DATA.Talent_HP }}</p>
         <input class="slider" type="range" name="Talent_HP" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">DEF IV: {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</p>
+        <p class="const">🛡️ DEF IV: {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</p>
         <input class="slider" type="range" name="Talent_Defense" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">ATK IV: {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</p>
+        <p class="const">⚔️ ATK IV: {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</p>
         <input class="slider" type="range" name="Talent_Shot" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
@@ -102,23 +102,23 @@ const palStore = usePalEditorStore()
       <hr>
       <p class="cat">SOUL RANKs (POWER STATUE)</p>
       <div class="editField spaceBetween">
-        <p class="const">SoulBonus HP: {{ palStore.SELECTED_PAL_DATA.Rank_HP }}</p>
+        <p class="const">❤️ SoulBonus HP: {{ palStore.SELECTED_PAL_DATA.Rank_HP }}</p>
         <input class="slider" type="range" name="Rank_HP" min="0" max="10" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">SoulBonus Attack: {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</p>
+        <p class="const">⚔️ SoulBonus Attack: {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</p>
         <input class="slider" type="range" name="Rank_Attack" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">SoulBonus Defence: {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</p>
+        <p class="const">🛡️ SoulBonus Defence: {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</p>
         <input class="slider" type="range" name="Rank_Defence" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">SoulBonus CraftSpeed: {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</p>
+        <p class="const">🔨SoulBonus CraftSpeed: {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</p>
         <input class="slider" type="range" name="Rank_CraftSpeed" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
@@ -137,9 +137,8 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">{{ 
-              palStore.PASSIVE_SKILLS[skill].I18n[0]
-                }}
+              <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">
+              {{palStore.displayRating(palStore.PASSIVE_SKILLS[skill].Rating)}} {{ palStore.PASSIVE_SKILLS[skill].I18n[0] }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill].I18n[1] }}</span>
             </div>
@@ -151,7 +150,7 @@ const palStore = usePalEditorStore()
             <select class="PassiveSkill selector" name="add_PassiveSkillList" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
               <option class="PassiveSkill" value="" key="">Add Skills</option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
-                :key="skill.InternalName" :title="skill.I18n[1]">{{ skill.I18n[0] }}</option>
+                :key="skill.InternalName" :title="skill.I18n[1]">{{palStore.displayRating(skill.Rating)}} {{ skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
               :disabled="palStore.LOADING_FLAG">➕</button>
@@ -164,13 +163,14 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.ACTIVE_SKILLS[skill].I18n
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].I18n
                 }}
               </p>
               <span class="tooltip-text">
-                <p>Name: {{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }}</p>
-                <p>Element: {{ palStore.ACTIVE_SKILLS[skill].Element }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
+                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill].CT }}</p>
+                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].Element }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill].IsUniqueSkill ? "✨ Unique" : ""}} {{ palStore.ACTIVE_SKILLS[skill].HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
               </span>
             </div>
 
@@ -183,15 +183,16 @@ const palStore = usePalEditorStore()
       <p class="cat">MASTERED ACTIVE SKILLS</p>
       <div class="flex-h">
         <div class="editField skillList">
-          <div v-if="palStore.SELECTED_PAL_DATA.MasteredWaza" v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
+          <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.ACTIVE_SKILLS[skill].I18n
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].I18n
                 }}
               </p>
               <span class="tooltip-text">
                 <p>{{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }}</p>
-                <p>Element: {{ palStore.ACTIVE_SKILLS[skill].Element }}</p>
+                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill].CT }}</p>
+                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].Element }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill].IsUniqueSkill ? "✨ Unique" : ""}} {{ palStore.ACTIVE_SKILLS[skill].HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
               </span>
             </div>
             <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) && !palStore.SELECTED_PAL_DATA.isEquipSkillFull()" class="edit" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
@@ -204,8 +205,7 @@ const palStore = usePalEditorStore()
               <option value="" key="">Add Skills</option>
               <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
                 :title="skill.I18n">
-                <!-- {{ `${palStore.SELECTED_PAL_DATA.displayElement(skill.Element)} - ${skill.I18n} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }} -->
-                {{ `${skill.I18n} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+                {{ `${palStore.displayElement(skill.Element)} - ${skill.I18n} - ${palStore.skillIcon(skill.InternalName)} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"

@@ -89,10 +89,13 @@ def get_active_skills():
             continue
         data = {
             "InternalName": attack["InternalName"],
-            "I18n": f'[{displayElement(attack["Element"])}] ' \
-                    f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
-                    f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
-                    f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
+            # "I18n": f'[{displayElement(attack["Element"])}] ' \
+            #         f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
+            #         f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
+            #         f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
+            "I18n": DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"],
+            "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
+            "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
             "Power": attack["Power"],
             "Element": attack["Element"],
             "CT": attack["CT"]

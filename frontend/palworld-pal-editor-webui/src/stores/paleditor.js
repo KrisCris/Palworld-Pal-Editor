@@ -61,41 +61,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       return "N/A";
     }
 
-    // displayElement(element) {
-    //   str = ""
-    //   if (element == "Water") str += "💧"
-    //   if (element == "Fire") str += "🔥"
-    //   if (element == "Dragon") str += "🐉"
-    //   if (element == "Grass") str += "☘️"
-    //   if (element == "Ground") str += "🪨"
-    //   if (element == "Ice") str += "❄️"
-    //   if (element == "Electric") str += "⚡"
-    //   if (element == "Neutral") str += "😐"
-    //   if (element == "Dark") str += "🌑"
-    //   return str
-    // }
-
-    displayElement(element) {
-      const elementEmojis = {
-        Water: "💧",
-        Fire: "🔥",
-        Dragon: "🐉",
-        Grass: "☘️",
-        Ground: "🪨",
-        Ice: "❄️",
-        Electric: "⚡",
-        Neutral: "😐",
-        Dark: "🌑"
-      };
-    
-      return elementEmojis[element] || "";
-    }
-
-    displayRating(rating) {
-      if (rating < 0) return "👎";
-      if (rating > 0) return "👍"
-    }
-
     getRank() {
       return this.Rank - 1;
     }
@@ -804,6 +769,41 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
+  function displayPalElement(DataAccessKey) {
+    const els = PAL_STATIC_DATA.value[DataAccessKey].Elements
+    let str = ""
+    for (let e of els) {
+      str += displayElement(e)
+    }
+    return str
+  }
+
+  function displayElement(element) {
+    const elementEmojis = {
+      Water: "💧",
+      Fire: "🔥",
+      Dragon: "🐉",
+      Grass: "☘️",
+      Ground: "🪨",
+      Ice: "❄️",
+      Electric: "⚡",
+      Neutral: "🔵",
+      Dark: "🌑"
+    };
+    return elementEmojis[element] || "";
+  }
+
+  function skillIcon(atk) {
+    if (ACTIVE_SKILLS.value[atk].IsUniqueSkill) return "✨"
+    if (ACTIVE_SKILLS.value[atk].HasSkillFruit) return "🍐"
+  }
+
+  function displayRating(rating) {
+    if (rating < 0) return "🔴";
+    if (rating > 1) return "🟡";
+    return "⚪"
+  }
+
   return {
     PAL_PASSIVE_SELECTED_ITEM,
     PAL_ACTIVE_SELECTED_ITEM,
@@ -831,6 +831,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PASSIVE_SKILLS_LIST,
     ACTIVE_SKILLS,
     ACTIVE_SKILLS_LIST,
+
+    displayPalElement,
+    displayElement,
+    skillIcon,
+    displayRating,
+
     reset,
     updateI18n,
     loadSave,
