@@ -2,7 +2,7 @@
 
 ## What is this?
 
-### A Palworld Pal Editor developed by _connlost with ❤️ ~~(yeah i don't too lazy to change github username)~~
+### A Palworld Pal Editor developed by _connlost with ❤️ ~~(yeah i am just too lazy to change github username)~~
 
 ***I've only tested this tool on my save, it may not work properly for you.***
 
