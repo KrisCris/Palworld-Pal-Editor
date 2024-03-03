@@ -10,6 +10,8 @@
 
 ***LET ME KNOW IF ANY BUG PRESENTS.***
 
+<img width="720" alt="Screenshot 2024-03-03 at 1 39 32 PM" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/b6259622-707a-4634-abea-c280dc7060d4">
+
 ## What You Can Do
 
 - [x] List Players and Pals
@@ -30,6 +32,10 @@
 - [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
 
 ## Video
+
+- DOCKER
+
+https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/d7008b22-a2ff-4a2c-8903-32bab0922b32
 
 - GUI / WEB
   
@@ -121,4 +127,4 @@ Custom:
 
 1. I made the tool for my friends who spent time playing this game with me ❤.
 2. For practicing my 2-year-untouched Python skills.
-3. I don't want to answer it. And you probably don't want to hear my shit talk.
+3. FUN, I AM JUST TOO BORING THESE DAYS.
