@@ -28,7 +28,9 @@ watch(palStore.LOADING_FLAG, (newValue) => {
   <div class="SaveDiv" v-if="palStore.SAVE_LOADED_FLAG">
     <p>💾</p>
     <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH" :placeholder="palStore.PAL_GAME_SAVE_PATH">
-    <button id="SAVE_BTN" @click="palStore.writeSave">SAVE CHANGES</button>
+    <button id="SAVE_BTN" @click="palStore.writeSave">💾 SAVE CHANGES</button>
+    <button class="op" @click="palStore.loadSave">🔄 Reload Save</button>
+    <button class="op" @click="palStore.reset">🏠 Return to Main Page</button>
   </div>
   <div class="language-selector">
     <p>🌐</p>
@@ -39,6 +41,17 @@ watch(palStore.LOADING_FLAG, (newValue) => {
 </template>
 
 <style>
+div.options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  right: 10rem;
+  padding: 0.3rem;
+  z-index: 1000;
+}
+
 div.loading-bar {
   position: fixed;
   top: 0;
@@ -53,16 +66,12 @@ div.SaveDiv {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: .5rem;
   position: fixed;
-  /* Fix the position relative to the viewport */
   top: 0;
-  /* Pin to the top of the viewport */
   left: 0.3rem;
-  /* Pin to the right of the viewport */
   padding: 0.3rem;
-  /* Add some padding around the select box */
   z-index: 1000;
-  /* Ensure it sits above other content */
 }
 
 div.language-selector {
@@ -70,15 +79,10 @@ div.language-selector {
   align-items: center;
   justify-content: center;
   position: fixed;
-  /* Fix the position relative to the viewport */
   top: 0;
-  /* Pin to the top of the viewport */
   right: 0.3rem;
-  /* Pin to the right of the viewport */
   padding: 0.3rem;
-  /* Add some padding around the select box */
   z-index: 1000;
-  /* Ensure it sits above other content */
 }
 
 select#languageSelect {
@@ -131,6 +135,27 @@ button#SAVE_BTN:hover {
 }
 
 button#SAVE_BTN:disabled {
+  background-color: #8a8a8a;
+}
+
+button.op {
+  height: 2rem;
+  background-color: #414141;
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  /* font-size: 1.2rem; */
+  transition: all 0.15s ease-in-out;
+}
+
+button.op:hover {
+  background-color: #2c2c2c;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+button.op:disabled {
   background-color: #8a8a8a;
 }
 </style>

@@ -228,6 +228,8 @@ class PalObjects:
         if custom_type:
             struct["custom_type"] = custom_type
 
+        return struct
+
     @staticmethod
     def get_ArrayProperty(container: dict) -> Optional[list[Any]]:
         """

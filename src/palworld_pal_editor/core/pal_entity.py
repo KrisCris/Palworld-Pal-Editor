@@ -97,8 +97,10 @@ class PalEntity:
         
         self.remove_all_attacks()
         self.learn_attacks()
+        self.heal_pal()
+        self.clear_worker_sick()
         self.MaxHP = self.ComputedMaxHP
-    
+
     @property
     def _RawSpecieKey(self) -> Optional[str]:
         key = self.CharacterID
@@ -531,7 +533,7 @@ class PalEntity:
         
         self.EquipWaza.append(waza)
 
-        if waza not in self.MasteredWaza:
+        if waza not in (self.MasteredWaza or []):
             self.add_MasteredWaza(waza)
 
         LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to EquipWaza")
@@ -547,6 +549,14 @@ class PalEntity:
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
+
+    @property
+    def num_EquipWaza(self) -> int:
+        return len(self.EquipWaza or [])
+    
+    @property
+    def num_EmptyEquipWaza(self) -> int:
+        return 3 - self.num_EquipWaza
 
     @property
     def MasteredWaza(self) -> Optional[list[str]]:
@@ -577,6 +587,8 @@ class PalEntity:
         self.MasteredWaza.append(waza)
         # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
         LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to MasteredWaza")
+        if self.num_EmptyEquipWaza > 0:
+            self.add_EquipWaza(waza)
         return True
 
     @LOGGER.change_logger('MasteredWaza')
@@ -585,7 +597,7 @@ class PalEntity:
             if item is not None:
                 idx = self.MasteredWaza.index(item)
             waza = self.MasteredWaza.pop(int(idx))
-            if waza in self.EquipWaza:
+            if waza in (self.EquipWaza or []):
                 self.pop_EquipWaza(item=waza)
             # return PalObjects.pop_ArrayProperty(self._pal_param["MasteredWaza"], idx)
             LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)} from MasteredWaza")
@@ -688,6 +700,59 @@ class PalEntity:
         return self.WorkerSick is not None
     
     @property
+    def PalReviveTimer(self) -> Optional[float]:
+        """
+        ```json
+        "PalReviveTimer":{
+            "id":"None",
+            "value":22.99822425842285,
+            "type":"FloatProperty"
+        }
+        ```
+        """
+        return PalObjects.get_BaseType(self._pal_param.get("PalReviveTimer"))
+    
+    # @PalReviveTimer.setter
+    # @LOGGER.change_logger("PalReviveTimer")
+    # def PalReviveTimer(self, val: float) -> Optional[float]:
+    #     if self.PalReviveTimer is None:
+    #         return
+    #     PalObjects.set_BaseType(self._pal_param.get("PalReviveTimer"), val)
+    
+    @property
+    def PhysicalHealth(self) -> Optional[str]:
+        """
+        ```json
+        "PhysicalHealth":{
+            "id":"None",
+            "value":{
+                "type":"EPalStatusPhysicalHealthType",
+                "value":"EPalStatusPhysicalHealthType::Dying"
+            },
+            "type":"EnumProperty"
+        },
+        ```
+        """
+        return PalObjects.get_EnumProperty(self._pal_param.get("PhysicalHealth"))
+    
+    @property
+    def IsFaintedPal(self) -> bool:
+        if self.PalReviveTimer or self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
+            return True
+        return False
+
+    @LOGGER.change_logger("PhysicalHealth")
+    def heal_pal(self):
+        if self.IsFaintedPal:
+            self._pal_param.pop("PalReviveTimer", None)
+        if self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
+            self._pal_param.pop("PhysicalHealth", None)
+        if not self.MaxHP:
+            self.MaxHP = self.ComputedMaxHP
+        self.HP = self.MaxHP
+            
+
+    @property
     def FoodWithStatusEffect(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("FoodWithStatusEffect"))
     
@@ -714,8 +779,8 @@ class PalEntity:
         PalObjects.set_BaseType(self._pal_param['Tiemr_FoodWithStatusEffect'], val)
         
     def learn_attacks(self):
-        for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level):
-            if atk not in self.MasteredWaza:
+        for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1):
+            if atk not in (self.MasteredWaza or []):
                 self.add_MasteredWaza(atk)
         # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
         #     if atk in self.MasteredWaza:
@@ -730,6 +795,8 @@ class PalEntity:
     @LOGGER.change_logger("WorkerSick")
     def clear_worker_sick(self):
         self._pal_param.pop("WorkerSick", None)
+        if self.MaxFullStomach:
+            self.FullStomach = self.MaxFullStomach
         self.SanityValue = 100.0
 
     def max_lv_exp(self):
@@ -758,6 +825,12 @@ class PalEntity:
 
             lines.append(f"{line}{value}")
         LOGGER.info("\n".join(lines))
+
+    def print_obj(self):
+        print(self.dump_obj())
+
+    def dump_obj(self) -> str:
+        return str(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
         rank = clamp(0, 10, rank)
@@ -800,7 +873,7 @@ class PalEntity:
     def _get_passive_buff(self, buff_key: str) -> float:
         if self.PassiveSkillList is None: return 0
         bonus = 0.0
-        for passive in self.PassiveSkillList:
+        for passive in (self.PassiveSkillList or []):
             bonus += DataProvider.get_passive_buff(passive, buff_key)
         return bonus
     

@@ -7,13 +7,14 @@ const palStore = usePalEditorStore()
 
 <template>
   <div class="PalEditor">
-    <div class="EditorItem item flex-v">
+    <div class="EditorItem item flex-v basicInfo">
+      <button id="dump_btn" @click="palStore.dumpPalData">Dump Data</button>
       <img class="palIcon" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
         <div class="editField">
           <p class="const"> Specie: {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey].I18n }}
-</p>
+          </p>
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
               :key="pal.InternalName" :title="pal.I18n">{{ pal.I18n }}</option>
@@ -55,13 +56,22 @@ const palStore = usePalEditorStore()
         </div>
         <p class="const">Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
         <p class="const">Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
-        <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
-        <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
-        <p class="const">🛡️ Possible Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
-        <p class="const">🔨 Possible CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
+        <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
+          <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
+          <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
+          <p class="const">🛡️ Possible Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
+          <p class="const">🔨 Possible CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
+        </div>
+
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
-          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">💊
+          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick"
+            :disabled="palStore.LOADING_FLAG">💊
             Clear Worker Sick</button>
+        </div>
+        <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal">
+          <button class="edit text" @click="palStore.updatePal" name="IsFaintedPal"
+            :disabled="palStore.LOADING_FLAG">💉
+            Revive Pal</button>
         </div>
       </div>
     </div>
@@ -86,7 +96,8 @@ const palStore = usePalEditorStore()
       <div class="editField spaceBetween">
         <p class="const">MELEE IV (Unused): {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}</p>
         <input class="slider" type="range" name="Talent_Melee" min="0" max="100"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+          v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <hr>
       <p class="cat">SOUL RANKs (POWER STATUE)</p>
@@ -103,7 +114,8 @@ const palStore = usePalEditorStore()
       <div class="editField spaceBetween">
         <p class="const">SoulBonus Defence: {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</p>
         <input class="slider" type="range" name="Rank_Defence" min="0" max="10"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+          v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">SoulBonus CraftSpeed: {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</p>
@@ -119,14 +131,14 @@ const palStore = usePalEditorStore()
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
     </div>
-    <div class="EditorItem item flex-v left">
+    <div class="EditorItem item flex-v left skillPanel">
       <p class="cat">PASSIVE SKILLS</p>
       <div class="flex-h">
-        <div class="editField">
+        <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
             <div class="tooltip-container">
               <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">{{ palStore.PASSIVE_SKILLS[skill].I18n[0]
-              }}
+                }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill].I18n[1] }}</span>
             </div>
@@ -134,27 +146,25 @@ const palStore = usePalEditorStore()
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.removePassiveSkill" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
+          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
+            <select class="PassiveSkill selector" name="AddPassiveSkill" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
+              <option class="PassiveSkill" value="" key="">Add Skills</option>
+              <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
+                :key="skill.InternalName" :title="skill.I18n[1]">{{ skill.I18n[0] }}</option>
+            </select>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.addPassiveSkill" name="AddPassiveSkill"
+              :disabled="palStore.LOADING_FLAG">➕</button>
+          </div>
         </div>
       </div>
-      <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
-        <select class="PassiveSkill selector" name="AddPassiveSkill" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
-          <option class="PassiveSkill" value="" key="">Add Skills</option>
-          <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
-            :key="skill.InternalName" :title="skill.I18n[1]">{{ skill.I18n[0] }}</option>
-        </select>
-        <button class="edit" @click="palStore.SELECTED_PAL_DATA.addPassiveSkill" name="AddPassiveSkill"
-          :disabled="palStore.LOADING_FLAG">➕</button>
-      </div>
-    </div>
-
-    <div class="EditorItem item flex-v left">
+      <hr>
       <p class="cat">ACTIVE SKILLS</p>
       <div class="flex-h">
-        <div class="editField">
+        <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{ palStore.ACTIVE_SKILLS[skill].I18n
-              }}
+                }}
               </p>
               <span class="tooltip-text">
                 <p>Name: {{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
@@ -166,18 +176,22 @@ const palStore = usePalEditorStore()
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.removeActiveSkill" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
+          <div class="editField">
+            <select class="selector" name="AddActiveSkill" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
+              <option value="" key="">Add Skills</option>
+              <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
+                :title="skill.I18n">{{ `${skill.Element} - ${skill.I18n} - ATK: ${skill.Power}` }}</option>
+            </select>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.addActiveSkill" name="AddActiveSkill"
+              :disabled="palStore.LOADING_FLAG">➕</button>
+          </div>
         </div>
       </div>
-      <div class="editField">
-        <select class="selector" name="AddActiveSkill" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
-          <option value="" key="">Add Skills</option>
-          <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName"
-            :key="skill.InternalName" :title="skill.I18n">{{ `${skill.Element} - ${skill.I18n} - ATK: ${skill.Power}` }}</option>
-        </select>
-        <button class="edit" @click="palStore.SELECTED_PAL_DATA.addActiveSkill" name="AddActiveSkill"
-          :disabled="palStore.LOADING_FLAG">➕</button>
-      </div>
     </div>
+
+    <!-- <div class="EditorItem item flex-v left">
+
+    </div> -->
   </div>
 </template>
 
@@ -200,11 +214,32 @@ const palStore = usePalEditorStore()
   border-radius: 1rem;
 }
 
-.EditorItem .Basic-Info {}
+/* .EditorItem .Basic-Info {} */
 
 /* option.PassiveSkill{
   background-color: red;
 } */
+
+div.basicInfo {
+  position: relative;
+  max-width: calc(var(--editor-panel-width) - 380px);
+  min-width: 490px;
+}
+
+div.palInfo {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+div.skillPanel {
+  max-width: var(--editor-panel-width);
+  flex-wrap: wrap;
+}
+
+div.skillList {
+  display: flex;
+  flex-wrap: wrap;
+}
 
 hr {
   border: 0;
@@ -213,9 +248,11 @@ hr {
   background-color: #8a8a8a;
   margin: 20px 0;
 }
+
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
+
 p.cat {
   margin-top: -.8rem;
   margin-left: -.5rem;
@@ -269,7 +306,7 @@ div.editField {
   border-width: 1px;
   border-color: white; */
   /* width: 100%; */
-  flex-wrap: nowrap;
+  /* flex-wrap: nowrap; */
   gap: 5px
 }
 
@@ -312,6 +349,31 @@ button.del {
 
 button.del:hover {
   background-color: #7c0f0f;
+}
+
+button#dump_btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  padding: 1rem;
+  margin: 0rem;
+  background-color: #636363;
+  color: rgb(204, 204, 204);
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+}
+
+button#dump_btn:hover {
+  background-color: #3e3e3e;
+  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  color: rgb(204, 204, 204);
 }
 
 input.edit {

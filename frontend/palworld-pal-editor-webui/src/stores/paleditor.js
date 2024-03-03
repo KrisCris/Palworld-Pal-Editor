@@ -31,6 +31,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.IsTower = obj.IsTower;
       this.Gender = obj.Gender;
       this.HasWorkerSick = obj.HasWorkerSick;
+      this.IsFaintedPal = obj.IsFaintedPal;
 
       this.ComputedDefense = obj.ComputedDefense;
       this.ComputedAttack = obj.ComputedAttack;
@@ -443,6 +444,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_ID.value = null;
     SELECTED_PLAYER_ID.value = null;
 
+    BASE_PAL_MAP.value = new Map()
+    PLAYER_MAP.value = new Map()
+    PAL_PASSIVE_SELECTED_ITEM.value = ""
+    PAL_ACTIVE_SELECTED_ITEM.value = ""
+  
+    // display data
+    SELECTED_PAL_DATA.value = new Map()
+    PAL_MAP.value = new Map()
+
     PLAYER_MAP.value.clear();
   }
 
@@ -501,7 +511,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response.status == 0) {
       alert(`Changes saved to ${PAL_WRITE_BACK_PATH.value}`);
       // YOU HAVE TO RELOAD FOR NOW, THIS HOW MY BACKEND WORKS.
-      reset()
+      loadSave()
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -696,6 +706,32 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       : SELECTED_PLAYER_ID.value
   }
 
+  async function dumpPalData() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await post("/api/pal/dump_data", {
+      PlayerUId: GET_PAL_OWNER_API_ID(),
+      PalGuid: SELECTED_PAL_ID.value,
+    })
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      const data = response.data
+      await navigator.clipboard.writeText(data);
+      alert("Pal Data Copied to Clipboard!")
+      window.open("https://jsonformatter.curiousconcept.com/")
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+    } else {
+      alert(`- updatePal - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
   return {
     PAL_PASSIVE_SELECTED_ITEM,
     PAL_ACTIVE_SELECTED_ITEM,
@@ -723,6 +759,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PASSIVE_SKILLS_LIST,
     ACTIVE_SKILLS,
     ACTIVE_SKILLS_LIST,
+    reset,
     updateI18n,
     loadSave,
     selectPlayer,
@@ -730,6 +767,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     updatePal,
     writeSave,
     fetch_config,
+    dumpPalData,
 
     login,
     auth,

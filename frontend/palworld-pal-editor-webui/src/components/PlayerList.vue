@@ -38,7 +38,7 @@ div.flex {
   flex-direction: column;
   flex-shrink: 0;
   height: var(--sub-height);
-  min-width: 10rem;
+  width: 10rem;
   padding-right: 0.3rem;
   /* scrollbar */
 }

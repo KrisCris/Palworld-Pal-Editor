@@ -21,6 +21,7 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
   --editor-top-offset: 2rem;
   --sub-height:calc(96vh - var(--editor-top-offset));
+  --editor-panel-width: calc(90vw - 15rem - 10rem - 5rem)
 }
 
 /* semantic color variables for this project */

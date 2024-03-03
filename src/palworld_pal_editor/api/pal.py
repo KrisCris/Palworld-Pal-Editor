@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
+import traceback
+
 from palworld_pal_editor.api.util import reply
 
 from palworld_pal_editor.core import SaveManager, PalEntity
@@ -22,6 +24,8 @@ def patch_paldata():
     try:
         if key == "HasWorkerSick":
             pal_entity.clear_worker_sick()
+        elif key == "IsFaintedPal":
+            pal_entity.heal_pal()
         elif key == "DelPassiveSkill":
             pal_entity.pop_PassiveSkillList(item=value)
         elif key == "AddPassiveSkill":
@@ -35,8 +39,9 @@ def patch_paldata():
         elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
             return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:
-        LOGGER.warning(f"Error in patch_paldata {e}")
-        return reply(1, None, f"Error in patch_paldata {e}")
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error in patch_paldata {stack_trace}")
+        return reply(1, None, f"Error in patch_paldata {stack_trace}")
     return reply(0)
 
 # Get Pal Data
@@ -101,5 +106,26 @@ def _pal_data(pal: PalEntity):
         "Talent_Melee": pal.Talent_Melee or 0,
         "Talent_Shot": pal.Talent_Shot or 0,
         "Talent_Defense": pal.Talent_Defense or 0,
-        "HasWorkerSick": pal.HasWorkerSick
+        "HasWorkerSick": pal.HasWorkerSick,
+        "IsFaintedPal":pal.IsFaintedPal,
     }
+
+@pal_blueprint.route("/dump_data", methods=["POST"])
+@jwt_required()
+def dump_data():
+    PalGuid = request.json.get("PalGuid")
+    PlayerUId = request.json.get("PlayerUId")
+    if PlayerUId == "PAL_BASE_WORKER_BTN":
+        pal = SaveManager().get_working_pal(PalGuid)
+        LOGGER.info(f"Get BASE WORKER {pal}")
+    else:
+        try:
+            player = SaveManager().get_player(PlayerUId)
+            pal = player.get_pal(PalGuid)
+            LOGGER.info(f"Get {player.NickName}'s pal: {pal}")
+        except:
+            pass
+    if pal:
+        return reply(0, pal.dump_obj())
+    LOGGER.warning(f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
+    return reply(1, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")

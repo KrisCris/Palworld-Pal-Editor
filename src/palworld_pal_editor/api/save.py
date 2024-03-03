@@ -1,3 +1,4 @@
+import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -47,9 +48,14 @@ def load():
 @jwt_required()
 def save():
     path = request.json.get("WritePath", None)
-    if SaveManager().save(path):
-        return reply(0)
-    reply(1, msg="Error occored during saving, check debug console.")
+    try:
+        if SaveManager().save(path):
+            return reply(0)
+        return reply(1, msg=f"Path not available? {path}")
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error in patch_paldata {stack_trace}")
+        return reply(1, msg=f"Error occored during saving, check debug console. {stack_trace}")
 
 
 @save_blueprint.route("/passive_skills", methods=["GET"])

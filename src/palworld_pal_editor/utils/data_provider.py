@@ -195,7 +195,7 @@ class DataProvider:
         attacks = DataProvider.get_pal_attacks(pal)
         if attacks is None:
             return []
-        return [attack for attack in attacks if attacks[attack] <= level]
+        return [attack for attack in attacks if attacks[attack] <= (level or 1)]
 
     @staticmethod
     def get_attacks_to_forget(pal: str, level: int) -> list[str]:

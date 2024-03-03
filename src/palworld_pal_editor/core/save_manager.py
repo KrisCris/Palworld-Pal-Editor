@@ -299,8 +299,7 @@ class SaveManager:
             except Exception as e:
                 LOGGER.error(f"Error backing up directory: {e}")
                 return False
-
-
+        
         LOGGER.info("Compressing GVAS file")
         sav_data = compress_gvas_to_sav(
             self.gvas_file.write(PALEDITOR_CUSTOM_PROPERTIES), self._compression_times

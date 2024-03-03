@@ -7,7 +7,6 @@ const palStore = usePalEditorStore()
 const palListContainer = ref(null);
 
 onMounted(async () => {
-    await nextTick();
     await nextTick(); // Wait for the DOM to update with the dynamic buttons
     const button = palListContainer.value.querySelector('button:not(:disabled)');
     if (button) {
@@ -15,14 +14,19 @@ onMounted(async () => {
     }
     watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
         await nextTick(); // Wait for the DOM to update with the dynamic buttons
-        const button = palListContainer.value.querySelector('button:not(:disabled)');
-        if (button) {
-            button.click(); // Simulate a click on the first enabled button
+        try {
+            const button = palListContainer.value.querySelector('button:not(:disabled)');
+            if (button) {
+                button.click(); // Simulate a click on the first enabled button
+            }
+        } catch (error) {
+            return
         }
     })
 });
 
 </script>
+
 <template>
     <div class="flex">
         <p>PAL LIST</p>
@@ -72,9 +76,11 @@ img.palIcon {
     width: 2rem;
     border-radius: 50%;
 }
+
 button {
     cursor: pointer;
 }
+
 button.pal {
     display: flex;
     align-items: center;
