@@ -32,6 +32,7 @@
     - [2. 打包的可执行文件](#2-打包的可执行文件)
     - [3. Docker Container](#3-docker-container)
     - [配置文件](#配置文件)
+      - [命令行参数会覆盖并写入配置文件](#命令行参数会覆盖并写入配置文件)
   - [视频](#视频)
   - [未来开发计划？ (无ETA)](#未来开发计划-无eta)
   - [贡献](#贡献)
@@ -65,32 +66,34 @@
 
 ### 1. 直接运行代码
 
-1. Install Python 3.11+
-2. Clone / Download the code
-3. In the project directory, run `setup_and_run.ps1` for Windows Powershell, or `setup_and_run.sh` on Unix-like OS.
-4. Optional Params:
-   - `--password yourPW` Login Auth, you may want this if you are running web mode.
-   - `--mode <gui | web | cli>` You can launch the program in either `gui`, `web` or `cli` mode.
-   - `--path /path/to/save/folder` Provide the path to the folder containing Level.sav.
-   - `--port 8080` Port for web mode.
-   - `--lang <zh-CN | en>` Currently supporting `zh-CN` and `en`. (Currrently hardcoded UI texts are English only.)
-   - `--i` for enable interactive mode, you may want to use with `cli` mode.
-5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
+1. 安装 Python 3.11+
+2. 克隆 / 下载项目代码
+3. 在项目文件夹里运行，Windows：`setup_and_run.ps1`， Unix-like系统：`setup_and_run.sh`.
+4. 可选命令行参数:
+   - `--password yourPW` 认证密码.
+   - `--mode <gui | web | cli>` 运行模式，可选：`gui`, `web` 或 `cli`.
+   - `--path /path/to/save/folder` 存档文件夹的路径（包含Level.sav的那个文件夹）.
+   - `--port 8080` 网页模式的端口.
+   - `--lang <zh-CN | en>` 语言，目前支持 `zh-CN` 和 `en`. (目前页面上的文字是英文的，只有帕鲁，技能之类的是有翻译的。)
+   - `--i` 模拟py的可交互模式，近在 `cli` 模式使用.
+5. 在 `cli` 模式下，你可以调用 `lang($LANG_CODE)` 函数来切换语言.
 
 ### 2. 打包的可执行文件
 
-1. Download from GitHub Release Page, may not be bundled with the latest code.
-2. Also support command line arguments mentioned above.
+1. 下载Release页面的最新程序，或者你也可以去Actions里下载最近commits的打包（后者是最新的，但你很可能会遇到bug）。
+2. 命令行参数可用。
 
 ### 3. Docker Container
 
-1. Clone the code.
-2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
-3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
+1. 克隆项目.
+2. 编辑 `./docker/docker-compose.yml`（网络不佳的用户建议传入代理环境变量）。
+3. 运行 `./build_and_run_docker.sh` 以构建容器，如果 `docker-compose` 命令不可用的话，可以换 `docker compose` 试试。（Windows的话你把里面的命令复制出来手动跑就行了）。
 
 ### 配置文件
 
-Default:
+#### 命令行参数会覆盖并写入配置文件
+
+默认:
 
 ```json
 // config.json
@@ -105,7 +108,7 @@ Default:
 }
 ```
 
-Custom:
+自定义:
 
 ```json
 // config.json

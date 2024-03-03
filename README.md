@@ -35,6 +35,7 @@
     - [2. Use Pre-Built Binary](#2-use-pre-built-binary)
     - [3. Docker Container](#3-docker-container)
     - [Config File](#config-file)
+      - [Note: Command Line Arguments Override Config](#note-command-line-arguments-override-config)
   - [Videos](#videos)
   - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
   - [Contribution](#contribution)
@@ -92,6 +93,8 @@
 3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
 
 ### Config File
+
+#### Note: Command Line Arguments Override Config
 
 Default:
 
