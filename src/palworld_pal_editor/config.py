@@ -1,6 +1,10 @@
 import json
 import os
+from pathlib import Path
+import sys
 
+PROGRAM_PATH=Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.resolve()
+VERSION = "0.1.1"
 
 class Config:
     i18n: str = "en"

@@ -1,7 +1,7 @@
 import argparse
 
 from palworld_pal_editor.utils import LOGGER, DataProvider
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION
 
 from palworld_pal_editor.cli import main as cli_main
 from palworld_pal_editor.gui import main as gui_main
@@ -9,7 +9,7 @@ from palworld_pal_editor.webui import main as webui_main
 
 
 def setup_config_from_args():
-    Config.load_from_file('config.json')
+    Config.load_from_file(PROGRAM_PATH / 'config.json')
 
     parser = argparse.ArgumentParser(description="Palworld Pal Editor, developed by _connlost with ❤.")
 
@@ -43,11 +43,13 @@ def setup_config_from_args():
         Config.mode = "gui"
         LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
 
-    Config.save_to_file('config.json')
+    Config.save_to_file(PROGRAM_PATH / 'config.json')
+    LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
 
 def main():
     setup_config_from_args()
     LOGGER.info(Config.__str__())
+    LOGGER.info(f"Running Palworld-Pal-Editor version: {VERSION}")
     match Config.mode:
         case "cli": globals().update(cli_main())
         case "gui": gui_main()
