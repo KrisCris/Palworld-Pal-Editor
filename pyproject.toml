@@ -12,7 +12,7 @@ keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 readme = "README.md"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
     "customtkinter==5.2.2",
     "setuptools==69.1.0",
