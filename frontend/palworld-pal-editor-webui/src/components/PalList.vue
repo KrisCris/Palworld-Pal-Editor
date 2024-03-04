@@ -6,23 +6,24 @@ const palStore = usePalEditorStore()
 
 const palListContainer = ref(null);
 
+watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+    await nextTick();
+    try {
+        const button = palListContainer.value.querySelector('button:not(:disabled)');
+        if (button) {
+            button.click();
+        }
+    } catch (error) {
+        return
+    }
+})
+
 onMounted(async () => {
-    await nextTick(); // Wait for the DOM to update with the dynamic buttons
+    await nextTick();
     const button = palListContainer.value.querySelector('button:not(:disabled)');
     if (button) {
-        button.click(); // Simulate a click on the first enabled button
+        button.click();
     }
-    watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
-        await nextTick(); // Wait for the DOM to update with the dynamic buttons
-        try {
-            const button = palListContainer.value.querySelector('button:not(:disabled)');
-            if (button) {
-                button.click(); // Simulate a click on the first enabled button
-            }
-        } catch (error) {
-            return
-        }
-    })
 });
 
 </script>

@@ -1,6 +1,6 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref } from 'vue';
 const palStore = usePalEditorStore()
 
 const loadingWidth = ref(0);
@@ -8,7 +8,6 @@ const showLoading = ref(false)
 const interval = ref(null)
 
 watch(() => palStore.LOADING_FLAG, (newValue) => {
-  console.log(newValue)
   if (newValue) {
     interval.value = setInterval(() => {
       if (palStore.LOADING_FLAG && loadingWidth.value < 90) {
@@ -18,6 +17,7 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
     showLoading.value = true
     loadingWidth.value = 0
   }
+
   if (!newValue) {
     loadingWidth.value = 100;
     setTimeout(() => {

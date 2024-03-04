@@ -293,7 +293,8 @@ class SaveManager:
             try:
                 if output_path.exists():
                     LOGGER.info(f"Backing up {output_path} to {backup_dir}")
-                    shutil.copytree(output_path, backup_dir, ignore=lambda dir, contents: ['Palworld-Pal-Editor-Backup'])
+                    shutil.copytree(output_path, backup_dir, 
+                                    ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
                 else:
                     LOGGER.info(f"No existing directory to backup: {output_path}")
             except Exception as e:
