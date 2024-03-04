@@ -10,12 +10,15 @@ const interval = ref(null)
 watch(() => palStore.LOADING_FLAG, (newValue) => {
   if (newValue) {
     interval.value = setInterval(() => {
-      if (palStore.LOADING_FLAG && loadingWidth.value < 90) {
-        loadingWidth.value += Math.random() * 10;
+      if (palStore.LOADING_FLAG) {
+        if (loadingWidth.value < 20) loadingWidth.value += Math.random() * 8;
+        if (loadingWidth.value < 50) loadingWidth.value += Math.random() * 4;
+        if (loadingWidth.value < 75) loadingWidth.value += Math.random() * 2;
+        if (loadingWidth.value < 98) loadingWidth.value += Math.random() * 1;
       }
-    }, 500);
+    }, 2000);
     showLoading.value = true
-    loadingWidth.value = 0
+    loadingWidth.value = 2
   }
 
   if (!newValue) {
@@ -34,10 +37,10 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
     <div class="options" v-if="palStore.SAVE_LOADED_FLAG">
       <p>💾</p>
       <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
-        :placeholder="palStore.PAL_GAME_SAVE_PATH">
-      <button class="op save" @click="palStore.writeSave">💾 SAVE CHANGES</button>
-      <button class="op" @click="palStore.loadSave">🔄 Reload Save</button>
-      <button class="op" @click="palStore.reset">🏠 Return to Main Page</button>
+        :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
+      <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">💾 SAVE CHANGES</button>
+      <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">🔄 Reload Save</button>
+      <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">🏠 Return to Main Page</button>
     </div>
     <div class="options">
       <p>🌐</p>
@@ -136,5 +139,9 @@ button.op.save {
 
 button.op.save:hover {
   background-color: #830e25;
+}
+
+button.op.save:disabled {
+  background-color: #8a8a8a;
 }
 </style>

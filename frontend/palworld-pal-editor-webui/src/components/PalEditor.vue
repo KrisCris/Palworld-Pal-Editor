@@ -8,7 +8,7 @@ const palStore = usePalEditorStore()
 <template>
   <div class="PalEditor">
     <div class="EditorItem item flex-v basicInfo">
-      <button id="dump_btn" @click="palStore.dumpPalData">Dump Data</button>
+      <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">Dump Data</button>
       <img class="palIcon" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
@@ -358,6 +358,10 @@ button.edit:hover {
   transition: all 0.15s ease-in-out;
 }
 
+button.edit:disabled {
+  background-color: #8a8a8a;
+}
+
 button.text {
   width: 100%;
   background-color: #2c77c2;
@@ -369,12 +373,20 @@ button.text:hover {
   background-color: #18518a;
 }
 
+button.text:disabled {
+  background-color: #8a8a8a;
+}
+
 button.del {
   background-color: #ffcece;
 }
 
 button.del:hover {
   background-color: #7c0f0f;
+}
+
+button.del:disabled {
+  background-color: #8a8a8a;
 }
 
 button#dump_btn {
@@ -400,6 +412,10 @@ button#dump_btn:hover {
   background-color: #3e3e3e;
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
   color: rgb(204, 204, 204);
+}
+
+button#dump_btn:disabled {
+  background-color: #8a8a8a;
 }
 
 input.edit {
