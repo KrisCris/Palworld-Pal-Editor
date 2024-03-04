@@ -1,23 +1,15 @@
 from functools import wraps
 import json
-from pathlib import Path
-import sys
 from typing import Any, Callable, Optional
 # from PIL import Image
 
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.utils.util import alphanumeric_key
 
-BASE_PATH = (
-    Path(sys._MEIPASS)
-    if getattr(sys, "frozen", False)
-    else Path(__file__).parent.parent
-)
-
 
 def load_json(filename: str) -> Any:
-    path = BASE_PATH / "assets/data" / filename
+    path = ASSETS_PATH / "assets/data" / filename
     with path.open("r", encoding="utf8") as file:
         return json.load(file)
 

@@ -1,6 +1,4 @@
-import os
 from pathlib import Path
-import sys
 import threading
 import webbrowser
 from flask import Flask, send_from_directory
@@ -8,13 +6,12 @@ from flask_jwt_extended import JWTManager
 from werkzeug.security import generate_password_hash
 from palworld_pal_editor.api.util import reply
 
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.api import *
 from palworld_pal_editor.utils import LOGGER
 
-BASE_PATH = Path(sys._MEIPASS) if getattr(sys, 'frozen', False) else Path(__file__).parent
 
-app = Flask(__name__, static_folder=BASE_PATH / "webui", static_url_path='/')
+app = Flask(__name__, static_folder=ASSETS_PATH / "webui", static_url_path='/')
 app.register_blueprint(player_blueprint, url_prefix='/api/player')
 app.register_blueprint(pal_blueprint, url_prefix='/api/pal')
 app.register_blueprint(save_blueprint, url_prefix='/api/save')
@@ -23,12 +20,13 @@ app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)
 
+
 @app.route('/image/<icon_type>/<filename>')
 def serve_image(icon_type, filename):
-    image_path = BASE_PATH / 'assets/icons' / icon_type / f"{filename}.png"
-    if os.path.exists(image_path):
-        directory = os.path.dirname(image_path)
-        filename = os.path.basename(image_path)
+    image_path: Path = ASSETS_PATH / 'assets/icons' / icon_type / f"{filename}.png"
+    if image_path.exists():
+        directory = image_path.parent
+        filename = image_path.name
         return send_from_directory(directory, filename)
     else:
         return "Image not found", 404
@@ -37,19 +35,23 @@ def serve_image(icon_type, filename):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists(f"{app.static_folder}/{path}"):
-        return send_from_directory(app.static_folder, path)
+    static_folder_path = Path(app.static_folder)
+    target_path = static_folder_path / path
+    if path != "" and target_path.exists():
+        return send_from_directory(str(static_folder_path), path)
     else:
-        return send_from_directory(app.static_folder, 'index.html')
+        return send_from_directory(str(static_folder_path), 'index.html')
 
 
 @jwt.invalid_token_loader
 def invalid_token_callback(error_string):
     return reply(status=2, msg="Invalid Token: " + error_string), 401
 
+
 @jwt.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):
     return reply(status=2, msg="Token has expired"), 401
+
 
 @jwt.unauthorized_loader
 def missing_token_callback(error_string):

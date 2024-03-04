@@ -1,9 +1,8 @@
-from enum import Enum
 from functools import wraps
 import logging
-import os
 from datetime import datetime
 import copy
+from pathlib import Path
 from typing import Callable
 from flask import request
 
@@ -36,13 +35,14 @@ class Logger:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, name="PalEditor", log_directory="logs", level=logging.DEBUG):
+    def __init__(self, name="Palworld-Pal-Editor", log_directory="logs", level=logging.DEBUG):
         if not hasattr(self, 'initialized'):
             self.initialized = True
-            self.log_directory = log_directory
-            os.makedirs(self.log_directory, exist_ok=True)
+            self.log_directory = Path(log_directory)
+            self.log_directory.mkdir(parents=True, exist_ok=True)
+
             log_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.log")
-            log_path = os.path.join(self.log_directory, log_filename)
+            log_path = self.log_directory / log_filename
 
             self.logger = logging.getLogger(name)
             self.logger.setLevel(level)

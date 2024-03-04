@@ -1,9 +1,16 @@
 import json
-import os
 from pathlib import Path
 import sys
 
-PROGRAM_PATH=Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.resolve()
+PROGRAM_PATH = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.resolve()
+if hasattr(sys, 'frozen'):
+    if hasattr(sys, "_MEIPASS"):
+        ASSETS_PATH = Path(sys._MEIPASS)
+    else:
+        ASSETS_PATH = Path(sys.executable).parent
+else:
+    ASSETS_PATH = Path(__file__).parent
+
 VERSION = "0.2.1"
 
 class Config:
@@ -18,9 +25,10 @@ class Config:
 
     @classmethod
     def load_from_file(cls, file_path: str):
-        """Load configuration values from a JSON file."""
-        if os.path.exists(file_path):
-            with open(file_path, "r") as file:
+        """Load configuration values from a JSON file using pathlib."""
+        path = Path(file_path)
+        if path.exists():
+            with path.open("r") as file:
                 data = json.load(file)
                 for key, value in data.items():
                     if hasattr(cls, key):
@@ -28,9 +36,10 @@ class Config:
 
     @classmethod
     def save_to_file(cls, file_path: str):
-        """Save current configuration values to a JSON file using the to_dict method."""
+        """Save current configuration values to a JSON file using the to_dict method and pathlib."""
         config_data = cls.to_dict()
-        with open(file_path, "w") as file:
+        path = Path(file_path)
+        with path.open("w") as file:
             json.dump(config_data, file, indent=4)
 
     @classmethod
