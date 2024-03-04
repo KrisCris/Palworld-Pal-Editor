@@ -20,6 +20,9 @@ def toUUID(uuid_str: str) -> Optional[UUID]:
         return uuid_str
     return isUUIDStr(uuid_str)
 
+def UUID2HexStr(uuid: str | UUID) -> str:
+    return str(uuid).upper().replace('-', '')
+
 
 def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = None) -> Optional[Any]:
     """

@@ -10,7 +10,7 @@ from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
 
-from palworld_pal_editor.core.pal_objects import get_attr_value, toUUID
+from palworld_pal_editor.core.pal_objects import UUID2HexStr, get_attr_value, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
@@ -98,6 +98,11 @@ PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (skip_deco
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.WorkSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DungeonSaveData"] = (skip_decode, skip_encode)
 PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.EnemyCampSaveData"] = (skip_decode, skip_encode)
+
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
+PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
+
 # PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
 # PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
@@ -325,3 +330,15 @@ class SaveManager:
             file.write(sav_data)
         LOGGER.info(f"Saved to {file_path}")
         return True
+    
+
+    def load_player(self, player_uid: str | UUID) -> GvasFile:
+        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
+        if not player_path.exists():
+            LOGGER.warning(f"Player SAV {str(player_path.absolute())} not exist")
+            return
+        with player_path.open("rb") as player_file:
+            player_data = player_file.read()
+        raw_gvas, compression_times = decompress_sav_to_gvas(player_data)
+        player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PALWORLD_CUSTOM_PROPERTIES)
+        return player_gvas_file
