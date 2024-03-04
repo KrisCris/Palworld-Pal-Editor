@@ -1,4 +1,5 @@
 import argparse
+import traceback
 
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION
@@ -9,7 +10,11 @@ from palworld_pal_editor.webui import main as webui_main
 
 
 def setup_config_from_args():
-    Config.load_from_file(PROGRAM_PATH / 'config.json')
+    CONFIG_PATH = PROGRAM_PATH / 'config.json'
+    try: 
+        Config.load_from_file(PROGRAM_PATH / 'config.json')
+    except:
+        LOGGER.warning(f"Failed Loading Config from {CONFIG_PATH}: {traceback.format_exc()}")
 
     parser = argparse.ArgumentParser(description="Palworld Pal Editor, developed by _connlost with ❤.")
 
@@ -43,8 +48,12 @@ def setup_config_from_args():
         Config.mode = "gui"
         LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
 
-    Config.save_to_file(PROGRAM_PATH / 'config.json')
-    LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
+    try:
+        Config.save_to_file(PROGRAM_PATH / 'config.json')
+        LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
+    except:
+        LOGGER.warning(f"Failed Saving Config {str(Config.__str__())} to {CONFIG_PATH}: {traceback.format_exc()}")
+
 
 def main():
     setup_config_from_args()
@@ -68,4 +77,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        LOGGER.error(f"Exception caught on __main__: {e}")
+        LOGGER.error(f"Exception caught on __main__: {traceback.format_exc()}")

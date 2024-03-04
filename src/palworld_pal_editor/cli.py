@@ -110,7 +110,7 @@ def lang(i18n_code):
 
 def pal_help():
     LOGGER.info(
-    """
+    r"""
     - class SaveManager:
     > Singleton Class so you can call SaveManager() multiple times.
     -     `SaveManager()`: Get the SaveManager Instance
