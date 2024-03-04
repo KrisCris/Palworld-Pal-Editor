@@ -12,7 +12,7 @@ from palworld_pal_editor.webui import main as webui_main
 def setup_config_from_args():
     CONFIG_PATH = PROGRAM_PATH / 'config.json'
     try: 
-        Config.load_from_file(PROGRAM_PATH / 'config.json')
+        Config.load_from_file(CONFIG_PATH)
     except:
         LOGGER.warning(f"Failed Loading Config from {CONFIG_PATH}: {traceback.format_exc()}")
 

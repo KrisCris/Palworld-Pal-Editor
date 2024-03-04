@@ -9,9 +9,6 @@ VERSION = "0.2.1"
 class Config:
     i18n: str = "en"
     mode: str = "gui"
-    # cli: bool = False
-    # gui: bool = False
-    # web: bool = False
     port: int = 58080
     debug: bool = False
     path: str = None
@@ -44,14 +41,10 @@ class Config:
 
     @classmethod
     def to_dict(cls):
-        ignore = ["_password_hash", "debug"]
-        attrs = {}
-        for attr, value in cls.__dict__.items():
-            if (
-                not attr in ignore
-                and not attr.startswith("__")
-                and not callable(value)
-                and not isinstance(value, classmethod)
-            ):
-                attrs[attr] = value
-        return attrs
+        return {
+            'i18n': Config.i18n,
+            'mode': Config.mode,
+            'port': Config.port,
+            'path': Config.path,
+            'password': Config.password
+        }

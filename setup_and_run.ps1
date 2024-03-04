@@ -11,6 +11,27 @@ function Get-PythonCommand {
     exit
 }
 
+
+# Check if npm is available
+$npmCmd = Get-Command npm -ErrorAction SilentlyContinue
+if ($null -ne $npmCmd) {
+    $NPM_CMD = "npm"
+} else {
+    Write-Host "Node is not installed."
+    Exit 1
+}
+
+# Install dependencies and build the project
+cd ".\frontend\palworld-pal-editor-webui"
+& $NPM_CMD install
+& $NPM_CMD run build
+
+cd "..\..\"
+# Move the build directory
+Remove-Item ".\src\palworld_pal_editor\webui" -Recurse -Force
+Move-Item -Path ".\frontend\palworld-pal-editor-webui\dist" -Destination ".\src\palworld_pal_editor\webui" -Force
+
+
 # Determine the appropriate Python command
 $PYTHON_CMD = Get-PythonCommand
 
@@ -39,4 +60,4 @@ pip install -r requirements.txt
 pip install -e .
 
 # Run your package in interactive mode
-python -i -m palworld_pal_editor --cli --lang=en
+python -m palworld_pal_editor --mode=gui --lang=en
