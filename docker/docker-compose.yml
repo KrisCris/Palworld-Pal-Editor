@@ -9,13 +9,13 @@ services:
       - 12345:12345
     environment:
       - TZ=UTC
-      - PUID=501
-      # - PGID=20
+      - PUID=1000
+      - PGID=1000
       - APP_PORT=12345
       - APP_LANG=zh-CN
       - MODE=web # [cli, web, gui] You are not going to run gui in docker though... ;)
       # - PY_INTERACTIVE_FLAG=--i #You may want to use if if you are running cli mode
       - SAVE_PATH=/mnt/gamesave
-      - PASSWORD=1234 # remove this env unless you want a password, but password is strongly recommended (for web mode).
+      - PASSWORD=password # remove this env unless you want a password, but password is strongly recommended (for web mode).
     volumes:
       - "/Users/connlost/Coding/Palworld-Pal-Editor/tests/gamesave/AF518B19A47340B8A55BC58137981393:/mnt/gamesave"

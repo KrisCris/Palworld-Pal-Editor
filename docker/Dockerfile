@@ -3,17 +3,17 @@
 FROM nikolaik/python-nodejs:python3.12-nodejs21-slim
 
 # Define environment variables for customization
-ENV TZ=UTC \
-    PUID=1000 \
-    PGID=1000 \
-    APP_PORT=8000 \
-    APP_LANG=en \
-    LANG=C.UTF-8 \
-    PYTHONUNBUFFERED=1 \
-    MODE=--cli \
-    PY_INTERACTIVE_FLAG="--i" \
-    SAVE_PATH="/mnt/gamesave" \
-    PASSWORD=null
+# ENV TZ=UTC \
+#     PUID=1000 \
+#     PGID=1000 \
+#     APP_PORT=8000 \
+#     APP_LANG=en \
+#     LANG=C.UTF-8 \
+#     PYTHONUNBUFFERED=1 \
+#     MODE=--cli \
+#     PY_INTERACTIVE_FLAG="--i" \
+#     SAVE_PATH="/mnt/gamesave" \
+#     PASSWORD=null
 
 # Set the working directory in the container
 WORKDIR /app

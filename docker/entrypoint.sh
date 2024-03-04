@@ -15,7 +15,19 @@ fi
 # Ensure the working directory is owned by the appuser, adjusting permissions as necessary
 chown -R pn:pn /app
 
-echo "launching..."
-# Execute setup_and_run script with environment variables as arguments
-exec gosu pn ./setup_and_run.sh --lang "$APP_LANG" --port $APP_PORT --mode "$MODE" --path "$SAVE_PATH" --password "$PASSWORD" "$PY_INTERACTIVE_FLAG"
 
+
+cmd="gosu pn ./setup_and_run.sh"
+
+# Check each environment variable and append it to the command if it exists
+if [ -n "$APP_LANG" ]; then cmd="$cmd --lang \"$APP_LANG\""; fi
+if [ -n "$APP_PORT" ]; then cmd="$cmd --port $APP_PORT"; fi
+if [ -n "$MODE" ]; then cmd="$cmd --mode \"$MODE\""; fi
+if [ -n "$SAVE_PATH" ]; then cmd="$cmd --path \"$SAVE_PATH\""; fi
+if [ -n "$PASSWORD" ]; then cmd="$cmd --password \"$PASSWORD\""; fi
+if [ -n "$PY_INTERACTIVE_FLAG" ]; then cmd="$cmd $PY_INTERACTIVE_FLAG"; fi
+
+echo "Launching: $cmd"
+
+# Execute the command
+eval exec $cmd
