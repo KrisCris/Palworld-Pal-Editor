@@ -42,6 +42,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.EquipWaza = obj.EquipWaza;
       this.PassiveSkillList = obj.PassiveSkillList;
 
+      this.group_id = obj.group_id
+      this.ContainerId = obj.ContainerId
+      this.SlotIndex = obj.SlotIndex
       this.DisplayName = obj.DisplayName;
       this.I18nName = obj.I18nName;
       this.DataAccessKey = obj.DataAccessKey;

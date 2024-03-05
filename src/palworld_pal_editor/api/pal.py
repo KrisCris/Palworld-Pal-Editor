@@ -127,6 +127,9 @@ def _pal_data(pal: PalEntity):
         "Talent_Defense": pal.Talent_Defense or 0,
         "HasWorkerSick": pal.HasWorkerSick,
         "IsFaintedPal":pal.IsFaintedPal,
+        "group_id": str(pal.group_id) if pal.group_id else None,
+        "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
+        "SlotIndex": pal.SlotIndex
     }
 
 @pal_blueprint.route("/dump_data", methods=["POST"])

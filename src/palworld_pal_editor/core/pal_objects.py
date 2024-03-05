@@ -329,7 +329,7 @@ class PalObjects:
     def get_PalCharacterSlotId(container: dict) -> Optional[tuple[UUID, int]]:
         container_id = PalObjects.get_PalContainerId(get_nested_attr(container, ['value', 'ContainerId']))
         slot_idx = PalObjects.get_BaseType(get_nested_attr(container, ['value', 'SlotIndex']))
-        if not container_id or not slot_idx: return None
+        if container_id is None or slot_idx is None: return None
         return (container_id, slot_idx)
     
     @staticmethod
