@@ -14,16 +14,22 @@ onMounted(async () => {
 
 <template>
   <div class="flex">
-    <p>PLAYER LIST</p>
+    <div class="title">
+      <p>PLAYER LIST</p>
+      <button class="playerSettings" v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).hasViewingCage"
+        :title="`Unlock Viewing Cage for ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
+        :disabled="palStore.LOADING_FLAG"
+        @click="palStore.updatePlayer" name="unlock_viewing_cage">🪟</button>
+    </div>
     <div class="overflow-list" ref="playerListContainer">
       <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
-        <button @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG"
+        <button class="player" @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG"
           :value="palStore.PAL_BASE_WORKER_BTN">
           BASE PAL
         </button>
       </div>
       <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
-        <button class="player" :value="player.id" @click="palStore.selectPlayer"
+        <button class="player real" :value="player.id" @click="palStore.selectPlayer"
           :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
           {{ player.name }}
         </button>
@@ -41,6 +47,14 @@ div.flex {
   width: 10rem;
   padding-right: 0.3rem;
   /* scrollbar */
+}
+
+div.title {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: .5rem;
 }
 
 div.overflow-list {
@@ -61,7 +75,7 @@ div.overflow-container {
   /* scrollbar */
 }
 
-button {
+button.player {
   min-width: 100%;
   max-height: 5rem;
   padding: .5rem 1rem;
@@ -75,24 +89,43 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button.playerSettings {
+  background-color: rgb(54, 54, 54);
+  padding: 0;
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.2rem;
+  font-size: 1rem;
+}
+
+button.playerSettings:hover {
+  background-color: rgb(123, 123, 123);
+  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  cursor: pointer;
+}
+
+button.player:hover {
   background-color: #9b7210;
   transition: all 0.15s ease-in-out;
 }
 
-button.player {
+button.player.real {
   background-color: #3365da;
 }
 
-button.player:hover {
+button.player.real:hover {
   background-color: #1b49b4;
 }
 
-button:disabled {
+button.player.real:disabled {
   background-color: #8a8a8a;
 }
 
-button:disabled:hover {
+button.player:disabled {
+  background-color: #8a8a8a;
+}
+button.playerSettings:disabled {
   background-color: #8a8a8a;
 }
 </style>

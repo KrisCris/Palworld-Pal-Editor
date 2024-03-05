@@ -1,9 +1,10 @@
+import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from palworld_pal_editor.api.util import reply
 
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.utils import DataProvider
+from palworld_pal_editor.utils import LOGGER, DataProvider
 
 player_blueprint = Blueprint("player", __name__)
 
@@ -49,3 +50,69 @@ def get_player_pals():
         # "Talent_Shot": pal.Talent_Shot or 0,
         # "Talent_Defense": pal.Talent_Defense or 0,
     } for pal in pals])
+
+@player_blueprint.route("/players_data", methods=["GET"])
+@jwt_required()
+def get_player_list():
+    workingpals = SaveManager().get_working_pals()
+    players = SaveManager().get_players()
+    if not players: return reply(1, None, "No Player Found")
+    return reply(
+        0,
+        {
+            "players": [
+                {"id": str(player.PlayerUId), "name": player.NickName, "hasViewingCage": player.has_viewing_cage()}
+                for player in SaveManager().get_players()
+            ],
+            "hasWorkingPal": (True if len(workingpals) else False),
+        },
+    )
+
+
+@player_blueprint.route("/player_data", methods=["POST"])
+@jwt_required()
+def get_player_data():
+    PlayerUId = request.json.get("PlayerUId")
+
+    if PlayerUId == "PAL_BASE_WORKER_BTN":
+        LOGGER.warning(f"PAL_BASE_WORKER_BTN is not a real player")
+        return reply(1, None, f"PAL_BASE_WORKER_BTN is not a real player")
+    
+    player_entity = SaveManager().get_player(PlayerUId)
+    if not player_entity:
+        LOGGER.warning(f"Player {PlayerUId} not exist")
+        return reply(1, None, f"Player {PlayerUId} not exist")
+    
+    return reply(0, {
+        "id": str(player_entity.PlayerUId), 
+        "name": player_entity.NickName, 
+        "hasViewingCage": player_entity.has_viewing_cage()}
+        )
+
+
+@player_blueprint.route("/player_data", methods=["PATCH"])
+@jwt_required()
+def patch_player_data():
+    PlayerUId = request.json.get("PlayerUId")
+    key = request.json.get("key")
+    value = request.json.get("value")
+
+    if PlayerUId == "PAL_BASE_WORKER_BTN":
+        LOGGER.warning(f"PAL_BASE_WORKER_BTN is not a real player")
+        return reply(1, None, f"PAL_BASE_WORKER_BTN is not a real player")
+    
+    player_entity = SaveManager().get_player(PlayerUId)
+    if not player_entity:
+        LOGGER.warning(f"Player {PlayerUId} not exist")
+        return reply(1, None, f"Player {PlayerUId} not exist")
+    
+    try:
+        match key:
+            case "unlock_viewing_cage": player_entity.unlock_viewing_cage()
+            case _:
+                pass
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error in patching player data {stack_trace}")
+        return reply(1, None, f"Error in patching player data {stack_trace}")
+    return reply(0)

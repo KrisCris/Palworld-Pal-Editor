@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, nextTick } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
@@ -7,6 +7,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     constructor(obj) {
       this.id = obj.id;
       this.name = obj.name;
+      this.hasViewingCage = obj.hasViewingCage;
       this.pals = new Map();
     }
   }
@@ -42,9 +43,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.EquipWaza = obj.EquipWaza;
       this.PassiveSkillList = obj.PassiveSkillList;
 
-      this.group_id = obj.group_id
-      this.ContainerId = obj.ContainerId
-      this.SlotIndex = obj.SlotIndex
+      this.group_id = obj.group_id;
+      this.ContainerId = obj.ContainerId;
+      this.SlotIndex = obj.SlotIndex;
       this.DisplayName = obj.DisplayName;
       this.I18nName = obj.I18nName;
       this.DataAccessKey = obj.DataAccessKey;
@@ -145,19 +146,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     isEquippedPassiveSkill(skill) {
-      return this.PassiveSkillList.includes(skill)
+      return this.PassiveSkillList.includes(skill);
     }
 
     isEquippedSkill(skill) {
-      return this.EquipWaza.includes(skill)
+      return this.EquipWaza.includes(skill);
     }
 
     isMasteredSkill(skill) {
-      return this.MasteredWaza.includes(skill)
+      return this.MasteredWaza.includes(skill);
     }
 
     isEquipSkillFull() {
-      return this.EquipWaza.length >= 3
+      return this.EquipWaza.length >= 3;
     }
 
     pop_EquipWaza(e) {
@@ -338,7 +339,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function auth() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    
+
     const response = await get("/api/auth/auth");
     if (response === false) return;
 
@@ -357,7 +358,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function login(e) {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    
+
     const response = await post("/api/auth/login", {
       password: e.target.value,
     });
@@ -379,7 +380,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function fetch_config() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    
+
     const response = await get("/api/save/fetch_config");
     if (response === false) return;
 
@@ -484,27 +485,95 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_ID.value = null;
     SELECTED_PLAYER_ID.value = null;
 
-    BASE_PAL_MAP.value = new Map()
-    PLAYER_MAP.value = new Map()
-    PAL_PASSIVE_SELECTED_ITEM.value = ""
-    PAL_ACTIVE_SELECTED_ITEM.value = ""
-  
+    BASE_PAL_MAP.value = new Map();
+    PLAYER_MAP.value = new Map();
+    PAL_PASSIVE_SELECTED_ITEM.value = "";
+    PAL_ACTIVE_SELECTED_ITEM.value = "";
+
     // display data
-    SELECTED_PAL_DATA.value = new Map()
-    PAL_MAP.value = new Map()
+    SELECTED_PAL_DATA.value = new Map();
+    PAL_MAP.value = new Map();
 
     PLAYER_MAP.value.clear();
   }
 
-  async function loadSave() {
-    reset();
-
+  async function updatePlayer(e) {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    await updateI18n();
+    // sometimes we manually construct a "e" target in a very hacked way
+    let key = e.target.name;
+    let value = e.target.value;
 
-    const response = await post("/api/save/load", {
+    if (SELECTED_PLAYER_ID.value == null) {
+      alert("Select a player first!");
+      return;
+    }
+
+    console.log(
+      `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
+        PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).name
+      } key=${key}, value=${value}`
+    );
+
+    const response = await patch("/api/player/player_data", {
+      key: key,
+      value: value,
+      PlayerUId: SELECTED_PLAYER_ID.value,
+    });
+    if (response === false) return;
+
+    if (response.status == 0) {
+      await loadPlayer(SELECTED_PLAYER_ID.value);
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+    } else {
+      alert(`- updatePlayer - Error occured: ${response.msg}`);
+    }
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function loadPlayer(playerUId, updatePal = false) {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    if (SELECTED_PLAYER_ID.value == null) {
+      alert("Select a player first!");
+      return;
+    }
+
+    const response = await post("/api/player/player_data", {
+      PlayerUId: playerUId,
+    });
+    if (response === false) return;
+
+    if (response.status == 0) {
+      const player_obj = new Player(response.data);
+      if (!updatePal && PLAYER_MAP.value.has(playerUId)) {
+        player_obj.pals = PLAYER_MAP.value.get(playerUId).pals;
+      }
+
+      PLAYER_MAP.value.set(playerUId, player_obj);
+      await selectPlayer({ target: { value: playerUId } });
+
+      // player id and pal data never changed so this is save
+      if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+    } else {
+      alert(`- loadPlayer - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function loadPlayers() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await get("/api/player/players_data", {
       ReadPath: PAL_GAME_SAVE_PATH.value,
     });
     if (response === false) return;
@@ -523,7 +592,31 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG) {
         alert("No Player Found in the Gamesave");
       }
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+    } else {
+      alert(`- loadPlayers - Error occured: ${response.msg}`);
+    }
 
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function loadSave() {
+    reset();
+
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    await updateI18n();
+
+    const response = await post("/api/save/load", {
+      ReadPath: PAL_GAME_SAVE_PATH.value,
+    });
+    if (response === false) return;
+
+    if (response.status == 0) {
+      await loadPlayers();
       await fetchStaticData();
 
       SAVE_LOADED_FLAG.value = true;
@@ -716,7 +809,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let value = e.target.value;
 
     console.log(
-      `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${SELECTED_PAL_DATA.value.DisplayName} key=${key}, value=${value}`
+      `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
+        SELECTED_PAL_DATA.value.DisplayName
+      } key=${key}, value=${value}`
     );
 
     const response = await patch("/api/pal/paldata", {
@@ -743,7 +838,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   function GET_PAL_OWNER_API_ID() {
     return BASE_PAL_BTN_CLK_FLAG.value
       ? PAL_BASE_WORKER_BTN.value
-      : SELECTED_PLAYER_ID.value
+      : SELECTED_PLAYER_ID.value;
   }
 
   async function dumpPalData() {
@@ -753,15 +848,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const response = await post("/api/pal/dump_data", {
       PlayerUId: GET_PAL_OWNER_API_ID(),
       PalGuid: SELECTED_PAL_ID.value,
-    })
+    });
 
     if (response === false) return;
 
     if (response.status == 0) {
-      const data = response.data
+      const data = response.data;
       await navigator.clipboard.writeText(data);
-      alert("Pal Data Copied to Clipboard!")
-      window.open("https://jsonformatter.curiousconcept.com/")
+      alert("Pal Data Copied to Clipboard!");
+      window.open("https://jsonformatter.curiousconcept.com/");
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -773,12 +868,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function displayPalElement(DataAccessKey) {
-    const els = PAL_STATIC_DATA.value[DataAccessKey].Elements
-    let str = ""
+    const els = PAL_STATIC_DATA.value[DataAccessKey].Elements;
+    let str = "";
     for (let e of els) {
-      str += displayElement(e)
+      str += displayElement(e);
     }
-    return str
+    return str;
   }
 
   function displayElement(element) {
@@ -791,20 +886,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       Ice: "❄️",
       Electric: "⚡",
       Neutral: "🔵",
-      Dark: "🌑"
+      Dark: "🌑",
     };
     return elementEmojis[element] || "";
   }
 
   function skillIcon(atk) {
-    if (ACTIVE_SKILLS.value[atk].IsUniqueSkill) return "✨"
-    if (ACTIVE_SKILLS.value[atk].HasSkillFruit) return "🍐"
+    if (ACTIVE_SKILLS.value[atk].IsUniqueSkill) return "✨";
+    if (ACTIVE_SKILLS.value[atk].HasSkillFruit) return "🍐";
   }
 
   function displayRating(rating) {
     if (rating < 0) return "🔴";
     if (rating > 1) return "🟡";
-    return "⚪"
+    return "⚪";
   }
 
   return {
@@ -846,6 +941,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     selectPlayer,
     selectPal,
     updatePal,
+    updatePlayer,
     writeSave,
     fetch_config,
     dumpPalData,

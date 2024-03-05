@@ -40,22 +40,6 @@ def patch_paldata():
             case _:
                 if isinstance(err:=setattr(pal_entity, key, value), TypeError):
                     return reply(1, None, f"Error in patch_paldata {err}")
-        # if key == "HasWorkerSick":
-        #     pal_entity.clear_worker_sick()
-        # elif key == "IsFaintedPal":
-        #     pal_entity.heal_pal()
-        # elif key == "DelPassiveSkill":
-        #     pal_entity.pop_PassiveSkillList(item=value)
-        # elif key == "AddPassiveSkill":
-        #     if not pal_entity.add_PassiveSkillList(value):
-        #         return reply(1, None, f"Passive {value} already exists!")
-        # elif key == "DelActiveSkill":
-        #     pal_entity.pop_MasteredWaza(item=value)
-        # elif key == "AddActiveSkill":
-        #     if not pal_entity.add_MasteredWaza(value):
-        #         return reply(1, None, f"Attack {value} already exists!")
-        # elif isinstance(err:=setattr(pal_entity, key, value), TypeError):
-        #     return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")

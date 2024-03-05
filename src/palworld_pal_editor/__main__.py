@@ -18,10 +18,6 @@ def setup_config_from_args():
 
     parser = argparse.ArgumentParser(description="Palworld Pal Editor, developed by _connlost with ❤.")
 
-    # parser.add_argument('--gui', action='store_true', help='Enable GUI mode.', default=Config.gui)
-    # parser.add_argument('--web', action='store_true', help='Enable WebUI.', default=Config.web)
-    # parser.add_argument('--cli', action='store_true', help='Enable CLI mode.', default=Config.cli)
-
     parser.add_argument('--lang', type=str, help=f'Language for the application. options: {", ".join(DataProvider.get_i18n_options())}', default=Config.i18n)
     parser.add_argument('--debug', action='store_true', help='Debug option, only mimics interactive mode for VSCode debug launch.', default=Config.debug)
     parser.add_argument('--path', type=str, help='Path to the save folder.', default=Config.path)
@@ -31,9 +27,6 @@ def setup_config_from_args():
 
     args = parser.parse_args()
 
-    # Config.cli = args.cli
-    # Config.gui = args.gui
-    # Config.web = args.web
     Config.debug = args.debug
     Config.path = args.path
     Config.mode = args.mode
