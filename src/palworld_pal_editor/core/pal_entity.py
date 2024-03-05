@@ -5,7 +5,7 @@ from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
-from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value
+from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value, get_nested_attr
 from palworld_pal_editor.utils.util import type_guard
 
 
@@ -40,9 +40,18 @@ class PalEntity:
 
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
+    
+    @property
+    def group_id(self) -> Optional[UUID]:
+        return get_nested_attr(self._pal_obj, ['value', 'RawData', 'value', 'group_id'])
+    
+    @group_id.setter
+    def group_id(self, id: UUID | str):
+        self._pal_obj['value']['RawData']['value']['group_id'] = id
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
+        # EMPTY UUID
         return get_attr_value(self._pal_key, "PlayerUId")
     
     @property
@@ -69,6 +78,20 @@ class PalEntity:
     @property
     def OldOwnerPlayerUIds(self) -> Optional[list[UUID]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("OldOwnerPlayerUIds"))
+    
+    @property
+    def SlotID(self) -> Optional[tuple[UUID, int]]:
+        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotID"))
+    
+    @property
+    def ContainerId(self) -> Optional[UUID]:
+        if (slot := self.SlotID) is None: return
+        return slot[0]
+    
+    @property
+    def SlotIndex(self) -> Optional[int]:
+        if (slot := self.SlotID) is None: return
+        return slot[1]
     
     @property
     def CharacterID(self) -> Optional[str]:

@@ -55,6 +55,8 @@ const palStore = usePalEditorStore()
           </div>
         </div>
         <p class="const">🆔 Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
+        <p class="const">🏘️ Pal Group ID: {{ palStore.SELECTED_PAL_DATA.group_id }}</p>
+        <p class="const">📦 Pal ContainerSlot: {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}</p>
         <p class="const">🗿 Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
           <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>

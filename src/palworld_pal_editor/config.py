@@ -55,5 +55,6 @@ class Config:
             'mode': Config.mode,
             'port': Config.port,
             'path': Config.path,
-            'password': Config.password
+            'password': Config.password,
+            'JWT_SECRET_KEY': Config.JWT_SECRET_KEY
         }

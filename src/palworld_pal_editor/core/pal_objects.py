@@ -6,32 +6,36 @@ from palworld_pal_editor.utils import LOGGER, clamp
 
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
-        try:
-            uuid = UUID.from_str(str(uuid_str))
-            if str(uuid) == uuid_str.lower():
-                return uuid
-            raise Exception(f"{uuid_str} is not a valid UUID")
-        except Exception:
-            LOGGER.warning("isUUIDStr: {e}")
-            return None
+    try:
+        uuid = UUID.from_str(str(uuid_str))
+        if str(uuid) == uuid_str.lower():
+            return uuid
+        raise Exception(f"{uuid_str} is not a valid UUID")
+    except Exception:
+        LOGGER.warning("isUUIDStr: {e}")
+        return None
+
 
 def toUUID(uuid_str: str) -> Optional[UUID]:
     if isinstance(uuid_str, UUID):
         return uuid_str
     return isUUIDStr(uuid_str)
 
+
 def UUID2HexStr(uuid: str | UUID) -> str:
-    return str(uuid).upper().replace('-', '')
+    return str(uuid).upper().replace("-", "")
 
 
-def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = None) -> Optional[Any]:
+def get_attr_value(
+    data_container: dict, attr_name: str, nested_keys: list = None
+) -> Optional[Any]:
     """
     Generic method to retrieve the value of an attribute from the pal data.
-    
+
     Parameters:
         attr_name (str): The name of the attribute to retrieve.
         nested_keys (list): A list of keys to navigate through nested dictionaries if necessary.
-    
+
     Returns:
         Optional[Any]: The value of the attribute, or None if the attribute does not exist.
     """
@@ -47,16 +51,21 @@ def get_attr_value(data_container: dict, attr_name: str, nested_keys: list = Non
             for key in nested_keys:
                 attr = attr.get(key, None)
                 if attr is None:
-                    raise KeyError(f"trying to get attr `{attr_name}`, but nested key `{key}` not found in dict {data_container}.")
-        
+                    raise KeyError(
+                        f"trying to get attr `{attr_name}`, but nested key `{key}` not found in dict {data_container}."
+                    )
+
         if attr and "value" in attr:
             return attr["value"]
         else:
-            raise KeyError(f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}.")
-    
+            raise KeyError(
+                f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}."
+            )
+
     except Exception as e:
         # LOGGER.warning(e)
         return None
+
 
 def get_nested_attr(container: dict, keys: list) -> Optional[Any]:
     """
@@ -74,6 +83,7 @@ def get_nested_attr(container: dict, keys: list) -> Optional[Any]:
             # LOGGER.warning(e)
             return None
     return current_level
+
 
 class PalGender(Enum):
     MALE = "EPalGenderType::Male"
@@ -111,35 +121,35 @@ class PalRank(Enum):
 
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
-    
+
     @staticmethod
     def StrProperty(value: str):
         return {"id": None, "type": "StrProperty", "value": value}
-    
+
     @staticmethod
     def NameProperty(value: str):
         return {"id": None, "type": "NameProperty", "value": value}
-    
+
     @staticmethod
     def IntProperty(value: int):
         return {"id": None, "type": "IntProperty", "value": value}
-    
+
     @staticmethod
     def Int64Property(value: int):
         return {"id": None, "type": "Int64Property", "value": value}
-    
+
     @staticmethod
     def FloatProperty(value: float):
-        return {'id': None, 'type': 'FloatProperty', 'value': value}
-    
+        return {"id": None, "type": "FloatProperty", "value": value}
+
     @staticmethod
     def BoolProperty(value: bool):
-        return {"value":value, "id": None, "type":"BoolProperty"}
+        return {"value": value, "id": None, "type": "BoolProperty"}
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
         return get_nested_attr(container, ["value"])
-    
+
     @staticmethod
     def set_BaseType(container: dict, value: Any):
         container["value"] = value
@@ -147,11 +157,11 @@ class PalObjects:
     @staticmethod
     def Guid(value: str | UUID):
         return {
-            "struct_type":"Guid",
+            "struct_type": "Guid",
             "struct_id": PalObjects.EMPTY_UUID,
             "id": None,
-            "value":toUUID(value),
-            "type":"StructProperty"
+            "value": toUUID(value),
+            "type": "StructProperty",
         }
 
     @staticmethod
@@ -169,21 +179,21 @@ class PalObjects:
         """
 
         return {
-            'id': None, 'type': 'EnumProperty', 'value': {
-                'type': type,
-                'value': value
-            }}
-    
+            "id": None,
+            "type": "EnumProperty",
+            "value": {"type": type, "value": value},
+        }
+
     @staticmethod
     def get_EnumProperty(container: dict) -> Optional[str]:
         return get_nested_attr(container, ["value", "value"])
-    
+
     @staticmethod
     def set_EnumProperty(container: dict, value: str):
         container["value"]["value"] = value
 
     @staticmethod
-    def ArrayProperty(array_type: str, value: dict, custom_type: Optional[str]=None):
+    def ArrayProperty(array_type: str, value: dict, custom_type: Optional[str] = None):
         """
         Example:
         >>> "RawData":{
@@ -225,7 +235,7 @@ class PalObjects:
             "array_type": array_type,
             "id": None,
             "value": value,
-            "type": "ArrayProperty"
+            "type": "ArrayProperty",
         }
 
         if custom_type:
@@ -239,7 +249,7 @@ class PalObjects:
         Please note that custom_type is unsupported!
         """
         return get_nested_attr(container, ["value", "values"])
-    
+
     @staticmethod
     def add_ArrayProperty(container: dict, value: Any):
         PalObjects.get_ArrayProperty(container).append(value)
@@ -266,29 +276,77 @@ class PalObjects:
             "type":"StructProperty"
         },
         """
-
         return {
             "struct_type": "FixedPoint64",
             "struct_id": PalObjects.EMPTY_UUID,
             "id": None,
-            "value": {
-                "Value": PalObjects.Int64Property(value)
-            },
-            "type": "StructProperty"
+            "value": {"Value": PalObjects.Int64Property(value)},
+            "type": "StructProperty",
         }
 
     @staticmethod
     def get_FixedPoint64(container: dict) -> Optional[int]:
         int64: Optional[dict] = get_nested_attr(container, ["value", "Value"])
         return PalObjects.get_BaseType(int64)
-    
+
     @staticmethod
     def set_FixedPoint64(container: dict, value: int):
         PalObjects.set_BaseType(container["value"]["Value"], value)
 
     @staticmethod
+    def PalContainerId(id: UUID | str):
+        return {
+            "struct_type": "PalContainerId",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": {"ID": PalObjects.Guid(id)},
+            "type": "StructProperty",
+        }
+
+    @staticmethod
+    def get_PalContainerId(container: dict) -> Optional[UUID]:
+        return PalObjects.get_BaseType(get_nested_attr(container, ["value", "ID"]))
+    
+    @staticmethod
+    def set_PalContainerId(container: dict, id: str | UUID):
+        id = toUUID(id)
+        PalObjects.set_BaseType(container["value"]["ID"], id)
+
+    @staticmethod
+    def PalCharacterSlotId(slot: int, id: UUID | str):
+        return {
+            "struct_type": "PalCharacterSlotId",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": {
+                "ContainerId": PalObjects.PalContainerId(id),
+                "SlotIndex": PalObjects.IntProperty(slot),
+            },
+            "type": "StructProperty",
+        }
+    
+    @staticmethod
+    def get_PalCharacterSlotId(container: dict) -> Optional[tuple[UUID, int]]:
+        container_id = PalObjects.get_PalContainerId(get_nested_attr(container, ['value', 'ContainerId']))
+        slot_idx = PalObjects.get_BaseType(get_nested_attr(container, ['value', 'SlotIndex']))
+        if container_id is None or slot_idx is None: return None
+        return (container_id, slot_idx)
+    
+    @staticmethod
+    def set_PalCharacterSlotId(container: dict, container_id: UUID | str, slot_idx: int):
+        PalObjects.set_PalContainerId(container['value']['ContainerId'], container_id)
+        PalObjects.set_BaseType(container['value']['SlotIndex'], slot_idx)
+
+    @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
-        case_1 = {"StrProperty", "NameProperty", "IntProperty", "Int64Property", "FloatProperty", "BoolProperty"}
+        case_1 = {
+            "StrProperty",
+            "NameProperty",
+            "IntProperty",
+            "Int64Property",
+            "FloatProperty",
+            "BoolProperty",
+        }
         match container:
             case {"type": type_str, **rest} if type_str in case_1:
                 return PalObjects.get_BaseType(container)

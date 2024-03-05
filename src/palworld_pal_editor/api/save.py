@@ -29,19 +29,10 @@ def load():
     path = request.json.get("ReadPath", None)
     path = path or Config.path
     if path and SaveManager().open(path):
-        workingpals = SaveManager().get_working_pals()
-        return reply(
-            0,
-            {
-                "players": [
-                    {"id": str(player.PlayerUId), "name": player.NickName}
-                    for player in SaveManager().get_players()
-                ],
-                "hasWorkingPal": (True if len(workingpals) else False),
-            },
-        )
-    print(path)
-    return reply(1, None, "Failed to load, check path")
+        return reply(0)
+    
+    LOGGER.warning(f"Failed to load, check path: {path}")
+    return reply(1, None, f"Failed to load, check path: {path}")
 
 
 @save_blueprint.route("/save", methods=["POST"])

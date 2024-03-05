@@ -20,6 +20,9 @@ watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
 
 onMounted(async () => {
     await nextTick();
+    // TODO Note: this is just a temp fix for pal selection when pal list is refreshed by updatePlayer
+    await nextTick();
+    await nextTick();
     const button = palListContainer.value.querySelector('button:not(:disabled)');
     if (button) {
         button.click();
