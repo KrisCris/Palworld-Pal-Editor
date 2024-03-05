@@ -112,6 +112,9 @@ class PlayerEntity:
     def get_pals(self) -> list[PalEntity]:
         return self._palbox.values()
     
+    def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
+        return self._palbox.pop(guid, None)
+    
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         guid = str(guid)
         if guid in self._palbox:

@@ -156,13 +156,14 @@ class SaveManager:
         return self.baseworker_mapping.get(str(guid), None)
 
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        for player in self.get_players():
-            if pal := player.get_pal(guid):
-                return pal
         if guid in self.baseworker_mapping:
             return self.baseworker_mapping[guid]
         if guid in self._dangling_pals:
             return self._dangling_pals[guid]
+        for player in self.get_players():
+            if pal := player.get_pal(guid):
+                return pal
+
         LOGGER.warning(f"Can't find pal {guid}")
 
     def get_working_pals(self) -> list[PalEntity]:
@@ -282,6 +283,26 @@ class SaveManager:
 
             LOGGER.info("Done")
         return self.gvas_file
+    
+    def delete_pal(self, guid: str | UUID):
+        popped_pal = None
+        if guid in self.baseworker_mapping:
+            popped_pal = self.baseworker_mapping.pop(guid)
+        elif guid in self._dangling_pals:
+            popped_pal = self._dangling_pals.pop(guid)
+        else:
+            for player in self.get_players():
+                if popped_pal := player.pop_pal(guid):
+                    break
+        if not popped_pal:
+            LOGGER.warning(f"Can't find pal {guid}")
+            return
+        try:
+            self.entities_list.remove(popped_pal._pal_obj)
+        except:
+            LOGGER.warning(f"PAL {guid} NOT IN THE LIST")
+            return
+        LOGGER.info(f"DELETED PAL {guid}")
 
     def save(self, file_path: str) -> bool:
         if self.gvas_file is None:

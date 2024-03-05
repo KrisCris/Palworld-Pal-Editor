@@ -78,6 +78,24 @@ def get_pal(guid: str) -> Optional[PalEntity]:
     LOGGER.info(f" - {pal}")
     return pal
 
+def delete_pal(guid: str, yes: False):
+    if not yes:
+        LOGGER.warning("THIS IS INCOMPLETE AND DANGEROUS FUNCTION, FOR TESTING ONLY! ENTER Y IF YOU WANT TO CONTINUE. ANY OTHER KEY TO ABORT.")
+        c = input("Your answer: ")
+        if c != "Y":
+            LOGGER.info("ABORTED")
+            return
+    SaveManager().delete_pal(guid)
+
+def batch_pal_delete(guid_list: list[str]):
+    LOGGER.warning("THIS IS INCOMPLETE AND DANGEROUS FUNCTION, FOR TESTING ONLY! ENTER Y IF YOU WANT TO CONTINUE. ANY OTHER KEY TO ABORT.")
+    c = input("Your answer: ")
+    if c != "Y":
+        LOGGER.info("ABORTED")
+        return
+    for guid in guid_list:
+        delete_pal(guid, yes=True)
+
 def list_attacks():
     sorted_list = DataProvider.get_sorted_attacks()
     for item in sorted_list:
@@ -107,6 +125,9 @@ def lang(i18n_code):
         Config.i18n = i18n_code
     else:
         LOGGER.warning(f"I18n code {i18n_code} not available. Select from {DataProvider.get_i18n_options()}")
+
+def save():
+    SaveManager().save(SaveManager()._file_path)
 
 def pal_help():
     LOGGER.info(
