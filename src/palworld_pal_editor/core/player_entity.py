@@ -40,6 +40,9 @@ class PlayerEntity:
     def InstanceId(self) -> Optional[UUID]:
         return get_attr_value(self._player_key, "InstanceId")
     
+    # @property
+    # def 
+    
     @property
     def NickName(self) -> Optional[str]:
         return get_attr_value(self._player_param, "NickName")
