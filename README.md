@@ -47,6 +47,7 @@
 
 ## What This Tool Can Do
 
+- [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
 - [x] Change Pal Gender
