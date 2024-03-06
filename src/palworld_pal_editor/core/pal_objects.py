@@ -306,7 +306,7 @@ class PalObjects:
     @staticmethod
     def get_PalContainerId(container: dict) -> Optional[UUID]:
         return PalObjects.get_BaseType(get_nested_attr(container, ["value", "ID"]))
-    
+
     @staticmethod
     def set_PalContainerId(container: dict, id: str | UUID):
         id = toUUID(id)
@@ -324,18 +324,25 @@ class PalObjects:
             },
             "type": "StructProperty",
         }
-    
+
     @staticmethod
     def get_PalCharacterSlotId(container: dict) -> Optional[tuple[UUID, int]]:
-        container_id = PalObjects.get_PalContainerId(get_nested_attr(container, ['value', 'ContainerId']))
-        slot_idx = PalObjects.get_BaseType(get_nested_attr(container, ['value', 'SlotIndex']))
-        if container_id is None or slot_idx is None: return None
+        container_id = PalObjects.get_PalContainerId(
+            get_nested_attr(container, ["value", "ContainerId"])
+        )
+        slot_idx = PalObjects.get_BaseType(
+            get_nested_attr(container, ["value", "SlotIndex"])
+        )
+        if container_id is None or slot_idx is None:
+            return None
         return (container_id, slot_idx)
-    
+
     @staticmethod
-    def set_PalCharacterSlotId(container: dict, container_id: UUID | str, slot_idx: int):
-        PalObjects.set_PalContainerId(container['value']['ContainerId'], container_id)
-        PalObjects.set_BaseType(container['value']['SlotIndex'], slot_idx)
+    def set_PalCharacterSlotId(
+        container: dict, container_id: UUID | str, slot_idx: int
+    ):
+        PalObjects.set_PalContainerId(container["value"]["ContainerId"], container_id)
+        PalObjects.set_BaseType(container["value"]["SlotIndex"], slot_idx)
 
     @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
@@ -361,3 +368,11 @@ class PalObjects:
 
         LOGGER.warning(f"Unhandled Pal Object Type: {container}")
         return None
+
+    @staticmethod
+    def individual_character_handle_id(instance_id: UUID | str, guid = None):
+        guid = guid or PalObjects.EMPTY_UUID
+        return {
+            "guid": toUUID(guid),
+            "instance_id": toUUID(instance_id),
+        }

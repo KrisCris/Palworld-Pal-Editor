@@ -9,11 +9,15 @@ from palworld_save_tools.archive import FArchiveReader, FArchiveWriter, UUID
 from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
+from palworld_pal_editor.core.base_camp_data import BaseCampData
+
+from palworld_pal_editor.core.pal_container import CharacterContainerManager
 
 from palworld_pal_editor.core.pal_objects import UUID2HexStr, get_attr_value, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
+from palworld_pal_editor.core.group_data import GroupData
 
 
 def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
@@ -98,11 +102,12 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.ItemContainerSaveData"] = (skip_decode, ski
 MAIN_SKIP_PROPERTIES[".worldSaveData.WorkSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.EnemyCampSaveData"] = (skip_decode, skip_encode)
+MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip_decode, skip_encode)
+
 
 MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
-
 # PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
 # PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
@@ -126,6 +131,9 @@ class SaveManager:
     baseworker_mapping: Optional[dict[str, PalEntity]]
     _dangling_pals: Optional[dict[str, PalEntity]]
     
+    character_container: Optional[CharacterContainerManager]
+    group_data: Optional[GroupData]
+    camp_data: Optional[BaseCampData]
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -274,10 +282,24 @@ class SaveManager:
             )
 
             try:
+                self.group_data = GroupData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing group data: {e}")
+                return None
+            
+            try:
+                self.camp_data = BaseCampData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing base camp data: {e}")
+                return None
+
+            try:
                 self.entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
             except Exception as e:
                 LOGGER.error(f"Unable to retrieve pal data: {e}")
                 return None
+            
+            # self.character_container = CharacterContainerManager(self.gvas_file.properties["worldSaveData"]["value"]["CharacterContainerSaveData"]["value"])
 
             self._load_entities()
 
