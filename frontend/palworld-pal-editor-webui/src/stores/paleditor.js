@@ -227,6 +227,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const I18nList = ref({
     en: "English",
     "zh-CN": "中文",
+    "ja": "日本語"
   });
 
   // flags

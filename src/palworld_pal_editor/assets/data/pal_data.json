@@ -20,7 +20,8 @@
         },
         "I18n": {
             "en": "Melpaca",
-            "zh-CN": "美露帕"
+            "zh-CN": "美露帕",
+            "ja": "メルパカ"
         },
         "SortingKey": {
             "paldeck": "36"
@@ -47,7 +48,8 @@
         },
         "I18n": {
             "en": "Kitsun",
-            "zh-CN": "苍焰狼"
+            "zh-CN": "苍焰狼",
+            "ja": "シラヌイ"
         },
         "SortingKey": {
             "paldeck": "61"
@@ -74,7 +76,8 @@
         },
         "I18n": {
             "en": "Anubis",
-            "zh-CN": "阿努比斯"
+            "zh-CN": "阿努比斯",
+            "ja": "アヌビス"
         },
         "SortingKey": {
             "paldeck": "100"
@@ -102,7 +105,8 @@
         },
         "I18n": {
             "en": "Incineram",
-            "zh-CN": "炎魔羊"
+            "zh-CN": "炎魔羊",
+            "ja": "ヘルゴート"
         },
         "SortingKey": {
             "paldeck": "40"
@@ -129,7 +133,8 @@
         },
         "I18n": {
             "en": "Incineram Noct",
-            "zh-CN": "暗魔羊"
+            "zh-CN": "暗魔羊",
+            "ja": "アビスゴート"
         },
         "SortingKey": {
             "paldeck": "40B"
@@ -156,7 +161,8 @@
         },
         "I18n": {
             "en": "Mau",
-            "zh-CN": "喵丝特"
+            "zh-CN": "喵丝特",
+            "ja": "ニャオテト"
         },
         "SortingKey": {
             "paldeck": "24"
@@ -183,7 +189,8 @@
         },
         "I18n": {
             "en": "Mau Cryst",
-            "zh-CN": "冰丝特"
+            "zh-CN": "冰丝特",
+            "ja": "チルテト"
         },
         "SortingKey": {
             "paldeck": "24B"
@@ -210,7 +217,8 @@
         },
         "I18n": {
             "en": "Caprity",
-            "zh-CN": "灌木羊"
+            "zh-CN": "灌木羊",
+            "ja": "ベリゴート"
         },
         "SortingKey": {
             "paldeck": "35"
@@ -238,7 +246,8 @@
         },
         "I18n": {
             "en": "Vanwyrm",
-            "zh-CN": "烽歌龙"
+            "zh-CN": "烽歌龙",
+            "ja": "カバネドリ"
         },
         "SortingKey": {
             "paldeck": "71"
@@ -266,7 +275,8 @@
         },
         "I18n": {
             "en": "Vanwyrm Cryst",
-            "zh-CN": "霜歌龙"
+            "zh-CN": "霜歌龙",
+            "ja": "シロカバネ"
         },
         "SortingKey": {
             "paldeck": "71B"
@@ -294,7 +304,8 @@
         },
         "I18n": {
             "en": "Necromus",
-            "zh-CN": "混沌骑士"
+            "zh-CN": "混沌骑士",
+            "ja": "ペイントール"
         },
         "SortingKey": {
             "paldeck": "109"
@@ -321,7 +332,8 @@
         },
         "I18n": {
             "en": "Shadowbeak",
-            "zh-CN": "异构格里芬"
+            "zh-CN": "异构格里芬",
+            "ja": "ゼノグリフ"
         },
         "SortingKey": {
             "paldeck": "107"
@@ -349,7 +361,8 @@
         },
         "I18n": {
             "en": "Astegon",
-            "zh-CN": "魔渊龙"
+            "zh-CN": "魔渊龙",
+            "ja": "ジオラーヴァ"
         },
         "SortingKey": {
             "paldeck": "98"
@@ -377,7 +390,8 @@
         },
         "I18n": {
             "en": "Azurobe",
-            "zh-CN": "碧海龙"
+            "zh-CN": "碧海龙",
+            "ja": "アズレーン"
         },
         "SortingKey": {
             "paldeck": "82"
@@ -404,7 +418,8 @@
         },
         "I18n": {
             "en": "Fuack",
-            "zh-CN": "冲浪鸭"
+            "zh-CN": "冲浪鸭",
+            "ja": "カモノスケ"
         },
         "SortingKey": {
             "paldeck": "6"
@@ -431,7 +446,8 @@
         },
         "I18n": {
             "en": "Rushoar",
-            "zh-CN": "草莽猪"
+            "zh-CN": "草莽猪",
+            "ja": "イノボウ"
         },
         "SortingKey": {
             "paldeck": "20"
@@ -459,7 +475,8 @@
         },
         "I18n": {
             "en": "Penking",
-            "zh-CN": "企鹅王"
+            "zh-CN": "企鹅王",
+            "ja": "キャプペン"
         },
         "SortingKey": {
             "paldeck": "11"
@@ -486,7 +503,8 @@
         },
         "I18n": {
             "en": "Lifmunk",
-            "zh-CN": "翠叶鼠"
+            "zh-CN": "翠叶鼠",
+            "ja": "クルリス"
         },
         "SortingKey": {
             "paldeck": "4"
@@ -513,7 +531,8 @@
         },
         "I18n": {
             "en": "Tombat",
-            "zh-CN": "猫蝠怪"
+            "zh-CN": "猫蝠怪",
+            "ja": "ニャンバット"
         },
         "SortingKey": {
             "paldeck": "68"
@@ -540,7 +559,8 @@
         },
         "I18n": {
             "en": "Katress",
-            "zh-CN": "暗巫猫"
+            "zh-CN": "暗巫猫",
+            "ja": "クレメーオ"
         },
         "SortingKey": {
             "paldeck": "75"
@@ -567,7 +587,8 @@
         },
         "I18n": {
             "en": "Felbat",
-            "zh-CN": "夜幕魔蝠"
+            "zh-CN": "夜幕魔蝠",
+            "ja": "ヤミトバリ"
         },
         "SortingKey": {
             "paldeck": "94"
@@ -594,7 +615,8 @@
         },
         "I18n": {
             "en": "Chikipi",
-            "zh-CN": "皮皮鸡"
+            "zh-CN": "皮皮鸡",
+            "ja": "タマコッコ"
         },
         "SortingKey": {
             "paldeck": "3"
@@ -621,7 +643,8 @@
         },
         "I18n": {
             "en": "Tocotoco",
-            "zh-CN": "炸蛋鸟"
+            "zh-CN": "炸蛋鸟",
+            "ja": "クルットリ"
         },
         "SortingKey": {
             "paldeck": "27"
@@ -648,7 +671,8 @@
         },
         "I18n": {
             "en": "Mozzarina",
-            "zh-CN": "波霸牛"
+            "zh-CN": "波霸牛",
+            "ja": "ミルカルビ"
         },
         "SortingKey": {
             "paldeck": "29"
@@ -675,7 +699,8 @@
         },
         "I18n": {
             "en": "Cinnamoth",
-            "zh-CN": "幻悦蝶"
+            "zh-CN": "幻悦蝶",
+            "ja": "パピテフ"
         },
         "SortingKey": {
             "paldeck": "41"
@@ -702,7 +727,8 @@
         },
         "I18n": {
             "en": "Vixy",
-            "zh-CN": "玉藻狐"
+            "zh-CN": "玉藻狐",
+            "ja": "タマモ"
         },
         "SortingKey": {
             "paldeck": "14"
@@ -729,7 +755,8 @@
         },
         "I18n": {
             "en": "Fuddler",
-            "zh-CN": "遁地鼠"
+            "zh-CN": "遁地鼠",
+            "ja": "モグルン"
         },
         "SortingKey": {
             "paldeck": "22"
@@ -756,7 +783,8 @@
         },
         "I18n": {
             "en": "Cawgnito",
-            "zh-CN": "黑鸦隐士"
+            "zh-CN": "黑鸦隐士",
+            "ja": "マスクロウ"
         },
         "SortingKey": {
             "paldeck": "44"
@@ -784,7 +812,8 @@
         },
         "I18n": {
             "en": "Menasting",
-            "zh-CN": "冥铠蝎"
+            "zh-CN": "冥铠蝎",
+            "ja": "デスティング"
         },
         "SortingKey": {
             "paldeck": "99"
@@ -811,7 +840,8 @@
         },
         "I18n": {
             "en": "Eikthyrdeer",
-            "zh-CN": "紫霞鹿"
+            "zh-CN": "紫霞鹿",
+            "ja": "ツノガミ"
         },
         "SortingKey": {
             "paldeck": "37"
@@ -838,7 +868,8 @@
         },
         "I18n": {
             "en": "Eikthyrdeer Terra",
-            "zh-CN": "祈岳鹿"
+            "zh-CN": "祈岳鹿",
+            "ja": "ヤマガミ"
         },
         "SortingKey": {
             "paldeck": "37B"
@@ -865,7 +896,8 @@
         },
         "I18n": {
             "en": "Daedream",
-            "zh-CN": "寐魔"
+            "zh-CN": "寐魔",
+            "ja": "ネムラム"
         },
         "SortingKey": {
             "paldeck": "19"
@@ -892,7 +924,8 @@
         },
         "I18n": {
             "en": "Digtoise",
-            "zh-CN": "碎岩龟"
+            "zh-CN": "碎岩龟",
+            "ja": "ドリタス"
         },
         "SortingKey": {
             "paldeck": "67"
@@ -919,7 +952,8 @@
         },
         "I18n": {
             "en": "Galeclaw",
-            "zh-CN": "天擒鸟"
+            "zh-CN": "天擒鸟",
+            "ja": "エアムルグ"
         },
         "SortingKey": {
             "paldeck": "47"
@@ -946,7 +980,8 @@
         },
         "I18n": {
             "en": "Sparkit",
-            "zh-CN": "伏特喵"
+            "zh-CN": "伏特喵",
+            "ja": "ボルトラ"
         },
         "SortingKey": {
             "paldeck": "7"
@@ -973,7 +1008,8 @@
         },
         "I18n": {
             "en": "Grizzbolt",
-            "zh-CN": "暴电熊"
+            "zh-CN": "暴电熊",
+            "ja": "エレパンダ"
         },
         "SortingKey": {
             "paldeck": "103"
@@ -1000,7 +1036,8 @@
         },
         "I18n": {
             "en": "Elphidran",
-            "zh-CN": "精灵龙"
+            "zh-CN": "精灵龙",
+            "ja": "シルフィア"
         },
         "SortingKey": {
             "paldeck": "80"
@@ -1028,7 +1065,8 @@
         },
         "I18n": {
             "en": "Elphidran Aqua",
-            "zh-CN": "水灵龙"
+            "zh-CN": "水灵龙",
+            "ja": "シルティア"
         },
         "SortingKey": {
             "paldeck": "80B"
@@ -1055,7 +1093,8 @@
         },
         "I18n": {
             "en": "Fenglope",
-            "zh-CN": "云海鹿"
+            "zh-CN": "云海鹿",
+            "ja": "ムラクモ"
         },
         "SortingKey": {
             "paldeck": "93"
@@ -1082,7 +1121,8 @@
         },
         "I18n": {
             "en": "Pyrin",
-            "zh-CN": "火麒麟"
+            "zh-CN": "火麒麟",
+            "ja": "サラブレイズ"
         },
         "SortingKey": {
             "paldeck": "58"
@@ -1110,7 +1150,8 @@
         },
         "I18n": {
             "en": "Pyrin Noct",
-            "zh-CN": "邪麒麟"
+            "zh-CN": "邪麒麟",
+            "ja": "サラブラック"
         },
         "SortingKey": {
             "paldeck": "58B"
@@ -1137,7 +1178,8 @@
         },
         "I18n": {
             "en": "Rooby",
-            "zh-CN": "燎火鹿"
+            "zh-CN": "燎火鹿",
+            "ja": "ヒノコジカ"
         },
         "SortingKey": {
             "paldeck": "9"
@@ -1164,7 +1206,8 @@
         },
         "I18n": {
             "en": "Arsox",
-            "zh-CN": "炽焰牛"
+            "zh-CN": "炽焰牛",
+            "ja": "ブルフェルノ"
         },
         "SortingKey": {
             "paldeck": "42"
@@ -1192,7 +1235,8 @@
         },
         "I18n": {
             "en": "Dinossom",
-            "zh-CN": "花冠龙"
+            "zh-CN": "花冠龙",
+            "ja": "アロアリュー"
         },
         "SortingKey": {
             "paldeck": "64"
@@ -1220,7 +1264,8 @@
         },
         "I18n": {
             "en": "Dinossom Lux",
-            "zh-CN": "雷冠龙"
+            "zh-CN": "雷冠龙",
+            "ja": "ビリビリュー"
         },
         "SortingKey": {
             "paldeck": "64B"
@@ -1247,7 +1292,8 @@
         },
         "I18n": {
             "en": "Petallia",
-            "zh-CN": "花丽娜"
+            "zh-CN": "花丽娜",
+            "ja": "フラリーナ"
         },
         "SortingKey": {
             "paldeck": "87"
@@ -1274,7 +1320,8 @@
         },
         "I18n": {
             "en": "Flopie",
-            "zh-CN": "波娜兔"
+            "zh-CN": "波娜兔",
+            "ja": "ポプリーナ"
         },
         "SortingKey": {
             "paldeck": "28"
@@ -1301,7 +1348,8 @@
         },
         "I18n": {
             "en": "Celaray",
-            "zh-CN": "鲁米儿"
+            "zh-CN": "鲁米儿",
+            "ja": "ルミカイト"
         },
         "SortingKey": {
             "paldeck": "25"
@@ -1328,7 +1376,8 @@
         },
         "I18n": {
             "en": "Wixen",
-            "zh-CN": "焰巫狐"
+            "zh-CN": "焰巫狐",
+            "ja": "フォレーナ"
         },
         "SortingKey": {
             "paldeck": "76"
@@ -1355,7 +1404,8 @@
         },
         "I18n": {
             "en": "Teafant",
-            "zh-CN": "壶小象"
+            "zh-CN": "壶小象",
+            "ja": "チョロゾウ"
         },
         "SortingKey": {
             "paldeck": "16"
@@ -1382,7 +1432,8 @@
         },
         "I18n": {
             "en": "Direhowl",
-            "zh-CN": "猎狼"
+            "zh-CN": "猎狼",
+            "ja": "ガウルフ"
         },
         "SortingKey": {
             "paldeck": "26"
@@ -1409,7 +1460,8 @@
         },
         "I18n": {
             "en": "Maraith",
-            "zh-CN": "噬魂兽"
+            "zh-CN": "噬魂兽",
+            "ja": "ソルレイス"
         },
         "SortingKey": {
             "paldeck": "66"
@@ -1436,7 +1488,8 @@
         },
         "I18n": {
             "en": "Gorirat",
-            "zh-CN": "铁拳猿"
+            "zh-CN": "铁拳猿",
+            "ja": "ゴリレイジ"
         },
         "SortingKey": {
             "paldeck": "49"
@@ -1463,7 +1516,8 @@
         },
         "I18n": {
             "en": "Mammorest",
-            "zh-CN": "森猛犸"
+            "zh-CN": "森猛犸",
+            "ja": "グランモス"
         },
         "SortingKey": {
             "paldeck": "90"
@@ -1490,7 +1544,8 @@
         },
         "I18n": {
             "en": "Mammorest Cryst",
-            "zh-CN": "雪猛犸"
+            "zh-CN": "雪猛犸",
+            "ja": "ブリザモス"
         },
         "SortingKey": {
             "paldeck": "90B"
@@ -1517,7 +1572,8 @@
         },
         "I18n": {
             "en": "Mossanda",
-            "zh-CN": "叶胖达"
+            "zh-CN": "叶胖达",
+            "ja": "ササゾー"
         },
         "SortingKey": {
             "paldeck": "33"
@@ -1544,7 +1600,8 @@
         },
         "I18n": {
             "en": "Mossanda Lux",
-            "zh-CN": "雷胖达"
+            "zh-CN": "雷胖达",
+            "ja": "ライゾー"
         },
         "SortingKey": {
             "paldeck": "33B"
@@ -1571,7 +1628,8 @@
         },
         "I18n": {
             "en": "Verdash",
-            "zh-CN": "踏春兔"
+            "zh-CN": "踏春兔",
+            "ja": "ラベロット"
         },
         "SortingKey": {
             "paldeck": "77"
@@ -1598,7 +1656,8 @@
         },
         "I18n": {
             "en": "Helzephyr",
-            "zh-CN": "雷冥鸟"
+            "zh-CN": "雷冥鸟",
+            "ja": "ヘルガルダ"
         },
         "SortingKey": {
             "paldeck": "97"
@@ -1625,7 +1684,8 @@
         },
         "I18n": {
             "en": "Nitewing",
-            "zh-CN": "疾风隼"
+            "zh-CN": "疾风隼",
+            "ja": "ホークウィン"
         },
         "SortingKey": {
             "paldeck": "38"
@@ -1652,7 +1712,8 @@
         },
         "I18n": {
             "en": "Jolthog",
-            "zh-CN": "电棘鼠"
+            "zh-CN": "电棘鼠",
+            "ja": "パチグリ"
         },
         "SortingKey": {
             "paldeck": "12"
@@ -1679,7 +1740,8 @@
         },
         "I18n": {
             "en": "Jolthog Cryst",
-            "zh-CN": "冰刺鼠"
+            "zh-CN": "冰刺鼠",
+            "ja": "コチグリ"
         },
         "SortingKey": {
             "paldeck": "12B"
@@ -1707,7 +1769,8 @@
         },
         "I18n": {
             "en": "Warsect",
-            "zh-CN": "铠格力斯"
+            "zh-CN": "铠格力斯",
+            "ja": "グラクレス"
         },
         "SortingKey": {
             "paldeck": "92"
@@ -1734,7 +1797,8 @@
         },
         "I18n": {
             "en": "Faleris",
-            "zh-CN": "荷鲁斯"
+            "zh-CN": "荷鲁斯",
+            "ja": "ホルス"
         },
         "SortingKey": {
             "paldeck": "105"
@@ -1761,7 +1825,8 @@
         },
         "I18n": {
             "en": "Reindrix",
-            "zh-CN": "严冬鹿"
+            "zh-CN": "严冬鹿",
+            "ja": "ツララジカ"
         },
         "SortingKey": {
             "paldeck": "59"
@@ -1788,7 +1853,8 @@
         },
         "I18n": {
             "en": "Foxcicle",
-            "zh-CN": "吹雪狐"
+            "zh-CN": "吹雪狐",
+            "ja": "フブキツネ"
         },
         "SortingKey": {
             "paldeck": "57"
@@ -1816,7 +1882,8 @@
         },
         "I18n": {
             "en": "Frostallion",
-            "zh-CN": "唤冬兽"
+            "zh-CN": "唤冬兽",
+            "ja": "グレイシャル"
         },
         "SortingKey": {
             "paldeck": "110"
@@ -1843,7 +1910,8 @@
         },
         "I18n": {
             "en": "Frostallion Noct",
-            "zh-CN": "唤夜兽"
+            "zh-CN": "唤夜兽",
+            "ja": "グレイシャドウ"
         },
         "SortingKey": {
             "paldeck": "110B"
@@ -1871,7 +1939,8 @@
         },
         "I18n": {
             "en": "Jetragon",
-            "zh-CN": "空涡龙"
+            "zh-CN": "空涡龙",
+            "ja": "ジェッドラン"
         },
         "SortingKey": {
             "paldeck": "111"
@@ -1898,7 +1967,8 @@
         },
         "I18n": {
             "en": "Kelpsea",
-            "zh-CN": "水灵儿"
+            "zh-CN": "水灵儿",
+            "ja": "ケルピス"
         },
         "SortingKey": {
             "paldeck": "81"
@@ -1925,7 +1995,8 @@
         },
         "I18n": {
             "en": "Kelpsea Ignis",
-            "zh-CN": "火灵儿"
+            "zh-CN": "火灵儿",
+            "ja": "マグピス"
         },
         "SortingKey": {
             "paldeck": "81B"
@@ -1952,7 +2023,8 @@
         },
         "I18n": {
             "en": "Kingpaca",
-            "zh-CN": "君王美露帕"
+            "zh-CN": "君王美露帕",
+            "ja": "アルパオー"
         },
         "SortingKey": {
             "paldeck": "89"
@@ -1979,7 +2051,8 @@
         },
         "I18n": {
             "en": "Ice Kingpaca",
-            "zh-CN": "冰帝美露帕"
+            "zh-CN": "冰帝美露帕",
+            "ja": "アオパオー"
         },
         "SortingKey": {
             "paldeck": "89B"
@@ -2006,7 +2079,8 @@
         },
         "I18n": {
             "en": "Blazamut",
-            "zh-CN": "焰煌"
+            "zh-CN": "焰煌",
+            "ja": "ボルカイザー"
         },
         "SortingKey": {
             "paldeck": "96"
@@ -2033,7 +2107,8 @@
         },
         "I18n": {
             "en": "Univolt",
-            "zh-CN": "雷角马"
+            "zh-CN": "雷角马",
+            "ja": "ライコーン"
         },
         "SortingKey": {
             "paldeck": "56"
@@ -2060,7 +2135,8 @@
         },
         "I18n": {
             "en": "Foxparks",
-            "zh-CN": "火绒狐"
+            "zh-CN": "火绒狐",
+            "ja": "キツネビ"
         },
         "SortingKey": {
             "paldeck": "5"
@@ -2087,7 +2163,8 @@
         },
         "I18n": {
             "en": "Flambelle",
-            "zh-CN": "融焰娘"
+            "zh-CN": "融焰娘",
+            "ja": "ラヴィ"
         },
         "SortingKey": {
             "paldeck": "70"
@@ -2106,7 +2183,8 @@
         },
         "I18n": {
             "en": "Dumud",
-            "zh-CN": "趴趴鲇"
+            "zh-CN": "趴趴鲇",
+            "ja": "トドドドン"
         },
         "SortingKey": {
             "paldeck": "43"
@@ -2134,7 +2212,8 @@
         },
         "I18n": {
             "en": "Relaxaurus",
-            "zh-CN": "佩克龙"
+            "zh-CN": "佩克龙",
+            "ja": "ペコドン"
         },
         "SortingKey": {
             "paldeck": "85"
@@ -2162,7 +2241,8 @@
         },
         "I18n": {
             "en": "Relaxaurus Lux",
-            "zh-CN": "派克龙"
+            "zh-CN": "派克龙",
+            "ja": "パリピドン"
         },
         "SortingKey": {
             "paldeck": "85B"
@@ -2189,7 +2269,8 @@
         },
         "I18n": {
             "en": "Lyleen",
-            "zh-CN": "百合女王"
+            "zh-CN": "百合女王",
+            "ja": "リリクイン"
         },
         "SortingKey": {
             "paldeck": "104"
@@ -2216,7 +2297,8 @@
         },
         "I18n": {
             "en": "Lyleen Noct",
-            "zh-CN": "黑月女王"
+            "zh-CN": "黑月女王",
+            "ja": "ルナクイン"
         },
         "SortingKey": {
             "paldeck": "104B"
@@ -2243,7 +2325,8 @@
         },
         "I18n": {
             "en": "Bristla",
-            "zh-CN": "荆棘魔仙"
+            "zh-CN": "荆棘魔仙",
+            "ja": "イバラヒメ"
         },
         "SortingKey": {
             "paldeck": "30"
@@ -2270,7 +2353,8 @@
         },
         "I18n": {
             "en": "Leezpunk",
-            "zh-CN": "庞克蜥"
+            "zh-CN": "庞克蜥",
+            "ja": "ダリザード"
         },
         "SortingKey": {
             "paldeck": "45"
@@ -2297,7 +2381,8 @@
         },
         "I18n": {
             "en": "Leezpunk Ignis",
-            "zh-CN": "热血蜥"
+            "zh-CN": "热血蜥",
+            "ja": "チリザード"
         },
         "SortingKey": {
             "paldeck": "45B"
@@ -2324,7 +2409,8 @@
         },
         "I18n": {
             "en": "Blazehowl",
-            "zh-CN": "狱焰王"
+            "zh-CN": "狱焰王",
+            "ja": "ゴクエンオ"
         },
         "SortingKey": {
             "paldeck": "84"
@@ -2352,7 +2438,8 @@
         },
         "I18n": {
             "en": "Blazehowl Noct",
-            "zh-CN": "狱阎王"
+            "zh-CN": "狱阎王",
+            "ja": "シンエンオ"
         },
         "SortingKey": {
             "paldeck": "84B"
@@ -2379,7 +2466,8 @@
         },
         "I18n": {
             "en": "Tanzee",
-            "zh-CN": "新叶猿"
+            "zh-CN": "新叶猿",
+            "ja": "エテッパ"
         },
         "SortingKey": {
             "paldeck": "8"
@@ -2406,7 +2494,8 @@
         },
         "I18n": {
             "en": "Swee",
-            "zh-CN": "毛掸儿"
+            "zh-CN": "毛掸儿",
+            "ja": "コモップ"
         },
         "SortingKey": {
             "paldeck": "53"
@@ -2433,7 +2522,8 @@
         },
         "I18n": {
             "en": "Sweepa",
-            "zh-CN": "毛老爹"
+            "zh-CN": "毛老爹",
+            "ja": "ドンモップ"
         },
         "SortingKey": {
             "paldeck": "54"
@@ -2460,7 +2550,8 @@
         },
         "I18n": {
             "en": "Lunaris",
-            "zh-CN": "秘斯媞雅"
+            "zh-CN": "秘斯媞雅",
+            "ja": "ミステリア"
         },
         "SortingKey": {
             "paldeck": "63"
@@ -2487,7 +2578,8 @@
         },
         "I18n": {
             "en": "Grintale",
-            "zh-CN": "笑魇猫"
+            "zh-CN": "笑魇猫",
+            "ja": "ニャンギマリ"
         },
         "SortingKey": {
             "paldeck": "52"
@@ -2514,7 +2606,8 @@
         },
         "I18n": {
             "en": "Depresso",
-            "zh-CN": "瞅什魔"
+            "zh-CN": "瞅什魔",
+            "ja": "ンダコアラ"
         },
         "SortingKey": {
             "paldeck": "17"
@@ -2541,7 +2634,8 @@
         },
         "I18n": {
             "en": "Killamari",
-            "zh-CN": "勾魂鱿"
+            "zh-CN": "勾魂鱿",
+            "ja": "ヤミイカ"
         },
         "SortingKey": {
             "paldeck": "23"
@@ -2568,7 +2662,8 @@
         },
         "I18n": {
             "en": "Nox",
-            "zh-CN": "露娜蒂"
+            "zh-CN": "露娜蒂",
+            "ja": "ルナティ"
         },
         "SortingKey": {
             "paldeck": "21"
@@ -2596,7 +2691,8 @@
         },
         "I18n": {
             "en": "Pengullet",
-            "zh-CN": "企丸丸"
+            "zh-CN": "企丸丸",
+            "ja": "ペンタマ"
         },
         "SortingKey": {
             "paldeck": "10"
@@ -2623,7 +2719,8 @@
         },
         "I18n": {
             "en": "Cattiva",
-            "zh-CN": "捣蛋猫"
+            "zh-CN": "捣蛋猫",
+            "ja": "ツッパニャン"
         },
         "SortingKey": {
             "paldeck": "2"
@@ -2650,7 +2747,8 @@
         },
         "I18n": {
             "en": "Lovander",
-            "zh-CN": "博爱蜥"
+            "zh-CN": "博爱蜥",
+            "ja": "ラブマンダー"
         },
         "SortingKey": {
             "paldeck": "69"
@@ -2677,7 +2775,8 @@
         },
         "I18n": {
             "en": "Ribbuny",
-            "zh-CN": "姬小兔"
+            "zh-CN": "姬小兔",
+            "ja": "ヒメウサ"
         },
         "SortingKey": {
             "paldeck": "39"
@@ -2705,7 +2804,8 @@
         },
         "I18n": {
             "en": "Gumoss",
-            "zh-CN": "叶泥泥"
+            "zh-CN": "叶泥泥",
+            "ja": "ナエモチ"
         },
         "SortingKey": {
             "paldeck": "13"
@@ -2733,7 +2833,8 @@
         },
         "I18n": {
             "en": "Gumoss (Special)",
-            "zh-CN": "叶泥泥 (Special)"
+            "zh-CN": "叶泥泥 (Special)",
+            "ja": "ナエモチ (特殊)"
         },
         "SortingKey": {
             "paldeck": "13S"
@@ -2760,7 +2861,8 @@
         },
         "I18n": {
             "en": "Elizabee",
-            "zh-CN": "女皇蜂"
+            "zh-CN": "女皇蜂",
+            "ja": "クインビーナ"
         },
         "SortingKey": {
             "paldeck": "51"
@@ -2787,7 +2889,8 @@
         },
         "I18n": {
             "en": "Dazzi",
-            "zh-CN": "雷鸣童子"
+            "zh-CN": "雷鸣童子",
+            "ja": "カミナラシ"
         },
         "SortingKey": {
             "paldeck": "62"
@@ -2814,7 +2917,8 @@
         },
         "I18n": {
             "en": "Ragnahawk",
-            "zh-CN": "燧火鸟"
+            "zh-CN": "燧火鸟",
+            "ja": "イグニクス"
         },
         "SortingKey": {
             "paldeck": "74"
@@ -2841,7 +2945,8 @@
         },
         "I18n": {
             "en": "Robinquill",
-            "zh-CN": "羽箭射手"
+            "zh-CN": "羽箭射手",
+            "ja": "フェザーロ"
         },
         "SortingKey": {
             "paldeck": "48"
@@ -2869,7 +2974,8 @@
         },
         "I18n": {
             "en": "Robinquill Terra",
-            "zh-CN": "山岳射手"
+            "zh-CN": "山岳射手",
+            "ja": "サンドロ"
         },
         "SortingKey": {
             "paldeck": "48B"
@@ -2896,7 +3002,8 @@
         },
         "I18n": {
             "en": "Bushi",
-            "zh-CN": "浪刃武士"
+            "zh-CN": "浪刃武士",
+            "ja": "ツジギリ"
         },
         "SortingKey": {
             "paldeck": "72"
@@ -2924,7 +3031,8 @@
         },
         "I18n": {
             "en": "Paladius",
-            "zh-CN": "圣光骑士"
+            "zh-CN": "圣光骑士",
+            "ja": "セイントール"
         },
         "SortingKey": {
             "paldeck": "108"
@@ -2951,7 +3059,8 @@
         },
         "I18n": {
             "en": "Broncherry",
-            "zh-CN": "连理龙"
+            "zh-CN": "连理龙",
+            "ja": "ラブラドン"
         },
         "SortingKey": {
             "paldeck": "86"
@@ -2979,7 +3088,8 @@
         },
         "I18n": {
             "en": "Broncherry Aqua",
-            "zh-CN": "海誓龙"
+            "zh-CN": "海誓龙",
+            "ja": "スプラドン"
         },
         "SortingKey": {
             "paldeck": "86B"
@@ -3006,7 +3116,8 @@
         },
         "I18n": {
             "en": "Surfent",
-            "zh-CN": "滑水蛇"
+            "zh-CN": "滑水蛇",
+            "ja": "シーペント"
         },
         "SortingKey": {
             "paldeck": "65"
@@ -3033,7 +3144,8 @@
         },
         "I18n": {
             "en": "Surfent Terra",
-            "zh-CN": "流沙蛇"
+            "zh-CN": "流沙蛇",
+            "ja": "スナペント"
         },
         "SortingKey": {
             "paldeck": "65B"
@@ -3060,7 +3172,8 @@
         },
         "I18n": {
             "en": "Gobfin",
-            "zh-CN": "鲨小子"
+            "zh-CN": "鲨小子",
+            "ja": "シャーキッド"
         },
         "SortingKey": {
             "paldeck": "31"
@@ -3087,7 +3200,8 @@
         },
         "I18n": {
             "en": "Gobfin Ignis",
-            "zh-CN": "红小鲨"
+            "zh-CN": "红小鲨",
+            "ja": "シャーマンダー"
         },
         "SortingKey": {
             "paldeck": "31B"
@@ -3114,7 +3228,8 @@
         },
         "I18n": {
             "en": "Lamball",
-            "zh-CN": "棉悠悠"
+            "zh-CN": "棉悠悠",
+            "ja": "モコロン"
         },
         "SortingKey": {
             "paldeck": "1"
@@ -3141,7 +3256,8 @@
         },
         "I18n": {
             "en": "Quivern",
-            "zh-CN": "天羽龙"
+            "zh-CN": "天羽龙",
+            "ja": "フェスキー"
         },
         "SortingKey": {
             "paldeck": "95"
@@ -3168,7 +3284,8 @@
         },
         "I18n": {
             "en": "Beegarde",
-            "zh-CN": "骑士蜂"
+            "zh-CN": "骑士蜂",
+            "ja": "ビーナイト"
         },
         "SortingKey": {
             "paldeck": "50"
@@ -3195,7 +3312,8 @@
         },
         "I18n": {
             "en": "Suzaku",
-            "zh-CN": "朱雀"
+            "zh-CN": "朱雀",
+            "ja": "スザク"
         },
         "SortingKey": {
             "paldeck": "102"
@@ -3222,7 +3340,8 @@
         },
         "I18n": {
             "en": "Suzaku Aqua",
-            "zh-CN": "清雀"
+            "zh-CN": "清雀",
+            "ja": "シヴァ"
         },
         "SortingKey": {
             "paldeck": "102B"
@@ -3249,7 +3368,8 @@
         },
         "I18n": {
             "en": "Woolipop",
-            "zh-CN": "棉花糖"
+            "zh-CN": "棉花糖",
+            "ja": "メリポップ"
         },
         "SortingKey": {
             "paldeck": "34"
@@ -3276,7 +3396,8 @@
         },
         "I18n": {
             "en": "Beakon",
-            "zh-CN": "迅雷鸟"
+            "zh-CN": "迅雷鸟",
+            "ja": "ライバード"
         },
         "SortingKey": {
             "paldeck": "73"
@@ -3303,7 +3424,8 @@
         },
         "I18n": {
             "en": "Rayhound",
-            "zh-CN": "霹雳犬"
+            "zh-CN": "霹雳犬",
+            "ja": "イヌズマ"
         },
         "SortingKey": {
             "paldeck": "60"
@@ -3331,7 +3453,8 @@
         },
         "I18n": {
             "en": "Orserk",
-            "zh-CN": "波鲁杰克斯"
+            "zh-CN": "波鲁杰克斯",
+            "ja": "ボルゼクス"
         },
         "SortingKey": {
             "paldeck": "106"
@@ -3359,7 +3482,8 @@
         },
         "I18n": {
             "en": "Jormuntide",
-            "zh-CN": "覆海龙"
+            "zh-CN": "覆海龙",
+            "ja": "レヴィドラ"
         },
         "SortingKey": {
             "paldeck": "101"
@@ -3387,7 +3511,8 @@
         },
         "I18n": {
             "en": "Jormuntide Ignis",
-            "zh-CN": "腾炎龙"
+            "zh-CN": "腾炎龙",
+            "ja": "アグニドラ"
         },
         "SortingKey": {
             "paldeck": "101B"
@@ -3414,7 +3539,8 @@
         },
         "I18n": {
             "en": "Vaelet",
-            "zh-CN": "薇莉塔"
+            "zh-CN": "薇莉塔",
+            "ja": "ヴィオレッタ"
         },
         "SortingKey": {
             "paldeck": "78"
@@ -3442,7 +3568,8 @@
         },
         "I18n": {
             "en": "Reptyro",
-            "zh-CN": "熔岩兽"
+            "zh-CN": "熔岩兽",
+            "ja": "ボルカノン"
         },
         "SortingKey": {
             "paldeck": "88"
@@ -3470,7 +3597,8 @@
         },
         "I18n": {
             "en": "Ice Reptyro",
-            "zh-CN": "寒霜兽"
+            "zh-CN": "寒霜兽",
+            "ja": "フロスカノン"
         },
         "SortingKey": {
             "paldeck": "88B"
@@ -3498,7 +3626,8 @@
         },
         "I18n": {
             "en": "Chillet",
-            "zh-CN": "疾旋鼬"
+            "zh-CN": "疾旋鼬",
+            "ja": "オコチョ"
         },
         "SortingKey": {
             "paldeck": "55"
@@ -3525,7 +3654,8 @@
         },
         "I18n": {
             "en": "Loupmoon",
-            "zh-CN": "月镰魔"
+            "zh-CN": "月镰魔",
+            "ja": "ツキカゲ"
         },
         "SortingKey": {
             "paldeck": "46"
@@ -3552,7 +3682,8 @@
         },
         "I18n": {
             "en": "Sibelyx",
-            "zh-CN": "绸笠蛾"
+            "zh-CN": "绸笠蛾",
+            "ja": "シルキーヌ"
         },
         "SortingKey": {
             "paldeck": "79"
@@ -3579,7 +3710,8 @@
         },
         "I18n": {
             "en": "Cryolinx",
-            "zh-CN": "冰棘兽"
+            "zh-CN": "冰棘兽",
+            "ja": "ツンドラ―"
         },
         "SortingKey": {
             "paldeck": "83"
@@ -3598,7 +3730,8 @@
         },
         "I18n": {
             "en": "Hangyu",
-            "zh-CN": "吊缚灵"
+            "zh-CN": "吊缚灵",
+            "ja": "シメナワ"
         },
         "SortingKey": {
             "paldeck": "32"
@@ -3617,7 +3750,8 @@
         },
         "I18n": {
             "en": "Hangyu Cryst",
-            "zh-CN": "冰缚灵"
+            "zh-CN": "冰缚灵",
+            "ja": "オバケナワ"
         },
         "SortingKey": {
             "paldeck": "32B"
@@ -3644,7 +3778,8 @@
         },
         "I18n": {
             "en": "Hoocrates",
-            "zh-CN": "啼卡尔"
+            "zh-CN": "啼卡尔",
+            "ja": "ホウロック"
         },
         "SortingKey": {
             "paldeck": "15"
@@ -3671,7 +3806,8 @@
         },
         "I18n": {
             "en": "Cremis",
-            "zh-CN": "米露菲"
+            "zh-CN": "米露菲",
+            "ja": "ミルフィー"
         },
         "SortingKey": {
             "paldeck": "18"
@@ -3698,7 +3834,8 @@
         },
         "I18n": {
             "en": "Wumpo",
-            "zh-CN": "白绒雪怪"
+            "zh-CN": "白绒雪怪",
+            "ja": "ヒエティ"
         },
         "SortingKey": {
             "paldeck": "91"
@@ -3725,7 +3862,8 @@
         },
         "I18n": {
             "en": "Wumpo Botan",
-            "zh-CN": "绿苔绒怪"
+            "zh-CN": "绿苔绒怪",
+            "ja": "トロピティ"
         },
         "SortingKey": {
             "paldeck": "91B"
@@ -3807,7 +3945,8 @@
         "Tower": true,
         "I18n": {
             "en": "Axel & Orserk",
-            "zh-CN": "阿克塞尔 & 波鲁杰克斯"
+            "zh-CN": "阿克塞尔 & 波鲁杰克斯",
+            "ja": "アクセル & ボルゼクス"
         },
         "SortingKey": {
             "paldeck": "106T"
@@ -3833,7 +3972,8 @@
         "Tower": true,
         "I18n": {
             "en": "Lily & Lyleen",
-            "zh-CN": "莉莉 & 百合女王"
+            "zh-CN": "莉莉 & 百合女王",
+            "ja": "リリィ & リリクイン"
         },
         "SortingKey": {
             "paldeck": "104T"
@@ -3863,7 +4003,8 @@
         "Tower": true,
         "I18n": {
             "en": "Marcus & Faleris",
-            "zh-CN": "马库斯 & 荷鲁斯"
+            "zh-CN": "马库斯 & 荷鲁斯",
+            "ja": "マーカス & ホルス"
         },
         "SortingKey": {
             "paldeck": "105T"
@@ -3893,7 +4034,8 @@
         "Tower": true,
         "I18n": {
             "en": "Victor & Shadowbeak",
-            "zh-CN": "维克托 & 异构格里芬"
+            "zh-CN": "维克托 & 异构格里芬",
+            "ja": "ヴィクター & ゼノグリフ"
         },
         "SortingKey": {
             "paldeck": "107T"
@@ -3919,7 +4061,8 @@
         "Tower": true,
         "I18n": {
             "en": "Zoe & Grizzbolt",
-            "zh-CN": "佐伊 & 暴电熊"
+            "zh-CN": "佐伊 & 暴电熊",
+            "ja": "ゾーイ & エレパンダ"
         },
         "SortingKey": {
             "paldeck": "103T"
@@ -3937,7 +4080,8 @@
         "Human": true,
         "I18n": {
             "en": "Black Marketeer",
-            "zh-CN": "黑市商人"
+            "zh-CN": "黑市商人",
+            "ja": "闇商人"
         },
         "SortingKey": {
 
