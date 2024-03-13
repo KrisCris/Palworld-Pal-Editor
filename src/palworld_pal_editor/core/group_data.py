@@ -20,11 +20,20 @@ class PalGroup:
             self.instance_map[str(instance["instance_id"])] = instance
 
         for player in self.players or []:
-            self.player_map[str(player["player_uid"])] = player
+            self.player_map[str(player[0])] = player
+
+    def __str__(self) -> str:
+        lines = []
+        lines.append(f"{self.guild_name} - {self.group_id}")
+        for player in self.players:
+            lines.append(f"\n\t{str(player[0])} - {str(player[1])}")
+        return "\t".join(lines)
 
     def add_pal(self, instanceId: UUID | str) -> bool:
-        if instanceId in self.instance_map:
+        if self.has_pal(instanceId):
+            LOGGER.warning("Pal ID already exists")
             return False
+        
         new_handle = PalObjects.individual_character_handle_id(instanceId)
         self.instance_map[str(instanceId)] = new_handle
         if self.individual_character_handle_ids is None:
@@ -33,10 +42,17 @@ class PalGroup:
         return True
     
     def del_pal(self, instanceId: UUID | str):
-        if instanceId not in self.instance_map:
+        if not self.has_pal(instanceId):
+            LOGGER.warning(f"Pal {instanceId} not exist in group {self.guild_name}")
             return
         handle = self.instance_map.pop(instanceId)
         self.individual_character_handle_ids.remove(handle)
+
+    def has_pal(self, instanceId: UUID | str) -> bool:
+        return instanceId in self.instance_map
+    
+    def has_player(self, playerUId: UUID | str) -> bool:
+        return playerUId in self.player_map
 
     @property
     def group_id(self) -> Optional[UUID]:
@@ -55,8 +71,8 @@ class PalGroup:
         return self._group_param.get("guild_name")
 
     @property
-    def players(self) -> Optional[list[dict]]:
-        return self._group_param.get("players")
+    def players(self) -> Optional[list[tuple[UUID, str]]]:
+        return [(player_data['player_uid'], player_data['player_info']['player_name']) for player_data in self._group_param.get("players")]
 
 
 class GroupData:
@@ -82,9 +98,15 @@ class GroupData:
                 continue
 
             self.group_map[str(group_id)] = group_entity
+            LOGGER.info(f"Guild Found: {group_entity}")
 
     def get_group(self, group_id: UUID | str) -> Optional[PalGroup]:
         return self.group_map.get(group_id)
 
     def get_groups(self) -> list[PalGroup]:
         return self.group_map.values()
+    
+    def get_player_group_id(self, player_uid: UUID | str) -> Optional[UUID]:
+        for group in self.get_groups():
+            if group.has_player(player_uid):
+                return group.group_id

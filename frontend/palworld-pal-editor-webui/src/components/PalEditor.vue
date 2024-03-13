@@ -9,6 +9,9 @@ const palStore = usePalEditorStore()
   <div class="PalEditor">
     <div class="EditorItem item flex-v basicInfo">
       <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">Dump Data</button>
+      <button id="dupe_btn" @click="palStore.dupePal" :disabled="palStore.LOADING_FLAG">Dupe Pal</button>
+      <button id="del_btn" @click="palStore.delPal" :disabled="palStore.LOADING_FLAG">🗑️ Del Pal</button>
+
       <img class="palIcon" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
@@ -417,6 +420,62 @@ button#dump_btn:hover {
 }
 
 button#dump_btn:disabled {
+  background-color: #8a8a8a;
+}
+
+button#del_btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  padding: 1rem;
+  margin: 0rem;
+  background-color: #bd1c3c;
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+}
+
+button#del_btn:hover {
+  background-color: #830e25;
+  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+}
+
+button#del_btn:disabled {
+  background-color: #8a8a8a;
+}
+
+button#dupe_btn {
+  position: absolute;
+  top: 3.5rem;
+  left: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  padding: 1rem;
+  margin: 0rem;
+  background-color: #1c8dbd;
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+}
+
+button#dupe_btn:hover {
+  background-color: #0e6b92;
+  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+}
+
+button#dupe_btn:disabled {
   background-color: #8a8a8a;
 }
 

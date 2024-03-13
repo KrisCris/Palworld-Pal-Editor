@@ -18,7 +18,7 @@ class Tests(unittest.TestCase):
         pal_num = sum(len(player.get_pals()) for player in players)
         worker_num = len(sm.get_working_pals())
         dangling = len(sm._dangling_pals.values())
-        self.assertEqual(len(sm.entities_list), player_num + pal_num + worker_num + dangling)
+        self.assertEqual(len(sm._entities_list), player_num + pal_num + worker_num + dangling)
 
     def test_hp_scaling_calc(self):
         sm = SaveManager()

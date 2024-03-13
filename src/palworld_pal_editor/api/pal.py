@@ -1,3 +1,4 @@
+import copy
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 import traceback
@@ -71,7 +72,7 @@ def paldata():
         f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
     )
     return reply(
-        1, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
+        1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
     )
 
 # Just some dumb shit
@@ -134,4 +135,49 @@ def dump_data():
     if pal:
         return reply(0, pal.dump_obj())
     LOGGER.warning(f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
-    return reply(1, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
+    return reply(1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
+
+@pal_blueprint.route("/pal/<pal_id>", methods=["DELETE"])
+@jwt_required()
+def delete_pal(pal_id):
+    if SaveManager().delete_pal(pal_id):
+        return reply(0)
+    return reply(1, None, f"Error Deleting Pal {pal_id}, check logs for more info.")
+
+
+@pal_blueprint.route("/add_pal", methods=["POST"])
+@jwt_required()
+def add_pal():
+    PlayerUId = request.json.get("PlayerUId")
+    if PlayerUId == "PAL_BASE_WORKER_BTN":
+        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
+        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
+    else:
+        try:
+            pal_entity = SaveManager().add_pal(PlayerUId)
+            if not pal_entity:
+                return reply(1, None, f"Failed adding pal, likely your pal containers are full, check logs for detail.")
+        except:
+            return reply(1, None, f"Error happened during adding pal, check logs for detail. {traceback.format_exc()}")
+    return reply(0, _pal_data(pal_entity))
+
+
+@pal_blueprint.route("/dupe_pal", methods=["POST"])
+@jwt_required()
+def dupe_pal():
+    PalGuid = request.json.get("PalGuid")
+    PlayerUId = request.json.get("PlayerUId")
+    if PlayerUId == "PAL_BASE_WORKER_BTN":
+        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
+        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
+    else:
+        try:
+            player = SaveManager().get_player(PlayerUId)
+            pal = copy.deepcopy(player.get_pal(PalGuid))
+
+            pal_entity = SaveManager().add_pal(PlayerUId, pal)
+            if not pal_entity:
+                return reply(1, None, f"Failed duping pal, likely your pal containers are full, check logs for detail.")
+        except:
+            return reply(1, None, f"Error happened during duping pal, check logs for detail. {traceback.format_exc()}")
+    return reply(0, _pal_data(pal_entity))

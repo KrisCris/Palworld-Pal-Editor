@@ -370,9 +370,190 @@ class PalObjects:
         return None
 
     @staticmethod
-    def individual_character_handle_id(instance_id: UUID | str, guid = None):
+    def individual_character_handle_id(instance_id: UUID | str, guid=None):
         guid = guid or PalObjects.EMPTY_UUID
         return {
             "guid": toUUID(guid),
             "instance_id": toUUID(instance_id),
+        }
+
+    @staticmethod
+    def DateTime(time):
+        return {
+            "struct_type": "DateTime",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": time,
+            "type": "StructProperty",
+        }
+
+    @staticmethod
+    def Vector(x, y, z):
+        return {
+            "struct_type": "Vector",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": {
+                "x": x,
+                "y": y,
+                "z": z,
+            },
+            "type": "StructProperty",
+        }
+
+    EPalWorkSuitabilities = [
+        "EPalWorkSuitability::EmitFlame",
+        "EPalWorkSuitability::Watering",
+        "EPalWorkSuitability::Seeding",
+        "EPalWorkSuitability::GenerateElectricity",
+        "EPalWorkSuitability::Handcraft",
+        "EPalWorkSuitability::Collection",
+        "EPalWorkSuitability::Deforest",
+        "EPalWorkSuitability::Mining",
+        "EPalWorkSuitability::OilExtraction",
+        "EPalWorkSuitability::ProductMedicine",
+        "EPalWorkSuitability::Cool",
+        "EPalWorkSuitability::Transport",
+        "EPalWorkSuitability::MonsterFarm",
+    ]
+
+    @staticmethod
+    def WorkSuitabilityStruct(WorkSuitability, Rank):
+        return {
+            "WorkSuitability": PalObjects.EnumProperty(
+                "EPalWorkSuitability", WorkSuitability
+            ),
+            "Rank": PalObjects.IntProperty(Rank),
+        }
+
+    StatusNames = [
+        "最大HP",
+        "最大SP",
+        "攻撃力",
+        "所持重量",
+        "捕獲率",
+        "作業速度",
+    ]
+
+    @staticmethod
+    def StatusPointStruct(name, point):
+        return {
+            "StatusName": PalObjects.NameProperty(name),
+            "StatusPoint": PalObjects.IntProperty(point),
+        }
+
+    @staticmethod
+    def PalSaveParameter(InstanceId, OwnerPlayerUId, ContainerId, SlotIndex, group_id):
+        return {
+            "key": {
+                "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
+                "InstanceId": PalObjects.Guid(InstanceId),
+                "DebugName": PalObjects.StrProperty(""),
+            },
+            "value": {
+                "RawData": PalObjects.ArrayProperty(
+                    "ByteProperty",
+                    {
+                        "object": {
+                            "SaveParameter": {
+                                "struct_type": "PalIndividualCharacterSaveParameter",
+                                "struct_id": PalObjects.EMPTY_UUID,
+                                "id": None,
+                                "value": {
+                                    "CharacterID": PalObjects.NameProperty("Sheepball"),
+                                    "Gender": PalObjects.EnumProperty(
+                                        "EPalGenderType", "EPalGenderType::Female"
+                                    ),
+                                    'NickName': PalObjects.StrProperty("!!!NEW PAL!!!"),
+                                    "EquipWaza": PalObjects.ArrayProperty(
+                                        "EnumProperty", {"values": []}
+                                    ),
+                                    "MasteredWaza": PalObjects.ArrayProperty(
+                                        "EnumProperty", {"values": []}
+                                    ),
+                                    "HP": PalObjects.FixedPoint64(545000),
+                                    "Talent_HP": PalObjects.IntProperty(50),
+                                    "Talent_Melee": PalObjects.IntProperty(50),
+                                    "Talent_Shot": PalObjects.IntProperty(50),
+                                    "Talent_Defense": PalObjects.IntProperty(50),
+                                    "FullStomach": PalObjects.FloatProperty(150),
+                                    "PassiveSkillList": PalObjects.ArrayProperty(
+                                        "NameProperty", {"values": []}
+                                    ),
+                                    "MP": PalObjects.FixedPoint64(100000),
+                                    "OwnedTime": PalObjects.DateTime(
+                                        638419931074290000
+                                    ),
+                                    "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
+                                    "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
+                                        "StructProperty",
+                                        {
+                                            "prop_name": "OldOwnerPlayerUIds",
+                                            "prop_type": "StructProperty",
+                                            # "values": [OwnerPlayerUId],
+                                            "values": [],
+                                            "type_name": "Guid",
+                                            "id": PalObjects.EMPTY_UUID,
+                                        },
+                                    ),
+                                    "MaxHP": PalObjects.FixedPoint64(545000),
+                                    "CraftSpeed": PalObjects.IntProperty(70),
+                                    "CraftSpeeds": PalObjects.ArrayProperty(
+                                        "StructProperty",
+                                        {
+                                            "prop_name": "CraftSpeeds",
+                                            "prop_type": "StructProperty",
+                                            "values": [
+                                                PalObjects.WorkSuitabilityStruct(
+                                                    work, 0
+                                                )
+                                                for work in PalObjects.EPalWorkSuitabilities
+                                            ],
+                                            "type_name": "PalWorkSuitabilityInfo",
+                                            "id": PalObjects.EMPTY_UUID,
+                                        },
+                                    ),
+                                    # "EquipItemContainerId": {
+                                    #     "struct_type": "PalContainerId",
+                                    #     "struct_id": PalObjects.EMPTY_UUID,
+                                    #     "id": None,
+                                    #     "value": {
+                                    #         "ID": {
+                                    #             "struct_type": "Guid",
+                                    #             "struct_id": PalObjects.EMPTY_UUID,
+                                    #             "id": None,
+                                    #             "value": "2ee46d97-4a5a-4e11-837c-276e4c6b9c7b",
+                                    #             "type": "StructProperty",
+                                    #         }
+                                    #     },
+                                    #     "type": "StructProperty",
+                                    # },
+                                    "SlotID": PalObjects.PalCharacterSlotId(
+                                        SlotIndex, ContainerId
+                                    ),
+                                    "MaxFullStomach": PalObjects.FloatProperty(150.0),
+                                    "GotStatusPointList": PalObjects.ArrayProperty(
+                                        "StructProperty",
+                                        {
+                                            "prop_name": "GotStatusPointList",
+                                            "prop_type": "StructProperty",
+                                            "values": [
+                                                PalObjects.StatusPointStruct(name, 0)
+                                                for name in PalObjects.StatusNames
+                                            ],
+                                            "type_name": "PalGotStatusPoint",
+                                            "id": PalObjects.EMPTY_UUID,
+                                        },
+                                    ),
+                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 0),
+                                },
+                                "type": "StructProperty",
+                            }
+                        },
+                        "unknown_bytes": (0, 0, 0, 0),
+                        "group_id": group_id,
+                    },
+                    ".worldSaveData.CharacterSaveParameterMap.Value.RawData",
+                )
+            },
         }

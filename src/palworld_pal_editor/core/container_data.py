@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, overload
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
 
@@ -24,12 +24,18 @@ class PalContainer:
 
     def __len__(self):
         return len(self.slots)
+    
+    def __str__(self) -> str:
+        return f"{self.ID} - {len(self)}"
 
     @property
     def ID(self) -> Optional[UUID]:
         return PalObjects.get_BaseType(self._container_obj.get("key", {}).get("ID"))
 
     def add_pal(self, pal_id: UUID | str) -> int:
+        if self.has_pal(pal_id):
+            return -1
+        
         slot_idx = self.get_empty_slot()
         if slot_idx == -1:
             return slot_idx
@@ -49,10 +55,16 @@ class PalContainer:
 
         self.slots[slot_idx].clear()
 
-    def has_pal(self, pal_id: UUID | str, slot_idx: int) -> bool:
-        if slot_idx >= len(self.slots):
-            return False
-        return self.slots[slot_idx].instance_id == pal_id
+    def has_pal(self, pal_id: UUID | str, slot_idx: int = None) -> bool:
+        if slot_idx is not None:
+            if slot_idx >= len(self.slots):
+                return False
+            return self.slots[slot_idx].instance_id == pal_id
+        
+        for slot in self.slots:
+            if str(slot.instance_id) == str(pal_id):
+                return True
+        return False
 
     def reorder_pals(self, pal_ids: list[UUID | str]):
         id_num = len(pal_ids)
@@ -77,6 +89,14 @@ class ContainerSlot:
     def __init__(self, slot_data: dict) -> None:
         self._slot_data: dict = slot_data
         self._slot_raw_data: dict = slot_data["RawData"]["value"]
+
+    # def __eq__(self, __value: object) -> bool:
+    #     if not isinstance(__value, ContainerSlot):
+    #         return False
+    #     return UUID.__eq__(self.instance_id, __value.instance_id)
+
+    # def __hash__(self) -> int:
+    #     return hash(str(self.instance_id))
 
     @property
     def isEmpty(self) -> bool:
@@ -110,6 +130,7 @@ class ContainerData:
                 continue
 
             self.container_map[container_entity.ID] = container_entity
+            LOGGER.info(f"Container Found: {container_entity}")
 
     def get_container(self, id: UUID | str) -> Optional[PalContainer]:
         return self.container_map.get(id)

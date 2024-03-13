@@ -234,6 +234,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SAVE_LOADED_FLAG = ref(false);
   const HAS_WORKING_PAL_FLAG = ref(false);
   const BASE_PAL_BTN_CLK_FLAG = ref(false);
+  const PAL_RESELECT_CTR = ref(0)
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -262,7 +263,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   let auth_token = "";
   const IS_LOCKED = ref(true);
 
-  async function get(api) {
+  async function GET(api) {
     try {
       const response = await axios.get(api, {
         headers: {
@@ -288,7 +289,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
   }
 
-  async function post(api, data) {
+  async function POST(api, data) {
     try {
       const response = await axios.post(api, data, {
         headers: { Authorization: "Bearer " + auth_token },
@@ -312,9 +313,33 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
   }
 
-  async function patch(api, data) {
+  async function PATCH(api, data) {
     try {
       const response = await axios.patch(api, data, {
+        headers: { Authorization: "Bearer " + auth_token },
+      });
+
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response.data);
+        return error.response.data;
+      } else if (error.request) {
+        alert(
+          `no response from the backend, make sure it is running, error: ${error.request}`
+        );
+        return false;
+      } else {
+        alert(`patch(): ${error.message}`);
+        return false;
+      }
+    }
+  }
+
+  async function DELETE(api) {
+    try {
+      const response = await axios.delete(api, {
         headers: { Authorization: "Bearer " + auth_token },
       });
 
@@ -340,7 +365,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await get("/api/auth/auth");
+    const response = await GET("/api/auth/auth");
     if (response === false) return;
 
     if (response.status == 0) {
@@ -359,7 +384,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await post("/api/auth/login", {
+    const response = await POST("/api/auth/login", {
       password: e.target.value,
     });
     if (response === false) return;
@@ -370,6 +395,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Wrong Password, Try Again.");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- login - Error occured: ${response.msg}`);
     }
@@ -381,7 +407,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await get("/api/save/fetch_config");
+    const response = await GET("/api/save/fetch_config");
     if (response === false) return;
 
     if (response.status == 0) {
@@ -396,6 +422,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert("- fetch_config - Error occured: ", response.msg);
     }
@@ -407,7 +434,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await patch("/api/save/i18n", { I18n: I18n.value });
+    const response = await PATCH("/api/save/i18n", { I18n: I18n.value });
     if (response === false) return;
 
     if (response.status == 0) {
@@ -423,6 +450,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- updateI18n - Error occured: ${response.msg}`);
     }
@@ -432,7 +460,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function fetchStaticData() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    const passive_skills_raw = await get("/api/save/passive_skills");
+    const passive_skills_raw = await GET("/api/save/passive_skills");
     if (passive_skills_raw === false) return;
 
     if (passive_skills_raw.status == 0) {
@@ -447,7 +475,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       );
     }
 
-    const active_skills_raw = await get("/api/save/active_skills");
+    const active_skills_raw = await GET("/api/save/active_skills");
     if (active_skills_raw === false) return;
 
     if (active_skills_raw.status == 0) {
@@ -462,7 +490,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       );
     }
 
-    const pal_data_raw = await get("/api/save/pal_data");
+    const pal_data_raw = await GET("/api/save/pal_data");
     if (pal_data_raw === false) return;
 
     if (pal_data_raw.status == 0) {
@@ -516,7 +544,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       } key=${key}, value=${value}`
     );
 
-    const response = await patch("/api/player/player_data", {
+    const response = await PATCH("/api/player/player_data", {
       key: key,
       value: value,
       PlayerUId: SELECTED_PLAYER_ID.value,
@@ -528,6 +556,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- updatePlayer - Error occured: ${response.msg}`);
     }
@@ -543,7 +572,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       return;
     }
 
-    const response = await post("/api/player/player_data", {
+    const response = await POST("/api/player/player_data", {
       PlayerUId: playerUId,
     });
     if (response === false) return;
@@ -562,6 +591,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- loadPlayer - Error occured: ${response.msg}`);
     }
@@ -573,7 +603,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await get("/api/player/players_data", {
+    const response = await GET("/api/player/players_data", {
       ReadPath: PAL_GAME_SAVE_PATH.value,
     });
     if (response === false) return;
@@ -595,6 +625,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- loadPlayers - Error occured: ${response.msg}`);
     }
@@ -610,7 +641,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     await updateI18n();
 
-    const response = await post("/api/save/load", {
+    const response = await POST("/api/save/load", {
       ReadPath: PAL_GAME_SAVE_PATH.value,
     });
     if (response === false) return;
@@ -627,6 +658,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- loadSave - Error occured: ${response.msg}`);
     }
@@ -636,7 +668,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function writeSave() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    const response = await post("/api/save/save", {
+    const response = await POST("/api/save/save", {
       WritePath: PAL_WRITE_BACK_PATH.value,
     });
     if (response === false) return;
@@ -648,6 +680,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- writeSave - Error occured: ${response.msg}`);
     }
@@ -657,7 +690,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function fetchPlayerPal(playerUId) {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    const response = await post("/api/player/player_pals", {
+    const response = await POST("/api/player/player_pals", {
       PlayerUId: playerUId,
     });
     if (response === false) return;
@@ -681,6 +714,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- fetchPlayerPal - Error occured: ${response.msg}`);
     }
@@ -730,7 +764,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await post("/api/pal/paldata", {
+    const response = await POST("/api/pal/paldata", {
       PlayerUId: player,
       InstanceId: pal,
     });
@@ -748,6 +782,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- fetchPlayerPal - Error occured: ${response.msg}`);
     }
@@ -814,7 +849,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       } key=${key}, value=${value}`
     );
 
-    const response = await patch("/api/pal/paldata", {
+    const response = await PATCH("/api/pal/paldata", {
       key: key,
       value: value,
       PlayerUId: GET_PAL_OWNER_API_ID(),
@@ -829,6 +864,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- updatePal - Error occured: ${response.msg}`);
     }
@@ -845,7 +881,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await post("/api/pal/dump_data", {
+    const response = await POST("/api/pal/dump_data", {
       PlayerUId: GET_PAL_OWNER_API_ID(),
       PalGuid: SELECTED_PAL_ID.value,
     });
@@ -860,8 +896,91 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
+      reset();
     } else {
       alert(`- updatePal - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function delPal() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await DELETE(`/api/pal/pal/${SELECTED_PAL_ID.value}`);
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      PAL_MAP.value.delete(SELECTED_PAL_DATA.value.InstanceId);
+      SELECTED_PAL_ID.value = null;
+      SELECTED_PAL_EL = null;
+      SELECTED_PAL_DATA.value = null;
+      PAL_RESELECT_CTR.value++;
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- delPal - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function addPal() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+    const PlayerUId = GET_PAL_OWNER_API_ID()
+    if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
+      alert("Adding pals to basecamp is unsupported!")
+      return
+    }
+    const response = await POST('/api/pal/add_pal', {
+      PlayerUId: PlayerUId
+    });
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      const pal_data = new PalData(response.data)
+      PAL_MAP.value.set(pal_data.InstanceId, pal_data)
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- delPal - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function dupePal() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+    const PlayerUId = GET_PAL_OWNER_API_ID()
+    if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
+      alert("Adding pals to basecamp is unsupported!")
+      return
+    }
+    const response = await POST('/api/pal/dupe_pal', {
+      PlayerUId: PlayerUId,
+      PalGuid: SELECTED_PAL_ID.value,
+    });
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      const pal_data = new PalData(response.data)
+      PAL_MAP.value.set(pal_data.InstanceId, pal_data)
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- delPal - Error occured: ${response.msg}`);
     }
 
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -913,6 +1032,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_DATA,
     LOADING_FLAG,
     SAVE_LOADED_FLAG,
+    PAL_RESELECT_CTR,
 
     IS_LOCKED,
     HAS_PASSWORD,
@@ -945,6 +1065,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     writeSave,
     fetch_config,
     dumpPalData,
+    delPal,
+    addPal,
+    dupePal,
 
     login,
     auth,

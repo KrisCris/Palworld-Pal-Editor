@@ -15,6 +15,9 @@ class PalBaseCamp:
             LOGGER.warning(str(self._camp_param))
             raise Exception("possible broken camp object")
         
+    def __str__(self) -> str:
+        return f"{self.id} - {self.name} - Owner Guild: {self.owner_group_id} - Container: {self.container_id}"
+        
     @property
     def id(self) -> Optional[UUID]:
         return self._camp_param.get("id")
@@ -26,6 +29,10 @@ class PalBaseCamp:
     @property
     def owner_group_id(self) -> Optional[UUID]:
         return self._camp_param.get('group_id_belong_to')
+    
+    @property
+    def container_id(self) -> Optional[UUID]:
+        return self._camp_param.get('container_id')
 
 class BaseCampData:
     def __init__(self, gvas_file: GvasFile) -> None:
@@ -44,6 +51,7 @@ class BaseCampData:
                 continue
 
             self.camp_map[str(camp_id)] = camp_entity
+            LOGGER.info(f"BaseCamp found: {camp_entity}")
 
     def get_camp(self, camp_id: UUID | str) -> Optional[PalBaseCamp]:
         self.camp_map.get(camp_id)
