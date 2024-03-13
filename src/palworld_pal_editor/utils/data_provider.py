@@ -35,7 +35,7 @@ PAL_XP_THRESHOLDS: list[int] = load_json("pal_xp_thresholds.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
-I18N_LIST = ["en", "zh-CN"]
+I18N_LIST = ["en", "zh-CN", "ja"]
 
 
 def none_guard(
