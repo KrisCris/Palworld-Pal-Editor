@@ -12,12 +12,16 @@ keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 readme = "README.md"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
-    "customtkinter==5.2.2",
     "setuptools==69.1.0",
     "palworld_save_tools==0.19.0",
-    "wheel==0.42.0"
+    "wheel==0.42.0",
+    "Flask==3.0.2",
+    "pyinstaller==6.4.0",
+    "waitress==3.0.0",
+    "Flask-JWT-Extended==4.6.0",
+    "pywebview==4.4.1"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

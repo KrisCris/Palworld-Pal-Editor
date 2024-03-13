@@ -154,15 +154,19 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## Contribution
 
-1. If you found a bug, or want a feature, please check [Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues) first.
-2. If you want to contribute code, please checkout the latest branch.
-3. Open a PR so everyone knows what you are going to contribute.
+1. If you found a bug, or are looking for a feature, please check [Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues) first.
+2. If you want to contribute code, please check out the latest branch.
+3. Open a PR so everyone knows what you are working on.
 
 ## Sponsor
 
 THANK YOU ❤️, BUT THIS IS YET TBD.
 
 ## Thanks
+
+- [Take-Me1010](https://github.com/Take-Me1010) for Japanese translation.
+
+---
 
 - Fast game save loading code by [MagicBear](https://github.com/magicbear).
 - Save conversion between GVAS and `.sav` by [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools).

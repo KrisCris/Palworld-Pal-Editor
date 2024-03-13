@@ -158,6 +158,10 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## 感谢
 
+- 感谢 [Take-Me1010](https://github.com/Take-Me1010) 的日语翻译。
+
+---
+
 - 感谢 [MagicBear](https://github.com/magicbear) 大大的超快速存档载入方法。
 - 感谢 [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools) 提供的存档解包工具。
 - 感谢 [MagicBear](https://github.com/magicbear) 大佬的 [Palworld-Server-Toolkit](https://github.com/magicbear/palworld-server-toolkit) 的启发。
