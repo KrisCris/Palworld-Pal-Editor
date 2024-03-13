@@ -23,3 +23,44 @@ save_data['UnlockedRecipeTechnologyNames'] # ArrayProperty NameProperty
 # Pal Container ID
 save_data['PalStorageContainerId'] # e96b5439-4fb8-444c-9a99-f9b5a5921f46
 ```
+
+
+
+
+
+# CharacterContainerSaveData
+
+```python
+container_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterContainerSaveData"]["value"]
+
+for container in container_list:
+    container_id = PalObjects.get_BaseType(container["key"]["ID"])
+    container_slots = container["Value"]["Slots"]["value"]["values"]
+    for slot in container_slots:
+        data = slot["RawData"]
+        if data["custom_type"] != ".worldSaveData.CharacterContainerSaveData.Value.Slots.Slots.RawData": return
+    	pal_InstanceID = data["value"]["instance_id"]
+        
+       
+        
+        
+        
+# find empty slot?
+def get_empty_slot(uuid):
+    container = self.container_map.get(uuid)
+    # todo
+```
+
+
+
+```python
+for container in container_data:
+    container_id = container["key"]["ID"]["value"]
+    LOGGER.info(f"Container: {container_id}")
+    container_slots = container["value"]["Slots"]["value"]["values"]
+    for slot in container_slots:
+        LOGGER.info(f"\t{str(slot["RawData"]["value"]["instance_id"])}")
+        
+# log all the container contents
+```
+

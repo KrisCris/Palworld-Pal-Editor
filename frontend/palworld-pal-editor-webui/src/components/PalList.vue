@@ -18,6 +18,18 @@ watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
     }
 })
 
+watch(async () => palStore.PAL_RESELECT_CTR, async () => {
+    await nextTick();
+    try {
+        const button = palListContainer.value.querySelector('button:not(:disabled)');
+        if (button) {
+            button.click();
+        }
+    } catch (error) {
+        return
+    }
+})
+
 onMounted(async () => {
     await nextTick();
     // TODO Note: this is just a temp fix for pal selection when pal list is refreshed by updatePlayer
@@ -33,7 +45,13 @@ onMounted(async () => {
 
 <template>
     <div class="flex">
-        <p>PAL LIST</p>
+        <div class="title">
+            <p>PAL LIST</p>
+            <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
+                :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">+</button>
+        </div>
+
         <div class="overflow-list" ref="palListContainer">
             <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
                 <button :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️' }]"
@@ -56,6 +74,15 @@ div.flex {
     height: var(--sub-height);
     padding-right: 0.3rem;
     /* scrollbar */
+}
+
+div.title {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: .5rem;
+    justify-content: space-between;
 }
 
 div.overflow-list {
@@ -145,5 +172,25 @@ button.pal.female:hover {
 
 button.pal.female:disabled {
     background-color: #5d0b32;
+}
+
+button.add_pal {
+    background-color: #3db15e;
+    /* padding: 0; */
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.2rem;
+    font-size: 1rem;
+}
+
+button.add_pal:hover {
+    background-color: #4b8d5e;
+    box-shadow: 2px 2px 10px rgb(38, 38, 38);
+    cursor: pointer;
+}
+
+button.add_pal:disabled {
+    background-color: #8a8a8a;
 }
 </style>

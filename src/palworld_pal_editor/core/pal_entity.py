@@ -5,7 +5,7 @@ from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
-from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value, get_nested_attr
+from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value, get_nested_attr, toUUID
 from palworld_pal_editor.utils.util import type_guard
 
 
@@ -58,6 +58,10 @@ class PalEntity:
     def InstanceId(self) -> Optional[UUID]:
         return get_attr_value(self._pal_key, "InstanceId")
     
+    @InstanceId.setter
+    def InstanceId(self, id: UUID | str):
+        self._pal_key["InstanceId"] = PalObjects.Guid(id)
+    
     @property
     def OwnerPlayerUId(self) -> Optional[UUID]:
         return get_attr_value(self._pal_param, "OwnerPlayerUId")
@@ -82,6 +86,10 @@ class PalEntity:
     @property
     def SlotID(self) -> Optional[tuple[UUID, int]]:
         return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotID"))
+    
+    @SlotID.setter
+    def SlotID(self, slot_id: tuple[UUID | str, int]):
+        self._pal_param['SlotID'] = PalObjects.PalCharacterSlotId(slot_id[1], slot_id[0])
     
     @property
     def ContainerId(self) -> Optional[UUID]:

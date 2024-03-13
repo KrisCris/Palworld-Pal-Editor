@@ -8,11 +8,12 @@ from palworld_pal_editor.core.pal_objects import PalObjects, get_attr_value
 
 
 class PlayerEntity:
-    def __init__(self, player_obj: dict, palbox: dict[str, PalEntity], gvas_file: GvasFile, compression_times: int) -> None:
+    def __init__(self, group_id: UUID | str, player_obj: dict, palbox: dict[str, PalEntity], gvas_file: GvasFile, compression_times: int) -> None:
         self._player_obj: dict = player_obj
         self._palbox: dict[str, PalEntity] = palbox
         self._gvas_file: GvasFile = gvas_file
         self._gvas_compression_times: int = compression_times
+        self.group_id = group_id
 
         if self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"]['struct_type'] != "PalIndividualCharacterSaveParameter":
             raise Exception(f"{self._player_obj}'s save param is not PalIndividualCharacterSaveParameter")
@@ -64,8 +65,12 @@ class PlayerEntity:
         return PalObjects.get_PalContainerId(self._player_save_data.get("OtomoCharacterContainerId"))
     
     @property
+    def PalStorageContainerId(self) -> Optional[UUID]:
+        return PalObjects.get_PalContainerId(self._player_save_data.get("PalStorageContainerId"))
+    
+    @property
     def OtomoOrder(self) -> Optional[str]:
-        # what this thing??
+        # what is this thing??
         return PalObjects.get_EnumProperty(self._player_save_data.get("OtomoOrder"))
     
     @property
@@ -111,6 +116,9 @@ class PlayerEntity:
     
     def get_pals(self) -> list[PalEntity]:
         return self._palbox.values()
+    
+    def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
+        return self._palbox.pop(guid, None)
     
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         guid = str(guid)
