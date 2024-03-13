@@ -30,7 +30,7 @@ class PalBaseCamp:
 class BaseCampData:
     def __init__(self, gvas_file: GvasFile) -> None:
         self.camp_map = {}
-        self._BCSD: list[dict] = gvas_file.properties["worldSaveData"]["value"]["BaseCampSaveData"]
+        self._BCSD: dict = gvas_file.properties["worldSaveData"]["value"]["BaseCampSaveData"]
 
         for camp in self._BCSD["value"]:
             camp_id: UUID = camp.get("key")

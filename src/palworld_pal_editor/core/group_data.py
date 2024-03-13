@@ -17,7 +17,7 @@ class PalGroup:
         self.player_map = {}
 
         for instance in self.individual_character_handle_ids or []:
-            self.instance_map[str(instance["instance_id"])] = self.instance_map
+            self.instance_map[str(instance["instance_id"])] = instance
 
         for player in self.players or []:
             self.player_map[str(player["player_uid"])] = player
@@ -84,7 +84,7 @@ class GroupData:
             self.group_map[str(group_id)] = group_entity
 
     def get_group(self, group_id: UUID | str) -> Optional[PalGroup]:
-        self.group_map.get(group_id)
+        return self.group_map.get(group_id)
 
     def get_groups(self) -> list[PalGroup]:
         return self.group_map.values()

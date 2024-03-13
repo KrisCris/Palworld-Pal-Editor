@@ -65,7 +65,7 @@ class PlayerEntity:
     
     @property
     def OtomoOrder(self) -> Optional[str]:
-        # what this thing??
+        # what is this thing??
         return PalObjects.get_EnumProperty(self._player_save_data.get("OtomoOrder"))
     
     @property

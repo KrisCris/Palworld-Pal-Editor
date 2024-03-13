@@ -9,9 +9,10 @@ from palworld_save_tools.archive import FArchiveReader, FArchiveWriter, UUID
 from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
-from palworld_pal_editor.core.base_camp_data import BaseCampData
 
-from palworld_pal_editor.core.pal_container import CharacterContainerManager
+from palworld_pal_editor.core.basecamp_data import BaseCampData
+
+from palworld_pal_editor.core.container_data import ContainerData
 
 from palworld_pal_editor.core.pal_objects import UUID2HexStr, get_attr_value, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
@@ -119,7 +120,7 @@ PLAYER_SKIP_PROPERTIES[".SaveData.inventoryInfo"] = (skip_decode, skip_encode)
 PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
 
 class SaveManager:
-    # Although these are class attrs, SaveManager itself is singleton.
+    # Although these are class attrs, SaveManager itself is singleton so it should be fine?
     _instance = None
     _file_path: Optional[Path]
     _raw_gvas: Optional[bytes]
@@ -131,7 +132,7 @@ class SaveManager:
     baseworker_mapping: Optional[dict[str, PalEntity]]
     _dangling_pals: Optional[dict[str, PalEntity]]
     
-    character_container: Optional[CharacterContainerManager]
+    container_data: Optional[ContainerData]
     group_data: Optional[GroupData]
     camp_data: Optional[BaseCampData]
 
@@ -150,7 +151,7 @@ class SaveManager:
     def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
         if guid is None: return
         # TODO Use str instead of UUID
-        # actually uuid and str works the same because both eq and hash using str
+        # actually uuid and str works the same because both eq and hash methods are using str
         guid = str(guid)
         if guid in self.player_mapping:
             player = self.player_mapping[guid]
@@ -292,14 +293,18 @@ class SaveManager:
             except Exception as e:
                 LOGGER.error(f"Error parsing base camp data: {e}")
                 return None
+            
+            try:
+                self.container_data = ContainerData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing container data: {e}")
+                return None
 
             try:
                 self.entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
             except Exception as e:
                 LOGGER.error(f"Unable to retrieve pal data: {e}")
                 return None
-            
-            # self.character_container = CharacterContainerManager(self.gvas_file.properties["worldSaveData"]["value"]["CharacterContainerSaveData"]["value"])
 
             self._load_entities()
 
