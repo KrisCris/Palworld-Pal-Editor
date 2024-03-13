@@ -49,6 +49,9 @@
 
 ## What This Tool Can Do
 
+- [x] Spawn Pal
+- [x] Duplicate Pal
+- [x] Delete Pal
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -148,7 +151,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 - [ ] Improve WebUI (I am bad at frontend dev, sorry! Contribution appreciated.)
 - [ ] Real GUI, or maybe just a Terminal GUI using [Textual](https://textualize.io/).
-- [ ] Add / Remove Pal (I mean, you can just catch a pal and set it to something else.)
 - [ ] Move Pal to Different Slots? Change owner? IDK...
 - [ ] More Stuff...
 
