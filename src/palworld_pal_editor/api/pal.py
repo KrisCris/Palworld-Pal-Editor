@@ -174,9 +174,9 @@ def dupe_pal():
     else:
         try:
             player = SaveManager().get_player(PlayerUId)
-            pal = copy.deepcopy(player.get_pal(PalGuid))
+            pal_obj = player.get_pal(PalGuid)._pal_obj
 
-            pal_entity = SaveManager().add_pal(PlayerUId, pal)
+            pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
             if not pal_entity:
                 return reply(1, None, f"Failed duping pal, likely your pal containers are full, check logs for detail.")
         except:

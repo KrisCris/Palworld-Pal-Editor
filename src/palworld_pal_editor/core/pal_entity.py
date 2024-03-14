@@ -52,8 +52,12 @@ class PalEntity:
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
-        # EMPTY UUID
+        # should be EMPTY UUID, but sometimes it's set to player uid in singleplayer game, weird
         return get_attr_value(self._pal_key, "PlayerUId")
+    
+    @PlayerUId.setter
+    def PlayerUId(self, id: UUID | str) -> Optional[UUID]:
+        self._pal_key["PlayerUId"] = PalObjects.Guid(id)
     
     @property
     def InstanceId(self) -> Optional[UUID]:
