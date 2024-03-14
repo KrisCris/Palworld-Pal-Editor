@@ -2,7 +2,7 @@ import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.config import PROGRAM_PATH, Config
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.api.util import reply
@@ -29,6 +29,8 @@ def load():
     path = request.json.get("ReadPath", None)
     path = path or Config.path
     if path and SaveManager().open(path):
+        Config.path = path
+        Config.save_to_file(PROGRAM_PATH / 'config.json')
         return reply(0)
     
     LOGGER.warning(f"Failed to load, check path: {path}")

@@ -71,4 +71,4 @@ def main():
     else:
         from waitress import serve
         LOGGER.info(f"LISTENING ON {host}:{Config.port}.")
-        serve(app, host=host, port=Config.port, threads=6)
+        serve(app, host=host, port=Config.port, threads=12)

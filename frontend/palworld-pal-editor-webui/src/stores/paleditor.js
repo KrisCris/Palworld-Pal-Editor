@@ -839,7 +839,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // if (!isElementInViewport(SELECTED_PAL_EL)) {
     //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
     // }
-
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
@@ -960,7 +959,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       // ADD_PAL_RESELECT_CTR.value++;
       if (nextNode) {
         SELECTED_PAL_ID.value = nextNode.key;
-        // SELECTED_PAL_DATA.value = nextNode.value;
       }
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");

@@ -49,7 +49,9 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
     try {
         const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
-            palStore.selectPal({target: button}, true)
+            if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
+                palStore.selectPal({target: button}, true)
+            }
             if (!palStore.isElementInViewport(button)) {
                 button.scrollIntoView({ behavior: "smooth" });
             }
