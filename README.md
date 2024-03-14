@@ -81,17 +81,16 @@
 
 ### A. Directly Run the Code
 
-1. Install Python 3.11+
+1. Install Python 3.11+ and node.js.
 2. Clone / Download the code
 3. In the project directory, run `setup_and_run.ps1` for Windows Powershell, or `setup_and_run.sh` on Unix-like OS.
 4. Optional Params:
-   - `--password yourPW` Login Auth, you may want this if you are running web mode.
-   - `--mode <gui | web | cli>` You can launch the program in either `gui`, `web` or `cli` mode.
-   - `--path /path/to/save/folder` Provide the path to the folder containing Level.sav.
-   - `--port 8080` Port for web mode.
-   - `--lang <zh-CN | en>` Currently supporting `zh-CN` and `en`. (Currrently hardcoded UI texts are English only.)
-   - `--i` for enable interactive mode, you may want to use with `cli` mode.
-5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
+   - `--password=yourPW` Login password, you may want this if you are running web mode.
+   - `--mode=< gui | web | cli >` You can launch the program in either `gui`, `web` or `cli` mode.
+   - `--path=/path/to/save/folder` Provide the path to the folder containing Level.sav.
+   - `--port=8080` Port for web mode.
+   - `--lang=< zh-CN | en >` Currently supporting `zh-CN`, `en`, and `ja`. (Hardcoded UI texts are English only.)
+5. In `cli` mode, You can change language by calling `lang($LANG_CODE)`.
 
 ### B. Use Pre-Built Binary
 
@@ -101,8 +100,8 @@
 ### C. Docker Container
 
 1. Clone the code.
-2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
-3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
+2. Copy `./docker/sample-docker-compose.yml` to `./docker/docker-compose.yml`, then do necessary modifications.
+3. Run `./build_and_run_docker.sh`, or just manually run the commands if you are using Windows.
 
 ### Config File
 
@@ -116,7 +115,6 @@ Default:
     "i18n": "en",
     "mode": "web",
     "port": 58080,
-    "debug": false,
     "path": null,
     "password": null,
     "JWT_SECRET_KEY": "X2Nvbm5sb3N0"
@@ -131,7 +129,6 @@ Custom:
     "i18n": "zh-CN",
     "mode": "gui",
     "port": 12345,
-    "debug": false,
     "path": "/path/to/save/folder",
     "password": "YOUR PASSWORD",
     "JWT_SECRET_KEY": "YOUR SECRETS"

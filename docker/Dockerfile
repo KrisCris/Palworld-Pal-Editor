@@ -11,7 +11,6 @@ FROM nikolaik/python-nodejs:python3.12-nodejs21-slim
 #     LANG=C.UTF-8 \
 #     PYTHONUNBUFFERED=1 \
 #     MODE=--cli \
-#     PY_INTERACTIVE_FLAG="--i" \
 #     SAVE_PATH="/mnt/gamesave" \
 #     PASSWORD=null
 

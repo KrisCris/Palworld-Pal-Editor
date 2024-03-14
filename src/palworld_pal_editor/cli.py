@@ -24,11 +24,11 @@ def main():
     banner_message = f"\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object."
 
     # interactive mode
-    if Config.debug or (getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')):
-        code.interact(banner=banner_message, local=globals())
-    else:
-        LOGGER.info(banner_message)
-        return globals()
+    # if Config.debug or (getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')):
+    code.interact(banner=banner_message, local=globals())
+    # else:
+    # LOGGER.info(banner_message)
+    # return globals()
 
 
 def list_player() -> list[PlayerEntity]:
