@@ -41,6 +41,7 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
       <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">💾 SAVE CHANGES</button>
       <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">🔄 Reload Save</button>
       <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">🏠 Return to Main Page</button>
+      <button class="op" @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG">👀 Toggle Unref'd Pal</button>
     </div>
     <div class="options">
       <p>🌐</p>

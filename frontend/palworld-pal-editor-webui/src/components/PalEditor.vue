@@ -6,13 +6,15 @@ const palStore = usePalEditorStore()
 </script>
 
 <template>
-  <div class="PalEditor">
+  <div :class="['PalEditor', { 'unref': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]">
     <div class="EditorItem item flex-v basicInfo">
       <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">Dump Data</button>
-      <button id="dupe_btn" @click="palStore.dupePal" :disabled="palStore.LOADING_FLAG">Dupe Pal</button>
+      <button id="dupe_btn" @click="palStore.dupePal" :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">Dupe Pal</button>
       <button id="del_btn" @click="palStore.delPal" :disabled="palStore.LOADING_FLAG">🗑️ Del Pal</button>
 
-      <img class="palIcon" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
+      <img :class="['palIcon']" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
+      <p v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">THIS PAL IS LIKELY UNREFERENCED IN GAME</p>
+
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
         <div class="editField">
@@ -51,10 +53,12 @@ const palStore = usePalEditorStore()
 
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
             <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Gender"
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
               :disabled="palStore.LOADING_FLAG">🔽</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Gender"
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
               :disabled="palStore.LOADING_FLAG">🔼</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
+            :disabled="palStore.LOADING_FLAG">🔝</button>
           </div>
         </div>
         <p class="const">🆔 Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
@@ -237,6 +241,10 @@ const palStore = usePalEditorStore()
   gap: .5rem;
 }
 
+.PalEditor.unref {
+  filter: grayscale(100%);
+}
+
 .EditorItem {
   display: flex;
   flex-shrink: 0;
@@ -254,7 +262,7 @@ const palStore = usePalEditorStore()
 div.basicInfo {
   position: relative;
   max-width: calc(var(--editor-panel-width) - 380px);
-  min-width: 490px;
+  min-width: 600px;
 }
 
 div.palInfo {
@@ -330,6 +338,10 @@ img.palIcon {
   border-radius: 50%;
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
   margin-bottom: 1rem;
+}
+
+img.palIcon.unref {
+  filter: grayscale(100%);
 }
 
 div.editField {

@@ -19,7 +19,7 @@ onMounted(async () => {
       <button class="playerSettings" v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).hasViewingCage"
         :title="`Unlock Viewing Cage for ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
         :disabled="palStore.LOADING_FLAG"
-        @click="palStore.updatePlayer" name="unlock_viewing_cage">🪟</button>
+        @click="palStore.updatePlayer" name="unlock_viewing_cage">🧊</button>
     </div>
     <div class="overflow-list" ref="playerListContainer">
       <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">

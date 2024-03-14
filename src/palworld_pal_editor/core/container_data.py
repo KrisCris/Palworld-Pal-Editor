@@ -60,11 +60,11 @@ class PalContainer:
             if slot_idx >= len(self.slots):
                 return False
             return self.slots[slot_idx].instance_id == pal_id
-        
-        for slot in self.slots:
-            if str(slot.instance_id) == str(pal_id):
-                return True
-        return False
+        else:
+            for slot in self.slots:
+                if str(slot.instance_id) == str(pal_id):
+                    return True
+            return False
 
     def reorder_pals(self, pal_ids: list[UUID | str]):
         id_num = len(pal_ids)

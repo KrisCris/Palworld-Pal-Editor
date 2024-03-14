@@ -219,6 +219,12 @@ class SaveManager:
                     LOGGER.info(f"Found player: {player_entity}")
                 else:
                     pal_entity = PalEntity(entity)
+                    container_id, slot_idx = pal_entity.SlotID
+                    group_id = pal_entity.group_id
+                    is_unref_pal = not self.group_data.get_group(group_id).has_pal(pal_entity.InstanceId)
+                    is_unref_pal = is_unref_pal or not self.container_data.get_container(container_id).has_pal(pal_entity.InstanceId, slot_idx)
+                    pal_entity.is_unreferenced_pal = is_unref_pal
+
                     owner = pal_entity.OwnerPlayerUId
                     if owner:
                         owner_str = str(owner)

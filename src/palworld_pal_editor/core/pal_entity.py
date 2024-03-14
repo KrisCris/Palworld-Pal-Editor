@@ -31,6 +31,7 @@ class PalEntity:
         # self._isBoss_cache = {}
         # self._raw_specie_key_cache = {}
         # self._data_access_key_cache = {}
+        self.is_unreferenced_pal = False
 
     def __str__(self) -> str:
         return "{} - {} - {}".format(self.DisplayName, self.OwnerName, self.InstanceId)
@@ -819,6 +820,8 @@ class PalEntity:
         #         self.pop_MasteredWaza(atk)
                 
     def remove_all_attacks(self):
+        if self.MasteredWaza is None:
+            return
         atks = self.MasteredWaza.copy()
         if not atks: return
         for atk in atks:

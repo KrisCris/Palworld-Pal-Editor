@@ -49,6 +49,7 @@ def get_player_pals():
         # "Talent_Melee": pal.Talent_Melee or 0,
         # "Talent_Shot": pal.Talent_Shot or 0,
         # "Talent_Defense": pal.Talent_Defense or 0,
+        "Is_Unref_Pal": pal.is_unreferenced_pal,
     } for pal in pals])
 
 @player_blueprint.route("/players_data", methods=["GET"])

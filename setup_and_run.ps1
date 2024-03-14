@@ -60,4 +60,4 @@ pip install -r requirements.txt
 pip install -e .
 
 # Run your package in interactive mode
-python -m palworld_pal_editor --mode=gui --lang=en
+python -m palworld_pal_editor $args

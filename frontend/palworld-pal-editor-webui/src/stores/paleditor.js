@@ -56,6 +56,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.HasTowerVariant = obj.HasTowerVariant;
       this.IsPal = obj.IsPal;
       this.IsHuman = obj.IsHuman;
+      this.Is_Unref_Pal = obj.Is_Unref_Pal;
     }
 
     displaySpecialType() {
@@ -96,6 +97,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         this.Level += 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
+    }
+
+    maxLevel() {
+      this.Level = 50;
+      updatePal({ target: { name: "Level", value: this.Level } });
     }
 
     displayGender() {
@@ -227,7 +233,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const I18nList = ref({
     en: "English",
     "zh-CN": "中文",
-    "ja": "日本語"
+    ja: "日本語",
   });
 
   // flags
@@ -235,7 +241,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SAVE_LOADED_FLAG = ref(false);
   const HAS_WORKING_PAL_FLAG = ref(false);
   const BASE_PAL_BTN_CLK_FLAG = ref(false);
-  const PAL_RESELECT_CTR = ref(0)
+  const PAL_RESELECT_CTR = ref(0);
+  const SHOW_UNREF_PAL_FLAG = ref(false);
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -933,20 +940,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function addPal() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    const PlayerUId = GET_PAL_OWNER_API_ID()
+    const PlayerUId = GET_PAL_OWNER_API_ID();
     if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-      alert("Adding pals to basecamp is unsupported!")
-      return
+      alert("Adding pals to basecamp is unsupported!");
+      return;
     }
-    const response = await POST('/api/pal/add_pal', {
-      PlayerUId: PlayerUId
+    const response = await POST("/api/pal/add_pal", {
+      PlayerUId: PlayerUId,
     });
 
     if (response === false) return;
 
     if (response.status == 0) {
-      const pal_data = new PalData(response.data)
-      PAL_MAP.value.set(pal_data.InstanceId, pal_data)
+      const pal_data = new PalData(response.data);
+      PAL_MAP.value.set(pal_data.InstanceId, pal_data);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -961,12 +968,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   async function dupePal() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
-    const PlayerUId = GET_PAL_OWNER_API_ID()
+    const PlayerUId = GET_PAL_OWNER_API_ID();
     if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-      alert("Adding pals to basecamp is unsupported!")
-      return
+      alert("Adding pals to basecamp is unsupported!");
+      return;
     }
-    const response = await POST('/api/pal/dupe_pal', {
+    const response = await POST("/api/pal/dupe_pal", {
       PlayerUId: PlayerUId,
       PalGuid: SELECTED_PAL_ID.value,
     });
@@ -974,8 +981,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response === false) return;
 
     if (response.status == 0) {
-      const pal_data = new PalData(response.data)
-      PAL_MAP.value.set(pal_data.InstanceId, pal_data)
+      const pal_data = new PalData(response.data);
+      PAL_MAP.value.set(pal_data.InstanceId, pal_data);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -1034,6 +1041,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     LOADING_FLAG,
     SAVE_LOADED_FLAG,
     PAL_RESELECT_CTR,
+    SHOW_UNREF_PAL_FLAG,
 
     IS_LOCKED,
     HAS_PASSWORD,

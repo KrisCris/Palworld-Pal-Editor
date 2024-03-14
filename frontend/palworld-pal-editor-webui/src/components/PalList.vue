@@ -54,10 +54,11 @@ onMounted(async () => {
 
         <div class="overflow-list" ref="palListContainer">
             <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
-                <button :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️' }]"
+                <button :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal}]"
                     :value="pal.InstanceId" @click="palStore.selectPal"
-                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
-                    <img class="palIcon" :src="`/image/pals/${pal.IconAccessKey}`">
+                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
+                    v-if="!pal.Is_Unref_Pal || palStore.SHOW_UNREF_PAL_FLAG">
+                    <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
                     {{ pal.DisplayName }}
                 </button>
             </div>
@@ -172,6 +173,18 @@ button.pal.female:hover {
 
 button.pal.female:disabled {
     background-color: #5d0b32;
+}
+
+button.unref {
+    filter: grayscale(100%);
+}
+
+button.unref:hover {
+    background-color: #5e5e5e !important;
+}
+
+button.unref:disabled {
+    background-color: #5e5e5e !important;
 }
 
 button.add_pal {
