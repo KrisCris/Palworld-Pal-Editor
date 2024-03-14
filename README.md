@@ -12,13 +12,15 @@
 <img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
 </p>
 
+## Supported Language
+
+- **English** | **日本語** | **简体中文**
+
 ## What is this?
 
 ### A Palworld Pal Editor developed by _connlost with ❤️
 
  ~~(yeah i am just too lazy to change github username)~~
-
-***I've only tested this tool on my save, it may not work properly for you.***
 
 ***Always backup your save in case corruption happens. (The tool does backup files for you.)***
 
@@ -29,13 +31,14 @@
 ---
 
 - [Palworld Pal Editor](#palworld-pal-editor)
+  - [Supported Language](#supported-language)
   - [What is this?](#what-is-this)
     - [A Palworld Pal Editor developed by \_connlost with ❤️](#a-palworld-pal-editor-developed-by-_connlost-with-️)
   - [What This Tool Can Do](#what-this-tool-can-do)
   - [Usage](#usage)
-    - [1. Directly Run the Code](#1-directly-run-the-code)
-    - [2. Use Pre-Built Binary](#2-use-pre-built-binary)
-    - [3. Docker Container](#3-docker-container)
+    - [A. Directly Run the Code](#a-directly-run-the-code)
+    - [B. Use Pre-Built Binary](#b-use-pre-built-binary)
+    - [C. Docker Container](#c-docker-container)
     - [Config File](#config-file)
       - [Note: Command Line Arguments Override Config](#note-command-line-arguments-override-config)
   - [Videos](#videos)
@@ -52,6 +55,7 @@
 - [x] Spawn Pal
 - [x] Duplicate Pal
 - [x] Delete Pal
+- [x] Highlight (so you can delete them) / hide pals that are not displayed in game.
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -73,7 +77,9 @@
 
 ## Usage
 
-### 1. Directly Run the Code
+**NOTE: YOU CAN ALWAYS RUN THE EDITOR IN A WEB BROWER, IN CASE THE GUI ISN'T WORKING FOR YOU.**
+
+### A. Directly Run the Code
 
 1. Install Python 3.11+
 2. Clone / Download the code
@@ -87,12 +93,12 @@
    - `--i` for enable interactive mode, you may want to use with `cli` mode.
 5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
 
-### 2. Use Pre-Built Binary
+### B. Use Pre-Built Binary
 
 1. Download from GitHub Release Page, may not be bundled with the latest code.
 2. Also support command line arguments mentioned above.
 
-### 3. Docker Container
+### C. Docker Container
 
 1. Clone the code.
 2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
