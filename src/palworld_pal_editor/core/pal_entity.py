@@ -113,7 +113,8 @@ class PalEntity:
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
     def CharacterID(self, value: str) -> None:
-        # TODO Need to test if SheepBall and Sheepball are identical
+        og_specie = self._RawSpecieKey
+
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
         else:
@@ -131,8 +132,11 @@ class PalEntity:
         elif not self.Gender and self.IsPal:
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
-        
-        self.remove_all_attacks()
+
+        new_specie = self._RawSpecieKey
+        if new_specie != og_specie:
+            self.remove_unique_attacks()
+
         self.learn_attacks()
         self.heal_pal()
         self.clear_worker_sick()
@@ -823,13 +827,14 @@ class PalEntity:
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
                 
-    def remove_all_attacks(self):
+    def remove_unique_attacks(self):
         if self.MasteredWaza is None:
             return
         atks = self.MasteredWaza.copy()
         if not atks: return
         for atk in atks:
-            self.pop_MasteredWaza(item=atk)
+            if DataProvider.is_unique_attacks(atk):
+                self.pop_MasteredWaza(item=atk)
 
     @LOGGER.change_logger("WorkerSick")
     def clear_worker_sick(self):
