@@ -50,7 +50,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
         const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
             if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
-                palStore.selectPal({target: button}, true)
+                palStore.selectPal({ target: button }, true)
             }
             if (!palStore.isElementInViewport(button)) {
                 button.scrollIntoView({ behavior: "smooth" });
@@ -73,10 +73,29 @@ onMounted(async () => {
 });
 
 function get_filtered_pal_list() {
+    console.log("FILTER")
+    let list = Array.from(palStore.PAL_MAP.values())
+
     if (!palStore.SHOW_UNREF_PAL_FLAG) {
-        return Array.from(palStore.PAL_MAP.values()).filter(pal => !pal.Is_Unref_Pal)
+        list = list.filter(pal => !pal.Is_Unref_Pal)
+    } else {
+        list = list.filter(pal => pal.Is_Unref_Pal)
     }
-    return palStore.PAL_MAP.values()
+
+    const player = palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)
+    if (player) {
+        if (!palStore.SHOW_VIEWING_CAGE_PAL_FLAG) {
+            list = list.filter(pal => {
+                return pal.ContainerId == player.OtomoCharacterContainerId || pal.ContainerId == player.PalStorageContainerId
+            })
+        } else {
+            list = list.filter(pal => {
+                return pal.ContainerId != player.OtomoCharacterContainerId && pal.ContainerId != player.PalStorageContainerId
+            })
+        }
+    }
+
+    return list
 }
 
 </script>

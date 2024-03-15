@@ -8,6 +8,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.id = obj.id;
       this.name = obj.name;
       this.hasViewingCage = obj.hasViewingCage;
+      this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId
+      this.PalStorageContainerId = obj.PalStorageContainerId
       this.pals = new Map();
     }
   }
@@ -245,6 +247,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   // const DEL_PAL_RESELECT_CTR = ref(0)
   const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
+  const SHOW_VIEWING_CAGE_PAL_FLAG = ref(false);
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -1096,6 +1099,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // ADD_PAL_RESELECT_CTR,
     UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
+    SHOW_VIEWING_CAGE_PAL_FLAG,
 
     IS_LOCKED,
     HAS_PASSWORD,
