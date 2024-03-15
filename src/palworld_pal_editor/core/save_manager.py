@@ -326,6 +326,33 @@ class SaveManager:
             LOGGER.info("Done")
         return self.gvas_file
     
+    def move_pal(self, pal_id: UUID | str, target_container_ids: list[UUID | str]) -> bool:
+        pal_entity = self.get_pal(pal_id)
+        if not pal_entity: raise Exception("Pal Not Found") 
+
+        pal_container = None
+        for id in target_container_ids:
+            if container := self.container_data.get_container(id):
+                if container.get_empty_slot() != -1:
+                    pal_container = container
+                    break
+
+        if pal_container is None:
+            LOGGER.info("No Empty Pal Slot")
+            return False
+
+        if pal_container.has_pal(pal_id):
+            raise Exception("Pal already in the target container.")
+        
+        old_container = self.container_data.get_container(pal_entity.ContainerId)
+        old_container.del_pal(pal_id, pal_entity.SlotIndex)
+
+        if (slot_idx := pal_container.add_pal(pal_id)) == -1:
+            return False
+
+        pal_entity.SlotID = (pal_container.ID, slot_idx)
+        return True
+    
     def delete_pal(self, guid: str | UUID) -> bool:
         popped_pal = None
         if guid in self.baseworker_mapping:

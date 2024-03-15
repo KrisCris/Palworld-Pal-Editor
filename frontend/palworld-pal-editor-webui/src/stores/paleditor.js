@@ -59,6 +59,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.IsPal = obj.IsPal;
       this.IsHuman = obj.IsHuman;
       this.Is_Unref_Pal = obj.Is_Unref_Pal;
+      this.in_owner_palbox = obj.in_owner_palbox;
     }
 
     displaySpecialType() {
@@ -247,7 +248,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   // const DEL_PAL_RESELECT_CTR = ref(0)
   const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
-  const SHOW_VIEWING_CAGE_PAL_FLAG = ref(false);
+  const SHOW_OOB_PAL_FLAG = ref(true);
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -926,6 +927,24 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
+  function isFilteredPal(pal) {
+    if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
+      return true
+    }
+    if (SHOW_UNREF_PAL_FLAG.value && !pal.Is_Unref_Pal) {
+      return true
+    }
+
+    // if (SHOW_OOB_PAL_FLAG.value && pal.in_owner_palbox) {
+    //   return true
+    // }
+
+    if (!SHOW_OOB_PAL_FLAG.value && !pal.in_owner_palbox) {
+      return true
+    }
+    return false
+  }
+
   function getNextElement(map, currKey) {
     let found = false;
     let firstElement = null;
@@ -933,9 +952,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     for (let [key, value] of map) {
       if (isFirstElement) {
         firstElement = { key, value }; // Store the first element
-        isFirstElement = false;
+        isFirstElement = false || isFilteredPal(value);
       }
       if (found) {
+        if (isFilteredPal(value)) continue;
         return { key, value };
       }
       if (key == currKey) {
@@ -1099,7 +1119,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // ADD_PAL_RESELECT_CTR,
     UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
-    SHOW_VIEWING_CAGE_PAL_FLAG,
+    SHOW_OOB_PAL_FLAG,
 
     IS_LOCKED,
     HAS_PASSWORD,
@@ -1118,6 +1138,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     ACTIVE_SKILLS_LIST,
 
     isElementInViewport,
+    isFilteredPal,
 
     displayPalElement,
     displayElement,

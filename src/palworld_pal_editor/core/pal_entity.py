@@ -27,6 +27,7 @@ class PalEntity:
         
         self._derived_hp_scaling = self._derive_hp_scaling()
         self._display_name_cache = {}
+        self.owner_player_entity = None
         ## TODO
         # self._isBoss_cache = {}
         # self._raw_specie_key_cache = {}
@@ -42,6 +43,18 @@ class PalEntity:
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
     
+    def set_owner_player_entity(self, player):
+        self.owner_player_entity = player
+
+    @property
+    def in_owner_palbox(self) -> bool:
+        # base pal, no owner
+        if not self.owner_player_entity: return True
+        if  self.ContainerId == self.owner_player_entity.OtomoCharacterContainerId or \
+            self.ContainerId == self.owner_player_entity.PalStorageContainerId:
+            return True
+        return False
+
     @property
     def group_id(self) -> Optional[UUID]:
         return get_nested_attr(self._pal_obj, ['value', 'RawData', 'value', 'group_id'])

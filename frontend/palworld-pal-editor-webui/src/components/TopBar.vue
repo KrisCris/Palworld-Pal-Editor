@@ -41,7 +41,7 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
       <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">💾 SAVE CHANGES</button>
       <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">🔄 Reload Save</button>
       <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">🏠 Return to Main Page</button>
-      <button :class="['op', {'toggled': palStore.SHOW_VIEWING_CAGE_PAL_FLAG}]" @click="palStore.SHOW_VIEWING_CAGE_PAL_FLAG = !palStore.SHOW_VIEWING_CAGE_PAL_FLAG" :disabled="palStore.LOADING_FLAG">🧊 Toggle Viewing Cage Pal</button>
+      <button :class="['op', {'toggled': palStore.SHOW_OOB_PAL_FLAG}]" @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG" title="Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by somebody.">🧊 Show Out of Box Pal</button>
       <button :class="['op', {'toggled': palStore.SHOW_UNREF_PAL_FLAG}]" @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG">👀 Toggle Unref'd Pal</button>
     </div>
     <div class="options">

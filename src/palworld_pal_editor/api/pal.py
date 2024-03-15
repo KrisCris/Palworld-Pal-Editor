@@ -38,6 +38,12 @@ def patch_paldata():
             case "add_EquipWaza": 
                 if not pal_entity.add_EquipWaza(value):
                     return reply(1, None, f"Too many skills, or skill {value} already exists!")
+            case "in_owner_palbox":
+                if PlayerUId == "PAL_BASE_WORKER_BTN":
+                    return reply(1, None, f"Moving pal to basecamp is unsupported.")
+                player = SaveManager().get_player(PlayerUId)
+                if not SaveManager().move_pal(pal_entity.InstanceId, [player.OtomoCharacterContainerId, player.PalStorageContainerId]):
+                    return reply(1, None, f"No enough slot in pal container.")
             case _:
                 if isinstance(err:=setattr(pal_entity, key, value), TypeError):
                     return reply(1, None, f"Error in patch_paldata {err}")
@@ -116,6 +122,7 @@ def _pal_data(pal: PalEntity):
         "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
         "SlotIndex": pal.SlotIndex,
         "Is_Unref_Pal": pal.is_unreferenced_pal,
+        "in_owner_palbox": pal.in_owner_palbox,
     }
 
 @pal_blueprint.route("/dump_data", methods=["POST"])

@@ -74,28 +74,7 @@ onMounted(async () => {
 
 function get_filtered_pal_list() {
     console.log("FILTER")
-    let list = Array.from(palStore.PAL_MAP.values())
-
-    if (!palStore.SHOW_UNREF_PAL_FLAG) {
-        list = list.filter(pal => !pal.Is_Unref_Pal)
-    } else {
-        list = list.filter(pal => pal.Is_Unref_Pal)
-    }
-
-    const player = palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)
-    if (player) {
-        if (!palStore.SHOW_VIEWING_CAGE_PAL_FLAG) {
-            list = list.filter(pal => {
-                return pal.ContainerId == player.OtomoCharacterContainerId || pal.ContainerId == player.PalStorageContainerId
-            })
-        } else {
-            list = list.filter(pal => {
-                return pal.ContainerId != player.OtomoCharacterContainerId && pal.ContainerId != player.PalStorageContainerId
-            })
-        }
-    }
-
-    return list
+    return Array.from(palStore.PAL_MAP.values()).filter(pal => !palStore.isFilteredPal(pal))
 }
 
 </script>
@@ -112,7 +91,7 @@ function get_filtered_pal_list() {
         <div class="overflow-list" ref="palListContainer">
             <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
                 <button
-                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal }]"
+                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox}]"
                     :value="pal.InstanceId" @click="palStore.selectPal"
                     :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
                     <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
@@ -242,6 +221,10 @@ button.unref:hover {
 
 button.unref:disabled {
     background-color: #5e5e5e !important;
+}
+
+button.out_of_container {
+    color: #3db15e;
 }
 
 button.add_pal {

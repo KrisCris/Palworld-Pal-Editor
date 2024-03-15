@@ -54,7 +54,7 @@ def get_player_pals():
                 # "Talent_Shot": pal.Talent_Shot or 0,
                 # "Talent_Defense": pal.Talent_Defense or 0,
                 "Is_Unref_Pal": pal.is_unreferenced_pal,
-                "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
+                "in_owner_palbox": pal.in_owner_palbox,
             }
             for pal in pals
         ],
