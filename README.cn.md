@@ -47,6 +47,7 @@
 - [x] 生成帕鲁
 - [x] 复制帕鲁
 - [x] 删除帕鲁
+- [x] 显示 / 隐藏 不在玩家帕鲁栏位中的帕鲁
 - [x] 显示 / 隐藏 无用的帕鲁数据
 - [x] 列出玩家和帕鲁
 - [x] 查看帕鲁数据
@@ -154,7 +155,9 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## 赞助
 
-感谢你看到这里，但是暂未决定。
+[ko-fi ❤️](https://ko-fi.com/connlost)
+
+<img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
 
 ## 感谢
 

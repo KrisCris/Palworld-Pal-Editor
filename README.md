@@ -55,7 +55,8 @@
 - [x] Spawn Pal
 - [x] Duplicate Pal
 - [x] Delete Pal
-- [x] Highlight (so you can delete them) / hide pals that are not displayed in game.
+- [x] Show / hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other player, prior palworld v0.1.5))
+- [x] Show (so you can delete them) / hide pals that are not displayed in game.
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -165,7 +166,7 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## Sponsor
 
-THANK YOU ❤️, BUT THIS IS YET TBD.
+[ko-fi ❤️](https://ko-fi.com/connlost)
 
 ## Thanks
 
