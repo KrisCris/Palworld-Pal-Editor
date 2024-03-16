@@ -47,6 +47,8 @@
 - [x] 生成帕鲁
 - [x] 复制帕鲁
 - [x] 删除帕鲁
+- [x] 显示 / 隐藏 不在玩家帕鲁栏位中的帕鲁
+- [x] 显示 / 隐藏 无用的帕鲁数据
 - [x] 列出玩家和帕鲁
 - [x] 查看帕鲁数据
 - [x] 改变帕鲁性别
@@ -69,16 +71,15 @@
 
 ### 1. 直接运行代码
 
-1. 安装 Python 3.11+
+1. 安装 Python 3.11+ 和 node.js
 2. 克隆 / 下载项目代码
 3. 在项目文件夹里运行，Windows：`setup_and_run.ps1`， Unix-like系统：`setup_and_run.sh`.
 4. 可选命令行参数:
-   - `--password yourPW` 认证密码.
-   - `--mode <gui | web | cli>` 运行模式，可选：`gui`, `web` 或 `cli`.
-   - `--path /path/to/save/folder` 存档文件夹的路径（包含Level.sav的那个文件夹）.
-   - `--port 8080` 网页模式的端口.
-   - `--lang <zh-CN | en>` 语言，目前支持 `zh-CN` 和 `en`. (目前页面上的文字是英文的，只有帕鲁，技能之类的是有翻译的。)
-   - `--i` 模拟py的可交互模式，近在 `cli` 模式使用.
+   - `--password=yourPW` WebUI 认证密码.
+   - `--mode=<gui | web | cli>` 运行模式，可选：`gui`, `web` 或 `cli`.
+   - `--path=/path/to/save/folder` 存档文件夹的路径（包含Level.sav的那个文件夹）.
+   - `--port=8080` 网页模式的端口.
+   - `--lang=<zh-CN | en>` 语言，目前支持 `zh-CN` 和 `en`. (目前页面上的文字是英文的，只有帕鲁，技能之类的是有翻译的。)
 5. 在 `cli` 模式下，你可以调用 `lang($LANG_CODE)` 函数来切换语言.
 
 ### 2. 打包的可执行文件
@@ -89,8 +90,8 @@
 ### 3. Docker Container
 
 1. 克隆项目.
-2. 编辑 `./docker/docker-compose.yml`（网络不佳的用户建议传入代理环境变量）。
-3. 运行 `./build_and_run_docker.sh` 以构建容器，如果 `docker-compose` 命令不可用的话，可以换 `docker compose` 试试。（Windows的话你把里面的命令复制出来手动跑就行了）。
+2. 复制 `./docker/sample-docker-compose.yml` 到 `./docker/docker-compose.yml`, 并根据需求做适当修改（网络不佳的用户建议传入代理环境变量）。
+3. 运行 `./build_and_run_docker.sh` 以构建容器并运行容器。（Windows的话你把里面的命令复制出来手动跑就行了）。
 
 ### 配置文件
 
@@ -104,7 +105,6 @@
     "i18n": "en",
     "mode": "web",
     "port": 58080,
-    "debug": false,
     "path": null,
     "password": null,
     "JWT_SECRET_KEY": "X2Nvbm5sb3N0"
@@ -119,7 +119,6 @@
     "i18n": "zh-CN",
     "mode": "gui",
     "port": 12345,
-    "debug": false,
     "path": "/path/to/save/folder",
     "password": "YOUR PASSWORD",
     "JWT_SECRET_KEY": "YOUR SECRETS"
@@ -145,7 +144,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 - [ ] 改进网页端（一开始是打算做桌面端程序的，但想着dockerfile都写了，就临时改主意搓了一个。我这坨屎山vue实在是写的太乱了qwq）。
 - [ ] 桌面端, 或者干脆用 [Textual](https://textualize.io/) 做一个控制台UI， XD。
-- [ ] 添加删除帕鲁 （目前你可以抓棉悠悠改成别的（x）。。暂时还没研究怎么加。。）
 - [ ] 移动帕鲁存储栏位？或者修改主人？ idk
 - [ ] More Stuff...
 
@@ -157,7 +155,9 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## 赞助
 
-感谢你看到这里，但是暂未决定。
+[ko-fi ❤️](https://ko-fi.com/connlost)
+
+<img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
 
 ## 感谢
 

@@ -326,6 +326,33 @@ class SaveManager:
             LOGGER.info("Done")
         return self.gvas_file
     
+    def move_pal(self, pal_id: UUID | str, target_container_ids: list[UUID | str]) -> bool:
+        pal_entity = self.get_pal(pal_id)
+        if not pal_entity: raise Exception("Pal Not Found") 
+
+        pal_container = None
+        for id in target_container_ids:
+            if container := self.container_data.get_container(id):
+                if container.get_empty_slot() != -1:
+                    pal_container = container
+                    break
+
+        if pal_container is None:
+            LOGGER.info("No Empty Pal Slot")
+            return False
+
+        if pal_container.has_pal(pal_id):
+            raise Exception("Pal already in the target container.")
+        
+        old_container = self.container_data.get_container(pal_entity.ContainerId)
+        old_container.del_pal(pal_id, pal_entity.SlotIndex)
+
+        if (slot_idx := pal_container.add_pal(pal_id)) == -1:
+            return False
+
+        pal_entity.SlotID = (pal_container.ID, slot_idx)
+        return True
+    
     def delete_pal(self, guid: str | UUID) -> bool:
         popped_pal = None
         if guid in self.baseworker_mapping:
@@ -351,7 +378,7 @@ class SaveManager:
         LOGGER.info(f"DELETED PAL {guid}")
         return True
     
-    def add_pal(self, player_uid: str | UUID, pal: PalEntity = None) -> Optional[PalEntity]:
+    def add_pal(self, player_uid: str | UUID, pal_obj: dict = None) -> Optional[PalEntity]:
         player = self.get_player(player_uid)
         if player is None:
             LOGGER.warning(f"Player {player_uid} not found")
@@ -382,16 +409,20 @@ class SaveManager:
             container_id = pal_container.ID
             group.add_pal(pal_instanceId)
             
-            if not pal:
+            if not pal_obj:
                 pal_obj = PalObjects.PalSaveParameter(pal_instanceId, player_uid, container_id, slot_idx, group_id)
                 pal_entity = PalEntity(pal_obj)
             else:
-                pal_entity = pal
+                pal_obj = copy.deepcopy(pal_obj)
+                pal_entity = PalEntity(pal_obj)
                 pal_entity.InstanceId = pal_instanceId
                 pal_entity.SlotID = (container_id, slot_idx)
+                # I don't know why some captured pals have PlayerUId, 
+                # and having this non-empty ID will cause the game to discard the duped pal
+                pal_entity.PlayerUId = PalObjects.EMPTY_UUID
                 pal_entity._pal_param.pop("EquipItemContainerId", None)
+                # (pal_entity.OldOwnerPlayerUIds or []).clear()
                 pal_entity.NickName = "!!!DUPED PAL!!!"
-                pal_obj = pal_entity._pal_obj
 
             player.add_pal(pal_entity)
             self._entities_list.append(pal_obj)

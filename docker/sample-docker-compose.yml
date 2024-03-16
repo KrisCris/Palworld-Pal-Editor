@@ -3,7 +3,6 @@ services:
   palworld-pal-editor:
     image: docker.io/library/palworld-pal-editor
     container_name: palworld-pal-editor
-    # stdin_open: true  # or tty: true, to keep cli py interactive mode running
     # network_mode: host
     ports:
       - 12345:12345
@@ -11,10 +10,9 @@ services:
       - TZ=UTC
       - PUID=1000
       - PGID=1000
-      - APP_PORT=12345
+      - APP_PORT=12345 # make sure this matches the port you are going to map
       - APP_LANG=zh-CN
       - MODE=web # [cli, web, gui] You are not going to run gui in docker though... ;)
-      # - PY_INTERACTIVE_FLAG=--i #You may want to use if if you are running cli mode
       - SAVE_PATH=/mnt/gamesave
       - PASSWORD=password # remove this env unless you want a password, but password is strongly recommended (for web mode).
     volumes:

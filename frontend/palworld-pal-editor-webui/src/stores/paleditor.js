@@ -8,6 +8,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.id = obj.id;
       this.name = obj.name;
       this.hasViewingCage = obj.hasViewingCage;
+      this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId
+      this.PalStorageContainerId = obj.PalStorageContainerId
       this.pals = new Map();
     }
   }
@@ -57,6 +59,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.IsPal = obj.IsPal;
       this.IsHuman = obj.IsHuman;
       this.Is_Unref_Pal = obj.Is_Unref_Pal;
+      this.in_owner_palbox = obj.in_owner_palbox;
     }
 
     displaySpecialType() {
@@ -241,8 +244,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SAVE_LOADED_FLAG = ref(false);
   const HAS_WORKING_PAL_FLAG = ref(false);
   const BASE_PAL_BTN_CLK_FLAG = ref(false);
-  const PAL_RESELECT_CTR = ref(0);
+  // const ADD_PAL_RESELECT_CTR = ref(0);
+  // const DEL_PAL_RESELECT_CTR = ref(0)
+  const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
+  const SHOW_OOB_PAL_FLAG = ref(true);
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -258,7 +264,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SELECTED_PLAYER_ID = ref(null);
   const SELECTED_PAL_ID = ref(null);
 
-  // selected pal EL, only for the use of scrollTo when out of window
+  // TODO Get rid of this...
   let SELECTED_PAL_EL = null;
 
   // Configs
@@ -592,10 +598,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       }
 
       PLAYER_MAP.value.set(playerUId, player_obj);
+
+      const pal_id_bk = SELECTED_PAL_ID.value;
+      // const pal_data_bk = SELECTED_PAL_DATA.value;
       await selectPlayer({ target: { value: playerUId } });
 
-      // player id and pal data never changed so this is save
-      if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
+      // player id and pal data never changed so this is safe
+      // if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
+      if (!updatePal) await selectPal({ target: { value: pal_id_bk } }, true);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -812,6 +822,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // set selected pal, and print out debug info
     let palId = e.target.value;
     let palData = PAL_MAP.value.get(palId);
+    if (palData == null) {
+      alert("Error selecting pal, try again or reload");
+      if (!no_set_loading_flag) LOADING_FLAG.value = false;
+      return;
+    }
     console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
 
     await fetchPalData(
@@ -825,10 +840,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
 
     // Scroll to selected pal
-    if (!isElementInViewport(SELECTED_PAL_EL)) {
-      SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
-    }
-
+    // if (!isElementInViewport(SELECTED_PAL_EL)) {
+    //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
+    // }
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
@@ -869,6 +883,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       // A hack way to trigger vue re-rendering.
       // The object is simply too nested that I can't figure out how to have vue properly refresh.
       await selectPal({ target: { value: SELECTED_PAL_ID.value } }, true);
+      UPDATE_PAL_RESELECT_CTR.value++;
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -912,6 +927,44 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
+  function isFilteredPal(pal) {
+    if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
+      return true
+    }
+    if (SHOW_UNREF_PAL_FLAG.value && !pal.Is_Unref_Pal) {
+      return true
+    }
+
+    // if (SHOW_OOB_PAL_FLAG.value && pal.in_owner_palbox) {
+    //   return true
+    // }
+
+    if (!SHOW_OOB_PAL_FLAG.value && !pal.in_owner_palbox) {
+      return true
+    }
+    return false
+  }
+
+  function getNextElement(map, currKey) {
+    let found = false;
+    let firstElement = null;
+    let isFirstElement = true;
+    for (let [key, value] of map) {
+      if (isFirstElement) {
+        firstElement = { key, value }; // Store the first element
+        isFirstElement = false || isFilteredPal(value);
+      }
+      if (found) {
+        if (isFilteredPal(value)) continue;
+        return { key, value };
+      }
+      if (key == currKey) {
+        found = true;
+      }
+    }
+    return firstElement;
+  }
+
   async function delPal() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
@@ -921,11 +974,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response === false) return;
 
     if (response.status == 0) {
+      const nextNode = getNextElement(PAL_MAP.value, SELECTED_PAL_ID.value);
       PAL_MAP.value.delete(SELECTED_PAL_DATA.value.InstanceId);
       SELECTED_PAL_ID.value = null;
       SELECTED_PAL_EL = null;
       SELECTED_PAL_DATA.value = null;
-      PAL_RESELECT_CTR.value++;
+      // ADD_PAL_RESELECT_CTR.value++;
+      if (nextNode) {
+        SELECTED_PAL_ID.value = nextNode.key;
+      }
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -953,7 +1010,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     if (response.status == 0) {
       const pal_data = new PalData(response.data);
+      const temp_map = new Map();
+      PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
+      PAL_MAP.value.clear();
       PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+      temp_map.forEach((v, k) => PAL_MAP.value.set(k, v));
+
+      // ADD_PAL_RESELECT_CTR.value++
+      SELECTED_PAL_ID.value = pal_data.InstanceId;
+      SELECTED_PAL_DATA.value = pal_data;
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -982,7 +1047,18 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     if (response.status == 0) {
       const pal_data = new PalData(response.data);
-      PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+      const temp_map = new Map();
+      PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
+      PAL_MAP.value.clear();
+      temp_map.forEach((v, k) => {
+        PAL_MAP.value.set(k, v);
+        if (v == SELECTED_PAL_DATA.value) {
+          PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+        }
+      });
+      // PAL_RESELECT_CTR.value++
+      SELECTED_PAL_ID.value = pal_data.InstanceId;
+      SELECTED_PAL_DATA.value = pal_data;
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -1040,8 +1116,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SELECTED_PAL_DATA,
     LOADING_FLAG,
     SAVE_LOADED_FLAG,
-    PAL_RESELECT_CTR,
+    // ADD_PAL_RESELECT_CTR,
+    UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
+    SHOW_OOB_PAL_FLAG,
 
     IS_LOCKED,
     HAS_PASSWORD,
@@ -1058,6 +1136,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PASSIVE_SKILLS_LIST,
     ACTIVE_SKILLS,
     ACTIVE_SKILLS_LIST,
+
+    isElementInViewport,
+    isFilteredPal,
 
     displayPalElement,
     displayElement,

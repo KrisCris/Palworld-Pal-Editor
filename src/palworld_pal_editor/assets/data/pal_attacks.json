@@ -732,7 +732,7 @@
         "Power": 85,
         "I18n": {
             "en": "Ignis Slam",
-            "zh-CN": "烈焰冲撞 [火/邪麒麟]",
+            "zh-CN": "烈焰冲撞 [火麒麟]",
             "ja": "フレイムチャージ [サラブレイズ]"
         },
         "UniqueSkill": true
@@ -790,7 +790,7 @@
     "EPalWazaID::ThunderBall": {
         "InternalName": "EPalWazaID::ThunderBall",
         "Element": "Electric",
-        "CT": 50,
+        "CT": 9,
         "Power": 50,
         "I18n": {
             "en": "Electric Ball",

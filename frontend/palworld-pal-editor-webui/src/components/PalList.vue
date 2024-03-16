@@ -18,12 +18,43 @@ watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
     }
 })
 
-watch(async () => palStore.PAL_RESELECT_CTR, async () => {
+// watch(async () => palStore.ADD_PAL_RESELECT_CTR, async () => {
+//     await nextTick();
+//     try {
+//         const button = palListContainer.value.querySelector('button:not(:disabled)');
+//         if (button) {
+//             button.click();
+//         }
+//     } catch (error) {
+//         return
+//     }
+// })
+
+watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
     await nextTick();
     try {
-        const button = palListContainer.value.querySelector('button:not(:disabled)');
+        const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
-            button.click();
+            if (!palStore.isElementInViewport(button)) {
+                button.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    } catch (error) {
+        return
+    }
+})
+
+watch(async () => palStore.SELECTED_PAL_ID, async () => {
+    await nextTick();
+    try {
+        const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
+        if (button) {
+            if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
+                palStore.selectPal({ target: button }, true)
+            }
+            if (!palStore.isElementInViewport(button)) {
+                button.scrollIntoView({ behavior: "smooth" });
+            }
         }
     } catch (error) {
         return
@@ -41,6 +72,11 @@ onMounted(async () => {
     }
 });
 
+function get_filtered_pal_list() {
+    console.log("FILTER")
+    return Array.from(palStore.PAL_MAP.values()).filter(pal => !palStore.isFilteredPal(pal))
+}
+
 </script>
 
 <template>
@@ -53,11 +89,11 @@ onMounted(async () => {
         </div>
 
         <div class="overflow-list" ref="palListContainer">
-            <div class="overflow-container" v-for="pal in palStore.PAL_MAP.values()">
-                <button :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal}]"
+            <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
+                <button
+                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox}]"
                     :value="pal.InstanceId" @click="palStore.selectPal"
-                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
-                    v-if="!pal.Is_Unref_Pal || palStore.SHOW_UNREF_PAL_FLAG">
+                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
                     <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
                     {{ pal.DisplayName }}
                 </button>
@@ -185,6 +221,10 @@ button.unref:hover {
 
 button.unref:disabled {
     background-color: #5e5e5e !important;
+}
+
+button.out_of_container {
+    color: #3db15e;
 }
 
 button.add_pal {

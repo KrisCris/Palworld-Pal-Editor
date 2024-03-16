@@ -12,13 +12,15 @@
 <img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
 </p>
 
+## Supported Language
+
+- **English** | **日本語** | **简体中文**
+
 ## What is this?
 
 ### A Palworld Pal Editor developed by _connlost with ❤️
 
  ~~(yeah i am just too lazy to change github username)~~
-
-***I've only tested this tool on my save, it may not work properly for you.***
 
 ***Always backup your save in case corruption happens. (The tool does backup files for you.)***
 
@@ -29,13 +31,14 @@
 ---
 
 - [Palworld Pal Editor](#palworld-pal-editor)
+  - [Supported Language](#supported-language)
   - [What is this?](#what-is-this)
     - [A Palworld Pal Editor developed by \_connlost with ❤️](#a-palworld-pal-editor-developed-by-_connlost-with-️)
   - [What This Tool Can Do](#what-this-tool-can-do)
   - [Usage](#usage)
-    - [1. Directly Run the Code](#1-directly-run-the-code)
-    - [2. Use Pre-Built Binary](#2-use-pre-built-binary)
-    - [3. Docker Container](#3-docker-container)
+    - [A. Directly Run the Code](#a-directly-run-the-code)
+    - [B. Use Pre-Built Binary](#b-use-pre-built-binary)
+    - [C. Docker Container](#c-docker-container)
     - [Config File](#config-file)
       - [Note: Command Line Arguments Override Config](#note-command-line-arguments-override-config)
   - [Videos](#videos)
@@ -52,6 +55,8 @@
 - [x] Spawn Pal
 - [x] Duplicate Pal
 - [x] Delete Pal
+- [x] Show / hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other player, prior palworld v0.1.5))
+- [x] Show (so you can delete them) / hide pals that are not displayed in game.
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -73,30 +78,31 @@
 
 ## Usage
 
-### 1. Directly Run the Code
+**NOTE: YOU CAN ALWAYS RUN THE EDITOR IN A WEB BROWER, IN CASE THE GUI ISN'T WORKING FOR YOU.**
 
-1. Install Python 3.11+
+### A. Directly Run the Code
+
+1. Install Python 3.11+ and node.js.
 2. Clone / Download the code
 3. In the project directory, run `setup_and_run.ps1` for Windows Powershell, or `setup_and_run.sh` on Unix-like OS.
 4. Optional Params:
-   - `--password yourPW` Login Auth, you may want this if you are running web mode.
-   - `--mode <gui | web | cli>` You can launch the program in either `gui`, `web` or `cli` mode.
-   - `--path /path/to/save/folder` Provide the path to the folder containing Level.sav.
-   - `--port 8080` Port for web mode.
-   - `--lang <zh-CN | en>` Currently supporting `zh-CN` and `en`. (Currrently hardcoded UI texts are English only.)
-   - `--i` for enable interactive mode, you may want to use with `cli` mode.
-5. You can change language in `cli` mode by calling `lang($LANG_CODE)`.
+   - `--password=yourPW` Login password, you may want this if you are running web mode.
+   - `--mode=< gui | web | cli >` You can launch the program in either `gui`, `web` or `cli` mode.
+   - `--path=/path/to/save/folder` Provide the path to the folder containing Level.sav.
+   - `--port=8080` Port for web mode.
+   - `--lang=< zh-CN | en >` Currently supporting `zh-CN`, `en`, and `ja`. (Hardcoded UI texts are English only.)
+5. In `cli` mode, You can change language by calling `lang($LANG_CODE)`.
 
-### 2. Use Pre-Built Binary
+### B. Use Pre-Built Binary
 
 1. Download from GitHub Release Page, may not be bundled with the latest code.
 2. Also support command line arguments mentioned above.
 
-### 3. Docker Container
+### C. Docker Container
 
 1. Clone the code.
-2. You may want to take a look at `./docker/docker-compose.yml`, and do some modification.
-3. Run `./build_and_run_docker.sh`, or just manually run the commends if you are using Windows.
+2. Copy `./docker/sample-docker-compose.yml` to `./docker/docker-compose.yml`, then do necessary modifications.
+3. Run `./build_and_run_docker.sh`, or just manually run the commands if you are using Windows.
 
 ### Config File
 
@@ -110,7 +116,6 @@ Default:
     "i18n": "en",
     "mode": "web",
     "port": 58080,
-    "debug": false,
     "path": null,
     "password": null,
     "JWT_SECRET_KEY": "X2Nvbm5sb3N0"
@@ -125,7 +130,6 @@ Custom:
     "i18n": "zh-CN",
     "mode": "gui",
     "port": 12345,
-    "debug": false,
     "path": "/path/to/save/folder",
     "password": "YOUR PASSWORD",
     "JWT_SECRET_KEY": "YOUR SECRETS"
@@ -162,7 +166,7 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## Sponsor
 
-THANK YOU ❤️, BUT THIS IS YET TBD.
+[ko-fi ❤️](https://ko-fi.com/connlost)
 
 ## Thanks
 

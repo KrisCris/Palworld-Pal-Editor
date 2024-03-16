@@ -27,6 +27,7 @@ class PalEntity:
         
         self._derived_hp_scaling = self._derive_hp_scaling()
         self._display_name_cache = {}
+        self.owner_player_entity = None
         ## TODO
         # self._isBoss_cache = {}
         # self._raw_specie_key_cache = {}
@@ -42,6 +43,18 @@ class PalEntity:
     def __eq__(self, __value: object) -> bool:
         return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
     
+    def set_owner_player_entity(self, player):
+        self.owner_player_entity = player
+
+    @property
+    def in_owner_palbox(self) -> bool:
+        # base pal, no owner
+        if not self.owner_player_entity: return True
+        if  self.ContainerId == self.owner_player_entity.OtomoCharacterContainerId or \
+            self.ContainerId == self.owner_player_entity.PalStorageContainerId:
+            return True
+        return False
+
     @property
     def group_id(self) -> Optional[UUID]:
         return get_nested_attr(self._pal_obj, ['value', 'RawData', 'value', 'group_id'])
@@ -52,8 +65,12 @@ class PalEntity:
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
-        # EMPTY UUID
+        # should be EMPTY UUID, but sometimes it's set to player uid in singleplayer game, weird
         return get_attr_value(self._pal_key, "PlayerUId")
+    
+    @PlayerUId.setter
+    def PlayerUId(self, id: UUID | str) -> Optional[UUID]:
+        self._pal_key["PlayerUId"] = PalObjects.Guid(id)
     
     @property
     def InstanceId(self) -> Optional[UUID]:
@@ -109,7 +126,8 @@ class PalEntity:
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
     def CharacterID(self, value: str) -> None:
-        # TODO Need to test if SheepBall and Sheepball are identical
+        og_specie = self._RawSpecieKey
+
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
         else:
@@ -127,8 +145,11 @@ class PalEntity:
         elif not self.Gender and self.IsPal:
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
-        
-        self.remove_all_attacks()
+
+        new_specie = self._RawSpecieKey
+        if new_specie != og_specie:
+            self.remove_unique_attacks()
+
         self.learn_attacks()
         self.heal_pal()
         self.clear_worker_sick()
@@ -819,13 +840,14 @@ class PalEntity:
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
                 
-    def remove_all_attacks(self):
+    def remove_unique_attacks(self):
         if self.MasteredWaza is None:
             return
         atks = self.MasteredWaza.copy()
         if not atks: return
         for atk in atks:
-            self.pop_MasteredWaza(item=atk)
+            if DataProvider.is_unique_attacks(atk):
+                self.pop_MasteredWaza(item=atk)
 
     @LOGGER.change_logger("WorkerSick")
     def clear_worker_sick(self):

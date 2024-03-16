@@ -485,13 +485,14 @@ class PalObjects:
                                         638419931074290000
                                     ),
                                     "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
+                                    # "OwnerPlayerUId": PalObjects.EMPTY_UUID,
                                     "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
                                             "prop_name": "OldOwnerPlayerUIds",
                                             "prop_type": "StructProperty",
-                                            # "values": [OwnerPlayerUId],
-                                            "values": [],
+                                            "values": [OwnerPlayerUId],
+                                            # "values": [],
                                             "type_name": "Guid",
                                             "id": PalObjects.EMPTY_UUID,
                                         },

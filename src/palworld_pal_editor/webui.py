@@ -62,7 +62,7 @@ def main():
     Config._password_hash = generate_password_hash(Config.password or "")
     if Config.mode == "web" and not Config.debug:
         try:
-            threading.Timer(3, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()
+            threading.Timer(1, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()
         except:
             LOGGER.info("Failed to launch browser.")
     host = '0.0.0.0' if Config.mode == "web" else "127.0.0.1"
@@ -71,4 +71,4 @@ def main():
     else:
         from waitress import serve
         LOGGER.info(f"LISTENING ON {host}:{Config.port}.")
-        serve(app, host=host, port=Config.port, threads=6)
+        serve(app, host=host, port=Config.port, threads=12)

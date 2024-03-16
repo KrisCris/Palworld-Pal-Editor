@@ -10,30 +10,25 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    // VitePWA({
-    //   registerType: 'autoUpdate', 
-    //   devOptions: {
-    //     enabled: true
-    //   }, 
-    //   manifest: {
-    //     name: 'Palworld Pal Editor',
-    //     short_name: 'Pal Editor',
-    //     description: 'Palworld Pal Editor, Authored by _connlost.',
-    //     theme_color: '#ffffff',
-    //     icons: [
-    //       {
-    //         src: '@/assets/logo.ico',
-    //         sizes: '192x192',
-    //         type: 'image/ico'
-    //       },
-    //       {
-    //         src: '@/assets/logo.ico',
-    //         sizes: '512x512',
-    //         type: 'image/ico'
-    //       }
-    //     ]
-    //   }
-    // })
+    VitePWA({
+      registerType: 'autoUpdate', 
+      devOptions: {
+        enabled: true
+      }, 
+      manifest: {
+        name: 'Palworld Pal Editor',
+        short_name: 'Pal Editor',
+        description: 'Palworld Pal Editor, Authored by _connlost.',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: '/icons/256.png',
+            sizes: '256x256',
+            type: 'image/png'
+          }
+        ]
+      }
+    })
   ],
   resolve: {
     alias: {

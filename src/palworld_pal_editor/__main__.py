@@ -32,8 +32,9 @@ def setup_config_from_args():
     Config.mode = args.mode
     Config.port = args.port
     Config.password = args.password
+    Config.i18n = args.lang
 
-    if not DataProvider.is_valid_i18n(args.lang):
+    if not DataProvider.is_valid_i18n(Config.i18n):
         Config.i18n = DataProvider.default_i18n
 
     modes = ["cli", "gui", "web"]
@@ -53,7 +54,8 @@ def main():
     LOGGER.info(Config.__str__())
     LOGGER.info(f"Running Palworld-Pal-Editor version: {VERSION}")
     match Config.mode:
-        case "cli": globals().update(cli_main())
+        # case "cli": globals().update(cli_main())
+        case "cli": cli_main()
         case "gui": gui_main()
         case "web": webui_main()
 
