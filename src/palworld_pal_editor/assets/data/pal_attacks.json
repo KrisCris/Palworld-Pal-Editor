@@ -6,7 +6,8 @@
         "Power": 30,
         "I18n": {
             "en": "Hydro Jet",
-            "zh-CN": "水流射击"
+            "zh-CN": "水流射击",
+            "ja": "ウォータージェット"
         },
         "SkillFruit": true
     },
@@ -17,7 +18,8 @@
         "Power": 40,
         "I18n": {
             "en": "Aqua Gun",
-            "zh-CN": "水枪"
+            "zh-CN": "水枪",
+            "ja": "アクアジェット"
         },
         "SkillFruit": true
     },
@@ -28,7 +30,8 @@
         "Power": 65,
         "I18n": {
             "en": "Bubble Blast",
-            "zh-CN": "泡沫射击"
+            "zh-CN": "泡沫射击",
+            "ja": "バブルショット"
         },
         "SkillFruit": true
     },
@@ -39,7 +42,8 @@
         "Power": 80,
         "I18n": {
             "en": "Acid Rain",
-            "zh-CN": "酸雨"
+            "zh-CN": "酸雨",
+            "ja": "アシッドレイン"
         },
         "SkillFruit": true
     },
@@ -50,7 +54,8 @@
         "Power": 100,
         "I18n": {
             "en": "Aqua Burst",
-            "zh-CN": "爆裂水球"
+            "zh-CN": "爆裂水球",
+            "ja": "スプラッシュボム"
         },
         "SkillFruit": true
     },
@@ -61,7 +66,8 @@
         "Power": 150,
         "I18n": {
             "en": "Hydro Laser",
-            "zh-CN": "高压水炮"
+            "zh-CN": "高压水炮",
+            "ja": "ハイドロストリーム"
         },
         "SkillFruit": true
     },
@@ -75,7 +81,8 @@
         "Power": 25,
         "I18n": {
             "en": "Air Cannon",
-            "zh-CN": "空气炮"
+            "zh-CN": "空气炮",
+            "ja": "エアーキャノン"
         },
         "SkillFruit": true
     },
@@ -86,7 +93,8 @@
         "Power": 35,
         "I18n": {
             "en": "Power Shot",
-            "zh-CN": "能量射击"
+            "zh-CN": "能量射击",
+            "ja": "パワーショット"
         },
         "SkillFruit": true
     },
@@ -97,7 +105,8 @@
         "Power": 70,
         "I18n": {
             "en": "Power Bomb",
-            "zh-CN": "元气弹"
+            "zh-CN": "元气弹",
+            "ja": "パワーボム"
         },
         "SkillFruit": true
     },
@@ -108,7 +117,8 @@
         "Power": 150,
         "I18n": {
             "en": "Pal Blast",
-            "zh-CN": "帕鲁光束"
+            "zh-CN": "帕鲁光束",
+            "ja": "パルブラスト"
         },
         "SkillFruit": true
     },
@@ -119,7 +129,8 @@
         "Power": 180,
         "I18n": {
             "en": "Implode",
-            "zh-CN": "自爆"
+            "zh-CN": "自爆",
+            "ja": "自爆"
         },
         "SkillFruit": true
     },
@@ -132,7 +143,8 @@
         "Power": 30,
         "I18n": {
             "en": "Chicken Rush",
-            "zh-CN": "皮皮冲鸡 [皮皮鸡]"
+            "zh-CN": "皮皮冲鸡 [皮皮鸡]",
+            "ja": "チキンタックル [タマコッコ]"
         },
         "UniqueSkill": true
     },
@@ -143,7 +155,8 @@
         "Power": 35,
         "I18n": {
             "en": "Roly Poly",
-            "zh-CN": "滚滚毛球 [棉悠悠]"
+            "zh-CN": "滚滚毛球 [棉悠悠]",
+            "ja": "コロコロモコロン [モコロン]"
         },
         "UniqueSkill": true
     },
@@ -154,7 +167,8 @@
         "Power": 40,
         "I18n": {
             "en": "Punch Flurry",
-            "zh-CN": "喵喵拳 [捣蛋猫]"
+            "zh-CN": "喵喵拳 [捣蛋猫]",
+            "ja": "ツッパンチ [ツッパニャン]"
         },
         "UniqueSkill": true
     },
@@ -165,7 +179,8 @@
         "Power": 40,
         "I18n": {
             "en": "Fluffy Tackle",
-            "zh-CN": "绒毛冲撞 [美露帕]"
+            "zh-CN": "绒毛冲撞 [美露帕]",
+            "ja": "ふんわりタックル [メルパカ]"
         },
         "UniqueSkill": true
     },
@@ -176,7 +191,8 @@
         "Power": 45,
         "I18n": {
             "en": "Fierce Fang",
-            "zh-CN": "狂野獠牙 [猎狼]"
+            "zh-CN": "狂野獠牙 [猎狼]",
+            "ja": "ワイルドファング [ガウルフ]"
         },
         "UniqueSkill": true
     },
@@ -187,7 +203,8 @@
         "Power": 50,
         "I18n": {
             "en": "Antler Uppercut",
-            "zh-CN": "尖角顶击 [紫霞/祇岳鹿]"
+            "zh-CN": "尖角顶击 [紫霞/祇岳鹿]",
+            "ja": "ホーンアッパー [ツノガミ/ヤマガミ]"
         },
         "UniqueSkill": true
     },
@@ -198,7 +215,8 @@
         "Power": 55,
         "I18n": {
             "en": "Reckless Charge",
-            "zh-CN": "猪突猛进 [草莽猪]"
+            "zh-CN": "猪突猛进 [草莽猪]",
+            "ja": "猪突猛進 [イノボウ]"
         },
         "UniqueSkill": true
     },
@@ -209,7 +227,8 @@
         "Power": 60,
         "I18n": {
             "en": "Gale Claw",
-            "zh-CN": "滑空爪 [天擒鸟]"
+            "zh-CN": "滑空爪 [天擒鸟]",
+            "ja": "グライドクロー [エアムルグ]"
         },
         "UniqueSkill": true
     },
@@ -220,7 +239,8 @@
         "Power": 60,
         "I18n": {
             "en": "Cat Press",
-            "zh-CN": "喵咪扑击 [笑魇猫]"
+            "zh-CN": "喵咪扑击 [笑魇猫]",
+            "ja": "キャットプレス [ニャンギマリ]"
         },
         "UniqueSkill": true
     },
@@ -231,7 +251,8 @@
         "Power": 65,
         "I18n": {
             "en": "Tornado Attack",
-            "zh-CN": "龙卷风 [疾风隼]"
+            "zh-CN": "龙卷风 [疾风隼]",
+            "ja": "トルネードアタック [ホークウィン]"
         },
         "UniqueSkill": true
     },
@@ -242,7 +263,8 @@
         "Power": 80,
         "I18n": {
             "en": "Muscle Slam",
-            "zh-CN": "铁山靠 [连理/海誓龙]"
+            "zh-CN": "铁山靠 [连理/海誓龙]",
+            "ja": "ボディスマッシュ [ラブラドン/スプラドン]"
         },
         "UniqueSkill": true
     },
@@ -253,7 +275,8 @@
         "Power": 85,
         "I18n": {
             "en": "Ground Pound",
-            "zh-CN": "猩猩连打 [铁拳猿]"
+            "zh-CN": "猩猩连打 [铁拳猿]",
+            "ja": "ゴリラウンドコンボ [ゴリレイジ]"
         },
         "UniqueSkill": true
     },
@@ -264,7 +287,8 @@
         "Power": 90,
         "I18n": {
             "en": "Cloud Tempest",
-            "zh-CN": "阴云之岚 [云海鹿]"
+            "zh-CN": "阴云之岚 [云海鹿]",
+            "ja": "クラウドテンペスト [ムラクモ]"
         },
         "UniqueSkill": true
     },
@@ -275,7 +299,8 @@
         "Power": 100,
         "I18n": {
             "en": "Kingly Slam",
-            "zh-CN": "泰山压顶 [君王/冰帝美露帕]"
+            "zh-CN": "泰山压顶 [君王/冰帝美露帕]",
+            "ja": "キングプレス [アルパオー/アオパオー]"
         },
         "UniqueSkill": true
     },
@@ -286,7 +311,8 @@
         "Power": 120,
         "I18n": {
             "en": "Spear Thrust",
-            "zh-CN": "闪枪冲锋 [圣光骑士]"
+            "zh-CN": "闪枪冲锋 [圣光骑士]",
+            "ja": "一槍一閃 [セイントール]"
         },
         "UniqueSkill": true
     },
@@ -298,7 +324,8 @@
         "Power": 500,
         "I18n": {
             "en": "Megaton Implode [Tocotoco]",
-            "zh-CN": "超自爆 [炸蛋鸟]"
+            "zh-CN": "超自爆 [炸蛋鸟]",
+            "ja": "メガトン自爆 [クルットリ]"
         }
     },
 
@@ -311,7 +338,8 @@
         "Power": 30,
         "I18n": {
             "en": "Wind Cutter",
-            "zh-CN": "风刃"
+            "zh-CN": "风刃",
+            "ja": "ウインドカッター"
         },
         "SkillFruit": true
     },
@@ -322,7 +350,8 @@
         "Power": 50,
         "I18n": {
             "en": "Seed Machine Gun",
-            "zh-CN": "种子机关枪"
+            "zh-CN": "种子机关枪",
+            "ja": "シードマシンガン"
         },
         "SkillFruit": true
     },
@@ -333,7 +362,8 @@
         "Power": 65,
         "I18n": {
             "en": "Seed Mine",
-            "zh-CN": "种子地雷"
+            "zh-CN": "种子地雷",
+            "ja": "シードマイン"
         },
         "SkillFruit": true
     },
@@ -344,7 +374,8 @@
         "Power": 80,
         "I18n": {
             "en": "Grass Tornado",
-            "zh-CN": "绿野飓风"
+            "zh-CN": "绿野飓风",
+            "ja": "グラストルネード"
         },
         "SkillFruit": true
     },
@@ -355,7 +386,8 @@
         "Power": 95,
         "I18n": {
             "en": "Spine Vine",
-            "zh-CN": "缠绕地刺"
+            "zh-CN": "缠绕地刺",
+            "ja": "スパインヴァイン"
         },
         "SkillFruit": true
     },
@@ -366,7 +398,8 @@
         "Power": 150,
         "I18n": {
             "en": "Solar Blast",
-            "zh-CN": "太阳光束"
+            "zh-CN": "太阳光束",
+            "ja": "ソーラーブラスト"
         },
         "SkillFruit": true
     },
@@ -379,7 +412,8 @@
         "Power": 60,
         "I18n": {
             "en": "Botanical Smash",
-            "zh-CN": "植物猛击 [花冠龙]"
+            "zh-CN": "植物猛击 [花冠龙]",
+            "ja": "ボタニカルスマッシュ [アロアリュー/ビリビリュー]"
         },
         "UniqueSkill": true
     },
@@ -390,7 +424,8 @@
         "Power": 65,
         "I18n": {
             "en": "Focus Shot",
-            "zh-CN": "精准狙击 [羽箭/山岳射手]"
+            "zh-CN": "精准狙击 [羽箭/山岳射手]",
+            "ja": "スナイプショット [フェザーロ/サンドロ]"
         },
         "UniqueSkill": true
     },
@@ -401,7 +436,8 @@
         "Power": 70,
         "I18n": {
             "en": "Spinning Lance",
-            "zh-CN": "回旋矛 [女皇蜂]"
+            "zh-CN": "回旋矛 [女皇蜂]",
+            "ja": "スピニングランス [クインビーナ]"
         },
         "UniqueSkill": true
     },
@@ -412,7 +448,8 @@
         "Power": 85,
         "I18n": {
             "en": "Crushing Punch",
-            "zh-CN": "筋肉重拳 [叶胖达]"
+            "zh-CN": "筋肉重拳 [叶胖达]",
+            "ja": "マッスルパンチ [ササゾー]"
         },
         "UniqueSkill": true
     },
@@ -423,7 +460,8 @@
         "Power": 60,
         "I18n": {
             "en": "Multicutter [Lily & Lyleen]",
-            "zh-CN": "多重利刃 [莉莉 & 百合女王]"
+            "zh-CN": "多重利刃 [莉莉 & 百合女王]",
+            "ja": "マルチカッター [リリィ & リリクイン]"
         },
         "UniqueSkill": true
     },
@@ -435,7 +473,8 @@
         "Power": 250,
         "I18n": {
             "en": "Bee Quiet",
-            "zh-CN": "蜂！蜂！蜂！ [骑士蜂]"
+            "zh-CN": "蜂！蜂！蜂！ [骑士蜂]",
+            "ja": "ビー・クワイエット [ビーナイト]"
         }
     },
 
@@ -447,7 +486,8 @@
         "Power": 30,
         "I18n": {
             "en": "Ice Missile",
-            "zh-CN": "冰雪飞弹"
+            "zh-CN": "冰雪飞弹",
+            "ja": "アイスミサイル"
         },
         "SkillFruit": true
     },
@@ -458,7 +498,8 @@
         "Power": 55,
         "I18n": {
             "en": "Icicle Cutter",
-            "zh-CN": "冰刃"
+            "zh-CN": "冰刃",
+            "ja": "アイスカッター"
         },
         "SkillFruit": true
     },
@@ -469,7 +510,8 @@
         "Power": 70,
         "I18n": {
             "en": "Iceberg",
-            "zh-CN": "冰刺"
+            "zh-CN": "冰刺",
+            "ja": "アイスバーグ"
         },
         "SkillFruit": true
     },
@@ -480,7 +522,8 @@
         "Power": 90,
         "I18n": {
             "en": "Cryst Breath",
-            "zh-CN": "凛冬之息"
+            "zh-CN": "凛冬之息",
+            "ja": "コールドブレス"
         },
         "SkillFruit": true
     },
@@ -491,7 +534,8 @@
         "Power": 130,
         "I18n": {
             "en": "Blizzard Spike",
-            "zh-CN": "钻石星辰"
+            "zh-CN": "钻石星辰",
+            "ja": "ブリザードスパイク"
         },
         "SkillFruit": true
     },
@@ -504,7 +548,8 @@
         "Power": 65,
         "I18n": {
             "en": "Freezing Charge",
-            "zh-CN": "霜角猛攻 [严冬鹿]"
+            "zh-CN": "霜角猛攻 [严冬鹿]",
+            "ja": "アイスホーンラッシュ [ツララジカ]"
         },
         "UniqueSkill": true
     },
@@ -515,7 +560,8 @@
         "Power": 70,
         "I18n": {
             "en": "Emperor Slide",
-            "zh-CN": "王者滑击 [企丸王]"
+            "zh-CN": "王者滑击 [企丸王]",
+            "ja": "キャプテンスライディング [キャプペン]"
         },
         "UniqueSkill": true
     },
@@ -526,7 +572,8 @@
         "Power": 100,
         "I18n": {
             "en": "Frost Burst",
-            "zh-CN": "霜冻爆裂 [寒霜兽]"
+            "zh-CN": "霜冻爆裂 [寒霜兽]",
+            "ja": "フロストバースト [フロストカノン]"
         },
         "UniqueSkill": true
     },
@@ -537,7 +584,8 @@
         "Power": 110,
         "I18n": {
             "en": "Crystal Wing",
-            "zh-CN": "冰晶之翼 [唤冬/夜兽]"
+            "zh-CN": "冰晶之翼 [唤冬/夜兽]",
+            "ja": "クリスタルウィング [グレイシャル/グレイシャドウ]"
         },
         "UniqueSkill": true
     },
@@ -550,7 +598,8 @@
         "Power": 30,
         "I18n": {
             "en": "Ignis Blast",
-            "zh-CN": "烈焰射击"
+            "zh-CN": "烈焰射击",
+            "ja": "ファイアーショット"
         },
         "SkillFruit": true
     },
@@ -561,7 +610,8 @@
         "Power": 45,
         "I18n": {
             "en": "Spirit Fire",
-            "zh-CN": "烈焰溅射"
+            "zh-CN": "烈焰溅射",
+            "ja": "スプリットファイアー"
         },
         "SkillFruit": true
     },
@@ -572,7 +622,8 @@
         "Power": 55,
         "I18n": {
             "en": "Flare Arrow",
-            "zh-CN": "烈焰箭"
+            "zh-CN": "烈焰箭",
+            "ja": "フレアアロー"
         },
         "SkillFruit": true
     },
@@ -583,7 +634,8 @@
         "Power": 70,
         "I18n": {
             "en": "Ignis Breath",
-            "zh-CN": "烈焰放射"
+            "zh-CN": "烈焰放射",
+            "ja": "ファイアーブレス"
         },
         "SkillFruit": true
     },
@@ -594,7 +646,8 @@
         "Power": 80,
         "I18n": {
             "en": "Flare Storm",
-            "zh-CN": "烈焰风暴"
+            "zh-CN": "烈焰风暴",
+            "ja": "フレアストーム"
         },
         "SkillFruit": true
     },
@@ -605,7 +658,8 @@
         "Power": 120,
         "I18n": {
             "en": "Ignis Rage",
-            "zh-CN": "地狱火"
+            "zh-CN": "地狱火",
+            "ja": "インフェルノ"
         },
         "SkillFruit": true
     },
@@ -616,7 +670,8 @@
         "Power": 150,
         "I18n": {
             "en": "Fire Ball",
-            "zh-CN": "烈焰球"
+            "zh-CN": "烈焰球",
+            "ja": "ファイアーボール"
         },
         "SkillFruit": true
     },
@@ -629,7 +684,8 @@
         "Power": 50,
         "I18n": {
             "en": "Blazing Horn",
-            "zh-CN": "炽热角击 [炽焰牛]"
+            "zh-CN": "炽热角击 [炽焰牛]",
+            "ja": "ブレイジングホーン [ブルフェルノ]"
         },
         "UniqueSkill": true
     },
@@ -640,7 +696,8 @@
         "Power": 65,
         "I18n": {
             "en": "Iaigiri",
-            "zh-CN": "居合斩 [浪刃武士]"
+            "zh-CN": "居合斩 [浪刃武士]",
+            "ja": "居合切り [ツジギリ]"
         },
         "UniqueSkill": true
     },
@@ -651,7 +708,8 @@
         "Power": 70,
         "I18n": {
             "en": "Hellfire Claw",
-            "zh-CN": "狱火爪 [炎/暗魔羊]"
+            "zh-CN": "狱火爪 [炎/暗魔羊]",
+            "ja": "ヘルファイアクロー [ヘルゴート/アビスゴート]"
         },
         "UniqueSkill": true
     },
@@ -662,7 +720,8 @@
         "Power": 75,
         "I18n": {
             "en": "Daring Flames",
-            "zh-CN": "风林火山 [苍焰狼]"
+            "zh-CN": "风林火山 [苍焰狼]",
+            "ja": "風林火山 [シラヌイ]"
         },
         "UniqueSkill": true
     },
@@ -673,7 +732,8 @@
         "Power": 85,
         "I18n": {
             "en": "Ignis Slam",
-            "zh-CN": "烈焰冲撞 [火/邪麒麟]"
+            "zh-CN": "烈焰冲撞 [火麒麟]",
+            "ja": "フレイムチャージ [サラブレイズ]"
         },
         "UniqueSkill": true
     },
@@ -684,7 +744,8 @@
         "Power": 100,
         "I18n": {
             "en": "Volcanic Burst",
-            "zh-CN": "火山爆发 [熔岩兽]"
+            "zh-CN": "火山爆发 [熔岩兽]",
+            "ja": "ボルカニックバースト [ボルカノン]"
         },
         "UniqueSkill": true
     },
@@ -695,7 +756,8 @@
         "Power": 135,
         "I18n": {
             "en": "Phoenix Flare",
-            "zh-CN": "凤凰翔波 [荷鲁斯]"
+            "zh-CN": "凤凰翔波 [荷鲁斯]",
+            "ja": "鳳凰翔波 [ホルス]"
         },
         "UniqueSkill": true
     },
@@ -708,7 +770,8 @@
         "Power": 30,
         "I18n": {
             "en": "Spark Blast",
-            "zh-CN": "电火花"
+            "zh-CN": "电火花",
+            "ja": "スパークショット"
         },
         "SkillFruit": true
     },
@@ -719,18 +782,20 @@
         "Power": 40,
         "I18n": {
             "en": "Shockwave",
-            "zh-CN": "冲击波"
+            "zh-CN": "冲击波",
+            "ja": "ショックウェーブ"
         },
         "SkillFruit": true
     },
     "EPalWazaID::ThunderBall": {
         "InternalName": "EPalWazaID::ThunderBall",
         "Element": "Electric",
-        "CT": 50,
+        "CT": 9,
         "Power": 50,
         "I18n": {
             "en": "Electric Ball",
-            "zh-CN": "闪电球"
+            "zh-CN": "闪电球",
+            "ja": "サンダーボール"
         },
         "SkillFruit": true
     },
@@ -741,7 +806,8 @@
         "Power": 65,
         "I18n": {
             "en": "Plasma Tornado",
-            "zh-CN": "等离子浮游炮"
+            "zh-CN": "等离子浮游炮",
+            "ja": "プラズマファンネル"
         },
         "SkillFruit": true
     },
@@ -752,7 +818,8 @@
         "Power": 70,
         "I18n": {
             "en": "Lock-on Laser",
-            "zh-CN": "锁定雷射"
+            "zh-CN": "锁定雷射",
+            "ja": "ロックオンレーザー"
         },
         "SkillFruit": true
     },
@@ -763,7 +830,8 @@
         "Power": 75,
         "I18n": {
             "en": "Lightning Streak",
-            "zh-CN": "雷击"
+            "zh-CN": "雷击",
+            "ja": "ラインサンダー"
         },
         "SkillFruit": true
     },
@@ -774,7 +842,8 @@
         "Power": 90,
         "I18n": {
             "en": "Tri-Lightning",
-            "zh-CN": "三重雷击"
+            "zh-CN": "三重雷击",
+            "ja": "トライサンダー"
         },
         "SkillFruit": true
     },
@@ -785,7 +854,8 @@
         "Power": 120,
         "I18n": {
             "en": "Lightning Strike",
-            "zh-CN": "闪电冲击"
+            "zh-CN": "闪电冲击",
+            "ja": "ライトニングストライク"
         },
         "SkillFruit": true
     },
@@ -796,7 +866,8 @@
         "Power": 150,
         "I18n": {
             "en": "Lightning Bolt",
-            "zh-CN": "闪电伏特"
+            "zh-CN": "闪电伏特",
+            "ja": "ライトニングボルト"
         },
         "SkillFruit": true
     },
@@ -809,7 +880,8 @@
         "Power": 85,
         "I18n": {
             "en": "Blast Punch",
-            "zh-CN": "爆裂拳击 [雷胖达]"
+            "zh-CN": "爆裂拳击 [雷胖达]",
+            "ja": "ブラストパンチ [ライゾー]"
         },
         "UniqueSkill": true
     },
@@ -820,7 +892,8 @@
         "Power": 90,
         "I18n": {
             "en": "Lightning Claw",
-            "zh-CN": "霹雳连爪 [暴电熊]"
+            "zh-CN": "霹雳连爪 [暴电熊]",
+            "ja": "ライトニングクロー [エレパンダ]"
         },
         "UniqueSkill": true
     },
@@ -831,7 +904,8 @@
         "Power": 100,
         "I18n": {
             "en": "Kerauno",
-            "zh-CN": "雷神之枪 [波鲁杰克斯]"
+            "zh-CN": "雷神之枪 [波鲁杰克斯]",
+            "ja": "ケラウノス [ボルゼクス]"
         },
         "UniqueSkill": true
     },
@@ -846,7 +920,8 @@
         "Power": 40,
         "I18n": {
             "en": "Sand Blast",
-            "zh-CN": "泥浆投掷"
+            "zh-CN": "泥浆投掷",
+            "ja": "マッドシュート"
         },
         "SkillFruit": true
     },
@@ -857,7 +932,8 @@
         "Power": 55,
         "I18n": {
             "en": "Stone Blast",
-            "zh-CN": "碎石霰弹"
+            "zh-CN": "碎石霰弹",
+            "ja": "ストーンブラスト"
         },
         "SkillFruit": true
     },
@@ -868,7 +944,8 @@
         "Power": 70,
         "I18n": {
             "en": "Stone Cannon",
-            "zh-CN": "投石"
+            "zh-CN": "投石",
+            "ja": "ストーンキャノン"
         },
         "SkillFruit": true
     },    
@@ -879,7 +956,8 @@
         "Power": 80,
         "I18n": {
             "en": "Sand Tornado",
-            "zh-CN": "砂砾飓风"
+            "zh-CN": "砂砾飓风",
+            "ja": "サンドトルネード"
         },
         "SkillFruit": true
     },
@@ -890,7 +968,8 @@
         "Power": 150,
         "I18n": {
             "en": "Rock Lance",
-            "zh-CN": "岩石锐矛"
+            "zh-CN": "岩石锐矛",
+            "ja": "ロックランス"
         },
         "SkillFruit": true
     },
@@ -905,7 +984,8 @@
         "Power": 65,
         "I18n": {
             "en": "Shell Spin",
-            "zh-CN": "甲壳回旋 [碎岩龟]"
+            "zh-CN": "甲壳回旋 [碎岩龟]",
+            "ja": "シェルスピン [ドリタス]"
         },
         "UniqueSkill": true
     },
@@ -916,7 +996,8 @@
         "Power": 75,
         "I18n": {
             "en": "Giga Horn",
-            "zh-CN": "终极角击 [铠格力斯]"
+            "zh-CN": "终极角击 [铠格力斯]",
+            "ja": "ギガホーン [グラクレス]"
         },
         "UniqueSkill": true
     },
@@ -927,7 +1008,8 @@
         "Power": 100,
         "I18n": {
             "en": "Spinning Roundhouse",
-            "zh-CN": "回旋踢 [阿努比斯]"
+            "zh-CN": "回旋踢 [阿努比斯]",
+            "ja": "スピンレッグスラッシュ [アヌビス]"
         },
         "UniqueSkill": true
     },
@@ -938,7 +1020,8 @@
         "Power": 100,
         "I18n": {
             "en": "Earth Impact",
-            "zh-CN": "地震 [森/雪猛犸]"
+            "zh-CN": "地震 [森/雪猛犸]",
+            "ja": "アースインパクト [グランモス/ブリザモス]"
         },
         "UniqueSkill": true
     },
@@ -949,7 +1032,8 @@
         "Power": 120,
         "I18n": {
             "en": "Forceful Charge",
-            "zh-CN": "巨力冲锋 [阿努比斯]"
+            "zh-CN": "巨力冲锋 [阿努比斯]",
+            "ja": "フォースドライブ [アヌビス]"
         },
         "UniqueSkill": true
     },
@@ -960,7 +1044,8 @@
         "Power": 140,
         "I18n": {
             "en": "Ground Smash",
-            "zh-CN": "粉碎大地 [阿努比斯]"
+            "zh-CN": "粉碎大地 [阿努比斯]",
+            "ja": "グラウンドスマッシャー [アヌビス]"
         },
         "UniqueSkill": true
     },
@@ -975,7 +1060,8 @@
         "Power": 30,
         "I18n": {
             "en": "Dragon Cannon",
-            "zh-CN": "龙息弹"
+            "zh-CN": "龙息弹",
+            "ja": "ドラゴンキャノン"
         },
         "SkillFruit": true
     },
@@ -986,7 +1072,8 @@
         "Power": 55,
         "I18n": {
             "en": "Dragon Burst",
-            "zh-CN": "龙之波动"
+            "zh-CN": "龙之波动",
+            "ja": "ドラゴンバースト"
         },
         "SkillFruit": true
     },
@@ -997,7 +1084,8 @@
         "Power": 70,
         "I18n": {
             "en": "Draconic Breath",
-            "zh-CN": "龙息"
+            "zh-CN": "龙息",
+            "ja": "ドラゴンブレス"
         },
         "SkillFruit": true
     },
@@ -1008,7 +1096,8 @@
         "Power": 150,
         "I18n": {
             "en": "Dragon Meteor",
-            "zh-CN": "龙彗星"
+            "zh-CN": "龙彗星",
+            "ja": "ドラゴンメテオ"
         },
         "SkillFruit": true
     },
@@ -1021,7 +1110,8 @@
         "Power": 70,
         "I18n": {
             "en": "Mystic Whirlwind",
-            "zh-CN": "神秘旋风 [精灵/水灵龙]"
+            "zh-CN": "神秘旋风 [精灵/水灵龙]",
+            "ja": "ミスティックハリケーン [シルフィア/シルティア]"
         },
         "UniqueSkill": true
     },
@@ -1032,7 +1122,8 @@
         "Power": 140,
         "I18n": {
             "en": "Beam Comet",
-            "zh-CN": "光束彗星 [空涡龙]"
+            "zh-CN": "光束彗星 [空涡龙]",
+            "ja": "ビームコメット [ジェッドラン]"
         },
         "UniqueSkill": true
     },
@@ -1046,7 +1137,8 @@
         "Power": 30,
         "I18n": {
             "en": "Poison Blast",
-            "zh-CN": "剧毒射击"
+            "zh-CN": "剧毒射击",
+            "ja": "ポイズンシュート"
         },
         "SkillFruit": true
     },
@@ -1057,7 +1149,8 @@
         "Power": 55,
         "I18n": {
             "en": "Shadow Burst",
-            "zh-CN": "暗影波动"
+            "zh-CN": "暗影波动",
+            "ja": "シャドウバースト"
         },
         "SkillFruit": true
     },
@@ -1068,7 +1161,8 @@
         "Power": 75,
         "I18n": {
             "en": "Spirit Flame",
-            "zh-CN": "鬼火"
+            "zh-CN": "鬼火",
+            "ja": "スプリットフレイム"
         },
         "SkillFruit": true
     },
@@ -1079,7 +1173,8 @@
         "Power": 100,
         "I18n": {
             "en": "Nightmare Ball",
-            "zh-CN": "恶梦球"
+            "zh-CN": "恶梦球",
+            "ja": "ナイトメアボール"
         },
         "SkillFruit": true
     },
@@ -1090,7 +1185,8 @@
         "Power": 150,
         "I18n": {
             "en": "Dark Laser",
-            "zh-CN": "暗黑镭射"
+            "zh-CN": "暗黑镭射",
+            "ja": "ダークレーザー"
         },
         "SkillFruit": true
     },
@@ -1105,7 +1201,8 @@
         "Power": 55,
         "I18n": {
             "en": "Phantom Peck",
-            "zh-CN": "幻影突袭 [黑鸦隐士]"
+            "zh-CN": "幻影突袭 [黑鸦隐士]",
+            "ja": "ファントムアサルト [マスクロウ]"
         },
         "UniqueSkill": true
     },
@@ -1116,7 +1213,8 @@
         "Power": 55,
         "I18n": {
             "en": "Jumping Claw",
-            "zh-CN": "飞跃爪击 [月镰魔]"
+            "zh-CN": "飞跃爪击 [月镰魔]",
+            "ja": "ジャンピングクロー [ツキカゲ]"
         },
         "UniqueSkill": true
     },
@@ -1127,7 +1225,8 @@
         "Power": 85,
         "I18n": {
             "en": "Dark Charge",
-            "zh-CN": "暗影冲撞 [邪麒麟]"
+            "zh-CN": "暗影冲撞 [邪麒麟]",
+            "ja": "ダークチャージ [サラブラック]"
         },
         "UniqueSkill": true
     },
@@ -1138,7 +1237,8 @@
         "Power": 120,
         "I18n": {
             "en": "Twin Spears",
-            "zh-CN": "双枪一闪 [混沌骑士]"
+            "zh-CN": "双枪一闪 [混沌骑士]",
+            "ja": "双槍一閃 [ベイントール]"
         },
         "UniqueSkill": true
     },
@@ -1149,7 +1249,8 @@
         "Power": 160,
         "I18n": {
             "en": "Divine Disaster",
-            "zh-CN": "神圣灾祸 [异构格里芬]"
+            "zh-CN": "神圣灾祸 [异构格里芬]",
+            "ja": "ディザスターディバイン [ゼノグリフ]"
         },
         "UniqueSkill": true
     },
@@ -1160,7 +1261,8 @@
         "Power": 160,
         "I18n": {
             "en": "Dark Whisp [Victor & Shadowbeak]",
-            "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]"
+            "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]",
+            "ja": "ダークウィスプ [ヴィクター & ゼノグリフ]"
         },
         "UniqueSkill": true
     },
@@ -1173,7 +1275,8 @@
         "Power": 0,
         "I18n": {
             "en": "Poison Fog",
-            "zh-CN": "毒雾"
+            "zh-CN": "毒雾",
+            "ja": "ポイズンフォグ"
         }
     },
     "EPalWazaID::DarkBall": {
@@ -1183,7 +1286,8 @@
         "Power": 40,
         "I18n": {
             "en": "Dark Ball",
-            "zh-CN": "暗黑球"
+            "zh-CN": "暗黑球",
+            "ja": "ダークボール"
         }
     },
 
@@ -1200,7 +1304,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::WorkAttack",
-            "zh-CN": "EPalWazaID::WorkAttack"
+            "zh-CN": "EPalWazaID::WorkAttack",
+            "ja": "EPalWazaID::WorkAttack"
         }
     },
     "EPalWazaID::SnowStorm": {
@@ -1210,7 +1315,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::SnowStorm",
-            "zh-CN": "EPalWazaID::SnowStorm"
+            "zh-CN": "EPalWazaID::SnowStorm",
+            "ja": "EPalWazaID::SnowStorm"
         }
     },
     "EPalWazaID::Funnel_RaijinDaughter": {
@@ -1220,7 +1326,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Funnel_RaijinDaughter",
-            "zh-CN": "EPalWazaID::Funnel_RaijinDaughter"
+            "zh-CN": "EPalWazaID::Funnel_RaijinDaughter",
+            "ja": "EPalWazaID::Funnel_RaijinDaughter"
         }
     },
     "EPalWazaID::Scratch": {
@@ -1230,7 +1337,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Scratch",
-            "zh-CN": "EPalWazaID::Scratch"
+            "zh-CN": "EPalWazaID::Scratch",
+            "ja": "EPalWazaID::Scratch"
         }
     },
     "EPalWazaID::Funnel_DreamDemon": {
@@ -1240,7 +1348,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Funnel_DreamDemon",
-            "zh-CN": "EPalWazaID::Funnel_DreamDemon"
+            "zh-CN": "EPalWazaID::Funnel_DreamDemon",
+            "ja": "EPalWazaID::Funnel_DreamDemon"
         }
     },
     "EPalWazaID::CrossThunder": {
@@ -1250,7 +1359,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::CrossThunder",
-            "zh-CN": "EPalWazaID::CrossThunder"
+            "zh-CN": "EPalWazaID::CrossThunder",
+            "ja": "EPalWazaID::CrossThunder"
         }
     },
     "EPalWazaID::EnergyShot": {
@@ -1260,7 +1370,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::EnergyShot",
-            "zh-CN": "EPalWazaID::EnergyShot"
+            "zh-CN": "EPalWazaID::EnergyShot",
+            "ja": "EPalWazaID::EnergyShot"
         }
     },
     "EPalWazaID::Unique_BluePlatypus_Toboggan": {
@@ -1270,7 +1381,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Unique_BluePlatypus_Toboggan",
-            "zh-CN": "EPalWazaID::Unique_BluePlatypus_Toboggan"
+            "zh-CN": "EPalWazaID::Unique_BluePlatypus_Toboggan",
+            "ja": "EPalWazaID::Unique_BluePlatypus_Toboggan"
         }
     },
     "EPalWazaID::Psychokinesis": {
@@ -1280,7 +1392,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Psychokinesis",
-            "zh-CN": "EPalWazaID::Psychokinesis"
+            "zh-CN": "EPalWazaID::Psychokinesis",
+            "ja": "EPalWazaID::Psychokinesis"
         }
     },
     "EPalWazaID::Human_Punch": {
@@ -1290,7 +1403,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Human_Punch",
-            "zh-CN": "EPalWazaID::Human_Punch"
+            "zh-CN": "EPalWazaID::Human_Punch",
+            "ja": "EPalWazaID::Human_Punch"
         }
     },
     "EPalWazaID::Throw": {
@@ -1300,7 +1414,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Throw",
-            "zh-CN": "EPalWazaID::Throw"
+            "zh-CN": "EPalWazaID::Throw",
+            "ja": "EPalWazaID::Throw"
         }
     },
     "EPalWazaID::ThunderRain": {
@@ -1310,7 +1425,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::ThunderRain",
-            "zh-CN": "EPalWazaID::ThunderRain"
+            "zh-CN": "EPalWazaID::ThunderRain",
+            "ja": "EPalWazaID::ThunderRain"
         }
     },
     "EPalWazaID::Unique_Kirin_LightningTackle": {
@@ -1320,7 +1436,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Unique_Kirin_LightningTackle",
-            "zh-CN": "EPalWazaID::Unique_Kirin_LightningTackle"
+            "zh-CN": "EPalWazaID::Unique_Kirin_LightningTackle",
+            "ja": "EPalWazaID::Unique_Kirin_LightningTackle"
         }
     },
     "EPalWazaID::WaterWave": {
@@ -1330,7 +1447,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::WaterWave",
-            "zh-CN": "EPalWazaID::WaterWave"
+            "zh-CN": "EPalWazaID::WaterWave",
+            "ja": "EPalWazaID::WaterWave"
         }
     },
     "EPalWazaID::TidalWave": {
@@ -1340,7 +1458,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::TidalWave",
-            "zh-CN": "EPalWazaID::TidalWave"
+            "zh-CN": "EPalWazaID::TidalWave",
+            "ja": "EPalWazaID::TidalWave"
         }
     },
     "EPalWazaID::Unique_WeaselDragon_FlyingTackle": {
@@ -1350,7 +1469,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
-            "zh-CN": "EPalWazaID::Unique_WeaselDragon_FlyingTackle"
+            "zh-CN": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
+            "ja": "EPalWazaID::Unique_WeaselDragon_FlyingTackle"
         }
     },
     "EPalWazaID::Intimidate": {
@@ -1360,7 +1480,8 @@
         "Power": -1,
         "I18n": {
             "en": "EPalWazaID::Intimidate",
-            "zh-CN": "EPalWazaID::Intimidate"
+            "zh-CN": "EPalWazaID::Intimidate",
+            "ja": "EPalWazaID::Intimidate"
         }
     }
 }

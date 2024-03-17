@@ -2,10 +2,6 @@
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
-function loadSave() {
-
-}
-
 </script>
 
 <template>
@@ -14,8 +10,10 @@ function loadSave() {
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
             <p>Hello there!</p>
             <p> > Thank you for using this tool!</p>
-            <p> > If you are running this tool on web page, or from a docker container, please consider setting up a password.</p>
-            <p> > This is important, especially if you are considering remote accessting this tool.</p>
+            <p> > If you are running this tool on webui mode, or from a docker container, consider setup a password to prevent unauthorized remote access.</p>
+            <br>
+            <p> > If you have any issue, or want to contribute, check out <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub</a> page.</p>
+            <p> > If you love this tool and wish to donate, check out my <a target="_blank" href="https://ko-fi.com/connlost">ko-fi</a> page.</p>
             <br>
 
         </div>
@@ -35,6 +33,10 @@ function loadSave() {
 </template>
 
 <style scoped>
+a {
+    color: aquamarine;
+}
+
 div#entryDiv {
     display: flex;
     flex-direction: row;

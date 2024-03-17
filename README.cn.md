@@ -5,7 +5,9 @@
 </p>
 
 <p align='center'>
-<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge">&nbsp;&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;&nbsp;
+<a href="https://discord.gg/Dg5CcDem"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/Dg5CcDem"></a>&nbsp;&nbsp;
 <img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
 <img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
 </p>
@@ -47,6 +49,7 @@
 - [x] 生成帕鲁
 - [x] 复制帕鲁
 - [x] 删除帕鲁
+- [x] 显示 / 隐藏 不在玩家帕鲁栏位中的帕鲁
 - [x] 显示 / 隐藏 无用的帕鲁数据
 - [x] 列出玩家和帕鲁
 - [x] 查看帕鲁数据
@@ -154,7 +157,9 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## 赞助
 
-感谢你看到这里，但是暂未决定。
+[ko-fi ❤️](https://ko-fi.com/connlost)
+
+<img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
 
 ## 感谢
 

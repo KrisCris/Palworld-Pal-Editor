@@ -7,7 +7,7 @@
 <p align='center'>
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;&nbsp;
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/activity"><img alt="GitHub Repo Commits" src="https://img.shields.io/github/commits-since/KrisCris/Palworld-Pal-Editor/latest?style=for-the-badge"></a>&nbsp;&nbsp;
+<a href="https://discord.gg/Dg5CcDem"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/Dg5CcDem"></a>&nbsp;&nbsp;
 <img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
 <img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
 </p>
@@ -55,7 +55,8 @@
 - [x] Spawn Pal
 - [x] Duplicate Pal
 - [x] Delete Pal
-- [x] Highlight (so you can delete them) / hide pals that are not displayed in game.
+- [x] Show / hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other player, prior palworld v0.1.5))
+- [x] Show (so you can delete them) / hide pals that are not displayed in game.
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -165,7 +166,7 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## Sponsor
 
-THANK YOU ❤️, BUT THIS IS YET TBD.
+[ko-fi ❤️](https://ko-fi.com/connlost)
 
 ## Thanks
 
