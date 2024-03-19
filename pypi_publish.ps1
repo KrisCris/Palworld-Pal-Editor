@@ -59,5 +59,7 @@ pip install -r requirements.txt
 pip install twine
 pip install --upgrade build
 
+Remove-Item ".\dist" -Recurse -Force
+
 python -m build
 python -m twine upload dist/*

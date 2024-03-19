@@ -15,62 +15,18 @@ def alphanumeric_key(key: str):
 def clamp(min_value: int, max_value: int, val: int) -> int:
     return max(min_value, min(max_value, val))
 
-# def is_union_type(hint):
-#     return isinstance(hint, _GenericAlias) and hint.__origin__ is Union
-
-# def is_instance(obj, hint):
-#     if is_union_type(hint):
-#         return any(is_instance(obj, sub_hint) for sub_hint in hint.__args__)
-#     else:
-#         return isinstance(obj, hint)
-
-# def convert_type(value, to_type):
-#     if is_union_type(to_type):
-#         for sub_type in to_type.__args__:
-#             try:
-#                 return sub_type(value)
-#             except (ValueError, TypeError):
-#                 continue
-#         raise TypeError(f"Cannot convert value '{value}' to any of {to_type}")
-#     else:
-#         try:
-#             return to_type(value)
-#         except (ValueError, TypeError) as e:
-#             raise TypeError(f"Cannot convert value '{value}' of type {type(value).__name__} to {to_type.__name__}") from e
-
-# def type_guard(func):
-#     @wraps(func)
-#     def wrapper(*args, **kwargs):
-#         hints = get_type_hints(func)
-#         arg_names = func.__code__.co_varnames[:func.__code__.co_argcount]
-#         all_args = dict(zip(arg_names, args))
-#         all_args.update(kwargs)
-
-#         for arg_name, arg_value in all_args.items():
-#             hint = hints.get(arg_name)
-#             if hint and not is_instance(arg_value, hint):
-#                 try:
-#                     all_args[arg_name] = convert_type(arg_value, hint)
-#                 except TypeError as e:
-#                     LOGGER.warn(f"Argument '{arg_name}' of {func.__name__} expected {hint}, got {type(arg_value).__name__}. Error: {e}")
-#                     return TypeError(f"Argument '{arg_name}' of {func.__name__} expected {hint}, got {type(arg_value).__name__}. Error: {e}")
-#         return func(**all_args)
-
-#     return wrapper
 
 def is_union_type(hint):
-    # Check for both typing.Union and types.UnionType (Python 3.10+)
-    if sys.version_info >= (3, 10):
-        import types
-        return isinstance(hint, types.UnionType)
-    else:
-        return isinstance(hint, _GenericAlias) and hint.__origin__ is Union
+    import types
+    return isinstance(hint, types.UnionType)
+
 
 def is_instance(obj, hint):
     if is_union_type(hint):
         return any(is_instance(obj, sub_hint) for sub_hint in getattr(hint, '__args__', []))
     else:
         return isinstance(obj, hint)
+
 
 def convert_type(value, to_type):
     if is_union_type(to_type):
@@ -85,6 +41,7 @@ def convert_type(value, to_type):
             return to_type(value)
         except (ValueError, TypeError) as e:
             raise TypeError(f"Cannot convert value '{value}' of type {type(value).__name__} to {to_type.__name__}") from e
+
 
 def type_guard(func):
     @wraps(func)

@@ -59,16 +59,9 @@ def main():
         case "gui": gui_main()
         case "web": webui_main()
 
-    # if Config.cli:
-    #     globals().update(cli_main())
-    # elif Config.gui:
-    #     gui_main()
-    # elif Config.web:
-    #     webui_main()
-    # else:
-        # raise NotImplementedError("unimplemented interaction method")
-
 if __name__ == "__main__":
+    LOGGER.info(f"Logs written to {PROGRAM_PATH / 'logs'}")
+    
     try:
         main()
     except Exception as e:
