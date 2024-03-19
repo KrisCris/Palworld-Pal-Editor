@@ -78,7 +78,11 @@ class PalGroup:
 class GroupData:
     def __init__(self, gvas_file: GvasFile) -> None:
         self.group_map = {}
-        self._GSDM = gvas_file.properties["worldSaveData"]["value"]["GroupSaveDataMap"]
+        self._wsd = gvas_file.properties["worldSaveData"]["value"]
+        if "GroupSaveDataMap" not in self._wsd:
+            LOGGER.info("No Group Found")
+            return
+        self._GSDM = self._wsd["GroupSaveDataMap"]
 
         for group in self._GSDM["value"]:
             group_id: UUID = group.get("key")

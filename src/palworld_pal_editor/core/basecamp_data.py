@@ -37,7 +37,12 @@ class PalBaseCamp:
 class BaseCampData:
     def __init__(self, gvas_file: GvasFile) -> None:
         self.camp_map = {}
-        self._BCSD: dict = gvas_file.properties["worldSaveData"]["value"]["BaseCampSaveData"]
+
+        self._wsd = gvas_file.properties["worldSaveData"]["value"]
+        if "BaseCampSaveData" not in self._wsd:
+            LOGGER.info("No Base Camp Found")
+            return
+        self._BCSD = self._wsd["BaseCampSaveData"]
 
         for camp in self._BCSD["value"]:
             camp_id: UUID = camp.get("key")
