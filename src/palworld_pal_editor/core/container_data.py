@@ -117,10 +117,13 @@ class ContainerSlot:
 
 class ContainerData:
     def __init__(self, gvas_file: GvasFile) -> None:
-        self._CCSD: dict = gvas_file.properties["worldSaveData"]["value"][
-            "CharacterContainerSaveData"
-        ]
         self.container_map = {}
+
+        self._wsd = gvas_file.properties["worldSaveData"]["value"]
+        if "CharacterContainerSaveData" not in self._wsd:
+            LOGGER.info("No Container Found")
+            return
+        self._CCSD: dict = self._wsd["CharacterContainerSaveData"]
 
         for container in self._CCSD["value"]:
             try:

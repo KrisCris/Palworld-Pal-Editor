@@ -36,11 +36,12 @@
     - [A Palworld Pal Editor developed by \_connlost with ❤️](#a-palworld-pal-editor-developed-by-_connlost-with-️)
   - [What This Tool Can Do](#what-this-tool-can-do)
   - [Usage](#usage)
-    - [A. Directly Run the Code](#a-directly-run-the-code)
-    - [B. Use Pre-Built Binary](#b-use-pre-built-binary)
+    - [A. Use Pre-Built Binary](#a-use-pre-built-binary)
+    - [B. Install via pip](#b-install-via-pip)
     - [C. Docker Container](#c-docker-container)
+    - [D. Directly Run the Code](#d-directly-run-the-code)
+    - [Optional Command-line Args](#optional-command-line-args)
     - [Config File](#config-file)
-      - [Note: Command Line Arguments Override Config](#note-command-line-arguments-override-config)
   - [Videos](#videos)
   - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
   - [Contribution](#contribution)
@@ -80,23 +81,15 @@
 
 **NOTE: YOU CAN ALWAYS RUN THE EDITOR IN A WEB BROWER, IN CASE THE GUI ISN'T WORKING FOR YOU.**
 
-### A. Directly Run the Code
+### A. Use Pre-Built Binary
 
-1. Install Python 3.11+ and node.js.
-2. Clone / Download the code
-3. In the project directory, run `setup_and_run.ps1` for Windows Powershell, or `setup_and_run.sh` on Unix-like OS.
-4. Optional Params:
-   - `--password=yourPW` Login password, you may want this if you are running web mode.
-   - `--mode=< gui | web | cli >` You can launch the program in either `gui`, `web` or `cli` mode.
-   - `--path=/path/to/save/folder` Provide the path to the folder containing Level.sav.
-   - `--port=8080` Port for web mode.
-   - `--lang=< zh-CN | en >` Currently supporting `zh-CN`, `en`, and `ja`. (Hardcoded UI texts are English only.)
-5. In `cli` mode, You can change language by calling `lang($LANG_CODE)`.
+Just download from GitHub Release Page or Nexusmods, may not be the latest code.
 
-### B. Use Pre-Built Binary
+### B. Install via pip
 
-1. Download from GitHub Release Page, may not be bundled with the latest code.
-2. Also support command line arguments mentioned above.
+1. Make sure you have Python 3.11+
+2. `pip install --upgrade palworld-pal-editor`
+3. `python -m palworld_pal_editor`
 
 ### C. Docker Container
 
@@ -104,9 +97,28 @@
 2. Copy `./docker/sample-docker-compose.yml` to `./docker/docker-compose.yml`, then do necessary modifications.
 3. Run `./build_and_run_docker.sh`, or just manually run the commands if you are using Windows.
 
+### D. Directly Run the Code
+
+1. Install Python 3.11+ and node.js.
+2. Clone / Download the code
+3. In the project directory, run `setup_and_run.ps1` for Windows Powershell, or `setup_and_run.sh` on Unix-like OS.
+4. In `cli` mode, You can change language by calling `lang($LANG_CODE)`.
+
+### Optional Command-line Args
+
+```text
+options:
+  -h, --help           show this help message and exit
+  --lang LANG          Language for the application. options: en, zh-CN, ja
+  --path PATH          Path to the save folder.
+  --mode MODE          Running Mode, options: cli, gui, web
+  --port PORT          Port used for WebUI mode.
+  --password PASSWORD  Password for WebUI.
+```
+
 ### Config File
 
-#### Note: Command Line Arguments Override Config
+***Note: Command Line Arguments Override Config***
 
 Default:
 

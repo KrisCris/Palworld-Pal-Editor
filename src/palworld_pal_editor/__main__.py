@@ -23,7 +23,7 @@ def setup_config_from_args():
     parser.add_argument('--path', type=str, help='Path to the save folder.', default=Config.path)
     parser.add_argument('--mode', type=str, help='Running Mode, options: cli, gui, web', default=Config.mode)
     parser.add_argument('--port', type=int, help='Port used for WebUI mode.', default=Config.port)
-    parser.add_argument('--password', type=str, help='Password for something.', default=Config.password)
+    parser.add_argument('--password', type=str, help='Password for WebUI.', default=Config.password)
 
     args = parser.parse_args()
 
@@ -59,16 +59,9 @@ def main():
         case "gui": gui_main()
         case "web": webui_main()
 
-    # if Config.cli:
-    #     globals().update(cli_main())
-    # elif Config.gui:
-    #     gui_main()
-    # elif Config.web:
-    #     webui_main()
-    # else:
-        # raise NotImplementedError("unimplemented interaction method")
-
 if __name__ == "__main__":
+    LOGGER.info(f"Logs written to {PROGRAM_PATH / 'logs'}")
+    
     try:
         main()
     except Exception as e:

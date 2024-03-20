@@ -250,6 +250,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SHOW_UNREF_PAL_FLAG = ref(false);
   const SHOW_OOB_PAL_FLAG = ref(true);
 
+  const PAL_LIST_SEARCH_KEYWORD = ref("")
+
   // data
   const BASE_PAL_MAP = ref(new Map());
   const PLAYER_MAP = ref(new Map());
@@ -942,6 +944,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!SHOW_OOB_PAL_FLAG.value && !pal.in_owner_palbox) {
       return true
     }
+
+    if (PAL_LIST_SEARCH_KEYWORD.value && 
+      !pal.DisplayName.toLowerCase().includes(PAL_LIST_SEARCH_KEYWORD.value.toLowerCase())) {
+      return true
+    }
+    
     return false
   }
 
@@ -1120,6 +1128,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
     SHOW_OOB_PAL_FLAG,
+
+    PAL_LIST_SEARCH_KEYWORD,
 
     IS_LOCKED,
     HAS_PASSWORD,

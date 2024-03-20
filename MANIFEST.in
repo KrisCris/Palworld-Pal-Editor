@@ -1,0 +1,5 @@
+include src/palworld_pal_editor/assets/data/*
+include src/palworld_pal_editor/assets/icons/elements/*
+include src/palworld_pal_editor/assets/icons/pals/*
+include src/palworld_pal_editor/webui/assets/*
+include src/palworld_pal_editor/webui/icons/*

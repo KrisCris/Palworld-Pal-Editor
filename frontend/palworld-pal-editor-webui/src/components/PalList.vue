@@ -83,6 +83,8 @@ function get_filtered_pal_list() {
     <div class="flex">
         <div class="title">
             <p>PAL LIST</p>
+            <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Pal Name"
+                :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
                 :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
                 :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">+</button>
@@ -91,7 +93,7 @@ function get_filtered_pal_list() {
         <div class="overflow-list" ref="palListContainer">
             <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
                 <button
-                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox}]"
+                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
                     :value="pal.InstanceId" @click="palStore.selectPal"
                     :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
                     <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
@@ -119,7 +121,7 @@ div.title {
     flex-wrap: nowrap;
     align-items: center;
     gap: .5rem;
-    justify-content: space-between;
+    /* justify-content: space-between; */
 }
 
 div.overflow-list {
@@ -138,6 +140,26 @@ div.overflow-list {
     padding-bottom: 0.1rem;
     /* scrollbar */
     width: 100%;
+}
+
+input.palFilter {
+    display: flex;
+    align-items: center;
+    background-color: #34353a;
+    width: 7rem;
+    height: 1rem;
+    margin: .2rem;
+    padding: .2rem .6rem;
+    border-radius: 1rem;
+    color: rgb(208, 212, 226);
+    box-shadow: 2px 2px 10px rgb(38, 38, 38);
+    border: none;
+    outline: none;
+}
+
+input.palFilter:focus {
+  background-color: #b4b7be;
+  color: rgb(0, 0, 0);
 }
 
 img.palIcon {

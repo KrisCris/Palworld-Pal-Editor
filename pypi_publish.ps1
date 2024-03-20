@@ -1,4 +1,3 @@
-$ErrorActionPreference = 'Continue'
 # Function to check and return the available Python command
 function Get-PythonCommand {
     $commands = @('python3', 'python')
@@ -11,6 +10,7 @@ function Get-PythonCommand {
     Write-Host "Python 3 is not installed."
     exit
 }
+
 
 # Check if npm is available
 $npmCmd = Get-Command npm -ErrorAction SilentlyContinue
@@ -41,9 +41,9 @@ $versionNumbers = $versionOutput -replace "Python ", "" -split "\."
 $majorVersion = [int]$versionNumbers[0]
 $minorVersion = [int]$versionNumbers[1]
 
-# Ensure Python version is at least 3.10
-if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 10)) {
-    Write-Host "Python version 3.10 or newer is required."
+# Ensure Python version is at least 3.11
+if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 11)) {
+    Write-Host "Python version 3.11 or newer is required."
     exit
 }
 
@@ -56,8 +56,10 @@ Write-Host "Using $($PYTHON_CMD) (version $($majorVersion).$($minorVersion))"
 # Install dependencies
 pip install -r requirements.txt
 
-pip install pyinstaller
+pip install twine
+pip install --upgrade build
 
 Remove-Item ".\dist" -Recurse -Force
 
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets;assets" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO
+python -m build
+python -m twine upload dist/*

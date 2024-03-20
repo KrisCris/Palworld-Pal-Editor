@@ -30,9 +30,11 @@
       - [幻兽帕鲁 帕鲁 编辑器](#幻兽帕鲁-帕鲁-编辑器)
   - [这个工具能干啥](#这个工具能干啥)
   - [使用](#使用)
-    - [1. 直接运行代码](#1-直接运行代码)
-    - [2. 打包的可执行文件](#2-打包的可执行文件)
-    - [3. Docker Container](#3-docker-container)
+    - [A. 使用打包的可执行文件](#a-使用打包的可执行文件)
+    - [B. 通过 pip 安装](#b-通过-pip-安装)
+    - [C. 使用 Docker Container](#c-使用-docker-container)
+    - [D. 直接运行代码](#d-直接运行代码)
+    - [可选命令行参数](#可选命令行参数)
     - [配置文件](#配置文件)
       - [命令行参数会覆盖并写入配置文件](#命令行参数会覆盖并写入配置文件)
   - [视频](#视频)
@@ -71,29 +73,40 @@
 
 ## 使用
 
-### 1. 直接运行代码
-
-1. 安装 Python 3.11+ 和 node.js
-2. 克隆 / 下载项目代码
-3. 在项目文件夹里运行，Windows：`setup_and_run.ps1`， Unix-like系统：`setup_and_run.sh`.
-4. 可选命令行参数:
-   - `--password=yourPW` WebUI 认证密码.
-   - `--mode=<gui | web | cli>` 运行模式，可选：`gui`, `web` 或 `cli`.
-   - `--path=/path/to/save/folder` 存档文件夹的路径（包含Level.sav的那个文件夹）.
-   - `--port=8080` 网页模式的端口.
-   - `--lang=<zh-CN | en>` 语言，目前支持 `zh-CN` 和 `en`. (目前页面上的文字是英文的，只有帕鲁，技能之类的是有翻译的。)
-5. 在 `cli` 模式下，你可以调用 `lang($LANG_CODE)` 函数来切换语言.
-
-### 2. 打包的可执行文件
+### A. 使用打包的可执行文件
 
 1. 下载Release页面的最新程序，或者你也可以去Actions里下载最近commits的打包（后者是最新的，但你很可能会遇到bug）。
-2. 命令行参数可用。
+2. （命令行参数可用。）
 
-### 3. Docker Container
+### B. 通过 pip 安装
+
+1. 请确保你使用了 Python 3.11+
+2. `pip install --upgrade palworld-pal-editor`
+3. `python -m palworld_pal_editor`
+
+### C. 使用 Docker Container
 
 1. 克隆项目.
 2. 复制 `./docker/sample-docker-compose.yml` 到 `./docker/docker-compose.yml`, 并根据需求做适当修改（网络不佳的用户建议传入代理环境变量）。
 3. 运行 `./build_and_run_docker.sh` 以构建容器并运行容器。（Windows的话你把里面的命令复制出来手动跑就行了）。
+
+### D. 直接运行代码
+
+1. 安装 Python 3.11+ 和 node.js
+2. 克隆 / 下载项目代码
+3. 在项目文件夹里运行，Windows：`setup_and_run.ps1`， Unix-like系统：`setup_and_run.sh`.
+
+### 可选命令行参数
+
+```text
+options:
+  -h, --help           show this help message and exit
+  --lang LANG          Language for the application. options: en, zh-CN, ja
+  --path PATH          Path to the save folder.
+  --mode MODE          Running Mode, options: cli, gui, web
+  --port PORT          Port used for WebUI mode.
+  --password PASSWORD  Password for WebUI.
+```
 
 ### 配置文件
 
