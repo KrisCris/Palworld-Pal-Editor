@@ -29,6 +29,11 @@ def serve_image(icon_type, filename):
         filename = image_path.name
         return send_from_directory(directory, filename)
     else:
+        if icon_type == 'pals':
+            image_path = ASSETS_PATH / 'assets/icons/pals/unknown.png'
+            directory = image_path.parent
+            filename = image_path.name
+            return send_from_directory(directory, filename)
         return "Image not found", 404
 
 

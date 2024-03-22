@@ -98,19 +98,19 @@ def get_active_skills():
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
 
 
-def displayElement(element):
-      elementEmojis = {
-        'Water': "💧",
-        'Fire': "🔥",
-        'Dragon': "🐉",
-        'Grass': "☘️",
-        'Ground': "🪨",
-        'Ice': "❄️",
-        'Electric': "⚡",
-        'Neutral': "😐",
-        'Dark': "🌑"
-      }
-      return elementEmojis.get(element) or "❓"
+# def displayElement(element):
+#       elementEmojis = {
+#         'Water': "💧",
+#         'Fire': "🔥",
+#         'Dragon': "🐉",
+#         'Grass': "☘️",
+#         'Ground': "🪨",
+#         'Ice': "❄️",
+#         'Electric': "⚡",
+#         'Neutral': "😐",
+#         'Dark': "🌑"
+#       }
+#       return elementEmojis.get(element) or "❓"
 
 @save_blueprint.route("/i18n", methods=["PATCH"])
 # @jwt_required()
@@ -135,6 +135,7 @@ def get_pal_data():
         data = {
             "InternalName": pal["InternalName"],
             "Elements": pal["Elements"],
+            "Invalid": pal.get("Invalid", False),
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),

@@ -1079,7 +1079,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function displayPalElement(DataAccessKey) {
-    const els = PAL_STATIC_DATA.value[DataAccessKey].Elements;
+    const els = PAL_STATIC_DATA.value[DataAccessKey]?.Elements;
+    if (!els) return
+    
     let str = "";
     for (let e of els) {
       str += displayElement(e);

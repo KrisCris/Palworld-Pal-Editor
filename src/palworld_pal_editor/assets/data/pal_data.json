@@ -4043,7 +4043,8 @@
         "I18n": {
             "en": "BadCatgirl"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "BlueberryFairy": {
         "InternalName": "BlueberryFairy",
@@ -4060,7 +4061,8 @@
         "I18n": {
             "en": "BlueberryFairy"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "BrownRabbit": {
         "InternalName": "BrownRabbit",
@@ -4076,7 +4078,8 @@
         "I18n": {
             "en": "BrownRabbit"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "ElecLion": {
         "InternalName": "ElecLion",
@@ -4108,7 +4111,8 @@
         "I18n": {
             "en": "FeatherOstrich"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "GoldenHorse": {
         "InternalName": "GoldenHorse",
@@ -4124,7 +4128,8 @@
         "I18n": {
             "en": "GoldenHorse"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "PinkKangaroo": {
         "InternalName": "PinkKangaroo",
@@ -4140,7 +4145,8 @@
         "I18n": {
             "en": "PinkKangaroo"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "ScorpionMan": {
         "InternalName": "ScorpionMan",
@@ -4156,7 +4162,8 @@
         "I18n": {
             "en": "ScorpionMan"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "SifuDog": {
         "InternalName": "SifuDog",
@@ -4172,7 +4179,8 @@
         "I18n": {
             "en": "SifuDog"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "TentacleTurtle": {
         "InternalName": "TentacleTurtle",
@@ -4188,7 +4196,8 @@
         "I18n": {
             "en": "TentacleTurtle"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "WingGolem": {
         "InternalName": "WingGolem",
@@ -4204,7 +4213,8 @@
         "I18n": {
             "en": "WingGolem"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "BeardedDragon": {
         "InternalName": "BeardedDragon",
@@ -4220,7 +4230,8 @@
         "I18n": {
             "en": "BeardedDragon"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "WaterLizard": {
         "InternalName": "WaterLizard",
@@ -4236,7 +4247,8 @@
         "I18n": {
             "en": "WaterLizard"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "GuardianDog": {
         "InternalName": "GuardianDog",
@@ -4252,7 +4264,8 @@
         "I18n": {
             "en": "GuardianDog"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "GrassDragon": {
         "InternalName": "GrassDragon",
@@ -4268,7 +4281,8 @@
         "I18n": {
             "en": "GrassDragon"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "BlackFurDragon": {
         "InternalName": "BlackFurDragon",
@@ -4712,7 +4726,8 @@
             "en": "Female Islander (Mobu_Female)",
             "zh-CN": "岛民 (Mobu_Female)"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "FireCult_FlameThrower": {
         "InternalName": "FireCult_FlameThrower",

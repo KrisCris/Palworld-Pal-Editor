@@ -20,11 +20,11 @@ const palStore = usePalEditorStore()
         <p class="cat">BASIC INFO</p>
         <div class="editField">
           <p class="const"> Specie: {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} {{
-    palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey].I18n }}
+    palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey}}
           </p>
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n">{{ palStore.displayPalElement(pal.InternalName) }} {{ pal.I18n }}
+              :key="pal.InternalName" :title="pal.I18n">{{pal.Invalid ? '❌': ""}}{{ palStore.displayPalElement(pal.InternalName) }} {{ pal.I18n }}
             </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
