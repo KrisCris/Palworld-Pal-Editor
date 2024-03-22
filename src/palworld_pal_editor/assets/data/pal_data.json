@@ -3884,9 +3884,7 @@
         "I18n": {
             "en": "Dragostrophe"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
     "ElecLion": {
         "InternalName": "ElecLion",
@@ -3902,9 +3900,7 @@
         "I18n": {
             "en": "Boltmane"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
     "DarkMutant": {
         "InternalName": "DarkMutant",
@@ -3921,9 +3917,7 @@
         "I18n": {
             "en": "Dark Mutant"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
     "GYM_ThunderDragonMan": {
         "InternalName": "GYM_ThunderDragonMan",
@@ -4024,8 +4018,8 @@
         "Elements": [
             "Dark"
         ],
-        "Attacks": {         
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,                                       
+        "Attacks": {
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,
             "EPalWazaID::DarkLegion": 1,
             "EPalWazaID::GhostFlame": 1,
             "EPalWazaID::ShadowBall": 1,
@@ -4081,11 +4075,669 @@
             "DEF": 100
         }
     },
+    "Hunter_Bat": {
+        "InternalName": "Hunter_Bat",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Thug (Bat)",
+            "zh-CN": "盗猎集团 新手 (Bat)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Bat_Invader": {
+        "InternalName": "Hunter_Bat_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Thug (Bat_Invader)",
+            "zh-CN": "盗猎集团 新手 (Bat_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Fat_GatlingGun": {
+        "InternalName": "Hunter_Fat_GatlingGun",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Crusher",
+            "zh-CN": "盗猎集团 粉碎者"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Fat_GatlingGun_Invader": {
+        "InternalName": "Hunter_Fat_GatlingGun_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Crusher (Invader)",
+            "zh-CN": "盗猎集团 粉碎者 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_FlameThrower": {
+        "InternalName": "Hunter_FlameThrower",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Cleaner",
+            "zh-CN": "盗猎集团 善后组"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_FlameThrower_Invader": {
+        "InternalName": "Hunter_FlameThrower_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Cleaner (Invader)",
+            "zh-CN": "盗猎集团 善后组 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Grenade": {
+        "InternalName": "Hunter_Grenade",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Grenadier",
+            "zh-CN": "盗猎集团 投弹组"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Grenade_Invader": {
+        "InternalName": "Hunter_Grenade_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Grenadier (Invader)",
+            "zh-CN": "盗猎集团 投弹组 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Handgun": {
+        "InternalName": "Hunter_Handgun",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Thug (Handgun)",
+            "zh-CN": "盗猎集团 新手 (Handgun)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Handgun_Invader": {
+        "InternalName": "Hunter_Handgun_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Thug (Handgun_Invader)",
+            "zh-CN": "盗猎集团 新手 (Handgun_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Rifle": {
+        "InternalName": "Hunter_Rifle",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Gunner",
+            "zh-CN": "盗猎集团 射手"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Rifle_Invader": {
+        "InternalName": "Hunter_Rifle_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Gunner (Invader)",
+            "zh-CN": "盗猎集团 射手 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_RocketLauncher": {
+        "InternalName": "Hunter_RocketLauncher",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Elite",
+            "zh-CN": "盗猎集团 精英"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_RocketLauncher_Invader": {
+        "InternalName": "Hunter_RocketLauncher_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Elite (Invader)",
+            "zh-CN": "盗猎集团 精英 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Shotgun": {
+        "InternalName": "Hunter_Shotgun",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Hunter",
+            "zh-CN": "盗猎集团 猎人"
+        },
+        "SortingKey": {}
+    },
+    "Hunter_Shotgun_Invader": {
+        "InternalName": "Hunter_Shotgun_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Hunter (Invader)",
+            "zh-CN": "盗猎集团 猎人 (Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Visitor_Hunter_Rifle": {
+        "InternalName": "Visitor_Hunter_Rifle",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Syndicate Thug (Visitor_Rifle)",
+            "zh-CN": "盗猎集团 新手 (Visitor_Rifle)"
+        },
+        "SortingKey": {}
+    },
+    "Believer_Bat": {
+        "InternalName": "Believer_Bat",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Free Pal Alliance Devout (Bat)",
+            "zh-CN": "帕鲁保护团体 支持者 (Bat)"
+        },
+        "SortingKey": {}
+    },
+    "Believer_Bat_Invader": {
+        "InternalName": "Believer_Bat_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Free Pal Alliance Devout (Bat_Invader)",
+            "zh-CN": "帕鲁保护团体 支持者 (Bat_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Believer_CrossBow": {
+        "InternalName": "Believer_CrossBow",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Free Pal Alliance Devout (CrossBow)",
+            "zh-CN": "帕鲁保护团体 支持者 (CrossBow)"
+        },
+        "SortingKey": {}
+    },
+    "Believer_CrossBow_Invader": {
+        "InternalName": "Believer_CrossBow_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Free Pal Alliance Devout (CrossBow_Invader)",
+            "zh-CN": "帕鲁保护团体 支持者 (CrossBow_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "Female_DesertPeople02": {
+        "InternalName": "Female_DesertPeople02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Female_Desert02)",
+            "zh-CN": "村民 (Female_Desert02)"
+        },
+        "SortingKey": {}
+    },
+    "Female_People02": {
+        "InternalName": "Female_People02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Female02)",
+            "zh-CN": "村民 (Female02)"
+        },
+        "SortingKey": {}
+    },
+    "Female_People03": {
+        "InternalName": "Female_People03",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Female03)",
+            "zh-CN": "村民 (Female03)"
+        },
+        "SortingKey": {}
+    },
+    "Male_DesertPeople01": {
+        "InternalName": "Male_DesertPeople01",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male_Desert01)",
+            "zh-CN": "村民 (Male_Desert01)"
+        },
+        "SortingKey": {}
+    },
+    "Male_People02": {
+        "InternalName": "Male_People02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male02)",
+            "zh-CN": "村民 (Male02)"
+        },
+        "SortingKey": {}
+    },
+    "Male_People03": {
+        "InternalName": "Male_People03",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male03)",
+            "zh-CN": "村民 (Male03)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Trader01": {
+        "InternalName": "Male_Trader01",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male_Trader01)",
+            "zh-CN": "村民 (Male_Trader01)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Trader02": {
+        "InternalName": "Male_Trader02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male_Trader02)",
+            "zh-CN": "村民 (Male_Trader02)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Trader03": {
+        "InternalName": "Male_Trader03",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Male_Trader03)",
+            "zh-CN": "村民 (Male_Trader03)"
+        },
+        "SortingKey": {}
+    },
+    "MobuVillager": {
+        "InternalName": "MobuVillager",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Villager (Mobu)",
+            "zh-CN": "村民 (Mobu)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Soldier01": {
+        "InternalName": "Male_Soldier01",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Male_Soldier01)",
+            "zh-CN": "岛民 (Male_Soldier01)"
+        },
+        "SortingKey": {}
+    },
+    "Female_Soldier01": {
+        "InternalName": "Female_Soldier01",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Soldier01)",
+            "zh-CN": "岛民 (Soldier01)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Police_old": {
+        "InternalName": "Male_Police_old",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Male_Police_old)",
+            "zh-CN": "岛民 (Male_Police_old)"
+        },
+        "SortingKey": {}
+    },
+    "MobuCitizen_Male": {
+        "InternalName": "MobuCitizen_Male",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Mobu_Male)",
+            "zh-CN": "岛民 (Mobu_Male)"
+        },
+        "SortingKey": {}
+    },
+    "MobuCitizen": {
+        "InternalName": "MobuCitizen",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Mobu)",
+            "zh-CN": "岛民 (Mobu)"
+        },
+        "SortingKey": {}
+    },
+    "MobuCitizen_Female": {
+        "InternalName": "MobuCitizen_Female",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Female Islander (Mobu_Female)",
+            "zh-CN": "岛民 (Mobu_Female)"
+        },
+        "SortingKey": {}
+    },
+    "FireCult_FlameThrower": {
+        "InternalName": "FireCult_FlameThrower",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Brothers of the Eternal Pyre Martyr (FlameThrower)",
+            "zh-CN": "永炎同心会 殉教者 (FlameThrower)"
+        },
+        "SortingKey": {}
+    },
+    "FireCult_FlameThrower_Invader": {
+        "InternalName": "FireCult_FlameThrower_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Brothers of the Eternal Pyre Martyr (FlameThrower_Invader)",
+            "zh-CN": "永炎同心会 殉教者 (FlameThrower_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "FireCult_Rifle": {
+        "InternalName": "FireCult_Rifle",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Brothers of the Eternal Pyre Martyr (Rifle)",
+            "zh-CN": "永炎同心会 殉教者 (Rifle)"
+        },
+        "SortingKey": {}
+    },
+    "FireCult_Rifle_Invader": {
+        "InternalName": "FireCult_Rifle_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Brothers of the Eternal Pyre Martyr (Rifle_Invader)",
+            "zh-CN": "永炎同心会 殉教者 (Rifle_Invader)"
+        },
+        "SortingKey": {}
+    },
+    "WeaponsDealer": {
+        "InternalName": "WeaponsDealer",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Weapons Dealer",
+            "zh-CN": "武器商人"
+        },
+        "SortingKey": {}
+    },
+    "GoodwillAmbassador": {
+        "InternalName": "GoodwillAmbassador",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (GoodwillAmbassador)",
+            "zh-CN": "帕鲁商人 (GoodwillAmbassador)"
+        },
+        "SortingKey": {}
+    },
+    "Inspector": {
+        "InternalName": "Inspector",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (Inspector)",
+            "zh-CN": "帕鲁商人 (Inspector)"
+        },
+        "SortingKey": {}
+    },
+    "PalDealer": {
+        "InternalName": "PalDealer",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (PalDealer)",
+            "zh-CN": "帕鲁商人 (PalDealer)"
+        },
+        "SortingKey": {}
+    },
+    "PalDealer_Desert": {
+        "InternalName": "PalDealer_Desert",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (Desert)",
+            "zh-CN": "帕鲁商人 (Desert)"
+        },
+        "SortingKey": {}
+    },
+    "PalDealer_Volcano": {
+        "InternalName": "PalDealer_Volcano",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (Volcano)",
+            "zh-CN": "帕鲁商人 (Volcano)"
+        },
+        "SortingKey": {}
+    },
+    "PalTrader": {
+        "InternalName": "PalTrader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (PalTrader)",
+            "zh-CN": "帕鲁商人 (PalTrader)"
+        },
+        "SortingKey": {}
+    },
+    "RandomEventShop": {
+        "InternalName": "RandomEventShop",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (RandomEventShop)",
+            "zh-CN": "帕鲁商人 (RandomEventShop)"
+        },
+        "SortingKey": {}
+    },
+    "Robbery_Leader": {
+        "InternalName": "Robbery_Leader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (Robbery_Leader)",
+            "zh-CN": "帕鲁商人 (Robbery_Leader)"
+        },
+        "SortingKey": {}
+    },
+    "Robbery_Minion": {
+        "InternalName": "Robbery_Minion",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Pal Merchant (Robbery_Minion)",
+            "zh-CN": "帕鲁商人 (Robbery_Minion)"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson": {
+        "InternalName": "SalesPerson",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant",
+            "zh-CN": "流浪商人"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson_Desert": {
+        "InternalName": "SalesPerson_Desert",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Desert)",
+            "zh-CN": "流浪商人 (Desert)"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson_Desert2": {
+        "InternalName": "SalesPerson_Desert2",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Desert2)",
+            "zh-CN": "流浪商人 (Desert2)"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson_Volcano": {
+        "InternalName": "SalesPerson_Volcano",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Volcano)",
+            "zh-CN": "流浪商人 (Volcano)"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson_Volcano2": {
+        "InternalName": "SalesPerson_Volcano2",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Volcano2)",
+            "zh-CN": "流浪商人 (Volcano2)"
+        },
+        "SortingKey": {}
+    },
+    "SalesPerson_Wander": {
+        "InternalName": "SalesPerson_Wander",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Wander)",
+            "zh-CN": "流浪商人 (Wander)"
+        },
+        "SortingKey": {}
+    },
+    "Visitor_Present": {
+        "InternalName": "Visitor_Present",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Wandering Merchant (Visitor_Present)",
+            "zh-CN": "流浪商人 (Visitor_Present)"
+        },
+        "SortingKey": {}
+    },
+    "Guard_Rifle": {
+        "InternalName": "Guard_Rifle",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Guard (Rifle)",
+            "zh-CN": "卫兵 (Rifle)"
+        },
+        "SortingKey": {}
+    },
+    "Guard_Shotgun": {
+        "InternalName": "Guard_Shotgun",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Guard (Shotgun)",
+            "zh-CN": "卫兵 (Shotgun)"
+        },
+        "SortingKey": {}
+    },
     "Male_DarkTrader01": {
         "InternalName": "Male_DarkTrader01",
-        "Elements": [
-            "None"
-        ],
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
@@ -4093,568 +4745,140 @@
             "zh-CN": "黑市商人",
             "ja": "闇商人"
         },
-        "SortingKey": {
-
-        },
+        "SortingKey": {},
         "Scaling": {
             "HP": 1000,
             "ATK": 80,
             "DEF": 90
         }
     },
-    "FireCult_FlameThrower": {
-        "InternalName": "FireCult_FlameThrower",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Brothers of the Eternal Pyre Martyr",
-            "zh-CN": "Brothers of the Eternal Pyre Martyr"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "FireCult_Rifle": {
-        "InternalName": "FireCult_Rifle",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Brothers of the Eternal Pyre Rifleman"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Male_Soldier01": {
-        "InternalName": "Male_Soldier01",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Burly Merc",
-            "zh-CN": "Burly Merc"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Female_Soldier01": {
-        "InternalName": "Female_Soldier01",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Expedition Survivor",
-            "zh-CN": "Expedition Survivor"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Believer_CrossBow": {
-        "InternalName": "Believer_CrossBow",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Free Pal Alliance Devout",
-            "zh-CN": "Free Pal Alliance Devout"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Believer_Bat": {
-        "InternalName": "Believer_Bat",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {            
-            "en": "Free Pal Alliance Thug",
-            "zh-CN": "帕鲁保护团体-支持者"
-        },
-        "SortingKey": {
-
-        }
-    },
     "Male_Scientist01_LaserRifle": {
         "InternalName": "Male_Scientist01_LaserRifle",
-        "Elements": [
-            "None"
-        ],
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "PAL Genetic Research Unit Executioner",
-            "zh-CN": "PAL Genetic Research Unit Executioner"
+            "en": "PAL Genetic Research Unit Executioner (LaserRifle)",
+            "zh-CN": "基因研究部队 执行小队 (LaserRifle)"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
-    "PalDealer": {
-        "InternalName": "PalDealer",
-        "Elements": [
-            "None"
-        ],
+    "Male_Scientist01_LaserRifle_Invader": {
+        "InternalName": "Male_Scientist01_LaserRifle_Invader",
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant",
-            "zh-CN": "帕鲁商人"
+            "en": "PAL Genetic Research Unit Executioner (LaserRifle_Invader)",
+            "zh-CN": "基因研究部队 执行小队 (LaserRifle_Invader)"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
+    },
+    "Scientist_FlameThrower": {
+        "InternalName": "Scientist_FlameThrower",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "PAL Genetic Research Unit Executioner (FlameThrower)",
+            "zh-CN": "基因研究部队 执行小队 (FlameThrower)"
+        },
+        "SortingKey": {}
+    },
+    "Scientist_FlameThrower_Invader": {
+        "InternalName": "Scientist_FlameThrower_Invader",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "PAL Genetic Research Unit Executioner (FlameThrower_Invader)",
+            "zh-CN": "基因研究部队 执行小队 (FlameThrower_Invader)"
+        },
+        "SortingKey": {}
     },
     "Police_Handgun": {
         "InternalName": "Police_Handgun",
-        "Elements": [
-            "None"
-        ],
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
             "en": "PIDF Guard",
-            "zh-CN": "PIDF Guard"
+            "zh-CN": "自卫队 守卫"
         },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Bat": {
-        "InternalName": "Hunter_Bat",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Thug (Bat)",
-            "zh-CN": "Syndicate Thug (Bat)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_FlameThrower": {
-        "InternalName": "Hunter_FlameThrower",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Cleaner",
-            "zh-CN": "Syndicate Cleaner"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Fat_GatlingGun": {
-        "InternalName": "Hunter_Fat_GatlingGun",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Crusher",
-            "zh-CN": "盗猎集团-粉碎者"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_RocketLauncher": {
-        "InternalName": "Hunter_RocketLauncher",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Elite",
-            "zh-CN": "Syndicate Elite"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Grenade": {
-        "InternalName": "Hunter_Grenade",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Grenadier",
-            "zh-CN": "Syndicate Grenadier"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Rifle": {
-        "InternalName": "Hunter_Rifle",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Gunner",
-            "zh-CN": "Syndicate Gunner"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Shotgun": {
-        "InternalName": "Hunter_Shotgun",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Hunter",
-            "zh-CN": "Syndicate Hunter"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Hunter_Handgun": {
-        "InternalName": "Hunter_Handgun",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Syndicate Thug (Handgun)",
-            "zh-CN": "Syndicate Thug (Handgun)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson": {
-        "InternalName": "SalesPerson",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant",
-            "zh-CN": "流浪商人"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson_Wander": {
-        "InternalName": "SalesPerson_Wander",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant (Wander)",
-            "zh-CN": "流浪商人 (Wander)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson_Desert": {
-        "InternalName": "SalesPerson_Desert",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant (Desert)",
-            "zh-CN": "流浪商人 (Desert)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson_Desert2": {
-        "InternalName": "SalesPerson_Desert2",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant (Desert2)",
-            "zh-CN": "流浪商人 (Desert)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson_Volcano": {
-        "InternalName": "SalesPerson_Volcano",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant (Volcano)",
-            "zh-CN": "流浪商人 (Volcano)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "SalesPerson_Volcano2": {
-        "InternalName": "SalesPerson_Volcano2",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Wandering Merchant (Volcano2)",
-            "zh-CN": "流浪商人 (Volcano2)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Female_DesertPeople02": {
-        "InternalName": "Female_DesertPeople02",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Female Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Female_People02": {
-        "InternalName": "Female_People02",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Female Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Female_People03": {
-        "InternalName": "Female_People03",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Female Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Male_DesertPeople01": {
-        "InternalName": "Male_DesertPeople01",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Male Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Male_People02": {
-        "InternalName": "Male_People02",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Male Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Male_People03": {
-        "InternalName": "Male_People03",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Male Villager"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "MobuCitizen": {
-        "InternalName": "MobuCitizen",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Islander"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "MobuCitizen_Male": {
-        "InternalName": "MobuCitizen_Male",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Male Islander"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "MobuCitizen_Female": {
-        "InternalName": "MobuCitizen_Female",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Female Islander"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Guard_Rifle": {
-        "InternalName": "Guard_Rifle",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Guard"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "Guard_Shotgun": {
-        "InternalName": "Guard_Shotgun",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "PIDF Goody Two-Shoes"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "PalDealer_Desert": {
-        "InternalName": "PalDealer_Desert",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Pal Merchant (Desert)"
-        },
-        "SortingKey": {
-
-        }
-    },
-    "PalDealer_Volcano": {
-        "InternalName": "PalDealer_Volcano",
-        "Elements": [
-            "None"
-        ],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Pal Merchant (Volcano)"
-        },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
     "Police_Rifle": {
         "InternalName": "Police_Rifle",
-        "Elements": [
-            "None"
-        ],
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "PIDF Infantry"
+            "en": "PIDF Infantry",
+            "zh-CN": "自卫队 步枪士兵"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
     },
     "Police_Shotgun": {
         "InternalName": "Police_Shotgun",
-        "Elements": [
-            "None"
-        ],
+        "Elements": [],
         "Attacks": {},
         "Human": true,
         "I18n": {
             "en": "PIDF Elite",
-            "zh-CN": "自卫队-精英"
+            "zh-CN": "自卫队 精英"
         },
-        "SortingKey": {
-
-        }
+        "SortingKey": {}
+    },
+    "QuestMan": {
+        "InternalName": "QuestMan",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "InternalName: QuestMan"
+        },
+        "SortingKey": {}
+    },
+    "TestAssassin": {
+        "InternalName": "TestAssassin",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "InternalName: TestAssassin"
+        },
+        "SortingKey": {}
+    },
+    "TestNPC": {
+        "InternalName": "TestNPC",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "InternalName: TestNPC"
+        },
+        "SortingKey": {}
+    },
+    "SecurityDrone": {
+        "InternalName": "SecurityDrone",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Drone",
+            "zh-CN": "监视无人机"
+        },
+        "SortingKey": {}
+    },
+    "VisitingMerchant": {
+        "InternalName": "VisitingMerchant",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Visitor",
+            "zh-CN": "来访者"
+        },
+        "SortingKey": {}
     }
 }
