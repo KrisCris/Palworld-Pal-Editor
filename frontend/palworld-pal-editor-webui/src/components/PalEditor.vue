@@ -156,11 +156,11 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.PASSIVE_SKILLS[skill].I18n[1]">
-                {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill].Rating) }} {{
-    palStore.PASSIVE_SKILLS[skill].I18n[0] }}
+              <p class="const" :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
+                {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
+    palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
-              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill].I18n[1] }}</span>
+              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill}}</span>
             </div>
 
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
@@ -185,17 +185,17 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].I18n
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
+    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
                 }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill].CT }}</p>
-                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{
-    palStore.ACTIVE_SKILLS[skill].Element }}</p>
-                <p>{{ palStore.ACTIVE_SKILLS[skill].IsUniqueSkill ? "✨ Unique" : "" }} {{
-    palStore.ACTIVE_SKILLS[skill].HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
+                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
+                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+    palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} {{
+    palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
               </span>
             </div>
 
@@ -210,17 +210,17 @@ const palStore = usePalEditorStore()
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill].I18n">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{ palStore.ACTIVE_SKILLS[skill].I18n
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
+    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
                 }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill].I18n }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill].Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill].CT }}</p>
-                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill].Element) }} {{
-    palStore.ACTIVE_SKILLS[skill].Element }}</p>
-                <p>{{ palStore.ACTIVE_SKILLS[skill].IsUniqueSkill ? "✨ Unique" : "" }} {{
-    palStore.ACTIVE_SKILLS[skill].HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
+                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
+                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+    palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} {{
+    palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
               </span>
             </div>
             <button

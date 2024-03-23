@@ -1105,11 +1105,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function skillIcon(atk) {
-    if (ACTIVE_SKILLS.value[atk].IsUniqueSkill) return "✨";
-    if (ACTIVE_SKILLS.value[atk].HasSkillFruit) return "🍐";
+    if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
+    if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
   }
 
   function displayRating(rating) {
+    if (rating === undefined) return ""
     if (rating < 0) return "🔴";
     if (rating > 1) return "🟡";
     return "⚪";
