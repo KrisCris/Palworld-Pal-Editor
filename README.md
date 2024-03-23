@@ -56,8 +56,8 @@
 - [x] Spawn Pal
 - [x] Duplicate Pal
 - [x] Delete Pal
-- [x] Show / hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other player, prior palworld v0.1.5))
-- [x] Show (so you can delete them) / hide pals that are not displayed in game.
+- [x] Show / Hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other players, prior Palworld v0.1.5))
+- [x] Show (so you can delete them) / hide pals that are not displayed in game (Ghost Pals).
 - [x] Unlock Viewing Cage for Selected player (multiplayer server)
 - [x] List Players and Pals
 - [x] Inspect Pal Stats
@@ -79,7 +79,7 @@
 
 ## Usage
 
-**NOTE: YOU CAN ALWAYS RUN THE EDITOR IN A WEB BROWER, IN CASE THE GUI ISN'T WORKING FOR YOU.**
+**NOTE: YOU CAN ALWAYS RUN THE EDITOR IN A WEB BROWSER, IN CASE THE GUI ISN'T WORKING PROPERLY FOR YOU.**
 
 ### A. Use Pre-Built Binary
 

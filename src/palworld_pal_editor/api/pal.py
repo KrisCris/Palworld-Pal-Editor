@@ -31,13 +31,13 @@ def patch_paldata():
             case "pop_EquipWaza": pal_entity.pop_EquipWaza(item=value)
             case "add_PassiveSkillList": 
                 if not pal_entity.add_PassiveSkillList(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
             case "add_MasteredWaza": 
                 if not pal_entity.add_MasteredWaza(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
             case "add_EquipWaza": 
                 if not pal_entity.add_EquipWaza(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists!")
+                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
             case "in_owner_palbox":
                 if PlayerUId == "PAL_BASE_WORKER_BTN":
                     return reply(1, None, f"Moving pal to basecamp is unsupported.")
