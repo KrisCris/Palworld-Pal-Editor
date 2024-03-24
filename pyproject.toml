@@ -12,7 +12,7 @@ keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 readme = "README.md"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
     "setuptools==69.1.0",
     "palworld_save_tools==0.19.0",
@@ -25,8 +25,9 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
+    "Natural Language :: Chinese (Simplified)", "Natural Language :: English", "Natural Language :: Japanese"
 ]
 
 [project.urls]

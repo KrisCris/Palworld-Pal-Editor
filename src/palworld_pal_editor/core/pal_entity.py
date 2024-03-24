@@ -168,7 +168,7 @@ class PalEntity:
         return key
     
     @property
-    def IsHuman(self):
+    def IsHuman(self) -> bool:
         return DataProvider.is_pal_human(self.DataAccessKey)
             
     @property
@@ -200,7 +200,13 @@ class PalEntity:
                 key = "Sheepball"
             case "LazyCatFish":
                 key = "LazyCatfish"
+            case "Police_HandGun":
+                key = "Police_Handgun"
         return key
+    
+    @property
+    def IsInvalid(self) -> bool:
+        return DataProvider.is_pal_invalid(self.DataAccessKey)
     
     @property
     def I18nName(self) -> Optional[str]:

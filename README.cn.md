@@ -16,12 +16,13 @@
 
 #### 幻兽帕鲁 帕鲁 编辑器
 
+https://www.bilibili.com/video/av1402092377
 
 **为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)**
 
 ***如果遇到BUG欢迎提交issue***
 
-<img width="720" alt="Screenshot 2024-03-03 at 1 39 32 PM" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/b6259622-707a-4634-abea-c280dc7060d4">
+<img width="720" alt="Screenshot" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/51a9c262-a71a-4008-b2a3-f4a68e78046a">
 
 ---
 

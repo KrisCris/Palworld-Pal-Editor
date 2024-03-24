@@ -1079,7 +1079,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function displayPalElement(DataAccessKey) {
-    const els = PAL_STATIC_DATA.value[DataAccessKey].Elements;
+    const els = PAL_STATIC_DATA.value[DataAccessKey]?.Elements;
+    if (!els) return
+    
     let str = "";
     for (let e of els) {
       str += displayElement(e);
@@ -1103,11 +1105,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function skillIcon(atk) {
-    if (ACTIVE_SKILLS.value[atk].IsUniqueSkill) return "✨";
-    if (ACTIVE_SKILLS.value[atk].HasSkillFruit) return "🍐";
+    if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
+    if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
   }
 
   function displayRating(rating) {
+    if (rating === undefined) return ""
     if (rating < 0) return "🔴";
     if (rating > 1) return "🟡";
     return "⚪";

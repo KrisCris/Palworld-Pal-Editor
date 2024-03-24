@@ -1,6 +1,7 @@
 from functools import wraps
 import json
 from typing import Any, Callable, Optional
+
 # from PIL import Image
 
 from palworld_pal_editor.config import ASSETS_PATH, Config
@@ -109,9 +110,12 @@ class DataProvider:
     def get_sorted_pals() -> list[dict]:
         sorted_list = sorted(
             PAL_DATA.values(),
-            key=lambda item: alphanumeric_key(
-                DataProvider.get_pal_sorting_key(item["InternalName"])
-                or item["InternalName"]
+            key=lambda item: (
+                DataProvider.is_pal_human(item["InternalName"]),
+                alphanumeric_key(
+                    DataProvider.get_pal_sorting_key(item["InternalName"])
+                    or DataProvider.get_pal_i18n(item["InternalName"])
+                ),
             ),
         )
         return sorted_list
@@ -124,6 +128,11 @@ class DataProvider:
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
+    
+    @staticmethod
+    def is_pal_invalid(key: str) -> bool:
+        if key not in PAL_DATA: return True
+        return PAL_DATA[key].get("Invalid", False)
 
     @none_guard(data_source=PAL_DATA, subkey="Attacks")
     def get_pal_attacks(pal: str) -> Optional[list[str]]:
@@ -146,37 +155,44 @@ class DataProvider:
     @staticmethod
     def has_attack(key: str) -> bool:
         return key in PAL_ATTACKS
-    
+
     @staticmethod
     def has_skill_fruit(attack: str) -> bool:
-        if attack not in PAL_ATTACKS: return False
-        if PAL_ATTACKS[attack].get("SkillFruit"): return True
+        if attack not in PAL_ATTACKS:
+            return False
+        if PAL_ATTACKS[attack].get("SkillFruit"):
+            return True
         return False
 
     @staticmethod
     def is_invalid_attacks(key: str) -> bool:
-        if key not in PAL_ATTACKS: return True
+        if key not in PAL_ATTACKS:
+            return True
         power = PAL_ATTACKS[key].get("Power")
-        if power is None or power == -1: return True 
+        if power is None or power == -1:
+            return True
         return False
 
     @staticmethod
     def is_unique_attacks(key: str) -> bool:
-        if key not in PAL_ATTACKS: return False
-        if PAL_ATTACKS[key].get("UniqueSkill"): return True
+        if key not in PAL_ATTACKS:
+            return False
+        if PAL_ATTACKS[key].get("UniqueSkill"):
+            return True
         return False
 
     @staticmethod
     def get_sorted_attacks() -> list[dict]:
         sorted_list = sorted(
-            PAL_ATTACKS.values(), key=lambda item: (
+            PAL_ATTACKS.values(),
+            key=lambda item: (
                 DataProvider.is_invalid_attacks(item["InternalName"]),
-                item["Element"], 
+                item["Element"],
                 DataProvider.has_skill_fruit(item["InternalName"]),
-                item["Power"])
+                item["Power"],
+            ),
         )
         return sorted_list
-
 
     @none_guard(data_source=PAL_PASSIVES, subkey="I18n")
     @staticmethod
