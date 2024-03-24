@@ -1,11 +1,8 @@
-name: Main Build
+name: Dev Release
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 jobs:
-  build:
+  dev-release:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
