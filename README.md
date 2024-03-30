@@ -44,6 +44,7 @@
     - [Config File](#config-file)
   - [Videos](#videos)
   - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
+  - [Star History](#star-history)
   - [Contribution](#contribution)
   - [Sponsor](#sponsor)
   - [Thanks](#thanks)
@@ -169,6 +170,10 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 - [ ] Real GUI, or maybe just a Terminal GUI using [Textual](https://textualize.io/).
 - [ ] Move Pal to Different Slots? Change owner? IDK...
 - [ ] More Stuff...
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date)](https://star-history.com/#KrisCris/Palworld-Pal-Editor&Date)
 
 ## Contribution
 

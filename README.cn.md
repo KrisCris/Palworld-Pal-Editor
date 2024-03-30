@@ -40,6 +40,7 @@ https://www.bilibili.com/video/av1402092377
       - [命令行参数会覆盖并写入配置文件](#命令行参数会覆盖并写入配置文件)
   - [视频](#视频)
   - [未来开发计划？ (无ETA)](#未来开发计划-无eta)
+  - [Star History](#star-history)
   - [贡献](#贡献)
   - [赞助](#赞助)
   - [感谢](#感谢)
@@ -162,6 +163,10 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 - [ ] 桌面端, 或者干脆用 [Textual](https://textualize.io/) 做一个控制台UI， XD。
 - [ ] 移动帕鲁存储栏位？或者修改主人？ idk
 - [ ] More Stuff...
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date)](https://star-history.com/#KrisCris/Palworld-Pal-Editor&Date)
 
 ## 贡献
 

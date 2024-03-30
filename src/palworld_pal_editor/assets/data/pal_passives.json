@@ -680,8 +680,8 @@
                 "Description": "+25% to Player mining efficiency"
             },
             "zh-CN": {
-                "Name": "采伐领袖",
-                "Description": "玩家的砍伐速度提升25%"
+                "Name": "矿山首领",
+                "Description": "玩家的挖掘速度提升25%"
             },
             "ja": {
                 "Name": "鉱山のチーフ",
@@ -698,8 +698,8 @@
                 "Description": "+25% to Player logging efficiency"
             },
             "zh-CN": {
-                "Name": "矿山首领",
-                "Description": "玩家的挖掘速度提升25%"
+                "Name": "采伐领袖",
+                "Description": "玩家的砍伐速度提升25%"
             },
             "ja": {
                 "Name": "伐採リーダー",
