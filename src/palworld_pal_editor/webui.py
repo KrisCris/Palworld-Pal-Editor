@@ -46,6 +46,11 @@ def serve(path):
         return send_from_directory(str(static_folder_path), path)
     else:
         return send_from_directory(str(static_folder_path), 'index.html')
+    
+
+@app.route('/api/ready')
+def ready():
+    return reply(status=0), 200
 
 
 @jwt.invalid_token_loader
