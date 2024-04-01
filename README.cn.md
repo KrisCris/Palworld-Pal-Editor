@@ -16,7 +16,7 @@
 
 #### 幻兽帕鲁 帕鲁 编辑器
 
-https://www.bilibili.com/video/av1402092377
+https://www.bilibili.com/video/av1001846154
 
 **为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)**
 
