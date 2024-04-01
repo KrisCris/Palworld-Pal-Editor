@@ -18,6 +18,7 @@ def fetch_config():
             "I18n": Config.i18n,
             "Path": Config.path,
             "HasPassword": Config.password != None,
+            "Mode": Config.mode
         },
     )
 
@@ -143,3 +144,22 @@ def get_pal_data():
         pal_dict[pal["InternalName"]] = data
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
+
+@save_blueprint.route("/file_picker", methods=["GET"])
+@jwt_required()
+def show_file_picker():
+    if Config.mode != "gui":
+        msg = "File picker only supports GUI mode."
+        LOGGER.warning(msg)
+        return reply(1, msg=msg)
+    
+    import tkinter as tk
+    from tkinter import filedialog
+
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+    folder_selected = filedialog.askdirectory(parent=root)
+    root.destroy()
+    LOGGER.info(f"File picker result: {folder_selected}")
+    return reply(0, {"path": folder_selected})
