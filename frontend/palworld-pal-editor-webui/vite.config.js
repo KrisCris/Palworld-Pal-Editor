@@ -12,6 +12,29 @@ export default defineConfig({
     vueJsx(),
     VitePWA({
       registerType: 'autoUpdate', 
+      workbox: {
+        globPatterns: [],
+        runtimeCaching: [
+          {
+            urlPattern: ({request}) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 150,
+                maxAgeSeconds: 24 * 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({request}) => request.destination !== 'image',
+            handler: 'NetworkOnly',
+          },
+        ],
+      },
       devOptions: {
         enabled: true
       }, 
