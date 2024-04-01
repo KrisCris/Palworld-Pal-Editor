@@ -27,6 +27,7 @@ const palStore = usePalEditorStore()
             <input type="text" v-model="palStore.PAL_GAME_SAVE_PATH"
                 placeholder="/Path/To/PalServer/Pal/Saved/SaveGames/0/HEXHEXHEXHEXHEX"
                 :disabled="palStore.LOADING_FLAG">
+            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.IS_GUI">Select Path</button>
             <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">Load Save</button>
         </div>
     </div>
@@ -94,6 +95,24 @@ button {
 
 button:hover {
     background-color: #1b49b4;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+button.pathSelect {
+    margin-bottom: 1rem;
+    height: 3rem;
+    background-color: #3f3f3f;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1.2rem;
+    transition: all 0.3s ease-in-out;
+}
+
+button.pathSelect:hover {
+    background-color: rgb(125, 125, 125);
     transition: all 0.3s ease-in-out;
     cursor: pointer;
 }
