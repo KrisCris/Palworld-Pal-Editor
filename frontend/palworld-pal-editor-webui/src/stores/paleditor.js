@@ -273,6 +273,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const I18n = ref(localStorage.getItem("PAL_I18n"));
   const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
   const HAS_PASSWORD = ref(false);
+  const IS_GUI = ref(false)
   const PAL_WRITE_BACK_PATH = ref("");
 
   // auth
@@ -434,13 +435,41 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_GAME_SAVE_PATH.value = response.data.Path;
       }
       HAS_PASSWORD.value = response.data.HasPassword;
-      console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value);
+      IS_GUI.value = response.data.Mode == "gui"
+      console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value, IS_GUI.value);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
       reset();
     } else {
       alert("- fetch_config - Error occured: ", response.msg);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function show_file_picker() {
+    if (!IS_GUI.value) {
+      alert("This only works in GUI mode!")
+      return;
+    }
+    
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await GET("/api/save/file_picker");
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      if (response.data.path)
+        PAL_GAME_SAVE_PATH.value = response.data.path
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- show_file_picker - Error occured: ${response.msg}`);
     }
 
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -1136,6 +1165,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     IS_LOCKED,
     HAS_PASSWORD,
+    IS_GUI,
 
     HAS_WORKING_PAL_FLAG,
     BASE_PAL_BTN_CLK_FLAG,
@@ -1174,5 +1204,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     login,
     auth,
+    show_file_picker
   };
 });

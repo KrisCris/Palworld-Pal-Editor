@@ -52,6 +52,9 @@ def serve(path):
 def ready():
     return reply(status=0), 200
 
+@app.route('/api/ready')
+def ready():
+    return reply(status=0), 200
 
 @jwt.invalid_token_loader
 def invalid_token_callback(error_string):

@@ -30,7 +30,7 @@
             "args": [
                 "--mode=gui",
                 "--lang=zh-CN",
-                "--debug"
+                // "--debug"
             ]
         },
         {
