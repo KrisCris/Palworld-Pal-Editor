@@ -1129,7 +1129,17 @@
     },
 
 
-
+    "EPalWazaID::PoisonFog": {
+        "InternalName": "EPalWazaID::PoisonFog",
+        "Element": "Dark",
+        "CT": 30,
+        "Power": 0,
+        "I18n": {
+            "en": "Poison Fog",
+            "zh-CN": "毒雾",
+            "ja": "ポイズンフォグ"
+        }
+    },
     "EPalWazaID::PoisonShot": {
         "InternalName": "EPalWazaID::PoisonShot",
         "Element": "Dark",
@@ -1141,6 +1151,17 @@
             "ja": "ポイズンシュート"
         },
         "SkillFruit": true
+    },
+    "EPalWazaID::DarkBall": {
+        "InternalName": "EPalWazaID::DarkBall",
+        "Element": "Dark",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": "Dark Ball",
+            "zh-CN": "暗黑球",
+            "ja": "ダークボール"
+        }
     },
     "EPalWazaID::DarkWave": {
         "InternalName": "EPalWazaID::DarkWave",
@@ -1190,8 +1211,46 @@
         },
         "SkillFruit": true
     },
-
-
+    "EPalWazaID::DarkPulse": {
+        "InternalName": "EPalWazaID::DarkPulse",
+        "Element": "Dark",
+        "CT": 2,
+        "Power": 40,
+        "I18n": {
+            "en": "Umbral Surge",
+            "zh-CN": "黑暗霰射"
+        }
+    },
+    "EPalWazaID::DarkCanon": {
+        "InternalName": "EPalWazaID::DarkCanon",
+        "Element": "Dark",
+        "CT": 2,
+        "Power": 50,
+        "I18n": {
+            "en": "Dark Cannon",
+            "zh-CN": "黑暗弹"
+        }
+    },
+    "EPalWazaID::DarkArrow": {
+        "InternalName": "EPalWazaID::DarkArrow",
+        "Element": "Dark",
+        "CT": 10,
+        "Power": 65,
+        "I18n": {
+            "en": "Dark Arrow",
+            "zh-CN": "黑暗箭"
+        }
+    },
+    "EPalWazaID::Apocalypse": {
+        "InternalName": "EPalWazaID::Apocalypse",
+        "Element": "Dark",
+        "CT": 55,
+        "Power": 110,
+        "I18n": {
+            "en": "Apocalypse",
+            "zh-CN": "启示录"
+        }
+    },
 
 
     "EPalWazaID::Unique_DarkCrow_TelePoke": {
@@ -1260,38 +1319,45 @@
         "CT": 45,
         "Power": 160,
         "I18n": {
-            "en": "Dark Whisp [Victor & Shadowbeak]",
+            "en": "Dark Whisp",
             "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]",
             "ja": "ダークウィスプ [ヴィクター & ゼノグリフ]"
         },
         "UniqueSkill": true
     },
-
-
-    "EPalWazaID::PoisonFog": {
-        "InternalName": "EPalWazaID::PoisonFog",
+    "EPalWazaID::Unique_NightLady_WarpBeam": {
+        "InternalName": "EPalWazaID::Unique_NightLady_WarpBeam",
         "Element": "Dark",
-        "CT": 30,
-        "Power": 0,
+        "CT": 50,
+        "Power": 160,
         "I18n": {
-            "en": "Poison Fog",
-            "zh-CN": "毒雾",
-            "ja": "ポイズンフォグ"
-        }
+            "en": "Nightmare Bloom",
+            "zh-CN": "噩梦绽放 [贝菈露洁]"
+        },
+        "UniqueSkill": true
     },
-    "EPalWazaID::DarkBall": {
-        "InternalName": "EPalWazaID::DarkBall",
+    "EPalWazaID::Unique_NightLady_FlameNightmare": {
+        "InternalName": "EPalWazaID::Unique_NightLady_FlameNightmare",
         "Element": "Dark",
-        "CT": 4,
-        "Power": 40,
+        "CT": 45,
+        "Power": 130,
         "I18n": {
-            "en": "Dark Ball",
-            "zh-CN": "暗黑球",
-            "ja": "ダークボール"
-        }
+            "en": "Flame Waltz",
+            "zh-CN": "烈焰华尔兹 [贝菈露洁]"
+        },
+        "UniqueSkill": true
     },
-
-
+    "EPalWazaID::Unique_NightLady_WarpBeam_Straight": {
+        "InternalName": "EPalWazaID::Unique_NightLady_WarpBeam_Straight",
+        "Element": "Dark",
+        "CT": 50,
+        "Power": 140,
+        "I18n": {
+            "en": "Nightmare Ray",
+            "zh-CN": "噩梦射线 [贝菈诺娃]"
+        },
+        "UniqueSkill": true
+    },
 
 
 
