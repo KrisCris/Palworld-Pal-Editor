@@ -108,7 +108,7 @@ def list_attacks():
                     if DataProvider.has_skill_fruit(item["InternalName"])
                     else ""
                 ),
-                DataProvider.get_attack_i18n(item["InternalName"]),
+                DataProvider.get_attack_i18n(item["InternalName"])[0],
                 item["InternalName"]))
 
 def list_passives():

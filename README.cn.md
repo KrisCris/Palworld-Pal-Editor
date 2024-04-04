@@ -7,7 +7,7 @@
 <p align='center'>
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;&nbsp;
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://discord.gg/A9dXQPve"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/A9dXQPve"></a>&nbsp;&nbsp;
+<a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;&nbsp;
 <img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
 <img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
 </p>
@@ -84,7 +84,7 @@
 - [x] 修改 帕鲁魂强化等级
 - [x] 修改 帕鲁种族
 - [x] 修改 帕鲁个体值
-- [x] 计算并展示 最大生命值，攻击力，防御力，工作速度 （除了最大生命值其他可能不准）
+- [x] 计算并展示 最大生命值，攻击力，防御力，工作速度
 - [x] 移除 帕鲁工作疾病
 - [x] 复活帕鲁
 - [x] 修改 食物BUFF 的时间 （目前只支持CLI）

@@ -1,6 +1,6 @@
 {
-    "Sheepball": {
-        "InternalName": "Sheepball",
+    "SheepBall": {
+        "InternalName": "SheepBall",
         "Elements": [
             "Neutral"
         ],
@@ -4047,10 +4047,40 @@
         },
         "I18n": {
             "en": "Bellanoir",
-            "zh-CN": "贝菈诺娃"
+            "zh-CN": "贝菈诺娃",
+            "ja": "ベラノワール"
         },
         "SortingKey": {
             "paldeck": "112"
+        }
+    },
+    "RAID_NightLady": {
+        "InternalName": "RAID_NightLady",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::GhostFlame": 1,
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::ShadowBall": 1,
+            "EPalWazaID::DarkLaser": 1,
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::Apocalypse": 1,
+            "EPalWazaID::Unique_NightLady_WarpBeam_Straight": 1
+        },
+        "Scaling": {
+            "HP": 120,
+            "ATK": 140,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Eclipsed Siren Bellanoir",
+            "zh-CN": "狂乱淑女 贝菈诺娃",
+            "ja": "狂乱の淑女 ベラノワール"
+        },
+        "SortingKey": {
+            "paldeck": "112R"
         }
     },
     "NightLady_Dark": {
@@ -4074,12 +4104,74 @@
         },
         "I18n": {
             "en": "Bellanoir Libero",
-            "zh-CN": "贝菈露洁"
+            "zh-CN": "贝菈露洁",
+            "ja": "ベラルージュ"
         },
         "SortingKey": {
             "paldeck": "112B"
         }
     },
+    "RAID_NightLady_Dark": {
+        "InternalName": "RAID_NightLady_Dark",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::ShadowBall": 1,
+            "EPalWazaID::DarkLaser": 1,
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkLegion": 1,
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::Apocalypse": 1,
+            "EPalWazaID::Unique_NightLady_FlameNightmare": 1,
+            "EPalWazaID::Unique_NightLady_WarpBeam": 1
+        },
+        "Scaling": {
+            "HP": 120,
+            "ATK": 150,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Twilight Siren Bellanoir Libero",
+            "zh-CN": "幽玄魔女 贝菈露洁",
+            "ja": "幽玄の魔女 ベラルージュ"
+        },
+        "SortingKey": {
+            "paldeck": "112R1"
+        }
+    },
+    "RAID_NightLady_Dark_2": {
+        "InternalName": "RAID_NightLady_Dark_2",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::ShadowBall": 1,
+            "EPalWazaID::DarkLaser": 1,
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkLegion": 1,
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::Apocalypse": 1,
+            "EPalWazaID::Unique_NightLady_FlameNightmare": 1,
+            "EPalWazaID::Unique_NightLady_WarpBeam": 1
+        },
+        "Scaling": {
+            "HP": 120,
+            "ATK": 150,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Twilight Siren (Ultra) Bellanoir Libero",
+            "zh-CN": "幽玄魔女【极】 贝菈露洁",
+            "ja": "幽玄の魔女【極】 ベラルージュ"
+        },
+        "SortingKey": {
+            "paldeck": "112R2"
+        }
+    },
+
 
 
 
@@ -4606,6 +4698,17 @@
         },
         "SortingKey": {}
     },
+    "Believer_Fat_GatlingGun": {
+        "InternalName": "Believer_Fat_GatlingGun",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Believer_Fat_GatlingGun",
+            "zh-CN": "Believer_Fat_GatlingGun"
+        },
+        "SortingKey": {}
+    },
     "Female_DesertPeople02": {
         "InternalName": "Female_DesertPeople02",
         "Elements": [],
@@ -4727,6 +4830,39 @@
         },
         "SortingKey": {}
     },
+    "Male_Soldier02": {
+        "InternalName": "Male_Soldier02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Male_Soldier02)",
+            "zh-CN": "岛民 (Male_Soldier02)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Soldier03": {
+        "InternalName": "Male_Soldier03",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Male_Soldier03)",
+            "zh-CN": "岛民 (Male_Soldier03)"
+        },
+        "SortingKey": {}
+    },
+    "Male_Soldier04": {
+        "InternalName": "Male_Soldier04",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Male_Soldier04)",
+            "zh-CN": "岛民 (Male_Soldier04)"
+        },
+        "SortingKey": {}
+    },
     "Female_Soldier01": {
         "InternalName": "Female_Soldier01",
         "Elements": [],
@@ -4735,6 +4871,39 @@
         "I18n": {
             "en": "Islander (Soldier01)",
             "zh-CN": "岛民 (Soldier01)"
+        },
+        "SortingKey": {}
+    },
+    "Female_Soldier02": {
+        "InternalName": "Female_Soldier02",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Soldier02)",
+            "zh-CN": "岛民 (Soldier02)"
+        },
+        "SortingKey": {}
+    },
+    "Female_Soldier03": {
+        "InternalName": "Female_Soldier03",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Soldier03)",
+            "zh-CN": "岛民 (Soldier03)"
+        },
+        "SortingKey": {}
+    },
+    "Female_Soldier04": {
+        "InternalName": "Female_Soldier04",
+        "Elements": [],
+        "Attacks": {},
+        "Human": true,
+        "I18n": {
+            "en": "Islander (Soldier04)",
+            "zh-CN": "岛民 (Soldier04)"
         },
         "SortingKey": {}
     },
@@ -4770,18 +4939,6 @@
             "zh-CN": "岛民 (Mobu)"
         },
         "SortingKey": {}
-    },
-    "MobuCitizen_Female": {
-        "InternalName": "MobuCitizen_Female",
-        "Elements": [],
-        "Attacks": {},
-        "Human": true,
-        "I18n": {
-            "en": "Female Islander (Mobu_Female)",
-            "zh-CN": "岛民 (Mobu_Female)"
-        },
-        "SortingKey": {},
-        "Invalid": true
     },
     "FireCult_FlameThrower": {
         "InternalName": "FireCult_FlameThrower",

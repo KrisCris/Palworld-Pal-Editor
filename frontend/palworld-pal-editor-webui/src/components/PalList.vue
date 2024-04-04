@@ -73,7 +73,7 @@ onMounted(async () => {
 });
 
 function get_filtered_pal_list() {
-    console.log("FILTER")
+    // console.log("FILTER")
     return Array.from(palStore.PAL_MAP.values()).filter(pal => !palStore.isFilteredPal(pal))
 }
 

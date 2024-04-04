@@ -9,15 +9,15 @@ function formatString(input) {
   if (!match) return input; // Return the input as is if it doesn't match the expected pattern
 
   const [, numbers, suffix] = match;
-  
+
   // Pad the numeric part with leading zeros to make it at least 3 digits
   const paddedNumbers = numbers.padStart(3, '0');
-  
+
   // Append the suffix if it exists; otherwise, append an empty space
   const formatted = suffix ? paddedNumbers + suffix : paddedNumbers;
-  if (suffix) {
-    console.log(formatted)
-  }
+  // if (suffix) {
+  //   console.log(formatted)
+  // }
   return formatted;
 }
 
@@ -43,8 +43,12 @@ function formatString(input) {
           <p class="const"> Specie: </p>
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n"> {{`${formatString(pal.SortingKey) || ""} ${pal.Invalid ? '❌': ""} ${palStore.displayPalElement(pal.InternalName)} ${pal.I18n}`}}
-            </option>
+              :key="pal.InternalName" :title="pal.I18n"> {{ `
+                ${formatString(pal.SortingKey) || ""} 
+                ${pal.Invalid ? '❌' : ""} 
+                ${palStore.displayPalElement(pal.InternalName)} 
+                ${pal.I18n}` 
+              }}</option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
@@ -96,10 +100,10 @@ function formatString(input) {
 
         <p class="const">🗿 Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-          <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
-          <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
-          <p class="const">🛡️ Possible Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
-          <p class="const">🔨 Possible CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
+          <p class="const">❤️ Computed MaxHP: {{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}</p>
+          <p class="const">⚔️ Computed Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
+          <p class="const">🛡️ Computed Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
+          <p class="const">🔨 Computed CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
         </div>
 
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
@@ -179,7 +183,7 @@ function formatString(input) {
                 {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
     palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
-              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill}}</span>
+              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
             </div>
 
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
@@ -204,12 +208,15 @@ function formatString(input) {
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
-                }}
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
+    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+    palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
+  }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
+                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
+                <p> --- </p>
                 <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
                 <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
     palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
@@ -224,17 +231,20 @@ function formatString(input) {
         </div>
       </div>
       <hr>
-      <p class="cat">MASTERED ACTIVE SKILLS</p>
+      <p class="cat">MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)</p>
       <div class="flex-h">
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
-                }}
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
+    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+    palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
+  }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
+                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
+                <p> --- </p>
                 <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
                 <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
     palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
@@ -253,8 +263,9 @@ function formatString(input) {
             <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
               <option value="" key="">Add Skills</option>
               <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
-                :title="skill.I18n">
-                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n} ${palStore.skillIcon(skill.InternalName)} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+                :title="skill.I18n[1]">
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)} -
+                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
@@ -263,10 +274,6 @@ function formatString(input) {
         </div>
       </div>
     </div>
-
-    <!-- <div class="EditorItem item flex-v left">
-
-    </div> -->
   </div>
 </template>
 
@@ -591,7 +598,7 @@ div.spaceBetween {
   color: white;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 5px;
+  padding: 1rem;
 
   /* Position the tooltip */
   position: absolute;

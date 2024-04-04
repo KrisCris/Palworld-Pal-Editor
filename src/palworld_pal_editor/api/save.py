@@ -79,21 +79,24 @@ def get_active_skills():
     atk_dict = {}
     atk_arr = []
     for attack in attacks_raw:
-        if attack.get("Invalid", None):
-            continue
+        # if attack.get("Invalid", None):
+        #     continue
         data = {
             "InternalName": attack["InternalName"],
             # "I18n": f'[{displayElement(attack["Element"])}] ' \
             #         f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
             #         f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
             #         f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
-            "I18n": DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"],
+            "I18n": list(DataProvider.get_attack_i18n(attack["InternalName"]) or [attack["InternalName"], ""]),
             "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
             "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
             "Power": attack["Power"],
             "Element": attack["Element"],
-            "CT": attack["CT"]
+            "CT": attack["CT"],
+            "Invalid": attack.get("Invalid", False)
         }
+        if data["Invalid"]:
+            data["I18n"][0] = "❌ " + data["I18n"][0]
         atk_dict[attack["InternalName"]] = data
         atk_arr.append(data)
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
