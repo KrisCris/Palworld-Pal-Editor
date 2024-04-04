@@ -4026,6 +4026,60 @@
             "paldeck": "111"
         }
     },
+    "NightLady": {
+        "InternalName": "NightLady",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkPulse": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::GhostFlame": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::Apocalypse": 40,
+            "EPalWazaID::Unique_NightLady_WarpBeam_Straight": 50
+        },
+        "Scaling": {
+            "HP": 120,
+            "ATK": 150,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Bellanoir",
+            "zh-CN": "贝菈诺娃"
+        },
+        "SortingKey": {
+            "paldeck": "112"
+        }
+    },
+    "NightLady_Dark": {
+        "InternalName": "NightLady_Dark",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkPulse": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::ShadowBall": 22,
+            "EPalWazaID::Apocalypse": 30,
+            "EPalWazaID::Unique_NightLady_FlameNightmare": 40,
+            "EPalWazaID::Unique_NightLady_WarpBeam": 50
+        },
+        "Scaling": {
+            "HP": 120,
+            "ATK": 150,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Bellanoir Libero",
+            "zh-CN": "贝菈露洁"
+        },
+        "SortingKey": {
+            "paldeck": "112B"
+        }
+    },
 
 
 
