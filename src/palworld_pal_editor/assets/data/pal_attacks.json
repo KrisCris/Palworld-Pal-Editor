@@ -1550,5 +1550,75 @@
             "zh-CN": "EPalWazaID::Intimidate",
             "ja": "EPalWazaID::Intimidate"
         }
+    },
+
+
+
+
+    "EPalWazaID::BeamSlicer": {
+        "InternalName": "EPalWazaID::BeamSlicer",
+        "Element": "Dragon",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::BeamSlicer",
+            "zh-CN": "EPalWazaID::BeamSlicer",
+            "ja": "EPalWazaID::BeamSlicer"
+        }
+    },
+    "EPalWazaID::Commet": {
+        "InternalName": "EPalWazaID::Commet",
+        "Element": "Dragon",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Commet",
+            "zh-CN": "EPalWazaID::Commet",
+            "ja": "EPalWazaID::Commet"
+        }
+    },
+    "EPalWazaID::DarkTornado": {
+        "InternalName": "EPalWazaID::DarkTornado",
+        "Element": "Dark",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::DarkTornado",
+            "zh-CN": "EPalWazaID::DarkTornado",
+            "ja": "EPalWazaID::DarkTornado"
+        }
+    },
+    "EPalWazaID::DiamondFall": {
+        "InternalName": "EPalWazaID::DiamondFall",
+        "Element": "Ice",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::DiamondFall",
+            "zh-CN": "EPalWazaID::DiamondFall",
+            "ja": "EPalWazaID::DiamondFall"
+        }
+    },
+    "EPalWazaID::Tremor": {
+        "InternalName": "EPalWazaID::Tremor",
+        "Element": "Ground",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Tremor",
+            "zh-CN": "EPalWazaID::Tremor",
+            "ja": "EPalWazaID::Tremor"
+        }
+    },
+    "EPalWazaID::Unique_DarkScorpion_Pierce": {
+        "InternalName": "EPalWazaID::Unique_DarkScorpion_Pierce",
+        "Element": "Dark",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": "EPalWazaID::Unique_DarkScorpion_Pierce",
+            "zh-CN": "EPalWazaID::Unique_DarkScorpion_Pierce",
+            "ja": "EPalWazaID::Unique_DarkScorpion_Pierce"
+        }
     }
 }
