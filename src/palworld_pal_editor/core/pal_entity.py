@@ -157,6 +157,7 @@ class PalEntity:
         self.heal_pal()
         self.clear_worker_sick()
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
     @property
     def _RawSpecieKey(self) -> Optional[str]:
@@ -283,6 +284,7 @@ class PalEntity:
         else:
             self.CharacterID = f"GYM_{self._RawSpecieKey}"
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
     @property
     def _IsBOSS(self) -> bool:
@@ -323,6 +325,7 @@ class PalEntity:
         self._IsBOSS = value
         # Update MaxHP
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
@@ -380,6 +383,7 @@ class PalEntity:
         self.Exp = DataProvider.get_level_xp(self.Level)
         # Update MaxHP
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
         # Learn Attacks
         self.learn_attacks()
 
@@ -418,6 +422,7 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
 
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
         if self.Rank == PalRank.Rank0:
             self._pal_param.pop("Rank", None)
@@ -444,6 +449,7 @@ class PalEntity:
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
@@ -577,6 +583,7 @@ class PalEntity:
         LOGGER.info(f"Added {DataProvider.get_passive_i18n(skill)[0]} to PassiveSkillList")
         # Update MaxHP, but no such skill atm.
         # self.MaxHP = self.ComputedMaxHP
+        # self.HP = self.ComputedMaxHP
         return True
     
     @LOGGER.change_logger('PassiveSkillList')
@@ -715,6 +722,7 @@ class PalEntity:
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
         # self.MaxHP = self.ComputedMaxHP
+        self.HP = self.ComputedMaxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
@@ -839,8 +847,7 @@ class PalEntity:
             self._pal_param.pop("PhysicalHealth", None)
         # if not self.MaxHP:
         #     self.MaxHP = self.ComputedMaxHP
-        self.HP = int(self.ComputedMaxHP * 0.9)
-            
+        self.HP = self.ComputedMaxHP            
 
     @property
     def FoodWithStatusEffect(self) -> Optional[str]:
