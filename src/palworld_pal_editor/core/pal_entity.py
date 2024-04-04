@@ -1,5 +1,7 @@
 import copy
 import math
+import re
+import traceback
 from typing import Optional
 from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
@@ -25,7 +27,7 @@ class PalEntity:
         if get_attr_value(self._pal_param, "IsPlayer"):
             raise TypeError("Expecting pal_obj, received player_obj: {} - {} - {}".format(self.NickName, self.PlayerUId, self.InstanceId))
         
-        self._derived_hp_scaling = self._derive_hp_scaling()
+        # self._derived_hp_scaling = self._derive_hp_scaling()
         self._display_name_cache = {}
         self.owner_player_entity = None
         ## TODO
@@ -125,6 +127,7 @@ class PalEntity:
     
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
+    @type_guard
     def CharacterID(self, value: str) -> None:
         og_specie = self._RawSpecieKey
 
@@ -153,7 +156,7 @@ class PalEntity:
         self.learn_attacks()
         self.heal_pal()
         self.clear_worker_sick()
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
     @property
     def _RawSpecieKey(self) -> Optional[str]:
@@ -165,7 +168,20 @@ class PalEntity:
                 key = key.split("BOSS_")[1]
         if self.IsTower:
             key = key.split("GYM_")[1]
+        if self.IsRAID:
+            pattern = r'RAID_([A-Za-z_]+?)(?:_\d+)?$'
+            match = re.search(pattern, self.CharacterID)
+            if match:
+                key = match.group(1)
         return key
+    
+    @property
+    def IsRAID(self) -> bool:
+        pattern = r'RAID_([A-Za-z_]+?)(?:_\d+)?$'
+        match = re.search(pattern, self.CharacterID)
+        if match:
+            return True
+        return False
     
     @property
     def IsHuman(self) -> bool:
@@ -188,16 +204,21 @@ class PalEntity:
     def IconAccessKey(self) -> Optional[str]:
         if self.IsHuman:
             return "Human"
+        if self.IsRAID:
+            return self._RawSpecieKey
         return self.DataAccessKey
 
     @property
     def DataAccessKey(self) -> Optional[str]:
         if self.IsTower:
             return self.CharacterID
+        if self.IsRAID:
+            return self.CharacterID
+        
         key = self._RawSpecieKey
         match key:
-            case "SheepBall":
-                key = "Sheepball"
+            case "Sheepball":
+                key = "SheepBall"
             case "LazyCatFish":
                 key = "LazyCatfish"
             case "Police_HandGun":
@@ -261,7 +282,7 @@ class PalEntity:
             self.CharacterID = self._RawSpecieKey
         else:
             self.CharacterID = f"GYM_{self._RawSpecieKey}"
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
     @property
     def _IsBOSS(self) -> bool:
@@ -301,7 +322,7 @@ class PalEntity:
             self.IsRarePal = False
         self._IsBOSS = value
         # Update MaxHP
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
@@ -358,7 +379,7 @@ class PalEntity:
             self._pal_param["Level"]["value"] = value
         self.Exp = DataProvider.get_level_xp(self.Level)
         # Update MaxHP
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
         # Learn Attacks
         self.learn_attacks()
 
@@ -396,7 +417,7 @@ class PalEntity:
         else:
             PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
 
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
         if self.Rank == PalRank.Rank0:
             self._pal_param.pop("Rank", None)
@@ -422,7 +443,7 @@ class PalEntity:
     @type_guard
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
@@ -448,7 +469,9 @@ class PalEntity:
         Credit to https://www.reddit.com/r/Palworld/comments/1afyau4/pal_stat_mechanics_hidden_ivs_levelup_stats_and/
         """
         Level = self.Level or 1
-        HP_Stat = DataProvider.get_pal_scaling(self.DataAccessKey, "HP", self.IsBOSS) or self._derived_hp_scaling
+        HP_Stat = DataProvider.get_pal_scaling(self.DataAccessKey, "HP", self.IsBOSS)
+        if HP_Stat is None:
+            return None
         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
         HP_Bonus = self._get_passive_buff("b_HP") # 0
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
@@ -507,31 +530,33 @@ class PalEntity:
     
     @HP.setter
     @LOGGER.change_logger('HP')
+    @type_guard
     def HP(self, value: int) -> None:
         if self.HP is None:
             self._pal_param["HP"] = PalObjects.FixedPoint64(value)
         else:
             PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
 
-    @property
-    def MaxHP(self) -> Optional[int]:
-        return PalObjects.get_FixedPoint64(self._pal_param.get("MaxHP"))
+    # @property
+    # def MaxHP(self) -> Optional[int]:
+    #     return PalObjects.get_FixedPoint64(self._pal_param.get("MaxHP"))
     
-    @MaxHP.setter
-    @LOGGER.change_logger("MaxHP")
-    def MaxHP(self, val: int) -> None:
-        if self.MaxHP is None:
-            self._pal_param["MaxHP"] = PalObjects.FixedPoint64(val)
-        else:
-            PalObjects.set_FixedPoint64(self._pal_param["MaxHP"], val)
+    # @MaxHP.setter
+    # @LOGGER.change_logger("MaxHP")
+    # def MaxHP(self, val: int) -> None:
+    #     if self.MaxHP is None:
+    #         self._pal_param["MaxHP"] = PalObjects.FixedPoint64(val)
+    #     else:
+    #         PalObjects.set_FixedPoint64(self._pal_param["MaxHP"], val)
 
-        self.HP = self.MaxHP
+    #     self.HP = self.MaxHP
 
     @property
     def PassiveSkillList(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("PassiveSkillList"))
 
     @LOGGER.change_logger('PassiveSkillList')
+    @type_guard
     def add_PassiveSkillList(self, skill: str) -> bool:
         if not DataProvider.has_passive_skill(skill):
             LOGGER.warning(f"Can't find pal passive {skill} in database, skipping")
@@ -572,6 +597,7 @@ class PalEntity:
         return PalObjects.get_ArrayProperty(self._pal_param.get("EquipWaza"))
 
     @LOGGER.change_logger('EquipWaza')
+    @type_guard
     def add_EquipWaza(self, waza: str) -> bool:
         """
         Normally you can't add the same "waza" twice on a pal.
@@ -628,6 +654,7 @@ class PalEntity:
     #     return set(self.MasteredWaza) if self.MasteredWaza is not None else None
 
     @LOGGER.change_logger('MasteredWaza')
+    @type_guard
     def add_MasteredWaza(self, waza: str) -> bool:
         """
         Normally you can't add the same "waza" twice on a pal.
@@ -652,6 +679,7 @@ class PalEntity:
         return True
 
     @LOGGER.change_logger('MasteredWaza')
+    @type_guard
     def pop_MasteredWaza(self, idx: int = None, item: str = None) -> Optional[str]:
         try:
             if item is not None:
@@ -686,7 +714,7 @@ class PalEntity:
     @type_guard
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
-        self.MaxHP = self.ComputedMaxHP
+        # self.MaxHP = self.ComputedMaxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
@@ -716,6 +744,7 @@ class PalEntity:
     
     @SanityValue.setter
     @LOGGER.change_logger("SanityValue")
+    @type_guard
     def SanityValue(self, val: float):
         if self.SanityValue is None:
             self._pal_param["SanityValue"] = PalObjects.FloatProperty(val)
@@ -732,6 +761,7 @@ class PalEntity:
     
     @FullStomach.setter
     @LOGGER.change_logger("FullStomach")
+    @type_guard
     def FullStomach(self, val: float):
         if self.FullStomach is None:
             self._pal_param["HP"] = PalObjects.FloatProperty(val)
@@ -807,9 +837,9 @@ class PalEntity:
             self._pal_param.pop("PalReviveTimer", None)
         if self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
             self._pal_param.pop("PhysicalHealth", None)
-        if not self.MaxHP:
-            self.MaxHP = self.ComputedMaxHP
-        self.HP = self.MaxHP
+        # if not self.MaxHP:
+        #     self.MaxHP = self.ComputedMaxHP
+        self.HP = int(self.ComputedMaxHP * 0.9)
             
 
     @property
@@ -832,6 +862,7 @@ class PalEntity:
 
     @Timer_FoodWithStatusEffect.setter
     @LOGGER.change_logger("Timer_FoodWithStatusEffect")
+    @type_guard
     def Timer_FoodWithStatusEffect(self, val: int) -> bool:
         if self.FoodWithStatusEffect is None or self.Timer_FoodWithStatusEffect is None:
             LOGGER.warning("Trying to set food effect timer when there is no food eaten.")
@@ -940,26 +971,29 @@ class PalEntity:
             bonus += DataProvider.get_passive_buff(passive, buff_key)
         return bonus
     
-    def _derive_hp_scaling(self) -> int:
-        def adjust_number(n):
-            last_digit = n % 5
-            if last_digit < 3:
-                return n - last_digit
-            else:
-                return n - last_digit + 5
 
-        Level = self.Level or 1
-        HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
-        HP_Bonus = self._get_passive_buff("b_HP") # 0
-        HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
-        CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
-        
-        HP_No_Bonus = math.ceil(self.MaxHP / 1000 / ((1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)))
-        HP_Stat = math.ceil((HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV)))
-        return adjust_number(HP_Stat)
+    # Deprecated
+    # def _derive_hp_scaling(self) -> int:
+    #     try:
+    #         def adjust_number(n):
+    #             last_digit = n % 5
+    #             if last_digit < 3:
+    #                 return n - last_digit
+    #             else:
+    #                 return n - last_digit + 5
 
+    #         Level = self.Level or 1
+    #         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
+    #         HP_Bonus = self._get_passive_buff("b_HP") # 0
+    #         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
+    #         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
+            
+    #         HP_No_Bonus = math.ceil(self.MaxHP / 1000 / ((1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)))
+    #         HP_Stat = math.ceil((HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV)))
+    #         return adjust_number(HP_Stat)
+    #     except:
+    #         LOGGER.error(traceback.format_exc())
 
-    # TODO ADD PAL, DEL PAL, CHANGE OWNER?
 
     # TODO Guess empty value is good?
     # "DecreaseFullStomachRates":{

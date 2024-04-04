@@ -15,9 +15,9 @@ function formatString(input) {
 
   // Append the suffix if it exists; otherwise, append an empty space
   const formatted = suffix ? paddedNumbers + suffix : paddedNumbers;
-  if (suffix) {
-    console.log(formatted)
-  }
+  // if (suffix) {
+  //   console.log(formatted)
+  // }
   return formatted;
 }
 
@@ -100,10 +100,10 @@ function formatString(input) {
 
         <p class="const">🗿 Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-          <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
-          <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
-          <p class="const">🛡️ Possible Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
-          <p class="const">🔨 Possible CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
+          <p class="const">❤️ Computed MaxHP: {{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}</p>
+          <p class="const">⚔️ Computed Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
+          <p class="const">🛡️ Computed Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
+          <p class="const">🔨 Computed CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
         </div>
 
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">

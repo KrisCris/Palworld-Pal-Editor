@@ -257,7 +257,7 @@ with open('./pal_data.json', 'r', encoding='utf8') as pal_file:
 def rename(key: str):
     match(key):
         case 'Grassmammoth': return "GrassMammoth"
-        case 'SheepBall': return "Sheepball"
+        case 'Sheepball': return "SheepBall"
         case _: return key
 
 element_key = {

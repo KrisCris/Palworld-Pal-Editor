@@ -32,6 +32,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.IsRarePal = obj.IsRarePal;
       this.IsBOSS = obj.IsBOSS;
       this.IsTower = obj.IsTower;
+      this.IsRAID = obj.IsRAID;
       this.Gender = obj.Gender;
       this.HasWorkerSick = obj.HasWorkerSick;
       this.IsFaintedPal = obj.IsFaintedPal;
@@ -39,7 +40,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.ComputedDefense = obj.ComputedDefense;
       this.ComputedAttack = obj.ComputedAttack;
       this.ComputedCraftSpeed = obj.ComputedCraftSpeed;
-      this.MaxHP = obj.MaxHP;
+      this.ComputedMaxHP = obj.ComputedMaxHP;
 
       this.MasteredWaza = obj.MasteredWaza;
       this.EquipWaza = obj.EquipWaza;
@@ -66,6 +67,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       if (this.IsTower) return "🗼";
       if (this.IsBOSS) return "💀";
       if (this.IsRarePal) return "✨";
+      if (this.IsRAID) return "RAID";
       return "N/A";
     }
 
@@ -288,7 +290,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         },
       });
 
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -312,7 +314,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         headers: { Authorization: "Bearer " + auth_token },
       });
 
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -336,7 +338,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         headers: { Authorization: "Bearer " + auth_token },
       });
 
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -360,7 +362,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         headers: { Authorization: "Bearer " + auth_token },
       });
 
-      console.log(response.data);
+      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -436,7 +438,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       }
       HAS_PASSWORD.value = response.data.HasPassword;
       IS_GUI.value = response.data.Mode == "gui"
-      console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value, IS_GUI.value);
+      // console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value, IS_GUI.value);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -563,6 +565,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PAL_PASSIVE_SELECTED_ITEM.value = "";
     PAL_ACTIVE_SELECTED_ITEM.value = "";
 
+    PAL_LIST_SEARCH_KEYWORD.value = "";
+    SHOW_UNREF_PAL_FLAG.value = false;
+    SHOW_OOB_PAL_FLAG.value = true;
+
     // display data
     SELECTED_PAL_DATA.value = new Map();
     PAL_MAP.value = new Map();
@@ -583,11 +589,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       return;
     }
 
-    console.log(
-      `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
-        PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).name
-      } key=${key}, value=${value}`
-    );
+    // console.log(
+    //   `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
+    //     PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).name
+    //   } key=${key}, value=${value}`
+    // );
 
     const response = await PATCH("/api/player/player_data", {
       key: key,
@@ -665,7 +671,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       for (let player of response.data.players) {
         let p = new Player(player);
         PLAYER_MAP.value.set(p.id, p);
-        console.log(`Found player: ${p.name} - ${p.id}`);
+        // console.log(`Found player: ${p.name} - ${p.id}`);
       }
 
       if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG) {
@@ -756,9 +762,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       for (let pal of response.data) {
         let pal_data = new PalData(pal);
         map.set(pal_data.InstanceId, pal_data);
-        console.log(
-          `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
-        );
+        // console.log(
+        //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
+        // );
       }
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
@@ -858,7 +864,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       if (!no_set_loading_flag) LOADING_FLAG.value = false;
       return;
     }
-    console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
+    // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
 
     await fetchPalData(
       // get player id, or BASE INDICATION STR
@@ -896,11 +902,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     let key = e.target.name;
     let value = e.target.value;
 
-    console.log(
-      `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
-        SELECTED_PAL_DATA.value.DisplayName
-      } key=${key}, value=${value}`
-    );
+    // console.log(
+    //   `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
+    //     SELECTED_PAL_DATA.value.DisplayName
+    //   } key=${key}, value=${value}`
+    // );
 
     const response = await PATCH("/api/pal/paldata", {
       key: key,
