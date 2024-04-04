@@ -148,9 +148,10 @@ class DataProvider:
 
     @none_guard(data_source=PAL_ATTACKS, subkey="I18n")
     @staticmethod
-    def get_attack_i18n(key: str) -> Optional[str]:
+    def get_attack_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_ATTACKS[key]["I18n"]
-        return i18n_list.get(Config.i18n, i18n_list.get("en"))
+        i18n: dict = i18n_list.get(Config.i18n, i18n_list.get("en"))
+        return  (i18n.get("Name", key), i18n.get("Description", ""))
 
     @staticmethod
     def has_attack(key: str) -> bool:
@@ -165,31 +166,28 @@ class DataProvider:
         return False
 
     @staticmethod
-    def is_invalid_attacks(key: str) -> bool:
+    def is_invalid_attack(key: str) -> bool:
         if key not in PAL_ATTACKS:
             return True
-        power = PAL_ATTACKS[key].get("Power")
-        if power is None or power == -1:
-            return True
-        return False
+        return PAL_ATTACKS[key].get("Invalid", False)
 
     @staticmethod
     def is_unique_attacks(key: str) -> bool:
         if key not in PAL_ATTACKS:
             return False
-        if PAL_ATTACKS[key].get("UniqueSkill"):
-            return True
-        return False
+        return PAL_ATTACKS[key].get("UniqueSkill", False)
 
     @staticmethod
     def get_sorted_attacks() -> list[dict]:
         sorted_list = sorted(
             PAL_ATTACKS.values(),
             key=lambda item: (
-                DataProvider.is_invalid_attacks(item["InternalName"]),
+                DataProvider.is_invalid_attack(item["InternalName"]),
                 item["Element"],
-                DataProvider.has_skill_fruit(item["InternalName"]),
+                DataProvider.is_unique_attacks(item["InternalName"]),
+                # DataProvider.has_skill_fruit(item["InternalName"]),
                 item["Power"],
+                item["CT"]
             ),
         )
         return sorted_list
@@ -199,7 +197,7 @@ class DataProvider:
     def get_passive_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_PASSIVES[key]["I18n"]
         i18n: dict = i18n_list.get(Config.i18n, i18n_list.get("en"))
-        return (i18n.get("Name"), i18n.get("Description"))
+        return (i18n.get("Name", key), i18n.get("Description", ""))
 
     @staticmethod
     def has_passive_skill(key: str) -> bool:

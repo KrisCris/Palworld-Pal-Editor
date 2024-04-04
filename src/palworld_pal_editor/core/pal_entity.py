@@ -595,7 +595,7 @@ class PalEntity:
         if waza not in (self.MasteredWaza or []):
             self.add_MasteredWaza(waza)
 
-        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to EquipWaza")
+        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)[0]} to EquipWaza")
         return True
     
     @LOGGER.change_logger('EquipWaza')
@@ -604,7 +604,7 @@ class PalEntity:
             if item is not None:
                 idx = self.EquipWaza.index(item)
             waza = self.EquipWaza.pop(int(idx))
-            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)} from EquipWaza")
+            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)[0]} from EquipWaza")
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
@@ -645,7 +645,7 @@ class PalEntity:
         
         self.MasteredWaza.append(waza)
         # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
-        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)} to MasteredWaza")
+        LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)[0]} to MasteredWaza")
         
         # if self.num_EmptyEquipWaza > 0:
         #     self.add_EquipWaza(waza)
@@ -660,7 +660,7 @@ class PalEntity:
             if waza in (self.EquipWaza or []):
                 self.pop_EquipWaza(item=waza)
             # return PalObjects.pop_ArrayProperty(self._pal_param["MasteredWaza"], idx)
-            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)} from MasteredWaza")
+            LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)[0]} from MasteredWaza")
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")

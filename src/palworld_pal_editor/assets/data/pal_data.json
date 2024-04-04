@@ -4047,7 +4047,8 @@
         },
         "I18n": {
             "en": "Bellanoir",
-            "zh-CN": "贝菈诺娃"
+            "zh-CN": "贝菈诺娃",
+            "ja": "ベラノワール"
         },
         "SortingKey": {
             "paldeck": "112"
@@ -4074,7 +4075,8 @@
         },
         "I18n": {
             "en": "Bellanoir Libero",
-            "zh-CN": "贝菈露洁"
+            "zh-CN": "贝菈露洁",
+            "ja": "ベラルージュ"
         },
         "SortingKey": {
             "paldeck": "112B"
