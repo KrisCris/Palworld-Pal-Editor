@@ -1305,7 +1305,7 @@
     },
     "NonKilling": {
         "InternalName": "NonKilling",
-        "Rating": 3,
+        "Rating": -1,
         "I18n": {
             "en": {
                 "Name": "Mercy Hit",
