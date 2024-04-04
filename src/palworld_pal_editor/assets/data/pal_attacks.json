@@ -475,7 +475,8 @@
             "en": "Bee Quiet",
             "zh-CN": "蜂！蜂！蜂！ [骑士蜂]",
             "ja": "ビー・クワイエット [ビーナイト]"
-        }
+        },
+        "UniqueSkill": true
     },
 
 
@@ -1319,7 +1320,7 @@
         "CT": 45,
         "Power": 160,
         "I18n": {
-            "en": "Dark Whisp",
+            "en": "Dark Whisp [Victor & Shadowbeak]",
             "zh-CN": "黑暗之拥 [维克托 & 异构格里芬]",
             "ja": "ダークウィスプ [ヴィクター & ゼノグリフ]"
         },

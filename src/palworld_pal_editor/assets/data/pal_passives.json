@@ -1288,5 +1288,33 @@
             "b_CraftSpeed": 0,
             "b_MoveSpeed": 0.15
         }
+    },
+    "Witch": {
+        "InternalName": "Witch",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Siren of the Void",
+                "Description": "20% increase to Dark attack damage, 20% increase to Ice attack damage."
+            },
+            "zh-CN": {
+                "Name": "魔女",
+                "Description": "暗属性攻击伤害增加20%, 冰属性攻击伤害增加20%"
+            }
+        }
+    },
+    "NonKilling": {
+        "InternalName": "NonKilling",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Mercy Hit",
+                "Description": "Pacifist. Will not reduce the target's Health below 1."
+            },
+            "zh-CN": {
+                "Name": "手下留情",
+                "Description": "和平主义者 使攻击目标的生命值不会小于1"
+            }
+        }
     }
 }
