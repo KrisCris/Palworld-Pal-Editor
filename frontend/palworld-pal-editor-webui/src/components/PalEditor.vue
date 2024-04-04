@@ -2,6 +2,24 @@
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
+function formatString(input) {
+  if (!input) return input;
+  // Separate the numeric part and the alphabetic suffix using a regular expression
+  const match = input.match(/^(\d+)([A-Za-z]*)$/);
+  if (!match) return input; // Return the input as is if it doesn't match the expected pattern
+
+  const [, numbers, suffix] = match;
+  
+  // Pad the numeric part with leading zeros to make it at least 3 digits
+  const paddedNumbers = numbers.padStart(3, '0');
+  
+  // Append the suffix if it exists; otherwise, append an empty space
+  const formatted = suffix ? paddedNumbers + suffix : paddedNumbers;
+  if (suffix) {
+    console.log(formatted)
+  }
+  return formatted;
+}
 
 </script>
 
@@ -25,7 +43,7 @@ const palStore = usePalEditorStore()
           <p class="const"> Specie: </p>
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n">{{pal.Invalid ? '❌': ""}}{{ palStore.displayPalElement(pal.InternalName) }} {{ pal.I18n }}
+              :key="pal.InternalName" :title="pal.I18n"> {{`${formatString(pal.SortingKey) || ""} ${pal.Invalid ? '❌': ""} ${palStore.displayPalElement(pal.InternalName)} ${pal.I18n}`}}
             </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
@@ -236,8 +254,7 @@ const palStore = usePalEditorStore()
               <option value="" key="">Add Skills</option>
               <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
                 :title="skill.I18n">
-                {{ `${palStore.displayElement(skill.Element)} - ${skill.I18n} -
-                ${palStore.skillIcon(skill.InternalName)} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n} ${palStore.skillIcon(skill.InternalName)} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"

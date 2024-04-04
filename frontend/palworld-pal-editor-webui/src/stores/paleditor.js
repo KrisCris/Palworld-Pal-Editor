@@ -1136,6 +1136,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   function skillIcon(atk) {
     if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
     if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
+    return ""
   }
 
   function displayRating(rating) {
