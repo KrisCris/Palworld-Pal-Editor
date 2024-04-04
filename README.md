@@ -87,7 +87,7 @@
 - [x] Change CharacterID (Pal Species)
 - [x] Change Pal Passive Skills
 - [x] Change Pal IV
-- [x] Calculate MaxHP
+- [x] ~~Calculate MaxHP~~ (MaxHP no longer stored in game save.)
 - [x] Remove Pal Sicks
 - [x] Revive Pals
 - [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
