@@ -27,7 +27,7 @@ const palStore = usePalEditorStore()
             <input type="text" v-model="palStore.PAL_GAME_SAVE_PATH"
                 placeholder="/Path/To/PalServer/Pal/Saved/SaveGames/0/HEXHEXHEXHEXHEX"
                 :disabled="palStore.LOADING_FLAG">
-            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.IS_GUI">Select Path</button>
+            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.FilePickerAvailable">Select Path</button>
             <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">Load Save</button>
         </div>
     </div>
