@@ -44,14 +44,13 @@ def serve_image(icon_type, filename):
 
 
 @app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/<path>')
 def serve(path):
     static_folder_path = Path(app.static_folder)
     target_path = static_folder_path / path
     if path != "" and target_path.exists():
         return send_from_directory(str(static_folder_path), path)
-    else:
-        return send_from_directory(str(static_folder_path), 'index.html')
+    return send_from_directory(str(static_folder_path), 'index.html')
 
 @app.route('/api/ready')
 def ready():
