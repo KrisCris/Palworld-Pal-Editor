@@ -251,6 +251,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
   const SHOW_OOB_PAL_FLAG = ref(true);
+  const HIDE_INVALID_OPTIONS = ref(true)
 
   const PAL_LIST_SEARCH_KEYWORD = ref("")
 
@@ -1167,7 +1168,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
     SHOW_OOB_PAL_FLAG,
-
+    HIDE_INVALID_OPTIONS,
+    
     PAL_LIST_SEARCH_KEYWORD,
 
     IS_LOCKED,

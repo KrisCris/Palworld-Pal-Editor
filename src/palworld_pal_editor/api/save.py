@@ -152,6 +152,7 @@ def get_pal_data():
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),
+            "IsHuman": DataProvider.is_pal_human(pal["InternalName"]) or False
         }
         pal_dict[pal["InternalName"]] = data
         pal_arr.append(data)
