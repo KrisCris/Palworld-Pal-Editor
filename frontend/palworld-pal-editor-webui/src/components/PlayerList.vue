@@ -29,7 +29,11 @@ onMounted(async () => {
         </button>
       </div>
       <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
-        <button class="player real" :value="player.id" @click="palStore.selectPlayer"
+        <button 
+          class="player real" 
+          :value="player.id" 
+          @click="palStore.selectPlayer"
+          :title="player.id"
           :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
           {{ player.name }}
         </button>
