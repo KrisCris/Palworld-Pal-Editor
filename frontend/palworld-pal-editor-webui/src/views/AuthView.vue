@@ -10,12 +10,14 @@ const PW = ref("")
     <div id="authDiv">
         <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
         <br>
-        <p>Hello! It seems you have set a protection password 🔐.</p>
-        <p>Before continue, please enter the password:</p>
-        <br>
+        <p>{{ palStore.getTranslatedText("AuthView_1") }}</p>
+        <p>{{ palStore.getTranslatedText("AuthView_2") }}</p>
+        
         <input type="password" v-model="PW"
                 placeholder="PASSWORD" :disabled="palStore.LOADING_FLAG">
-        <button @click="palStore.login" :disabled="palStore.LOADING_FLAG" :value="PW">AUTH</button>
+        <button @click="palStore.login" :disabled="palStore.LOADING_FLAG" :value="PW">
+            {{ palStore.getTranslatedText("AuthView_Btn_1") }}
+        </button>
     </div>
 </template>
 

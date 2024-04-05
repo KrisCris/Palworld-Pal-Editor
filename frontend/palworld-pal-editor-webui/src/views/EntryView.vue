@@ -1,34 +1,42 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
-
 </script>
 
 <template>
     <div id="entryDiv">
         <div class="left">
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
-            <p>Hello there!</p>
-            <p> > Thank you for using this tool!</p>
-            <p> > If you are running this tool on webui mode, or from a docker container, consider setup a password to prevent unauthorized remote access.</p>
+            <p>{{ palStore.getTranslatedText('EntryView_1') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_2') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_3') }}</p>
             <br>
-            <p> > If you have any issue, or want to contribute, check out <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub</a> page.</p>
-            <p> > If you love this tool and wish to donate, check out my <a target="_blank" href="https://ko-fi.com/connlost">ko-fi</a> page.</p>
+            <p>{{ palStore.getTranslatedText('EntryView_4') }}
+                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub</a>
+                {{ palStore.getTranslatedText('EntryView_5') }}
+            </p>
+            <p>{{ palStore.getTranslatedText('EntryView_6') }}
+                <a target="_blank" href="https://ko-fi.com/connlost">ko-fi</a>
+                {{ palStore.getTranslatedText('EntryView_5') }}
+            </p>
             <br>
-
         </div>
         <div class="right">
-            <p> > If you are running this program for the first time, you will need to manually enter the correct path to your
-            save folder, i.e. the parent folder of Level.sav.</p>
-            <p> > After a successful save loading, the path will be stored and automatically input for you the next time.</p>
-            <p> > If you are running from the docker container, make sure you have mapped the directory correctly, and all you need is to enter the mapped path.</p>
+            <p>{{ palStore.getTranslatedText('EntryView_7') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_8') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_9') }}</p>
             <br>
             <p class="small">{{ palStore.PAL_GAME_SAVE_PATH }}</p>
             <input type="text" v-model="palStore.PAL_GAME_SAVE_PATH"
-                placeholder="/Path/To/PalServer/Pal/Saved/SaveGames/0/HEXHEXHEXHEXHEX"
+                placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
                 :disabled="palStore.LOADING_FLAG">
-            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.FilePickerAvailable">Select Path</button>
-            <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">Load Save</button>
+
+            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.FilePickerAvailable">
+                {{ palStore.getTranslatedText('EntryView_Btn_1') }}
+            </button>
+            <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
+                {{ palStore.getTranslatedText('EntryView_Btn_2') }}
+            </button>
         </div>
     </div>
 </template>
@@ -45,7 +53,13 @@ div#entryDiv {
     gap: 0 3rem;
 }
 
-div.left, div.right{
+div.col {
+    display: flex;
+    flex-direction: column;
+}
+
+div.left,
+div.right {
     flex: 1 1 48%;
     display: flex;
     flex-direction: column;
@@ -57,7 +71,7 @@ p {
     margin: 0 1rem;
 }
 
-p.small{
+p.small {
     font-size: 0.8rem;
     margin: 0 0;
     color: grey;

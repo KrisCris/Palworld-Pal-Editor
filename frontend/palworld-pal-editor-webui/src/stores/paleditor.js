@@ -2,6 +2,11 @@ import { ref, computed, reactive, nextTick } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
+import en from "../i18n/en.js"
+import cn from "../i18n/zh-CN.js"
+import tw from "../i18n/zh-TW.js"
+import ja from "../i18n/ja.js"
+
 export const usePalEditorStore = defineStore("paleditor", () => {
   class Player {
     constructor(obj) {
@@ -240,6 +245,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     "zh-CN": "中文",
     ja: "日本語",
   });
+
+  const TranslationKeyMap = ref({
+    en: en,
+    "zh-CN": cn,
+    "zh-TW": tw,
+    ja: ja
+  })
 
   // flags
   const LOADING_FLAG = ref(false);
@@ -575,6 +587,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PAL_MAP.value = new Map();
 
     PLAYER_MAP.value.clear();
+  }
+
+  function getTranslatedText(translationKey) {
+    const i18nData = TranslationKeyMap.value[I18n.value] || TranslationKeyMap.value.en
+    return i18nData[translationKey] || "I18N_MISSING"
   }
 
   async function updatePlayer(e) {
@@ -1189,6 +1206,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     ACTIVE_SKILLS,
     ACTIVE_SKILLS_LIST,
 
+    getTranslatedText,
+    
     isElementInViewport,
     isFilteredPal,
 
