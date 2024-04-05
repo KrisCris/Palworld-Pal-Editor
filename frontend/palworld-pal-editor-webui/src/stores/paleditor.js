@@ -251,6 +251,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
   const SHOW_OOB_PAL_FLAG = ref(true);
+  const HIDE_INVALID_OPTIONS = ref(true)
 
   const PAL_LIST_SEARCH_KEYWORD = ref("")
 
@@ -275,7 +276,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const I18n = ref(localStorage.getItem("PAL_I18n"));
   const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
   const HAS_PASSWORD = ref(false);
-  const IS_GUI = ref(false)
+  const FilePickerAvailable = ref(false)
   const PAL_WRITE_BACK_PATH = ref("");
 
   // auth
@@ -437,7 +438,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_GAME_SAVE_PATH.value = response.data.Path;
       }
       HAS_PASSWORD.value = response.data.HasPassword;
-      IS_GUI.value = response.data.Mode == "gui"
+      FilePickerAvailable.value = response.data.FilePickerAvailable
       // console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value, IS_GUI.value);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
@@ -451,7 +452,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   async function show_file_picker() {
-    if (!IS_GUI.value) {
+    if (!FilePickerAvailable.value) {
       alert("This only works in GUI mode!")
       return;
     }
@@ -1167,12 +1168,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     UPDATE_PAL_RESELECT_CTR,
     SHOW_UNREF_PAL_FLAG,
     SHOW_OOB_PAL_FLAG,
-
+    HIDE_INVALID_OPTIONS,
+    
     PAL_LIST_SEARCH_KEYWORD,
 
     IS_LOCKED,
     HAS_PASSWORD,
-    IS_GUI,
+    FilePickerAvailable,
 
     HAS_WORKING_PAL_FLAG,
     BASE_PAL_BTN_CLK_FLAG,

@@ -416,11 +416,11 @@
         },
         "I18n": {
             "en": "Gumoss (Special)",
-            "zh-CN": "叶泥泥 (Special)",
+            "zh-CN": "叶泥泥 (特殊)",
             "ja": "ナエモチ (特殊)"
         },
         "SortingKey": {
-            "paldeck": "13S"
+            "paldeck": "13"
         }
     },
     "CuteFox": {
@@ -3605,7 +3605,7 @@
             "ja": "ゾーイ & エレパンダ"
         },
         "SortingKey": {
-            "paldeck": "103T"
+            "paldeck": "103"
         },
         "Scaling": {
             "HP": 6000,
@@ -3690,7 +3690,7 @@
             "ja": "リリィ & リリクイン"
         },
         "SortingKey": {
-            "paldeck": "104T"
+            "paldeck": "104"
         },
         "Scaling": {
             "HP": 5500,
@@ -3751,7 +3751,7 @@
             "ja": "マーカス & ホルス"
         },
         "SortingKey": {
-            "paldeck": "105T"
+            "paldeck": "105"
         },
         "Scaling": {
             "HP": 6500,
@@ -3812,7 +3812,7 @@
             "ja": "アクセル & ボルゼクス"
         },
         "SortingKey": {
-            "paldeck": "106T"
+            "paldeck": "106"
         },
         "Scaling": {
             "HP": 6500,
@@ -3873,7 +3873,7 @@
             "ja": "ヴィクター & ゼノグリフ"
         },
         "SortingKey": {
-            "paldeck": "107T"
+            "paldeck": "107"
         },
         "Scaling": {
             "HP": 8000,
@@ -4080,7 +4080,7 @@
             "ja": "狂乱の淑女 ベラノワール"
         },
         "SortingKey": {
-            "paldeck": "112R"
+            "paldeck": "112"
         }
     },
     "NightLady_Dark": {
@@ -4138,7 +4138,7 @@
             "ja": "幽玄の魔女 ベラルージュ"
         },
         "SortingKey": {
-            "paldeck": "112R1"
+            "paldeck": "112B"
         }
     },
     "RAID_NightLady_Dark_2": {
@@ -4168,7 +4168,7 @@
             "ja": "幽玄の魔女【極】 ベラルージュ"
         },
         "SortingKey": {
-            "paldeck": "112R2"
+            "paldeck": "112B"
         }
     },
 
@@ -4241,7 +4241,8 @@
         "I18n": {
             "en": "Boltmane"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "FeatherOstrich": {
         "InternalName": "FeatherOstrich",
@@ -4445,7 +4446,8 @@
         "I18n": {
             "en": "Dragostrophe"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "DarkMutant": {
         "InternalName": "DarkMutant",
@@ -4462,7 +4464,8 @@
         "I18n": {
             "en": "DarkMutant"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
 
 
@@ -4704,10 +4707,10 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Believer_Fat_GatlingGun",
-            "zh-CN": "Believer_Fat_GatlingGun"
+            "en": "Name_Believer_BOSS"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "Female_DesertPeople02": {
         "InternalName": "Female_DesertPeople02",
@@ -4784,7 +4787,8 @@
             "en": "Villager (Male_Trader01)",
             "zh-CN": "村民 (Male_Trader01)"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "Male_Trader02": {
         "InternalName": "Male_Trader02",
@@ -4795,7 +4799,8 @@
             "en": "Villager (Male_Trader02)",
             "zh-CN": "村民 (Male_Trader02)"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "Male_Trader03": {
         "InternalName": "Male_Trader03",
@@ -4806,7 +4811,8 @@
             "en": "Villager (Male_Trader03)",
             "zh-CN": "村民 (Male_Trader03)"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "MobuVillager": {
         "InternalName": "MobuVillager",
@@ -4869,8 +4875,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Islander (Soldier01)",
-            "zh-CN": "岛民 (Soldier01)"
+            "en": "Islander (Female_Soldier01)",
+            "zh-CN": "岛民 (Female_Soldier01)"
         },
         "SortingKey": {}
     },
@@ -4880,8 +4886,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Islander (Soldier02)",
-            "zh-CN": "岛民 (Soldier02)"
+            "en": "Islander (Female_Soldier02)",
+            "zh-CN": "岛民 (Female_Soldier02)"
         },
         "SortingKey": {}
     },
@@ -4891,8 +4897,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Islander (Soldier03)",
-            "zh-CN": "岛民 (Soldier03)"
+            "en": "Islander (Female_Soldier03)",
+            "zh-CN": "岛民 (Female_Soldier03)"
         },
         "SortingKey": {}
     },
@@ -4902,8 +4908,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Islander (Soldier04)",
-            "zh-CN": "岛民 (Soldier04)"
+            "en": "Islander (Female_Soldier04)",
+            "zh-CN": "岛民 (Female_Soldier04)"
         },
         "SortingKey": {}
     },
@@ -4990,8 +4996,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Weapons Dealer",
-            "zh-CN": "武器商人"
+            "en": "(Not a Merchant) Weapons Dealer",
+            "zh-CN": "(不是商人) 武器商人"
         },
         "SortingKey": {}
     },
@@ -5001,8 +5007,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant (GoodwillAmbassador)",
-            "zh-CN": "帕鲁商人 (GoodwillAmbassador)"
+            "en": "(Not a Merchant) Pal Merchant (GoodwillAmbassador)",
+            "zh-CN": "(不是商人) 帕鲁商人 (GoodwillAmbassador)"
         },
         "SortingKey": {}
     },
@@ -5012,8 +5018,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant (Inspector)",
-            "zh-CN": "帕鲁商人 (Inspector)"
+            "en": "(Not a Merchant) Pal Merchant (Inspector)",
+            "zh-CN": "(不是商人) 帕鲁商人 (Inspector)"
         },
         "SortingKey": {}
     },
@@ -5056,8 +5062,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant (PalTrader)",
-            "zh-CN": "帕鲁商人 (PalTrader)"
+            "en": "(Not a Merchant) Pal Merchant (PalTrader)",
+            "zh-CN": "(不是商人) 帕鲁商人 (PalTrader)"
         },
         "SortingKey": {}
     },
@@ -5078,8 +5084,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant (Robbery_Leader)",
-            "zh-CN": "帕鲁商人 (Robbery_Leader)"
+            "en": "(Not a Merchant) Pal Merchant (Robbery_Leader)",
+            "zh-CN": "(不是商人) 帕鲁商人 (Robbery_Leader)"
         },
         "SortingKey": {}
     },
@@ -5089,8 +5095,8 @@
         "Attacks": {},
         "Human": true,
         "I18n": {
-            "en": "Pal Merchant (Robbery_Minion)",
-            "zh-CN": "帕鲁商人 (Robbery_Minion)"
+            "en": "(Not a Merchant) Pal Merchant (Robbery_Minion)",
+            "zh-CN": "(不是商人) 帕鲁商人 (Robbery_Minion)"
         },
         "SortingKey": {}
     },
@@ -5169,7 +5175,8 @@
             "en": "Wandering Merchant (Visitor_Present)",
             "zh-CN": "流浪商人 (Visitor_Present)"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "Guard_Rifle": {
         "InternalName": "Guard_Rifle",
@@ -5295,7 +5302,8 @@
         "I18n": {
             "en": "InternalName: QuestMan"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "TestAssassin": {
         "InternalName": "TestAssassin",
@@ -5305,7 +5313,8 @@
         "I18n": {
             "en": "InternalName: TestAssassin"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "TestNPC": {
         "InternalName": "TestNPC",
@@ -5315,7 +5324,8 @@
         "I18n": {
             "en": "InternalName: TestNPC"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "SecurityDrone": {
         "InternalName": "SecurityDrone",
@@ -5326,7 +5336,8 @@
             "en": "Drone",
             "zh-CN": "监视无人机"
         },
-        "SortingKey": {}
+        "SortingKey": {},
+        "Invalid": true
     },
     "VisitingMerchant": {
         "InternalName": "VisitingMerchant",

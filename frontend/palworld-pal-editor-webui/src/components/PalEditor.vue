@@ -21,6 +21,16 @@ function formatString(input) {
   return formatted;
 }
 
+function filterInvalid(list) {
+  return list.filter(item => {
+    if (palStore.HIDE_INVALID_OPTIONS) {
+      // return !(item.Invalid || item.IsHuman)
+      return !item.Invalid
+    }
+    return true
+  })
+}
+
 </script>
 
 <template>
@@ -37,18 +47,17 @@ function formatString(input) {
       <div class="item flex-v left">
         <p class="cat">BASIC INFO</p>
         <div class="editField">
-          <!-- <p class="const"> Specie: {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} {{
+          <p class="const"> Species: {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} {{
     palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey}}
-          </p> -->
-          <p class="const"> Specie: </p>
+          </p>
+          <!-- <p class="const"> Specie: </p> -->
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
-            <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n"> {{ `
+            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName" :key="pal.InternalName" :title="pal.I18n"> {{ `
                 ${formatString(pal.SortingKey) || ""} 
                 ${pal.Invalid ? '❌' : ""} 
                 ${palStore.displayPalElement(pal.InternalName)} 
                 ${pal.I18n}` 
-              }}</option>
+              }} </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
@@ -262,7 +271,7 @@ function formatString(input) {
           <div class="editField">
             <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
               <option value="" key="">Add Skills</option>
-              <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
+              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName" :key="skill.InternalName"
                 :title="skill.I18n[1]">
                 {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)} -
                 ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}

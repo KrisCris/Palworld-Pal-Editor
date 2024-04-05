@@ -41,8 +41,28 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
       <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">💾 SAVE CHANGES</button>
       <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">🔄 Reload Save</button>
       <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">🏠 Return to Main Page</button>
-      <button :class="['op', {'toggled': palStore.SHOW_OOB_PAL_FLAG}]" @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG" title="Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by somebody.">🧊 Show Out of Box Pal</button>
-      <button :class="['op', {'toggled': palStore.SHOW_UNREF_PAL_FLAG}]" @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG">👀 Toggle Ghost Pal</button>
+
+      <button 
+        :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
+        @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" 
+        :disabled="palStore.LOADING_FLAG"
+        title="Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone">
+        🧊 Show Out of Box Pal
+      </button>
+
+      <button 
+        :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
+        @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" 
+        :disabled="palStore.LOADING_FLAG"
+        title="Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.">
+        👀 Toggle Ghost Pal
+      </button>
+      <button 
+        :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]"
+        @click="palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS" 
+        :disabled="palStore.LOADING_FLAG"
+        title="Hide invalid dropdown menu options">
+        ⚠️ Hide Invalid Options</button>
     </div>
     <div class="options">
       <p>🌐</p>
@@ -100,7 +120,7 @@ input.savePath {
   align-items: center;
   background-color: #34353a;
   height: 1.8rem;
-  width: 40vw;
+  max-width: 30vw;
   margin: .2rem;
   padding: .2rem .4rem;
   border-radius: .5rem;

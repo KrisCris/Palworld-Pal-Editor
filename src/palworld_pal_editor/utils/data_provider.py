@@ -116,6 +116,7 @@ class DataProvider:
                     DataProvider.get_pal_sorting_key(item["InternalName"])
                     or DataProvider.get_pal_i18n(item["InternalName"])
                 ),
+                len(item["InternalName"])
             ),
         )
         return sorted_list

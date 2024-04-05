@@ -12,13 +12,22 @@ save_blueprint = Blueprint("save", __name__)
 
 @save_blueprint.route("/fetch_config", methods=["GET"])
 def fetch_config():
+    tk_status = False
+    if Config.mode == "gui":
+        try:
+            import tkinter as tk
+            tk_status = True
+        except:
+            trace = traceback.format_exc()
+            LOGGER.error(f"Hiding File Picker Since It Will Not Work: {trace}")
+
     return reply(
         0,
         {
             "I18n": Config.i18n,
             "Path": Config.path,
             "HasPassword": Config.password != None,
-            "Mode": Config.mode
+            "FilePickerAvailable": Config.mode == "gui" and tk_status
         },
     )
 
@@ -143,6 +152,7 @@ def get_pal_data():
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),
+            "IsHuman": DataProvider.is_pal_human(pal["InternalName"]) or False
         }
         pal_dict[pal["InternalName"]] = data
         pal_arr.append(data)
@@ -156,13 +166,19 @@ def show_file_picker():
         LOGGER.warning(msg)
         return reply(1, msg=msg)
     
-    import tkinter as tk
-    from tkinter import filedialog
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
 
-    root = tk.Tk()
-    root.withdraw()
-    root.attributes('-topmost', True)
-    folder_selected = filedialog.askdirectory(parent=root)
-    root.destroy()
-    LOGGER.info(f"File picker result: {folder_selected}")
-    return reply(0, {"path": folder_selected})
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        folder_selected = filedialog.askdirectory(parent=root)
+        root.destroy()
+        LOGGER.info(f"File picker result: {folder_selected}")
+        return reply(0, {"path": folder_selected})
+    except:
+        trace = traceback.format_exc()
+        LOGGER.error(f"Failed Open File Picker: {trace}")
+        LOGGER.error(f"Please Manually Type in the Path.")
+        return reply(1, msg="Failed open file picker (check log for detail), please manually type in the path.")
