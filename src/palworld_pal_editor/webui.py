@@ -9,7 +9,13 @@ from palworld_pal_editor.api.util import reply
 from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.api import *
 from palworld_pal_editor.utils import LOGGER
+import mimetypes
 
+# attempt to fix MIME TYPE error for some user
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
+mimetypes.add_type('image/png', '.png')
+mimetypes.add_type('text/html', '.html')
 
 app = Flask(__name__, static_folder=ASSETS_PATH / "webui", static_url_path='/')
 app.register_blueprint(player_blueprint, url_prefix='/api/player')
