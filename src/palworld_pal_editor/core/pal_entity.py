@@ -688,8 +688,9 @@ class PalEntity:
         # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
         LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)[0]} to MasteredWaza")
         
-        # if self.num_EmptyEquipWaza > 0:
-        #     self.add_EquipWaza(waza)
+        if self.num_EmptyEquipWaza > 0:
+            self.add_EquipWaza(waza)
+            
         return True
 
     @LOGGER.change_logger('MasteredWaza')
@@ -886,9 +887,12 @@ class PalEntity:
         PalObjects.set_BaseType(self._pal_param['Tiemr_FoodWithStatusEffect'], val)
         
     def learn_attacks(self):
-        for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1):
-            if atk not in (self.MasteredWaza or []):
-                self.add_MasteredWaza(atk)
+        if self.IsHuman:
+            self.add_MasteredWaza("EPalWazaID::Human_Punch")
+        else:
+            for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1):
+                if atk not in (self.MasteredWaza or []):
+                    self.add_MasteredWaza(atk)
         # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
         #     if atk in self.MasteredWaza:
         #         self.pop_MasteredWaza(atk)
@@ -899,7 +903,9 @@ class PalEntity:
         atks = self.MasteredWaza.copy()
         if not atks: return
         for atk in atks:
-            if DataProvider.is_unique_attacks(atk):
+            if self.IsHuman:
+                self.pop_MasteredWaza(item=atk)
+            elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
 
     @LOGGER.change_logger("WorkerSick")

@@ -2397,19 +2397,19 @@
         "Power": 12,
         "I18n": {
             "en": {
-                "Name": "Punch",
+                "Name": "Punch [Human]",
                 "Description": "Punch with conviction; believe in the power of the fist."
             },
             "zh-CN": {
-                "Name": "击打",
+                "Name": "击打 [人类]",
                 "Description": "相信自己的拳头，出拳攻击。"
             },
             "ja": {
-                "Name": "パンチ",
+                "Name": "パンチ [人間]",
                 "Description": "己の拳を信じて、パンチする。"
             }
         },
-        "Invalid": true
+        "UniqueSkill": true
     },
     "EPalWazaID::Throw": {
         "InternalName": "EPalWazaID::Throw",
