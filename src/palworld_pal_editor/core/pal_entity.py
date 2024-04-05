@@ -157,7 +157,8 @@ class PalEntity:
         self.heal_pal()
         self.clear_worker_sick()
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @property
     def _RawSpecieKey(self) -> Optional[str]:
@@ -284,7 +285,8 @@ class PalEntity:
         else:
             self.CharacterID = f"GYM_{self._RawSpecieKey}"
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @property
     def _IsBOSS(self) -> bool:
@@ -325,7 +327,8 @@ class PalEntity:
         self._IsBOSS = value
         # Update MaxHP
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
@@ -383,7 +386,8 @@ class PalEntity:
         self.Exp = DataProvider.get_level_xp(self.Level)
         # Update MaxHP
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
         # Learn Attacks
         self.learn_attacks()
 
@@ -422,7 +426,8 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
 
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
         if self.Rank == PalRank.Rank0:
             self._pal_param.pop("Rank", None)
@@ -449,7 +454,8 @@ class PalEntity:
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
@@ -470,7 +476,7 @@ class PalEntity:
         self._set_soul_rank('Rank_CraftSpeed', rank)
 
     @property
-    def ComputedMaxHP(self) -> int:
+    def ComputedMaxHP(self) -> Optional[int]:
         """
         Credit to https://www.reddit.com/r/Palworld/comments/1afyau4/pal_stat_mechanics_hidden_ivs_levelup_stats_and/
         """
@@ -583,7 +589,8 @@ class PalEntity:
         LOGGER.info(f"Added {DataProvider.get_passive_i18n(skill)[0]} to PassiveSkillList")
         # Update MaxHP, but no such skill atm.
         # self.MaxHP = self.ComputedMaxHP
-        # self.HP = self.ComputedMaxHP
+        # if maxHP := self.ComputedMaxHP:
+        #     self.HP = maxHP
         return True
     
     @LOGGER.change_logger('PassiveSkillList')
@@ -722,7 +729,8 @@ class PalEntity:
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
         # self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
@@ -847,7 +855,8 @@ class PalEntity:
             self._pal_param.pop("PhysicalHealth", None)
         # if not self.MaxHP:
         #     self.MaxHP = self.ComputedMaxHP
-        self.HP = self.ComputedMaxHP            
+        if maxHP := self.ComputedMaxHP:
+            self.HP = maxHP
 
     @property
     def FoodWithStatusEffect(self) -> Optional[str]:
