@@ -1,15 +1,21 @@
 # Palworld Pal Editor
 
-<p align="center">
+<h3 align="center">
    <a href="/README.md">English</a> | <strong>简体中文</strong>
-</p>
+</h3>
 
 <p align='center'>
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;&nbsp;
-<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
-<img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/kriscris/palworld-pal-editor?display_name=tag&style=for-the-badge"></a>
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;
+</p>
+<p align='center'>
+<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;
+<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/palworld-pal-editor?style=for-the-badge"></a>&nbsp;
+<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/palworld-pal-editor?style=for-the-badge&label=PYPI%20DOWNLOADS"></a>&nbsp;
+</p>
+<p align='center'>
+<a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
 </p>
 
 ## 支持的语言
@@ -28,6 +34,8 @@
 <https://www.bilibili.com/video/av1952608324>
 
 > [!NOTE]
+> Steam 本地游戏存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
+> 
 > **本工具目前只支持Steam，如果你使用的是Xbox Game Pass版本，可以参考一下两个工具来转换存档格式：**
 >
 > - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
