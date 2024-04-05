@@ -25,6 +25,8 @@
 
 ### A Palworld Pal Editor developed by _connlost with ❤️
 
+<https://youtu.be/v9U60jj5Ugw>
+
  ~~(yeah i am just too lazy to change github username)~~
 
 > [!NOTE]

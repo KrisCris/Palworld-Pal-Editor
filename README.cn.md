@@ -25,7 +25,7 @@
 
 ### 幻兽帕鲁 帕鲁 编辑器
 
-<https://www.bilibili.com/video/av1001846154>
+<https://www.bilibili.com/video/av1952608324>
 
 > [!NOTE]
 > **本工具目前只支持Steam，如果你使用的是Xbox Game Pass版本，可以参考一下两个工具来转换存档格式：**
