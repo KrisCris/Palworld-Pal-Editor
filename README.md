@@ -24,7 +24,9 @@
 - **English** | **日本語** | **简体中文**
 
 > [!NOTE]
-> The UI is hardcoded in English, but there isn't much text, and the emojis should be very easy to understand.
+> If the UI isn't in your language, that means the UI I18n is missing, and we need someone to contribute the translations.
+>
+> But don't worry, all Pals and Skills are translated for the supported languages.
 >
 > At the end of the day, you can always use Chrome translation, if you are running it in web mode. ***(You don't need to worry about translation messing up the data we write to the save, we are not using plain text.)***
 
