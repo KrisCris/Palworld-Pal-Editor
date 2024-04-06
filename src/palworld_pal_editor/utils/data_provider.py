@@ -36,7 +36,8 @@ PAL_XP_THRESHOLDS: list[int] = load_json("pal_xp_thresholds.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
-I18N_LIST = ["en", "zh-CN", "ja"]
+# I18N_LIST = ["en", "zh-CN", "ja"]
+I18N_LIST: dict[str, str] = load_json("i18n_list.json")
 
 
 def none_guard(
@@ -74,7 +75,10 @@ class DataProvider:
 
     @property
     def default_i18n() -> str:
-        return I18N_LIST[0]
+        return I18N_LIST.keys()[0]
+    
+    def get_i18n_map() -> dict[str, str]:
+        return I18N_LIST
 
     # @staticmethod
     # def get_pal_icon(key: str) -> Optional[Any]:
@@ -240,4 +244,4 @@ class DataProvider:
 
     @staticmethod
     def get_i18n_options() -> list[str]:
-        return I18N_LIST
+        return I18N_LIST.keys()

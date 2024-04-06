@@ -66,7 +66,7 @@ export default {
     PlayerList_1: "玩家列表",
     PlayerList_2: "为玩家解锁观赏笼: ",
 
-    PlayerList_Btn_1: "基地中的帕鲁",
+    PlayerList_Btn_1: "基地帕鲁",
 
     TopBar_Btn_1: "保存更改",
     TopBar_Btn_2: "重新载入存档",
