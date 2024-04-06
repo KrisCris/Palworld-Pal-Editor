@@ -24,7 +24,7 @@ export default {
     Editor_3: "种族: ",
     Editor_4: "昵称: ",
     Editor_5: "性别: ",
-    Editor_6: "Variant: ", // 不知道用什么词
+    Editor_6: "特殊种: ", // 不知道用什么词
     Editor_7: "帕鲁对象 ID: ",
     Editor_8: "帕鲁工会 ID: ",
     Editor_9: "帕鲁容器位置: ",
