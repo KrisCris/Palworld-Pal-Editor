@@ -38,31 +38,38 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
       <p>💾</p>
       <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
         :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
-      <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">💾 SAVE CHANGES</button>
-      <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">🔄 Reload Save</button>
-      <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">🏠 Return to Main Page</button>
+      <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">
+        💾 {{ palStore.getTranslatedText("TopBar_Btn_1") }}
+      </button>
+      <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
+        🔄 {{ palStore.getTranslatedText("TopBar_Btn_2") }}
+      </button>
+      <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">
+        🏠 {{ palStore.getTranslatedText("TopBar_Btn_3") }}
+      </button>
 
       <button 
         :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
         @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" 
         :disabled="palStore.LOADING_FLAG"
-        title="Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone">
-        🧊 Show Out of Box Pal
+        :title="palStore.getTranslatedText('TopBar_1')">
+        🧊 {{ palStore.getTranslatedText("TopBar_Btn_4") }}
       </button>
 
       <button 
         :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
         @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" 
         :disabled="palStore.LOADING_FLAG"
-        title="Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.">
-        👀 Toggle Ghost Pal
+        :title="palStore.getTranslatedText('TopBar_2')">
+        👀 {{ palStore.getTranslatedText("TopBar_Btn_5") }}
       </button>
       <button 
         :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]"
         @click="palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS" 
         :disabled="palStore.LOADING_FLAG"
-        title="Hide invalid dropdown menu options">
-        ⚠️ Hide Invalid Options</button>
+        :title="palStore.getTranslatedText('TopBar_3')">
+        ⚠️ {{ palStore.getTranslatedText("TopBar_Btn_6") }}
+      </button>
     </div>
     <div class="options">
       <p>🌐</p>

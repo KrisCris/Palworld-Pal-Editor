@@ -25,6 +25,7 @@ def fetch_config():
         0,
         {
             "I18n": Config.i18n,
+            "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
             "HasPassword": Config.password != None,
             "FilePickerAvailable": Config.mode == "gui" and tk_status

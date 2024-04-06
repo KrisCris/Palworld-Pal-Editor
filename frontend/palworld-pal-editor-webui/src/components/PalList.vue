@@ -82,7 +82,9 @@ function get_filtered_pal_list() {
 <template>
     <div class="flex">
         <div class="title">
-            <p>PAL LIST</p>
+            <p>
+                {{ palStore.getTranslatedText("PalList_1") }}
+            </p>
             <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
                 :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"

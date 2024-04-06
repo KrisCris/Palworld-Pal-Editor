@@ -1,0 +1,81 @@
+export default {
+    AuthView_1: "Hello! It seems you have set a protection password 🔐.",
+    AuthView_2: "Before continue, please enter the password:",
+    AuthView_Btn_1: "Unlock",
+
+    EntryView_1: "Hello there!",
+    EntryView_2: " > Thank you for using this tool!",
+    EntryView_3:
+        " > If you are running this tool on webui mode, or from a docker container, consider setup a password to prevent unauthorized remote access.",
+    EntryView_4: " > If you have any issue, or want to contribute, check out ",
+    EntryView_5: " page.",
+    EntryView_6: " > If you love this tool and wish to donate, check out my ",
+    EntryView_7:
+        " > If you are running this program for the first time, you will need to manually enter the correct path to your save folder, i.e. the parent folder of Level.sav.",
+    EntryView_8:
+        " > After a successful save loading, the path will be stored and automatically input for you the next time.",
+    EntryView_9:
+        " > If you are running from the docker container, please make sure you have mapped the directory correctly, and setup the correct file access permission. Then all you need is to enter the mapped path.",
+    EntryView_Btn_1: "Select Path",
+    EntryView_Btn_2: "Load Save",
+
+    Editor_1: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
+    Editor_2: "BASIC INFO",
+    Editor_3: "Species: ",
+    Editor_4: "NickName: ",
+    Editor_5: "Gender: ",
+    Editor_6: "Variant: ",
+    Editor_7: "Pal Instance ID: ",
+    Editor_8: "Pal Group ID: ",
+    Editor_9: "Pal ContainerSlot: ",
+    Editor_10: "Owner: ",
+    Editor_11: "None (BASE WORKER)",
+    Editor_12: "Computed MaxHP: ",
+    Editor_13: "Computed Attack: ",
+    Editor_14: "Computed Defense: ",
+    Editor_15: "Computed CraftSpeed: ",
+    Editor_16: "IVs",
+    Editor_17: "HP IV: ",
+    Editor_18: "DEF IV: ",
+    Editor_19: "ATK IV: ",
+    Editor_20: "MELEE IV (Unused): ",
+    Editor_21: "SOUL RANKs (POWER STATUE)",
+    Editor_22: "SoulBonus HP: ",
+    Editor_23: "SoulBonus Attack: ",
+    Editor_24: "SoulBonus Defence: ",
+    Editor_25: "SoulBonus CraftSpeed: ",
+    Editor_26: "CONDENSER RANK",
+    Editor_27: "Condenser Rank: ",
+    Editor_28: "PASSIVE SKILLS",
+    Editor_29: "Add Skills",
+    Editor_30: "EQUIPPED ACTIVE SKILLS",
+    Editor_31: "Attack: ",
+    Editor_32: "CT: ",
+    Editor_33: "Element: ",
+    Editor_34: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
+
+    Editor_Btn_1: "Dump Data",
+    Editor_Btn_2: "Dupe Pal",
+    Editor_Btn_3: "Del Pal",
+    Editor_Btn_4: "Take Back",
+    Editor_Btn_5: "Clear Worker Sick",
+    Editor_Btn_6: "Revive Pal",
+
+    PalList_1: "PAL LIST",
+
+    PlayerList_1: "PLAYER LIST",
+    PlayerList_2: "Unlock Viewing Cage for ",
+
+    PlayerList_Btn_1: "BASE PAL",
+
+    TopBar_Btn_1: "SAVE CHANGES",
+    TopBar_Btn_2: "Reload Save",
+    TopBar_Btn_3: "Return to Main Page",
+    TopBar_Btn_4: "Show Out of Box Pal",
+    TopBar_Btn_5: "Toggle Ghost Pal",
+    TopBar_Btn_6: "Hide Invalid Options",
+
+    TopBar_1: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",
+    TopBar_2: "Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.",
+    TopBar_3: "Hide invalid dropdown menu options."
+};
