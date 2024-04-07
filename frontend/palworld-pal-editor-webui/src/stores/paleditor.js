@@ -235,11 +235,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const ACTIVE_SKILLS_LIST = ref([]);
   const PAL_STATIC_DATA = ref({});
   const PAL_STATIC_DATA_LIST = ref([]);
-  const I18nList = ref({
-    en: "English",
-    "zh-CN": "中文",
-    ja: "日本語",
-  });
+  const I18nList = ref({});
+
+  // const TranslationKeyMap = ref({
+  //   en: en,
+  //   "zh-CN": cn,
+  //   "zh-TW": tw,
+  //   ja: ja
+  // })
+
+  const TranslationKeyMap = ref({})
+  const I18nLoadingPromises = {}
 
   // flags
   const LOADING_FLAG = ref(false);
@@ -270,7 +276,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const SELECTED_PAL_ID = ref(null);
 
   // TODO Get rid of this...
-  let SELECTED_PAL_EL = null;
+  // let SELECTED_PAL_EL = null;
 
   // Configs
   const I18n = ref(localStorage.getItem("PAL_I18n"));
@@ -431,9 +437,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response === false) return;
 
     if (response.status == 0) {
-      if (!I18n.value) {
+      I18nList.value = response.data.I18nList
+      if (!I18n.value || !I18nList.value[I18n.value]) {
         I18n.value = response.data.I18n;
       }
+      // TranslationKeyMap[I18n.value] = await import(`../i18n/${I18n.value}.js`)
       if (!PAL_GAME_SAVE_PATH.value) {
         PAL_GAME_SAVE_PATH.value = response.data.Path;
       }
@@ -494,7 +502,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         });
         fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
       }
-      fetchStaticData();
+      if (!IS_LOCKED.value)
+        fetchStaticData();
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -575,6 +584,42 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     PAL_MAP.value = new Map();
 
     PLAYER_MAP.value.clear();
+  }
+
+  function getTranslatedText(translationKey) {
+    const I18nKey = I18n.value || "en"
+
+    if (TranslationKeyMap.value[I18nKey]) {
+      const i18nData = TranslationKeyMap.value[I18n.value]
+      return i18nData[translationKey] || "I18N_MISSING"
+    }
+
+    if (!I18nLoadingPromises[I18nKey]) {
+      I18nLoadingPromises[I18nKey] = import(`../i18n/${I18nKey}.js`)
+        .then(module => {
+          console.log(`${I18nKey} imported`)
+          TranslationKeyMap.value[I18nKey] = module.default
+          delete I18nLoadingPromises[I18nKey]
+        })
+        .catch(error => {
+          console.error(`Failed to load UI language file for ${I18nKey}, fallback to "en":`, error);
+          if (TranslationKeyMap.value["en"]) {
+            TranslationKeyMap.value[I18nKey] = TranslationKeyMap.value["en"]
+            delete I18nLoadingPromises[I18nKey]
+          } else {
+            import(`../i18n/en.js`).then(module => {
+                console.log(`en imported`)
+                TranslationKeyMap.value[I18nKey] = module.default
+                delete I18nLoadingPromises[I18nKey]
+              })
+          }
+        })
+    }
+
+    return I18nLoadingPromises[I18nKey].then(() => {
+      const i18nData = TranslationKeyMap.value[I18nKey];
+      return i18nData?.translationKey || "I18N_MISSING";
+    });
   }
 
   async function updatePlayer(e) {
@@ -852,7 +897,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // sometimes we manually construct a "e" target in a very hacked way
     if (!manual) {
-      SELECTED_PAL_EL = e.target;
+      // SELECTED_PAL_EL = e.target;
       SELECTED_PAL_DATA.value = null;
       SELECTED_PAL_ID.value = null;
     }
@@ -1021,7 +1066,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       const nextNode = getNextElement(PAL_MAP.value, SELECTED_PAL_ID.value);
       PAL_MAP.value.delete(SELECTED_PAL_DATA.value.InstanceId);
       SELECTED_PAL_ID.value = null;
-      SELECTED_PAL_EL = null;
+      // SELECTED_PAL_EL = null;
       SELECTED_PAL_DATA.value = null;
       // ADD_PAL_RESELECT_CTR.value++;
       if (nextNode) {
@@ -1189,6 +1234,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     ACTIVE_SKILLS,
     ACTIVE_SKILLS_LIST,
 
+    getTranslatedText,
+    
     isElementInViewport,
     isFilteredPal,
 

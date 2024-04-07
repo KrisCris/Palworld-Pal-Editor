@@ -457,10 +457,10 @@ class SaveManager:
 
         if file_path.exists():
             BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
-            backup_dir = output_path / BK_FOLDER_NAME / f"{output_path.name}_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
             try:
                 if output_path.exists():
-                    LOGGER.info(f"Backing up {output_path} to {backup_dir}")
+                    LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
                     shutil.copytree(output_path, backup_dir, 
                                     ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
                 else:

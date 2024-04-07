@@ -295,9 +295,22 @@ human = [
     "Female_Soldier04"
 ]
 
+# import json
 
 with open("./pal_data.json", "r", encoding="utf-8") as pal_file:
     pal_data: dict = json.load(pal_file)
+
+# with open("文件名.json", "r", encoding="utf-8") as translation_file:
+#     tw_translation: dict = json.load(translation_file)
+
+# for key in tw_translation:
+#     if key in pal_data:
+#         pal_data[key]["I18n"]["zh-TW"] = tw_translation[key]
+#     else:
+#         print(f"{key}: {tw_translation[key]}")
+
+# with open("./pal_data.json", "w", encoding="utf-8") as pal_file:
+#     json.dump(pal_data, pal_file, indent=4, ensure_ascii=False)
 
 current_pals = []
 current_human = []
