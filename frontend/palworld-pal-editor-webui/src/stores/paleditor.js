@@ -502,7 +502,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         });
         fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
       }
-      if (!IS_LOCKED)
+      if (!IS_LOCKED.value)
         fetchStaticData();
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
