@@ -11,7 +11,7 @@ if hasattr(sys, 'frozen'):
 else:
     ASSETS_PATH = Path(__file__).parent
 
-VERSION = "0.3.4"
+VERSION = "0.5.1"
 
 class Config:
     i18n: str = "en"

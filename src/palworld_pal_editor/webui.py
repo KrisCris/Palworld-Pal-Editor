@@ -9,7 +9,13 @@ from palworld_pal_editor.api.util import reply
 from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.api import *
 from palworld_pal_editor.utils import LOGGER
+import mimetypes
 
+# attempt to fix MIME TYPE error for some user
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
+mimetypes.add_type('image/png', '.png')
+mimetypes.add_type('text/html', '.html')
 
 app = Flask(__name__, static_folder=ASSETS_PATH / "webui", static_url_path='/')
 app.register_blueprint(player_blueprint, url_prefix='/api/player')
@@ -38,15 +44,17 @@ def serve_image(icon_type, filename):
 
 
 @app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/<path>')
 def serve(path):
     static_folder_path = Path(app.static_folder)
     target_path = static_folder_path / path
     if path != "" and target_path.exists():
         return send_from_directory(str(static_folder_path), path)
-    else:
-        return send_from_directory(str(static_folder_path), 'index.html')
+    return send_from_directory(str(static_folder_path), 'index.html')
 
+@app.route('/api/ready')
+def ready():
+    return reply(status=0), 200
 
 @jwt.invalid_token_loader
 def invalid_token_callback(error_string):

@@ -8,3 +8,4 @@ pyinstaller==6.4.0
 waitress==3.0.0
 Flask-JWT-Extended==4.6.0
 pywebview==4.4.1
+requests==2.31.0

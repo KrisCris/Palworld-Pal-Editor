@@ -12,12 +12,23 @@ save_blueprint = Blueprint("save", __name__)
 
 @save_blueprint.route("/fetch_config", methods=["GET"])
 def fetch_config():
+    tk_status = False
+    if Config.mode == "gui":
+        try:
+            import tkinter as tk
+            tk_status = True
+        except:
+            trace = traceback.format_exc()
+            LOGGER.error(f"Hiding File Picker Since It Will Not Work: {trace}")
+
     return reply(
         0,
         {
             "I18n": Config.i18n,
+            "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
             "HasPassword": Config.password != None,
+            "FilePickerAvailable": Config.mode == "gui" and tk_status
         },
     )
 
@@ -78,21 +89,24 @@ def get_active_skills():
     atk_dict = {}
     atk_arr = []
     for attack in attacks_raw:
-        if attack.get("Invalid", None):
-            continue
+        # if attack.get("Invalid", None):
+        #     continue
         data = {
             "InternalName": attack["InternalName"],
             # "I18n": f'[{displayElement(attack["Element"])}] ' \
             #         f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
             #         f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
             #         f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
-            "I18n": DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"],
+            "I18n": list(DataProvider.get_attack_i18n(attack["InternalName"]) or [attack["InternalName"], ""]),
             "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
             "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
             "Power": attack["Power"],
             "Element": attack["Element"],
-            "CT": attack["CT"]
+            "CT": attack["CT"],
+            "Invalid": attack.get("Invalid", False)
         }
+        if data["Invalid"]:
+            data["I18n"][0] = "❌ " + data["I18n"][0]
         atk_dict[attack["InternalName"]] = data
         atk_arr.append(data)
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
@@ -139,7 +153,33 @@ def get_pal_data():
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),
+            "IsHuman": DataProvider.is_pal_human(pal["InternalName"]) or False
         }
         pal_dict[pal["InternalName"]] = data
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
+
+@save_blueprint.route("/file_picker", methods=["GET"])
+@jwt_required()
+def show_file_picker():
+    if Config.mode != "gui":
+        msg = "File picker only supports GUI mode."
+        LOGGER.warning(msg)
+        return reply(1, msg=msg)
+    
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        folder_selected = filedialog.askdirectory(parent=root)
+        root.destroy()
+        LOGGER.info(f"File picker result: {folder_selected}")
+        return reply(0, {"path": folder_selected})
+    except:
+        trace = traceback.format_exc()
+        LOGGER.error(f"Failed Open File Picker: {trace}")
+        LOGGER.error(f"Please Manually Type in the Path.")
+        return reply(1, msg="Failed open file picker (check log for detail), please manually type in the path.")

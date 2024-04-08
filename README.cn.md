@@ -1,45 +1,65 @@
 # Palworld Pal Editor
 
-<p align="center">
+<h3 align="center">
    <a href="/README.md">English</a> | <strong>简体中文</strong>
-</p>
+</h3>
 
 <p align='center'>
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;&nbsp;
-<a href="https://discord.gg/Dg5CcDem"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/Dg5CcDem"></a>&nbsp;&nbsp;
-<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;&nbsp;
-<img alt="Vue.js" src="https://img.shields.io/badge/Vue%20js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D">&nbsp;&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/kriscris/palworld-pal-editor?display_name=tag&style=for-the-badge"></a>
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;
 </p>
+<p align='center'>
+<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;
+<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/palworld-pal-editor?style=for-the-badge"></a>&nbsp;
+<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/palworld-pal-editor?style=for-the-badge&label=PYPI%20DOWNLOADS"></a>&nbsp;
+</p>
+<p align='center'>
+<a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
+</p>
+
+## 支持的语言
+
+- **English** | **日本語** | **简体中文**
 
 ## 这是什么？
 
-#### 幻兽帕鲁 帕鲁 编辑器
+### 幻兽帕鲁 帕鲁 编辑器
 
-https://www.bilibili.com/video/av1402092377
+<https://www.bilibili.com/video/av1952608324>
 
-**为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)**
+> [!NOTE]
+> Steam 本地游戏存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
+> 
+> **本工具目前只支持Steam，如果你使用的是Xbox Game Pass版本，可以参考一下两个工具来转换存档格式：**
+>
+> - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
+> - [Palworld XGP Save Importer (Steam -> XGP)](https://github.com/HarukaMa/palworld-xgp-import)
 
-***如果遇到BUG欢迎提交issue***
+> [!IMPORTANT]
+> **为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)。**
+>
+> ***如果遇到BUG欢迎提交 [Issue](https://github.com/KrisCris/Palworld-Pal-Editor/issues) 。***
 
 <img width="720" alt="Screenshot" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/51a9c262-a71a-4008-b2a3-f4a68e78046a">
 
 ---
 
 - [Palworld Pal Editor](#palworld-pal-editor)
+  - [支持的语言](#支持的语言)
   - [这是什么？](#这是什么)
-      - [幻兽帕鲁 帕鲁 编辑器](#幻兽帕鲁-帕鲁-编辑器)
+    - [幻兽帕鲁 帕鲁 编辑器](#幻兽帕鲁-帕鲁-编辑器)
   - [这个工具能干啥](#这个工具能干啥)
   - [使用](#使用)
-    - [A. 使用打包的可执行文件](#a-使用打包的可执行文件)
-    - [B. 通过 pip 安装](#b-通过-pip-安装)
-    - [C. 使用 Docker Container](#c-使用-docker-container)
-    - [D. 直接运行代码](#d-直接运行代码)
+    - [方案 A. 使用打包的可执行文件](#方案-a-使用打包的可执行文件)
+    - [方案 B. 通过 pip 安装](#方案-b-通过-pip-安装)
+    - [方案 C. 使用 Docker Container](#方案-c-使用-docker-container)
+    - [方案 D. 直接运行代码](#方案-d-直接运行代码)
     - [可选命令行参数](#可选命令行参数)
     - [配置文件](#配置文件)
-      - [命令行参数会覆盖并写入配置文件](#命令行参数会覆盖并写入配置文件)
   - [视频](#视频)
   - [未来开发计划？ (无ETA)](#未来开发计划-无eta)
+  - [Star History](#star-history)
   - [贡献](#贡献)
   - [赞助](#赞助)
   - [感谢](#感谢)
@@ -67,31 +87,36 @@ https://www.bilibili.com/video/av1402092377
 - [x] 修改 帕鲁魂强化等级
 - [x] 修改 帕鲁种族
 - [x] 修改 帕鲁个体值
-- [x] 计算并展示 最大生命值，攻击力，防御力，工作速度 （除了最大生命值其他可能不准）
+- [x] 计算并展示 最大生命值，攻击力，防御力，工作速度
 - [x] 移除 帕鲁工作疾病
 - [x] 复活帕鲁
 - [x] 修改 食物BUFF 的时间 （目前只支持CLI）
 
 ## 使用
 
-### A. 使用打包的可执行文件
+### 方案 A. 使用打包的可执行文件
 
-1. 下载Release页面的最新程序，或者你也可以去Actions里下载最近commits的打包（后者是最新的，但你很可能会遇到bug）。
-2. （命令行参数可用。）
+***直接运行可执行文件，你不需要安装Python等依赖。***
 
-### B. 通过 pip 安装
+- 稳定版:
+  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
+  - [Nexusmods](https://www.nexusmods.com/palworld/mods/995)
+- 最新（你可能会遇到问题）:
+  - [Github Actions Artifacts](https://github.com/KrisCris/Palworld-Pal-Editor/actions)
+
+### 方案 B. 通过 pip 安装
 
 1. 请确保你使用了 Python 3.11+
 2. `pip install --upgrade palworld-pal-editor`
 3. `python -m palworld_pal_editor`
 
-### C. 使用 Docker Container
+### 方案 C. 使用 Docker Container
 
 1. 克隆项目.
 2. 复制 `./docker/sample-docker-compose.yml` 到 `./docker/docker-compose.yml`, 并根据需求做适当修改（网络不佳的用户建议传入代理环境变量）。
 3. 运行 `./build_and_run_docker.sh` 以构建容器并运行容器。（Windows的话你把里面的命令复制出来手动跑就行了）。
 
-### D. 直接运行代码
+### 方案 D. 直接运行代码
 
 1. 安装 Python 3.11+ 和 node.js
 2. 克隆 / 下载项目代码
@@ -101,17 +126,20 @@ https://www.bilibili.com/video/av1402092377
 
 ```text
 options:
-  -h, --help           show this help message and exit
-  --lang LANG          Language for the application. options: en, zh-CN, ja
-  --path PATH          Path to the save folder.
-  --mode MODE          Running Mode, options: cli, gui, web
-  --port PORT          Port used for WebUI mode.
-  --password PASSWORD  Password for WebUI.
+  -h, --help           显示帮助
+  --lang LANG          设置应用语言，可选项: en, zh-CN, ja
+  --path PATH          存档文件夹的路径
+  --mode MODE          运行模式，可选项: cli, gui, web
+  --port PORT          WebUI监听的端口
+  --password PASSWORD  WebUI的密码，默认无密码
 ```
 
 ### 配置文件
 
-#### 命令行参数会覆盖并写入配置文件
+> [!NOTE]
+>
+> 1. 通常来说你不需要手动修改配置文件
+> 2. 命令行参数会覆盖并写入配置文件
 
 默认:
 
@@ -136,12 +164,15 @@ options:
     "mode": "gui",
     "port": 12345,
     "path": "/path/to/save/folder",
-    "password": "YOUR PASSWORD",
-    "JWT_SECRET_KEY": "YOUR SECRETS"
+    "password": "YOUR PASSWORD FOR WEBUI AUTH",
+    "JWT_SECRET_KEY": "JUST SOME RANDOM TEXTS"
 }
 ```
 
 ## 视频
+
+> [!IMPORTANT]
+> 以下视频展示了如何从代码运行，如果你下载的可执行文件的话，你可以快进跳过那些部分。
 
 - DOCKER
 
@@ -162,6 +193,10 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 - [ ] 桌面端, 或者干脆用 [Textual](https://textualize.io/) 做一个控制台UI， XD。
 - [ ] 移动帕鲁存储栏位？或者修改主人？ idk
 - [ ] More Stuff...
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date)](https://star-history.com/#KrisCris/Palworld-Pal-Editor&Date)
 
 ## 贡献
 

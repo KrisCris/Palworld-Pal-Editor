@@ -435,6 +435,14 @@ class PalObjects:
         "作業速度",
     ]
 
+    ExStatusNames = [
+        "最大HP",
+        "最大SP",
+        "攻撃力",
+        "所持重量",
+        "作業速度",
+    ]
+
     @staticmethod
     def StatusPointStruct(name, point):
         return {
@@ -460,11 +468,13 @@ class PalObjects:
                                 "struct_id": PalObjects.EMPTY_UUID,
                                 "id": None,
                                 "value": {
-                                    "CharacterID": PalObjects.NameProperty("Sheepball"),
+                                    "CharacterID": PalObjects.NameProperty("SheepBall"),
                                     "Gender": PalObjects.EnumProperty(
                                         "EPalGenderType", "EPalGenderType::Female"
                                     ),
-                                    'NickName': PalObjects.StrProperty("!!!NEW PAL!!!"),
+                                    "Level": PalObjects.IntProperty(1),
+                                    "Exp": PalObjects.IntProperty(0),
+                                    "NickName": PalObjects.StrProperty("!!!NEW PAL!!!"),
                                     "EquipWaza": PalObjects.ArrayProperty(
                                         "EnumProperty", {"values": []}
                                     ),
@@ -480,24 +490,22 @@ class PalObjects:
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}
                                     ),
-                                    "MP": PalObjects.FixedPoint64(100000),
+                                    "MP": PalObjects.FixedPoint64(10000),
                                     "OwnedTime": PalObjects.DateTime(
-                                        638419931074290000
+                                        638478651098960000
                                     ),
                                     "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
-                                    # "OwnerPlayerUId": PalObjects.EMPTY_UUID,
                                     "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
                                             "prop_name": "OldOwnerPlayerUIds",
                                             "prop_type": "StructProperty",
                                             "values": [OwnerPlayerUId],
-                                            # "values": [],
                                             "type_name": "Guid",
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "MaxHP": PalObjects.FixedPoint64(545000),
+                                    # "MaxHP": PalObjects.FixedPoint64(545000), # MaxHP is no longer stored in the game save.
                                     "CraftSpeed": PalObjects.IntProperty(70),
                                     "CraftSpeeds": PalObjects.ArrayProperty(
                                         "StructProperty",
@@ -541,6 +549,19 @@ class PalObjects:
                                             "values": [
                                                 PalObjects.StatusPointStruct(name, 0)
                                                 for name in PalObjects.StatusNames
+                                            ],
+                                            "type_name": "PalGotStatusPoint",
+                                            "id": PalObjects.EMPTY_UUID,
+                                        },
+                                    ),
+                                    "GotExStatusPointList": PalObjects.ArrayProperty(
+                                        "StructProperty",
+                                        {
+                                            "prop_name": "GotExStatusPointList",
+                                            "prop_type": "StructProperty",
+                                            "values": [
+                                                PalObjects.StatusPointStruct(name, 0)
+                                                for name in PalObjects.ExStatusNames
                                             ],
                                             "type_name": "PalGotStatusPoint",
                                             "id": PalObjects.EMPTY_UUID,

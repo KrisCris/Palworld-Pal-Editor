@@ -12,7 +12,7 @@ keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 readme = "README.md"
-version = "0.3.4"
+version = "0.5.1"
 dependencies = [
     "setuptools==69.1.0",
     "palworld_save_tools==0.19.0",
@@ -21,7 +21,8 @@ dependencies = [
     "pyinstaller==6.4.0",
     "waitress==3.0.0",
     "Flask-JWT-Extended==4.6.0",
-    "pywebview==4.4.1"
+    "pywebview==4.4.1",
+    "requests==2.31.0"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

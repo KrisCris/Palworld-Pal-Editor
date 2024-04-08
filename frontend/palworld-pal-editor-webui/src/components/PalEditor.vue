@@ -2,36 +2,82 @@
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
+function formatString(input) {
+  if (!input) return input;
+  // Separate the numeric part and the alphabetic suffix using a regular expression
+  const match = input.match(/^(\d+)([A-Za-z]*)$/);
+  if (!match) return input; // Return the input as is if it doesn't match the expected pattern
+
+  const [, numbers, suffix] = match;
+
+  // Pad the numeric part with leading zeros to make it at least 3 digits
+  const paddedNumbers = numbers.padStart(3, '0');
+
+  // Append the suffix if it exists; otherwise, append an empty space
+  const formatted = suffix ? paddedNumbers + suffix : paddedNumbers;
+  // if (suffix) {
+  //   console.log(formatted)
+  // }
+  return formatted;
+}
+
+function filterInvalid(list) {
+  return list.filter(item => {
+    if (palStore.HIDE_INVALID_OPTIONS) {
+      // return !(item.Invalid || item.IsHuman)
+      return !item.Invalid
+    }
+    return true
+  })
+}
 
 </script>
 
 <template>
   <div :class="['PalEditor', { 'unref': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]">
     <div class="EditorItem item flex-v basicInfo">
-      <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">Dump Data</button>
+      <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">
+        {{ palStore.getTranslatedText("Editor_Btn_1") }}
+      </button>
       <button id="dupe_btn" @click="palStore.dupePal" :disabled="palStore.LOADING_FLAG"
-        v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">Dupe Pal</button>
-      <button id="del_btn" @click="palStore.delPal" :disabled="palStore.LOADING_FLAG">🗑️ Del Pal</button>
+        v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
+        {{ palStore.getTranslatedText("Editor_Btn_2") }}
+      </button>
+      <button id="del_btn" @click="palStore.delPal" :disabled="palStore.LOADING_FLAG">
+        🗑️ {{ palStore.getTranslatedText("Editor_Btn_3") }}
+      </button>
 
       <img :class="['palIcon']" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
-      <p v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">THIS PAL IS LIKELY UNREFERENCED IN GAME</p>
+      <p v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">
+        {{ palStore.getTranslatedText("Editor_1") }}
+      </p>
 
       <div class="item flex-v left">
-        <p class="cat">BASIC INFO</p>
+        <p class="cat">
+          {{ palStore.getTranslatedText("Editor_2") }}
+        </p>
         <div class="editField">
-          <p class="const"> Specie: {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} {{
-    palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey}}
+          <p class="const"> 
+            {{ palStore.getTranslatedText("Editor_3") }} 
+            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} 
+            {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey }}
           </p>
+          <!-- <p class="const"> Specie: </p> -->
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
-            <option class="" v-for="pal in palStore.PAL_STATIC_DATA_LIST" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.I18n">{{pal.Invalid ? '❌': ""}}{{ palStore.displayPalElement(pal.InternalName) }} {{ pal.I18n }}
-            </option>
+            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName" :key="pal.InternalName" :title="pal.I18n"> {{ `
+                ${formatString(pal.SortingKey) || ""} 
+                ${pal.Invalid ? '❌' : ""} 
+                ${palStore.displayPalElement(pal.InternalName)} 
+                ${pal.I18n}` 
+              }} </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
         </div>
         <div class="editField">
-          <p class="const"> NickName: </p>
+          <p class="const"> 
+            {{ palStore.getTranslatedText("Editor_4") }} 
+          </p>
           <input class="edit" type="text" name="NickName" v-model="palStore.SELECTED_PAL_DATA.NickName"
             :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
           <button class="edit" @click="palStore.updatePal" name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
@@ -39,13 +85,19 @@ const palStore = usePalEditorStore()
         </div>
         <div class="flex-h">
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender">
-            <p class="const"> Gender: {{ palStore.SELECTED_PAL_DATA.displayGender() }}</p>
+            <p class="const"> 
+              {{ palStore.getTranslatedText("Editor_5") }}
+              {{ palStore.SELECTED_PAL_DATA.displayGender() }}
+            </p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
               :disabled="palStore.LOADING_FLAG">🔄</button>
           </div>
 
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-            <p class="const"> Variant: {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}</p>
+            <p class="const"> 
+              {{ palStore.getTranslatedText("Editor_6") }}
+              {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
+            </p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapTower" name="IsTower"
               v-if="palStore.SELECTED_PAL_DATA.HasTowerVariant" :disabled="palStore.LOADING_FLAG">🗼</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
@@ -64,94 +116,157 @@ const palStore = usePalEditorStore()
               :disabled="palStore.LOADING_FLAG">🔝</button>
           </div>
         </div>
-        <p class="const">🆔 Pal Instance ID: {{ palStore.SELECTED_PAL_ID }}</p>
-        <p class="const">🏘️ Pal Group ID: {{ palStore.SELECTED_PAL_DATA.group_id }}</p>
+        <p class="const">
+          🆔 {{ palStore.getTranslatedText("Editor_7") }}
+          {{ palStore.SELECTED_PAL_ID }}
+        </p>
+        <p class="const">
+          🏘️ {{ palStore.getTranslatedText("Editor_8") }}
+          {{ palStore.SELECTED_PAL_DATA.group_id }}
+        </p>
         <div class="editField">
           <p :class="['const', { 'out_of_container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }]"
             :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
-            📦 Pal ContainerSlot: {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex
-            }}</p>
+            📦 {{ palStore.getTranslatedText("Editor_9") }}
+            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ 
+            {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
+          </p>
           <button class="edit edit_text" @click="palStore.updatePal" name="in_owner_palbox"
-            :disabled="palStore.LOADING_FLAG" v-if="!palStore.SELECTED_PAL_DATA.in_owner_palbox">Take Back</button>
+            :disabled="palStore.LOADING_FLAG" v-if="!palStore.SELECTED_PAL_DATA.in_owner_palbox">
+            {{ palStore.getTranslatedText("Editor_Btn_4") }}
+          </button>
         </div>
 
-        <p class="const">🗿 Owner: {{ palStore.SELECTED_PAL_DATA.OwnerName || "None (BASE WORKER)" }}</p>
+        <p class="const">
+          🗿 {{ palStore.getTranslatedText("Editor_10") }}
+          {{ palStore.SELECTED_PAL_DATA.OwnerName || 
+          palStore.getTranslatedText("Editor_11") }}
+        </p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-          <p class="const">❤️ MaxHP: {{ palStore.SELECTED_PAL_DATA.MaxHP / 1000 }}</p>
-          <p class="const">⚔️ Possible Attack: {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</p>
-          <p class="const">🛡️ Possible Defense: {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</p>
-          <p class="const">🔨 Possible CraftSpeed: {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</p>
+          <p class="const">
+            ❤️ {{ palStore.getTranslatedText("Editor_12") }}
+            {{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}
+          </p>
+          <p class="const">
+            ⚔️ {{ palStore.getTranslatedText("Editor_13") }}
+            {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}
+          </p>
+          <p class="const">
+            🛡️ {{ palStore.getTranslatedText("Editor_14") }}
+            {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}
+          </p>
+          <p class="const">
+            🔨 {{ palStore.getTranslatedText("Editor_15") }}
+            {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}
+          </p>
         </div>
 
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
           <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick"
-            :disabled="palStore.LOADING_FLAG">💊
-            Clear Worker Sick</button>
+            :disabled="palStore.LOADING_FLAG">
+            💊 {{ palStore.getTranslatedText("Editor_Btn_5") }}
+          </button>
         </div>
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal">
-          <button class="edit text" @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">💉
-            Revive Pal</button>
+          <button class="edit text" @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">
+            💉 {{ palStore.getTranslatedText("Editor_Btn_6") }}
+          </button>
         </div>
       </div>
     </div>
     <div class="EditorItem flex-v item left">
-      <p class="cat">IVs</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_16") }}
+      </p>
       <div class="editField spaceBetween">
-        <p class="const">❤️ HP IV: {{ palStore.SELECTED_PAL_DATA.Talent_HP }}</p>
+        <p class="const">
+          ❤️ {{ palStore.getTranslatedText("Editor_17") }}
+          {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
+        </p>
         <input class="slider" type="range" name="Talent_HP" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">🛡️ DEF IV: {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</p>
+        <p class="const">
+          🛡️ {{ palStore.getTranslatedText("Editor_18") }}
+          {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
+        </p>
         <input class="slider" type="range" name="Talent_Defense" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">⚔️ ATK IV: {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</p>
+        <p class="const">
+          ⚔️ {{ palStore.getTranslatedText("Editor_19") }}
+          {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
+        </p>
         <input class="slider" type="range" name="Talent_Shot" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">MELEE IV (Unused): {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}</p>
+        <p class="const">
+          {{ palStore.getTranslatedText("Editor_20") }}
+          {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
+        </p>
         <input class="slider" type="range" name="Talent_Melee" min="0" max="100"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <hr>
-      <p class="cat">SOUL RANKs (POWER STATUE)</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_21") }}
+      </p>
       <div class="editField spaceBetween">
-        <p class="const">❤️ SoulBonus HP: {{ palStore.SELECTED_PAL_DATA.Rank_HP }}</p>
+        <p class="const">
+          ❤️ {{ palStore.getTranslatedText("Editor_22") }}
+          {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
+        </p>
         <input class="slider" type="range" name="Rank_HP" min="0" max="10" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">⚔️ SoulBonus Attack: {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</p>
+        <p class="const">
+          ⚔️ {{ palStore.getTranslatedText("Editor_23") }}
+          {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
+        </p>
         <input class="slider" type="range" name="Rank_Attack" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">🛡️ SoulBonus Defence: {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</p>
+        <p class="const">
+          🛡️ {{ palStore.getTranslatedText("Editor_24") }}
+          {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
+        </p>
         <input class="slider" type="range" name="Rank_Defence" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
-        <p class="const">🔨SoulBonus CraftSpeed: {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</p>
+        <p class="const">
+          🔨 {{ palStore.getTranslatedText("Editor_25") }}
+          {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
+        </p>
         <input class="slider" type="range" name="Rank_CraftSpeed" min="0" max="10"
           v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
       <hr>
-      <p class="cat">CONDENSER RANK</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_26") }}
+      </p>
       <div class="editField spaceBetween">
-        <p class="const">Condenser Rank: {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}</p>
+        <p class="const">
+          {{ palStore.getTranslatedText("Editor_27") }}
+          {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
+        </p>
         <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
     </div>
     <div class="EditorItem item flex-v left skillPanel">
-      <p class="cat">PASSIVE SKILLS</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_28") }}
+      </p>
       <div class="flex-h">
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
@@ -160,7 +275,7 @@ const palStore = usePalEditorStore()
                 {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
     palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
-              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill}}</span>
+              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
             </div>
 
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
@@ -169,7 +284,9 @@ const palStore = usePalEditorStore()
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
             <select class="PassiveSkill selector" name="add_PassiveSkillList"
               v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
-              <option class="PassiveSkill" value="" key="">Add Skills</option>
+              <option class="PassiveSkill" value="" key="">
+                {{ palStore.getTranslatedText("Editor_29") }}
+              </option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
                 :key="skill.InternalName" :title="skill.I18n[1]">{{ palStore.displayRating(skill.Rating) }} {{
     skill.I18n[0] }}</option>
@@ -180,22 +297,37 @@ const palStore = usePalEditorStore()
         </div>
       </div>
       <hr>
-      <p class="cat">EQUIPPED ACTIVE SKILLS</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_30") }}
+      </p>
       <div class="flex-h">
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
-                }}
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
+    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+    palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
+  }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
-                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
-    palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} {{
-    palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
+                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
+                <p> --- </p>
+                <p>
+                  {{ palStore.getTranslatedText("Editor_31") }}
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.getTranslatedText("Editor_32") }}
+                  {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
+                </p>
+                <p>
+                  {{ palStore.getTranslatedText("Editor_33") }}
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
+                </p>
+                <p>
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
+                </p>
               </span>
             </div>
 
@@ -205,22 +337,36 @@ const palStore = usePalEditorStore()
         </div>
       </div>
       <hr>
-      <p class="cat">MASTERED ACTIVE SKILLS</p>
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_34") }}
+      </p>
       <div class="flex-h">
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill
-                }}
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
+                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                {{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n || skill }}</p>
-                <p>Attack: {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | CT: {{ palStore.ACTIVE_SKILLS[skill]?.CT }}</p>
-                <p>Element: {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
-    palStore.ACTIVE_SKILLS[skill]?.Element }}</p>
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} {{
-    palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}</p>
+                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
+                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
+                <p> --- </p>
+                <p>
+                  {{ palStore.getTranslatedText("Editor_31") }}
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.getTranslatedText("Editor_32") }}
+                  {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
+                </p>
+                <p>
+                  {{ palStore.getTranslatedText("Editor_33") }}
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
+                </p>
+                <p>
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
+                </p>
               </span>
             </div>
             <button
@@ -232,11 +378,13 @@ const palStore = usePalEditorStore()
           </div>
           <div class="editField">
             <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
-              <option value="" key="">Add Skills</option>
-              <option v-for="skill in palStore.ACTIVE_SKILLS_LIST" :value="skill.InternalName" :key="skill.InternalName"
-                :title="skill.I18n">
-                {{ `${palStore.displayElement(skill.Element)} - ${skill.I18n} -
-                ${palStore.skillIcon(skill.InternalName)} - ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+              <option value="" key="">
+                {{ palStore.getTranslatedText("Editor_29") }}
+              </option>
+              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName" :key="skill.InternalName"
+                :title="skill.I18n[1]">
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)} -
+                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
@@ -245,10 +393,6 @@ const palStore = usePalEditorStore()
         </div>
       </div>
     </div>
-
-    <!-- <div class="EditorItem item flex-v left">
-
-    </div> -->
   </div>
 </template>
 
@@ -573,7 +717,7 @@ div.spaceBetween {
   color: white;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 5px;
+  padding: 1rem;
 
   /* Position the tooltip */
   position: absolute;

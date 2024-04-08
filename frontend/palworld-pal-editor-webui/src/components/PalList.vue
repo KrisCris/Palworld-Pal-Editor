@@ -73,7 +73,7 @@ onMounted(async () => {
 });
 
 function get_filtered_pal_list() {
-    console.log("FILTER")
+    // console.log("FILTER")
     return Array.from(palStore.PAL_MAP.values()).filter(pal => !palStore.isFilteredPal(pal))
 }
 
@@ -82,8 +82,10 @@ function get_filtered_pal_list() {
 <template>
     <div class="flex">
         <div class="title">
-            <p>PAL LIST</p>
-            <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Pal Name"
+            <p>
+                {{ palStore.getTranslatedText("PalList_1") }}
+            </p>
+            <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
                 :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
                 :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
