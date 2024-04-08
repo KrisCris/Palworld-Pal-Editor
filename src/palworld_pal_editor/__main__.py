@@ -1,8 +1,8 @@
 import argparse
 import traceback
 
-from palworld_pal_editor.utils import LOGGER, DataProvider
-from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION
+from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
+from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION, CONFIG_PATH
 
 from palworld_pal_editor.cli import main as cli_main
 from palworld_pal_editor.gui import main as gui_main
@@ -10,9 +10,8 @@ from palworld_pal_editor.webui import main as webui_main
 
 
 def setup_config_from_args():
-    CONFIG_PATH = PROGRAM_PATH / 'config.json'
     try: 
-        Config.load_from_file(CONFIG_PATH)
+        Config.load_from_file()
     except:
         LOGGER.warning(f"Failed Loading Config from {CONFIG_PATH}: {traceback.format_exc()}")
 
@@ -26,28 +25,33 @@ def setup_config_from_args():
     parser.add_argument('--password', type=str, help='Password for WebUI.', default=Config.password)
 
     args = parser.parse_args()
-
-    Config.debug = args.debug
-    Config.path = args.path
-    Config.mode = args.mode
-    Config.port = args.port
-    Config.password = args.password
-    Config.i18n = args.lang
-
-    if not DataProvider.is_valid_i18n(Config.i18n):
-        Config.i18n = DataProvider.default_i18n
-
-    modes = ["cli", "gui", "web"]
-    if Config.mode not in modes:
-        Config.mode = "gui"
-        LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
-
     try:
-        Config.save_to_file(PROGRAM_PATH / 'config.json')
+        Config.set_configs({
+            "debug": args.debug,
+            "path": args.path,
+            "mode": args.mode,
+            "port": args.port,
+            "password": args.password,
+            "i18n": args.lang
+        })
+
+        if not DataProvider.is_valid_i18n(Config.i18n):
+            LOGGER.warning(f"Invalid --i18n {Config.i18n}, default to en.")
+            Config.set_config("i18n", DataProvider.default_i18n)
+
+        modes = ["cli", "gui", "web"]
+        if Config.mode not in modes:
+            Config.set_config("mode", "gui")
+            LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
+
+        if not Config.debug:
+            if (port := check_or_generate_port(Config.port)) != Config.port:
+                LOGGER.warning(f"Port {Config.port} not available, use {port} instead.")
+                Config.set_config("port", port)
+
         LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
     except:
         LOGGER.warning(f"Failed Saving Config {str(Config.__str__())} to {CONFIG_PATH}: {traceback.format_exc()}")
-
 
 def main():
     setup_config_from_args()

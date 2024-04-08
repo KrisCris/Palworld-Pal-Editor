@@ -11,6 +11,8 @@ if hasattr(sys, 'frozen'):
 else:
     ASSETS_PATH = Path(__file__).parent
 
+CONFIG_PATH = PROGRAM_PATH / 'config.json'
+
 VERSION = "0.5.1"
 
 class Config:
@@ -24,7 +26,7 @@ class Config:
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
 
     @classmethod
-    def load_from_file(cls, file_path: str):
+    def load_from_file(cls, file_path: str=CONFIG_PATH):
         """Load configuration values from a JSON file using pathlib."""
         path = Path(file_path)
         if path.exists():
@@ -35,7 +37,20 @@ class Config:
                         setattr(cls, key, value)
 
     @classmethod
-    def save_to_file(cls, file_path: str):
+    def set_configs(cls, attrs: dict):
+        for key, value in attrs.items():
+            if hasattr(cls, key):
+                setattr(cls, key, value)
+        Config.save_to_file()
+
+    @classmethod
+    def set_config(cls, key, value):
+        if hasattr(cls, key):
+            setattr(cls, key, value)
+        Config.save_to_file()
+
+    @classmethod
+    def save_to_file(cls, file_path: str=CONFIG_PATH):
         """Save current configuration values to a JSON file using the to_dict method and pathlib."""
         config_data = cls.to_dict()
         path = Path(file_path)
