@@ -4,7 +4,7 @@ import traceback
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
 from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION, CONFIG_PATH
 
-from palworld_pal_editor.cli import main as cli_main
+from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main
 from palworld_pal_editor.webui import main as webui_main
 
@@ -60,8 +60,12 @@ def main():
     match Config.mode:
         # case "cli": globals().update(cli_main())
         case "cli": cli_main()
-        case "gui": gui_main()
-        case "web": webui_main()
+        case "gui": 
+            InteractThread.load()
+            gui_main()
+        case "web": 
+            InteractThread.load()
+            webui_main()
 
 if __name__ == "__main__":
     LOGGER.info(f"Logs written to {PROGRAM_PATH / 'logs'}")
