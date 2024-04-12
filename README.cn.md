@@ -18,6 +18,8 @@
 <a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
 </p>
 
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/stargazers"><img width="720" alt="Star History Chart" src="https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date"></a>&nbsp;
+
 ## 支持的语言
 
 - **English** | **日本語** | **简体中文**
@@ -29,7 +31,9 @@
 <https://www.bilibili.com/video/av1952608324>
 
 > [!NOTE]
-> Steam 本地游戏存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
+> 帕鲁 Steam 版 本地游戏 存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
+>
+> 你要修改的存档文件夹: `%localappdata%\Pal\Saved\SaveGames\[你的 Steam ID]\[你的 游戏存档 ID]`
 > 
 > **本工具目前只支持Steam，如果你使用的是Xbox Game Pass版本，可以参考一下两个工具来转换存档格式：**
 >
@@ -59,7 +63,6 @@
     - [配置文件](#配置文件)
   - [视频](#视频)
   - [未来开发计划？ (无ETA)](#未来开发计划-无eta)
-  - [Star History](#star-history)
   - [贡献](#贡献)
   - [赞助](#赞助)
   - [感谢](#感谢)
@@ -193,10 +196,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 - [ ] 桌面端, 或者干脆用 [Textual](https://textualize.io/) 做一个控制台UI， XD。
 - [ ] 移动帕鲁存储栏位？或者修改主人？ idk
 - [ ] More Stuff...
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date)](https://star-history.com/#KrisCris/Palworld-Pal-Editor&Date)
 
 ## 贡献
 

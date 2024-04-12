@@ -18,13 +18,14 @@
 <a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
 </p>
 
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/stargazers"><img width="720" alt="Star History Chart" src="https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date"></a>&nbsp;
 
 ## Supported Language
 
 - **English** | **日本語** | **简体中文**
 
 > [!NOTE]
-> If the UI isn't in your language, that means the UI I18n is missing, and we need someone to contribute the translations.
+> If the UI isn't in your language, that means the UI I18n is missing. Your contribution is always welcomed!
 >
 > But don't worry, all Pals and Skills are translated for the supported languages.
 >
@@ -34,13 +35,15 @@
 
 ### A Palworld Pal Editor developed by _connlost with ❤️
 
-<https://youtu.be/v9U60jj5Ugw>
-
  ~~(yeah i am just too lazy to change github username)~~
 
+<https://youtu.be/v9U60jj5Ugw>
+
 > [!NOTE]
-> Steam Local Save Dir: `%localappdata%\Pal\Saved\SaveGames`
+> Steam Palworld Local Save Dir: `%localappdata%\Pal\Saved\SaveGames`
 > 
+> Your Game Save Dir: `%localappdata%\Pal\Saved\SaveGames\[Your Steam ID]\[Your GameSave ID]`
+>
 > **This tool currently only supports the Steam version of Palworld, if you are playing the Xbox Game Pass version, you can look into these two tools for save format conversion:**
 >
 > - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
@@ -71,7 +74,6 @@
     - [Config File](#config-file)
   - [Videos](#videos)
   - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
-  - [Star History](#star-history)
   - [Contribution](#contribution)
   - [Sponsor](#sponsor)
   - [Thanks](#thanks)
@@ -211,10 +213,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 - [ ] Real GUI, or maybe just a Terminal GUI using [Textual](https://textualize.io/).
 - [ ] Move Pal to Different Slots? Change owner? IDK...
 - [ ] More Stuff...
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date)](https://star-history.com/#KrisCris/Palworld-Pal-Editor&Date)
 
 ## Contribution
 
