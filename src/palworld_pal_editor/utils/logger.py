@@ -14,15 +14,23 @@ class ColorConsoleFormatter(logging.Formatter):
         logging.WARNING: "\033[33;20m",  # Yellow
         logging.ERROR: "\033[31;20m",  # Red
         logging.CRITICAL: "\033[31;1m",  # Bold Red
+        -1: "\033[94;20m"
     }
     reset_code = "\033[0m"
+
+    @staticmethod
+    def get_colored_msg(msg, levelno = -1) -> str:
+        levelname_color = ColorConsoleFormatter.color_codes.get(levelno, ColorConsoleFormatter.reset_code)
+        return f"{levelname_color}{msg}{ColorConsoleFormatter.reset_code}"
+    
+    def get_colored_level(self, msg, levelno) -> str:
+        return ColorConsoleFormatter.get_colored_msg(f"[{msg}]", levelno)
 
     def format(self, record):
         log_fmt = f"%(asctime)s %(levelname)s %(message)s"
         datefmt = '%Y-%m-%d %H:%M:%S'
         
-        levelname_color = self.color_codes.get(record.levelno, self.reset_code)
-        record.levelname = f"{levelname_color}[{record.levelname}]{self.reset_code}"
+        record.levelname = self.get_colored_level(record.levelname, record.levelno)
         
         formatter = logging.Formatter(log_fmt, datefmt)
         return formatter.format(record)

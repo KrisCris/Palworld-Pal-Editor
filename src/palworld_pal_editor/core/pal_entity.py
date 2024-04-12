@@ -549,10 +549,12 @@ class PalEntity:
         else:
             PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
 
+    # Deprecated since Palworld 0.2.x
     # @property
     # def MaxHP(self) -> Optional[int]:
     #     return PalObjects.get_FixedPoint64(self._pal_param.get("MaxHP"))
     
+    # Deprecated since Palworld 0.2.x
     # @MaxHP.setter
     # @LOGGER.change_logger("MaxHP")
     # def MaxHP(self, val: int) -> None:
@@ -772,6 +774,15 @@ class PalEntity:
     def MaxFullStomach(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("MaxFullStomach"))
     
+    @MaxFullStomach.setter
+    @LOGGER.change_logger("MaxFullStomach")
+    @type_guard
+    def MaxFullStomach(self, val: float) :
+        if self.MaxFullStomach is None:
+            self._pal_param["MaxFullStomach"] = PalObjects.FloatProperty(val)
+        else:
+            PalObjects.set_BaseType(self._pal_param['MaxFullStomach'], val)
+
     @property
     def FullStomach(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("FullStomach"))
@@ -781,7 +792,7 @@ class PalEntity:
     @type_guard
     def FullStomach(self, val: float):
         if self.FullStomach is None:
-            self._pal_param["HP"] = PalObjects.FloatProperty(val)
+            self._pal_param["FullStomach"] = PalObjects.FloatProperty(val)
         else:
             PalObjects.set_BaseType(self._pal_param['FullStomach'], val)
             
@@ -994,7 +1005,7 @@ class PalEntity:
         return bonus
     
 
-    # Deprecated
+    # Deprecated since Palworld 0.2.x
     # def _derive_hp_scaling(self) -> int:
     #     try:
     #         def adjust_number(n):

@@ -26,7 +26,7 @@ export default {
     Editor_5: "Gender: ",
     Editor_6: "Variant: ",
     Editor_7: "Pal Instance ID: ",
-    Editor_8: "Pal Group ID: ",
+    Editor_8: "Pal Guild ID: ",
     Editor_9: "Pal ContainerSlot: ",
     Editor_10: "Owner: ",
     Editor_11: "None (BASE WORKER)",

@@ -1,5 +1,5 @@
 from palworld_pal_editor.config import PROGRAM_PATH
-from palworld_pal_editor.utils.logger import Logger
+from palworld_pal_editor.utils.logger import Logger, ColorConsoleFormatter
 
 LOGGER = Logger(log_directory=PROGRAM_PATH / "logs")
 

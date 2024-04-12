@@ -1,10 +1,41 @@
-import code
 import sys
+import threading
+import traceback
 from typing import Optional
-from palworld_pal_editor.core import PalEntity, PlayerEntity, PalObjects, PalGender, PalRank, SaveManager
+from palworld_pal_editor.core import *
 from palworld_pal_editor.utils import *
-from palworld_pal_editor.config import Config
-from palworld_pal_editor.core.pal_objects import isUUIDStr, toUUID
+from palworld_pal_editor.config import *
+
+# InteractThread: Credit to MagicBear. I was just too lazy to write it, lol.
+class InteractThread(threading.Thread):
+    _instance = None
+    banner_message = ColorConsoleFormatter.get_colored_msg(f"\n!Interactive Mode Enabled!\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object.")
+
+    def __init__(self):
+        super().__init__(daemon=True)
+
+    @staticmethod
+    def load():
+        if InteractThread._instance is None:
+            InteractThread._instance = InteractThread()
+            InteractThread._instance.start()
+        return InteractThread._instance
+
+    def interact_readfunc(self, prompt):
+        print(prompt, end="", flush=True)
+        line = sys.stdin.readline()
+        if line.strip() == "quit()":
+            return None
+        return line
+
+    def run(self):
+        LOGGER.info(f"Palworld Pal Editor v{VERSION}, made by _connlost with ❤.")
+        import code
+        try:
+            code.interact(banner=InteractThread.banner_message, readfunc=self.interact_readfunc, local=globals())
+        except Exception as e:
+            traceback.print_exception(e)
+        InteractThread._instance = None
 
 def main():
     LOGGER.info("Palworld Pal Editor, made by _connlost with ❤.")
@@ -14,21 +45,15 @@ def main():
             pass
         else:
             while True:
-                LOGGER.info("> Please provide the path to the dir containing Level.sav")
-                input_path = input("> ")
+                msg = ColorConsoleFormatter.get_colored_msg("> Please provide the path to the dir containing Level.sav")
+                LOGGER.info(msg)
+                input_path = input(ColorConsoleFormatter.get_colored_msg("> "))
                 if save_manager.open(input_path) is not None:
                     break
     except Exception as e:
         LOGGER.warning(f"{e}")
-    
-    banner_message = f"\nThank you for using Palworld Pal Editor, made by _connlost with ❤.\nType pal_help() for Pal Editor help message\nType help(object) for help about object."
 
-    # interactive mode
-    # if Config.debug or (getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')):
-    code.interact(banner=banner_message, local=globals())
-    # else:
-    # LOGGER.info(banner_message)
-    # return globals()
+    InteractThread.load().join()
 
 
 def list_player() -> list[PlayerEntity]:
@@ -78,23 +103,25 @@ def get_pal(guid: str) -> Optional[PalEntity]:
     LOGGER.info(f" - {pal}")
     return pal
 
-def delete_pal(guid: str, yes: False):
-    if not yes:
-        LOGGER.warning("THIS IS INCOMPLETE AND DANGEROUS FUNCTION, FOR TESTING ONLY! ENTER Y IF YOU WANT TO CONTINUE. ANY OTHER KEY TO ABORT.")
-        c = input("Your answer: ")
-        if c != "Y":
-            LOGGER.info("ABORTED")
-            return
+def delete_pal(guid: str):
     SaveManager().delete_pal(guid)
 
 def batch_pal_delete(guid_list: list[str]):
-    LOGGER.warning("THIS IS INCOMPLETE AND DANGEROUS FUNCTION, FOR TESTING ONLY! ENTER Y IF YOU WANT TO CONTINUE. ANY OTHER KEY TO ABORT.")
-    c = input("Your answer: ")
-    if c != "Y":
-        LOGGER.info("ABORTED")
-        return
     for guid in guid_list:
         delete_pal(guid, yes=True)
+
+def add_pal(player_uid: str) -> Optional[PalEntity]:
+    return SaveManager().add_pal(player_uid)
+
+def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]:
+    player = SaveManager().get_player(player_uid)
+    pal_obj = player.get_pal(pal_guid)._pal_obj
+    if not pal_obj:
+        LOGGER.warning("Unable to find the target pal.")
+        return
+
+    return SaveManager().add_pal(player_uid, pal_obj)
+
 
 def list_attacks():
     sorted_list = DataProvider.get_sorted_attacks()
@@ -129,67 +156,8 @@ def lang(i18n_code):
 def save():
     SaveManager().save(SaveManager()._file_path)
 
-def pal_help():
-    LOGGER.info(
-    r"""
-    - class SaveManager:
-    > Singleton Class so you can call SaveManager() multiple times.
-    -     `SaveManager()`: Get the SaveManager Instance
-    -     `SaveManager().open(path: str)`: Open a new file
-    -     `SaveManager().save(path: str)`: Save to a new file
-    -     `SaveManager().get_players() -> list[PlayerEntity]`: Print and get the players list
-    -     `SaveManager().get_player(uuid: str)`: Get a PlayerEntity via a PlayerUId str
-
-    - class PlayerEntity: 
-    > Note: First retrieve a player_entity via SaveManager().get_player(uuid: str)
-    -     `player_entity.PlayerUId`: Getter
-    -     `player_entity.list_pals() -> list[PalEntity]`: Print and get the player palbox 
-    -     `player_entity.get_pal(guid: str) -> PalEntity`: Get a pal_entity via guid
-
-    - class PalEntity:
-    > Unless specified, most pal stats are made computed properties, 
-    > i.e. `pal_entity.Exp` gives you the value, while `pal_entity.Exp` = 0 sets the value.
-    - `pal_entity.PlayerUId`: Getter
-    - `pal_entity.InstanceId`: Getter
-    - `pal_entity.OwnerPlayerUId`: Getter
-    - `pal_entity.OwnerName`: Getter
-    - `pal_entity.OldOwnerPlayerUIds`: Getter
-    - `pal_entity.CharacterID`: Getter, Setter
-    - `pal_entity.DisplayName`: Getter
-    - `pal_entity.IsBOSS`: Getter, Setter
-    - `pal_entity.IsRarePal`: Getter, Setter
-    - `pal_entity.NickName`: Getter, Setter
-    - `pal_entity.Level`: Getter, Setter
-    - `pal_entity.Exp`: Getter, Setter
-    - `pal_entity.Rank`: Getter, Setter 
-    -     (from palworld_pal_editor.pal_object import PalRank, PalRank.Rank1/2/3/4)
-    - `pal_entity.MasteredWaza`
-    - `pal_entity.add_MasteredWaza(internal_waza_name)`
-    -     (try use list_attacks() to see all waza)
-    - `pal_entity.pop_MasteredWaza(idx=None, item=None)`
-    -     (Use either idx or Waza name)
-    - `pal_entity.HP`: Getter, Setter
-    - ... 
-    - ...refer to the code
-    - `pal_entity.print_stats()`: print out stats
-
-    ##########################################################
-    #
-    #  - ** Functions You May Want to Try First **
-    #  - pal_help()
-    #  - list_player()
-    #  - get_player(uid: str) -> PlayerEntity
-    #  - get_player_by_name(name: str) -> list[PlayerEntity]
-    #  - list_player_pals(player: PlayerEntity | str) -> list[PalEntity]
-    #  - get_pal(guid: str) -> Optional[PalEntity]
-    #  - list_attacks(): print out all sorted pal attacks
-    #  - lang(i18n_code): 'en', 'zh-CN' 设置语言 You can also set this using launch option e.g. --lang=en
-    #
-    #  - ** For Advanced Usage, Objects You May Want to Run help(obj) On: **
-    #  - SaveManager, PalEntity, PalGender, PalRank, PlayerEntity, PalObjects, DataProvider
-    #
-    ##########################################################
-
+def print_example():
+    msg = r"""
     ##########################################################
     #  - ** Examples **
     #  >>> list_player()
@@ -216,4 +184,43 @@ def pal_help():
     #  >>> save_manager.save(r"D:\gamesave\Level_new.sav")
     ##########################################################
     """
-    )
+    msg = ColorConsoleFormatter.get_colored_msg(msg)
+    LOGGER.info(msg)
+
+def pal_help():
+    msg = r"""
+    Helper Functions:
+        - pal_help()
+        - print_example()
+
+        - list_player() -> list[PlayerEntity]
+        - get_player(uid: str) -> PlayerEntity
+        - get_players_by_name(name: str) -> list[PlayerEntity]
+
+        - list_player_pals(player: PlayerEntity | str) -> list[PalEntity]
+        - get_pal(guid: str) -> Optional[PalEntity]
+
+        - add_pal(player_uid: str) -> Optional[PalEntity]
+        - dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]
+        - delete_pal(guid: str)
+        - batch_pal_delete(guid_list: list[str])
+
+        - list_attacks()
+        - list_passives()
+        - lang(i18n_code)
+        - save()
+
+    Step To Modify a Pal (You can run `print_example()` to see a real example):
+      1. Get the pal: `pal = get_pal(pal_id)`
+      2. Check PalEntity usage by calling: `help(PalEntity)`
+      2. Set the pal's property: `pal.[ property name ] = [ property value ]`, e.g. `pal.HP = 200`
+
+    Learn more about each class, call `help(class_name)`:
+    Useful Classes:
+        - PalEntity
+        - PlayerEntity
+        - SaveManager
+        - ...
+    """
+    msg = ColorConsoleFormatter.get_colored_msg(msg)
+    LOGGER.info(msg)
