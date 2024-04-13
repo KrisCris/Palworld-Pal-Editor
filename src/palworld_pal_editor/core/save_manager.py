@@ -111,8 +111,6 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip
 MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
 
 PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
@@ -299,6 +297,8 @@ class SaveManager:
                 self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
             )
 
+            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
+
             try:
                 self.group_data = GroupData(self.gvas_file)
             except Exception as e:
@@ -420,10 +420,13 @@ class SaveManager:
                 pal_entity.InstanceId = pal_instanceId
                 pal_entity.SlotID = (container_id, slot_idx)
                 # I don't know why some captured pals have PlayerUId, 
-                # and having this non-empty ID will cause the game to discard the duped pal
+                # But having non-empty ID will cause the game to hide the duped pal
                 pal_entity.PlayerUId = PalObjects.EMPTY_UUID
-                pal_entity._pal_param.pop("EquipItemContainerId", None)
-                # (pal_entity.OldOwnerPlayerUIds or []).clear()
+                # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
+                # so just assign a randomly for now.
+                pal_entity._pal_param["EquipItemContainerId"] = PalObjects.PalContainerId(str(uuid.uuid4()))
+                # pal_entity._pal_param.pop("EquipItemContainerId", None)
+                
                 pal_entity.NickName = "!!!DUPED PAL!!!"
 
             player.add_pal(pal_entity)

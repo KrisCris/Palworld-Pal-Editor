@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Any, Optional
+import uuid
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.utils import LOGGER, clamp
@@ -80,6 +81,7 @@ class PalRank(Enum):
 
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
+    TIME = 638486453957560000
 
     @staticmethod
     def StrProperty(value: str):
@@ -304,6 +306,16 @@ class PalObjects:
         PalObjects.set_BaseType(container["value"]["SlotIndex"], slot_idx)
 
     @staticmethod
+    def FloatContainer(value: dict):
+        return {
+            "struct_type": "FloatContainer",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": value,
+            "type": "StructProperty",
+        }
+
+    @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
         case_1 = {
             "StrProperty",
@@ -450,9 +462,7 @@ class PalObjects:
                                         "NameProperty", {"values": []}
                                     ),
                                     "MP": PalObjects.FixedPoint64(10000),
-                                    "OwnedTime": PalObjects.DateTime(
-                                        638478651098960000
-                                    ),
+                                    "OwnedTime": PalObjects.DateTime(PalObjects.TIME),
                                     "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
                                     "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
                                         "StructProperty",
@@ -464,8 +474,11 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    # "MaxHP": PalObjects.FixedPoint64(545000), # MaxHP is no longer stored in the game save.
+                                    # MaxHP is no longer stored in the game save.
+                                    # "MaxHP": PalObjects.FixedPoint64(545000), 
                                     "CraftSpeed": PalObjects.IntProperty(70),
+                                    # Do not omit CraftSpeeds, otherwise the pal works super slow
+                                    # TODO use accurate data (even tho this is useless)
                                     "CraftSpeeds": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
@@ -481,24 +494,14 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    # "EquipItemContainerId": {
-                                    #     "struct_type": "PalContainerId",
-                                    #     "struct_id": PalObjects.EMPTY_UUID,
-                                    #     "id": None,
-                                    #     "value": {
-                                    #         "ID": {
-                                    #             "struct_type": "Guid",
-                                    #             "struct_id": PalObjects.EMPTY_UUID,
-                                    #             "id": None,
-                                    #             "value": "2ee46d97-4a5a-4e11-837c-276e4c6b9c7b",
-                                    #             "type": "StructProperty",
-                                    #         }
-                                    #     },
-                                    #     "type": "StructProperty",
-                                    # },
+                                    "SanityValue": PalObjects.FloatProperty(100.0),
+                                    "EquipItemContainerId": PalObjects.PalContainerId(
+                                        str(uuid.uuid4())
+                                    ),
                                     "SlotID": PalObjects.PalCharacterSlotId(
                                         SlotIndex, ContainerId
                                     ),
+                                    # TODO Need accurate values
                                     "MaxFullStomach": PalObjects.FloatProperty(150.0),
                                     "GotStatusPointList": PalObjects.ArrayProperty(
                                         "StructProperty",
@@ -526,7 +529,9 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 0),
+                                    "DecreaseFullStomachRates": PalObjects.FloatContainer({}),
+                                    "CraftSpeedRates": PalObjects.FloatContainer({}),
+                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 7088.5),
                                 },
                                 "type": "StructProperty",
                             }
