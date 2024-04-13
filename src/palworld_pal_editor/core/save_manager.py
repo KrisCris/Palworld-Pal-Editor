@@ -16,7 +16,7 @@ from palworld_pal_editor.core.basecamp_data import BaseCampData
 
 from palworld_pal_editor.core.container_data import ContainerData
 
-from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, get_attr_value, toUUID
+from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
@@ -192,10 +192,10 @@ class SaveManager:
                 LOGGER.warning(f"Non-player/pal data found in CharacterSaveParameterMap, skipping {entity}")
                 continue
 
-            entity_param = entity_struct['value']
+            entity_param: dict = entity_struct['value']
             try: 
-                if get_attr_value(entity_param, "IsPlayer"):
-                    uid_str = str(get_attr_value(entity['key'], "PlayerUId"))
+                if PalObjects.get_BaseType(entity_param.get("IsPlayer")):
+                    uid_str = str(PalObjects.get_BaseType(entity["key"].get("PlayerUId")))
 
                     if uid_str in self.player_mapping:
                         LOGGER.error(f"Duplicated player found: \n\t{self.player_mapping[uid_str]}, skipping...")

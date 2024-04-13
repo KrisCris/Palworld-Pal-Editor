@@ -26,47 +26,6 @@ def UUID2HexStr(uuid: str | UUID) -> str:
     return str(uuid).upper().replace("-", "")
 
 
-def get_attr_value(
-    data_container: dict, attr_name: str, nested_keys: list = None
-) -> Optional[Any]:
-    """
-    Generic method to retrieve the value of an attribute from the pal data.
-
-    Parameters:
-        attr_name (str): The name of the attribute to retrieve.
-        nested_keys (list): A list of keys to navigate through nested dictionaries if necessary.
-
-    Returns:
-        Optional[Any]: The value of the attribute, or None if the attribute does not exist.
-    """
-    try:
-        if data_container is None:
-            raise TypeError("Expected dict, get None.")
-        attr = data_container.get(attr_name)
-
-        if attr is None:
-            raise IndexError(f"Providing dict does not have `{attr_name}` attribute.")
-
-        if nested_keys:
-            for key in nested_keys:
-                attr = attr.get(key, None)
-                if attr is None:
-                    raise KeyError(
-                        f"trying to get attr `{attr_name}`, but nested key `{key}` not found in dict {data_container}."
-                    )
-
-        if attr and "value" in attr:
-            return attr["value"]
-        else:
-            raise KeyError(
-                f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}."
-            )
-
-    except Exception as e:
-        # LOGGER.warning(e)
-        return None
-
-
 def get_nested_attr(container: dict, keys: list) -> Optional[Any]:
     """
     Retrieve a value from a nested dictionary using a sequence of keys.

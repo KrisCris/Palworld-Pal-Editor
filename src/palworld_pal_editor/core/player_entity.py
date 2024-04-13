@@ -4,7 +4,7 @@ from palworld_save_tools.gvas import GvasFile
 
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.core.pal_objects import PalObjects, get_attr_value
+from palworld_pal_editor.core.pal_objects import PalObjects
 
 
 class PlayerEntity:
@@ -36,11 +36,10 @@ class PlayerEntity:
         self._player_param: dict = self._player_obj["value"]["RawData"]["value"][
             "object"
         ]["SaveParameter"]["value"]
-
-        if not get_attr_value(self._player_param, "IsPlayer"):
+        if not PalObjects.get_BaseType(self._player_param.get("IsPlayer")):
             raise TypeError(
                 "Expecting player_obj, received pal_obj: {} - {} - {} - {}".format(
-                    get_attr_value(self._player_param, "CharacterID"),
+                    PalObjects.get_BaseType(self._player_param.get("CharacterID")),
                     self.NickName,
                     self.PlayerUId,
                     self.InstanceId,
@@ -76,15 +75,15 @@ class PlayerEntity:
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
-        return get_attr_value(self._player_key, "PlayerUId")
+        return PalObjects.get_BaseType(self._player_key.get("PlayerUId"))
 
     @property
     def InstanceId(self) -> Optional[UUID]:
-        return get_attr_value(self._player_key, "InstanceId")
+        return PalObjects.get_BaseType(self._player_key.get("InstanceId"))
 
     @property
     def NickName(self) -> Optional[str]:
-        return get_attr_value(self._player_param, "NickName")
+        return PalObjects.get_BaseType(self._player_param.get("NickName"))
 
     @property
     def OtomoCharacterContainerId(self) -> Optional[UUID]:
