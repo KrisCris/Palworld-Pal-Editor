@@ -386,7 +386,7 @@ class SaveManager:
             LOGGER.warning(f"Player {player_uid} not found")
             return None
         
-        player_container_ids = [player.PalStorageContainerId, player.OtomoCharacterContainerId]
+        player_container_ids = [player.OtomoCharacterContainerId, player.PalStorageContainerId]
         
         pal_container = None
         for id in player_container_ids:
