@@ -151,11 +151,13 @@ class PlayerEntity:
     def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
         return self._palbox.pop(guid, None)
 
-    def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+    def get_pal(self, guid: UUID | str, disable_warning=False) -> Optional[PalEntity]:
         guid = str(guid)
         if guid in self._palbox:
             return self._palbox[guid]
-        LOGGER.warning(f"Player {self} has no pal {guid}.")
+        
+        if not disable_warning:
+            LOGGER.warning(f"Player {self} has no pal {guid}.")
 
     def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
         match sorting_key:

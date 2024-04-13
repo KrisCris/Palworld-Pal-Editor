@@ -173,7 +173,7 @@ class SaveManager:
         if guid in self._dangling_pals:
             return self._dangling_pals[guid]
         for player in self.get_players():
-            if pal := player.get_pal(guid):
+            if pal := player.get_pal(guid, disable_warning=True):
                 return pal
 
         LOGGER.warning(f"Can't find pal {guid}")
