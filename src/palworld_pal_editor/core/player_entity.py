@@ -5,6 +5,7 @@ from palworld_save_tools.gvas import GvasFile
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.utils.data_provider import DataProvider
 
 
 class PlayerEntity:
@@ -18,6 +19,7 @@ class PlayerEntity:
     ) -> None:
         self._player_obj: dict = player_obj
         self._palbox: dict[str, PalEntity] = palbox
+        self._new_palbox: dict[str, PalEntity] = {}
         self._gvas_file: GvasFile = gvas_file
         self._gvas_compression_times: int = compression_times
         self.group_id = group_id
@@ -141,14 +143,100 @@ class PlayerEntity:
         pal_guid = str(pal_entity.InstanceId)
         if pal_guid in self._palbox:
             return False
+        
+        if pal_entity.is_new_pal:
+            self._new_palbox[pal_guid] = pal_entity
+
         self._palbox[pal_guid] = pal_entity
         pal_entity.set_owner_player_entity(self)
         return True
+    
+    def try_create_pal_record_data(self):
+        if "RecordData" not in self._player_save_data:
+            self._player_save_data["RecordData"] = PalObjects.PalLoggedinPlayerSaveDataRecordData()
+        record_data = self._player_save_data["RecordData"]["value"]
+
+        if "PalCaptureCount" not in record_data:
+            record_data["PalCaptureCount"] = PalObjects.MapProperty("NameProperty", "IntProperty")
+        
+        if "PaldeckUnlockFlag" not in record_data:
+            record_data["PaldeckUnlockFlag"] = PalObjects.MapProperty("NameProperty", "BoolProperty")
+
+    @property
+    def PalCaptureCount(self) -> Optional[list]:
+        if not (record_data := self._player_save_data.get("RecordData", None)):
+            return None
+        record_data: dict = record_data["value"]
+        return PalObjects.get_MapProperty(record_data.get("PalCaptureCount", None))
+    
+    @property
+    def PaldeckUnlockFlag(self) -> Optional[list]:
+        if not (record_data := self._player_save_data.get("RecordData", None)):
+            return None
+        record_data: dict = record_data["value"]
+        return PalObjects.get_MapProperty(record_data.get("PaldeckUnlockFlag", None))
+
+    def get_pal_capture_count(self, name: str) -> int:
+        try:
+            return self._player_save_data["RecordData"]["value"]["PalCaptureCount"]["value"][name]
+        except:
+            return 0
+        
+    def inc_pal_capture_count(self, name: str):
+        self.try_create_pal_record_data()
+        for record in self.PalCaptureCount:
+            if record['key'].lower() == name.lower():
+                record['value'] += 1
+                return
+        self.PalCaptureCount.append({
+            'key': name,
+            'value': 1
+        })
+
+    def unlock_paldeck(self, name: str):
+        self.try_create_pal_record_data()
+        for record in self.PaldeckUnlockFlag:
+            if record['key'].lower() == name.lower():
+                record['value'] = True
+                return
+        self.PaldeckUnlockFlag.append({
+            'key': name,
+            'value': True
+        })
+
+    def save_new_pal_records(self):
+        """
+        This should only be called on save
+        """
+        def handle_special_keys(key) -> str:
+            match key:
+                case 'PlantSlime_Flower': return 'PlantSlime'
+                case 'SheepBall': return 'Sheepball'
+                case 'LazyCatFish': return 'LazyCatfish'
+            return key
+        
+        for guid in self._new_palbox:
+            pal_entity = self._new_palbox[guid]
+            if DataProvider.is_pal_invalid(pal_entity.DataAccessKey):
+                LOGGER.info(f"Skip player records update for invalid pal: {pal_entity}")
+                continue
+            if pal_entity.IsHuman or not DataProvider.get_pal_sorting_key(pal_entity.DataAccessKey):
+                LOGGER.info(f"Skip player records update for pal: {pal_entity}")
+                continue
+
+            key = handle_special_keys(pal_entity.RawSpecieKey)
+            self.inc_pal_capture_count(key)
+            self.unlock_paldeck(key)
+            pal_entity.is_new_pal = False
+
+        self._new_palbox.clear()
 
     def get_pals(self) -> list[PalEntity]:
         return self._palbox.values()
 
     def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
+        if guid in self._new_palbox:
+            self._new_palbox.pop(guid)
         return self._palbox.pop(guid, None)
 
     def get_pal(self, guid: UUID | str, disable_warning=False) -> Optional[PalEntity]:

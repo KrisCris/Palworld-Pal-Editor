@@ -371,6 +371,32 @@ class PalObjects:
             },
             "type": "StructProperty",
         }
+    
+    @staticmethod
+    def PalLoggedinPlayerSaveDataRecordData(value: dict = None):
+        return {
+            "struct_type": "PalLoggedinPlayerSaveDataRecordData",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": value or {},
+            "type": "StructProperty"
+        }
+    
+    @staticmethod
+    def MapProperty(key_type: str, value_type: str, key_struct_type=None, value_struct_type=None):
+        return {
+            "key_type": key_type,
+            "value_type": value_type,
+            "key_struct_type": key_struct_type,
+            "value_struct_type": value_struct_type,
+            "id": None,
+            "value": [],
+            "type": "MapProperty"
+        }
+    
+    @staticmethod
+    def get_MapProperty(container: dict) -> Optional[list[dict]]:
+        return get_nested_attr(container, ["value"])
 
     EPalWorkSuitabilities = [
         "EPalWorkSuitability::EmitFlame",

@@ -117,7 +117,7 @@ PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
 PLAYER_SKIP_PROPERTIES[".SaveData.PlayerCharacterMakeData"] = (skip_decode, skip_encode)
 PLAYER_SKIP_PROPERTIES[".SaveData.LastTransform"] = (skip_decode, skip_encode)
 PLAYER_SKIP_PROPERTIES[".SaveData.inventoryInfo"] = (skip_decode, skip_encode)
-PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
+# PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
 
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
@@ -429,7 +429,10 @@ class SaveManager:
                 
                 pal_entity.NickName = "!!!DUPED PAL!!!"
 
-            player.add_pal(pal_entity)
+            pal_entity.is_new_pal = True
+
+            if not player.add_pal(pal_entity):
+                raise Exception("Duplicated Pal ID, Try Again!")
             self._entities_list.append(pal_obj)
         except:
             LOGGER.error(f"Failed adding pal: {traceback.format_exc()}")
@@ -506,6 +509,7 @@ class SaveManager:
         if player_entity.PlayerGVAS is None:
             return False
 
+        player_entity.save_new_pal_records()
         gvas_file, compression_times = player_entity.PlayerGVAS
         player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
 

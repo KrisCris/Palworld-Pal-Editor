@@ -30,6 +30,7 @@ class PalEntity:
         self._display_name_cache = {}
         self.owner_player_entity = None
         self.is_unreferenced_pal = False
+        self.is_new_pal = False
 
     def __str__(self) -> str:
         return "{} - {} - {}".format(self.DisplayName, self.OwnerName, self.InstanceId)
@@ -124,7 +125,7 @@ class PalEntity:
     @LOGGER.change_logger('CharacterID')
     @type_guard
     def CharacterID(self, value: str) -> None:
-        og_specie = self._RawSpecieKey
+        og_specie = self.RawSpecieKey
 
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
@@ -144,7 +145,7 @@ class PalEntity:
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
 
-        new_specie = self._RawSpecieKey
+        new_specie = self.RawSpecieKey
         if new_specie != og_specie:
             self.remove_unique_attacks()
 
@@ -155,7 +156,7 @@ class PalEntity:
             self.HP = maxHP
 
     @property
-    def _RawSpecieKey(self) -> Optional[str]:
+    def RawSpecieKey(self) -> Optional[str]:
         key = self.CharacterID
         if self._IsBOSS:
             if "Boss_" in key:
@@ -201,7 +202,7 @@ class PalEntity:
         if self.IsHuman:
             return "Human"
         if self.IsRAID:
-            return self._RawSpecieKey
+            return self.RawSpecieKey
         return self.DataAccessKey
 
     @property
@@ -211,7 +212,7 @@ class PalEntity:
         if self.IsRAID:
             return self.CharacterID
         
-        key = self._RawSpecieKey
+        key = self.RawSpecieKey
         match key:
             case "Sheepball":
                 key = "SheepBall"
@@ -275,9 +276,9 @@ class PalEntity:
     @type_guard
     def IsTower(self, value: bool) -> None:
         if not value:
-            self.CharacterID = self._RawSpecieKey
+            self.CharacterID = self.RawSpecieKey
         else:
-            self.CharacterID = f"GYM_{self._RawSpecieKey}"
+            self.CharacterID = f"GYM_{self.RawSpecieKey}"
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -295,9 +296,9 @@ class PalEntity:
     @type_guard
     def _IsBOSS(self, value: bool) -> None:
         if not value:
-            self.CharacterID = self._RawSpecieKey
+            self.CharacterID = self.RawSpecieKey
         elif not self._IsBOSS and value:
-            self.CharacterID = f"BOSS_{self._RawSpecieKey}"
+            self.CharacterID = f"BOSS_{self.RawSpecieKey}"
     
     @property
     def IsBOSS(self) -> bool:
