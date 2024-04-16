@@ -150,6 +150,9 @@ class PalEntity:
             self.remove_unique_attacks()
 
         self.learn_attacks()
+        if self.IsTower or self.IsRAID:
+            self.equip_all_pal_attacks()
+
         self.heal_pal()
         self.clear_worker_sick()
         if maxHP := self.ComputedMaxHP:
@@ -869,6 +872,14 @@ class PalEntity:
             for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1):
                 if atk not in (self.MasteredWaza or []):
                     self.add_MasteredWaza(atk)
+
+    def equip_all_pal_attacks(self):
+        atks = DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1)
+        if not atks: return
+        (self.EquipWaza or []).clear()
+        for atk in atks:
+            if atk not in (self.EquipWaza or []):
+                self.add_EquipWaza(atk, True)
                 
     def remove_unique_attacks(self):
         if self.MasteredWaza is None:
