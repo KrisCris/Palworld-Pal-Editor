@@ -586,7 +586,7 @@ class PalEntity:
 
     @LOGGER.change_logger('EquipWaza')
     @type_guard
-    def add_EquipWaza(self, waza: str) -> bool:
+    def add_EquipWaza(self, waza: str, force=False) -> bool:
         """
         Normally you can't add the same "waza" twice on a pal.
         """
@@ -600,7 +600,7 @@ class PalEntity:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
         
-        if len(self.EquipWaza) >= 3:
+        if len(self.EquipWaza) >= 3 and not force:
             LOGGER.warning(f"{self} EquipWaza has maxed out: {self.EquipWaza}, consider add to MasteredWaza instead.")
             return False
         
