@@ -1,0 +1,802 @@
+[
+    {
+      "Level": 1,
+      "DropEXP": 7,
+      "NextEXP": 0,
+      "PalNextEXP": 0,
+      "TotalEXP": 0,
+      "PalTotalEXP": 0
+    },
+    {
+      "Level": 2,
+      "DropEXP": 9,
+      "NextEXP": 8,
+      "PalNextEXP": 25,
+      "TotalEXP": 8,
+      "PalTotalEXP": 25
+    },
+    {
+      "Level": 3,
+      "DropEXP": 11,
+      "NextEXP": 30,
+      "PalNextEXP": 31,
+      "TotalEXP": 38,
+      "PalTotalEXP": 56
+    },
+    {
+      "Level": 4,
+      "DropEXP": 13,
+      "NextEXP": 98,
+      "PalNextEXP": 37,
+      "TotalEXP": 136,
+      "PalTotalEXP": 93
+    },
+    {
+      "Level": 5,
+      "DropEXP": 15,
+      "NextEXP": 180,
+      "PalNextEXP": 45,
+      "TotalEXP": 316,
+      "PalTotalEXP": 138
+    },
+    {
+      "Level": 6,
+      "DropEXP": 17,
+      "NextEXP": 278,
+      "PalNextEXP": 69,
+      "TotalEXP": 593,
+      "PalTotalEXP": 207
+    },
+    {
+      "Level": 7,
+      "DropEXP": 20,
+      "NextEXP": 395,
+      "PalNextEXP": 99,
+      "TotalEXP": 988,
+      "PalTotalEXP": 306
+    },
+    {
+      "Level": 8,
+      "DropEXP": 23,
+      "NextEXP": 536,
+      "PalNextEXP": 134,
+      "TotalEXP": 1524,
+      "PalTotalEXP": 440
+    },
+    {
+      "Level": 9,
+      "DropEXP": 26,
+      "NextEXP": 705,
+      "PalNextEXP": 176,
+      "TotalEXP": 2229,
+      "PalTotalEXP": 616
+    },
+    {
+      "Level": 10,
+      "DropEXP": 38,
+      "NextEXP": 908,
+      "PalNextEXP": 227,
+      "TotalEXP": 3138,
+      "PalTotalEXP": 843
+    },
+    {
+      "Level": 11,
+      "DropEXP": 45,
+      "NextEXP": 1152,
+      "PalNextEXP": 288,
+      "TotalEXP": 4290,
+      "PalTotalEXP": 1131
+    },
+    {
+      "Level": 12,
+      "DropEXP": 52,
+      "NextEXP": 1444,
+      "PalNextEXP": 361,
+      "TotalEXP": 5734,
+      "PalTotalEXP": 1492
+    },
+    {
+      "Level": 13,
+      "DropEXP": 58,
+      "NextEXP": 1795,
+      "PalNextEXP": 449,
+      "TotalEXP": 7529,
+      "PalTotalEXP": 1941
+    },
+    {
+      "Level": 14,
+      "DropEXP": 66,
+      "NextEXP": 2216,
+      "PalNextEXP": 554,
+      "TotalEXP": 9745,
+      "PalTotalEXP": 2495
+    },
+    {
+      "Level": 15,
+      "DropEXP": 74,
+      "NextEXP": 2721,
+      "PalNextEXP": 680,
+      "TotalEXP": 12467,
+      "PalTotalEXP": 3175
+    },
+    {
+      "Level": 16,
+      "DropEXP": 84,
+      "NextEXP": 3328,
+      "PalNextEXP": 832,
+      "TotalEXP": 15795,
+      "PalTotalEXP": 4007
+    },
+    {
+      "Level": 17,
+      "DropEXP": 97,
+      "NextEXP": 4055,
+      "PalNextEXP": 1014,
+      "TotalEXP": 19850,
+      "PalTotalEXP": 5021
+    },
+    {
+      "Level": 18,
+      "DropEXP": 110,
+      "NextEXP": 4928,
+      "PalNextEXP": 1232,
+      "TotalEXP": 24778,
+      "PalTotalEXP": 6253
+    },
+    {
+      "Level": 19,
+      "DropEXP": 124,
+      "NextEXP": 5976,
+      "PalNextEXP": 1494,
+      "TotalEXP": 30754,
+      "PalTotalEXP": 7747
+    },
+    {
+      "Level": 20,
+      "DropEXP": 138,
+      "NextEXP": 7233,
+      "PalNextEXP": 1808,
+      "TotalEXP": 37988,
+      "PalTotalEXP": 9555
+    },
+    {
+      "Level": 21,
+      "DropEXP": 153,
+      "NextEXP": 8742,
+      "PalNextEXP": 2185,
+      "TotalEXP": 46730,
+      "PalTotalEXP": 11740
+    },
+    {
+      "Level": 22,
+      "DropEXP": 171,
+      "NextEXP": 10552,
+      "PalNextEXP": 2638,
+      "TotalEXP": 57282,
+      "PalTotalEXP": 14378
+    },
+    {
+      "Level": 23,
+      "DropEXP": 194,
+      "NextEXP": 12725,
+      "PalNextEXP": 3181,
+      "TotalEXP": 70007,
+      "PalTotalEXP": 17559
+    },
+    {
+      "Level": 24,
+      "DropEXP": 217,
+      "NextEXP": 15332,
+      "PalNextEXP": 3833,
+      "TotalEXP": 85338,
+      "PalTotalEXP": 21392
+    },
+    {
+      "Level": 25,
+      "DropEXP": 241,
+      "NextEXP": 18460,
+      "PalNextEXP": 4615,
+      "TotalEXP": 103799,
+      "PalTotalEXP": 26007
+    },
+    {
+      "Level": 26,
+      "DropEXP": 267,
+      "NextEXP": 22214,
+      "PalNextEXP": 5554,
+      "TotalEXP": 126013,
+      "PalTotalEXP": 31561
+    },
+    {
+      "Level": 27,
+      "DropEXP": 300,
+      "NextEXP": 26719,
+      "PalNextEXP": 6680,
+      "TotalEXP": 152732,
+      "PalTotalEXP": 38241
+    },
+    {
+      "Level": 28,
+      "DropEXP": 337,
+      "NextEXP": 32125,
+      "PalNextEXP": 8031,
+      "TotalEXP": 184856,
+      "PalTotalEXP": 46272
+    },
+    {
+      "Level": 29,
+      "DropEXP": 374,
+      "NextEXP": 38612,
+      "PalNextEXP": 9653,
+      "TotalEXP": 223468,
+      "PalTotalEXP": 55925
+    },
+    {
+      "Level": 30,
+      "DropEXP": 417,
+      "NextEXP": 46396,
+      "PalNextEXP": 11599,
+      "TotalEXP": 269864,
+      "PalTotalEXP": 67524
+    },
+    {
+      "Level": 31,
+      "DropEXP": 467,
+      "NextEXP": 55737,
+      "PalNextEXP": 13934,
+      "TotalEXP": 325601,
+      "PalTotalEXP": 81458
+    },
+    {
+      "Level": 32,
+      "DropEXP": 518,
+      "NextEXP": 66947,
+      "PalNextEXP": 16737,
+      "TotalEXP": 392548,
+      "PalTotalEXP": 98195
+    },
+    {
+      "Level": 33,
+      "DropEXP": 580,
+      "NextEXP": 80398,
+      "PalNextEXP": 20099,
+      "TotalEXP": 472946,
+      "PalTotalEXP": 118294
+    },
+    {
+      "Level": 34,
+      "DropEXP": 647,
+      "NextEXP": 96540,
+      "PalNextEXP": 24135,
+      "TotalEXP": 569485,
+      "PalTotalEXP": 142429
+    },
+    {
+      "Level": 35,
+      "DropEXP": 719,
+      "NextEXP": 115909,
+      "PalNextEXP": 28977,
+      "TotalEXP": 685395,
+      "PalTotalEXP": 171406
+    },
+    {
+      "Level": 36,
+      "DropEXP": 806,
+      "NextEXP": 139153,
+      "PalNextEXP": 34788,
+      "TotalEXP": 824548,
+      "PalTotalEXP": 206194
+    },
+    {
+      "Level": 37,
+      "DropEXP": 896,
+      "NextEXP": 167046,
+      "PalNextEXP": 41761,
+      "TotalEXP": 991594,
+      "PalTotalEXP": 247955
+    },
+    {
+      "Level": 38,
+      "DropEXP": 1003,
+      "NextEXP": 200517,
+      "PalNextEXP": 50129,
+      "TotalEXP": 1192111,
+      "PalTotalEXP": 298084
+    },
+    {
+      "Level": 39,
+      "DropEXP": 1118,
+      "NextEXP": 240683,
+      "PalNextEXP": 60171,
+      "TotalEXP": 1432794,
+      "PalTotalEXP": 358255
+    },
+    {
+      "Level": 40,
+      "DropEXP": 1249,
+      "NextEXP": 288881,
+      "PalNextEXP": 72220,
+      "TotalEXP": 1721675,
+      "PalTotalEXP": 430475
+    },
+    {
+      "Level": 41,
+      "DropEXP": 1394,
+      "NextEXP": 346719,
+      "PalNextEXP": 86680,
+      "TotalEXP": 2068394,
+      "PalTotalEXP": 517155
+    },
+    {
+      "Level": 42,
+      "DropEXP": 1554,
+      "NextEXP": 416125,
+      "PalNextEXP": 104031,
+      "TotalEXP": 2484520,
+      "PalTotalEXP": 621186
+    },
+    {
+      "Level": 43,
+      "DropEXP": 1736,
+      "NextEXP": 499412,
+      "PalNextEXP": 124853,
+      "TotalEXP": 2983932,
+      "PalTotalEXP": 746039
+    },
+    {
+      "Level": 44,
+      "DropEXP": 1940,
+      "NextEXP": 599357,
+      "PalNextEXP": 149839,
+      "TotalEXP": 3583289,
+      "PalTotalEXP": 895878
+    },
+    {
+      "Level": 45,
+      "DropEXP": 2168,
+      "NextEXP": 719290,
+      "PalNextEXP": 179823,
+      "TotalEXP": 4302579,
+      "PalTotalEXP": 1075701
+    },
+    {
+      "Level": 46,
+      "DropEXP": 2422,
+      "NextEXP": 863210,
+      "PalNextEXP": 215803,
+      "TotalEXP": 5165789,
+      "PalTotalEXP": 1291504
+    },
+    {
+      "Level": 47,
+      "DropEXP": 2704,
+      "NextEXP": 1035914,
+      "PalNextEXP": 258979,
+      "TotalEXP": 6201703,
+      "PalTotalEXP": 1550483
+    },
+    {
+      "Level": 48,
+      "DropEXP": 3018,
+      "NextEXP": 1243159,
+      "PalNextEXP": 310790,
+      "TotalEXP": 7444862,
+      "PalTotalEXP": 1861273
+    },
+    {
+      "Level": 49,
+      "DropEXP": 3374,
+      "NextEXP": 1491853,
+      "PalNextEXP": 372963,
+      "TotalEXP": 8936715,
+      "PalTotalEXP": 2234236
+    },
+    {
+      "Level": 50,
+      "DropEXP": 3774,
+      "NextEXP": 1790285,
+      "PalNextEXP": 447571,
+      "TotalEXP": 10727001,
+      "PalTotalEXP": 2681807
+    },
+    {
+      "Level": 51,
+      "DropEXP": 4218,
+      "NextEXP": 2148405,
+      "PalNextEXP": 537101,
+      "TotalEXP": 12875405,
+      "PalTotalEXP": 3218908
+    },
+    {
+      "Level": 52,
+      "DropEXP": 4718,
+      "NextEXP": 2578147,
+      "PalNextEXP": 644537,
+      "TotalEXP": 15453553,
+      "PalTotalEXP": 3863445
+    },
+    {
+      "Level": 53,
+      "DropEXP": 5271,
+      "NextEXP": 3093839,
+      "PalNextEXP": 773460,
+      "TotalEXP": 18547392,
+      "PalTotalEXP": 4636905
+    },
+    {
+      "Level": 54,
+      "DropEXP": 5897,
+      "NextEXP": 3712669,
+      "PalNextEXP": 928167,
+      "TotalEXP": 22260061,
+      "PalTotalEXP": 5565072
+    },
+    {
+      "Level": 55,
+      "DropEXP": 6592,
+      "NextEXP": 4455265,
+      "PalNextEXP": 1113816,
+      "TotalEXP": 26715325,
+      "PalTotalEXP": 6678888
+    },
+    {
+      "Level": 56,
+      "DropEXP": 7374,
+      "NextEXP": 5346379,
+      "PalNextEXP": 1336595,
+      "TotalEXP": 32061705,
+      "PalTotalEXP": 8015483
+    },
+    {
+      "Level": 57,
+      "DropEXP": 8248,
+      "NextEXP": 6415717,
+      "PalNextEXP": 1603929,
+      "TotalEXP": 38477422,
+      "PalTotalEXP": 9619412
+    },
+    {
+      "Level": 58,
+      "DropEXP": 9227,
+      "NextEXP": 7698923,
+      "PalNextEXP": 1924731,
+      "TotalEXP": 46176345,
+      "PalTotalEXP": 11544143
+    },
+    {
+      "Level": 59,
+      "DropEXP": 12227,
+      "NextEXP": 9238769,
+      "PalNextEXP": 2309692,
+      "TotalEXP": 55415114,
+      "PalTotalEXP": 13853835
+    },
+    {
+      "Level": 60,
+      "DropEXP": 15227,
+      "NextEXP": 11086585,
+      "PalNextEXP": 2771646,
+      "TotalEXP": 66501699,
+      "PalTotalEXP": 16625481
+    },
+    {
+      "Level": 61,
+      "DropEXP": 18227,
+      "NextEXP": 13303964,
+      "PalNextEXP": 3325991,
+      "TotalEXP": 79805663,
+      "PalTotalEXP": 19951472
+    },
+    {
+      "Level": 62,
+      "DropEXP": 21227,
+      "NextEXP": 15964819,
+      "PalNextEXP": 3991205,
+      "TotalEXP": 95770482,
+      "PalTotalEXP": 23942677
+    },
+    {
+      "Level": 63,
+      "DropEXP": 24227,
+      "NextEXP": 19157845,
+      "PalNextEXP": 4789461,
+      "TotalEXP": 114928327,
+      "PalTotalEXP": 28732138
+    },
+    {
+      "Level": 64,
+      "DropEXP": 27227,
+      "NextEXP": 22989476,
+      "PalNextEXP": 5747369,
+      "TotalEXP": 137917803,
+      "PalTotalEXP": 34479507
+    },
+    {
+      "Level": 65,
+      "DropEXP": 30227,
+      "NextEXP": 27587433,
+      "PalNextEXP": 6896858,
+      "TotalEXP": 165505236,
+      "PalTotalEXP": 41376365
+    },
+    {
+      "Level": 66,
+      "DropEXP": 33227,
+      "NextEXP": 33104982,
+      "PalNextEXP": 8276245,
+      "TotalEXP": 198610218,
+      "PalTotalEXP": 49652610
+    },
+    {
+      "Level": 67,
+      "DropEXP": 36227,
+      "NextEXP": 39726040,
+      "PalNextEXP": 9931510,
+      "TotalEXP": 238336258,
+      "PalTotalEXP": 59584120
+    },
+    {
+      "Level": 68,
+      "DropEXP": 39227,
+      "NextEXP": 47671310,
+      "PalNextEXP": 11917827,
+      "TotalEXP": 286007568,
+      "PalTotalEXP": 71501947
+    },
+    {
+      "Level": 69,
+      "DropEXP": 42227,
+      "NextEXP": 57205634,
+      "PalNextEXP": 14301408,
+      "TotalEXP": 343213202,
+      "PalTotalEXP": 85803355
+    },
+    {
+      "Level": 70,
+      "DropEXP": 45227,
+      "NextEXP": 68646823,
+      "PalNextEXP": 17161706,
+      "TotalEXP": 411860024,
+      "PalTotalEXP": 102965061
+    },
+    {
+      "Level": 71,
+      "DropEXP": 48227,
+      "NextEXP": 82376249,
+      "PalNextEXP": 20594062,
+      "TotalEXP": 494236274,
+      "PalTotalEXP": 123559123
+    },
+    {
+      "Level": 72,
+      "DropEXP": 51227,
+      "NextEXP": 98851561,
+      "PalNextEXP": 24712890,
+      "TotalEXP": 593087835,
+      "PalTotalEXP": 148272013
+    },
+    {
+      "Level": 73,
+      "DropEXP": 54227,
+      "NextEXP": 118621935,
+      "PalNextEXP": 29655484,
+      "TotalEXP": 711709770,
+      "PalTotalEXP": 177927497
+    },
+    {
+      "Level": 74,
+      "DropEXP": 57227,
+      "NextEXP": 142346384,
+      "PalNextEXP": 35586596,
+      "TotalEXP": 854056155,
+      "PalTotalEXP": 213514093
+    },
+    {
+      "Level": 75,
+      "DropEXP": 60227,
+      "NextEXP": 170815723,
+      "PalNextEXP": 42703931,
+      "TotalEXP": 1024871878,
+      "PalTotalEXP": 256218024
+    },
+    {
+      "Level": 76,
+      "DropEXP": 63227,
+      "NextEXP": 204978930,
+      "PalNextEXP": 51244732,
+      "TotalEXP": 1229850808,
+      "PalTotalEXP": 307462756
+    },
+    {
+      "Level": 77,
+      "DropEXP": 66227,
+      "NextEXP": 245974778,
+      "PalNextEXP": 61493694,
+      "TotalEXP": 1475825586,
+      "PalTotalEXP": 368956450
+    },
+    {
+      "Level": 78,
+      "DropEXP": 69227,
+      "NextEXP": 295169796,
+      "PalNextEXP": 73792449,
+      "TotalEXP": 1770995381,
+      "PalTotalEXP": 442748899
+    },
+    {
+      "Level": 79,
+      "DropEXP": 72227,
+      "NextEXP": 354203817,
+      "PalNextEXP": 88550954,
+      "TotalEXP": 2125199198,
+      "PalTotalEXP": 531299853
+    },
+    {
+      "Level": 80,
+      "DropEXP": 75227,
+      "NextEXP": 425044642,
+      "PalNextEXP": 106261161,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 637561014
+    },
+    {
+      "Level": 81,
+      "DropEXP": 78227,
+      "NextEXP": 510053632,
+      "PalNextEXP": 127513408,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 765074422
+    },
+    {
+      "Level": 82,
+      "DropEXP": 81227,
+      "NextEXP": 612064421,
+      "PalNextEXP": 153016105,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 918090527
+    },
+    {
+      "Level": 83,
+      "DropEXP": 84227,
+      "NextEXP": 734477367,
+      "PalNextEXP": 183619342,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 1101709869
+    },
+    {
+      "Level": 84,
+      "DropEXP": 87227,
+      "NextEXP": 881372903,
+      "PalNextEXP": 220343226,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 1322053095
+    },
+    {
+      "Level": 85,
+      "DropEXP": 90227,
+      "NextEXP": 1057647545,
+      "PalNextEXP": 264411886,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 1586464981
+    },
+    {
+      "Level": 86,
+      "DropEXP": 93227,
+      "NextEXP": 1269177116,
+      "PalNextEXP": 317294279,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 1903759260
+    },
+    {
+      "Level": 87,
+      "DropEXP": 96227,
+      "NextEXP": 1523012601,
+      "PalNextEXP": 380753150,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 88,
+      "DropEXP": 99227,
+      "NextEXP": 1827615183,
+      "PalNextEXP": 456903796,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 89,
+      "DropEXP": 102227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 548284571,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 90,
+      "DropEXP": 105227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 657941500,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 91,
+      "DropEXP": 108227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 789529816,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 92,
+      "DropEXP": 111227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 947435794,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 93,
+      "DropEXP": 114227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 1136922969,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 94,
+      "DropEXP": 117227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 1364307578,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 95,
+      "DropEXP": 120227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 1637169109,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 96,
+      "DropEXP": 123227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 1964602946,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 97,
+      "DropEXP": 126227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 2147483647,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 98,
+      "DropEXP": 129227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 2147483647,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 99,
+      "DropEXP": 132227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 2147483647,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    },
+    {
+      "Level": 100,
+      "DropEXP": 135227,
+      "NextEXP": 2147483647,
+      "PalNextEXP": 2147483647,
+      "TotalEXP": 2147483647,
+      "PalTotalEXP": 2147483647
+    }
+]
