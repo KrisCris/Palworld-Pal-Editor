@@ -1,9 +1,14 @@
 from enum import Enum
+import json
 from typing import Any, Optional
 import uuid
 from palworld_save_tools.archive import UUID
+from palworld_save_tools.json_tools import CustomEncoder
 
 from palworld_pal_editor.utils import LOGGER, clamp
+
+def dumps(data: dict) -> str:
+    return json.dumps(data, indent=4, cls=CustomEncoder, ensure_ascii=False)
 
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
@@ -562,7 +567,7 @@ class PalObjects:
                                 "type": "StructProperty",
                             }
                         },
-                        "unknown_bytes": (0, 0, 0, 0),
+                        "unknown_bytes": [0, 0, 0, 0],
                         "group_id": group_id,
                     },
                     ".worldSaveData.CharacterSaveParameterMap.Value.RawData",

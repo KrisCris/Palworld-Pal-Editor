@@ -7,7 +7,7 @@ from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
-from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_nested_attr
+from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_nested_attr, dumps
 from palworld_pal_editor.utils.util import type_guard
 
 
@@ -930,7 +930,7 @@ class PalEntity:
         print(self.dump_obj())
 
     def dump_obj(self) -> str:
-        return str(self._pal_obj)
+        return dumps(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
         rank = clamp(0, 10, rank)
