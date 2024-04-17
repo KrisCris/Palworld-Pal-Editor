@@ -1,3 +1,4 @@
+import platform
 import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
@@ -13,7 +14,7 @@ save_blueprint = Blueprint("save", __name__)
 @save_blueprint.route("/fetch_config", methods=["GET"])
 def fetch_config():
     tk_status = False
-    if Config.mode == "gui":
+    if Config.mode == "gui" and platform.system() != "Darwin":
         try:
             import tkinter as tk
             tk_status = True
