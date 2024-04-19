@@ -1,3 +1,4 @@
+from pathlib import Path
 import platform
 import traceback
 from flask import Blueprint, jsonify, request
@@ -6,7 +7,7 @@ from flask_jwt_extended import jwt_required
 from palworld_pal_editor.config import PROGRAM_PATH, Config
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
-from palworld_pal_editor.api.util import reply
+from palworld_pal_editor.utils.util import get_path_context, reply
 
 save_blueprint = Blueprint("save", __name__)
 
@@ -184,3 +185,28 @@ def show_file_picker():
         LOGGER.error(f"Failed Open File Picker: {trace}")
         LOGGER.error(f"Please Manually Type in the Path.")
         return reply(1, msg="Failed open file picker (check log for detail), please manually type in the path.")
+    
+@save_blueprint.route("/path", methods=["GET"])
+@jwt_required()
+def get_path():
+    try:
+        current_path = Path(Config.path).resolve()
+        if not current_path.exists():
+            raise Exception(f"Path {current_path} not exist.")
+    except:
+        current_path = PROGRAM_PATH
+        
+    return reply(1, get_path_context(current_path))
+
+
+@save_blueprint.route("path", methods=["POST"])
+@jwt_required()
+def update_path():
+    path = Path(request.json.get("path")).resolve()
+    if not path.exists():
+        return reply(0, msg="Path Not Found")
+    Config.path = str(path)
+    
+    return reply(1, get_path_context(path))
+
+    

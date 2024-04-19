@@ -1,3 +1,4 @@
+from pathlib import Path
 import re
 from functools import wraps
 import sys
@@ -5,6 +6,29 @@ from typing import Callable, Optional, get_type_hints, Union, _GenericAlias
 import socket
 
 from palworld_pal_editor.utils import LOGGER
+
+from flask import jsonify
+
+def reply(status, data=None, msg=None):
+    return jsonify({"status": status, "data": data, "msg": msg})
+
+
+def get_path_context(path: Path) -> dict:
+    current_path = path.resolve()
+        
+    children = {
+        str(child.resolve()): {
+            "filename": child.name,
+            "isDir": child.is_dir(),
+        }
+        for child in sorted(current_path.iterdir(), key=lambda x: (x.is_file(), x.name))
+    }
+
+    return {
+        "currentPath": str(current_path),
+        "children": children
+    }
+
 
 def alphanumeric_key(key: str):
     """Converts a string into a list of integer and string fragments for sorting."""

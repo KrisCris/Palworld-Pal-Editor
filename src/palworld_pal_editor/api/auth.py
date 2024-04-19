@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required
 from werkzeug.security import check_password_hash
-from palworld_pal_editor.api.util import reply
+from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.config import Config
 
