@@ -7,7 +7,7 @@ from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
 
 from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
-from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_attr_value, get_nested_attr, toUUID
+from palworld_pal_editor.core.pal_objects import PalObjects, PalGender, PalRank, get_nested_attr, dumps
 from palworld_pal_editor.utils.util import type_guard
 
 
@@ -24,17 +24,13 @@ class PalEntity:
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
 
-        if get_attr_value(self._pal_param, "IsPlayer"):
+        if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError("Expecting pal_obj, received player_obj: {} - {} - {}".format(self.NickName, self.PlayerUId, self.InstanceId))
         
-        # self._derived_hp_scaling = self._derive_hp_scaling()
         self._display_name_cache = {}
         self.owner_player_entity = None
-        ## TODO
-        # self._isBoss_cache = {}
-        # self._raw_specie_key_cache = {}
-        # self._data_access_key_cache = {}
         self.is_unreferenced_pal = False
+        self.is_new_pal = False
 
     def __str__(self) -> str:
         return "{} - {} - {}".format(self.DisplayName, self.OwnerName, self.InstanceId)
@@ -68,7 +64,7 @@ class PalEntity:
     @property
     def PlayerUId(self) -> Optional[UUID]:
         # should be EMPTY UUID, but sometimes it's set to player uid in singleplayer game, weird
-        return get_attr_value(self._pal_key, "PlayerUId")
+        return PalObjects.get_BaseType(self._pal_key.get("PlayerUId"))
     
     @PlayerUId.setter
     def PlayerUId(self, id: UUID | str) -> Optional[UUID]:
@@ -76,7 +72,7 @@ class PalEntity:
     
     @property
     def InstanceId(self) -> Optional[UUID]:
-        return get_attr_value(self._pal_key, "InstanceId")
+        return PalObjects.get_BaseType(self._pal_key.get("InstanceId"))
     
     @InstanceId.setter
     def InstanceId(self, id: UUID | str):
@@ -84,8 +80,8 @@ class PalEntity:
     
     @property
     def OwnerPlayerUId(self) -> Optional[UUID]:
-        return get_attr_value(self._pal_param, "OwnerPlayerUId")
-    
+        return PalObjects.get_BaseType(self._pal_param.get("OwnerPlayerUId"))
+            
     @property
     def LastOwnerPlayerUId(self) -> Optional[UUID]:
         if self.OldOwnerPlayerUIds:
@@ -123,13 +119,13 @@ class PalEntity:
     
     @property
     def CharacterID(self) -> Optional[str]:
-        return get_attr_value(self._pal_param, "CharacterID")
+        return PalObjects.get_BaseType(self._pal_param.get("CharacterID"))
     
     @CharacterID.setter
     @LOGGER.change_logger('CharacterID')
     @type_guard
     def CharacterID(self, value: str) -> None:
-        og_specie = self._RawSpecieKey
+        og_specie = self.RawSpecieKey
 
         if self.CharacterID is None:
             self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
@@ -149,19 +145,21 @@ class PalEntity:
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
 
-        new_specie = self._RawSpecieKey
+        new_specie = self.RawSpecieKey
         if new_specie != og_specie:
             self.remove_unique_attacks()
 
         self.learn_attacks()
+        if self.IsTower or self.IsRAID:
+            self.equip_all_pal_attacks()
+
         self.heal_pal()
         self.clear_worker_sick()
-        # self.MaxHP = self.ComputedMaxHP
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
     @property
-    def _RawSpecieKey(self) -> Optional[str]:
+    def RawSpecieKey(self) -> Optional[str]:
         key = self.CharacterID
         if self._IsBOSS:
             if "Boss_" in key:
@@ -207,7 +205,7 @@ class PalEntity:
         if self.IsHuman:
             return "Human"
         if self.IsRAID:
-            return self._RawSpecieKey
+            return self.RawSpecieKey
         return self.DataAccessKey
 
     @property
@@ -217,7 +215,7 @@ class PalEntity:
         if self.IsRAID:
             return self.CharacterID
         
-        key = self._RawSpecieKey
+        key = self.RawSpecieKey
         match key:
             case "Sheepball":
                 key = "SheepBall"
@@ -281,10 +279,9 @@ class PalEntity:
     @type_guard
     def IsTower(self, value: bool) -> None:
         if not value:
-            self.CharacterID = self._RawSpecieKey
+            self.CharacterID = self.RawSpecieKey
         else:
-            self.CharacterID = f"GYM_{self._RawSpecieKey}"
-        # self.MaxHP = self.ComputedMaxHP
+            self.CharacterID = f"GYM_{self.RawSpecieKey}"
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -302,9 +299,9 @@ class PalEntity:
     @type_guard
     def _IsBOSS(self, value: bool) -> None:
         if not value:
-            self.CharacterID = self._RawSpecieKey
+            self.CharacterID = self.RawSpecieKey
         elif not self._IsBOSS and value:
-            self.CharacterID = f"BOSS_{self._RawSpecieKey}"
+            self.CharacterID = f"BOSS_{self.RawSpecieKey}"
     
     @property
     def IsBOSS(self) -> bool:
@@ -325,14 +322,13 @@ class PalEntity:
         if self.IsRarePal and value:
             self.IsRarePal = False
         self._IsBOSS = value
-        # Update MaxHP
-        # self.MaxHP = self.ComputedMaxHP
+
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
-        return get_attr_value(self._pal_param, "IsRarePal")
+        return PalObjects.get_BaseType(self._pal_param.get("IsRarePal"))
     
     @IsRarePal.setter
     @LOGGER.change_logger('IsRarePal')
@@ -341,8 +337,6 @@ class PalEntity:
         # Boss and Rare can only exist one
         if self.IsBOSS and not value:
             return
-        # if self.IsBOSS and value:
-        #     self.IsBOSS = False
 
         if self.IsRarePal is None:
             self._pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
@@ -356,7 +350,7 @@ class PalEntity:
     
     @property
     def NickName(self) -> Optional[str]:
-        return get_attr_value(self._pal_param, "NickName")
+        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
     
     @NickName.setter
     @LOGGER.change_logger('NickName')
@@ -366,13 +360,13 @@ class PalEntity:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
             self._pal_param["NickName"]["value"] = value
-        # clear up
+
         if not self.NickName:
             self._pal_param.pop("NickName", None)
 
     @property
     def Level(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Level")
+        return PalObjects.get_BaseType(self._pal_param.get("Level"))
     
     @Level.setter
     @LOGGER.change_logger('Level')
@@ -384,16 +378,15 @@ class PalEntity:
         else:
             self._pal_param["Level"]["value"] = value
         self.Exp = DataProvider.get_level_xp(self.Level)
-        # Update MaxHP
-        # self.MaxHP = self.ComputedMaxHP
+
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
-        # Learn Attacks
+
         self.learn_attacks()
 
     @property
     def Exp(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Exp")
+        return PalObjects.get_BaseType(self._pal_param.get("Exp"))
     
     @Exp.setter
     @LOGGER.change_logger('Exp')
@@ -406,7 +399,7 @@ class PalEntity:
 
     @property
     def Rank(self) -> Optional[PalRank]:
-        return PalRank.from_value(get_attr_value(self._pal_param, "Rank"))
+        return PalRank.from_value(PalObjects.get_BaseType(self._pal_param.get("Rank")))
 
     @Rank.setter
     @LOGGER.change_logger('Rank')
@@ -425,7 +418,6 @@ class PalEntity:
         else:
             PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
 
-        # self.MaxHP = self.ComputedMaxHP
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -434,26 +426,25 @@ class PalEntity:
 
     @property
     def Rank_HP(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Rank_HP")
+        return PalObjects.get_BaseType(self._pal_param.get("Rank_HP"))
 
     @property
     def Rank_Attack(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Rank_Attack")
+        return PalObjects.get_BaseType(self._pal_param.get("Rank_Attack"))
     
     @property
     def Rank_Defence(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Rank_Defence")
+        return PalObjects.get_BaseType(self._pal_param.get("Rank_Defence"))
     
     @property
     def Rank_CraftSpeed(self) -> Optional[int]:
-        return get_attr_value(self._pal_param, "Rank_CraftSpeed")
+        return PalObjects.get_BaseType(self._pal_param.get("Rank_CraftSpeed"))
     
     @Rank_HP.setter
     @LOGGER.change_logger('Rank_HP')
     @type_guard
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
-        # self.MaxHP = self.ComputedMaxHP
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -549,20 +540,6 @@ class PalEntity:
         else:
             PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
 
-    # @property
-    # def MaxHP(self) -> Optional[int]:
-    #     return PalObjects.get_FixedPoint64(self._pal_param.get("MaxHP"))
-    
-    # @MaxHP.setter
-    # @LOGGER.change_logger("MaxHP")
-    # def MaxHP(self, val: int) -> None:
-    #     if self.MaxHP is None:
-    #         self._pal_param["MaxHP"] = PalObjects.FixedPoint64(val)
-    #     else:
-    #         PalObjects.set_FixedPoint64(self._pal_param["MaxHP"], val)
-
-    #     self.HP = self.MaxHP
-
     @property
     def PassiveSkillList(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("PassiveSkillList"))
@@ -587,8 +564,7 @@ class PalEntity:
         
         self.PassiveSkillList.append(skill)
         LOGGER.info(f"Added {DataProvider.get_passive_i18n(skill)[0]} to PassiveSkillList")
-        # Update MaxHP, but no such skill atm.
-        # self.MaxHP = self.ComputedMaxHP
+        # Update HP, but no such skill atm.
         # if maxHP := self.ComputedMaxHP:
         #     self.HP = maxHP
         return True
@@ -600,8 +576,9 @@ class PalEntity:
                 idx = self.PassiveSkillList.index(item)
             skill = self.PassiveSkillList.pop(int(idx))
             LOGGER.info(f"Removed {DataProvider.get_passive_i18n(skill)[0]} from PassiveSkillList")
-            # Update MaxHP, but no such skill atm.
-            # self.MaxHP = self.ComputedMaxHP
+            # Update HP, but no such skill atm.
+            # if maxHP := self.ComputedMaxHP:
+            #     self.HP = maxHP
             return skill
         except Exception as e:
             LOGGER.warning(f"{e}")
@@ -612,7 +589,7 @@ class PalEntity:
 
     @LOGGER.change_logger('EquipWaza')
     @type_guard
-    def add_EquipWaza(self, waza: str) -> bool:
+    def add_EquipWaza(self, waza: str, force=False) -> bool:
         """
         Normally you can't add the same "waza" twice on a pal.
         """
@@ -626,7 +603,7 @@ class PalEntity:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
         
-        if len(self.EquipWaza) >= 3:
+        if len(self.EquipWaza) >= 3 and not force:
             LOGGER.warning(f"{self} EquipWaza has maxed out: {self.EquipWaza}, consider add to MasteredWaza instead.")
             return False
         
@@ -661,12 +638,6 @@ class PalEntity:
     def MasteredWaza(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("MasteredWaza"))
 
-    # @property
-    # def MasteredWazaSet(self) -> Optional[set[str]]:
-    #     # Unused
-    #     # We need a way to cache it, otherwise it's no better than idx into a list
-    #     return set(self.MasteredWaza) if self.MasteredWaza is not None else None
-
     @LOGGER.change_logger('MasteredWaza')
     @type_guard
     def add_MasteredWaza(self, waza: str) -> bool:
@@ -685,7 +656,7 @@ class PalEntity:
             return False
         
         self.MasteredWaza.append(waza)
-        # PalObjects.add_ArrayProperty(self._pal_param["MasteredWaza"], waza)
+
         LOGGER.info(f"Added {DataProvider.get_attack_i18n(waza)[0]} to MasteredWaza")
         
         if self.num_EmptyEquipWaza > 0:
@@ -702,7 +673,7 @@ class PalEntity:
             waza = self.MasteredWaza.pop(int(idx))
             if waza in (self.EquipWaza or []):
                 self.pop_EquipWaza(item=waza)
-            # return PalObjects.pop_ArrayProperty(self._pal_param["MasteredWaza"], idx)
+
             LOGGER.info(f"Removed {DataProvider.get_attack_i18n(waza)[0]} from MasteredWaza")
             return waza
         except Exception as e:
@@ -729,7 +700,7 @@ class PalEntity:
     @type_guard
     def Talent_HP(self, value: int):
         self._set_iv("Talent_HP", value)
-        # self.MaxHP = self.ComputedMaxHP
+
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -772,6 +743,15 @@ class PalEntity:
     def MaxFullStomach(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("MaxFullStomach"))
     
+    @MaxFullStomach.setter
+    @LOGGER.change_logger("MaxFullStomach")
+    @type_guard
+    def MaxFullStomach(self, val: float) :
+        if self.MaxFullStomach is None:
+            self._pal_param["MaxFullStomach"] = PalObjects.FloatProperty(val)
+        else:
+            PalObjects.set_BaseType(self._pal_param['MaxFullStomach'], val)
+
     @property
     def FullStomach(self) -> Optional[float]:
         return PalObjects.get_BaseType(self._pal_param.get("FullStomach"))
@@ -781,7 +761,7 @@ class PalEntity:
     @type_guard
     def FullStomach(self, val: float):
         if self.FullStomach is None:
-            self._pal_param["HP"] = PalObjects.FloatProperty(val)
+            self._pal_param["FullStomach"] = PalObjects.FloatProperty(val)
         else:
             PalObjects.set_BaseType(self._pal_param['FullStomach'], val)
             
@@ -854,8 +834,7 @@ class PalEntity:
             self._pal_param.pop("PalReviveTimer", None)
         if self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
             self._pal_param.pop("PhysicalHealth", None)
-        # if not self.MaxHP:
-        #     self.MaxHP = self.ComputedMaxHP
+
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -893,9 +872,14 @@ class PalEntity:
             for atk in DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1):
                 if atk not in (self.MasteredWaza or []):
                     self.add_MasteredWaza(atk)
-        # for atk in DataProvider.get_attacks_to_forget(self.DataAccessKey, self.Level):
-        #     if atk in self.MasteredWaza:
-        #         self.pop_MasteredWaza(atk)
+
+    def equip_all_pal_attacks(self):
+        atks = DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1)
+        if not atks: return
+        (self.EquipWaza or []).clear()
+        for atk in atks:
+            if atk not in (self.EquipWaza or []):
+                self.add_EquipWaza(atk, True)
                 
     def remove_unique_attacks(self):
         if self.MasteredWaza is None:
@@ -946,7 +930,7 @@ class PalEntity:
         print(self.dump_obj())
 
     def dump_obj(self) -> str:
-        return str(self._pal_obj)
+        return dumps(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
         rank = clamp(0, 10, rank)
@@ -994,7 +978,7 @@ class PalEntity:
         return bonus
     
 
-    # Deprecated
+    # Deprecated since Palworld 0.2.x
     # def _derive_hp_scaling(self) -> int:
     #     try:
     #         def adjust_number(n):

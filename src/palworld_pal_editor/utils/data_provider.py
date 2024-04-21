@@ -32,7 +32,7 @@ def load_json(filename: str) -> Any:
 PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json")
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
-PAL_XP_THRESHOLDS: list[int] = load_json("pal_xp_thresholds.json")
+PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
@@ -146,7 +146,7 @@ class DataProvider:
     @staticmethod
     def get_level_xp(lv: int) -> Optional[int]:
         try:
-            return PAL_XP_THRESHOLDS[lv - 1]
+            return PAL_EXP_TABLE[lv - 1]["PalTotalEXP"]
         except IndexError:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None

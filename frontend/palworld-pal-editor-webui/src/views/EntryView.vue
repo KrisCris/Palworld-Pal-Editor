@@ -60,7 +60,7 @@ div.col {
 
 div.left,
 div.right {
-    flex: 1 1 48%;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
 }

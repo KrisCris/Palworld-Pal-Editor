@@ -1,8 +1,14 @@
 from enum import Enum
+import json
 from typing import Any, Optional
+import uuid
 from palworld_save_tools.archive import UUID
+from palworld_save_tools.json_tools import CustomEncoder
 
 from palworld_pal_editor.utils import LOGGER, clamp
+
+def dumps(data: dict) -> str:
+    return json.dumps(data, indent=4, cls=CustomEncoder, ensure_ascii=False)
 
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
@@ -24,47 +30,6 @@ def toUUID(uuid_str: str) -> Optional[UUID]:
 
 def UUID2HexStr(uuid: str | UUID) -> str:
     return str(uuid).upper().replace("-", "")
-
-
-def get_attr_value(
-    data_container: dict, attr_name: str, nested_keys: list = None
-) -> Optional[Any]:
-    """
-    Generic method to retrieve the value of an attribute from the pal data.
-
-    Parameters:
-        attr_name (str): The name of the attribute to retrieve.
-        nested_keys (list): A list of keys to navigate through nested dictionaries if necessary.
-
-    Returns:
-        Optional[Any]: The value of the attribute, or None if the attribute does not exist.
-    """
-    try:
-        if data_container is None:
-            raise TypeError("Expected dict, get None.")
-        attr = data_container.get(attr_name)
-
-        if attr is None:
-            raise IndexError(f"Providing dict does not have `{attr_name}` attribute.")
-
-        if nested_keys:
-            for key in nested_keys:
-                attr = attr.get(key, None)
-                if attr is None:
-                    raise KeyError(
-                        f"trying to get attr `{attr_name}`, but nested key `{key}` not found in dict {data_container}."
-                    )
-
-        if attr and "value" in attr:
-            return attr["value"]
-        else:
-            raise KeyError(
-                f"trying to get attr `{attr_name}`, but final key `value` not found in dict {data_container}."
-            )
-
-    except Exception as e:
-        # LOGGER.warning(e)
-        return None
 
 
 def get_nested_attr(container: dict, keys: list) -> Optional[Any]:
@@ -121,6 +86,7 @@ class PalRank(Enum):
 
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
+    TIME = 638486453957560000
 
     @staticmethod
     def StrProperty(value: str):
@@ -345,6 +311,16 @@ class PalObjects:
         PalObjects.set_BaseType(container["value"]["SlotIndex"], slot_idx)
 
     @staticmethod
+    def FloatContainer(value: dict):
+        return {
+            "struct_type": "FloatContainer",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": value,
+            "type": "StructProperty",
+        }
+
+    @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
         case_1 = {
             "StrProperty",
@@ -400,6 +376,32 @@ class PalObjects:
             },
             "type": "StructProperty",
         }
+    
+    @staticmethod
+    def PalLoggedinPlayerSaveDataRecordData(value: dict = None):
+        return {
+            "struct_type": "PalLoggedinPlayerSaveDataRecordData",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": value or {},
+            "type": "StructProperty"
+        }
+    
+    @staticmethod
+    def MapProperty(key_type: str, value_type: str, key_struct_type=None, value_struct_type=None):
+        return {
+            "key_type": key_type,
+            "value_type": value_type,
+            "key_struct_type": key_struct_type,
+            "value_struct_type": value_struct_type,
+            "id": None,
+            "value": [],
+            "type": "MapProperty"
+        }
+    
+    @staticmethod
+    def get_MapProperty(container: dict) -> Optional[list[dict]]:
+        return get_nested_attr(container, ["value"])
 
     EPalWorkSuitabilities = [
         "EPalWorkSuitability::EmitFlame",
@@ -491,9 +493,7 @@ class PalObjects:
                                         "NameProperty", {"values": []}
                                     ),
                                     "MP": PalObjects.FixedPoint64(10000),
-                                    "OwnedTime": PalObjects.DateTime(
-                                        638478651098960000
-                                    ),
+                                    "OwnedTime": PalObjects.DateTime(PalObjects.TIME),
                                     "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
                                     "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
                                         "StructProperty",
@@ -505,8 +505,11 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    # "MaxHP": PalObjects.FixedPoint64(545000), # MaxHP is no longer stored in the game save.
+                                    # MaxHP is no longer stored in the game save.
+                                    # "MaxHP": PalObjects.FixedPoint64(545000), 
                                     "CraftSpeed": PalObjects.IntProperty(70),
+                                    # Do not omit CraftSpeeds, otherwise the pal works super slow
+                                    # TODO use accurate data (even tho this is useless)
                                     "CraftSpeeds": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
@@ -522,24 +525,14 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    # "EquipItemContainerId": {
-                                    #     "struct_type": "PalContainerId",
-                                    #     "struct_id": PalObjects.EMPTY_UUID,
-                                    #     "id": None,
-                                    #     "value": {
-                                    #         "ID": {
-                                    #             "struct_type": "Guid",
-                                    #             "struct_id": PalObjects.EMPTY_UUID,
-                                    #             "id": None,
-                                    #             "value": "2ee46d97-4a5a-4e11-837c-276e4c6b9c7b",
-                                    #             "type": "StructProperty",
-                                    #         }
-                                    #     },
-                                    #     "type": "StructProperty",
-                                    # },
+                                    "SanityValue": PalObjects.FloatProperty(100.0),
+                                    "EquipItemContainerId": PalObjects.PalContainerId(
+                                        str(uuid.uuid4())
+                                    ),
                                     "SlotID": PalObjects.PalCharacterSlotId(
                                         SlotIndex, ContainerId
                                     ),
+                                    # TODO Need accurate values
                                     "MaxFullStomach": PalObjects.FloatProperty(150.0),
                                     "GotStatusPointList": PalObjects.ArrayProperty(
                                         "StructProperty",
@@ -567,12 +560,14 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 0),
+                                    "DecreaseFullStomachRates": PalObjects.FloatContainer({}),
+                                    "CraftSpeedRates": PalObjects.FloatContainer({}),
+                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 7088.5),
                                 },
                                 "type": "StructProperty",
                             }
                         },
-                        "unknown_bytes": (0, 0, 0, 0),
+                        "unknown_bytes": [0, 0, 0, 0],
                         "group_id": group_id,
                     },
                     ".worldSaveData.CharacterSaveParameterMap.Value.RawData",

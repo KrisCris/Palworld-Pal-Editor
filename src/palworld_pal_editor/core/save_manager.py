@@ -8,7 +8,6 @@ import uuid
 
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import FArchiveReader, FArchiveWriter, UUID
-from palworld_save_tools.json_tools import CustomEncoder
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
 
@@ -16,7 +15,7 @@ from palworld_pal_editor.core.basecamp_data import BaseCampData
 
 from palworld_pal_editor.core.container_data import ContainerData
 
-from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, get_attr_value, toUUID
+from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
@@ -111,15 +110,13 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip
 MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.CharacterContainerSaveData"] = (skip_decode, skip_encode)
-# PALEDITOR_CUSTOM_PROPERTIES[".worldSaveData.GroupSaveDataMap"] = (skip_decode, skip_encode)
 
 
 PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
 PLAYER_SKIP_PROPERTIES[".SaveData.PlayerCharacterMakeData"] = (skip_decode, skip_encode)
 PLAYER_SKIP_PROPERTIES[".SaveData.LastTransform"] = (skip_decode, skip_encode)
 PLAYER_SKIP_PROPERTIES[".SaveData.inventoryInfo"] = (skip_decode, skip_encode)
-PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
+# PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
 
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
@@ -173,7 +170,7 @@ class SaveManager:
         if guid in self._dangling_pals:
             return self._dangling_pals[guid]
         for player in self.get_players():
-            if pal := player.get_pal(guid):
+            if pal := player.get_pal(guid, disable_warning=True):
                 return pal
 
         LOGGER.warning(f"Can't find pal {guid}")
@@ -192,10 +189,10 @@ class SaveManager:
                 LOGGER.warning(f"Non-player/pal data found in CharacterSaveParameterMap, skipping {entity}")
                 continue
 
-            entity_param = entity_struct['value']
+            entity_param: dict = entity_struct['value']
             try: 
-                if get_attr_value(entity_param, "IsPlayer"):
-                    uid_str = str(get_attr_value(entity['key'], "PlayerUId"))
+                if PalObjects.get_BaseType(entity_param.get("IsPlayer")):
+                    uid_str = str(PalObjects.get_BaseType(entity["key"].get("PlayerUId")))
 
                     if uid_str in self.player_mapping:
                         LOGGER.error(f"Duplicated player found: \n\t{self.player_mapping[uid_str]}, skipping...")
@@ -299,6 +296,8 @@ class SaveManager:
                 self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
             )
 
+            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
+
             try:
                 self.group_data = GroupData(self.gvas_file)
             except Exception as e:
@@ -386,7 +385,7 @@ class SaveManager:
             LOGGER.warning(f"Player {player_uid} not found")
             return None
         
-        player_container_ids = [player.PalStorageContainerId, player.OtomoCharacterContainerId]
+        player_container_ids = [player.OtomoCharacterContainerId, player.PalStorageContainerId]
         
         pal_container = None
         for id in player_container_ids:
@@ -420,13 +419,19 @@ class SaveManager:
                 pal_entity.InstanceId = pal_instanceId
                 pal_entity.SlotID = (container_id, slot_idx)
                 # I don't know why some captured pals have PlayerUId, 
-                # and having this non-empty ID will cause the game to discard the duped pal
+                # But having non-empty ID will cause the game to hide the duped pal
                 pal_entity.PlayerUId = PalObjects.EMPTY_UUID
-                pal_entity._pal_param.pop("EquipItemContainerId", None)
-                # (pal_entity.OldOwnerPlayerUIds or []).clear()
+                # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
+                # so just assign a randomly for now.
+                pal_entity._pal_param["EquipItemContainerId"] = PalObjects.PalContainerId(str(uuid.uuid4()))
+                # pal_entity._pal_param.pop("EquipItemContainerId", None)
+                
                 pal_entity.NickName = "!!!DUPED PAL!!!"
 
-            player.add_pal(pal_entity)
+            pal_entity.is_new_pal = True
+
+            if not player.add_pal(pal_entity):
+                raise Exception("Duplicated Pal ID, Try Again!")
             self._entities_list.append(pal_obj)
         except:
             LOGGER.error(f"Failed adding pal: {traceback.format_exc()}")
@@ -503,6 +508,7 @@ class SaveManager:
         if player_entity.PlayerGVAS is None:
             return False
 
+        player_entity.save_new_pal_records()
         gvas_file, compression_times = player_entity.PlayerGVAS
         player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
 

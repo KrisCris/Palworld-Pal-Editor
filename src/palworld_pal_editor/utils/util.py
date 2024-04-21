@@ -2,6 +2,7 @@ import re
 from functools import wraps
 import sys
 from typing import Callable, Optional, get_type_hints, Union, _GenericAlias
+import socket
 
 from palworld_pal_editor.utils import LOGGER
 
@@ -62,3 +63,19 @@ def type_guard(func):
         return func(**all_args)
 
     return wrapper
+
+
+def check_or_generate_port(preferred_port: int, host: str='0.0.0.0') -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind((host, preferred_port))
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            return preferred_port
+        except socket.error:
+            pass
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((host, 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        port = s.getsockname()[1]
+        return port

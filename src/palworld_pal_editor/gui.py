@@ -30,6 +30,8 @@ def main():
     try:
         webview.create_window(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {VERSION}", url=f"http://127.0.0.1:{Config.port}/", width=1600, height=1000, min_size=(960, 600))
         webview.start()
+    except KeyboardInterrupt:
+        pass
     except:
         LOGGER.warning(f"Failed Launching pywebview: {traceback.format_exc()}")
         LOGGER.info(f"Fallback to web browser, opening http://127.0.0.1:{Config.port} ...")

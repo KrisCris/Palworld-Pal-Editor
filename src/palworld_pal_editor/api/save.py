@@ -1,3 +1,4 @@
+import platform
 import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
@@ -13,7 +14,7 @@ save_blueprint = Blueprint("save", __name__)
 @save_blueprint.route("/fetch_config", methods=["GET"])
 def fetch_config():
     tk_status = False
-    if Config.mode == "gui":
+    if Config.mode == "gui" and platform.system() != "Darwin":
         try:
             import tkinter as tk
             tk_status = True
@@ -177,7 +178,7 @@ def show_file_picker():
         folder_selected = filedialog.askdirectory(parent=root)
         root.destroy()
         LOGGER.info(f"File picker result: {folder_selected}")
-        return reply(0, {"path": folder_selected})
+        return reply(0, {"path": folder_selected or ""})
     except:
         trace = traceback.format_exc()
         LOGGER.error(f"Failed Open File Picker: {trace}")
