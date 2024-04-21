@@ -16,10 +16,10 @@ onMounted(async () => {
   <div class="flex">
     <div class="title">
       <p>
-        {{ palStore.getTranslatedText("PlayerList_1") }}
+        {{ palStore.getTranslatedText("PlayerList_Text") }}
       </p>
       <button class="playerSettings" v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).hasViewingCage"
-        :title="`${palStore.getTranslatedText('PlayerList_2')}${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
+        :title="`${palStore.getTranslatedText('PlayerList_Viewing_Cage')}${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
         :disabled="palStore.LOADING_FLAG"
         @click="palStore.updatePlayer" name="unlock_viewing_cage">🧊</button>
     </div>
@@ -27,7 +27,7 @@ onMounted(async () => {
       <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
         <button class="player" @click="palStore.selectPlayer" :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG"
           :value="palStore.PAL_BASE_WORKER_BTN">
-          {{ palStore.getTranslatedText('PlayerList_Btn_1') }}
+          {{ palStore.getTranslatedText('PlayerList_Base_Pal') }}
         </button>
       </div>
       <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
