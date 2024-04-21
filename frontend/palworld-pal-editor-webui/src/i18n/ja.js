@@ -17,7 +17,7 @@ export default {
     EntryView_9:
         " > Dockerコンテナから実行している場合は、ディレクトリが正しくマッピングされており、適切なファイルアクセス権限が設定されていることを確認してください。その後、マッピングされたパスを入力するだけです。",
     EntryView_Btn_1: "パスを選択",
-    EntryView_Btn_2: "LOAD",
+    EntryView_Btn_2: "ロード",
 
     Editor_1: "このパルはゲーム内に存在しない可能性があります",
     Editor_2: "基本情報",
@@ -71,8 +71,8 @@ export default {
     TopBar_Btn_1: "変更を保存",
     TopBar_Btn_2: "セーブをリロード",
     TopBar_Btn_3: "メインページに戻る",
-    TopBar_Btn_4: "Show Out of Box Pal",
-    TopBar_Btn_5: "Toggle Ghost Pal",
+    TopBar_Btn_4: "ボックス外パルを表示",
+    TopBar_Btn_5: "ゴーストパルを表示",
     TopBar_Btn_6: "無効なオプションを非表示",
 
     TopBar_1: "所有者のプレイヤーパルコンテナにないパルを表示します。例：観賞用ケージ、他の人に取られたパル。",
