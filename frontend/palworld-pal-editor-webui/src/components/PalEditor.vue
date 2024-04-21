@@ -256,7 +256,7 @@ function filterInvalid(list) {
       </p>
       <div class="editField spaceBetween">
         <p class="const">
-          {{ palStore.getTranslatedText("Editor_27") }}
+          ⭐ {{ palStore.getTranslatedText("Editor_27") }}
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
         <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
@@ -741,5 +741,6 @@ select.selector {
   border-radius: .5rem;
   color: rgb(208, 212, 226);
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  max-width: 50%;
 }
 </style>
