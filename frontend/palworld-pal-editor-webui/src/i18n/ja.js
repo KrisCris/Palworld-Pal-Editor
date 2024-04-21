@@ -66,7 +66,7 @@ export default {
     PlayerList_1: "プレイヤーリスト",
     PlayerList_2: "観賞用ケージのロックを解除する: ",
 
-    PlayerList_Btn_1: "ベースキャンプ パル",
+    PlayerList_Btn_1: "拠点パル",
 
     TopBar_Btn_1: "変更を保存",
     TopBar_Btn_2: "セーブをリロード",
