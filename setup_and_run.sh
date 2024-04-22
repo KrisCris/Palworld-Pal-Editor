@@ -1,28 +1,3 @@
-#!/bin/bash
-
-# # modified for the use of docker image
-# # Default values
-# PY_INTERACTIVE_MODE=""
-# LANG=""
-# PORT=""
-# MODE=""
-# SAVE_PATH=""
-# PASSWORD=""
-
-# # Process command-line arguments
-# while [[ "$#" -gt 0 ]]; do
-#     case $1 in
-#         --i) PY_INTERACTIVE_MODE="-i"; shift ;;
-#         --lang) LANG="--lang \"$2\""; shift ;;
-#         --port) PORT="--port \"$2\""; shift ;;
-#         --mode) MODE="--mode \"$2\""; shift ;;
-#         --path) SAVE_PATH="--path \"$2\""; shift ;;
-#         --password) PASSWORD="--password \"$2\""; shift ;;
-#         *) echo "Unknown parameter passed: $1"; exit 1 ;;
-#     esac
-#     shift
-# done
-
 if which npm > /dev/null; then
     NPM_CMD=npm
 else
@@ -59,24 +34,13 @@ fi
 
 echo "Using ${PYTHON_CMD} (version ${PYTHON_VERSION})"
 
-# Create a virtual environment named 'venv' (skip if already created)
 ${PYTHON_CMD} -m venv venv
 
-# Activate the virtual environment
 source venv/bin/activate
 
-# Install packages from requirements.txt
 pip install -r requirements.txt
-
-# Install your package in editable mode
 pip install -e .
 
-# COMMAND_ARGS="$MODE $LANG $PORT $SAVE_PATH $PASSWORD"
-
-# Log the arguments before invoking Python
-# echo "Running command: python $PY_INTERACTIVE_MODE -m palworld_pal_editor $COMMAND_ARGS"
-
-# Use eval to correctly handle spaces in paths and other arguments
 launch_command="python -m palworld_pal_editor ${@}"
 echo "Launching $launch_command..."
 eval $launch_command
