@@ -237,13 +237,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const PAL_STATIC_DATA_LIST = ref([]);
   const I18nList = ref({});
 
-  // const TranslationKeyMap = ref({
-  //   en: en,
-  //   "zh-CN": cn,
-  //   "zh-TW": tw,
-  //   ja: ja
-  // })
-
   const TranslationKeyMap = ref({})
   const I18nLoadingPromises = {}
 
@@ -282,8 +275,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const I18n = ref(localStorage.getItem("PAL_I18n"));
   const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
   const HAS_PASSWORD = ref(false);
-  const FilePickerAvailable = ref(false)
   const PAL_WRITE_BACK_PATH = ref("");
+  const PATH_CONTEXT = ref(new Map())
+  const SHOW_FILE_PICKER = ref(false)
 
   // auth
   let auth_token = "";
@@ -446,8 +440,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_GAME_SAVE_PATH.value = response.data.Path;
       }
       HAS_PASSWORD.value = response.data.HasPassword;
-      FilePickerAvailable.value = response.data.FilePickerAvailable
-      // console.log(I18n.value, PAL_GAME_SAVE_PATH.value, HAS_PASSWORD.value, IS_GUI.value);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -459,22 +451,66 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!no_set_loading_flag) LOADING_FLAG.value = false;
   }
 
+  function update_path_picker_result(data) {
+    PAL_GAME_SAVE_PATH.value = data.currentPath
+    PATH_CONTEXT.value = new Map(Object.entries(data.children))
+    SHOW_FILE_PICKER.value = true
+  }
+
   async function show_file_picker() {
-    if (!FilePickerAvailable.value) {
-      alert("This only works in GUI mode!")
-      return;
-    }
-    
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await GET("/api/save/file_picker");
+    const response = await GET("/api/save/path");
 
     if (response === false) return;
 
     if (response.status == 0) {
-      if (response.data.path)
-        PAL_GAME_SAVE_PATH.value = response.data.path
+      update_path_picker_result(response.data)
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- show_file_picker - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function path_back() {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await PATCH("/api/save/path");
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      update_path_picker_result(response.data)
+    } else if (response.status == 2) {
+      alert("Unauthorized Access, Please Login. ");
+      IS_LOCKED.value = true;
+      reset();
+    } else {
+      alert(`- show_file_picker - Error occured: ${response.msg}`);
+    }
+
+    if (!no_set_loading_flag) LOADING_FLAG.value = false;
+  }
+
+  async function update_picker_result(path) {
+    let no_set_loading_flag = LOADING_FLAG.value;
+    if (!no_set_loading_flag) LOADING_FLAG.value = true;
+
+    const response = await POST("/api/save/path", {
+      path: path
+    });
+
+    if (response === false) return;
+
+    if (response.status == 0) {
+      update_path_picker_result(response.data)
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -1219,8 +1255,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     IS_LOCKED,
     HAS_PASSWORD,
-    FilePickerAvailable,
 
+    PATH_CONTEXT,
+    SHOW_FILE_PICKER,
     HAS_WORKING_PAL_FLAG,
     BASE_PAL_BTN_CLK_FLAG,
     PAL_GAME_SAVE_PATH,
@@ -1260,6 +1297,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     login,
     auth,
-    show_file_picker
+    show_file_picker,
+    update_picker_result,
+    path_back
   };
 });

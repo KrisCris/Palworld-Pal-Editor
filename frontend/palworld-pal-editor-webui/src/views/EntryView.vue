@@ -1,10 +1,12 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import PathPicker from '@/components/PathPicker.vue';
 const palStore = usePalEditorStore()
 </script>
 
 <template>
     <div id="entryDiv">
+        <PathPicker />
         <div class="left">
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
             <p>{{ palStore.getTranslatedText('EntryView_Greet_1') }}</p>
@@ -31,8 +33,8 @@ const palStore = usePalEditorStore()
                 placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
                 :disabled="palStore.LOADING_FLAG">
 
-            <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.FilePickerAvailable">
-                {{ palStore.getTranslatedText('EntryView_BTN_Path_Select') }}
+            <button class="pathSelect" @click="palStore.show_file_picker">
+                {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
             </button>
             <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
                 {{ palStore.getTranslatedText('EntryView_BTN_Load') }}

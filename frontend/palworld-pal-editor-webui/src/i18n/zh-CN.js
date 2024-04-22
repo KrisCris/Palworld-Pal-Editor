@@ -16,7 +16,7 @@ export default {
         " > 在成功载入存档后，存档的路径将会被保存，并在下次使用时自动为您输入。",
     EntryView_Note_3:
         " > 如果你在通过Docker容器的方式使用这个工具，请确保已经正确的映射了存档的路径，并且容器具有合适的文件访问权限。这里你只需要输入映射的路径。",
-    EntryView_BTN_Path_Select: "选择路径",
+    EntryView_BTN_Path_Picker: "选择路径",
     EntryView_BTN_Load: "载入存档",
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",

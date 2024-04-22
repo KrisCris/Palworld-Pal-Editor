@@ -16,7 +16,7 @@ export default {
         " > 読み込みに成功すると、次回からはパスが自動的に入力されます。",
     EntryView_Note_3:
         " > Dockerコンテナから実行している場合は、ディレクトリが正しくマッピングされており、適切なファイルアクセス権限が設定されていることを確認してください。その後、マッピングされたパスを入力するだけです。",
-    EntryView_BTN_Path_Select: "パスを選択",
+    EntryView_BTN_Path_Picker: "パスを選択",
     EntryView_BTN_Load: "ロード",
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",

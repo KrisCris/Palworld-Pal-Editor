@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import platform
 import traceback
@@ -14,15 +15,6 @@ save_blueprint = Blueprint("save", __name__)
 
 @save_blueprint.route("/fetch_config", methods=["GET"])
 def fetch_config():
-    tk_status = False
-    if Config.mode == "gui" and platform.system() != "Darwin":
-        try:
-            import tkinter as tk
-            tk_status = True
-        except:
-            trace = traceback.format_exc()
-            LOGGER.error(f"Hiding File Picker Since It Will Not Work: {trace}")
-
     return reply(
         0,
         {
@@ -30,7 +22,6 @@ def fetch_config():
             "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
             "HasPassword": Config.password != None,
-            "FilePickerAvailable": Config.mode == "gui" and tk_status
         },
     )
 
@@ -161,30 +152,6 @@ def get_pal_data():
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
 
-@save_blueprint.route("/file_picker", methods=["GET"])
-@jwt_required()
-def show_file_picker():
-    if Config.mode != "gui":
-        msg = "File picker only supports GUI mode."
-        LOGGER.warning(msg)
-        return reply(1, msg=msg)
-    
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        folder_selected = filedialog.askdirectory(parent=root)
-        root.destroy()
-        LOGGER.info(f"File picker result: {folder_selected}")
-        return reply(0, {"path": folder_selected or ""})
-    except:
-        trace = traceback.format_exc()
-        LOGGER.error(f"Failed Open File Picker: {trace}")
-        LOGGER.error(f"Please Manually Type in the Path.")
-        return reply(1, msg="Failed open file picker (check log for detail), please manually type in the path.")
     
 @save_blueprint.route("/path", methods=["GET"])
 @jwt_required()
@@ -194,9 +161,21 @@ def get_path():
         if not current_path.exists():
             raise Exception(f"Path {current_path} not exist.")
     except:
-        current_path = PROGRAM_PATH
-        
-    return reply(1, get_path_context(current_path))
+        pal_local_path = Path(os.environ.get('LOCALAPPDATA', "/")) / 'Pal' / 'Saved' / 'SaveGames'
+        if pal_local_path.exists():
+            current_path = pal_local_path
+        else:
+            current_path = PROGRAM_PATH
+
+    old_path = Config.path
+    Config.path = str(current_path)
+
+    try:
+        return reply(0, get_path_context(current_path))
+    except:
+        Config.path = old_path
+        LOGGER.error(traceback.format_exc())
+        return reply(1, msg=f"Error, cannot open path {current_path}.")
 
 
 @save_blueprint.route("path", methods=["POST"])
@@ -204,9 +183,29 @@ def get_path():
 def update_path():
     path = Path(request.json.get("path")).resolve()
     if not path.exists():
-        return reply(0, msg="Path Not Found")
+        return reply(1, msg="Path Not Found")
+
+    old_path = Config.path
     Config.path = str(path)
     
-    return reply(1, get_path_context(path))
+    try:
+        return reply(0, get_path_context(path))
+    except:
+        Config.path = old_path
+        LOGGER.error(traceback.format_exc())
+        return reply(1, msg=f"Error, cannot open path {path}.")
 
+
+@save_blueprint.route("path", methods=["PATCH"])
+@jwt_required()
+def path_back():
+    path = Path(Config.path).parent.resolve()
+    old_path = Config.path
+    Config.path = str(path)
     
+    try:
+        return reply(0, get_path_context(path))
+    except:
+        Config.path = old_path
+        LOGGER.error(traceback.format_exc())
+        return reply(1, msg=f"Error, cannot open path {path}.")
