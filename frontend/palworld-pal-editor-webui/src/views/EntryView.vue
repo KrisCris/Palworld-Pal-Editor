@@ -7,24 +7,24 @@ const palStore = usePalEditorStore()
     <div id="entryDiv">
         <div class="left">
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
-            <p>{{ palStore.getTranslatedText('EntryView_1') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_2') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_3') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_1') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_2') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_3') }}</p>
             <br>
-            <p>{{ palStore.getTranslatedText('EntryView_4') }}
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_4') }}
                 <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub</a>
-                {{ palStore.getTranslatedText('EntryView_5') }}
+                {{ palStore.getTranslatedText('EntryView_Greet_5') }}
             </p>
-            <p>{{ palStore.getTranslatedText('EntryView_6') }}
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_6') }}
                 <a target="_blank" href="https://ko-fi.com/connlost">ko-fi</a>
-                {{ palStore.getTranslatedText('EntryView_5') }}
+                {{ palStore.getTranslatedText('EntryView_Greet_5') }}
             </p>
             <br>
         </div>
         <div class="right">
-            <p>{{ palStore.getTranslatedText('EntryView_7') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_8') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_9') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Note_1') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Note_2') }}</p>
+            <p>{{ palStore.getTranslatedText('EntryView_Note_3') }}</p>
             <br>
             <p class="small">{{ palStore.PAL_GAME_SAVE_PATH }}</p>
             <input type="text" v-model="palStore.PAL_GAME_SAVE_PATH"
@@ -32,10 +32,10 @@ const palStore = usePalEditorStore()
                 :disabled="palStore.LOADING_FLAG">
 
             <button class="pathSelect" @click="palStore.show_file_picker" v-if="palStore.FilePickerAvailable">
-                {{ palStore.getTranslatedText('EntryView_Btn_1') }}
+                {{ palStore.getTranslatedText('EntryView_BTN_Path_Select') }}
             </button>
             <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
-                {{ palStore.getTranslatedText('EntryView_Btn_2') }}
+                {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
             </button>
         </div>
     </div>

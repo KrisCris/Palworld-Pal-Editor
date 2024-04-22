@@ -22,6 +22,7 @@ class Config:
     debug: bool = False
     path: str = None
     password: str = None
+    interactive: bool = False
     _password_hash: str = None
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
 

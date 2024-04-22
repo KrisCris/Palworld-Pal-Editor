@@ -25,9 +25,8 @@ if [ -n "$APP_PORT" ]; then cmd="$cmd --port=$APP_PORT"; fi
 if [ -n "$MODE" ]; then cmd="$cmd --mode=\"$MODE\""; fi
 if [ -n "$SAVE_PATH" ]; then cmd="$cmd --path=\"$SAVE_PATH\""; fi
 if [ -n "$PASSWORD" ]; then cmd="$cmd --password=\"$PASSWORD\""; fi
-# if [ -n "$PY_INTERACTIVE_FLAG" ]; then cmd="$cmd $PY_INTERACTIVE_FLAG"; fi
+if [ -n "$INTERACTIVE" ]; then cmd="$cmd --interactive=\"$INTERACTIVE\""; fi
 
 echo "Launching: $cmd"
 
-# Execute the command
 eval exec $cmd
