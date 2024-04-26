@@ -83,7 +83,7 @@ function get_filtered_pal_list() {
     <div class="flex">
         <div class="title">
             <p>
-                {{ palStore.getTranslatedText("PalList_1") }}
+                {{ palStore.getTranslatedText("PalList_Text") }}
             </p>
             <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
                 :disabled="palStore.LOADING_FLAG">

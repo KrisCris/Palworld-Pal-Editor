@@ -42,6 +42,7 @@ COPY ./ /app
 # Copy the entrypoint script into the image and make it executable
 COPY ./docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN chmod +x /app/setup_and_run.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 

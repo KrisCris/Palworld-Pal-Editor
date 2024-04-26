@@ -17,7 +17,7 @@ chown -R pn:pn /app
 
 
 
-cmd="gosu pn ./setup_and_run.sh"
+cmd="./setup_and_run.sh --nocli"
 
 # Check each environment variable and append it to the command if it exists
 if [ -n "$APP_LANG" ]; then cmd="$cmd --lang=\"$APP_LANG\""; fi
@@ -25,9 +25,8 @@ if [ -n "$APP_PORT" ]; then cmd="$cmd --port=$APP_PORT"; fi
 if [ -n "$MODE" ]; then cmd="$cmd --mode=\"$MODE\""; fi
 if [ -n "$SAVE_PATH" ]; then cmd="$cmd --path=\"$SAVE_PATH\""; fi
 if [ -n "$PASSWORD" ]; then cmd="$cmd --password=\"$PASSWORD\""; fi
-# if [ -n "$PY_INTERACTIVE_FLAG" ]; then cmd="$cmd $PY_INTERACTIVE_FLAG"; fi
+# if [ -n "$INTERACTIVE" ]; then cmd="$cmd --interactive"; fi
 
 echo "Launching: $cmd"
 
-# Execute the command
-eval exec $cmd
+eval exec "su pn -c '$cmd'"
