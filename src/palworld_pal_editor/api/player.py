@@ -1,7 +1,7 @@
 import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
-from palworld_pal_editor.api.util import reply
+from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider

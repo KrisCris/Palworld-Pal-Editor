@@ -16,7 +16,7 @@ export default {
         " > After a successful save loading, the path will be stored and automatically input for you the next time.",
     EntryView_Note_3:
         " > If you are running from the docker container, please make sure you have mapped the directory correctly, and setup the correct file access permission. Then all you need is to enter the mapped path.",
-    EntryView_BTN_Path_Select: "Select Path",
+    EntryView_BTN_Path_Picker: "Select Path",
     EntryView_BTN_Load: "Load Save",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
