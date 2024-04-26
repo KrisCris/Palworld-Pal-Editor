@@ -1,6 +1,10 @@
-name: Dev Release
+name: Dev Build
 
-on: [push]
+on: 
+  push:
+    branches-ignore:
+      - release
+
 jobs:
   dev-release:
     strategy:
@@ -13,7 +17,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.12.2
         architecture: x64
@@ -34,7 +38,7 @@ jobs:
       run: ./build_executable.sh
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Palworld_Pal_Editor_${{ matrix.os }}_artifact
         path: ./dist/

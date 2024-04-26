@@ -1,0 +1,44 @@
+name: Build and Push Docker image
+
+on:
+  push:
+    branches:
+      - release
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Lowercase repository owner
+      run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker/Dockerfile
+        push: true
+        tags: ghcr.io/${{ env.REPO_OWNER }}/palworld-pal-editor:latest
+        platforms: linux/amd64,linux/arm64
+
+    - name: Verify image digest
+      run: echo "The new image digest is ${{ steps.build-and-push.outputs.digest }}"
