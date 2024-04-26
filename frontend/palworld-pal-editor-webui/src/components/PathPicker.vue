@@ -1,6 +1,11 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
 import { computed } from '@vue/reactivity';
+import { ref, onMounted } from 'vue'
+
+import IconButton from './modules/IconButton.vue';
+import InputArea from './modules/InputArea.vue'
+import BarButton from './modules/BarButton.vue'
 const palStore = usePalEditorStore()
 
 const sortedPathChildren = computed(() => {
@@ -14,23 +19,43 @@ const sortedPathChildren = computed(() => {
         return a[1].filename.localeCompare(b[1].filename);
     })
 })
+
+// const scrollElement = ref(null);
+
+// const checkScroll = () => {
+//     if (!scrollElement.value) return;
+//     const scrollTop = scrollElement.value.scrollTop;
+//     const scrollHeight = scrollElement.value.scrollHeight;
+//     const clientHeight = scrollElement.value.clientHeight;
+
+//     scrollElement.value.classList.toggle('scrolled-top', scrollTop > 0);
+//     scrollElement.value.classList.toggle('scrolled-bottom', scrollTop + clientHeight < scrollHeight);
+// };
+
+// onMounted(() => {
+//     if (scrollElement.value) {
+//         scrollElement.value.addEventListener('scroll', checkScroll);
+//         checkScroll(); // Initial check to update shadow state
+//     }
+// });
 </script>
 
 <template>
-    <div v-if="palStore.SHOW_FILE_PICKER" class="popup">
-        <p> {{ palStore.PAL_GAME_SAVE_PATH }}</p>
-        <span>Current Directory: </span>
-        <input class="pathInput" type="text" name="PAL_GAME_SAVE_PATH" id="PAL_GAME_SAVE_PATH"
-            v-model="palStore.PAL_GAME_SAVE_PATH">
-        <button @click="palStore.update_picker_result(palStore.PAL_GAME_SAVE_PATH)">GO</button>
-        <ul>
+    <div class="popup">
+        <div class="currentPath">
+            <IconButton icon="⤴️" @click="palStore.path_back"/>
+            <InputArea v-model="palStore.PAL_GAME_SAVE_PATH"/>
+            <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_GAME_SAVE_PATH)"/>
+        </div>
+        
+        <ul ref="scrollElement">
             <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
                 @click="palStore.update_picker_result(key)" :fullpath="key">
                 {{ value.isDir ? "📁" : "📄" }} {{ value.filename }}
             </li>
         </ul>
-        <button @click="palStore.path_back">Back</button>
-        <button @click="palStore.SHOW_FILE_PICKER = false">OK</button>
+
+        <BarButton @click="palStore.SHOW_FILE_PICKER = false" content="OK"/>
     </div>
 </template>
 
@@ -40,31 +65,46 @@ const sortedPathChildren = computed(() => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 20px;
+
+    border: none;
+    outline: none;
+    width: 75vw;
+    height: 75vh;
+
+    border-radius: 0.5rem;
+    padding: 2rem 4rem;
     background-color: #515151;
     z-index: 10;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.popup .pathInput {
-    width: 70%;
+.popup .currentPath {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .popup ul {
-    max-height: 200px;
     overflow-y: auto;
     list-style-type: none;
     padding: 0;
-    border: 1px solid #ccc;
-    margin-top: 10px;
+    flex: 1;
 }
 
 .popup li {
-    margin: 5px 0;
+    margin: .2rem .2rem;
+    padding: .3rem .3rem;
+    border-radius: 0.5rem;
+    color: whitesmoke;
+    cursor: pointer;
 }
 
-.popup button {
-    display: block;
-    margin-top: 10px;
+.popup li:hover {
+    background-color: #4b8d5e;
 }
+
 </style>

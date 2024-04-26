@@ -6,7 +6,7 @@ const palStore = usePalEditorStore()
 
 <template>
     <div id="entryDiv">
-        <PathPicker />
+        <PathPicker v-if="palStore.SHOW_FILE_PICKER"/>
         <div class="left">
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
             <p>{{ palStore.getTranslatedText('EntryView_Greet_1') }}</p>
