@@ -105,20 +105,6 @@ def get_active_skills():
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
 
 
-# def displayElement(element):
-#       elementEmojis = {
-#         'Water': "💧",
-#         'Fire': "🔥",
-#         'Dragon': "🐉",
-#         'Grass': "☘️",
-#         'Ground': "🪨",
-#         'Ice': "❄️",
-#         'Electric': "⚡",
-#         'Neutral': "😐",
-#         'Dark': "🌑"
-#       }
-#       return elementEmojis.get(element) or "❓"
-
 @save_blueprint.route("/i18n", methods=["PATCH"])
 # @jwt_required()
 def update_i18n():
