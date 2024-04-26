@@ -32,5 +32,6 @@ button:hover {
 
 button:disabled {
     background-color: #8a8a8a;
+    cursor: auto;
 }
 </style>

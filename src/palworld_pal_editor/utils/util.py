@@ -14,8 +14,7 @@ def reply(status, data=None, msg=None):
 
 
 def get_path_context(path: Path) -> dict:
-    current_path = path.resolve()
-        
+    current_path = path.resolve()        
     children = {
         str(child.resolve()): {
             "filename": child.name,
@@ -24,9 +23,13 @@ def get_path_context(path: Path) -> dict:
         for child in sorted(current_path.iterdir(), key=lambda x: (x.is_file(), x.name))
     }
 
+    names = [child.name for child in current_path.iterdir()]
+    is_pal_dir = "Level.sav" in names and "Players" in names
+
     return {
         "currentPath": str(current_path),
-        "children": children
+        "children": children,
+        "isPalDir": is_pal_dir
     }
 
 

@@ -254,6 +254,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   const PAL_LIST_SEARCH_KEYWORD = ref("")
 
+  const IS_PAL_SAVE_PATH = ref(false)
+
   // data
   const BASE_PAL_MAP = ref(new Map());
   const PLAYER_MAP = ref(new Map());
@@ -277,7 +279,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const HAS_PASSWORD = ref(false);
   const PAL_WRITE_BACK_PATH = ref("");
   const PATH_CONTEXT = ref(new Map())
+
   const SHOW_FILE_PICKER = ref(false)
+  const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value)
 
   // auth
   let auth_token = "";
@@ -452,7 +456,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function update_path_picker_result(data) {
-    PAL_GAME_SAVE_PATH.value = data.currentPath
+    IS_PAL_SAVE_PATH.value = data.isPalDir
+    PAL_FILE_PICKER_PATH.value = data.currentPath
     PATH_CONTEXT.value = new Map(Object.entries(data.children))
     SHOW_FILE_PICKER.value = true
   }
@@ -1258,6 +1263,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     PATH_CONTEXT,
     SHOW_FILE_PICKER,
+    PAL_FILE_PICKER_PATH,
+    IS_PAL_SAVE_PATH,
+
     HAS_WORKING_PAL_FLAG,
     BASE_PAL_BTN_CLK_FLAG,
     PAL_GAME_SAVE_PATH,

@@ -20,6 +20,12 @@ const sortedPathChildren = computed(() => {
     })
 })
 
+const savePickerResult = () => {
+    palStore.SHOW_FILE_PICKER = false
+    palStore.PAL_GAME_SAVE_PATH = palStore.PAL_FILE_PICKER_PATH
+
+}
+
 // const scrollElement = ref(null);
 
 // const checkScroll = () => {
@@ -43,19 +49,22 @@ const sortedPathChildren = computed(() => {
 <template>
     <div class="popup">
         <div class="currentPath">
-            <IconButton icon="⤴️" @click="palStore.path_back"/>
-            <InputArea v-model="palStore.PAL_GAME_SAVE_PATH"/>
-            <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_GAME_SAVE_PATH)"/>
+            <IconButton icon="⤴️" @click="palStore.path_back" />
+            <InputArea v-model="palStore.PAL_FILE_PICKER_PATH" />
+            <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
         </div>
-        
+
         <ul ref="scrollElement">
-            <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
-                @click="palStore.update_picker_result(key)" :fullpath="key">
+            <li v-for="([key, value], index) of sortedPathChildren" 
+                :key="index" 
+                :isdir="value.isDir"
+                @click="() => { if (value.isDir) palStore.update_picker_result(key) }" 
+                :fullpath="key"
+            >
                 {{ value.isDir ? "📁" : "📄" }} {{ value.filename }}
             </li>
         </ul>
-
-        <BarButton @click="palStore.SHOW_FILE_PICKER = false" content="OK"/>
+        <BarButton @click="savePickerResult" content="OK" :disabled="!palStore.IS_PAL_SAVE_PATH" />
     </div>
 </template>
 
@@ -95,16 +104,18 @@ const sortedPathChildren = computed(() => {
     flex: 1;
 }
 
+.popup li[isdir=true] {
+    cursor: pointer;
+}
+
 .popup li {
     margin: .2rem .2rem;
     padding: .3rem .3rem;
     border-radius: 0.5rem;
     color: whitesmoke;
-    cursor: pointer;
 }
 
-.popup li:hover {
+.popup li:hover[isdir=true] {
     background-color: #4b8d5e;
 }
-
 </style>
