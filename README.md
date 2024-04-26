@@ -69,6 +69,7 @@
     - [Option A. Use Pre-Built Binary](#option-a-use-pre-built-binary)
     - [Option B. Install via pip](#option-b-install-via-pip)
     - [Option C. Docker Container](#option-c-docker-container)
+      - [If you want to manually build it](#if-you-want-to-manually-build-it)
     - [Option D. Directly Run the Code](#option-d-directly-run-the-code)
     - [Optional Command-line Args](#optional-command-line-args)
     - [Config File](#config-file)
@@ -131,6 +132,12 @@
 3. `python -m palworld_pal_editor`
 
 ### Option C. Docker Container
+
+1. Download the compose file: `./docker/sample-docker-compose.yml`.
+2. Rename it to `docker-compose.yml`, then configure it properly.
+3. Run `docker compose up -d`.
+
+#### If you want to manually build it
 
 1. Clone the code.
 2. Copy `./docker/sample-docker-compose.yml` to `./docker/docker-compose.yml`, then do necessary modifications.

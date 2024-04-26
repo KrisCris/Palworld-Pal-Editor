@@ -58,6 +58,7 @@
     - [方案 A. 使用打包的可执行文件](#方案-a-使用打包的可执行文件)
     - [方案 B. 通过 pip 安装](#方案-b-通过-pip-安装)
     - [方案 C. 使用 Docker Container](#方案-c-使用-docker-container)
+      - [如果你想手动构建 Image](#如果你想手动构建-image)
     - [方案 D. 直接运行代码](#方案-d-直接运行代码)
     - [可选命令行参数](#可选命令行参数)
     - [配置文件](#配置文件)
@@ -114,6 +115,12 @@
 3. `python -m palworld_pal_editor`
 
 ### 方案 C. 使用 Docker Container
+
+1. 下载 `./docker/sample-docker-compose.yml`
+2. 做适当的修改，并重命名为`docker-compse.yml`
+3. 运行 `docker compose up -d`
+
+#### 如果你想手动构建 Image
 
 1. 克隆项目.
 2. 复制 `./docker/sample-docker-compose.yml` 到 `./docker/docker-compose.yml`, 并根据需求做适当修改（网络不佳的用户建议传入代理环境变量）。
