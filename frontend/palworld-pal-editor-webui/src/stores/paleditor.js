@@ -8,8 +8,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.id = obj.id;
       this.name = obj.name;
       this.hasViewingCage = obj.hasViewingCage;
-      this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId
-      this.PalStorageContainerId = obj.PalStorageContainerId
+      this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
+      this.PalStorageContainerId = obj.PalStorageContainerId;
       this.pals = new Map();
     }
   }
@@ -237,8 +237,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const PAL_STATIC_DATA_LIST = ref([]);
   const I18nList = ref({});
 
-  const TranslationKeyMap = ref({})
-  const I18nLoadingPromises = {}
+  const TranslationKeyMap = ref({});
+  const I18nLoadingPromises = {};
 
   // flags
   const LOADING_FLAG = ref(false);
@@ -250,11 +250,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const UPDATE_PAL_RESELECT_CTR = ref(0);
   const SHOW_UNREF_PAL_FLAG = ref(false);
   const SHOW_OOB_PAL_FLAG = ref(true);
-  const HIDE_INVALID_OPTIONS = ref(true)
+  const HIDE_INVALID_OPTIONS = ref(true);
 
-  const PAL_LIST_SEARCH_KEYWORD = ref("")
+  const PAL_LIST_SEARCH_KEYWORD = ref("");
 
-  const IS_PAL_SAVE_PATH = ref(false)
+  const IS_PAL_SAVE_PATH = ref(false);
 
   // data
   const BASE_PAL_MAP = ref(new Map());
@@ -278,10 +278,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
   const HAS_PASSWORD = ref(false);
   const PAL_WRITE_BACK_PATH = ref("");
-  const PATH_CONTEXT = ref(new Map())
+  const PATH_CONTEXT = ref(new Map());
 
-  const SHOW_FILE_PICKER = ref(false)
-  const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value)
+  const SHOW_FILE_PICKER = ref(false);
+  const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value);
 
   // auth
   let auth_token = "";
@@ -435,7 +435,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response === false) return;
 
     if (response.status == 0) {
-      I18nList.value = response.data.I18nList
+      I18nList.value = response.data.I18nList;
       if (!I18n.value || !I18nList.value[I18n.value]) {
         I18n.value = response.data.I18n;
       }
@@ -456,22 +456,34 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function update_path_picker_result(data) {
-    IS_PAL_SAVE_PATH.value = data.isPalDir
-    PAL_FILE_PICKER_PATH.value = data.currentPath
-    PATH_CONTEXT.value = new Map(Object.entries(data.children))
-    SHOW_FILE_PICKER.value = true
+    IS_PAL_SAVE_PATH.value = data.isPalDir;
+    PAL_FILE_PICKER_PATH.value = data.currentPath;
+    PATH_CONTEXT.value = new Map(Object.entries(data.children));
+    SHOW_FILE_PICKER.value = true;
   }
 
   async function show_file_picker() {
     let no_set_loading_flag = LOADING_FLAG.value;
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-    const response = await GET("/api/save/path");
+    let response = undefined;
+    if (PAL_GAME_SAVE_PATH.value) {
+      response = await POST("/api/save/path", {
+        path: PAL_GAME_SAVE_PATH.value,
+      });
+      if (response.status != 0) {
+        PAL_GAME_SAVE_PATH.value = undefined;
+        localStorage.removeItem("PAL_GAME_SAVE_PATH");
+        response = await GET("/api/save/path");
+      }
+    } else {
+      response = await GET("/api/save/path");
+    }
 
     if (response === false) return;
 
     if (response.status == 0) {
-      update_path_picker_result(response.data)
+      update_path_picker_result(response.data);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -492,7 +504,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (response === false) return;
 
     if (response.status == 0) {
-      update_path_picker_result(response.data)
+      update_path_picker_result(response.data);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -509,13 +521,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
     const response = await POST("/api/save/path", {
-      path: path
+      path: path,
     });
 
     if (response === false) return;
 
     if (response.status == 0) {
-      update_path_picker_result(response.data)
+      update_path_picker_result(response.data);
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -543,8 +555,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         });
         fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
       }
-      if (!IS_LOCKED.value)
-        fetchStaticData();
+      if (!IS_LOCKED.value) fetchStaticData();
     } else if (response.status == 2) {
       alert("Unauthorized Access, Please Login. ");
       IS_LOCKED.value = true;
@@ -628,33 +639,36 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function getTranslatedText(translationKey) {
-    const I18nKey = I18n.value || "en"
+    const I18nKey = I18n.value || "en";
 
     if (TranslationKeyMap.value[I18nKey]) {
-      const i18nData = TranslationKeyMap.value[I18n.value]
-      return i18nData[translationKey] || "I18N_MISSING"
+      const i18nData = TranslationKeyMap.value[I18n.value];
+      return i18nData[translationKey] || "I18N_MISSING";
     }
 
     if (!I18nLoadingPromises[I18nKey]) {
       I18nLoadingPromises[I18nKey] = import(`../i18n/${I18nKey}.js`)
-        .then(module => {
-          console.log(`${I18nKey} imported`)
-          TranslationKeyMap.value[I18nKey] = module.default
-          delete I18nLoadingPromises[I18nKey]
+        .then((module) => {
+          console.log(`${I18nKey} imported`);
+          TranslationKeyMap.value[I18nKey] = module.default;
+          delete I18nLoadingPromises[I18nKey];
         })
-        .catch(error => {
-          console.error(`Failed to load UI language file for ${I18nKey}, fallback to "en":`, error);
+        .catch((error) => {
+          console.error(
+            `Failed to load UI language file for ${I18nKey}, fallback to "en":`,
+            error
+          );
           if (TranslationKeyMap.value["en"]) {
-            TranslationKeyMap.value[I18nKey] = TranslationKeyMap.value["en"]
-            delete I18nLoadingPromises[I18nKey]
+            TranslationKeyMap.value[I18nKey] = TranslationKeyMap.value["en"];
+            delete I18nLoadingPromises[I18nKey];
           } else {
-            import(`../i18n/en.js`).then(module => {
-                console.log(`en imported`)
-                TranslationKeyMap.value[I18nKey] = module.default
-                delete I18nLoadingPromises[I18nKey]
-              })
+            import(`../i18n/en.js`).then((module) => {
+              console.log(`en imported`);
+              TranslationKeyMap.value[I18nKey] = module.default;
+              delete I18nLoadingPromises[I18nKey];
+            });
           }
-        })
+        });
     }
 
     return I18nLoadingPromises[I18nKey].then(() => {
@@ -793,8 +807,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       await fetchStaticData();
 
       SAVE_LOADED_FLAG.value = true;
-
-      // save path to localstorage
       localStorage.setItem("PAL_GAME_SAVE_PATH", PAL_GAME_SAVE_PATH.value);
       PAL_WRITE_BACK_PATH.value = PAL_GAME_SAVE_PATH.value;
     } else if (response.status == 2) {
@@ -1053,10 +1065,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   function isFilteredPal(pal) {
     if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
-      return true
+      return true;
     }
     if (SHOW_UNREF_PAL_FLAG.value && !pal.Is_Unref_Pal) {
-      return true
+      return true;
     }
 
     // if (SHOW_OOB_PAL_FLAG.value && pal.in_owner_palbox) {
@@ -1064,15 +1076,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // }
 
     if (!SHOW_OOB_PAL_FLAG.value && !pal.in_owner_palbox) {
-      return true
+      return true;
     }
 
-    if (PAL_LIST_SEARCH_KEYWORD.value && 
-      !pal.DisplayName.toLowerCase().includes(PAL_LIST_SEARCH_KEYWORD.value.toLowerCase())) {
-      return true
+    if (
+      PAL_LIST_SEARCH_KEYWORD.value &&
+      !pal.DisplayName.toLowerCase().includes(
+        PAL_LIST_SEARCH_KEYWORD.value.toLowerCase()
+      )
+    ) {
+      return true;
     }
-    
-    return false
+
+    return false;
   }
 
   function getNextElement(map, currKey) {
@@ -1202,8 +1218,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   function displayPalElement(DataAccessKey) {
     const els = PAL_STATIC_DATA.value[DataAccessKey]?.Elements;
-    if (!els) return
-    
+    if (!els) return;
+
     let str = "";
     for (let e of els) {
       str += displayElement(e);
@@ -1229,11 +1245,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   function skillIcon(atk) {
     if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
     if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
-    return ""
+    return "";
   }
 
   function displayRating(rating) {
-    if (rating === undefined) return ""
+    if (rating === undefined) return "";
     if (rating < 0) return "🔴";
     if (rating > 1) return "🟡";
     return "⚪";
@@ -1255,7 +1271,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     SHOW_UNREF_PAL_FLAG,
     SHOW_OOB_PAL_FLAG,
     HIDE_INVALID_OPTIONS,
-    
+
     PAL_LIST_SEARCH_KEYWORD,
 
     IS_LOCKED,
@@ -1280,7 +1296,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     ACTIVE_SKILLS_LIST,
 
     getTranslatedText,
-    
+
     isElementInViewport,
     isFilteredPal,
 
@@ -1307,6 +1323,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     auth,
     show_file_picker,
     update_picker_result,
-    path_back
+    path_back,
   };
 });

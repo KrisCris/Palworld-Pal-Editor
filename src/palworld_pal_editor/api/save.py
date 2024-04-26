@@ -152,7 +152,7 @@ def get_pal_data():
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
 
-    
+
 @save_blueprint.route("/path", methods=["GET"])
 @jwt_required()
 def get_path():
