@@ -8,7 +8,7 @@ on:
       - "v*"
 
 jobs:
-  dev-release:
+  release-build:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -29,15 +29,21 @@ jobs:
       with:
         node-version: 20
 
-    - name: Run Windows Builder Script
+    - name: Windows Build
       if: runner.os == 'Windows'
       shell: pwsh
-      run: ./build_executable.ps1
-
-    - name: Run Unix-like Builder Script
+      run: |
+        ./build_executable.ps1
+        $tagName = "${{ github.ref_name }}"
+        Rename-Item ./dist/palworld-pal-editor.exe "palworld-pal-editor-$tagName-${{ matrix.os }}.exe"
+        
+    - name: Unix-like Build
       if: runner.os != 'Windows'
       shell: bash
-      run: ./build_executable.sh
+      run: |
+        ./build_executable.sh
+        tagName=${GITHUB_REF#refs/tags/}
+        mv ./dist/palworld-pal-editor ./dist/palworld-pal-editor-$tagName-${{ matrix.os }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
