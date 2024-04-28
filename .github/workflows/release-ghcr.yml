@@ -2,13 +2,11 @@ name: Build and Push Docker image
 
 on:
   push:
-    branches:
-      - release
     tags:
       - "v*"
 
 jobs:
-  build-and-push:
+  build-and-push-docker-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read

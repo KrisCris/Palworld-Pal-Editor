@@ -1,19 +1,18 @@
-version: '3.8'
 services:
   palworld-pal-editor:
-    image: docker.io/library/palworld-pal-editor
+    image: ghcr.io/kriscris/palworld-pal-editor:latest
+    restart: unless-stopped
     container_name: palworld-pal-editor
     # network_mode: host
     ports:
-      - 12345:12345
+      - 58888:58888
     environment:
-      - TZ=UTC
-      - PUID=1000
+      - PUID=1000 # change this to your uid
       - PGID=1000
-      - APP_PORT=12345 # make sure this matches the port you are going to map
-      - APP_LANG=zh-CN
-      - MODE=web # [cli, web, gui] You are not going to run gui in docker though... ;)
-      - SAVE_PATH=/mnt/gamesave
-      - PASSWORD=password # remove this env unless you want a password, but password is strongly recommended (for web mode).
+      - APP_PORT=58888 # make sure this matches the port you are going to map
+      - APP_LANG=en # options: en, zh-CN, ja
+      - MODE=web
+      - SAVE_PATH=/mnt/gamesave # this should match the volume you mapped to
+      - PASSWORD=password # to prevent unauthorized access, setting up a strong password is recommended.
     volumes:
-      - "/Users/connlost/Coding/Palworld-Pal-Editor/tests/gamesave/AF518B19A47340B8A55BC58137981393:/mnt/gamesave"
+      - "/Host/Path/To/The/GameSave/AF518B19A47340B8A55BC58137981393:/mnt/gamesave" # host path : container path
