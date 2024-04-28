@@ -40,5 +40,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Palworld_Pal_Editor_${{ matrix.os }}_artifact
+        name: Palworld_Pal_Editor_${{ runner.os }}_artifact
         path: ./dist/

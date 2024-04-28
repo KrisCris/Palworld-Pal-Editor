@@ -2,8 +2,6 @@ name: Release Build
 
 on:
   push:
-    branches:
-      - release
     tags:
       - "v*"
 
@@ -35,7 +33,7 @@ jobs:
       run: |
         ./build_executable.ps1
         $tagName = "${{ github.ref_name }}"
-        Rename-Item ./dist/palworld-pal-editor.exe "palworld-pal-editor-$tagName-${{ matrix.os }}.exe"
+        Rename-Item ./dist/palworld-pal-editor.exe "palworld-pal-editor-$tagName-${{ runner.os }}.exe"
         
     - name: Unix-like Build
       if: runner.os != 'Windows'
@@ -43,12 +41,12 @@ jobs:
       run: |
         ./build_executable.sh
         tagName=${GITHUB_REF#refs/tags/}
-        mv ./dist/palworld-pal-editor ./dist/palworld-pal-editor-$tagName-${{ matrix.os }}
+        mv ./dist/palworld-pal-editor ./dist/palworld-pal-editor-$tagName-${{ runner.os }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Palworld_Pal_Editor_${{ matrix.os }}_artifact
+        name: Palworld_Pal_Editor_${{ runner.os }}_artifact
         path: ./dist/
 
     - name: Create and Upload Release
