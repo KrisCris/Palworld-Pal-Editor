@@ -7,7 +7,6 @@ services:
     ports:
       - 58888:58888
     environment:
-      - TZ=UTC
       - PUID=1000 # change this to your uid
       - PGID=1000
       - APP_PORT=58888 # make sure this matches the port you are going to map

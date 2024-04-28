@@ -1,4 +1,8 @@
 .git
+.github
+.vscode
+save_data_re
+tests
 venv/
 logs/
 gamesave*/
