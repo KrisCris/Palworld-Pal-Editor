@@ -480,9 +480,12 @@ class PalEntity:
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
+        # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
+        Alpha_Scaling = 1.2 if self._IsBOSS or self.IsTower or self.IsRAID else 1
+
         # slightly off but not a big deal i suppose
         return math.floor(math.floor(500 + 5 * Level + HP_Stat * .5 * Level * (1 + HP_IV)) \
-            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)) * 1000
+            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus) * Alpha_Scaling) * 1000
 
     @property
     def ComputedAttack(self) -> Optional[int]:
