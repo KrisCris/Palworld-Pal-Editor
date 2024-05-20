@@ -481,7 +481,7 @@ class PalEntity:
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
         # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
-        Alpha_Scaling = 1.2 if self._IsBOSS or self.IsTower or self.IsRAID else 1
+        Alpha_Scaling = 1.2 if self._IsBOSS else 1
 
         # slightly off but not a big deal i suppose
         return math.floor(math.floor(500 + 5 * Level + HP_Stat * .5 * Level * (1 + HP_IV)) \
