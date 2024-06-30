@@ -3444,6 +3444,35 @@
             "paldeck": "95"
         }
     },
+    "SkyDragon_Grass": {
+        "InternalName": "SkyDragon_Grass",
+        "Elements": [
+            "Dragon",
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::DragonCanon": 1,
+            "EPalWazaID::WindCutter": 7,
+            "EPalWazaID::SeedMachinegun": 15,
+            "EPalWazaID::DragonBreath": 22,
+            "EPalWazaID::GrassTornado": 30,
+            "EPalWazaID::Commet": 40,
+            "EPalWazaID::RootLance": 50
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 105,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Quivern Botan",
+            "zh-CN": "翠羽龙",
+            "ja": "フォレスキー"
+        },
+        "SortingKey": {
+            "paldeck": "95B"
+        }
+    },
     "KingBahamut": {
         "InternalName": "KingBahamut",
         "Elements": [
