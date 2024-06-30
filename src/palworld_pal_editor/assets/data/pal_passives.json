@@ -1307,6 +1307,24 @@
             }
         }
     },
+    "Nocturnal": {
+        "InternalName": "Nocturnal",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Nocturnal",
+                "Description": "Does not sleep and continues to work even at night."
+            },
+            "zh-CN": {
+                "Name": "夜行性",
+                "Description": "即使到夜晚也不会睡觉，会一直工作。"
+            },
+            "ja": {
+                "Name": "夜行性",
+                "Description": "夜になっても眠らず、働き続ける。"
+            }
+        }
+    },
     "NonKilling": {
         "InternalName": "NonKilling",
         "Rating": -1,
