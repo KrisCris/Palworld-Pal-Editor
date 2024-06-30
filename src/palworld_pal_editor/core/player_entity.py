@@ -213,6 +213,7 @@ class PlayerEntity:
                 case 'PlantSlime_Flower': return 'PlantSlime'
                 case 'SheepBall': return 'Sheepball'
                 case 'LazyCatFish': return 'LazyCatfish'
+                case 'Blueplatypus': return 'BluePlatypus'
             return key
         
         for guid in self._new_palbox:

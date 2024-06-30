@@ -139,6 +139,7 @@ class PalEntity:
             case "GYM_Horus": self.Gender = PalGender.MALE
             case "GYM_BlackGriffon": self.Gender = PalGender.MALE
             case "GYM_ElecPanda": self.Gender = PalGender.FEMALE
+            case "GYM_MoonQueen": self.Gender = PalGender.FEMALE
         if self.Gender and self.IsHuman:
             self.del_Gender()
         elif not self.Gender and self.IsPal:
@@ -223,6 +224,8 @@ class PalEntity:
                 key = "LazyCatfish"
             case "Police_HandGun":
                 key = "Police_Handgun"
+            case "Blueplatypus":
+                key = "BluePlatypus"
         return key
     
     @property

@@ -27,18 +27,22 @@ invalid = [
     "EPalWazaID::SnowStorm",
     "EPalWazaID::EnergyShot",
     "EPalWazaID::CrossThunder",
-    "EPalWazaID::ThunderRain",
     "EPalWazaID::Funnel_RaijinDaughter",
     "EPalWazaID::Unique_Kirin_LightningTackle",
     "EPalWazaID::Funnel_DreamDemon",
     "EPalWazaID::Psychokinesis",
-    "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
-    "EPalWazaID::Tremor",
-    "EPalWazaID::DiamondFall",
-    "EPalWazaID::BeamSlicer",
-    "EPalWazaID::Commet",
     "EPalWazaID::DarkTornado",
-    "EPalWazaID::Unique_DarkScorpion_Pierce"
+    "EPalWazaID::ChargeCanon",
+    "EPalWazaID::BubbleShower",
+    "EPalWazaID::WaterBalloon",
+    "EPalWazaID::ChaosLaser",
+    "EPalWazaID::GrassTyphoon",
+    "EPalWazaID::SeedShotgun",
+    "EPalWazaID::FlareTwister",
+    "EPalWazaID::TripleCannon",
+    "EPalWazaID::Unique_Manticore_InfernoStrike",
+    "EPalWazaID::Unique_ThunderBird_ThunderStorm",
+    "EPalWazaID::Unique_LilyQueen_WindBarrier"
 ]
 
 # https://paldb.cc/en/ActiveSkills_Table
@@ -181,7 +185,57 @@ skill_list = [
     "EPalWazaID::DarkTornado",
     "EPalWazaID::Apocalypse",
     "EPalWazaID::Unique_NightLady_WarpBeam_Straight",
-    "EPalWazaID::Unique_DarkScorpion_Pierce"
+    "EPalWazaID::Unique_DarkScorpion_Pierce",
+    "EPalWazaID::StarMine",
+    "EPalWazaID::Unique_FeatherOstrich_Tossin",
+    "EPalWazaID::RootLance",
+    "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack",
+    "EPalWazaID::Unique_KingBahamut_AirCrash",
+    "EPalWazaID::LineGeyser",
+    "EPalWazaID::ChargeCanon",
+    "EPalWazaID::Unique_KingBahamut_ArmSmash",
+    "EPalWazaID::Unique_WingGolem_RoundCutter",
+    "EPalWazaID::BlastCanon",
+    "EPalWazaID::ThreeCommet",
+    "EPalWazaID::CommetRain",
+    "EPalWazaID::Eruption",
+    "EPalWazaID::Unique_ElecPanda_GatlingAttack",
+    "EPalWazaID::Unique_LilyQueen_LilyHealing",
+    "EPalWazaID::HolyBlast",
+    "EPalWazaID::Unique_DarkAlien_JumpScractch",
+    "EPalWazaID::Unique_MoonQueen_MoonBeam",
+    "EPalWazaID::FlameWall",
+    "EPalWazaID::AirBlade",
+    "EPalWazaID::Unique_MoonQueen_MoonBlade",
+    "EPalWazaID::Unique_SifuDog_Counter",
+    "EPalWazaID::WallSplash",
+    "EPalWazaID::TriSpark",
+    "EPalWazaID::ThunderStorm",
+    "EPalWazaID::Unique_ScorpionMan_Uppercut",
+    "EPalWazaID::FlameFunnel",
+    "EPalWazaID::SandTwister",
+    "EPalWazaID::RangeThunder",
+    "EPalWazaID::Railbolt",
+    "EPalWazaID::ShokeiLaser",
+    "EPalWazaID::BubbleShower",
+    "EPalWazaID::WaterBalloon",
+    "EPalWazaID::ChaosLaser",
+    "EPalWazaID::IciclePierce",
+    "EPalWazaID::DoubleIcicleThrow",
+    "EPalWazaID::IceAge",
+    "EPalWazaID::RaidCutter",
+    "EPalWazaID::WindEdge",
+    "EPalWazaID::GrassTyphoon",
+    "EPalWazaID::SeedShotgun",
+    "EPalWazaID::FlareTwister",
+    "EPalWazaID::TripleCannon",
+    "EPalWazaID::Unique_Horus_PerfectStorm",
+    "EPalWazaID::Unique_BlackGriffon_TackleLaser2",
+    "EPalWazaID::Unique_MoonQueen_IceMoonBlade",
+    "EPalWazaID::IcicleLine",
+    "EPalWazaID::Unique_Manticore_InfernoStrike",
+    "EPalWazaID::Unique_ThunderBird_ThunderStorm",
+    "EPalWazaID::Unique_LilyQueen_WindBarrier"
 ]
 
 def get_attack_data(id: str):
@@ -258,6 +312,7 @@ def rename(key: str):
     match(key):
         case 'Grassmammoth': return "GrassMammoth"
         case 'Sheepball': return "SheepBall"
+        case 'Blueplatypus': return "BluePlatypus"
         case _: return key
 
 element_key = {
@@ -298,12 +353,23 @@ def main():
             pal_key = key.split("_")[1]
             for lang in ["en", "zh-CN", "ja"]:
                 pal_key = rename(pal_key)
-                pal_name = pal_data[pal_key].get("I18n", {}).get(lang, pal_key)
+                pal_name = pal_data.get(pal_key, {}).get("I18n", {}).get(lang, pal_key)
                 value["I18n"][lang]["Name"] += f" [{pal_name}]"
         skill_map[key] = value
 
     with open('./new_attacks.json', 'w', encoding='utf8') as json_file:
         json.dump(skill_map, json_file, indent=4, ensure_ascii=False)
+
+    with open('./pal_attacks.json', 'r', encoding='utf8') as f:
+        old_attacks: dict = json.load(f)
+    
+    new_atks = {}
+    for key in skill_map:
+        if key not in old_attacks or (not skill_map[key].get('Invalid') and key in old_attacks and old_attacks[key].get('Invalid')):
+            new_atks[key] = skill_map[key]
+
+    with open('./new_attacks_inc.json', 'w', encoding='utf8') as json_file:
+        json.dump(new_atks, json_file, indent=4, ensure_ascii=False)
 
 if __name__ == "__main__":
     main()

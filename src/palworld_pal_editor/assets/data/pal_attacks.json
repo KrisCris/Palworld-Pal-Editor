@@ -2304,6 +2304,1194 @@
         },
         "UniqueSkill": true
     },
+
+"EPalWazaID::LineGeyser": {
+        "InternalName": "EPalWazaID::LineGeyser",
+        "Element": "Water",
+        "CT": 22,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "Splash",
+                "Description": "Generates a column of water that travels in a straight line."
+            },
+            "zh-CN": {
+                "Name": "瀑流击",
+                "Description": "召唤一束直线前进的水柱。"
+            },
+            "ja": {
+                "Name": "ラインスプラッシュ",
+                "Description": "一直線に進む水の柱を発生させる。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::WallSplash": {
+        "InternalName": "EPalWazaID::WallSplash",
+        "Element": "Water",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Curtain Splash",
+                "Description": "Continously creates walls made from water columns at the enemy's location."
+            },
+            "zh-CN": {
+                "Name": "间隙潮",
+                "Description": "连续在敌人的脚下生成水柱结成的墙壁。"
+            },
+            "ja": {
+                "Name": "ウォールスプラッシュ",
+                "Description": "水柱でできた壁を敵のいる地点に連続で発生させる。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::AirBlade": {
+        "InternalName": "EPalWazaID::AirBlade",
+        "Element": "Neutral",
+        "CT": 20,
+        "Power": 85,
+        "I18n": {
+            "en": {
+                "Name": "Air Blade",
+                "Description": "Sends out sharp blades of air in a fan shape."
+            },
+            "zh-CN": {
+                "Name": "真空刃",
+                "Description": "扇形发射锋利的气刃。"
+            },
+            "ja": {
+                "Name": "エアーブレード",
+                "Description": "鋭い空気の刃を扇状に飛ばす。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::HolyBlast": {
+        "InternalName": "EPalWazaID::HolyBlast",
+        "Element": "Neutral",
+        "CT": 30,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Holy Burst",
+                "Description": "Creates a wide explosion of light at the enemy's location and around it."
+            },
+            "zh-CN": {
+                "Name": "光击阵",
+                "Description": "在敌人脚下和四周引发大范围的光柱爆炸。"
+            },
+            "ja": {
+                "Name": "ホーリーバースト",
+                "Description": "敵のいる地点とその周囲に 広範囲の光の爆発を起こす。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::Unique_LilyQueen_LilyHealing": {
+        "InternalName": "EPalWazaID::Unique_LilyQueen_LilyHealing",
+        "Element": "Neutral",
+        "CT": 240,
+        "Power": 0,
+        "I18n": {
+            "en": {
+                "Name": "Bountiful Protection [Lyleen]",
+                "Description": "Lyleen's exclusive skill. Uses her healing power to recover her health. Doesn't heal anyone else."
+            },
+            "zh-CN": {
+                "Name": "丰饶加护 [百合女王]",
+                "Description": "百合女王的专属技能。依靠治愈的力量恢复自身的HP。并不会给玩家恢复生命值。"
+            },
+            "ja": {
+                "Name": "豊穣の加護 [リリクイン]",
+                "Description": "リリクイン種の専用スキル。癒しの力により自身のHPを回復する。プレイヤーのことは回復してくれない。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_MoonQueen_MoonBlade": {
+        "InternalName": "EPalWazaID::Unique_MoonQueen_MoonBlade",
+        "Element": "Neutral",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Seigetsu Blade [Selyne]",
+                "Description": "Selyne's exclusive skill. Fires two consecutive high-speed blades imbued with the power of moonlight."
+            },
+            "zh-CN": {
+                "Name": "青月刃 [辉月伊]",
+                "Description": "辉月伊种族的专属技能。快速挥动蕴含月光力量的刀刃，打出二连斩击。"
+            },
+            "ja": {
+                "Name": "青月刃 [セレムーン]",
+                "Description": "セレムーン種の専用スキル。月光の力を宿した高速の刃を2連続で飛ばす。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_MoonQueen_IceMoonBlade": {
+        "InternalName": "EPalWazaID::Unique_MoonQueen_IceMoonBlade",
+        "Element": "Neutral",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Seigetsu Flash [Selyne]",
+                "Description": "Selyne's exclusive skill. Launches three high-speed swords imbued with moonlight power in succession."
+            },
+            "zh-CN": {
+                "Name": "青月闪 [辉月伊]",
+                "Description": "辉月伊的专属技能。快速挥动蕴含月光力量的刀刃，打出三连斩击。"
+            },
+            "ja": {
+                "Name": "青月閃 [セレムーン]",
+                "Description": "セレムーン種の専用スキル。月光の力を宿した高速の刃を3連続で飛ばす。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::StarMine": {
+        "InternalName": "EPalWazaID::StarMine",
+        "Element": "Neutral",
+        "CT": 55,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Star Mine",
+                "Description": "Generates stars around the enemy that explode on contact. Stars also explode after some time."
+            },
+            "zh-CN": {
+                "Name": "诡雷繁星",
+                "Description": "在敌人周围生成一碰就爆炸的星星。星星在经过一定时间后，没有触碰也会爆炸。"
+            },
+            "ja": {
+                "Name": "スターマイン",
+                "Description": "触れると爆発する星を敵の周囲に生成する。星は時間経過によっても爆発する。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_SifuDog_Counter": {
+        "InternalName": "EPalWazaID::Unique_SifuDog_Counter",
+        "Element": "Neutral",
+        "CT": 30,
+        "Power": 170,
+        "I18n": {
+            "en": {
+                "Name": "Wholehearted Stance [Dogen]",
+                "Description": "Dogen's exclusive skill. Adopts an aiki stance. While in stance, any attack is nullified, then instantly countered with a full-force palm strike."
+            },
+            "zh-CN": {
+                "Name": "气合返 [汪宗师]",
+                "Description": "汪宗师的专属技能。摆出合气道的架势，在架势中受到的攻击将无效化，同时一瞬间迫近敌人，使出全身力量掌机。"
+            },
+            "ja": {
+                "Name": "渾身の構え [ワンフー]",
+                "Description": "ワンフー種の専用スキル。合気の構えをとる。構え中は攻撃を受けても無効化し、さらに一瞬で敵に迫って渾身の掌底を放つ。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_MoonQueen_MoonBeam": {
+        "InternalName": "EPalWazaID::Unique_MoonQueen_MoonBeam",
+        "Element": "Neutral",
+        "CT": 40,
+        "Power": 170,
+        "I18n": {
+            "en": {
+                "Name": "Moonlight Beam [Selyne]",
+                "Description": "Selyne's exclusive skill. Stores energy in the moon on its back, then fires a crescent-shaped beam forward."
+            },
+            "zh-CN": {
+                "Name": "皎月射线 [辉月伊]",
+                "Description": "辉月伊种族的专属技能。将能量积蓄于背后的月亮，然后向前方发出新月形的射线。"
+            },
+            "ja": {
+                "Name": "ムーンビーム [セレムーン]",
+                "Description": "セレムーン種の専用スキル。背中の月にエネルギーを溜め、前方に三日月型のビームを発射する。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::WindEdge": {
+        "InternalName": "EPalWazaID::WindEdge",
+        "Element": "Grass",
+        "CT": 22,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "Wind Edge",
+                "Description": "Launches sharp blades of air that fan out."
+            },
+            "zh-CN": {
+                "Name": "烈风切",
+                "Description": "扇形射出锐利的风刃。"
+            },
+            "ja": {
+                "Name": "ウィンドエッジ",
+                "Description": "鋭利な風の刃を扇状に飛ばす。"
+            }
+        }
+    },
+    "EPalWazaID::RaidCutter": {
+        "InternalName": "EPalWazaID::RaidCutter",
+        "Element": "Grass",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Raid Cutter",
+                "Description": "Shoots countless wind swords that fly straight towards the enemy."
+            },
+            "zh-CN": {
+                "Name": "连环风刃",
+                "Description": "瞄准敌人射出无数风刃。"
+            },
+            "ja": {
+                "Name": "レイドカッター",
+                "Description": "敵をめがけて飛んでいく 無数の風の刃を発射する。"
+            }
+        }
+    },
+    "EPalWazaID::RootLance": {
+        "InternalName": "EPalWazaID::RootLance",
+        "Element": "Grass",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Circle Vine",
+                "Description": "Sprots sharp roots in and around the enemy's location."
+            },
+            "zh-CN": {
+                "Name": "缠根牢狱",
+                "Description": "在敌人的位置和其周围刺出尖锐的根刺。"
+            },
+            "ja": {
+                "Name": "サークルヴァイン",
+                "Description": "敵のいる地点とその周囲に 鋭い根を突き出す。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::IciclePierce": {
+        "InternalName": "EPalWazaID::IciclePierce",
+        "Element": "Ice",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Icicle Bullet",
+                "Description": "Generates multiple sharp ice blocks in the sky and fires them at the enemy."
+            },
+            "zh-CN": {
+                "Name": "冰霜连弹",
+                "Description": "在空中生成复数个冰锥，瞄准敌人一齐射出。"
+            },
+            "ja": {
+                "Name": "アイシクルバレット",
+                "Description": "上空に尖った氷を複数生成し 敵めがけてそれらを発射する。"
+            }
+        }
+    },
+    "EPalWazaID::IcicleLine": {
+        "InternalName": "EPalWazaID::IcicleLine",
+        "Element": "Ice",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Icicle Line",
+                "Description": "Generates a pillar of ice that moves in a straight line."
+            },
+            "zh-CN": {
+                "Name": "冰锋之路",
+                "Description": "召唤直线推进的冰柱。"
+            },
+            "ja": {
+                "Name": "アイシクルライン",
+                "Description": "一直線に進む氷の柱を発生させる。"
+            }
+        }
+    },
+    "EPalWazaID::IceAge": {
+        "InternalName": "EPalWazaID::IceAge",
+        "Element": "Ice",
+        "CT": 50,
+        "Power": 140,
+        "I18n": {
+            "en": {
+                "Name": "Absolute Frost",
+                "Description": "Throws icicles in a wide area from under the enemy's feet."
+            },
+            "zh-CN": {
+                "Name": "霜降",
+                "Description": "大范围的在敌人脚下生成冰柱穿刺。"
+            },
+            "ja": {
+                "Name": "フロストアウト",
+                "Description": "敵の足元から広範囲に氷柱を突き立てる。"
+            }
+        }
+    },
+    "EPalWazaID::DiamondFall": {
+        "InternalName": "EPalWazaID::DiamondFall",
+        "Element": "Ice",
+        "CT": 60,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Diamond Rain",
+                "Description": "Creates numerous lumps of ice that are consecutively dropped on a foe's head."
+            },
+            "zh-CN": {
+                "Name": "晶钻之雨",
+                "Description": "在敌人头顶生成数个冰块 随后逐一坠落"
+            },
+            "ja": {
+                "Name": "ダイアモンドフォール",
+                "Description": "敵の頭上に氷の塊を生成し 次々と降らせる。"
+            }
+        }
+    },
+    "EPalWazaID::DoubleIcicleThrow": {
+        "InternalName": "EPalWazaID::DoubleIcicleThrow",
+        "Element": "Ice",
+        "CT": 60,
+        "Power": 200,
+        "I18n": {
+            "en": {
+                "Name": "Double Blizzard Spike",
+                "Description": "Creates two huge ice blocks and fires them at the enemy one after another. On impact, it also shocks those close by."
+            },
+            "zh-CN": {
+                "Name": "极寒双星",
+                "Description": "做出两个巨大的冰块，瞄准敌人先后发射。撞击后对周围造成冲击。"
+            },
+            "ja": {
+                "Name": "ダブルブリザードスパイク",
+                "Description": "巨大な氷塊を2つ作り出し 敵めがけて続けざまに発射する。着弾すると、周囲にも衝撃を与える。"
+            }
+        }
+    },
+    "EPalWazaID::FlameWall": {
+        "InternalName": "EPalWazaID::FlameWall",
+        "Element": "Fire",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Flame Wall",
+                "Description": "Creates a wall of flames at the enemy's location. The wall of flame will remain for a while, and deal damage to the enemies it touches."
+            },
+            "zh-CN": {
+                "Name": "爆烈火墙",
+                "Description": "在敌人的位置燃起火焰之墙。火墙将持续一段时间，碰到的敌人造成伤害。"
+            },
+            "ja": {
+                "Name": "フレイムウォール",
+                "Description": "敵のいる地点に燃え上がる炎の壁を発生させる。炎の壁はしばらく残り続け、触れた敵にダメージを与える。"
+            }
+        }
+    },
+    "EPalWazaID::FlameFunnel": {
+        "InternalName": "EPalWazaID::FlameFunnel",
+        "Element": "Fire",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Flame Funnel",
+                "Description": "Creates multiple spheres of fiery energy, from which countless fireballs shoot towards the enemy."
+            },
+            "zh-CN": {
+                "Name": "流火",
+                "Description": "使用火焰的力量做出复数个球体，然后向敌人发射无数火球。"
+            },
+            "ja": {
+                "Name": "フレイムファンネル",
+                "Description": "炎エネルギーをもつ球を複数作り出し、そこから敵に向かっていく無数の火球を発射する。"
+            }
+        }
+    },
+    "EPalWazaID::Eruption": {
+        "InternalName": "EPalWazaID::Eruption",
+        "Element": "Fire",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Volcanic Rain",
+                "Description": "Fires countless volcanic bombs into the sky. After a while, the bombs rain down around their originator."
+            },
+            "zh-CN": {
+                "Name": "熔岩爆发",
+                "Description": "向上空喷射无数熔岩弹。一段时间后，射出的熔岩弹将如雨一般散落在周围。"
+            },
+            "ja": {
+                "Name": "ボルカニックレイン",
+                "Description": "上空に向かって無数の火山弾を発射する。しばらく経つと発射された火山弾が 発動者の周囲に降り注ぐ。"
+            }
+        }
+    },
+    "EPalWazaID::Unique_Horus_PerfectStorm": {
+        "InternalName": "EPalWazaID::Unique_Horus_PerfectStorm",
+        "Element": "Fire",
+        "CT": 38,
+        "Power": 145,
+        "I18n": {
+            "en": {
+                "Name": "Raging Flame Wave [Faleris]",
+                "Description": "Faleris' exclusive skill. Generates multiple tornadoes of scorching fire and charges forward. The tornadoes converge in the center and eventually merge into a single massive tornado."
+            },
+            "zh-CN": {
+                "Name": "炎凰烈波 [荷鲁斯]",
+                "Description": "荷鲁斯的专属技能。卷起数个灼热的龙卷风，同时身缠烈焰，飞空向敌人突进。龙卷风最终将融合为巨大火龙卷。"
+            },
+            "ja": {
+                "Name": "炎凰烈波 [ホルス]",
+                "Description": "ホルス種の専用スキル。複数の灼熱の竜巻を巻き起こしたあと、滑空しながら突進する。竜巻は中央に集まっていき、最後は一つの巨大な竜巻になる。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_KingBahamut_ArmSmash": {
+        "InternalName": "EPalWazaID::Unique_KingBahamut_ArmSmash",
+        "Element": "Fire",
+        "CT": 38,
+        "Power": 150,
+        "I18n": {
+            "en": {
+                "Name": "Brawn Impact [Blazamut]",
+                "Description": "Blazamut's exclusive skill. Waves and pumps up its arms, the slams them together to create a large explosion in the surrounding area."
+            },
+            "zh-CN": {
+                "Name": "焚天爆炎 [焰煌]",
+                "Description": "焰煌及亚种的专属技能。伸展开手臂，使肌肉剧烈膨胀后，猛地拍击在一起引发巨大爆炸。"
+            },
+            "ja": {
+                "Name": "アームインパクト [ボルカイザー]",
+                "Description": "ボルカイザー種の専用スキル。腕を振りかぶり、大きく膨らませた後に 叩き合わせて周囲に大爆発を起こす。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::TriSpark": {
+        "InternalName": "EPalWazaID::TriSpark",
+        "Element": "Electric",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "TriSpark",
+                "Description": "A high-speed lightning ball that flies in a straight line. Simultaneously fires slow lightning balls that track the enemy."
+            },
+            "zh-CN": {
+                "Name": "三相火花",
+                "Description": "同时发射直线飞行的高速雷球，和追踪敌人的慢速雷球。"
+            },
+            "ja": {
+                "Name": "トライスパーク",
+                "Description": "直線状に飛ぶ高速の雷球と 敵を追尾する遅めの雷球を同時に発射する。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::RangeThunder": {
+        "InternalName": "EPalWazaID::RangeThunder",
+        "Element": "Electric",
+        "CT": 40,
+        "Power": 125,
+        "I18n": {
+            "en": {
+                "Name": "All Range Thunder",
+                "Description": "Generates lightning strikes that travel in a straight line in all directions."
+            },
+            "zh-CN": {
+                "Name": "雷动八方",
+                "Description": "向八个方向召唤直线推进的雷击。"
+            },
+            "ja": {
+                "Name": "オールレンジサンダー",
+                "Description": "一直線に進む雷撃を全方位に発生させる。"
+            }
+        }
+    },
+    "EPalWazaID::ThunderRain": {
+        "InternalName": "EPalWazaID::ThunderRain",
+        "Element": "Electric",
+        "CT": 45,
+        "Power": 135,
+        "I18n": {
+            "en": {
+                "Name": "Thunder Rain",
+                "Description": "Calls lightning that strikes an enemy after a set amount of time has passed."
+            },
+            "zh-CN": {
+                "Name": "广域雷击",
+                "Description": "召唤雷电 在一定时间后生成大量落电。"
+            },
+            "ja": {
+                "Name": "サンダーレイン",
+                "Description": "雷を呼んで 一定時間後にたくさんの落雷を起こす。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThunderStorm": {
+        "InternalName": "EPalWazaID::ThunderStorm",
+        "Element": "Electric",
+        "CT": 60,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Thunderstorm",
+                "Description": "Generates a huge tornado of lightning that moves slowly towards the enemy."
+            },
+            "zh-CN": {
+                "Name": "雷霆飓风",
+                "Description": "召唤巨大的雷属性龙卷风。龙卷风将追踪敌人缓慢移动。"
+            },
+            "ja": {
+                "Name": "サンダーストーム",
+                "Description": "巨大な雷の竜巻を発生させる。竜巻は敵に向かってゆっくりと移動する。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ShokeiLaser": {
+        "InternalName": "EPalWazaID::ShokeiLaser",
+        "Element": "Electric",
+        "CT": 50,
+        "Power": 170,
+        "I18n": {
+            "en": {
+                "Name": "Lethal Laser",
+                "Description": "After aiming at the enemy, fires multiple ultra-fast lightning lasers."
+            },
+            "zh-CN": {
+                "Name": "处刑雷射",
+                "Description": "锁定敌人后，连续射出超高速的镭射。"
+            },
+            "ja": {
+                "Name": "エクスキューションレーザー",
+                "Description": "敵に狙いを定めたあと、超高速な雷のレーザーを複数発射する。"
+            }
+        }
+    },
+    "EPalWazaID::Railbolt": {
+        "InternalName": "EPalWazaID::Railbolt",
+        "Element": "Electric",
+        "CT": 60,
+        "Power": 200,
+        "I18n": {
+            "en": {
+                "Name": "Thunder Rail",
+                "Description": "Charge the power of lightning to the limit and fires multiple simultaneous electric shocks at the enemy."
+            },
+            "zh-CN": {
+                "Name": "并联雷光",
+                "Description": "积蓄雷电的力量到极限，瞄准敌人同时发出强力的雷击。"
+            },
+            "ja": {
+                "Name": "サンダーレール",
+                "Description": "限界まで雷の力をチャージして 敵めがけて強力な電撃を複数同時発射する。"
+            }
+        }
+    },
+    "EPalWazaID::Unique_ElecPanda_GatlingAttack": {
+        "InternalName": "EPalWazaID::Unique_ElecPanda_GatlingAttack",
+        "Element": "Electric",
+        "CT": 42,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Heavy Thunder Tank [Grizzbolt]",
+                "Description": "Grizzbolt's exclusive skill. Attacks with a minigun pulled out from somewhere. Ends with a single, charged power shot."
+            },
+            "zh-CN": {
+                "Name": "雷击的重型战车 [暴电熊]",
+                "Description": "暴电熊的专属技能。不知从哪取出加特林机枪进行扫射。最后一发将射出强力的充能弹。"
+            },
+            "ja": {
+                "Name": "雷撃の重戦車 [エレパンダ]",
+                "Description": "エレパンダ種の専用スキル。どこからか取り出したミニガンをぶっ放す。最後に少しチャージした後、強力な弾を1発放つ。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack": {
+        "InternalName": "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack",
+        "Element": "Electric",
+        "CT": 50,
+        "Power": 180,
+        "I18n": {
+            "en": {
+                "Name": "Polykeraunos [Orserk]",
+                "Description": "Orserk's exclusive skill. Summons numerous thunder spears and hurls them at the enemy. The first spear is imbued with the power of lightning and explodes after a few seconds."
+            },
+            "zh-CN": {
+                "Name": "雷神之怒 [波鲁杰克斯]",
+                "Description": "波鲁杰克斯的专属技能。召唤数把雷枪，向敌人投掷而出，并引发爆炸。"
+            },
+            "ja": {
+                "Name": "ポリケラウノス [ボルゼクス]",
+                "Description": "ボルゼクス種の専用スキル。数多の雷槍を召喚し、敵に向かって投げつける。最初の1本は雷の力を溜め込み、数秒後に爆発する。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Tremor": {
+        "InternalName": "EPalWazaID::Tremor",
+        "Element": "Ground",
+        "CT": 35,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Rockburst",
+                "Description": "Causes the ground to shake before hurling a massive stone mass at its surroundings."
+            },
+            "zh-CN": {
+                "Name": "岩爆",
+                "Description": "撼动地面，使大块岩石射向四面八方"
+            },
+            "ja": {
+                "Name": "ロックバースト",
+                "Description": "地面を揺らし 大きな岩の塊を周囲に飛ばす"
+            }
+        }
+    },
+    "EPalWazaID::SandTwister": {
+        "InternalName": "EPalWazaID::SandTwister",
+        "Element": "Ground",
+        "CT": 60,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Sand Twister",
+                "Description": "Creates multiple sand tornadoes. The tornadoes continuously spin in circles."
+            },
+            "zh-CN": {
+                "Name": "沙尘暴",
+                "Description": "生成复数个砂龙卷。龙卷风们将一边自旋一边绕中心旋转。"
+            },
+            "ja": {
+                "Name": "サンドツイスター",
+                "Description": "複数の砂の竜巻を発生させる。竜巻は円を描くようにグルグルと回り続ける。"
+            }
+        }
+    },
+    "EPalWazaID::Unique_FeatherOstrich_Tossin": {
+        "InternalName": "EPalWazaID::Unique_FeatherOstrich_Tossin",
+        "Element": "Ground",
+        "CT": 21,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Earth Dash [Dazemu]",
+                "Description": "Dazemu's special skill. Accelerates all at once and rushes forward at high speed."
+            },
+            "zh-CN": {
+                "Name": "地之冲锋 [战冠雀]",
+                "Description": "战冠雀的专属技能。一口气提高速度，向前方突进。"
+            },
+            "ja": {
+                "Name": "アースダッシュ [トリステップ]",
+                "Description": "トリステップ種の専用スキル。一気に加速し、前方に高速突進する。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_DarkScorpion_Pierce": {
+        "InternalName": "EPalWazaID::Unique_DarkScorpion_Pierce",
+        "Element": "Ground",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Jumping Stinger [Menasting]",
+                "Description": "Menasting's exclusive skill. Jumps high and stabs its prey with its tail. The poison from the tail is deadly."
+            },
+            "zh-CN": {
+                "Name": "跳跃重刺 [冥铠蝎]",
+                "Description": "冥铠蝎种族的专用技能。高高跃起，用尾巴蓄势将猎物刺穿。尾部含有毒素。"
+            },
+            "ja": {
+                "Name": "ジャンピングスティンガー [デスティング]",
+                "Description": "デスティング種の専用スキル。高く跳び上がり、尻尾で勢いよく獲物を突き刺す。尻尾には毒が含まれている。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_WingGolem_RoundCutter": {
+        "InternalName": "EPalWazaID::Unique_WingGolem_RoundCutter",
+        "Element": "Ground",
+        "CT": 35,
+        "Power": 145,
+        "I18n": {
+            "en": {
+                "Name": "Ground Cutter [Knocklem]",
+                "Description": "Knocklem's exclusive skill. Takes a big swing and throws the ring on its back. The ring flies in a circular trajectory."
+            },
+            "zh-CN": {
+                "Name": "回旋岩锯 [泰锋]",
+                "Description": "泰锋的专属技能。大幅回旋身体投掷出背后的岩盘。岩盘将会以圆弧轨道状飞行。"
+            },
+            "ja": {
+                "Name": "グラウンドカッター [テラナイト]",
+                "Description": "テラナイト種の専用スキル。大きく振りかぶって背中の輪を投げる。輪は円を描くような軌道で飛んでいく。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::BlastCanon": {
+        "InternalName": "EPalWazaID::BlastCanon",
+        "Element": "Dragon",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Blast Cannon",
+                "Description": "Fires an energy bullet imbued with dragon power at the enemy's location. Upon impact, the bullet shatters and creates a frontal long-range explosion."
+            },
+            "zh-CN": {
+                "Name": "绽裂龙息",
+                "Description": "向敌人的位置发射充满龙属性的能量弹。能量弹在着弹时将向周围扩散，在前方广范围引发爆炸。"
+            },
+            "ja": {
+                "Name": "ブラストキャノン",
+                "Description": "敵のいる地点に竜の力がこもったエネルギー弾を発射する。エネルギー弾は着弾時に拡散し、前方広範囲に爆発を起こす。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::Commet": {
+        "InternalName": "EPalWazaID::Commet",
+        "Element": "Dragon",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Comet Strike",
+                "Description": "Drops a meteorite straight down, generating a shock wave around the impact area."
+            },
+            "zh-CN": {
+                "Name": "陨星",
+                "Description": "召唤陨石垂直落下，并在撞击点产生冲击波。"
+            },
+            "ja": {
+                "Name": "コメット",
+                "Description": "隕石を垂直に落とし、周囲に衝撃波を発生させる。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThreeCommet": {
+        "InternalName": "EPalWazaID::ThreeCommet",
+        "Element": "Dragon",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Comet Barrage",
+                "Description": "Drops meteorites one after another, generating shock waves around the impact areas."
+            },
+            "zh-CN": {
+                "Name": "三重陨星",
+                "Description": "召唤陨石接连落下，并在撞击点产生冲击波。"
+            },
+            "ja": {
+                "Name": "コメットフォール",
+                "Description": "隕石を続けざまに落とし、周囲に衝撃波を発生させる。"
+            }
+        }
+    },
+    "EPalWazaID::BeamSlicer": {
+        "InternalName": "EPalWazaID::BeamSlicer",
+        "Element": "Dragon",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Beam Slicer",
+                "Description": "Mows down the frontal area with a beam imbued with dragon power. The area touched by the beam will also explode after a few moments."
+            },
+            "zh-CN": {
+                "Name": "切割龙息",
+                "Description": "用龙属性的射线一扫前方。被扫过地方将产生延迟爆炸。"
+            },
+            "ja": {
+                "Name": "ビームスライサー",
+                "Description": "竜の力がこもった光線で前方をなぎ払う。なぎ払われた場所は時間差で爆発する。"
+            }
+        },
+        "SkillFruit": true
+    },
+    "EPalWazaID::CommetRain": {
+        "InternalName": "EPalWazaID::CommetRain",
+        "Element": "Dragon",
+        "CT": 55,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Meteorain",
+                "Description": "Drops countless meteorites, generating an array of shock waves."
+            },
+            "zh-CN": {
+                "Name": "陨星雨",
+                "Description": "召唤无数陨石落下，并在撞击点产生冲击波。"
+            },
+            "ja": {
+                "Name": "メテオレイン",
+                "Description": "無数の隕石を落とし、周囲に衝撃波を発生させる。"
+            }
+        }
+    },
+    "EPalWazaID::Unique_WeaselDragon_FlyingTackle": {
+        "InternalName": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
+        "Element": "Dragon",
+        "CT": 6,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Rocket Slam [Chillet]",
+                "Description": "Chillet's exclusive skill. Gathers a bit of strength and it leaps forward. When landing it's always scared so it closes its eyes."
+            },
+            "zh-CN": {
+                "Name": "火箭冲撞 [疾旋鼬]",
+                "Description": "疾旋鼬种族专用技能。短时间蓄力后，向前跃起。在着地时因为害怕一直都是紧闭着眼睛。"
+            },
+            "ja": {
+                "Name": "ロケットタックル [オコチョ]",
+                "Description": "オコチョ種の専用スキル。少し力を溜めた後、前方に飛びかかる。着地の瞬間はいつも怖くて目を瞑ってしまうようだ。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_KingBahamut_AirCrash": {
+        "InternalName": "EPalWazaID::Unique_KingBahamut_AirCrash",
+        "Element": "Dragon",
+        "CT": 42,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Magna Crush [Blazamut]",
+                "Description": "Blazamut's exclusive skill. After making a big jump, while moving at high speed in the air, gathers strength and unleashes a punch with full might."
+            },
+            "zh-CN": {
+                "Name": "龙陨震击 [焰煌]",
+                "Description": "焰煌及亚种的专用技能。高高跃上空中后，边在空中高速移动，边积蓄力量。然后打出全力一击。"
+            },
+            "ja": {
+                "Name": "マグナクラッシュ [ボルカイザー]",
+                "Description": "ボルカイザー種の専用スキル。大きく跳び上がった後、空中を高速で移動しつつ 力を溜め、渾身のパンチを繰り出す。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_DarkAlien_JumpScractch": {
+        "InternalName": "EPalWazaID::Unique_DarkAlien_JumpScractch",
+        "Element": "Dark",
+        "CT": 17,
+        "Power": 95,
+        "I18n": {
+            "en": {
+                "Name": "Evil Slash [Xenovader]",
+                "Description": "Xenovader's exclusive skill. A flash jump followed by a left-hand slash."
+            },
+            "zh-CN": {
+                "Name": "恶之爪 [杰诺贝达]",
+                "Description": "杰诺贝达的专属技能。灵活的跃起，用左手撕裂敌人。"
+            },
+            "ja": {
+                "Name": "イービルクロー [ゼノベーダ]",
+                "Description": "ゼノベーダ種の専用スキル。素早く跳びかかり、左手で切り裂く。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_ScorpionMan_Uppercut": {
+        "InternalName": "EPalWazaID::Unique_ScorpionMan_Uppercut",
+        "Element": "Dark",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Upper Smash [Prixter]",
+                "Description": "Prixter's exclusive skill. Closes the distance to the enemy at high speed, then attacks decisively with its pincers."
+            },
+            "zh-CN": {
+                "Name": "升虫拳 [蛊刺妖]",
+                "Description": "蛊刺妖的专属技能。快速缩短和敌人的距离，狠狠的用钳子使出上勾拳。"
+            },
+            "ja": {
+                "Name": "アッパースマッシュ [ブッサソリ]",
+                "Description": "ブッサソリ種の専用スキル。敵との距離を高速で詰め、思い切りハサミを振り上げる。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_BlackGriffon_TackleLaser2": {
+        "InternalName": "EPalWazaID::Unique_BlackGriffon_TackleLaser2",
+        "Element": "Dark",
+        "CT": 45,
+        "Power": 170,
+        "I18n": {
+            "en": {
+                "Name": "Divine Disaster II [Shadowbeak]",
+                "Description": "Shadowbeak's exclusive skill. As it charges forward, emits countless blue rays that automatically locate and pursue the enemy."
+            },
+            "zh-CN": {
+                "Name": "神圣灾祸Ⅱ [异构格里芬]",
+                "Description": "异构格里芬的专属技能。一边突进，一边从身体的圆环出射出无数的蓝色光束。光束会自动追踪敌人。"
+            },
+            "ja": {
+                "Name": "ディザスターディバインⅡ [ゼノグリフ]",
+                "Description": "ゼノグリフ種の専用スキル。突進しつつ、体の光輪から無数の青い光線を放つ。光線は敵を自動で捕捉し、追尾する。"
+            }
+        },
+        "UniqueSkill": true
+    },
+    "EPalWazaID::WaterBalloon": {
+        "InternalName": "EPalWazaID::WaterBalloon",
+        "Element": "Water",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::GrassTyphoon": {
+        "InternalName": "EPalWazaID::GrassTyphoon",
+        "Element": "Grass",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::SeedShotgun": {
+        "InternalName": "EPalWazaID::SeedShotgun",
+        "Element": "Grass",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_LilyQueen_WindBarrier": {
+        "InternalName": "EPalWazaID::Unique_LilyQueen_WindBarrier",
+        "Element": "Grass",
+        "CT": 60,
+        "Power": 60,
+        "I18n": {
+            "en": {
+                "Name": "Wind Barrier [Lyleen]",
+                "Description": "A skill exclusive to the Lilikin species. Surround yourself with a wind barrier, Returns the blade of wind to the attacking opponent."
+            },
+            "zh-CN": {
+                "Name": "风之结界 [百合女王]",
+                "Description": "▼独特的技能▼ - 请设置技能解释 -"
+            },
+            "ja": {
+                "Name": "ウィンドバリア [リリクイン]",
+                "Description": "リリクイン種の専用スキル。風のバリアで身を包み、攻撃してきた相手に風の刃をお返しする。"
+            }
+        },
+        "Invalid": true,
+        "UniqueSkill": true
+    },
+    "EPalWazaID::FlareTwister": {
+        "InternalName": "EPalWazaID::FlareTwister",
+        "Element": "Fire",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Flare Twister",
+                "Description": "Creates multiple flame tornadoes. The tornado continues to spin in circles."
+            },
+            "zh-CN": {
+                "Name": "炎龙舞",
+                "Description": "zh-Hans Text"
+            },
+            "ja": {
+                "Name": "フレアツイスター",
+                "Description": "複数の炎の竜巻を発生させる。竜巻は円を描くようにグルグルと回り続ける。"
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_Manticore_InfernoStrike": {
+        "InternalName": "EPalWazaID::Unique_Manticore_InfernoStrike",
+        "Element": "Fire",
+        "CT": 1,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "Volcanic Fang [Blazehowl]",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "火山獠牙 [狱焰王]",
+                "Description": "▼独特的技能▼ - 请设置技能解释 -"
+            },
+            "ja": {
+                "Name": "ボルカニックファング [ゴクエンオ]",
+                "Description": "▼ユニークスキル▼ --スキル説明の設定をお願いします--"
+            }
+        },
+        "Invalid": true,
+        "UniqueSkill": true
+    },
+    "EPalWazaID::Unique_ThunderBird_ThunderStorm": {
+        "InternalName": "EPalWazaID::Unique_ThunderBird_ThunderStorm",
+        "Element": "Electric",
+        "CT": 1,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "Lightning Dive [Beakon]",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "闪电俯冲 [迅雷鸟]",
+                "Description": "▼独特的技能▼ - 请设置技能解释 -"
+            },
+            "ja": {
+                "Name": "ライトニングダイブ [ライバード]",
+                "Description": "▼ユニークスキル▼ --スキル説明の設定をお願いします--"
+            }
+        },
+        "Invalid": true,
+        "UniqueSkill": true
+    },
+    "EPalWazaID::ChargeCanon": {
+        "InternalName": "EPalWazaID::ChargeCanon",
+        "Element": "Dragon",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Charge Cannon",
+                "Description": "An energy bullet charged with the power of a dragon. Fire at the enemy. When the bullet hits the Causes a wide explosion."
+            },
+            "zh-CN": {
+                "Name": "龙息炮",
+                "Description": "zh-Hans Text"
+            },
+            "ja": {
+                "Name": "チャージキャノン",
+                "Description": "竜の力をチャージしたエネルギー弾を 敵めがけて発射する。弾は着弾時に 広範囲の爆発を起こす。"
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::TripleCannon": {
+        "InternalName": "EPalWazaID::TripleCannon",
+        "Element": "Dragon",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "TripleCannon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "TripleCannon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "TripleCannon",
+                "Description": ""
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::BubbleShower": {
+        "InternalName": "EPalWazaID::BubbleShower",
+        "Element": "Dark",
+        "CT": 24,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Poison Shower",
+                "Description": "Spread poison balls around you."
+            },
+            "zh-CN": {
+                "Name": "毒雨",
+                "Description": "zh-Hans Text"
+            },
+            "ja": {
+                "Name": "ポイズンシャワー",
+                "Description": "周囲に毒の球をまき散らす。"
+            }
+        },
+        "Invalid": true
+    },
+    "EPalWazaID::ChaosLaser": {
+        "InternalName": "EPalWazaID::ChaosLaser",
+        "Element": "Dark",
+        "CT": 60,
+        "Power": 300,
+        "I18n": {
+            "en": {
+                "Name": "Chaos Laser",
+                "Description": "Charge the power of chaos, Fires a beam of light and darkness at the enemy at the same time."
+            },
+            "zh-CN": {
+                "Name": "混沌射线",
+                "Description": "zh-Hans Text"
+            },
+            "ja": {
+                "Name": "カオスレーザー",
+                "Description": "混沌の力をチャージし、敵めがけて光と闇のビームを同時に発射する。"
+            }
+        },
+        "Invalid": true
+    },
+
+
+
+
     "EPalWazaID::TidalWave": {
         "InternalName": "EPalWazaID::TidalWave",
         "Element": "Water",
@@ -2496,27 +3684,6 @@
         },
         "Invalid": true
     },
-    "EPalWazaID::DiamondFall": {
-        "InternalName": "EPalWazaID::DiamondFall",
-        "Element": "Ice",
-        "CT": 30,
-        "Power": 140,
-        "I18n": {
-            "en": {
-                "Name": "Diamond Rain",
-                "Description": "Creates numerous lumps of ice that are consecutively dropped on a foe's head. Inflict Freeze 100"
-            },
-            "zh-CN": {
-                "Name": "晶钻之雨",
-                "Description": "在敌人头顶生成数个冰块 随后逐一坠落 Inflict Freeze 100"
-            },
-            "ja": {
-                "Name": "ダイアモンドフォール",
-                "Description": "敵の頭上に氷の塊を生成し 次々と降らせる。Inflict Freeze 100"
-            }
-        },
-        "Invalid": true
-    },
     "EPalWazaID::SnowStorm": {
         "InternalName": "EPalWazaID::SnowStorm",
         "Element": "Ice",
@@ -2539,28 +3706,6 @@
         "Invalid": true,
         "UniqueSkill": true
     },
-    "EPalWazaID::Unique_WeaselDragon_FlyingTackle": {
-        "InternalName": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
-        "Element": "Ice",
-        "CT": 4,
-        "Power": 60,
-        "I18n": {
-            "en": {
-                "Name": "Rocket Slam [Chillet]",
-                "Description": "en Text"
-            },
-            "zh-CN": {
-                "Name": "火箭冲撞 [疾旋鼬]",
-                "Description": "▼独特的技能▼ - 请设置技能解释 -"
-            },
-            "ja": {
-                "Name": "ロケットタックル [オコチョ]",
-                "Description": "▼ユニークスキル▼ --スキル説明の設定をお願いします--"
-            }
-        },
-        "Invalid": true,
-        "UniqueSkill": true
-    },
     "EPalWazaID::CrossThunder": {
         "InternalName": "EPalWazaID::CrossThunder",
         "Element": "Electric",
@@ -2578,27 +3723,6 @@
             "ja": {
                 "Name": "クロスサンダー",
                 "Description": "敵の左右をふさぐように 2方向に進む雷撃を発生させる。"
-            }
-        },
-        "Invalid": true
-    },
-    "EPalWazaID::ThunderRain": {
-        "InternalName": "EPalWazaID::ThunderRain",
-        "Element": "Electric",
-        "CT": 20,
-        "Power": 1,
-        "I18n": {
-            "en": {
-                "Name": "Lightning Rain",
-                "Description": "Calls lightning that strikes an enemy after a set amount of time has passed. Inflict Electrical 80"
-            },
-            "zh-CN": {
-                "Name": "雷雨",
-                "Description": "召唤雷电 在一定时间后生成大量落电。Inflict Electrical 80"
-            },
-            "ja": {
-                "Name": "サンダーレイン",
-                "Description": "雷を呼んで 一定時間後にたくさんの落雷を起こす。Inflict Electrical 80"
             }
         },
         "Invalid": true
@@ -2646,69 +3770,6 @@
         },
         "Invalid": true,
         "UniqueSkill": true
-    },
-    "EPalWazaID::Tremor": {
-        "InternalName": "EPalWazaID::Tremor",
-        "Element": "Ground",
-        "CT": 4,
-        "Power": 60,
-        "I18n": {
-            "en": {
-                "Name": "Rockburst",
-                "Description": "Causes the ground to shake before hurling a massive stone mass at its surroundings. Inflict Muddy 100"
-            },
-            "zh-CN": {
-                "Name": "岩爆",
-                "Description": "撼动地面，使大块岩石射向四面八方 Inflict Muddy 100"
-            },
-            "ja": {
-                "Name": "ロックバースト",
-                "Description": "地面を揺らし 大きな岩の塊を周囲に飛ばす Inflict Muddy 100"
-            }
-        },
-        "Invalid": true
-    },
-    "EPalWazaID::BeamSlicer": {
-        "InternalName": "EPalWazaID::BeamSlicer",
-        "Element": "Dragon",
-        "CT": 4,
-        "Power": 60,
-        "I18n": {
-            "en": {
-                "Name": "BeamSlicer",
-                "Description": "en Text Inflict Burn 100"
-            },
-            "zh-CN": {
-                "Name": "BeamSlicer",
-                "Description": "zh-Hans Text Inflict Burn 100"
-            },
-            "ja": {
-                "Name": "ビームスライサー",
-                "Description": "竜の力がこもった光線で前方をなぎ払う。なぎ払われた場所は時間差で爆発する。Inflict Burn 100"
-            }
-        },
-        "Invalid": true
-    },
-    "EPalWazaID::Commet": {
-        "InternalName": "EPalWazaID::Commet",
-        "Element": "Dragon",
-        "CT": 4,
-        "Power": 60,
-        "I18n": {
-            "en": {
-                "Name": "Commet",
-                "Description": "en Text Inflict Burn 100"
-            },
-            "zh-CN": {
-                "Name": "Commet",
-                "Description": "zh-Hans Text Inflict Burn 100"
-            },
-            "ja": {
-                "Name": "コメット",
-                "Description": "隕石を垂直に落とし 周囲に衝撃波を発生させる Inflict Burn 100"
-            }
-        },
-        "Invalid": true
     },
     "EPalWazaID::DarkTornado": {
         "InternalName": "EPalWazaID::DarkTornado",
@@ -2770,28 +3831,6 @@
             "ja": {
                 "Name": "Funnel_DreamDemon",
                 "Description": "Inflict Darkness 5"
-            }
-        },
-        "Invalid": true,
-        "UniqueSkill": true
-    },
-    "EPalWazaID::Unique_DarkScorpion_Pierce": {
-        "InternalName": "EPalWazaID::Unique_DarkScorpion_Pierce",
-        "Element": "Dark",
-        "CT": 21,
-        "Power": 100,
-        "I18n": {
-            "en": {
-                "Name": "Jumping Stinger [Menasting]",
-                "Description": "en Text"
-            },
-            "zh-CN": {
-                "Name": "跳跃重刺 [冥铠蝎]",
-                "Description": "▼独特的技能▼ - 请设置技能解释 -"
-            },
-            "ja": {
-                "Name": "ジャンピングスティンガー [デスティング]",
-                "Description": "▼ユニークスキル▼ --スキル説明の設定をお願いします--"
             }
         },
         "Invalid": true,

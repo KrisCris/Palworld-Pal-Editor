@@ -1633,6 +1633,34 @@
             "paldeck": "49"
         }
     },
+    "Gorilla_Ground": {
+        "InternalName": "Gorilla_Ground",
+        "Elements": [
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::MudShot": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::ThrowRock": 22,
+            "EPalWazaID::Unique_Gorilla_GroundPunch": 30,
+            "EPalWazaID::Tremor": 40,
+            "EPalWazaID::RockLance": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 100,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Gorirat Terra",
+            "zh-CN": "石掌猿",
+            "ja": "ゴリガイア"
+        },
+        "SortingKey": {
+            "paldeck": "49B"
+        }
+    },
     "SoldierBee": {
         "InternalName": "SoldierBee",
         "Elements": [
@@ -1800,6 +1828,35 @@
         },
         "SortingKey": {
             "paldeck": "55"
+        }
+    },
+    "WeaselDragon_Fire": {
+        "InternalName": "WeaselDragon_Fire",
+        "Elements": [
+            "Fire",
+            "Dragon"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::DragonWave": 7,
+            "EPalWazaID::FlareArrow": 15,
+            "EPalWazaID::Flamethrower": 22,
+            "EPalWazaID::Unique_WeaselDragon_FlyingTackle": 30,
+            "EPalWazaID::FlameWall": 40,
+            "EPalWazaID::FireBall": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 85,
+            "DEF": 80
+        },
+        "I18n": {
+            "en": "Chillet Ignis",
+            "zh-CN": "桃旋鼬",
+            "ja": "モモチョ"
+        },
+        "SortingKey": {
+            "paldeck": "55B"
         }
     },
     "Kirin": {
@@ -2395,6 +2452,35 @@
             "paldeck": "72"
         }
     },
+    "Ronin_Dark": {
+        "InternalName": "Ronin_Dark",
+        "Elements": [
+            "Fire",
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireSeed": 1,
+            "EPalWazaID::DarkPulse": 7,
+            "EPalWazaID::DarkCanon": 15,
+            "EPalWazaID::DarkArrow": 22,
+            "EPalWazaID::GhostFlame": 30,
+            "EPalWazaID::FlameWall": 40,
+            "EPalWazaID::Apocalypse": 50
+        },
+        "Scaling": {
+            "HP": 80,
+            "ATK": 130,
+            "DEF": 80
+        },
+        "I18n": {
+            "en": "Bushi Noct",
+            "zh-CN": "鬼刃武士",
+            "ja": "ヤミウチ"
+        },
+        "SortingKey": {
+            "paldeck": "72B"
+        }
+    },
     "ThunderBird": {
         "InternalName": "ThunderBird",
         "Elements": [
@@ -2479,6 +2565,35 @@
             "paldeck": "75"
         }
     },
+    "CatMage_Fire": {
+        "InternalName": "CatMage_Fire",
+        "Elements": [
+            "Dark",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::DarkCanon": 7,
+            "EPalWazaID::FlareArrow": 15,
+            "EPalWazaID::FlareTornado": 22,
+            "EPalWazaID::FlameWall": 30,
+            "EPalWazaID::FlameFunnel": 40,
+            "EPalWazaID::FireBall": 50
+        },
+        "Scaling": {
+            "HP": 95,
+            "ATK": 105,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Katress Ignis",
+            "zh-CN": "炽巫猫",
+            "ja": "クレメーナ"
+        },
+        "SortingKey": {
+            "paldeck": "75B"
+        }
+    },
     "FoxMage": {
         "InternalName": "FoxMage",
         "Elements": [
@@ -2505,6 +2620,35 @@
         },
         "SortingKey": {
             "paldeck": "76"
+        }
+    },
+    "FoxMage_Dark": {
+        "InternalName": "FoxMage",
+        "Elements": [
+            "Fire",
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::DarkCanon": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::FlareTornado": 22,
+            "EPalWazaID::GhostFlame": 30,
+            "EPalWazaID::FlameWall": 40,
+            "EPalWazaID::Apocalypse": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 110,
+            "DEF": 85
+        },
+        "I18n": {
+            "en": "Wixen Noct",
+            "zh-CN": "幽巫狐",
+            "ja": "フォレーオ"
+        },
+        "SortingKey": {
+            "paldeck": "76B"
         }
     },
     "GrassRabbitMan": {
@@ -3328,6 +3472,99 @@
             "paldeck": "96"
         }
     },
+    "KingBahamut_Dragon": {
+        "InternalName": "KingBahamut_Dragon",
+        "Elements": [
+            "Dragon",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::DragonWave": 1,
+            "EPalWazaID::Flamethrower": 7,
+            "EPalWazaID::FlameWall": 15,
+            "EPalWazaID::Commet": 22,
+            "EPalWazaID::BeamSlicer": 30,
+            "EPalWazaID::Unique_KingBahamut_ArmSmash": 40,
+            "EPalWazaID::Unique_KingBahamut_AirCrash": 50
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 130,
+            "DEF": 125
+        },
+        "I18n": {
+            "en": "Blazamut Ryu",
+            "zh-CN": "殁殃",
+            "ja": "ボルドラゴ"
+        },
+        "SortingKey": {
+            "paldeck": "96B"
+        }
+    },
+    "RAID_KingBahamut_Dragon": {
+        "InternalName": "RAID_KingBahamut_Dragon",
+        "Elements": [
+            "Dragon",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_KingBahamut_AirCrash": 1,
+            "EPalWazaID::Unique_KingBahamut_ArmSmash": 1,
+            "EPalWazaID::ThreeCommet": 1,
+            "EPalWazaID::BlastCanon": 1,
+            "EPalWazaID::DragonMeteor": 1,
+            "EPalWazaID::BeamSlicer": 1,
+            "EPalWazaID::Eruption": 1,
+            "EPalWazaID::FireBall":1,
+            "EPalWazaID::FlameWall": 1,
+            "EPalWazaID::FlameFunnel": 1
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 130,
+            "DEF": 125
+        },
+        "I18n": {
+            "en": "Incarnation of the Eternal Flame Blazamut Ryu",
+            "zh-CN": "永炎现世 殁殃",
+            "ja": "永炎の顕現 ボルドラゴ"
+        },
+        "SortingKey": {
+            "paldeck": "96B"
+        }
+    },
+    "RAID_KingBahamut_Dragon_2": {
+        "InternalName": "RAID_KingBahamut_Dragon_2",
+        "Elements": [
+            "Dragon",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_KingBahamut_AirCrash": 1,
+            "EPalWazaID::Unique_KingBahamut_ArmSmash": 1,
+            "EPalWazaID::ThreeCommet": 1,
+            "EPalWazaID::BlastCanon": 1,
+            "EPalWazaID::DragonMeteor": 1,
+            "EPalWazaID::BeamSlicer": 1,
+            "EPalWazaID::Eruption": 1,
+            "EPalWazaID::FireBall":1,
+            "EPalWazaID::FlameWall": 1,
+            "EPalWazaID::FlameFunnel": 1
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 130,
+            "DEF": 125
+        },
+        "I18n": {
+            "en": "Incarnation of the Eternal Flame (Ultra) Blazamut Ryu",
+            "zh-CN": "永炎現世【极】 殁殃",
+            "ja": "永炎の顕現【極】 ボルドラゴ"
+        },
+        "SortingKey": {
+            "paldeck": "96B"
+        }
+    },
     "HadesBird": {
         "InternalName": "HadesBird",
         "Elements": [
@@ -3354,6 +3591,35 @@
         },
         "SortingKey": {
             "paldeck": "97"
+        }
+    },
+    "HadesBird_Electric": {
+        "InternalName": "HadesBird_Electric",
+        "Elements": [
+            "Dark",
+            "Electric"
+        ],
+        "Attacks": {
+            "EPalWazaID::SpreadPulse": 1,
+            "EPalWazaID::ElecWave": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::ShadowBall": 22,
+            "EPalWazaID::TriSpark": 30,
+            "EPalWazaID::ThunderRain": 40,
+            "EPalWazaID::ThunderStorm": 50
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 125,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Helzephyr Lux",
+            "zh-CN": "雷鸣鸟",
+            "ja": "ライガルダ"
+        },
+        "SortingKey": {
+            "paldeck": "97B"
         }
     },
     "BlackMetalDragon": {
@@ -3412,6 +3678,34 @@
         },
         "SortingKey": {
             "paldeck": "99"
+        }
+    },
+    "DarkScorpion_Ground": {
+        "InternalName": "DarkScorpion_Ground",
+        "Elements": [
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::StoneShotgun": 7,
+            "EPalWazaID::ThrowRock": 15,
+            "EPalWazaID::SandTornado": 22,
+            "EPalWazaID::Unique_DarkScorpion_Pierce": 30,
+            "EPalWazaID::RockLance": 40,
+            "EPalWazaID::Tremor": 50
+        },
+        "Scaling": {
+            "HP": 100,
+            "ATK": 105,
+            "DEF": 130
+        },
+        "I18n": {
+            "en": "Menasting Terra",
+            "zh-CN": "金铠蝎",
+            "ja": "ゴルディング"
+        },
+        "SortingKey": {
+            "paldeck": "99B"
         }
     },
     "Anubis": {
@@ -4167,6 +4461,481 @@
         }
     },
 
+    "MoonQueen": {
+        "InternalName": "MoonQueen",
+        "Elements": [
+            "Dark",
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::DarkCanon": 1,
+            "EPalWazaID::DarkArrow": 7,
+            "EPalWazaID::AirBlade": 15,
+            "EPalWazaID::HolyBlast": 22,
+            "EPalWazaID::Unique_MoonQueen_MoonBlade": 30,
+            "EPalWazaID::StarMine": 40,
+            "EPalWazaID::Unique_MoonQueen_MoonBeam": 50
+        },
+        "Scaling": {
+            "HP": 130,
+            "ATK": 115,
+            "DEF": 110
+        },
+        "I18n": {
+            "en": "Selyne",
+            "zh-CN": "辉月伊",
+            "ja": "セレムーン"
+        },
+        "SortingKey": {
+            "paldeck": "113"
+        }
+    },
+
+    "GYM_MoonQueen": {
+        "InternalName": "GYM_MoonQueen",
+        "Elements": [
+            "Dark",
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::StarMine": 1,
+            "EPalWazaID::PowerBall": 1,
+            "EPalWazaID::Commet": 1,
+            "EPalWazaID::IcicleThrow": 1,
+            "EPalWazaID::Unique_MoonQueen_MoonBeam": 1,
+            "EPalWazaID::Unique_MoonQueen_MoonBlade": 1,
+            "EPalWazaID::HolyBlast": 1,
+            "EPalWazaID::AirBlade": 1,
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::ShadowBall": 1,
+            "EPalWazaID::DiamondFall": 1
+        },
+        "Tower": true,
+        "Scaling": {
+            "HP": 130,
+            "ATK": 115,
+            "DEF": 110
+        },
+        "I18n": {
+            "en": "Saya & Selyne",
+            "zh-CN": "纱夜 & 辉月伊",
+            "ja": "サヤ＆セレムーン"
+        },
+        "SortingKey": {
+            "paldeck": "113"
+        }
+    },
+
+    "KendoFrog": {
+        "InternalName": "KendoFrog",
+        "Elements": [
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::WaterGun": 1,
+            "EPalWazaID::BubbleShot": 7,
+            "EPalWazaID::AcidRain": 15,
+            "EPalWazaID::WaterBall": 22,
+            "EPalWazaID::LineGeyser": 30,
+            "EPalWazaID::WallSplash": 40,
+            "EPalWazaID::HydroPump": 50
+        },
+        "Scaling": {
+            "HP": 80,
+            "ATK": 100,
+            "DEF": 85
+        },
+        "I18n": {
+            "en": "Croajiro",
+            "zh-CN": "武道蛙",
+            "ja": "ブシガエル"
+        },
+        "SortingKey": {
+            "paldeck": "114"
+        }
+    },
+
+    "LeafPrincess": {
+        "InternalName": "LeafPrincess",
+        "Elements": [
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::WindCutter": 1,
+            "EPalWazaID::SeedMachinegun": 7,
+            "EPalWazaID::SpecialCutter": 15,
+            "EPalWazaID::GrassTornado": 22,
+            "EPalWazaID::HolyBlast": 30,
+            "EPalWazaID::RootLance": 40,
+            "EPalWazaID::SolarBeam": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 90,
+            "DEF": 80
+        },
+        "I18n": {
+            "en": "Lullu",
+            "zh-CN": "春彩娘",
+            "ja": "フワフラワ"
+        },
+        "SortingKey": {
+            "paldeck": "115"
+        }
+    },
+
+    "MushroomDragon": {
+        "InternalName": "MushroomDragon",
+        "Elements": [
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::SeedMachinegun": 7,
+            "EPalWazaID::GrassTornado": 15,
+            "EPalWazaID::SeedMine": 22,
+            "EPalWazaID::RootAttack": 30,
+            "EPalWazaID::RootLance": 40,
+            "EPalWazaID::SolarBeam": 50
+        },
+        "Scaling": {
+            "HP": 110,
+            "ATK": 80,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Shroomer",
+            "zh-CN": "菇咚",
+            "ja": "キノッポ"
+        },
+        "SortingKey": {
+            "paldeck": "116"
+        }
+    },
+
+    "MushroomDragon_Dark": {
+        "InternalName": "MushroomDragon_Dark",
+        "Elements": [
+            "Grass",
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::DarkWave": 7,
+            "EPalWazaID::GrassTornado": 15,
+            "EPalWazaID::SeedMine": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::RootLance": 40,
+            "EPalWazaID::DarkLaser": 50
+        },
+        "Scaling": {
+            "HP": 110,
+            "ATK": 85,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Shroomer Noct",
+            "zh-CN": "菇波",
+            "ja": "ベノッポ"
+        },
+        "SortingKey": {
+            "paldeck": "116B"
+        }
+    },
+
+    "SmallArmadillo": {
+        "InternalName": "SmallArmadillo",
+        "Elements": [
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::MudShot": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::PowerBall": 22,
+            "EPalWazaID::SandTornado": 30,
+            "EPalWazaID::Tremor": 40,
+            "EPalWazaID::RockLance": 50
+        },
+        "Scaling": {
+            "HP": 75,
+            "ATK": 70,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Kikit",
+            "zh-CN": "球犰",
+            "ja": "コロマジロ"
+        },
+        "SortingKey": {
+            "paldeck": "117"
+        }
+    },
+
+    "CandleGhost": {
+        "InternalName": "CandleGhost",
+        "Elements": [
+            "Dark",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::DarkBall": 7,
+            "EPalWazaID::FireSeed": 15,
+            "EPalWazaID::GhostFlame": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::FlameFunnel": 40,
+            "EPalWazaID::Eruption": 50
+        },
+        "Scaling": {
+            "HP": 75,
+            "ATK": 70,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Sootseer",
+            "zh-CN": "恐炬灵",
+            "ja": "オドロクロ"
+        },
+        "SortingKey": {
+            "paldeck": "118"
+        }
+    },
+
+    "ScorpionMan": {
+        "InternalName": "ScorpionMan",
+        "Elements": [
+            "Dark",
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::DarkCanon": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::SandTornado": 22,
+            "EPalWazaID::Unique_ScorpionMan_Uppercut": 30,
+            "EPalWazaID::RockLance": 40,
+            "EPalWazaID::DarkLaser": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 110,
+            "DEF": 90
+        },
+        "I18n": {
+            "en": "Prixter",
+            "zh-CN": "蛊刺妖",
+            "ja": "ブッサソリ"
+        },
+        "SortingKey": {
+            "paldeck": "119"
+        }
+    },
+
+    "WingGolem": {
+        "InternalName": "WingGolem",
+        "Elements": [
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::StoneShotgun": 7,
+            "EPalWazaID::ThrowRock": 15,
+            "EPalWazaID::Tremor": 22,
+            "EPalWazaID::RockLance": 30,
+            "EPalWazaID::Unique_WingGolem_RoundCutter": 40,
+            "EPalWazaID::SandTwister": 50
+        },
+        "Scaling": {
+            "HP": 105,
+            "ATK": 110,
+            "DEF": 135
+        },
+        "I18n": {
+            "en": "Knocklem",
+            "zh-CN": "泰锋",
+            "ja": "テラナイト"
+        },
+        "SortingKey": {
+            "paldeck": "120"
+        }
+    },
+
+    "GuardianDog": {
+        "InternalName": "GuardianDog",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::PowerShot": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::PowerBall": 22,
+            "EPalWazaID::AirBlade": 30,
+            "EPalWazaID::HolyBlast": 40,
+            "EPalWazaID::HyperBeam": 50
+        },
+        "Scaling": {
+            "HP": 85,
+            "ATK": 85,
+            "DEF": 85
+        },
+        "I18n": {
+            "en": "Yakumo",
+            "zh-CN": "八云犬",
+            "ja": "ヤクモマル"
+        },
+        "SortingKey": {
+            "paldeck": "121"
+        }
+    },
+
+    "SifuDog": {
+        "InternalName": "SifuDog",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::AirCanon": 1,
+            "EPalWazaID::PowerShot": 7,
+            "EPalWazaID::ThrowRock": 15,
+            "EPalWazaID::PowerBall": 22,
+            "EPalWazaID::AirBlade": 30,
+            "EPalWazaID::Unique_SifuDog_Counter": 40,
+            "EPalWazaID::HyperBeam": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 100,
+            "DEF": 100
+        },
+        "I18n": {
+            "en": "Dogen",
+            "zh-CN": "汪宗师",
+            "ja": "ワンフー"
+        },
+        "SortingKey": {
+            "paldeck": "122"
+        }
+    },
+
+    "FeatherOstrich": {
+        "InternalName": "FeatherOstrich",
+        "Elements": [
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::PowerShot": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::ThrowRock": 22,
+            "EPalWazaID::Unique_FeatherOstrich_Tossin": 30,
+            "EPalWazaID::Tremor": 40,
+            "EPalWazaID::SandTwister": 50
+        },
+        "Scaling": {
+            "HP": 95,
+            "ATK": 90,
+            "DEF": 80
+        },
+        "I18n": {
+            "en": "Dazemu",
+            "zh-CN": "战冠雀",
+            "ja": "トリステップ"
+        },
+        "SortingKey": {
+            "paldeck": "123"
+        }
+    },
+
+    "MimicDog": {
+        "InternalName": "MimicDog",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::DarkCanon": 7,
+            "EPalWazaID::GhostFlame": 15,
+            "EPalWazaID::PowerBall": 22,
+            "EPalWazaID::AirBlade": 30,
+            "EPalWazaID::HolyBlast": 40,
+            "EPalWazaID::HyperBeam": 50
+        },
+        "Scaling": {
+            "HP": 60,
+            "ATK": 60,
+            "DEF": 130
+        },
+        "I18n": {
+            "en": "Mimog",
+            "zh-CN": "旺财",
+            "ja": "ミミドッグ"
+        },
+        "SortingKey": {
+            "paldeck": "124"
+        }
+    },
+
+    "DarkAlien": {
+        "InternalName": "DarkAlien",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::PoisonShot": 7,
+            "EPalWazaID::DarkPulse": 15,
+            "EPalWazaID::DarkArrow": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::Unique_DarkAlien_JumpScractch": 40,
+            "EPalWazaID::DarkLaser": 50
+        },
+        "Scaling": {
+            "HP": 90,
+            "ATK": 125,
+            "DEF": 85
+        },
+        "I18n": {
+            "en": "Xenovader",
+            "zh-CN": "杰诺贝达",
+            "ja": "ゼノベーダ"
+        },
+        "SortingKey": {
+            "paldeck": "125"
+        }
+    },
+
+    "WhiteAlienDragon": {
+        "InternalName": "WhiteAlienDragon",
+        "Elements": [
+            "Dragon"
+        ],
+        "Attacks": {
+            "EPalWazaID::DragonCanon": 1,
+            "EPalWazaID::DragonWave": 7,
+            "EPalWazaID::AirBlade": 15,
+            "EPalWazaID::DragonBreath": 22,
+            "EPalWazaID::IcicleLine": 30,
+            "EPalWazaID::Commet": 40,
+            "EPalWazaID::BeamSlicer": 50
+        },
+        "Scaling": {
+            "HP": 110,
+            "ATK": 120,
+            "DEF": 130
+        },
+        "I18n": {
+            "en": "Xenogard",
+            "zh-CN": "杰诺路达",
+            "ja": "ゼノルーダ"
+        },
+        "SortingKey": {
+            "paldeck": "126"
+        }
+    },
+
+
 
 
 
@@ -4239,23 +5008,7 @@
         "SortingKey": {},
         "Invalid": true
     },
-    "FeatherOstrich": {
-        "InternalName": "FeatherOstrich",
-        "Elements": [
-            "Ground"
-        ],
-        "Attacks": {},
-        "Scaling": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100
-        },
-        "I18n": {
-            "en": "FeatherOstrich"
-        },
-        "SortingKey": {},
-        "Invalid": true
-    },
+
     "GoldenHorse": {
         "InternalName": "GoldenHorse",
         "Elements": [
@@ -4290,40 +5043,6 @@
         "SortingKey": {},
         "Invalid": true
     },
-    "ScorpionMan": {
-        "InternalName": "ScorpionMan",
-        "Elements": [
-            "Dark"
-        ],
-        "Attacks": {},
-        "Scaling": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100
-        },
-        "I18n": {
-            "en": "ScorpionMan"
-        },
-        "SortingKey": {},
-        "Invalid": true
-    },
-    "SifuDog": {
-        "InternalName": "SifuDog",
-        "Elements": [
-            "Neutral"
-        ],
-        "Attacks": {},
-        "Scaling": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100
-        },
-        "I18n": {
-            "en": "SifuDog"
-        },
-        "SortingKey": {},
-        "Invalid": true
-    },
     "TentacleTurtle": {
         "InternalName": "TentacleTurtle",
         "Elements": [
@@ -4341,23 +5060,7 @@
         "SortingKey": {},
         "Invalid": true
     },
-    "WingGolem": {
-        "InternalName": "WingGolem",
-        "Elements": [
-            "Ground"
-        ],
-        "Attacks": {},
-        "Scaling": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100
-        },
-        "I18n": {
-            "en": "WingGolem"
-        },
-        "SortingKey": {},
-        "Invalid": true
-    },
+
     "BeardedDragon": {
         "InternalName": "BeardedDragon",
         "Elements": [
@@ -4392,23 +5095,7 @@
         "SortingKey": {},
         "Invalid": true
     },
-    "GuardianDog": {
-        "InternalName": "GuardianDog",
-        "Elements": [
-            "Neutral"
-        ],
-        "Attacks": {},
-        "Scaling": {
-            "HP": 90,
-            "ATK": 80,
-            "DEF": 90
-        },
-        "I18n": {
-            "en": "GuardianDog"
-        },
-        "SortingKey": {},
-        "Invalid": true
-    },
+
     "GrassDragon": {
         "InternalName": "GrassDragon",
         "Elements": [
