@@ -15,7 +15,7 @@ readme = "README.md"
 version = "0.8.1"
 dependencies = [
     "setuptools==69.1.0",
-    "palworld_save_tools==0.22.0",
+    "palworld_save_tools==0.23.0",
     "wheel==0.42.0",
     "Flask==3.0.2",
     "pyinstaller==6.4.0",
