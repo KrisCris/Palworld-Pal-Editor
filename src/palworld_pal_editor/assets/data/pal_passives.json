@@ -1309,7 +1309,7 @@
     },
     "Nocturnal": {
         "InternalName": "Nocturnal",
-        "Rating": 3,
+        "Rating": 1,
         "I18n": {
             "en": {
                 "Name": "Nocturnal",
@@ -1322,6 +1322,24 @@
             "ja": {
                 "Name": "夜行性",
                 "Description": "夜になっても眠らず、働き続ける。"
+            }
+        }
+    },
+    "CoolTimeReduction_Up_2": {
+        "InternalName": "CoolTimeReduction_Up_2",
+        "Rating": 1,
+        "I18n": {
+            "en": {
+                "Name": "Impatient",
+                "Description": "Active skill cooldown reduction 15%"
+            },
+            "zh-CN": {
+                "Name": "急性子",
+                "Description": "主动技能的冷却时间缩短15%"
+            },
+            "ja": {
+                "Name": "せっかち",
+                "Description": "アクティブスキルのクールタイム短縮15%"
             }
         }
     },
