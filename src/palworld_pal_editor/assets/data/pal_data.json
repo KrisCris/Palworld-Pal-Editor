@@ -2623,7 +2623,7 @@
         }
     },
     "FoxMage_Dark": {
-        "InternalName": "FoxMage",
+        "InternalName": "FoxMage_Dark",
         "Elements": [
             "Fire",
             "Dark"
