@@ -98,14 +98,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     levelUp() {
-      if (this.Level < 50) {
+      if (this.Level < 55) {
         this.Level += 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
     maxLevel() {
-      this.Level = 50;
+      this.Level = 55;
       updatePal({ target: { name: "Level", value: this.Level } });
     }
 

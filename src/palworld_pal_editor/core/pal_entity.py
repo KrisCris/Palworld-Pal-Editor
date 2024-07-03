@@ -375,7 +375,7 @@ class PalEntity:
     @LOGGER.change_logger('Level')
     @type_guard
     def Level(self, value: int) -> None:
-        value = clamp(1, 50, value)
+        value = clamp(1, 55, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.IntProperty(value)
         else:
