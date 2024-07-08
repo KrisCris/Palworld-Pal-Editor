@@ -221,7 +221,7 @@ class SaveManager:
                     container_id, slot_idx = pal_entity.SlotID
                     group_id = pal_entity.group_id
                     # is_unref_pal = not self.group_data.get_group(group_id).has_pal(pal_entity.InstanceId)
-                    is_unref_pal = not self.container_data.get_container(container_id).has_pal(pal_entity.InstanceId, slot_idx)
+                    is_unref_pal = not self.container_data.get_container(container_id).has_pal(pal_entity.InstanceId)
                     if is_unref_pal:
                         LOGGER.info(f"Likely Ghost Pal: {pal_entity}")
                     pal_entity.is_unreferenced_pal = is_unref_pal
@@ -348,7 +348,7 @@ class SaveManager:
             raise Exception("Pal already in the target container.")
         
         old_container = self.container_data.get_container(pal_entity.ContainerId)
-        old_container.del_pal(pal_id, pal_entity.SlotIndex)
+        old_container.del_pal(pal_id)
 
         if (slot_idx := pal_container.add_pal(pal_id)) == -1:
             return False
@@ -373,7 +373,7 @@ class SaveManager:
             if pal_group := self.group_data.get_group(popped_pal.group_id):
                 pal_group.del_pal(popped_pal.InstanceId)
             if pal_container := self.container_data.get_container(popped_pal.ContainerId):
-                pal_container.del_pal(popped_pal.InstanceId, popped_pal.SlotIndex)
+                pal_container.del_pal(popped_pal.InstanceId)
             self._entities_list.remove(popped_pal._pal_obj)
         except:
             LOGGER.warning(f"Error Deleting PAL {guid}: {traceback.format_exc()}")
