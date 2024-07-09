@@ -71,6 +71,7 @@ export default {
     TopBar_Btn_Save: "保存更改",
     TopBar_Btn_Reload: "重新载入存档",
     TopBar_Btn_Main_Page: "返回主页",
+    TopBar_Btn_HealAllPals: "治愈所有帕鲁",
     TopBar_Btn_Pal_OOB: "显示不在身边的帕鲁",
     TopBar_Btn_Pal_Ghost: "显示不存在的帕鲁",
     TopBar_Btn_Invalid_Options: "隐藏不可用的选项",

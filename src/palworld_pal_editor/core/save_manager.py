@@ -382,6 +382,15 @@ class SaveManager:
         LOGGER.info(f"DELETED PAL {guid}")
         return True
     
+    def heal_all_pals(self):
+        for pal in self.baseworker_mapping.values():
+            pal.heal_pal()
+        for pal in self._dangling_pals.values():
+            pal.heal_pal()
+        for player in self.get_players():
+            for pal in player._palbox.values():
+                pal.heal_pal() 
+    
     def add_pal(self, player_uid: str | UUID, pal_obj: dict = None) -> Optional[PalEntity]:
         player = self.get_player(player_uid)
         if player is None:

@@ -48,6 +48,10 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
         🏠 {{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}
       </button>
 
+      <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG">
+        💉 {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+      </button>
+
       <button 
         :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
         @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" 

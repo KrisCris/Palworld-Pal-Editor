@@ -155,7 +155,7 @@ class PalEntity:
             self.equip_all_pal_attacks()
 
         self.heal_pal()
-        self.clear_worker_sick()
+        # self.clear_worker_sick()
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -789,6 +789,10 @@ class PalEntity:
         return PalObjects.get_EnumProperty(self._pal_param.get("WorkerSick"))
     
     @property
+    def HungerType(self) -> Optional[str]:
+        return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
+    
+    @property
     def HasWorkerSick(self) -> bool:
         return self.WorkerSick is not None
     
@@ -835,11 +839,20 @@ class PalEntity:
         return False
 
     @LOGGER.change_logger("PhysicalHealth")
+    @LOGGER.change_logger("WorkerSick")
+    @LOGGER.change_logger("HungerType")
+    @LOGGER.change_logger("PalReviveTimer")
     def heal_pal(self):
-        if self.IsFaintedPal:
-            self._pal_param.pop("PalReviveTimer", None)
-        if self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
-            self._pal_param.pop("PhysicalHealth", None)
+        self._pal_param.pop("PalReviveTimer", None)
+        self._pal_param.pop("PhysicalHealth", None)
+        self._pal_param.pop("WorkerSick", None)
+        self._pal_param.pop("HungerType", None)
+
+        if self.MaxFullStomach:
+            self.FullStomach = self.MaxFullStomach
+        else:
+            self.FullStomach = 150.0
+        self.SanityValue = 100.0
 
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
@@ -898,12 +911,16 @@ class PalEntity:
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
 
-    @LOGGER.change_logger("WorkerSick")
-    def clear_worker_sick(self):
-        self._pal_param.pop("WorkerSick", None)
-        if self.MaxFullStomach:
-            self.FullStomach = self.MaxFullStomach
-        self.SanityValue = 100.0
+    # @LOGGER.change_logger("WorkerSick")
+    # @LOGGER.change_logger("HungerType")
+    # def clear_worker_sick(self):
+    #     self._pal_param.pop("WorkerSick", None)
+    #     self._pal_param.pop("HungerType", None)
+    #     if self.MaxFullStomach:
+    #         self.FullStomach = self.MaxFullStomach
+    #     else:
+    #         self.FullStomach = 150.0
+    #     self.SanityValue = 100.0
 
     def max_lv_exp(self):
         exp = DataProvider.get_level_xp(self.Level)

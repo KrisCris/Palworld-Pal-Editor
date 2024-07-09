@@ -502,7 +502,7 @@ class PalObjects:
                                     "Talent_Melee": PalObjects.IntProperty(50),
                                     "Talent_Shot": PalObjects.IntProperty(50),
                                     "Talent_Defense": PalObjects.IntProperty(50),
-                                    "FullStomach": PalObjects.FloatProperty(150),
+                                    "FullStomach": PalObjects.FloatProperty(300),
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}
                                     ),
@@ -547,7 +547,7 @@ class PalObjects:
                                         SlotIndex, ContainerId
                                     ),
                                     # TODO Need accurate values
-                                    "MaxFullStomach": PalObjects.FloatProperty(150.0),
+                                    "MaxFullStomach": PalObjects.FloatProperty(300.0),
                                     "GotStatusPointList": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
