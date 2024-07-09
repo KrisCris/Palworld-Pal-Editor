@@ -1,3 +1,4 @@
+import heapq
 from typing import Optional, overload
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
@@ -25,8 +26,11 @@ class PalContainer:
         if self.size is None:
             raise Exception(f"Container {self.ID} Size Unknown")
         
-        self.full_inv_idx_set = set(range(0, self.size))
-        self.used_inv_idx_set = set([slot.inv_idx for slot in self.slots])
+        self.available_inv_idx_set = set(range(0, self.size))
+        for slot in self.slots:
+            self.available_inv_idx_set.remove(slot.inv_idx)
+        self.available_inv_idx_set = list(self.available_inv_idx_set)
+        heapq.heapify(self.available_inv_idx_set)
 
 
     def __len__(self):
@@ -47,14 +51,13 @@ class PalContainer:
         if inv_slot == -1:
             return
         self._slots_data.append(PalObjects.ContainerSlotData(inv_slot))
-        self.used_inv_idx_set.add(inv_slot)
         return slotidx
 
     def _del_slot(self, slotidx: int):
         if slotidx >= len(self._slots_data):
             return
         slot = self._slots_data.pop(slotidx)
-        self.used_inv_idx_set.remove(PalObjects.get_BaseType(slot.get("SlotIndex")))
+        heapq.heappush(self.available_inv_idx_set, PalObjects.get_BaseType(slot.get("SlotIndex")))
 
     def add_pal(self, pal_id: UUID | str) -> int:
         if self.has_pal(pal_id):
@@ -95,7 +98,7 @@ class PalContainer:
                 return i
         return None
 
-    def has_pal(self, pal_id: UUID | str, slot_idx: int = None) -> bool:
+    def has_pal(self, pal_id: UUID | str, slot_idx: Optional[int] = None) -> bool:
         if slot_idx is not None:
             if slot_idx >= len(self.slots):
                 return False
@@ -128,9 +131,9 @@ class PalContainer:
         return -1
     
     def get_empty_inv_slot(self) -> int:
-        try:
-            return (self.full_inv_idx_set - self.used_inv_idx_set).pop()
-        except KeyError:
+        if self.available_inv_idx_set:
+            return heapq.heappop(self.available_inv_idx_set)
+        else:
             return -1
 
 
