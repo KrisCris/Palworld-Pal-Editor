@@ -97,8 +97,8 @@ class GroupData:
 
             try:
                 group_entity = PalGroup(group)
-            except:
-                LOGGER.info(f"Empty Guild {group_id}, skipping")
+            except Exception as e:
+                LOGGER.warning(f"Invalid PalGroup: {e}, skipping")
                 continue
 
             self.group_map[str(group_id)] = group_entity

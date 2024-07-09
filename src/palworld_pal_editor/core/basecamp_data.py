@@ -51,8 +51,8 @@ class BaseCampData:
 
             try:
                 camp_entity = PalBaseCamp(camp)
-            except:
-                LOGGER.info(f"Invalid Base Camp {camp_id}, skipping")
+            except Exception as e:
+                LOGGER.warning(f"Invalid Base Camp: {e}, skipping")
                 continue
 
             self.camp_map[str(camp_id)] = camp_entity

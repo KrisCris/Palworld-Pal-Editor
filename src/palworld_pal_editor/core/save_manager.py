@@ -221,7 +221,8 @@ class SaveManager:
                     container_id, slot_idx = pal_entity.SlotID
                     group_id = pal_entity.group_id
                     # is_unref_pal = not self.group_data.get_group(group_id).has_pal(pal_entity.InstanceId)
-                    is_unref_pal = not self.container_data.get_container(container_id).has_pal(pal_entity.InstanceId)
+                    pal_container = self.container_data.get_container(container_id)
+                    is_unref_pal = (not pal_container) or (not pal_container.has_pal(pal_entity.InstanceId))
                     if is_unref_pal:
                         LOGGER.info(f"Likely Ghost Pal: {pal_entity}")
                     pal_entity.is_unreferenced_pal = is_unref_pal

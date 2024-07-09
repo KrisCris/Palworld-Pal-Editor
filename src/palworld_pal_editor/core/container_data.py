@@ -181,8 +181,8 @@ class ContainerData:
         for container in self._CCSD["value"]:
             try:
                 container_entity = PalContainer(container)
-            except:
-                LOGGER.info(f"Invalid Container {container_entity.ID}, skipping")
+            except Exception as e:
+                LOGGER.warning(f"Invalid Container: {e}, skipping")
                 continue
 
             self.container_map[container_entity.ID] = container_entity
