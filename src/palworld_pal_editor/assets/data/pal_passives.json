@@ -14,6 +14,12 @@
             "ja": {
                 "Name": "アブノーマル",
                 "Description": "無属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Anormal",
+                "Description": "-10% de dégâts reçus des attaque de type neutre"
+            
             }
         }
     },
@@ -32,6 +38,12 @@
             "ja": {
                 "Name": "陽キャ",
                 "Description": "闇属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Joyeux",
+                "Description": "-10% de dégâts reçus des attaques de type sombre"
+            
             }
         }
     },
@@ -50,6 +62,12 @@
             "ja": {
                 "Name": "ドラゴンキラー",
                 "Description": "竜属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Tueur de dragon",
+                "Description": "-10% de dégâts reçus des attaques de type dragon"
+            
             }
         }
     },
@@ -68,6 +86,12 @@
             "ja": {
                 "Name": "高温体質",
                 "Description": "氷属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Corps chauffé",
+                "Description": "-10% de dégâts reçus des attaques de type glace"
+            
             }
         }
     },
@@ -86,6 +110,12 @@
             "ja": {
                 "Name": "日焼け好き",
                 "Description": "炎属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Amoureux du bronzage",
+                "Description": "-10% de dégâts reçus des attaques de type feu"
+            
             }
         }
     },
@@ -104,6 +134,12 @@
             "ja": {
                 "Name": "防草加工",
                 "Description": "草属性ダメージ耐性+10%"
+            },
+
+            "fr" : {
+                "Name": "Barrière botanique",
+                "Description": "-10% de dégâts reçus des attaques de type plante"
+            
             }
         }
     },
@@ -122,6 +158,12 @@
             "ja": {
                 "Name": "耐震構造",
                 "Description": "地属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Résistant aux tremblements de terre",
+                "Description": "-10% de dégâts reçus des attaques de type sol"
+            
             }
         }
     },
@@ -140,6 +182,12 @@
             "ja": {
                 "Name": "絶縁体",
                 "Description": "雷属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Corps isolé",
+                "Description": "-10% de dégâts reçus des attaques de type électrique"
+            
             }
         }
     },
@@ -158,6 +206,12 @@
             "ja": {
                 "Name": "防水加工",
                 "Description": "水属性ダメージ軽減+10%"
+            },
+
+            "fr" : {
+                "Name": "Imperméable",
+                "Description": "-10% de dégâts reçus des attaques de type eau"
+            
             }
         }
     },
@@ -176,6 +230,12 @@
             "ja": {
                 "Name": "無の境地",
                 "Description": "無属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Esprit zen",
+                "Description": "+10% de dégâts infligés avec des attaques de type neutre"
+            
             }
         }
     },
@@ -194,6 +254,12 @@
             "ja": {
                 "Name": "夜の帳",
                 "Description": "闇属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Voile des ténèbres",
+                "Description": "+10% de dégâts infligés avec des attaques de type sombre"
+            
             }
         }
     },
@@ -212,6 +278,12 @@
             "ja": {
                 "Name": "竜の血族",
                 "Description": "竜属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Sang du dragon",
+                "Description": "+10% de dégâts infligés avec des attaques de type dragon"
+            
             }
         }
     },
@@ -230,6 +302,12 @@
             "ja": {
                 "Name": "冷血",
                 "Description": "氷属性ダメ―ジ+10%"
+            },
+
+            "fr" : {
+                "Name": "Sang-froid",
+                "Description": "+10% de dégâts infligés avec des attaques de type glace"
+            
             }
         }
     },
@@ -248,6 +326,12 @@
             "ja": {
                 "Name": "火遊び好き",
                 "Description": "炎属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Pyromane",
+                "Description": "+10% de dégâts infligés avec des attaques de type feu"
+            
             }
         }
     },
@@ -266,6 +350,12 @@
             "ja": {
                 "Name": "草木の香り",
                 "Description": "草属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Feuillage parfumé",
+                "Description": "+10% de dégâts infligés avec des attaques de type plante"
+            
             }
         }
     },
@@ -284,6 +374,12 @@
             "ja": {
                 "Name": "大地の力",
                 "Description": "地属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Puissance de Gaïa",
+                "Description": "+10% de dégâts infligés avec des attaques de type sol"
+            
             }
         }
     },
@@ -302,6 +398,12 @@
             "ja": {
                 "Name": "コンデンサ",
                 "Description": "雷属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Condensateur",
+                "Description": "+10% de dégâts infligés avec des attaques de type électrique"
+            
             }
         }
     },
@@ -320,6 +422,12 @@
             "ja": {
                 "Name": "水遊び好き",
                 "Description": "水属性ダメージ+10%"
+            },
+
+            "fr" : {
+                "Name": "Hydromane",
+                "Description": "+10% de dégâts infligés avec des attaques de type eau"
+            
             }
         }
     },
@@ -338,6 +446,12 @@
             "ja": {
                 "Name": "聖天",
                 "Description": "無属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Empereur céleste",
+                "Description": "+20% de dégâts infligés avec des attaques de type neutre; capacité signature de Paladius"
+            
             }
         }
     },
@@ -356,6 +470,12 @@
             "ja": {
                 "Name": "冥王",
                 "Description": "闇属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Seigneur des enfers",
+                "Description": "+20% de dégâts infligés avec des attaques de type sombre; capacité signature de Necromus"
+            
             }
         }
     },
@@ -374,6 +494,12 @@
             "ja": {
                 "Name": "神龍",
                 "Description": "竜属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Dragon divin",
+                "Description": "+20% de dégâts infligés avec des attaques de type dragon; capacité signature de Jetragon"
+            
             }
         }
     },
@@ -392,6 +518,12 @@
             "ja": {
                 "Name": "氷帝",
                 "Description": "氷属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Empereur de glace",
+                "Description": "+20% de dégâts infligés avec des attaques de type glace; capacité signature de Frostallion"
+            
             }
         }
     },
@@ -410,6 +542,12 @@
             "ja": {
                 "Name": "炎帝",
                 "Description": "炎属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Empereur des flammes",
+                "Description": "+20% de dégâts infligés avec des attaques de type feu; capacité signature de Blazamut"
+            
             }
         }
     },
@@ -428,6 +566,12 @@
             "ja": {
                 "Name": "精霊王",
                 "Description": "草属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Empereur des esprits",
+                "Description": "+20% de dégâts infligés avec des attaques de type plante; capacité signature de Lyleen"
+            
             }
         }
     },
@@ -446,6 +590,12 @@
             "ja": {
                 "Name": "地帝",
                 "Description": "地属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Empereur de la terre",
+                "Description": "+20% de dégâts infligés avec des attaques de type sol; capacité signature de Anubis"
+            
             }
         }
     },
@@ -464,6 +614,12 @@
             "ja": {
                 "Name": "雷帝",
                 "Description": "雷属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Seigneur de la foudre",
+                "Description": "+20% de dégâts infligés avec des attaques de type électrique; capacité signature de Orserk"
+            
             }
         }
     },
@@ -482,6 +638,12 @@
             "ja": {
                 "Name": "海皇",
                 "Description": "水属性ダメージ+20%"
+            },
+
+            "fr" : {
+                "Name": "Seigneur des mers",
+                "Description": "+20% de dégâts infligés avec des attaques de type eau; capacité signature de Jormuntide"
+            
             }
         }
     },
@@ -500,6 +662,12 @@
             "ja": {
                 "Name": "勇敢",
                 "Description": "攻撃+10%"
+            },
+
+            "fr" : {
+                "Name": "Brave",
+                "Description": "+10% de dégâts infligés"
+            
             }
         }
     },
@@ -518,6 +686,12 @@
             "ja": {
                 "Name": "獰猛",
                 "Description": "攻撃+20%"
+            },
+
+            "fr" : {
+                "Name": "Féroce",
+                "Description": "+20% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -542,6 +716,12 @@
             "ja": {
                 "Name": "ビビり",
                 "Description": "攻撃-10%"
+            },
+
+            "fr" : {
+                "Name": "Lâche",
+                "Description": "-10% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -566,6 +746,12 @@
             "ja": {
                 "Name": "ことなかれ主義",
                 "Description": "攻撃-20%"
+            },
+
+            "fr" : {
+                "Name": "Pacifiste",
+                "Description": "-20% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -590,6 +776,12 @@
             "ja": {
                 "Name": "硬い皮膚",
                 "Description": "防御+10%"
+            },
+
+            "fr" : {
+                "Name": "Peau dure",
+                "Description": "+10% de défense"
+            
             }
         },
         "Buff": {
@@ -614,6 +806,12 @@
             "ja": {
                 "Name": "屈強な肉体",
                 "Description": "防御+20%"
+            },
+
+            "fr" : {
+                "Name": "Corps costaud",
+                "Description": "+20% de défense"
+            
             }
         },
         "Buff": {
@@ -638,6 +836,12 @@
             "ja": {
                 "Name": "うたれ弱い",
                 "Description": "防御-10%"
+            },
+
+            "fr" : {
+                "Name": "Abattu",
+                "Description": "-10% de défense"
+            
             }
         },
         "Buff": {
@@ -662,6 +866,12 @@
             "ja": {
                 "Name": "すぐ骨折する",
                 "Description": "防御-20%"
+            },
+
+            "fr" : {
+                "Name": "Cassant",
+                "Description": "-20% de défense"
+            
             }
         },
         "Buff": {
@@ -686,6 +896,12 @@
             "ja": {
                 "Name": "鉱山のチーフ",
                 "Description": "プレイヤーの採掘効率+25%"
+            },
+
+            "fr" : {
+                "Name": "Chef d'extraction",
+                "Description": "+25% de vitesse de minage du joueur"
+            
             }
         }
     },
@@ -704,6 +920,12 @@
             "ja": {
                 "Name": "伐採リーダー",
                 "Description": "プレイヤーの伐採効率+25%"
+            },
+
+            "fr" : {
+                "Name": "Chef d'abattage",
+                "Description": "+25% de vitesse de coupe du joueur"
+            
             }
         }
     },
@@ -722,6 +944,12 @@
             "ja": {
                 "Name": "突撃指揮者",
                 "Description": "プレイヤーの攻撃+10%"
+            },
+
+            "fr" : {
+                "Name": "Avant-g",
+                "Description": "+10% de dégâts infligés du joueur"
+            
             }
         }
     },
@@ -740,6 +968,12 @@
             "ja": {
                 "Name": "モチベーター",
                 "Description": "プレイヤーの作業速度+25%"
+            },
+
+            "fr" : {
+                "Name": "Motivateur",
+                "Description": "+25% de vitesse de déplacement du joueur"
+            
             }
         }
     },
@@ -758,6 +992,12 @@
             "ja": {
                 "Name": "堅城の軍師",
                 "Description": "プレイヤーの防御+10%"
+            },
+
+            "fr" : {
+                "Name": "Stratège de la forteresse",
+                "Description": "+10% de défense du joueur"
+            
             }
         }
     },
@@ -776,6 +1016,12 @@
             "ja": {
                 "Name": "ポジティブ思考",
                 "Description": "SAN値が減りにくい+10%"
+            },
+
+            "fr" : {
+                "Name": "Penseur positif",
+                "Description": "La santé mentale diminue de 10% plus lentement"
+            
             }
         }
     },
@@ -794,6 +1040,12 @@
             "ja": {
                 "Name": "ワーカーホリック",
                 "Description": "SAN値が減りにくい+15%"
+            },
+
+            "fr" : {
+                "Name": "Acharné",
+                "Description": "La santé mentale diminue de 15% plus lentement"
+            
             }
         }
     },
@@ -812,8 +1064,14 @@
             "ja": {
                 "Name": "精神が不安定",
                 "Description": "SAN値が減りやすい-10%"
+            },
+
+            "fr" : {
+                "Name": "Instable",
+                "Description": "La santé mentale diminue de 10% plus rapidement"
+            
             }
-        }
+        }   
     },
     "PAL_Sanity_Up_2": {
         "InternalName": "PAL_Sanity_Up_2",
@@ -830,6 +1088,12 @@
             "ja": {
                 "Name": "破滅願望",
                 "Description": "SAN値が減りやすい-15%"
+            },
+
+            "fr" : {
+                "Name": "Destructeur",
+                "Description": "La santé mentale diminue de 15% plus rapidement"
+            
             }
         }
     },
@@ -848,6 +1112,12 @@
             "ja": {
                 "Name": "小食",
                 "Description": "満腹度が減りにくい+10%"
+            },
+
+            "fr" : {
+                "Name": "Mangeur délicat",
+                "Description": "La faim diminue de 10% plus lentement"
+            
             }
         }
     },
@@ -866,6 +1136,12 @@
             "ja": {
                 "Name": "ダイエットマスター",
                 "Description": "満腹度が減りにくい+15%"
+            },
+
+            "fr" : {
+                "Name": "Nutrisioniste",
+                "Description": "Chance de perdre la faim -15%"
+
             }
         }
     },
@@ -884,6 +1160,12 @@
             "ja": {
                 "Name": "食いしんぼ",
                 "Description": "満腹度が減りやすい-10%"
+            },
+
+            "fr" : {
+                "Name": "Glouton",
+                "Description": "La faim diminue de 10% plus rapidement"
+            
             }
         }
     },
@@ -902,6 +1184,12 @@
             "ja": {
                 "Name": "無限の胃袋",
                 "Description": "満腹度が減りやすい-15%"
+            },
+
+            "fr" : {
+                "Name": "Estomac sans fond",
+                "Description": "La faim diminue de 15% plus rapidement"
+            
             }
         }
     },
@@ -920,6 +1208,12 @@
             "ja": {
                 "Name": "まじめ",
                 "Description": "作業速度+20%"
+            },
+
+            "fr" : {
+                "Name": "Sérieux",
+                "Description": "+20% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -944,6 +1238,12 @@
             "ja": {
                 "Name": "職人気質",
                 "Description": "作業速度+50%"
+            },
+
+            "fr" : {
+                "Name": "Artisan",
+                "Description": "+50% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -968,6 +1268,12 @@
             "ja": {
                 "Name": "不器用",
                 "Description": "作業速度-10%"
+            },
+
+            "fr" : {
+                "Name": "Maladroit",
+                "Description": "-10% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -992,6 +1298,12 @@
             "ja": {
                 "Name": "サボり癖",
                 "Description": "作業速度-30%"
+            },
+
+            "fr" : {
+                "Name": "Paresseux",
+                "Description": "-30% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -1016,6 +1328,12 @@
             "ja": {
                 "Name": "すばしこい",
                 "Description": "移動速度+10%"
+            },
+
+            "fr" : {
+                "Name": "Agile",
+                "Description": "+10% de vitesse de déplacement"
+            
             }
         },
         "Buff": {
@@ -1040,6 +1358,12 @@
             "ja": {
                 "Name": "走るのが得意",
                 "Description": "移動速度+20%"
+            },
+
+            "fr" : {
+                "Name": "Coursier",
+                "Description": "+20% de vitesse de déplacement"
+            
             }
         },
         "Buff": {
@@ -1064,6 +1388,12 @@
             "ja": {
                 "Name": "神速",
                 "Description": "移動速度+30%"
+            },
+
+            "fr" : {
+                "Name": "Sprinteur",
+                "Description": "+30% de vitesse de déplacement"
+            
             }
         },
         "Buff": {
@@ -1088,6 +1418,12 @@
             "ja": {
                 "Name": "社畜",
                 "Description": "作業速度+30%，攻撃-30%"
+            },
+
+            "fr" : {
+                "Name": "Esclave de travail",
+                "Description": "+30% de vitesse de travail, -30% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -1112,6 +1448,12 @@
             "ja": {
                 "Name": "粗暴",
                 "Description": "攻撃+15%，作業速度-10%"
+            },
+
+            "fr" : {
+                "Name": "Grossier",
+                "Description": "+15% de dégâts infligés, -10% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -1136,6 +1478,12 @@
             "ja": {
                 "Name": "脳筋",
                 "Description": "攻撃+30%，作業速度-50%"
+            },
+
+            "fr" : {
+                "Name": "Impulsif",
+                "Description": "+30% de dégâts infligés, -50% de vitesse de travail"
+            
             }
         },
         "Buff": {
@@ -1160,6 +1508,12 @@
             "ja": {
                 "Name": "オラオラ系",
                 "Description": "攻撃+10%，防御-10%"
+            },
+
+            "fr" : {
+                "Name": "Agressif",
+                "Description": "+10% de dégâts infligés, -20% de défense"
+            
             }
         },
         "Buff": {
@@ -1184,6 +1538,12 @@
             "ja": {
                 "Name": "うぬぼれ屋",
                 "Description": "作業速度+10%，防御-10%"
+            },
+
+            "fr" : {
+                "Name": "Vaniteux",
+                "Description": "+10% de vitesse de travail, -20% de défense"
+            
             }
         },
         "Buff": {
@@ -1208,6 +1568,12 @@
             "ja": {
                 "Name": "マゾヒスト",
                 "Description": "防御+15%，攻撃-16%"
+            },
+
+            "fr" : {
+                "Name": "Masochiste",
+                "Description": "+15% de défense, -15% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -1223,7 +1589,7 @@
         "I18n": {
             "en": {
                 "Name": "Sadist",
-                "Description": "+15% attack, +15% defence"
+                "Description": "+15% attack, -15% defence"
             },
             "zh-CN": {
                 "Name": "虐待狂",
@@ -1232,6 +1598,12 @@
             "ja": {
                 "Name": "サディスト",
                 "Description": "攻撃+15%，防御-15%"
+            },
+
+            "fr" : {
+                "Name": "Sadique",
+                "Description": "+15% de dégâts infligés, -15% de défense"
+            
             }
         },
         "Buff": {
@@ -1256,6 +1628,12 @@
             "ja": {
                 "Name": "希少",
                 "Description": "作業速度+15%，攻撃+15%"
+            },
+
+            "fr" : {
+                "Name": "Chanceux",
+                "Description": "+15% de vitesse de travail, +15% de dégâts infligés"
+            
             }
         },
         "Buff": {
@@ -1280,6 +1658,12 @@
             "ja": {
                 "Name": "伝説",
                 "Description": "攻撃+20%，防御+20%，移動速度+15%"
+            },
+
+            "fr" : {
+                "Name": "Légende",
+                "Description": "+20% de dégâts infligés, +20% de défense, +15% de vitesse de déplacement"
+            
             }
         },
         "Buff": {
@@ -1304,6 +1688,12 @@
             "ja": {
                 "Name": "魔女",
                 "Description": "闇属性ダメージ+20.0%，氷属性ダメージ+20.0%"
+            },
+
+            "fr" : {
+                "Name": "Sorcière",
+                "Description": "20% d'augmentation des dégâts d'attaque des ténèbres, 20% d'augmentation des dégâts d'attaque de glace"
+            
             }
         }
     },
@@ -1322,6 +1712,10 @@
             "ja": {
                 "Name": "夜行性",
                 "Description": "夜になっても眠らず、働き続ける。"
+            },
+            "fr": {
+                "Name": "Nocturne",
+                "Description": "Ne dort pas et continue de travailler même la nuit."
             }
         }
     },
@@ -1340,6 +1734,10 @@
             "ja": {
                 "Name": "せっかち",
                 "Description": "アクティブスキルのクールタイム短縮15%"
+            },
+            "fr": {
+                "Name": "Impatient",
+                "Description": "Réduction du temps de recharge des compétences actives de 15%"
             }
         }
     },
@@ -1358,6 +1756,12 @@
             "ja": {
                 "Name": "手加減",
                 "Description": "平和主義者 攻撃対象のHPを1未満にできない。"
+            },
+
+            "fr" : {
+                "Name": "Coup de pitié",
+                "Description": "Pacifiste. Ne réduira pas la santé de la cible en dessous de 1."
+            
             }
         }
     },
@@ -1376,6 +1780,12 @@
             "ja": {
                 "Name": "永炎",
                 "Description": "炎属性攻撃ダメージ増加30% 雷属性攻撃ダメージ増加30%"
+            },
+
+            "fr" : {
+                "Name": "Flamme éternelle",
+                "Description": "30% d'augmentation des dégâts d'attaque de feu. 30% d'augmentation des dégâts d'attaque de foudre."
+            
             }
         }
     },
@@ -1394,6 +1804,12 @@
             "ja": {
                 "Name": "冷静沈着",
                 "Description": "アクティブスキルのクールタイム短縮30% 攻撃+10%"
+            },
+
+            "fr" : {
+                "Name": "Calme",
+                "Description": "Réduction du temps de recharge des compétences actives de 30%. Attaque +10%"
+            
             }
         }
     },
@@ -1412,6 +1828,12 @@
             "ja": {
                 "Name": "博愛主義者",
                 "Description": "配合牧場にアサインされてる間、タマゴ生成速度が100%増加する"
+            },
+
+            "fr" : {
+                "Name": "Philanthrope",
+                "Description": "Lorsqu'il est assigné à une ferme d'élevage, le temps de production des œufs est réduit de 100%."
+            
             }
         }
     },
@@ -1430,6 +1852,12 @@
             "ja": {
                 "Name": "無限のスタミナ",
                 "Description": "最大スタミナ+50% ※ライド可能なパルのみ有効"
+            },
+
+            "fr" : {
+                "Name": "infatigable",
+                "Description": "Endurance max +50% *Cet effet n'est valable que pour les pals montables."
+            
             }
         }
     },
@@ -1448,6 +1876,12 @@
             "ja": {
                 "Name": "高貴",
                 "Description": "取引価格が改善+5%"
+            },
+
+            "fr" : {
+                "Name": "Noble",
+                "Description": "Prix de vente +5%"
+            
             }
         }
     },
@@ -1466,7 +1900,14 @@
             "ja": {
                 "Name": "健康優良児",
                 "Description": "最大スタミナ+25% ※ライド可能なパルのみ有効"
+            },
+
+            "fr" : {
+                "Name": "En pleine forme",
+                "Description": "Endurance max +25% *Cet effet n'est valable que pour les pals montables."
+            
             }
+            
         }
     },
     "SalePrice_Up_2": {
@@ -1484,6 +1925,12 @@
             "ja": {
                 "Name": "良い毛並み",
                 "Description": "取引価格が改善+3%"
+            },
+
+            "fr" : {
+                "Name": "Fourrure de qualité",
+                "Description": "Prix de vente +3%"
+            
             }
         }
     },
@@ -1502,6 +1949,12 @@
             "ja": {
                 "Name": "未知の生体細胞",
                 "Description": "攻撃+10% 炎属性ダメージ軽減15% 雷属性ダメージ軽減15%"
+            },
+
+            "fr" : {
+                "Name": "Cellules extraterrestres",
+                "Description": "Attaque +10%; Réduction des dégâts de feu 15%; Réduction des dégâts de foudre 15%"
+            
             }
         }
     },
@@ -1520,6 +1973,12 @@
             "ja": {
                 "Name": "引きこもり",
                 "Description": "最大スタミナ-25% ※ライド可能なパルのみ有効"
+            },
+
+            "fr" : {
+                "Name": "Maladif",
+                "Description": "Endurance max -25% *Cet effet n'est valable que pour les pals montables."
+            
             }
         }
     },
@@ -1538,6 +1997,12 @@
             "ja": {
                 "Name": "みすぼらしい",
                 "Description": "取引価格が悪化-10%"
+            },
+
+            "fr" : {
+                "Name": "Miteux",
+                "Description": "Prix de vente -10%"
+            
             }
         }
     },
@@ -1556,6 +2021,12 @@
             "ja": {
                 "Name": "のんびり屋さん",
                 "Description": "アクティブスキルのクールタイム延長-15%"
+            },
+
+            "fr" : {
+                "Name": "Détendu",
+                "Description": "Extension du temps de recharge des compétences actives -15%"
+            
             }
         }
     }
