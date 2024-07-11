@@ -15,7 +15,7 @@ class PalContainer:
             self._container_obj["value"]["Slots"]
         )
 
-        if self.ID is None or not self._slots_data:
+        if self.ID is None or self._slots_data is None:
             raise Exception("Invalid Container")
 
         self.slots: list[ContainerSlot] = [
@@ -63,7 +63,7 @@ class PalContainer:
         if self.has_pal(pal_id):
             return -1
         
-        if not (slot_idx := self._new_slot()):
+        if (slot_idx := self._new_slot()) is None:
             return -1
         
         slot = ContainerSlot(self._slots_data[slot_idx])

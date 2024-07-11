@@ -401,7 +401,7 @@ class SaveManager:
         
         pal_container = None
         for id in player_container_ids:
-            if container := self.container_data.get_container(id):
+            if (container := self.container_data.get_container(id)) is not None:
                 if container.get_empty_slot() != -1:
                     pal_container = container
                     break
@@ -418,7 +418,8 @@ class SaveManager:
             pal_instanceId = toUUID(str(uuid.uuid4()))
 
         try:
-            slot_idx = pal_container.add_pal(pal_instanceId)
+            if (slot_idx := pal_container.add_pal(pal_instanceId)) == -1:
+                return None
             container_id = pal_container.ID
             group.add_pal(pal_instanceId)
             
