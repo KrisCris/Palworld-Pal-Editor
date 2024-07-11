@@ -13,7 +13,7 @@ else:
 
 CONFIG_PATH = PROGRAM_PATH / 'config.json'
 
-VERSION = "sakura_pre5"
+VERSION = "0.9.0"
 
 class Config:
     i18n: str = "en"
