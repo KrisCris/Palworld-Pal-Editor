@@ -71,6 +71,7 @@ export default {
     TopBar_Btn_Save: "SAVE CHANGES",
     TopBar_Btn_Reload: "Reload Save",
     TopBar_Btn_Main_Page: "Return to Main Page",
+    TopBar_Btn_HealAllPals: "Heal All Pals",
     TopBar_Btn_Pal_OOB: "Show Out of Box Pal",
     TopBar_Btn_Pal_Ghost: "Toggle Ghost Pal",
     TopBar_Btn_Invalid_Options: "Hide Invalid Options",

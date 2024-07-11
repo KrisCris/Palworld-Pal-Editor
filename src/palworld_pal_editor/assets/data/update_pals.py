@@ -3,10 +3,10 @@
 # const items = document.querySelectorAll('a[data-hover]')
 # const list = []
 # for (const item of items) {
-#     list.push(item.innerHTML)
+#     list.push(item.getAttribute("data-hover").replace("?s=Pals/", ""))
 # }
 
-# check if the number of BOSS_ variant is the same as that of the non-BOSS version.
+
 # remove BOSS_
 import json
 
@@ -14,25 +14,31 @@ pal_list = [
     "RAID_NightLady",
     "RAID_NightLady_Dark",
     "RAID_NightLady_Dark_2",
+    "RAID_KingBahamut_Dragon",
+    "RAID_KingBahamut_Dragon_2",
     "GYM_BlackGriffon",
     "GYM_ElecPanda",
     "GYM_Horus",
     "GYM_LilyQueen",
     "GYM_ThunderDragonMan",
+    "GYM_MoonQueen",
+    "GYM_BlackGriffon_2",
+    "GYM_BlackGriffon_2_Avatar",
+    "GYM_ElecPanda_2",
+    "GYM_Horus_2",
+    "GYM_LilyQueen_2",
+    "GYM_ThunderDragonMan_2",
+    "GYM_MoonQueen_2",
+    "GYM_MoonQueen_2_Servant",
     "BadCatgirl",
     "BlueberryFairy",
     "BrownRabbit",
     "ElecLion",
-    "FeatherOstrich",
     "GoldenHorse",
     "PinkKangaroo",
-    "ScorpionMan",
-    "SifuDog",
     "TentacleTurtle",
-    "WingGolem",
     "BeardedDragon",
     "WaterLizard",
-    "GuardianDog",
     "GrassDragon",
     "Anubis",
     "Baphomet",
@@ -186,31 +192,40 @@ pal_list = [
     "FlameBambi",
     "NightLady",
     "NightLady_Dark",
-    "VolcanoDragon",
-    "DarkAlien",
-    "DarkMechaDragon",
+    "MoonQueen",
+    "KendoFrog",
     "LeafPrincess",
-    "GhostRabbit",
-    "NightBlueHorse",
-    "WhiteAlienDragon",
-    "WhiteShieldDragon",
     "MushroomDragon",
     "MushroomDragon_Dark",
     "SmallArmadillo",
-    "BlackPuppy",
-    "KendoFrog",
     "CandleGhost",
+    "ScorpionMan",
+    "WingGolem",
+    "GuardianDog",
+    "SifuDog",
+    "FeatherOstrich",
+    "MimicDog",
+    "DarkAlien",
+    "WhiteAlienDragon",
+    "VolcanoDragon",
+    "DarkMechaDragon",
+    "GhostRabbit",
+    "NightBlueHorse",
+    "WhiteShieldDragon",
+    "BlackPuppy",
     "WhiteDeer",
     "KingWhale",
     "MysteryMask",
     "HoodGhost",
     "Sekhmet",
     "ElecLizard",
-    "MoonQueen",
     "GrimGirl",
     "PurpleSpider",
     "BlueThunderHorse",
-    "RockBeast"
+    "RockBeast",
+    "OctopusGirl",
+    "IceNarwhal",
+    "JellyfishFairy"
 ]
 
 human = [
@@ -219,6 +234,8 @@ human = [
     "Hunter_Handgun",
     "Hunter_Shotgun",
     "Hunter_RocketLauncher",
+    "Hunter_MissileLauncher",
+    "Hunter_GrenadeLauncher",
     "Hunter_Bat",
     "Hunter_Grenade",
     "Hunter_FlameThrower",
@@ -292,7 +309,24 @@ human = [
     "Male_Soldier03",
     "Female_Soldier03",
     "Male_Soldier04",
-    "Female_Soldier04"
+    "Female_Soldier04",
+    "Hunter_Rifle_Oilrig",
+    "Hunter_Shotgun_Oilrig",
+    "Hunter_Grenade_Oilrig",
+    "Hunter_FlameThrower_Oilrig",
+    "Hunter_RocketLauncher_Oilrig",
+    "Hunter_GrenadeLauncher_Oilrig",
+    "Hunter_MissileLauncher_Oilrig",
+    "Hunter_Fat_GatlingGun_Oilrig",
+    "Male_DarkTrader02",
+    "Male_Ninja01",
+    "Male_NinjaElite01",
+    "Hunter_Fat_GatlingGun_Tower",
+    "Believer_CrossBow_Tower",
+    "Ninja01_Tower",
+    "NinjaElite01_Tower",
+    "Police_Rifle_Tower",
+    "Police_Shotgun_Tower"
 ]
 
 # import json

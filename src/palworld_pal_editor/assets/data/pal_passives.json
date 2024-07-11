@@ -1307,6 +1307,42 @@
             }
         }
     },
+    "Nocturnal": {
+        "InternalName": "Nocturnal",
+        "Rating": 1,
+        "I18n": {
+            "en": {
+                "Name": "Nocturnal",
+                "Description": "Does not sleep and continues to work even at night."
+            },
+            "zh-CN": {
+                "Name": "夜行性",
+                "Description": "即使到夜晚也不会睡觉，会一直工作。"
+            },
+            "ja": {
+                "Name": "夜行性",
+                "Description": "夜になっても眠らず、働き続ける。"
+            }
+        }
+    },
+    "CoolTimeReduction_Up_2": {
+        "InternalName": "CoolTimeReduction_Up_2",
+        "Rating": 1,
+        "I18n": {
+            "en": {
+                "Name": "Impatient",
+                "Description": "Active skill cooldown reduction 15%"
+            },
+            "zh-CN": {
+                "Name": "急性子",
+                "Description": "主动技能的冷却时间缩短15%"
+            },
+            "ja": {
+                "Name": "せっかち",
+                "Description": "アクティブスキルのクールタイム短縮15%"
+            }
+        }
+    },
     "NonKilling": {
         "InternalName": "NonKilling",
         "Rating": -1,
@@ -1322,6 +1358,204 @@
             "ja": {
                 "Name": "手加減",
                 "Description": "平和主義者 攻撃対象のHPを1未満にできない。"
+            }
+        }
+    },
+    "EternalFlame": {
+        "InternalName": "EternalFlame",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Eternal Flame",
+                "Description": "30% increase to Fire attack damage. 30% increase to Lightning attack damage."
+            },
+            "zh-CN": {
+                "Name": "永炎",
+                "Description": "火属性攻击伤害增加30% 雷属性攻击伤害增加30%"
+            },
+            "ja": {
+                "Name": "永炎",
+                "Description": "炎属性攻撃ダメージ増加30% 雷属性攻撃ダメージ増加30%"
+            }
+        }
+    },
+    "CoolTimeReduction_Up_1": {
+        "InternalName": "CoolTimeReduction_Up_1",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Serenity",
+                "Description": "Active skill cooldown reduction 30%. Attack +10%"
+            },
+            "zh-CN": {
+                "Name": "沉着冷静",
+                "Description": "主动技能的冷却时间缩短30% 攻击+10%"
+            },
+            "ja": {
+                "Name": "冷静沈着",
+                "Description": "アクティブスキルのクールタイム短縮30% 攻撃+10%"
+            }
+        }
+    },
+    "Test_PalEgg_HatchingSpeed_Up": {
+        "InternalName": "Test_PalEgg_HatchingSpeed_Up",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Philanthropist",
+                "Description": "When assigned to a Breeding Farm, egg production time is reduced by 100%."
+            },
+            "zh-CN": {
+                "Name": "博爱主义者",
+                "Description": "当分配到配种牧场时，产出蛋的速度将加快100%。"
+            },
+            "ja": {
+                "Name": "博愛主義者",
+                "Description": "配合牧場にアサインされてる間、タマゴ生成速度が100%増加する"
+            }
+        }
+    },
+    "Stamina_Up_1": {
+        "InternalName": "Stamina_Up_1",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Infinite Stamina",
+                "Description": "Max stamina +50% *This effect is only valid for rideable pals."
+            },
+            "zh-CN": {
+                "Name": "无限精力",
+                "Description": "最大体力+50% ※此效果仅对可骑乘的帕鲁有效。"
+            },
+            "ja": {
+                "Name": "無限のスタミナ",
+                "Description": "最大スタミナ+50% ※ライド可能なパルのみ有効"
+            }
+        }
+    },
+    "SalePrice_Up_1": {
+        "InternalName": "SalePrice_Up_1",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Noble",
+                "Description": "Sale price +5%"
+            },
+            "zh-CN": {
+                "Name": "高贵",
+                "Description": "改善交易价格+5%"
+            },
+            "ja": {
+                "Name": "高貴",
+                "Description": "取引価格が改善+5%"
+            }
+        }
+    },
+    "Stamina_Up_2": {
+        "InternalName": "Stamina_Up_2",
+        "Rating": 1,
+        "I18n": {
+            "en": {
+                "Name": "Fit as a Fiddle",
+                "Description": "Max stamina +25% *This effect is only valid for rideable pals."
+            },
+            "zh-CN": {
+                "Name": "品学兼优",
+                "Description": "最大体力+25% ※此效果仅对可骑乘的帕鲁有效。"
+            },
+            "ja": {
+                "Name": "健康優良児",
+                "Description": "最大スタミナ+25% ※ライド可能なパルのみ有効"
+            }
+        }
+    },
+    "SalePrice_Up_2": {
+        "InternalName": "SalePrice_Up_2",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Fine Furs",
+                "Description": "Sale price +3%"
+            },
+            "zh-CN": {
+                "Name": "贵族",
+                "Description": "改善交易价格+3%"
+            },
+            "ja": {
+                "Name": "良い毛並み",
+                "Description": "取引価格が改善+3%"
+            }
+        }
+    },
+    "Alien": {
+        "InternalName": "Alien",
+        "Rating": 3,
+        "I18n": {
+            "en": {
+                "Name": "Otherworldly Cells",
+                "Description": "Attack +10%; Fire damage reduction 15%; Lightning damage reduction 15%"
+            },
+            "zh-CN": {
+                "Name": "未知生物细胞",
+                "Description": "攻击力+10% 火属性伤害减免15% 雷属性伤害减免15%"
+            },
+            "ja": {
+                "Name": "未知の生体細胞",
+                "Description": "攻撃+10% 炎属性ダメージ軽減15% 雷属性ダメージ軽減15%"
+            }
+        }
+    },
+    "Stamina_Down_1": {
+        "InternalName": "Stamina_Down_1",
+        "Rating": -1,
+        "I18n": {
+            "en": {
+                "Name": "Sickly",
+                "Description": "Max Stamina -25% *This effect is only valid for rideable pals."
+            },
+            "zh-CN": {
+                "Name": "家里蹲",
+                "Description": "最大体力-25% ※此效果仅对可骑乘的帕鲁有效。"
+            },
+            "ja": {
+                "Name": "引きこもり",
+                "Description": "最大スタミナ-25% ※ライド可能なパルのみ有効"
+            }
+        }
+    },
+    "SalePrice_Down_1": {
+        "InternalName": "SalePrice_Down_1",
+        "Rating": -1,
+        "I18n": {
+            "en": {
+                "Name": "Shabby",
+                "Description": "Sale price -10%"
+            },
+            "zh-CN": {
+                "Name": "寒酸",
+                "Description": "改善交易价格-10%"
+            },
+            "ja": {
+                "Name": "みすぼらしい",
+                "Description": "取引価格が悪化-10%"
+            }
+        }
+    },
+    "CoolTimeReduction_Down_1": {
+        "InternalName": "CoolTimeReduction_Down_1",
+        "Rating": -1,
+        "I18n": {
+            "en": {
+                "Name": "Easygoing",
+                "Description": "Active skill cooldown extension -15%"
+            },
+            "zh-CN": {
+                "Name": "慢性子",
+                "Description": "主动技能的冷却时间延长-15%"
+            },
+            "ja": {
+                "Name": "のんびり屋さん",
+                "Description": "アクティブスキルのクールタイム延長-15%"
             }
         }
     }

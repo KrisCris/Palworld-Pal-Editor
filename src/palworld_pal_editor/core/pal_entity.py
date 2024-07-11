@@ -139,6 +139,7 @@ class PalEntity:
             case "GYM_Horus": self.Gender = PalGender.MALE
             case "GYM_BlackGriffon": self.Gender = PalGender.MALE
             case "GYM_ElecPanda": self.Gender = PalGender.FEMALE
+            case "GYM_MoonQueen": self.Gender = PalGender.FEMALE
         if self.Gender and self.IsHuman:
             self.del_Gender()
         elif not self.Gender and self.IsPal:
@@ -154,7 +155,7 @@ class PalEntity:
             self.equip_all_pal_attacks()
 
         self.heal_pal()
-        self.clear_worker_sick()
+        # self.clear_worker_sick()
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
 
@@ -223,6 +224,8 @@ class PalEntity:
                 key = "LazyCatfish"
             case "Police_HandGun":
                 key = "Police_Handgun"
+            case "Blueplatypus":
+                key = "BluePlatypus"
         return key
     
     @property
@@ -372,7 +375,7 @@ class PalEntity:
     @LOGGER.change_logger('Level')
     @type_guard
     def Level(self, value: int) -> None:
-        value = clamp(1, 50, value)
+        value = clamp(1, 55, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.IntProperty(value)
         else:
@@ -480,9 +483,12 @@ class PalEntity:
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
 
+        # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
+        Alpha_Scaling = 1.2 if self._IsBOSS else 1
+
         # slightly off but not a big deal i suppose
         return math.floor(math.floor(500 + 5 * Level + HP_Stat * .5 * Level * (1 + HP_IV)) \
-            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)) * 1000
+            * (1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus) * Alpha_Scaling) * 1000
 
     @property
     def ComputedAttack(self) -> Optional[int]:
@@ -783,6 +789,10 @@ class PalEntity:
         return PalObjects.get_EnumProperty(self._pal_param.get("WorkerSick"))
     
     @property
+    def HungerType(self) -> Optional[str]:
+        return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
+    
+    @property
     def HasWorkerSick(self) -> bool:
         return self.WorkerSick is not None
     
@@ -829,11 +839,20 @@ class PalEntity:
         return False
 
     @LOGGER.change_logger("PhysicalHealth")
+    @LOGGER.change_logger("WorkerSick")
+    @LOGGER.change_logger("HungerType")
+    @LOGGER.change_logger("PalReviveTimer")
     def heal_pal(self):
-        if self.IsFaintedPal:
-            self._pal_param.pop("PalReviveTimer", None)
-        if self.PhysicalHealth == "EPalStatusPhysicalHealthType::Dying":
-            self._pal_param.pop("PhysicalHealth", None)
+        self._pal_param.pop("PalReviveTimer", None)
+        self._pal_param.pop("PhysicalHealth", None)
+        self._pal_param.pop("WorkerSick", None)
+        self._pal_param.pop("HungerType", None)
+
+        if self.MaxFullStomach:
+            self.FullStomach = self.MaxFullStomach
+        else:
+            self.FullStomach = 150.0
+        self.SanityValue = 100.0
 
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
@@ -892,12 +911,16 @@ class PalEntity:
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
 
-    @LOGGER.change_logger("WorkerSick")
-    def clear_worker_sick(self):
-        self._pal_param.pop("WorkerSick", None)
-        if self.MaxFullStomach:
-            self.FullStomach = self.MaxFullStomach
-        self.SanityValue = 100.0
+    # @LOGGER.change_logger("WorkerSick")
+    # @LOGGER.change_logger("HungerType")
+    # def clear_worker_sick(self):
+    #     self._pal_param.pop("WorkerSick", None)
+    #     self._pal_param.pop("HungerType", None)
+    #     if self.MaxFullStomach:
+    #         self.FullStomach = self.MaxFullStomach
+    #     else:
+    #         self.FullStomach = 150.0
+    #     self.SanityValue = 100.0
 
     def max_lv_exp(self):
         exp = DataProvider.get_level_xp(self.Level)

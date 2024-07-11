@@ -1,3 +1,4 @@
+import heapq
 from typing import Optional, overload
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
@@ -10,17 +11,27 @@ class PalContainer:
     def __init__(self, container_obj: dict) -> None:
         self._container_obj: dict = container_obj
 
-        self._slots_data: dict = PalObjects.get_ArrayProperty(
+        self._slots_data: list = PalObjects.get_ArrayProperty(
             self._container_obj["value"]["Slots"]
         )
 
-        if self.ID is None or not self._slots_data:
+        if self.ID is None or self._slots_data is None:
             raise Exception("Invalid Container")
 
         self.slots: list[ContainerSlot] = [
             ContainerSlot(slot_dict) for slot_dict in self._slots_data
         ]
-        # TODO PRINT LOGS
+
+        self.size: int = PalObjects.get_BaseType(self._container_obj["value"]["SlotNum"])
+        if self.size is None:
+            raise Exception(f"Container {self.ID} Size Unknown")
+        
+        self.available_inv_idx_set = set(range(0, self.size))
+        for slot in self.slots:
+            self.available_inv_idx_set.remove(slot.inv_idx)
+        self.available_inv_idx_set = list(self.available_inv_idx_set)
+        heapq.heapify(self.available_inv_idx_set)
+
 
     def __len__(self):
         return len(self.slots)
@@ -32,20 +43,43 @@ class PalContainer:
     def ID(self) -> Optional[UUID]:
         return PalObjects.get_BaseType(self._container_obj.get("key", {}).get("ID"))
 
+    def _new_slot(self) -> Optional[int]:
+        slotidx = self.get_empty_slot()
+        if slotidx == -1:
+            return
+        inv_slot = self.get_empty_inv_slot()
+        if inv_slot == -1:
+            return
+        self._slots_data.append(PalObjects.ContainerSlotData(inv_slot))
+        return slotidx
+
+    def _del_slot(self, slotidx: int):
+        if slotidx >= len(self._slots_data):
+            return
+        slot = self._slots_data.pop(slotidx)
+        heapq.heappush(self.available_inv_idx_set, PalObjects.get_BaseType(slot.get("SlotIndex")))
+
     def add_pal(self, pal_id: UUID | str) -> int:
         if self.has_pal(pal_id):
             return -1
         
-        slot_idx = self.get_empty_slot()
-        if slot_idx == -1:
-            return slot_idx
-
-        slot = self.slots[slot_idx]
+        if (slot_idx := self._new_slot()) is None:
+            return -1
+        
+        slot = ContainerSlot(self._slots_data[slot_idx])
         slot.instance_id = pal_id
-        LOGGER.info(f"Pal {pal_id} add to container {self.ID} @ {slot_idx} ")
-        return slot_idx
+        self.slots.append(slot)
 
-    def del_pal(self, pal_id: UUID | str, slot_idx: int):
+        LOGGER.info(f"Pal {pal_id} add to container {self.ID} @ {slot.inv_idx} ")
+        return slot.inv_idx
+
+    def del_pal(self, pal_id: UUID):
+        slot_idx = self.get_pal_idx(pal_id)
+        if not slot_idx:
+            LOGGER.warning(
+                    f"Can't find PalID on del_pal: {str(pal_id)}."
+                )
+            return
         if not self.has_pal(pal_id, slot_idx):
             if slot_idx < len(self.slots):
                 LOGGER.warning(
@@ -53,9 +87,18 @@ class PalContainer:
                 )
             return
 
-        self.slots[slot_idx].clear()
+        self.slots[slot_idx].clear() # unnecessary since 0.3.3
+        self.slots.pop(slot_idx)
+        self._del_slot(slot_idx)
+        
 
-    def has_pal(self, pal_id: UUID | str, slot_idx: int = None) -> bool:
+    def get_pal_idx(self, pal_id: UUID | str) -> Optional[int]:
+        for i in range(0, len(self.slots)):
+            if self.slots[i].instance_id == pal_id:
+                return i
+        return None
+
+    def has_pal(self, pal_id: UUID | str, slot_idx: Optional[int] = None) -> bool:
         if slot_idx is not None:
             if slot_idx >= len(self.slots):
                 return False
@@ -66,23 +109,32 @@ class PalContainer:
                     return True
             return False
 
-    def reorder_pals(self, pal_ids: list[UUID | str]):
-        id_num = len(pal_ids)
-        for i in range(0, len(self.slots)):
-            slot = self.slots[i]
-            if i < id_num:
-                slot.instance_id = pal_ids[i]
-            else:
-                slot.clear()
+    # def reorder_pals(self, pal_ids: list[UUID | str]):
+    #     id_num = len(pal_ids)
+    #     for i in range(0, len(self.slots)):
+    #         slot = self.slots[i]
+    #         if i < id_num:
+    #             slot.instance_id = pal_ids[i]
+    #         else:
+    #             slot.clear()
 
     def get_empty_slot(self) -> int:
         """
         Return: slot idx, or -1 if full
         """
-        for i in range(0, len(self.slots)):
-            if self.slots[i].isEmpty:
-                return i
+        # for i in range(0, len(self.slots)):
+        #     if self.slots[i].isEmpty:
+        #         return i
+        # return -1
+        if len(self.slots) < self.size:
+            return len(self.slots)
         return -1
+    
+    def get_empty_inv_slot(self) -> int:
+        if self.available_inv_idx_set:
+            return heapq.heappop(self.available_inv_idx_set)
+        else:
+            return -1
 
 
 class ContainerSlot:
@@ -107,6 +159,10 @@ class ContainerSlot:
     def instance_id(self) -> Optional[UUID]:
         return self._slot_raw_data.get("instance_id")
 
+    @property
+    def inv_idx(self) -> int:
+        return PalObjects.get_BaseType(self._slot_data.get('SlotIndex'))
+
     @instance_id.setter
     def instance_id(self, id: UUID | str):
         self._slot_raw_data["instance_id"] = toUUID(id)
@@ -128,8 +184,8 @@ class ContainerData:
         for container in self._CCSD["value"]:
             try:
                 container_entity = PalContainer(container)
-            except:
-                LOGGER.info(f"Invalid Container {container_entity.ID}, skipping")
+            except Exception as e:
+                LOGGER.warning(f"Invalid Container: {e}, skipping")
                 continue
 
             self.container_map[container_entity.ID] = container_entity

@@ -71,6 +71,7 @@ export default {
     TopBar_Btn_Save: "変更を保存",
     TopBar_Btn_Reload: "セーブをリロード",
     TopBar_Btn_Main_Page: "メインページに戻る",
+    TopBar_Btn_HealAllPals: "すべてのパルを回復する",
     TopBar_Btn_Pal_OOB: "ボックス外パルを表示",
     TopBar_Btn_Pal_Ghost: "ゴーストパルを表示",
     TopBar_Btn_Invalid_Options: "無効なオプションを非表示",

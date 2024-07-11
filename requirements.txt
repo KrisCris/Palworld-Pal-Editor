@@ -1,8 +1,7 @@
 setuptools==69.1.0
-palworld_save_tools==0.22.0
+palworld_save_tools==0.23.1
 wheel==0.42.0
 Flask==3.0.2
-# pillow==10.2.0
 pyinstaller==6.4.0
 waitress==3.0.0
 Flask-JWT-Extended==4.6.0

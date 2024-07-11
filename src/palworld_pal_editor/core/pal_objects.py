@@ -7,6 +7,7 @@ from palworld_save_tools.json_tools import CustomEncoder
 
 from palworld_pal_editor.utils import LOGGER, clamp
 
+
 def dumps(data: dict) -> str:
     return json.dumps(data, indent=4, cls=CustomEncoder, ensure_ascii=False)
 
@@ -321,6 +322,17 @@ class PalObjects:
         }
 
     @staticmethod
+    def ContainerSlotData(slotidx: int):
+        return {
+            "SlotIndex": PalObjects.IntProperty(slotidx),
+            "RawData": PalObjects.ArrayProperty('ByteProperty', {
+                    "player_uid": PalObjects.EMPTY_UUID,
+                    "instance_id": PalObjects.EMPTY_UUID,
+                    "permission_tribe_id": 0,
+                }, '.worldSaveData.CharacterContainerSaveData.Value.Slots.Slots.RawData')
+        }
+
+    @staticmethod
     def get_container_value(container: dict) -> Optional[Any]:
         case_1 = {
             "StrProperty",
@@ -376,7 +388,7 @@ class PalObjects:
             },
             "type": "StructProperty",
         }
-    
+
     @staticmethod
     def PalLoggedinPlayerSaveDataRecordData(value: dict = None):
         return {
@@ -384,11 +396,13 @@ class PalObjects:
             "struct_id": PalObjects.EMPTY_UUID,
             "id": None,
             "value": value or {},
-            "type": "StructProperty"
+            "type": "StructProperty",
         }
-    
+
     @staticmethod
-    def MapProperty(key_type: str, value_type: str, key_struct_type=None, value_struct_type=None):
+    def MapProperty(
+        key_type: str, value_type: str, key_struct_type=None, value_struct_type=None
+    ):
         return {
             "key_type": key_type,
             "value_type": value_type,
@@ -396,9 +410,9 @@ class PalObjects:
             "value_struct_type": value_struct_type,
             "id": None,
             "value": [],
-            "type": "MapProperty"
+            "type": "MapProperty",
         }
-    
+
     @staticmethod
     def get_MapProperty(container: dict) -> Optional[list[dict]]:
         return get_nested_attr(container, ["value"])
@@ -488,7 +502,7 @@ class PalObjects:
                                     "Talent_Melee": PalObjects.IntProperty(50),
                                     "Talent_Shot": PalObjects.IntProperty(50),
                                     "Talent_Defense": PalObjects.IntProperty(50),
-                                    "FullStomach": PalObjects.FloatProperty(150),
+                                    "FullStomach": PalObjects.FloatProperty(300),
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}
                                     ),
@@ -506,7 +520,7 @@ class PalObjects:
                                         },
                                     ),
                                     # MaxHP is no longer stored in the game save.
-                                    # "MaxHP": PalObjects.FixedPoint64(545000), 
+                                    # "MaxHP": PalObjects.FixedPoint64(545000),
                                     "CraftSpeed": PalObjects.IntProperty(70),
                                     # Do not omit CraftSpeeds, otherwise the pal works super slow
                                     # TODO use accurate data (even tho this is useless)
@@ -533,7 +547,7 @@ class PalObjects:
                                         SlotIndex, ContainerId
                                     ),
                                     # TODO Need accurate values
-                                    "MaxFullStomach": PalObjects.FloatProperty(150.0),
+                                    "MaxFullStomach": PalObjects.FloatProperty(300.0),
                                     "GotStatusPointList": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
@@ -560,9 +574,13 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "DecreaseFullStomachRates": PalObjects.FloatContainer({}),
+                                    "DecreaseFullStomachRates": PalObjects.FloatContainer(
+                                        {}
+                                    ),
                                     "CraftSpeedRates": PalObjects.FloatContainer({}),
-                                    "LastJumpedLocation": PalObjects.Vector(0, 0, 7088.5),
+                                    "LastJumpedLocation": PalObjects.Vector(
+                                        0, 0, 7088.5
+                                    ),
                                 },
                                 "type": "StructProperty",
                             }

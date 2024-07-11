@@ -28,6 +28,7 @@ def main():
             if response.status_code == 200:
                 LOGGER.info("Backend Ready, Launching GUI...")
                 break
+            time.sleep(0.5)
         except requests.exceptions.ConnectionError:
             time.sleep(0.5)
 

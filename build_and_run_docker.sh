@@ -1,4 +1,4 @@
-docker build -t palworld-pal-editor -f docker/Dockerfile .
+docker build --no-cache -t palworld-pal-editor -f docker/Dockerfile .
 
 if which docker-compose > /dev/null; then
     docker-compose -f docker/docker-compose.yml up -d

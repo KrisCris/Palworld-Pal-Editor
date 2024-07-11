@@ -24,7 +24,7 @@ def patch_paldata():
         pal_entity = SaveManager().get_player(PlayerUId).get_pal(PalGuid)
     try:
         match key:
-            case "HasWorkerSick": pal_entity.clear_worker_sick()
+            case "HasWorkerSick": pal_entity.heal_pal()
             case "IsFaintedPal": pal_entity.heal_pal()
             case "pop_PassiveSkillList": pal_entity.pop_PassiveSkillList(item=value)
             case "pop_MasteredWaza": pal_entity.pop_MasteredWaza(item=value)
@@ -44,6 +44,8 @@ def patch_paldata():
                 player = SaveManager().get_player(PlayerUId)
                 if not SaveManager().move_pal(pal_entity.InstanceId, [player.OtomoCharacterContainerId, player.PalStorageContainerId]):
                     return reply(1, None, f"No enough slot in pal container.")
+            case "heal_all_pals": 
+                SaveManager().heal_all_pals()
             case _:
                 if isinstance(err:=setattr(pal_entity, key, value), TypeError):
                     return reply(1, None, f"Error in patch_paldata {err}")

@@ -106,10 +106,12 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonSaveData"] = (skip_decode, skip_enco
 MAIN_SKIP_PROPERTIES[".worldSaveData.EnemyCampSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip_decode, skip_encode)
 
-
 MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
+
+MAIN_SKIP_PROPERTIES[".worldSaveData.OilrigSaveData"] = (skip_decode, skip_encode)
+MAIN_SKIP_PROPERTIES[".worldSaveData.SupplySaveData"] = (skip_decode, skip_encode)
 
 
 PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
@@ -219,7 +221,8 @@ class SaveManager:
                     container_id, slot_idx = pal_entity.SlotID
                     group_id = pal_entity.group_id
                     # is_unref_pal = not self.group_data.get_group(group_id).has_pal(pal_entity.InstanceId)
-                    is_unref_pal = not self.container_data.get_container(container_id).has_pal(pal_entity.InstanceId, slot_idx)
+                    pal_container = self.container_data.get_container(container_id)
+                    is_unref_pal = (not pal_container) or (not pal_container.has_pal(pal_entity.InstanceId))
                     if is_unref_pal:
                         LOGGER.info(f"Likely Ghost Pal: {pal_entity}")
                     pal_entity.is_unreferenced_pal = is_unref_pal
@@ -346,7 +349,7 @@ class SaveManager:
             raise Exception("Pal already in the target container.")
         
         old_container = self.container_data.get_container(pal_entity.ContainerId)
-        old_container.del_pal(pal_id, pal_entity.SlotIndex)
+        old_container.del_pal(pal_id)
 
         if (slot_idx := pal_container.add_pal(pal_id)) == -1:
             return False
@@ -371,13 +374,22 @@ class SaveManager:
             if pal_group := self.group_data.get_group(popped_pal.group_id):
                 pal_group.del_pal(popped_pal.InstanceId)
             if pal_container := self.container_data.get_container(popped_pal.ContainerId):
-                pal_container.del_pal(popped_pal.InstanceId, popped_pal.SlotIndex)
+                pal_container.del_pal(popped_pal.InstanceId)
             self._entities_list.remove(popped_pal._pal_obj)
         except:
             LOGGER.warning(f"Error Deleting PAL {guid}: {traceback.format_exc()}")
             return False
         LOGGER.info(f"DELETED PAL {guid}")
         return True
+    
+    def heal_all_pals(self):
+        for pal in self.baseworker_mapping.values():
+            pal.heal_pal()
+        for pal in self._dangling_pals.values():
+            pal.heal_pal()
+        for player in self.get_players():
+            for pal in player._palbox.values():
+                pal.heal_pal() 
     
     def add_pal(self, player_uid: str | UUID, pal_obj: dict = None) -> Optional[PalEntity]:
         player = self.get_player(player_uid)
@@ -389,7 +401,7 @@ class SaveManager:
         
         pal_container = None
         for id in player_container_ids:
-            if container := self.container_data.get_container(id):
+            if (container := self.container_data.get_container(id)) is not None:
                 if container.get_empty_slot() != -1:
                     pal_container = container
                     break
@@ -406,7 +418,8 @@ class SaveManager:
             pal_instanceId = toUUID(str(uuid.uuid4()))
 
         try:
-            slot_idx = pal_container.add_pal(pal_instanceId)
+            if (slot_idx := pal_container.add_pal(pal_instanceId)) == -1:
+                return None
             container_id = pal_container.ID
             group.add_pal(pal_instanceId)
             
