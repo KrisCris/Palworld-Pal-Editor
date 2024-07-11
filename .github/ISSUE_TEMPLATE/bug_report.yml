@@ -1,0 +1,63 @@
+name: Bug report
+description: File a bug/issue
+title: "[BUG] <title>"
+labels: [bug]
+body:
+  - type: checkboxes
+    id: low-effort-checks
+    attributes:
+      label: Please confirm
+      description: Issues without all checks may be ignored/closed.
+      options:
+        - label: I have searched existing issues
+        - label: This issue is not a duplicate of an existing one
+        - label: I have read the [README](https://github.com/KrisCris/Palworld-Pal-Editor?tab=readme-ov-file#palworld-pal-editor)
+        - label: I have attached logs to this bug report (failure to include logs will mean your issue may not be responded to).
+        - label: I have checked for both game and editor updates, and understand that issues on older versions may not be resolved.
+
+  - type: textarea
+    attributes:
+      label: Bug Report Description
+      description: A clear and concise description of what the bug is and if possible, the steps you used to get to the bug. If appropriate, include screenshots or videos.
+      placeholder: |
+        When I try to use ...
+
+        Steps to reproduce the behavior:
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected Behaviour
+      description: A brief description of the expected behavior.
+      placeholder: It should be ...
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Editor Version
+      placeholder: "0.8.1"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Game Version
+      placeholder: "0.3.3"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Please copy the most recent `.log` file, which is stored right next to the executable.
+      placeholder: 2024-07-11_15-15-11.log
+    validations:
+      required: true
+
+      
