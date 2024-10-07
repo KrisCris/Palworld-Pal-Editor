@@ -47,7 +47,8 @@
                 "--mode=web",
                 "--lang=zh-CN",
                 "--debug"
-            ]
+            ],
+            "justMyCode": false
         }
     ]
 }

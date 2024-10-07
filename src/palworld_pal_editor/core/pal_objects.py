@@ -112,6 +112,13 @@ class PalObjects:
     @staticmethod
     def BoolProperty(value: bool):
         return {"value": value, "id": None, "type": "BoolProperty"}
+    
+    @staticmethod
+    def ByteProperty(value: Any, type: str = None):
+        return {"value": {
+            "type": type,
+            "value": value
+        }, "id": None, "type": "ByteProperty"}
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
@@ -120,6 +127,14 @@ class PalObjects:
     @staticmethod
     def set_BaseType(container: dict, value: Any):
         container["value"] = value
+
+    @staticmethod
+    def get_ByteProperty(container: dict) -> Optional[Any]:
+        return get_nested_attr(container, ["value", "value"])
+    
+    @staticmethod
+    def set_ByteProperty(container: dict, value: Any):
+        container["value"]["value"] = value
 
     @staticmethod
     def Guid(value: str | UUID):
