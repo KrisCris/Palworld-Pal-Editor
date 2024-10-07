@@ -369,7 +369,7 @@ class PalEntity:
 
     @property
     def Level(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Level"))
+        return PalObjects.get_ByteProperty(self._pal_param.get("Level"))
     
     @Level.setter
     @LOGGER.change_logger('Level')
@@ -377,9 +377,9 @@ class PalEntity:
     def Level(self, value: int) -> None:
         value = clamp(1, 55, value)
         if self.Level is None:
-            self._pal_param["Level"] = PalObjects.IntProperty(value)
+            self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
-            self._pal_param["Level"]["value"] = value
+            PalObjects.set_ByteProperty(self._pal_param['Level'], value)
         self.Exp = DataProvider.get_level_xp(self.Level)
 
         if maxHP := self.ComputedMaxHP:
@@ -398,7 +398,7 @@ class PalEntity:
         if self.Exp is None:
             self._pal_param["Exp"] = PalObjects.IntProperty(value)
         else:
-            self._pal_param["Exp"]["value"] = value
+            PalObjects.set_BaseType(self._pal_param['Exp'], value)
 
     @property
     def Rank(self) -> Optional[PalRank]:
@@ -687,19 +687,19 @@ class PalEntity:
 
     @property
     def Talent_HP(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get('Talent_HP'))
+        return PalObjects.get_ByteProperty(self._pal_param.get('Talent_HP'))
     
     @property
     def Talent_Melee(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get('Talent_Melee'))
+        return PalObjects.get_ByteProperty(self._pal_param.get('Talent_Melee'))
     
     @property
     def Talent_Shot(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get('Talent_Shot'))
+        return PalObjects.get_ByteProperty(self._pal_param.get('Talent_Shot'))
     
     @property
     def Talent_Defense(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get('Talent_Defense'))
+        return PalObjects.get_ByteProperty(self._pal_param.get('Talent_Defense'))
     
     @Talent_HP.setter
     @LOGGER.change_logger("Talent_HP")
@@ -968,9 +968,9 @@ class PalEntity:
     def _set_iv(self, property_name: str, value: int):
         iv = clamp(0, 100, value)
         if getattr(self, property_name) is None:
-            self._pal_param[property_name] = PalObjects.IntProperty(iv)
+            self._pal_param[property_name] = PalObjects.ByteProperty(iv)
         else:
-            PalObjects.set_BaseType(self._pal_param[property_name], iv)
+            PalObjects.set_ByteProperty(self._pal_param[property_name], iv)
 
     def _get_display_name(self) -> str:
         cache_key = (Config.i18n, self.DataAccessKey, self.NickName, self.IsRarePal, self.IsBOSS, self.IsTower, self.Gender)

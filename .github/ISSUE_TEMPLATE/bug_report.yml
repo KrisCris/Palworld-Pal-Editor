@@ -41,7 +41,7 @@ body:
   - type: input
     attributes:
       label: Editor Version
-      placeholder: "0.8.1"
+      placeholder: "0.9.0"
     validations:
       required: true
 
@@ -59,5 +59,13 @@ body:
       placeholder: 2024-07-11_15-15-11.log
     validations:
       required: true
+
+  - type: textarea
+    attributes:
+      label: Your Game Save
+      description: Please provide the save file that you were using when the bug occurred.
+      placeholder: Drag and Drop to Upload. (e.g. 0081AAF04827E23E63A3FF8D8DBA4643.zip)
+    validations:
+      required: false
 
       

@@ -25,7 +25,7 @@ class PalGroup:
     def __str__(self) -> str:
         lines = []
         lines.append(f"{self.guild_name} - {self.group_id}")
-        for player in self.players:
+        for player in self.players if self.players else []:
             lines.append(f"\n\t{str(player[0])} - {str(player[1])}")
         return "\t".join(lines)
 
@@ -33,24 +33,33 @@ class PalGroup:
         if self.has_pal(instanceId):
             LOGGER.warning("Pal ID already exists")
             return False
-        
+
         new_handle = PalObjects.individual_character_handle_id(instanceId)
         self.instance_map[str(instanceId)] = new_handle
-        if self.individual_character_handle_ids is None:
-            self._group_param["individual_character_handle_ids"] = []
-        self.individual_character_handle_ids.append(new_handle)
+        match self.individual_character_handle_ids:
+            case None:
+                self._group_param["individual_character_handle_ids"] = [new_handle]
+            case _:
+                self.individual_character_handle_ids.append(new_handle)
+        # if self.individual_character_handle_ids is None:
+        #     self._group_param["individual_character_handle_ids"] = []
+        # self.individual_character_handle_ids.append(new_handle)
         return True
-    
+
     def del_pal(self, instanceId: UUID | str):
         if not self.has_pal(instanceId):
             LOGGER.warning(f"Pal {instanceId} not exist in group {self.guild_name}")
             return
         handle = self.instance_map.pop(instanceId)
-        self.individual_character_handle_ids.remove(handle)
+        match self.individual_character_handle_ids:
+            case None:
+                pass
+            case _:
+                self.individual_character_handle_ids.remove(handle)
 
     def has_pal(self, instanceId: UUID | str) -> bool:
         return instanceId in self.instance_map
-    
+
     def has_player(self, playerUId: UUID | str) -> bool:
         return playerUId in self.player_map
 
@@ -72,7 +81,10 @@ class PalGroup:
 
     @property
     def players(self) -> Optional[list[tuple[UUID, str]]]:
-        return [(player_data['player_uid'], player_data['player_info']['player_name']) for player_data in self._group_param.get("players")]
+        return [
+            (player_data["player_uid"], player_data["player_info"]["player_name"])
+            for player_data in self._group_param.get("players") or []
+        ]
 
 
 class GroupData:
@@ -108,9 +120,10 @@ class GroupData:
         return self.group_map.get(group_id)
 
     def get_groups(self) -> list[PalGroup]:
-        return self.group_map.values()
-    
+        return list(self.group_map.values())
+
     def get_player_group_id(self, player_uid: UUID | str) -> Optional[UUID]:
         for group in self.get_groups():
             if group.has_player(player_uid):
                 return group.group_id
+        return None
