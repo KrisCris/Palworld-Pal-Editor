@@ -402,7 +402,7 @@ class PalEntity:
 
     @property
     def Rank(self) -> Optional[PalRank]:
-        return PalRank.from_value(PalObjects.get_BaseType(self._pal_param.get("Rank")))
+        return PalRank.from_value(PalObjects.get_ByteProperty(self._pal_param.get("Rank")))
 
     @Rank.setter
     @LOGGER.change_logger('Rank')
@@ -417,9 +417,9 @@ class PalEntity:
                 return
 
         if self.Rank is None:
-            self._pal_param["Rank"] = PalObjects.IntProperty(pal_rank.value)
+            self._pal_param["Rank"] = PalObjects.ByteProperty(pal_rank.value)
         else:
-            PalObjects.set_BaseType(self._pal_param["Rank"], pal_rank.value)
+            PalObjects.set_ByteProperty(self._pal_param.get("Rank"), pal_rank.value)
 
         if maxHP := self.ComputedMaxHP:
             self.HP = maxHP
@@ -429,19 +429,19 @@ class PalEntity:
 
     @property
     def Rank_HP(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Rank_HP"))
+        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_HP"))
 
     @property
     def Rank_Attack(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Rank_Attack"))
+        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_Attack"))
     
     @property
     def Rank_Defence(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Rank_Defence"))
+        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_Defence"))
     
     @property
     def Rank_CraftSpeed(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Rank_CraftSpeed"))
+        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_CraftSpeed"))
     
     @Rank_HP.setter
     @LOGGER.change_logger('Rank_HP')
@@ -958,9 +958,9 @@ class PalEntity:
     def _set_soul_rank(self, property_name: str, rank: int):
         rank = clamp(0, 10, rank)
         if getattr(self, property_name) is None:
-            self._pal_param[property_name] = PalObjects.IntProperty(rank)
+            self._pal_param[property_name] = PalObjects.ByteProperty(rank)
         else:
-            PalObjects.set_BaseType(self._pal_param[property_name], rank)
+            PalObjects.set_ByteProperty(self._pal_param.get(property_name), rank)
 
         if getattr(self, property_name) == 0:
             self._pal_param.pop(property_name, None)
