@@ -59,7 +59,6 @@ def save():
 @jwt_required()
 def get_passive_skills():
     passives_raw = DataProvider.get_sorted_passives()
-    passives_raw.reverse()
     passive_dict = {}
     passive_arr = []
     for passive in passives_raw:

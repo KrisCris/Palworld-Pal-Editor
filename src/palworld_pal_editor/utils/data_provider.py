@@ -212,7 +212,7 @@ class DataProvider:
     def get_sorted_passives() -> list[dict]:
         sorted_list = sorted(
             PAL_PASSIVES.values(),
-            key=lambda item: (item["Rating"], item["InternalName"]),
+            key=lambda item: (-item["Rating"], DataProvider.get_passive_i18n(item["InternalName"])),
         )
         return sorted_list
 

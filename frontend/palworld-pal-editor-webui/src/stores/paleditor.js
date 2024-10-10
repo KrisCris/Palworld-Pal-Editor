@@ -1251,6 +1251,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   function displayRating(rating) {
     if (rating === undefined) return "";
     if (rating < 0) return "🔴";
+    if (rating > 2) return "🟠";
     if (rating > 1) return "🟡";
     return "⚪";
   }
