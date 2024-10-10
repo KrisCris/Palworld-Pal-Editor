@@ -114,11 +114,11 @@ class PalObjects:
         return {"value": value, "id": None, "type": "BoolProperty"}
     
     @staticmethod
-    def ByteProperty(value: Any, type: str = None):
+    def ByteProperty(value: Any, type: str = 'None'):
         return {"value": {
             "type": type,
             "value": value
-        }, "id": "None", "type": "ByteProperty"}
+        }, "id": None, "type": "ByteProperty"}
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
