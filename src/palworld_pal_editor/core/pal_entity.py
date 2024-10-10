@@ -157,7 +157,7 @@ class PalEntity:
         self.heal_pal()
         # self.clear_worker_sick()
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @property
     def RawSpecieKey(self) -> Optional[str]:
@@ -286,7 +286,7 @@ class PalEntity:
         else:
             self.CharacterID = f"GYM_{self.RawSpecieKey}"
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @property
     def _IsBOSS(self) -> bool:
@@ -327,7 +327,7 @@ class PalEntity:
         self._IsBOSS = value
 
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @property
     def IsRarePal(self) -> Optional[bool]:
@@ -383,7 +383,7 @@ class PalEntity:
         self.Exp = DataProvider.get_level_xp(self.Level)
 
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
         self.learn_attacks()
 
@@ -422,7 +422,7 @@ class PalEntity:
             PalObjects.set_ByteProperty(self._pal_param.get("Rank"), pal_rank.value)
 
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
         if self.Rank == PalRank.Rank0:
             self._pal_param.pop("Rank", None)
@@ -449,7 +449,7 @@ class PalEntity:
     def Rank_HP(self, rank: int) -> None:
         self._set_soul_rank('Rank_HP', rank)
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @Rank_Attack.setter
     @LOGGER.change_logger('Rank_Attack')
@@ -534,17 +534,17 @@ class PalEntity:
 
 
     @property
-    def HP(self) -> Optional[int]:
-        return PalObjects.get_FixedPoint64(self._pal_param.get("HP"))
+    def Hp(self) -> Optional[int]:
+        return PalObjects.get_FixedPoint64(self._pal_param.get("Hp"))
     
-    @HP.setter
-    @LOGGER.change_logger('HP')
+    @Hp.setter
+    @LOGGER.change_logger('Hp')
     @type_guard
-    def HP(self, value: int) -> None:
-        if self.HP is None:
-            self._pal_param["HP"] = PalObjects.FixedPoint64(value)
+    def Hp(self, value: int) -> None:
+        if self.Hp is None:
+            self._pal_param["Hp"] = PalObjects.FixedPoint64(value)
         else:
-            PalObjects.set_FixedPoint64(self._pal_param["HP"], value)
+            PalObjects.set_FixedPoint64(self._pal_param["Hp"], value)
 
     @property
     def PassiveSkillList(self) -> Optional[list[str]]:
@@ -708,7 +708,7 @@ class PalEntity:
         self._set_iv("Talent_HP", value)
 
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @Talent_Melee.setter
     @LOGGER.change_logger("Talent_Melee")
@@ -855,7 +855,7 @@ class PalEntity:
         self.SanityValue = 100.0
 
         if maxHP := self.ComputedMaxHP:
-            self.HP = maxHP
+            self.Hp = maxHP
 
     @property
     def FoodWithStatusEffect(self) -> Optional[str]:

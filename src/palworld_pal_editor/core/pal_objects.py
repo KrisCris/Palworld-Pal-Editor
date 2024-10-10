@@ -512,7 +512,7 @@ class PalObjects:
                                     "MasteredWaza": PalObjects.ArrayProperty(
                                         "EnumProperty", {"values": []}
                                     ),
-                                    "HP": PalObjects.FixedPoint64(545000),
+                                    "Hp": PalObjects.FixedPoint64(545000),
                                     "Talent_HP": PalObjects.ByteProperty(50),
                                     "Talent_Melee": PalObjects.ByteProperty(50),
                                     "Talent_Shot": PalObjects.ByteProperty(50),

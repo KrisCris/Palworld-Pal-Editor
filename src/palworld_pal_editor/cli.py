@@ -213,7 +213,7 @@ def pal_help():
     Step To Modify a Pal (You can run `print_example()` to see a real example):
       1. Get the pal: `pal = get_pal(pal_id)`
       2. Check PalEntity usage by calling: `help(PalEntity)`
-      2. Set the pal's property: `pal.[ property name ] = [ property value ]`, e.g. `pal.HP = 200`
+      2. Set the pal's property: `pal.[ property name ] = [ property value ]`, e.g. `pal.Hp = 200`
 
     Learn more about each class, call `help(class_name)`:
     Useful Classes:
