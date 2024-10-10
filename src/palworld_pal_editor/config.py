@@ -13,7 +13,7 @@ else:
 
 CONFIG_PATH = PROGRAM_PATH / 'config.json'
 
-VERSION = "0.9.0"
+VERSION = "0.10.1"
 
 class Config:
     i18n: str = "en"
