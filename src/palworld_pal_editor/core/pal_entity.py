@@ -396,7 +396,7 @@ class PalEntity:
     @type_guard
     def Exp(self, value: int) -> None:
         if self.Exp is None:
-            self._pal_param["Exp"] = PalObjects.IntProperty(value)
+            self._pal_param["Exp"] = PalObjects.Int64Property(value)
         else:
             PalObjects.set_BaseType(self._pal_param['Exp'], value)
 
