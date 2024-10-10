@@ -118,7 +118,7 @@ class PalObjects:
         return {"value": {
             "type": type,
             "value": value
-        }, "id": None, "type": "ByteProperty"}
+        }, "id": "None", "type": "ByteProperty"}
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
@@ -448,14 +448,14 @@ class PalObjects:
         "EPalWorkSuitability::MonsterFarm",
     ]
 
-    @staticmethod
-    def WorkSuitabilityStruct(WorkSuitability, Rank):
-        return {
-            "WorkSuitability": PalObjects.EnumProperty(
-                "EPalWorkSuitability", WorkSuitability
-            ),
-            "Rank": PalObjects.IntProperty(Rank),
-        }
+    # @staticmethod
+    # def WorkSuitabilityStruct(WorkSuitability, Rank):
+    #     return {
+    #         "WorkSuitability": PalObjects.EnumProperty(
+    #             "EPalWorkSuitability", WorkSuitability
+    #         ),
+    #         "Rank": PalObjects.IntProperty(Rank),
+    #     }
 
     StatusNames = [
         "最大HP",
@@ -503,8 +503,8 @@ class PalObjects:
                                     "Gender": PalObjects.EnumProperty(
                                         "EPalGenderType", "EPalGenderType::Female"
                                     ),
-                                    "Level": PalObjects.IntProperty(1),
-                                    "Exp": PalObjects.IntProperty(0),
+                                    "Level": PalObjects.ByteProperty(1),
+                                    "Exp": PalObjects.Int64Property(0),
                                     "NickName": PalObjects.StrProperty("!!!NEW PAL!!!"),
                                     "EquipWaza": PalObjects.ArrayProperty(
                                         "EnumProperty", {"values": []}
@@ -513,10 +513,10 @@ class PalObjects:
                                         "EnumProperty", {"values": []}
                                     ),
                                     "HP": PalObjects.FixedPoint64(545000),
-                                    "Talent_HP": PalObjects.IntProperty(50),
-                                    "Talent_Melee": PalObjects.IntProperty(50),
-                                    "Talent_Shot": PalObjects.IntProperty(50),
-                                    "Talent_Defense": PalObjects.IntProperty(50),
+                                    "Talent_HP": PalObjects.ByteProperty(50),
+                                    "Talent_Melee": PalObjects.ByteProperty(50),
+                                    "Talent_Shot": PalObjects.ByteProperty(50),
+                                    "Talent_Defense": PalObjects.ByteProperty(50),
                                     "FullStomach": PalObjects.FloatProperty(300),
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}
@@ -536,24 +536,24 @@ class PalObjects:
                                     ),
                                     # MaxHP is no longer stored in the game save.
                                     # "MaxHP": PalObjects.FixedPoint64(545000),
-                                    "CraftSpeed": PalObjects.IntProperty(70),
+                                    # "CraftSpeed": PalObjects.IntProperty(70),
                                     # Do not omit CraftSpeeds, otherwise the pal works super slow
                                     # TODO use accurate data (even tho this is useless)
-                                    "CraftSpeeds": PalObjects.ArrayProperty(
-                                        "StructProperty",
-                                        {
-                                            "prop_name": "CraftSpeeds",
-                                            "prop_type": "StructProperty",
-                                            "values": [
-                                                PalObjects.WorkSuitabilityStruct(
-                                                    work, 0
-                                                )
-                                                for work in PalObjects.EPalWorkSuitabilities
-                                            ],
-                                            "type_name": "PalWorkSuitabilityInfo",
-                                            "id": PalObjects.EMPTY_UUID,
-                                        },
-                                    ),
+                                    # "CraftSpeeds": PalObjects.ArrayProperty(
+                                    #     "StructProperty",
+                                    #     {
+                                    #         "prop_name": "CraftSpeeds",
+                                    #         "prop_type": "StructProperty",
+                                    #         "values": [
+                                    #             PalObjects.WorkSuitabilityStruct(
+                                    #                 work, 0
+                                    #             )
+                                    #             for work in PalObjects.EPalWorkSuitabilities
+                                    #         ],
+                                    #         "type_name": "PalWorkSuitabilityInfo",
+                                    #         "id": PalObjects.EMPTY_UUID,
+                                    #     },
+                                    # ),
                                     "SanityValue": PalObjects.FloatProperty(100.0),
                                     "EquipItemContainerId": PalObjects.PalContainerId(
                                         str(uuid.uuid4())
