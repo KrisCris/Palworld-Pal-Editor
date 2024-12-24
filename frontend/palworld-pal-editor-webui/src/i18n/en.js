@@ -7,9 +7,13 @@ export default {
     EntryView_Greet_2: " > Thank you for using this tool!",
     EntryView_Greet_3:
         " > If you are running this tool on webui mode, or from a docker container, consider setup a password to prevent unauthorized remote access.",
-    EntryView_Greet_4: " > If you have any issue, or want to contribute, check out ",
+    EntryView_Greet_4: " > The download link for the Editor is:",
+    EntryView_Greet_4_1: "or",
     EntryView_Greet_5: " page.",
-    EntryView_Greet_6: " > If you love this tool and wish to donate, check out my ",
+    EntryView_Greet_6: " > If you like this tool and wish to support it, consider checking out my",
+    EntryView_Greet_7: " > Encountering issues? Join",
+    EntryView_Greet_7_1: "or visit",
+    EntryView_Greet_8: " > My BiliBili channel (Chinese):",
     EntryView_Note_1:
         " > If you are running this program for the first time, you will need to manually enter the correct path to your save folder, i.e. the parent folder of Level.sav.",
     EntryView_Note_2:
@@ -18,6 +22,7 @@ export default {
         " > If you are running from the docker container, please make sure you have mapped the directory correctly, and setup the correct file access permission. Then all you need is to enter the mapped path.",
     EntryView_BTN_Path_Picker: "Select Path",
     EntryView_BTN_Load: "Load Save",
+    EntryView_Period: ".",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",

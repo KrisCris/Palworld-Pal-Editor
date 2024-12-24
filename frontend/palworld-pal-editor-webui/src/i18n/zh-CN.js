@@ -1,3 +1,5 @@
+import EntryView from "@/views/EntryView.vue";
+
 export default {
     AuthView_PW_Prompt_1: "你好! 似乎你在运行这个工具时设置了认证密码 🔐。",
     AuthView_PW_Prompt_2: "你现在需要输入正确的密码，以进行后续操作：",
@@ -7,9 +9,13 @@ export default {
     EntryView_Greet_2: " > 感谢你下载并使用Palworld Pal Editor！",
     EntryView_Greet_3:
         " > 如果你正在以WebUI模式，或远程访问Docker容器的方式使用这个工具，请考虑设置密码，以防止未经授权的远程访问。",
-    EntryView_Greet_4: " > 如果你在使用这个工具的途中遇到了任何问题，可以访问项目的",
+    EntryView_Greet_4: " > 帕鲁编辑器的下载地址为：",
+    EntryView_Greet_4_1: "或",
     EntryView_Greet_5: " 页面。",
     EntryView_Greet_6: " > 如果你喜欢这个工具，并且希望赞助，可以考虑查看我的",
+    EntryView_Greet_7: " > 遇到问题？加入",
+    EntryView_Greet_7_1: "或访问",
+    EntryView_Greet_8: " > 我的BiliBili频道：",
     EntryView_Note_1:
         " > 如果你是第一次使用这个工具，你需要手动输入或选择 (仅限GUI模式) 正确的存档路径，即包含 Level.sav 文件的那个文件夹的目录。",
     EntryView_Note_2:
@@ -18,6 +24,7 @@ export default {
         " > 如果你在通过Docker容器的方式使用这个工具，请确保已经正确的映射了存档的路径，并且容器具有合适的文件访问权限。这里你只需要输入映射的路径。",
     EntryView_BTN_Path_Picker: "选择路径",
     EntryView_BTN_Load: "载入存档",
+    EntryView_Period: "。",
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",

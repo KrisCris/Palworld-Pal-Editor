@@ -7,9 +7,13 @@ export default {
     EntryView_Greet_2: " > Merci d'utiliser cet outil !",
     EntryView_Greet_3:
         " > Si vous utilisez cet outil en mode webui, ou depuis un conteneur Docker, pensez à configurer un mot de passe pour empêcher tout accès à distance non autorisé.",
-    EntryView_Greet_4: " > Si vous avez des problèmes ou souhaitez contribuer, consultez ",
+    EntryView_Greet_4: " > Le lien de téléchargement pour Pal Editor est :",
+    EntryView_Greet_4_1: "ou",
     EntryView_Greet_5: " page.",
-    EntryView_Greet_6: " > Si vous aimez cet outil et souhaitez faire un don, consultez mon ",
+    EntryView_Greet_6: " > Si vous aimez cet outil et souhaitez le soutenir, envisagez de consulter ma",
+    EntryView_Greet_7: " > Vous rencontrez un problème ? Rejoignez",
+    EntryView_Greet_7_1: "ou visitez",
+    EntryView_Greet_8: " > Ma chaîne BiliBili (chinois) :",
     EntryView_Note_1:
         " > Si vous utilisez ce programme pour la première fois, vous devrez entrer manuellement le chemin correct vers votre dossier de sauvegarde, c'est-à-dire le dossier parent de Level.sav.",
     EntryView_Note_2:
@@ -18,6 +22,7 @@ export default {
         " > Si vous utilisez un conteneur Docker, assurez-vous d'avoir correctement mappé le répertoire et configuré les permissions d'accès aux fichiers. Ensuite, il vous suffira d'entrer le chemin mappé.",
     EntryView_BTN_Path_Picker: "Sélectionner le chemin",
     EntryView_BTN_Load: "Charger la sauvegarde",
+    EntryView_Period: ".",
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",

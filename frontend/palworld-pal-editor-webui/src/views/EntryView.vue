@@ -14,12 +14,24 @@ const palStore = usePalEditorStore()
             <p>{{ palStore.getTranslatedText('EntryView_Greet_3') }}</p>
             <br>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_4') }}
-                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub</a>
-                {{ palStore.getTranslatedText('EntryView_Greet_5') }}
+                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/releases">GitHub Releases</a>
+                {{ palStore.getTranslatedText('EntryView_Greet_4_1') }}
+                <a target="_blank" href="https://www.nexusmods.com/palworld/mods/995?tab=files">Nexus Mods</a>
+                {{ palStore.getTranslatedText('EntryView_Period') }}
             </p>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_6') }}
-                <a target="_blank" href="https://ko-fi.com/connlost">ko-fi</a>
+                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/README.md#Sponsor">Sponsor</a>
                 {{ palStore.getTranslatedText('EntryView_Greet_5') }}
+            </p>
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_7') }}
+                <a target="_blank" href="https://discord.gg/FnuA95nMJ8">Discord</a>
+                {{ palStore.getTranslatedText('EntryView_Greet_7_1') }}
+                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub Repo</a>
+                {{ palStore.getTranslatedText('EntryView_Period') }}
+            </p>
+            <p>{{ palStore.getTranslatedText('EntryView_Greet_8') }}
+                <a target="_blank" href="https://space.bilibili.com/12184831">_connlost</a>
+                {{ palStore.getTranslatedText('EntryView_Period') }}
             </p>
             <br>
         </div>
@@ -46,6 +58,8 @@ const palStore = usePalEditorStore()
 <style scoped>
 a {
     color: aquamarine;
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 
 div#entryDiv {

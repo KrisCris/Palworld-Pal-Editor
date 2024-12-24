@@ -7,9 +7,13 @@ export default {
     EntryView_Greet_2: " > このツールをご利用いただきありがとうございます！",
     EntryView_Greet_3:
         " > WebUIモードやDockerコンテナでこのツールを実行している場合は、無許可のリモートアクセスを防ぐためにパスワードの設定を検討してください。",
-    EntryView_Greet_4: " > 何か問題がある場合、または貢献したい場合は、",
-    EntryView_Greet_5: " ページを確認してください。",
-    EntryView_Greet_6: " > このツールが気に入って寄付を検討しているなら、私の",
+    EntryView_Greet_4: " > パルエディターのダウンロードリンクは、",
+    EntryView_Greet_4_1: "または",
+    EntryView_Greet_5: " ページです。",
+    EntryView_Greet_6: " > このツールが気に入り、支援したいと思ったら、私の",
+    EntryView_Greet_7: " > 問題が発生しましたか？",
+    EntryView_Greet_7_1: "に参加するか、",
+    EntryView_Greet_8: " > 私のBiliBiliチャンネル（中国語）：",
     EntryView_Note_1:
         " > このプログラムを初めて実行する場合、正しい保存フォルダのパス（Level.savの親フォルダ）を手動で入力する必要があります。",
     EntryView_Note_2:
@@ -18,6 +22,7 @@ export default {
         " > Dockerコンテナから実行している場合は、ディレクトリが正しくマッピングされており、適切なファイルアクセス権限が設定されていることを確認してください。その後、マッピングされたパスを入力するだけです。",
     EntryView_BTN_Path_Picker: "パスを選択",
     EntryView_BTN_Load: "ロード",
+    EntryView_Period: "。",
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
