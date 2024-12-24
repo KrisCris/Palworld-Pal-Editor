@@ -214,6 +214,8 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 [ko-fi ❤️](https://ko-fi.com/connlost)
 
+[PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)
+
 <img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
 
 ## 感谢
