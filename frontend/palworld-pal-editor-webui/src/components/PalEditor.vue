@@ -370,7 +370,8 @@ function filterInvalid(list) {
               </span>
             </div>
             <button
-              v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) && !palStore.SELECTED_PAL_DATA.isEquipSkillFull()"
+              v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) 
+                && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
               class="edit" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">🔼</button>
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"

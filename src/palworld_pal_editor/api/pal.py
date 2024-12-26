@@ -36,7 +36,7 @@ def patch_paldata():
                 if not pal_entity.add_MasteredWaza(value):
                     return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
             case "add_EquipWaza": 
-                if not pal_entity.add_EquipWaza(value):
+                if not pal_entity.add_EquipWaza(value, True):
                     return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
             case "in_owner_palbox":
                 if PlayerUId == "PAL_BASE_WORKER_BTN":
