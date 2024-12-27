@@ -375,7 +375,7 @@ class PalEntity:
     @LOGGER.change_logger('Level')
     @type_guard
     def Level(self, value: int) -> None:
-        value = clamp(1, 55, value)
+        value = clamp(1, 60, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
@@ -956,7 +956,7 @@ class PalEntity:
         return dumps(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
-        rank = clamp(0, 10, rank)
+        rank = clamp(0, 20, rank)
         if getattr(self, property_name) is None:
             self._pal_param[property_name] = PalObjects.ByteProperty(rank)
         else:

@@ -15,6 +15,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   class PalData {
+    static MAX_LEVEL = 20;
+
     constructor(obj) {
       this.Talent_Defense = obj.Talent_Defense;
       this.Talent_Shot = obj.Talent_Shot;
@@ -98,14 +100,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     levelUp() {
-      if (this.Level < 55) {
+      if (this.Level < PalData.MAX_LEVEL) {
         this.Level += 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
     maxLevel() {
-      this.Level = 55;
+      this.Level = PalData.MAX_LEVEL;
       updatePal({ target: { name: "Level", value: this.Level } });
     }
 
@@ -1249,14 +1251,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   function displayRating(rating) {
-    if (rating === undefined) return "";
+    if (!rating) return "";
+    if (rating == 4) return "🟢";
+    if (rating >= 2) return "🟡";
     if (rating < 0) return "🔴";
-    if (rating > 2) return "🟠";
-    if (rating > 1) return "🟡";
     return "⚪";
   }
 
   return {
+    PalData,
+    
     PAL_PASSIVE_SELECTED_ITEM,
     PAL_ACTIVE_SELECTED_ITEM,
     PAL_BASE_WORKER_BTN,
