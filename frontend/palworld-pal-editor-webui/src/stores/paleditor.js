@@ -15,7 +15,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   class PalData {
-    static MAX_LEVEL = 20;
+    static MAX_LEVEL = 60;
+    static MAX_SOULS_LEVEL = 20;
 
     constructor(obj) {
       this.Talent_Defense = obj.Talent_Defense;
@@ -1260,7 +1261,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
   return {
     PalData,
-    
+
     PAL_PASSIVE_SELECTED_ITEM,
     PAL_ACTIVE_SELECTED_ITEM,
     PAL_BASE_WORKER_BTN,

@@ -221,7 +221,7 @@ function filterInvalid(list) {
           ❤️ {{ palStore.getTranslatedText("Editor_Souls_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
-        <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.PalData.MAX_LEVEL" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
+        <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.PalData.MAX_SOULS_LEVEL" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -229,7 +229,7 @@ function filterInvalid(list) {
           ⚔️ {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
-        <input class="slider" type="range" name="Rank_Attack" min="0" :max="palStore.PalData.MAX_LEVEL"
+        <input class="slider" type="range" name="Rank_Attack" min="0" :max="palStore.PalData.MAX_SOULS_LEVEL"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -237,7 +237,7 @@ function filterInvalid(list) {
           🛡️ {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
-        <input class="slider" type="range" name="Rank_Defence" min="0" :max="palStore.PalData.MAX_LEVEL"
+        <input class="slider" type="range" name="Rank_Defence" min="0" :max="palStore.PalData.MAX_SOULS_LEVEL"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -246,7 +246,7 @@ function filterInvalid(list) {
           🔨 {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
-        <input class="slider" type="range" name="Rank_CraftSpeed" min="0" :max="palStore.PalData.MAX_LEVEL"
+        <input class="slider" type="range" name="Rank_CraftSpeed" min="0" :max="palStore.PalData.MAX_SOULS_LEVEL"
           v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
