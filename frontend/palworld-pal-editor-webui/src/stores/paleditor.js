@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
+  const MAX_LEVEL = 60;
+  const MAX_SOULS_LEVEL = 20;
   class Player {
     constructor(obj) {
       this.id = obj.id;
@@ -15,9 +17,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   class PalData {
-    static MAX_LEVEL = 60;
-    static MAX_SOULS_LEVEL = 20;
-
     constructor(obj) {
       this.Talent_Defense = obj.Talent_Defense;
       this.Talent_Shot = obj.Talent_Shot;
@@ -101,14 +100,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     levelUp() {
-      if (this.Level < PalData.MAX_LEVEL) {
+      if (this.Level < MAX_LEVEL) {
         this.Level += 1;
         updatePal({ target: { name: "Level", value: this.Level } });
       }
     }
 
     maxLevel() {
-      this.Level = PalData.MAX_LEVEL;
+      this.Level = MAX_LEVEL;
       updatePal({ target: { name: "Level", value: this.Level } });
     }
 
@@ -1260,7 +1259,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
   }
 
   return {
-    PalData,
+    MAX_LEVEL,
+    MAX_SOULS_LEVEL,
 
     PAL_PASSIVE_SELECTED_ITEM,
     PAL_ACTIVE_SELECTED_ITEM,
