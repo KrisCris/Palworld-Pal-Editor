@@ -7,6 +7,7 @@ VOLUME [ "/mnt/gamesave" ]
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
         tini \
         gosu \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
