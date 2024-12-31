@@ -5172,5 +5172,657 @@
         },
         "UniqueSkill": true,
         "SkillFruit": false
+    },
+
+
+
+    
+    "EPalWazaID::TidalWave": {
+        "InternalName": "EPalWazaID::TidalWave",
+        "Element": "Water",
+        "CT": 15,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "TidalWave",
+                "Description": "Generates small waves over a wide area that slow an enemy's movements before assailing them with a giant wave."
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "大范围掀起小波浪 延缓敌人行动后， 用大型波浪攻击敌人。"
+            },
+            "ja": {
+                "Name": "コールウェーブ",
+                "Description": "広範囲に小さな波を起こし 敵の動きを遅くしたあとに 大きな波で敵を攻撃する。"
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "Crée de petites vagues sur une zone étendue pour ralentir les mouvements de l'ennemi avant de l'attaquer avec une plus grosse."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::WaterWave": {
+        "InternalName": "EPalWazaID::WaterWave",
+        "Element": "Water",
+        "CT": 5,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "WaterWave",
+                "Description": "Creates a wall with a water vortex that slowly moves forward."
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "用水之龙卷风在前方生成墙壁 并使其缓慢前进。"
+            },
+            "ja": {
+                "Name": "高圧水撃",
+                "Description": "水の竜巻で前方に壁を作りだし ゆっくりと前進させる。"
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "Érige un mur devant lui avançant lentement au moyen d'une tornade d'eau."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_BluePlatypus_Toboggan": {
+        "InternalName": "EPalWazaID::Unique_BluePlatypus_Toboggan",
+        "Element": "Water",
+        "CT": 120,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Surfing Slam",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "乘风破浪",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "サーフィンタックル",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Coud'surf",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Intimidate": {
+        "InternalName": "EPalWazaID::Intimidate",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "Intimidate",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "恐吓",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "威嚇",
+                "Description": "威圧的なパワーで 周囲の敵に衝撃を与える。"
+            },
+            "fr": {
+                "Name": "Intimidation",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Human_Punch": {
+        "InternalName": "EPalWazaID::Human_Punch",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 12,
+        "I18n": {
+            "en": {
+                "Name": "Punch",
+                "Description": "Punch with conviction; believe in the power of the fist."
+            },
+            "zh-CN": {
+                "Name": "击打",
+                "Description": "相信自己的拳头，出拳攻击。"
+            },
+            "ja": {
+                "Name": "パンチ",
+                "Description": "己の拳を信じて、パンチする。"
+            },
+            "fr": {
+                "Name": "Coup de poing",
+                "Description": "Rassemble toute sa confiance en lui dans un coup de poing."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Throw": {
+        "InternalName": "EPalWazaID::Throw",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 60,
+        "I18n": {
+            "en": {
+                "Name": "Throw",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "投げ",
+                "Description": "己の型を信じて、投げる。"
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Scratch": {
+        "InternalName": "EPalWazaID::Scratch",
+        "Element": "Neutral",
+        "CT": 2,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Scratch",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "引っ掻き",
+                "Description": "己の爪を信じて、ひっかく。"
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::WorkAttack": {
+        "InternalName": "EPalWazaID::WorkAttack",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "WorkAttack",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "WorkAttack",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "WorkAttack",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "WorkAttack",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::SnowStorm": {
+        "InternalName": "EPalWazaID::SnowStorm",
+        "Element": "Ice",
+        "CT": 5,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "SnowStorm",
+                "Description": "The user gathers frozen winds, damaging enemies around it before blasting them with a blizzard."
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "将冰冻之力聚集四周 攻击附近的敌人后 瞄准敌人释放暴风雪。"
+            },
+            "ja": {
+                "Name": "ホワイトアウト",
+                "Description": "凍える力を周囲に集めて 近くの者を攻撃したあとで 敵めがけて吹雪を放出する。"
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": "Accumule de l'énergie glacée autour de lui et attaque les individus à proximité avant de libérer un blizzard sur l'ennemi."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::EnergyShot": {
+        "InternalName": "EPalWazaID::EnergyShot",
+        "Element": "Ice",
+        "CT": 5,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "Ice Missile",
+                "Description": "en Text"
+            },
+            "zh-CN": {
+                "Name": "冰导弹",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "アイスミサイル",
+                "Description": "エネルギーをチャージし、 球体にして発射する。"
+            },
+            "fr": {
+                "Name": "Missile glacé",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::CrossThunder": {
+        "InternalName": "EPalWazaID::CrossThunder",
+        "Element": "Electric",
+        "CT": 7,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "Cross Lightning",
+                "Description": "Generates two lightning bolts that advance left and right, blocking either direction."
+            },
+            "zh-CN": {
+                "Name": "十字雷击",
+                "Description": "堵住敌人的左右两侧 生成可向两个方向前进的雷击。"
+            },
+            "ja": {
+                "Name": "クロスサンダー",
+                "Description": "敵の左右をふさぐように 2方向に進む雷撃を発生させる。"
+            },
+            "fr": {
+                "Name": "Éclairs croisés",
+                "Description": "Génère des éclairs qui se déplacent dans deux directions pour prendre l'ennemi en tenaille."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Funnel_RaijinDaughter": {
+        "InternalName": "EPalWazaID::Funnel_RaijinDaughter",
+        "Element": "Electric",
+        "CT": 8,
+        "Power": 30,
+        "I18n": {
+            "en": {
+                "Name": "Funnel_RaijinDaughter",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Funnel_RaijinDaughter",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Funnel_RaijinDaughter",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Funnel_RaijinDaughter",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Funnel_DreamDemon": {
+        "InternalName": "EPalWazaID::Funnel_DreamDemon",
+        "Element": "Dark",
+        "CT": 5,
+        "Power": 20,
+        "I18n": {
+            "en": {
+                "Name": "Funnel_DreamDemon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Funnel_DreamDemon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Funnel_DreamDemon",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Funnel_DreamDemon",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Psychokinesis": {
+        "InternalName": "EPalWazaID::Psychokinesis",
+        "Element": "Dark",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Psycho Gravity",
+                "Description": "Utilizes psychokinesis to grab enemies before flinging them to the ground from above."
+            },
+            "zh-CN": {
+                "Name": "念动引力",
+                "Description": "用念力剥夺周围敌人的行动自由 并将其从高处锤入地面。"
+            },
+            "ja": {
+                "Name": "サイコグラビティ",
+                "Description": "サイコキネシスで周囲の敵の自由を奪い 高い所から地面に叩きつける。"
+            },
+            "fr": {
+                "Name": "Gravité psy",
+                "Description": "Entrave les ennemis environnants avec la psychokinésie et les écrase au sol après les avoir élevés en hauteur."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::DarkTornado": {
+        "InternalName": "EPalWazaID::DarkTornado",
+        "Element": "Dark",
+        "CT": 18,
+        "Power": 80,
+        "I18n": {
+            "en": {
+                "Name": "DarkTornado",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "DarkTornado",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "DarkTornado",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "DarkTornado",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::WaterBalloon": {
+        "InternalName": "EPalWazaID::WaterBalloon",
+        "Element": "Water",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "WaterBalloon",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::ChaosLaser": {
+        "InternalName": "EPalWazaID::ChaosLaser",
+        "Element": "Dark",
+        "CT": 60,
+        "Power": 300,
+        "I18n": {
+            "en": {
+                "Name": "Chaos Laser",
+                "Description": "Charge the power of chaos, Fires a beam of light and darkness at the enemy at the same time."
+            },
+            "zh-CN": {
+                "Name": "混沌射线",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "カオスレーザー",
+                "Description": "混沌の力をチャージし、 敵めがけて光と闇のビームを同時に発射する。"
+            },
+            "fr": {
+                "Name": "Laser chaotique",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::GrassTyphoon": {
+        "InternalName": "EPalWazaID::GrassTyphoon",
+        "Element": "Grass",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "GrassTyphoon",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::SeedShotgun": {
+        "InternalName": "EPalWazaID::SeedShotgun",
+        "Element": "Grass",
+        "CT": 1,
+        "Power": 90,
+        "I18n": {
+            "en": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "SeedShotgun",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::FlareTwister": {
+        "InternalName": "EPalWazaID::FlareTwister",
+        "Element": "Fire",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Flare Twister",
+                "Description": "Creates multiple flame tornadoes. The tornado continues to spin in circles."
+            },
+            "zh-CN": {
+                "Name": "炎龙舞",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "フレアツイスター",
+                "Description": "複数の炎の竜巻を発生させる。 竜巻は円を描くようにグルグルと回り続ける。"
+            },
+            "fr": {
+                "Name": "Tornade flamboyante",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::TripleCannon": {
+        "InternalName": "EPalWazaID::TripleCannon",
+        "Element": "Dragon",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "TripleCannon",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "TripleCannon",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "TripleCannon",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "TripleCannon",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_LilyQueen_WindBarrier": {
+        "InternalName": "EPalWazaID::Unique_LilyQueen_WindBarrier",
+        "Element": "Grass",
+        "CT": 60,
+        "Power": 60,
+        "I18n": {
+            "en": {
+                "Name": "Wind Barrier",
+                "Description": "A skill exclusive to the Lilikin species. Surround yourself with a wind barrier, Returns the blade of wind to the attacking opponent."
+            },
+            "zh-CN": {
+                "Name": "风之结界",
+                "Description": "▼独特的技能▼ - 请设置技能解释 -"
+            },
+            "ja": {
+                "Name": "ウィンドバリア",
+                "Description": "リリクイン種の専用スキル。 風のバリアで身を包み、 攻撃してきた相手に風の刃をお返しする。"
+            },
+            "fr": {
+                "Name": "Barrière venteuse",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Funnel_RaijinDaughter_Water": {
+        "InternalName": "EPalWazaID::Funnel_RaijinDaughter_Water",
+        "Element": "Dark",
+        "CT": 8,
+        "Power": 30,
+        "I18n": {
+            "en": {
+                "Name": "Funnel_RaijinDaughter_Water",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Funnel_RaijinDaughter_Water",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Funnel_RaijinDaughter_Water",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Funnel_RaijinDaughter_Water",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::BlueThunderHorse_PartnerSkill": {
+        "InternalName": "EPalWazaID::BlueThunderHorse_PartnerSkill",
+        "Element": "Electric",
+        "CT": 55,
+        "Power": 30,
+        "I18n": {
+            "en": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "BlueThunderHorse_PartnerSkill",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
     }
 }

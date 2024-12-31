@@ -24,8 +24,8 @@ function formatString(input) {
 function filterInvalid(list) {
   return list.filter(item => {
     if (palStore.HIDE_INVALID_OPTIONS) {
-      // return !(item.Invalid || item.IsHuman)
-      return !item.Invalid
+      return !(item.Invalid || item.IsHuman)
+      // return !item.Invalid
     }
     return true
   })
@@ -57,26 +57,31 @@ function filterInvalid(list) {
           {{ palStore.getTranslatedText("Editor_Basic_Info") }}
         </p>
         <div class="editField">
-          <p class="const"> 
-            {{ palStore.getTranslatedText("Editor_Species") }} 
-            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} 
-            {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey }}
-          </p>
+          <div class="tooltip-container">
+            <p class="const" :title="palStore.SELECTED_PAL_DATA.InternalName">
+              {{ palStore.getTranslatedText("Editor_Species") }}
+              {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }}
+              {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n ||
+                palStore.SELECTED_PAL_DATA.DataAccessKey }}
+            </p>
+            <span class="tooltip-text">{{ palStore.SELECTED_PAL_DATA.CharacterID }}</span>
+          </div>
           <!-- <p class="const"> Specie: </p> -->
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
-            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName" :key="pal.InternalName" :title="pal.I18n"> {{ `
-                ${formatString(pal.SortingKey) || ""} 
-                ${pal.Invalid ? '❌' : ""} 
-                ${palStore.displayPalElement(pal.InternalName)} 
-                ${pal.I18n}` 
+            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName"
+              :key="pal.InternalName" :title="pal.InternalName"> {{ `
+              ${pal.Invalid || pal.IsHuman ? '⚠️' : ""}
+              ${formatString(pal.SortingKey) || ""}
+              ${palStore.displayPalElement(pal.InternalName)}
+              ${pal.I18n}`
               }} </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
         </div>
         <div class="editField">
-          <p class="const"> 
-            {{ palStore.getTranslatedText("Editor_Nickname") }} 
+          <p class="const">
+            {{ palStore.getTranslatedText("Editor_Nickname") }}
           </p>
           <input class="edit" type="text" name="NickName" v-model="palStore.SELECTED_PAL_DATA.NickName"
             :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
@@ -85,7 +90,7 @@ function filterInvalid(list) {
         </div>
         <div class="flex-h">
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender">
-            <p class="const"> 
+            <p class="const">
               {{ palStore.getTranslatedText("Editor_Gender") }}
               {{ palStore.SELECTED_PAL_DATA.displayGender() }}
             </p>
@@ -94,7 +99,7 @@ function filterInvalid(list) {
           </div>
 
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-            <p class="const"> 
+            <p class="const">
               {{ palStore.getTranslatedText("Editor_Variant") }}
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
             </p>
@@ -128,7 +133,7 @@ function filterInvalid(list) {
           <p :class="['const', { 'out_of_container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }]"
             :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
             📦 {{ palStore.getTranslatedText("Editor_Pal_Slot") }}
-            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ 
+            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @
             {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
           </p>
           <button class="edit edit_text" @click="palStore.updatePal" name="in_owner_palbox"
@@ -139,8 +144,8 @@ function filterInvalid(list) {
 
         <p class="const">
           🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}
-          {{ palStore.SELECTED_PAL_DATA.OwnerName || 
-          palStore.getTranslatedText("Editor_Pal_No_Owner") }}
+          {{ palStore.SELECTED_PAL_DATA.OwnerName ||
+            palStore.getTranslatedText("Editor_Pal_No_Owner") }}
         </p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
           <p class="const">
@@ -162,8 +167,7 @@ function filterInvalid(list) {
         </div>
 
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
-          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick"
-            :disabled="palStore.LOADING_FLAG">
+          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
             💊 {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
           </button>
         </div>
@@ -221,8 +225,8 @@ function filterInvalid(list) {
           ❤️ {{ palStore.getTranslatedText("Editor_Souls_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
-        <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.MAX_SOULS_LEVEL" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.MAX_SOULS_LEVEL"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
@@ -273,7 +277,7 @@ function filterInvalid(list) {
             <div class="tooltip-container">
               <p class="const" :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
                 {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
-    palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
+                  palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
             </div>
@@ -289,7 +293,7 @@ function filterInvalid(list) {
               </option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
                 :key="skill.InternalName" :title="skill.I18n[1]">{{ palStore.displayRating(skill.Rating) }} {{
-    skill.I18n[0] }}</option>
+                  skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
               :disabled="palStore.LOADING_FLAG">➕</button>
@@ -305,9 +309,9 @@ function filterInvalid(list) {
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
-    palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
-  }}
+                palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+                  palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
+                }}
               </p>
               <span class="tooltip-text">
                 <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
@@ -315,17 +319,17 @@ function filterInvalid(list) {
                 <p> --- </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
                   {{ palStore.getTranslatedText("Editor_Skill_CD") }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
                 </p>
               </span>
@@ -345,7 +349,7 @@ function filterInvalid(list) {
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                 {{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">
@@ -354,25 +358,24 @@ function filterInvalid(list) {
                 <p> --- </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
                   {{ palStore.getTranslatedText("Editor_Skill_CD") }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
                 </p>
               </span>
             </div>
-            <button
-              v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) 
-                && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
-              class="edit" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+            <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
+              && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)" class="edit"
+              @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">🔼</button>
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
@@ -382,9 +385,10 @@ function filterInvalid(list) {
               <option value="" key="">
                 {{ palStore.getTranslatedText("Editor_Select_Skill") }}
               </option>
-              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName" :key="skill.InternalName"
-                :title="skill.I18n[1]">
-                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)} -
+              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName"
+                :key="skill.InternalName" :title="skill.I18n[1]">
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)}
+                -
                 ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
               </option>
             </select>

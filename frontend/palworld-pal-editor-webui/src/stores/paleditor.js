@@ -35,6 +35,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.IsBOSS = obj.IsBOSS;
       this.IsTower = obj.IsTower;
       this.IsRAID = obj.IsRAID;
+      this.IsPREDATOR = obj.IsPREDATOR;
+      this.IsOilrig = obj.IsOilrig;
       this.Gender = obj.Gender;
       this.HasWorkerSick = obj.HasWorkerSick;
       this.IsFaintedPal = obj.IsFaintedPal;
@@ -48,6 +50,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       this.EquipWaza = obj.EquipWaza;
       this.PassiveSkillList = obj.PassiveSkillList;
 
+      this.CharacterID = obj.CharacterID;
       this.group_id = obj.group_id;
       this.ContainerId = obj.ContainerId;
       this.SlotIndex = obj.SlotIndex;
@@ -70,6 +73,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
       if (this.IsBOSS) return "💀";
       if (this.IsRarePal) return "✨";
       if (this.IsRAID) return "RAID";
+      if (this.IsPREDATOR) return "Rampaging";
+      if (this.IsOilrig) return "Oilrig";
       return "N/A";
     }
 

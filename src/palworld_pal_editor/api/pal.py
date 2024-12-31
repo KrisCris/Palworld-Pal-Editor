@@ -86,6 +86,7 @@ def paldata():
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
     return {
+        "CharacterID": pal.CharacterID,
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
         "OwnerName": pal.OwnerName or None,
@@ -101,6 +102,8 @@ def _pal_data(pal: PalEntity):
         "IsBOSS": pal.IsBOSS or False,
         "IsRarePal": pal.IsRarePal or False,
         "IsRAID": pal.IsRAID or False,
+        "IsPREDATOR": pal.IsPREDATOR or False,
+        "IsOilrig": pal.IsOilrig or False,
         "NickName": pal.NickName or "",
         "Level": pal.Level or 1,
         "Rank": pal.Rank.value if pal.Rank else 1,

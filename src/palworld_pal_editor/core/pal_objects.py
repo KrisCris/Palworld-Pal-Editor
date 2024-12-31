@@ -85,6 +85,31 @@ class PalRank(Enum):
             LOGGER.warning(f"{value} is not a valid PalRank")
 
 
+class PalSuitability(Enum):
+    EmitFlame = "EPalWorkSuitability::EmitFlame"
+    Watering = "EPalWorkSuitability::Watering"
+    Seeding = "EPalWorkSuitability::Seeding"
+    GenerateElectricity = "EPalWorkSuitability::GenerateElectricity"
+    Handcraft = "EPalWorkSuitability::Handcraft"
+    Collection = "EPalWorkSuitability::Collection"
+    Deforest = "EPalWorkSuitability::Deforest"
+    Mining = "EPalWorkSuitability::Mining"
+    OilExtraction = "EPalWorkSuitability::OilExtraction"
+    ProductMedicine = "EPalWorkSuitability::ProductMedicine"
+    Cool = "EPalWorkSuitability::Cool"
+    Transport = "EPalWorkSuitability::Transport"
+    MonsterFarm = "EPalWorkSuitability::MonsterFarm"
+
+    @staticmethod
+    def from_value(value: str):
+        if value is None:
+            return None
+        try:
+            return PalSuitability(value)
+        except:
+            LOGGER.warning(f"{value} is not a valid PalSuitability")
+
+
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
     TIME = 638486453957560000
@@ -112,13 +137,14 @@ class PalObjects:
     @staticmethod
     def BoolProperty(value: bool):
         return {"value": value, "id": None, "type": "BoolProperty"}
-    
+
     @staticmethod
-    def ByteProperty(value: Any, type: str = 'None'):
-        return {"value": {
-            "type": type,
-            "value": value
-        }, "id": None, "type": "ByteProperty"}
+    def ByteProperty(value: Any, type: str = "None"):
+        return {
+            "value": {"type": type, "value": value},
+            "id": None,
+            "type": "ByteProperty",
+        }
 
     @staticmethod
     def get_BaseType(container: dict) -> Optional[Any]:
@@ -131,7 +157,7 @@ class PalObjects:
     @staticmethod
     def get_ByteProperty(container: dict) -> Optional[Any]:
         return get_nested_attr(container, ["value", "value"])
-    
+
     @staticmethod
     def set_ByteProperty(container: dict, value: Any):
         container["value"]["value"] = value
@@ -147,7 +173,7 @@ class PalObjects:
         }
 
     @staticmethod
-    def EnumProperty(type: str, value: str):
+    def EnumProperty(type: str, value: Enum | str):
         """
         Example:
         >>> "Gender":{
@@ -163,7 +189,10 @@ class PalObjects:
         return {
             "id": None,
             "type": "EnumProperty",
-            "value": {"type": type, "value": value},
+            "value": {
+                "type": type,
+                "value": value.value if isinstance(value, Enum) else value,
+            },
         }
 
     @staticmethod
@@ -340,37 +369,74 @@ class PalObjects:
     def ContainerSlotData(slotidx: int):
         return {
             "SlotIndex": PalObjects.IntProperty(slotidx),
-            "RawData": PalObjects.ArrayProperty('ByteProperty', {
+            "RawData": PalObjects.ArrayProperty(
+                "ByteProperty",
+                {
                     "player_uid": PalObjects.EMPTY_UUID,
                     "instance_id": PalObjects.EMPTY_UUID,
                     "permission_tribe_id": 0,
-                }, '.worldSaveData.CharacterContainerSaveData.Value.Slots.Slots.RawData')
+                },
+                ".worldSaveData.CharacterContainerSaveData.Value.Slots.Slots.RawData",
+            ),
         }
 
     @staticmethod
-    def get_container_value(container: dict) -> Optional[Any]:
-        case_1 = {
-            "StrProperty",
-            "NameProperty",
-            "IntProperty",
-            "Int64Property",
-            "FloatProperty",
-            "BoolProperty",
-        }
-        match container:
-            case {"type": type_str, **rest} if type_str in case_1:
-                return PalObjects.get_BaseType(container)
-            case {"type": "StructProperty", "struct_type": "Guid", **rest}:
-                return PalObjects.get_BaseType(container)
-            case {"type": "EnumProperty", **rest}:
-                return PalObjects.get_EnumProperty(container)
-            case {"type": "ArrayProperty", **rest}:
-                return PalObjects.get_ArrayProperty(container)
-            case {"type": "StructProperty", "struct_type": "FixedPoint64", **rest}:
-                return PalObjects.get_FixedPoint64(container)
+    def GotWorkSuitabilityAddRankList():
+        return PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "GotWorkSuitabilityAddRankList",
+                "prop_type": "StructProperty",
+                "values": [],
+                "type_name": "PalWorkSuitabilityInfo",
+                "id": "00000000-0000-0000-0000-000000000000",
+            },
+        )
 
-        LOGGER.warning(f"Unhandled Pal Object Type: {container}")
-        return None
+    @staticmethod
+    def WorkSuitability(suitability, rank):
+        {
+            "WorkSuitability": PalObjects.EnumProperty(
+                "EPalWorkSuitability", suitability
+            ),
+            "Rank": PalObjects.IntProperty(rank),
+        }
+
+    @staticmethod
+    def get_WorkSuitabilities(
+        container: dict,
+    ) -> Optional[dict[PalSuitability, int]]:
+        ret = {}
+        suitabilities = PalObjects.get_ArrayProperty(container)
+        if suitabilities is None:
+            return None
+        for suitability in suitabilities:
+            ability = PalObjects.get_EnumProperty(suitability.get("WorkSuitability"))
+            rank = PalObjects.get_BaseType(suitability.get("Rank"))
+            if ability is None or rank is None:
+                continue
+            ret[PalSuitability.from_value(ability)] = rank
+        return ret
+
+    @staticmethod
+    def set_WorkSuitability(container, suitability: str | PalSuitability, rank: int):
+        suitabilities = PalObjects.get_ArrayProperty(container)
+        exists = False
+        for idx, ability in enumerate(suitabilities):
+            if (
+                PalObjects.get_EnumProperty(ability.get("WorkSuitability"))
+                == suitability
+            ):
+                exists = True
+                break
+
+        if exists:
+            if rank == 0:
+                suitabilities.pop(idx)
+            else:
+                PalObjects.set_BaseType(ability.get("Rank"), rank)
+        elif rank != 0:
+            suitabilities.append(PalObjects.WorkSuitability(suitability, rank))
 
     @staticmethod
     def individual_character_handle_id(instance_id: UUID | str, guid=None):
@@ -432,31 +498,6 @@ class PalObjects:
     def get_MapProperty(container: dict) -> Optional[list[dict]]:
         return get_nested_attr(container, ["value"])
 
-    EPalWorkSuitabilities = [
-        "EPalWorkSuitability::EmitFlame",
-        "EPalWorkSuitability::Watering",
-        "EPalWorkSuitability::Seeding",
-        "EPalWorkSuitability::GenerateElectricity",
-        "EPalWorkSuitability::Handcraft",
-        "EPalWorkSuitability::Collection",
-        "EPalWorkSuitability::Deforest",
-        "EPalWorkSuitability::Mining",
-        "EPalWorkSuitability::OilExtraction",
-        "EPalWorkSuitability::ProductMedicine",
-        "EPalWorkSuitability::Cool",
-        "EPalWorkSuitability::Transport",
-        "EPalWorkSuitability::MonsterFarm",
-    ]
-
-    # @staticmethod
-    # def WorkSuitabilityStruct(WorkSuitability, Rank):
-    #     return {
-    #         "WorkSuitability": PalObjects.EnumProperty(
-    #             "EPalWorkSuitability", WorkSuitability
-    #         ),
-    #         "Rank": PalObjects.IntProperty(Rank),
-    #     }
-
     StatusNames = [
         "最大HP",
         "最大SP",
@@ -503,25 +544,28 @@ class PalObjects:
                                     "Gender": PalObjects.EnumProperty(
                                         "EPalGenderType", "EPalGenderType::Female"
                                     ),
-                                    "Level": PalObjects.ByteProperty(1),
-                                    "Exp": PalObjects.Int64Property(0),
                                     "NickName": PalObjects.StrProperty("!!!NEW PAL!!!"),
                                     "EquipWaza": PalObjects.ArrayProperty(
-                                        "EnumProperty", {"values": []}
+                                        "EnumProperty",
+                                        {
+                                            "values": [
+                                                "EPalWazaID::Unique_SheepBall_Roll"
+                                            ]
+                                        },
                                     ),
                                     "MasteredWaza": PalObjects.ArrayProperty(
-                                        "EnumProperty", {"values": []}
+                                        "EnumProperty",
+                                        {"values": []},
                                     ),
                                     "Hp": PalObjects.FixedPoint64(545000),
                                     "Talent_HP": PalObjects.ByteProperty(50),
                                     "Talent_Melee": PalObjects.ByteProperty(50),
                                     "Talent_Shot": PalObjects.ByteProperty(50),
                                     "Talent_Defense": PalObjects.ByteProperty(50),
-                                    "FullStomach": PalObjects.FloatProperty(300),
+                                    "FullStomach": PalObjects.FloatProperty(150.0),
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}
                                     ),
-                                    "MP": PalObjects.FixedPoint64(10000),
                                     "OwnedTime": PalObjects.DateTime(PalObjects.TIME),
                                     "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
                                     "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
@@ -534,35 +578,9 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    # MaxHP is no longer stored in the game save.
-                                    # "MaxHP": PalObjects.FixedPoint64(545000),
-                                    # "CraftSpeed": PalObjects.IntProperty(70),
-                                    # Do not omit CraftSpeeds, otherwise the pal works super slow
-                                    # TODO use accurate data (even tho this is useless)
-                                    # "CraftSpeeds": PalObjects.ArrayProperty(
-                                    #     "StructProperty",
-                                    #     {
-                                    #         "prop_name": "CraftSpeeds",
-                                    #         "prop_type": "StructProperty",
-                                    #         "values": [
-                                    #             PalObjects.WorkSuitabilityStruct(
-                                    #                 work, 0
-                                    #             )
-                                    #             for work in PalObjects.EPalWorkSuitabilities
-                                    #         ],
-                                    #         "type_name": "PalWorkSuitabilityInfo",
-                                    #         "id": PalObjects.EMPTY_UUID,
-                                    #     },
-                                    # ),
-                                    "SanityValue": PalObjects.FloatProperty(100.0),
-                                    "EquipItemContainerId": PalObjects.PalContainerId(
-                                        str(uuid.uuid4())
-                                    ),
                                     "SlotID": PalObjects.PalCharacterSlotId(
                                         SlotIndex, ContainerId
                                     ),
-                                    # TODO Need accurate values
-                                    "MaxFullStomach": PalObjects.FloatProperty(300.0),
                                     "GotStatusPointList": PalObjects.ArrayProperty(
                                         "StructProperty",
                                         {
@@ -589,12 +607,8 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "DecreaseFullStomachRates": PalObjects.FloatContainer(
-                                        {}
-                                    ),
-                                    "CraftSpeedRates": PalObjects.FloatContainer({}),
-                                    "LastJumpedLocation": PalObjects.Vector(
-                                        0, 0, 7088.5
+                                    "LastNickNameModifierPlayerUid": PalObjects.Guid(
+                                        OwnerPlayerUId
                                     ),
                                 },
                                 "type": "StructProperty",

@@ -98,7 +98,7 @@ def get_active_skills():
             "Invalid": attack.get("Invalid", False)
         }
         if data["Invalid"]:
-            data["I18n"][0] = "❌ " + data["I18n"][0]
+            data["I18n"][0] = "⚠️ " + data["I18n"][0]
         atk_dict[attack["InternalName"]] = data
         atk_arr.append(data)
     return reply(0, {"dict": atk_dict, "arr": atk_arr})

@@ -30,7 +30,7 @@ def load_json(filename: str) -> Any:
 
 
 PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
-PAL_DATA: dict[str, dict] = load_json("pal_data.json")
+PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 
@@ -76,7 +76,7 @@ class DataProvider:
     @property
     def default_i18n() -> str:
         return I18N_LIST.keys()[0]
-    
+
     def get_i18n_map() -> dict[str, str]:
         return I18N_LIST
 
@@ -93,15 +93,10 @@ class DataProvider:
         i18n_list: dict = PAL_DATA[key]["I18n"]
         return i18n_list.get(Config.i18n, i18n_list.get("en"))
 
-    @none_guard(data_source=PAL_DATA, subkey="Scaling")
+    @none_guard(data_source=PAL_DATA, subkey="Stats")
     @staticmethod
-    def get_pal_scaling(pal: str, scaling_type: str, is_boss: bool) -> Optional[int]:
-        if scaling_type not in {"HP", "ATK", "DEF"}:
-            return None
-
-        scaling_list: dict = PAL_DATA[pal]["Scaling"]
-        if is_boss and f"{scaling_type}_BOSS" in scaling_list:
-            return scaling_list[f"{scaling_type}_BOSS"]
+    def get_pal_stats(pal: str, scaling_type: str) -> Optional[int]:
+        scaling_list: dict = PAL_DATA[pal]["Stats"]
         return scaling_list.get(scaling_type, None)
 
     @none_guard(data_source=PAL_DATA, subkey="SortingKey")
@@ -120,7 +115,7 @@ class DataProvider:
                     DataProvider.get_pal_sorting_key(item["InternalName"])
                     or DataProvider.get_pal_i18n(item["InternalName"])
                 ),
-                len(item["InternalName"])
+                len(item["InternalName"]),
             ),
         )
         return sorted_list
@@ -133,15 +128,20 @@ class DataProvider:
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
-    
+
     @staticmethod
     def is_pal_invalid(key: str) -> bool:
-        if key not in PAL_DATA: return True
+        if key not in PAL_DATA:
+            return True
         return PAL_DATA[key].get("Invalid", False)
 
     @none_guard(data_source=PAL_DATA, subkey="Attacks")
     def get_pal_attacks(pal: str) -> Optional[list[str]]:
         return PAL_DATA[pal]["Attacks"]
+
+    @none_guard(data_source=PAL_DATA, subkey="Suitabilities")
+    def get_pal_suitabilities(pal: str) -> Optional[list[str]]:
+        return PAL_DATA[pal]["Suitabilities"]
 
     @staticmethod
     def get_level_xp(lv: int) -> Optional[int]:
@@ -156,7 +156,7 @@ class DataProvider:
     def get_attack_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_ATTACKS[key]["I18n"]
         i18n: dict = i18n_list.get(Config.i18n, i18n_list.get("en"))
-        return  (i18n.get("Name", key), i18n.get("Description", ""))
+        return (i18n.get("Name", key), i18n.get("Description", ""))
 
     @staticmethod
     def has_attack(key: str) -> bool:
@@ -192,7 +192,7 @@ class DataProvider:
                 DataProvider.is_unique_attacks(item["InternalName"]),
                 # DataProvider.has_skill_fruit(item["InternalName"]),
                 item["Power"],
-                item["CT"]
+                item["CT"],
             ),
         )
         return sorted_list
@@ -212,7 +212,10 @@ class DataProvider:
     def get_sorted_passives() -> list[dict]:
         sorted_list = sorted(
             PAL_PASSIVES.values(),
-            key=lambda item: (-item["Rating"], DataProvider.get_passive_i18n(item["InternalName"])),
+            key=lambda item: (
+                -item["Rating"],
+                DataProvider.get_passive_i18n(item["InternalName"]),
+            ),
         )
         return sorted_list
 
