@@ -297,6 +297,19 @@ class PalEntity:
             case "Blueplatypus":
                 key = "BluePlatypus"
         return key
+    
+    @property
+    def IsFavoritePal(self) -> Optional[bool]:
+        return PalObjects.get_BaseType(self._pal_param.get("IsFavoritePal"))
+    
+    @IsFavoritePal.setter
+    @LOGGER.change_logger("IsFavoritePal")
+    @type_guard
+    def IsFavoritePal(self, value: bool) -> None:
+        if self.IsFavoritePal is None:
+            self._pal_param["IsFavoritePal"] = PalObjects.BoolProperty(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["IsFavoritePal"], value)
 
     @property
     def IsInvalid(self) -> bool:

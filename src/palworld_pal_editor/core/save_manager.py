@@ -440,7 +440,8 @@ class SaveManager:
                 # so just assign a randomly for now.
                 pal_entity._pal_param["EquipItemContainerId"] = PalObjects.PalContainerId(str(uuid.uuid4()))
                 # pal_entity._pal_param.pop("EquipItemContainerId", None)
-                
+                # remove expedition status
+                pal_entity._pal_param.pop("MapObjectConcreteInstanceIdAssignedToExpedition", None)
                 pal_entity.NickName = "!!!DUPED PAL!!!"
 
             pal_entity.is_new_pal = True
