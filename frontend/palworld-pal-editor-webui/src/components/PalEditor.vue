@@ -31,6 +31,21 @@ function filterInvalid(list) {
   })
 }
 
+function filteredSuits() {
+  const suits = palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities ?? {}
+  const retval = {}
+  for (const [key, value] of Object.entries(suits)) {
+    if (value > 0 || !palStore.HIDE_INVALID_OPTIONS) {
+      retval[key] = value
+    }
+  }
+  return retval;
+}
+
+const suitabilityIconSrc = key => {
+  return key ? `/image/suitabilities/${key.split("::").pop()}` : '';
+};
+
 </script>
 
 <template>
@@ -188,6 +203,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
         </p>
         <input class="slider" type="range" name="Talent_HP" min="0" max="100"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -196,6 +212,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
         </p>
         <input class="slider" type="range" name="Talent_Defense" min="0" max="100"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -205,6 +222,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
         </p>
         <input class="slider" type="range" name="Talent_Shot" min="0" max="100"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -213,6 +231,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
         </p>
         <input class="slider" type="range" name="Talent_Melee" min="0" max="100"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -226,6 +245,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
         <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.MAX_SOULS_LEVEL"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -234,6 +254,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
         <input class="slider" type="range" name="Rank_Attack" min="0" :max="palStore.MAX_SOULS_LEVEL"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -242,6 +263,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
         <input class="slider" type="range" name="Rank_Defence" min="0" :max="palStore.MAX_SOULS_LEVEL"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -251,6 +273,7 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
         <input class="slider" type="range" name="Rank_CraftSpeed" min="0" :max="palStore.MAX_SOULS_LEVEL"
+          :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -264,7 +287,25 @@ function filterInvalid(list) {
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
         <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
+          :disabled="palStore.LOADING_FLAG"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+      </div>
+    </div>
+    <div class="EditorItem flex-v item left"
+        v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_Suitabilities") }}
+      </p>
+      <div class="editField spaceBetween"
+        v-for="(value, key) in filteredSuits()">
+        <p class="const">
+          <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
+          {{ palStore.suitabilityValue(key) }}
+        </p>
+        <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
+          :disabled="palStore.LOADING_FLAG">🔽</button>
+        <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
+          :disabled="palStore.LOADING_FLAG">🔼</button>
       </div>
     </div>
     <div class="EditorItem item flex-v left skillPanel">
@@ -515,6 +556,12 @@ img.palIcon {
   margin-bottom: 1rem;
 }
 
+img.suitIcon {
+  height: 1.8rem;
+  margin: .2rem;
+  padding: .2rem .2rem;
+}
+
 img.palIcon.unref {
   filter: grayscale(100%);
 }
@@ -536,7 +583,7 @@ button.edit {
   height: 2rem;
   padding: 0rem;
   margin: 0rem;
-  background-color: #73aa83;
+  background-color: #848484;
   color: whitesmoke;
   border: none;
   outline: none;
@@ -545,13 +592,16 @@ button.edit {
 }
 
 button.edit:hover {
-  background-color: #4b8d5e;
+  background-color: #9c9c9c;
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
   transition: all 0.15s ease-in-out;
 }
 
 button.edit:disabled {
-  background-color: #8a8a8a;
+  background-color: #8b8b8b;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.text {
@@ -567,6 +617,9 @@ button.text:hover {
 
 button.text:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.edit_text {
@@ -582,6 +635,9 @@ button.edit_text:hover {
 
 button.edit_text:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.del {
@@ -594,6 +650,9 @@ button.del:hover {
 
 button.del:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#dump_btn {
@@ -623,6 +682,9 @@ button#dump_btn:hover {
 
 button#dump_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#del_btn {
@@ -651,6 +713,9 @@ button#del_btn:hover {
 
 button#del_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#dupe_btn {
@@ -679,6 +744,9 @@ button#dupe_btn:hover {
 
 button#dupe_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 input.edit {

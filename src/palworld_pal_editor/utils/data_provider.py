@@ -121,8 +121,8 @@ class DataProvider:
         return sorted_list
 
     @staticmethod
-    def has_tower_variant_pal(key: str) -> bool:
-        return f"GYM_{key}" in PAL_DATA
+    def has_x_variant_pal(key: str, vtype: str) -> bool:
+        return f"{vtype}_{key}" in PAL_DATA
 
     @none_guard(data_source=PAL_DATA)
     @staticmethod
@@ -140,7 +140,7 @@ class DataProvider:
         return PAL_DATA[pal]["Attacks"]
 
     @none_guard(data_source=PAL_DATA, subkey="Suitabilities")
-    def get_pal_suitabilities(pal: str) -> Optional[list[str]]:
+    def get_pal_suitabilities(pal: str) -> Optional[dict[str, int]]:
         return PAL_DATA[pal]["Suitabilities"]
 
     @staticmethod

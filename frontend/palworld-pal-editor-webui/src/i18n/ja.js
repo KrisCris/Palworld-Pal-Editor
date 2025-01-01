@@ -59,6 +59,8 @@ export default {
     Editor_Skill_EL: "属性: ",
     Editor_Mastered_Skills: "習得したアクティブスキル（パルをレベルアップすると自動的に追加されるスキル）",
 
+    Editor_Suitabilities: "作業適性",
+
     Editor_Btn_Export_Data: "データをダンプ",
     Editor_Btn_Dupe_Pal: "パルを複製",
     Editor_Btn_Delete_Pal: "パルを削除",

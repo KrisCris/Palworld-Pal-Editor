@@ -128,6 +128,7 @@ def get_pal_data():
             "InternalName": pal["InternalName"],
             "Elements": pal["Elements"],
             "Invalid": pal.get("Invalid", False),
+            "Suitabilities": DataProvider.get_pal_suitabilities(pal["InternalName"]),
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),

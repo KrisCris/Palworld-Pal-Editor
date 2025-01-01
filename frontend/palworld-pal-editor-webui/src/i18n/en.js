@@ -59,6 +59,8 @@ export default {
     Editor_Skill_EL: "Element: ",
     Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
 
+    Editor_Suitabilities: "Work Suitability",
+
     Editor_Btn_Export_Data: "Dump Data",
     Editor_Btn_Dupe_Pal: "Dupe Pal",
     Editor_Btn_Delete_Pal: "Del Pal",

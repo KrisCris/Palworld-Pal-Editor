@@ -233,6 +233,10 @@ class PalEntity:
         if re.match(r"(.+)_Oilrig", self.CharacterID):
             return True
         return False
+    
+    @property
+    def IsExpeditionPal(self) -> bool:
+        return bool(self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition"))
 
     @property
     def IsRAID(self) -> bool:
@@ -262,11 +266,15 @@ class PalEntity:
 
     @property
     def HasTowerVariant(self) -> bool:
-        if self.IsTower:
-            return True
-        if DataProvider.has_tower_variant_pal(self.DataAccessKey):
-            return True
-        return False
+        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "GYM")
+
+    @property
+    def HasRaidVariant(self) -> bool:
+        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "RAID")
+    
+    @property
+    def HasPredatorVariant(self) -> bool:
+        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "PREDATOR")
 
     @property
     def IconAccessKey(self) -> Optional[str]:
@@ -832,6 +840,15 @@ class PalEntity:
                 PalObjects.GotWorkSuitabilityAddRankList()
             )
 
+        suits = DataProvider.get_pal_suitabilities(self.DataAccessKey) or {}
+        if suits.get(suit) == rank or rank == 0:
+            PalObjects.pop_WorkSuitability(
+                self._pal_param["GotWorkSuitabilityAddRankList"], suit
+            )
+            # if not self.WorkSuitabilities:
+            #     self._pal_param.pop("GotWorkSuitabilityAddRankList", None)
+            return
+                
         PalObjects.set_WorkSuitability(
             self._pal_param["GotWorkSuitabilityAddRankList"], suit, rank
         )

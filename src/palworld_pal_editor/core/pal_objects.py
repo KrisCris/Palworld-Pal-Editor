@@ -395,7 +395,7 @@ class PalObjects:
 
     @staticmethod
     def WorkSuitability(suitability, rank):
-        {
+        return {
             "WorkSuitability": PalObjects.EnumProperty(
                 "EPalWorkSuitability", suitability
             ),
@@ -437,6 +437,16 @@ class PalObjects:
                 PalObjects.set_BaseType(ability.get("Rank"), rank)
         elif rank != 0:
             suitabilities.append(PalObjects.WorkSuitability(suitability, rank))
+
+    @staticmethod
+    def pop_WorkSuitability(container, suitability: str | PalSuitability):
+        suitabilities = PalObjects.get_ArrayProperty(container)
+        for idx, ability in enumerate(suitabilities):
+            if (
+                PalObjects.get_EnumProperty(ability.get("WorkSuitability"))
+                == suitability
+            ):
+                PalObjects.pop_ArrayProperty(container, idx)
 
     @staticmethod
     def individual_character_handle_id(instance_id: UUID | str, guid=None):

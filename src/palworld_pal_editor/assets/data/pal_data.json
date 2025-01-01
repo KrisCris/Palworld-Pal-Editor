@@ -1420,15 +1420,17 @@
         ],
         "Attacks": {
             "EPalWazaID::Unique_Garm_Bite": 1,
-            "EPalWazaID::MudShot": 7,
-            "EPalWazaID::AirCanon": 15,
-            "EPalWazaID::PowerShot": 22,
-            "EPalWazaID::FireBlast": 30,
-            "EPalWazaID::PowerBall": 40,
-            "EPalWazaID::HyperBeam": 50
+            "EPalWazaID::AirBlade": 2,
+            "EPalWazaID::AirCanon": 3,
+            "EPalWazaID::RockLance": 4,
+            "EPalWazaID::Tremor": 5,
+            "EPalWazaID::PowerBall": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 80,
+            "HP": 96,
             "ATK": 90,
             "DEF": 75,
             "MELEE": 110,
@@ -1889,16 +1891,18 @@
             "Grass"
         ],
         "Attacks": {
-            "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::SeedMachinegun": 7,
-            "EPalWazaID::ThrowRock": 15,
-            "EPalWazaID::Unique_GrassPanda_MusclePunch": 22,
-            "EPalWazaID::SeedMine": 30,
-            "EPalWazaID::RootAttack": 40,
-            "EPalWazaID::SolarBeam": 50
+            "EPalWazaID::Unique_GrassPanda_MusclePunch": 1,
+            "EPalWazaID::SeedMine": 2,
+            "EPalWazaID::RootAttack": 3,
+            "EPalWazaID::Tremor": 4,
+            "EPalWazaID::SpecialCutter": 5,
+            "EPalWazaID::WindEdge": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 100,
+            "HP": 120,
             "ATK": 90,
             "DEF": 90,
             "MELEE": 100,
@@ -2549,16 +2553,16 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::FireSeed": 7,
-            "EPalWazaID::FlareArrow": 15,
+            "EPalWazaID::PredatorBeam": 1,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 15,
             "EPalWazaID::Unique_Baphomet_SwallowKite": 22,
             "EPalWazaID::DarkWave": 30,
             "EPalWazaID::FireBall": 40,
             "EPalWazaID::Inferno": 50
         },
         "Stats": {
-            "HP": 95,
+            "HP": 114,
             "ATK": 105,
             "DEF": 85,
             "MELEE": 150,
@@ -3019,16 +3023,20 @@
             "Ice"
         ],
         "Attacks": {
-            "EPalWazaID::IceMissile": 1,
-            "EPalWazaID::IceBlade": 22,
-            "EPalWazaID::Unique_Werewolf_Ice_SnowScratch": 15,
-            "EPalWazaID::IciclePierce": 30,
-            "EPalWazaID::IcicleLine": 40,
-            "EPalWazaID::IcicleThrow": 50
+            "EPalWazaID::Unique_Werewolf_Ice_SnowScratch": 1,
+            "EPalWazaID::IcicleThrow": 2,
+            "EPalWazaID::IceBlade": 3,
+            "EPalWazaID::IciclePierce": 4,
+            "EPalWazaID::BlizzardLance": 5,
+            "EPalWazaID::PredatorBeam": 6,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 8,
+            "EPalWazaID::IcicleLine": 9,
+            "EPalWazaID::DiamondFall": 10
         },
         "Stats": {
-            "HP": 80,
-            "ATK": 105,
+            "HP": 96,
+            "ATK": 100,
             "DEF": 80,
             "MELEE": 130,
             "CRAFTSPEED": 100,
@@ -3254,16 +3262,18 @@
             "Neutral"
         ],
         "Attacks": {
-            "EPalWazaID::MudShot": 1,
-            "EPalWazaID::PowerShot": 7,
-            "EPalWazaID::Unique_Gorilla_GroundPunch": 15,
-            "EPalWazaID::StoneShotgun": 22,
-            "EPalWazaID::SeedMachinegun": 30,
-            "EPalWazaID::PowerBall": 40,
-            "EPalWazaID::HyperBeam": 50
+            "EPalWazaID::Unique_Gorilla_GroundPunch": 1,
+            "EPalWazaID::Tremor": 2,
+            "EPalWazaID::PowerBall": 3,
+            "EPalWazaID::RockLance": 4,
+            "EPalWazaID::AirBlade": 5,
+            "EPalWazaID::PowerShot": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 90,
+            "HP": 108,
             "ATK": 95,
             "DEF": 90,
             "MELEE": 110,
@@ -3966,17 +3976,17 @@
             "Electric"
         ],
         "Attacks": {
-            "EPalWazaID::MudShot": 1,
-            "EPalWazaID::ElecWave": 7,
-            "EPalWazaID::SpreadPulse": 15,
-            "EPalWazaID::StoneShotgun": 22,
-            "EPalWazaID::Unique_ThunderDog_InazumaShorai": 26,
-            "EPalWazaID::ThunderBall": 30,
-            "EPalWazaID::LineThunder": 40,
-            "EPalWazaID::Thunderbolt": 50
+            "EPalWazaID::Unique_ThunderDog_InazumaShorai": 1,
+            "EPalWazaID::LineThunder": 2,
+            "EPalWazaID::TriSpark": 3,
+            "EPalWazaID::ThunderRain": 4,
+            "EPalWazaID::ThunderFunnel": 5,
+            "EPalWazaID::PredatorBeam": 6,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 8
         },
         "Stats": {
-            "HP": 90,
+            "HP": 108,
             "ATK": 100,
             "DEF": 80,
             "MELEE": 100,
@@ -4061,16 +4071,19 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::FireSeed": 7,
-            "EPalWazaID::GhostFlame": 15,
-            "EPalWazaID::Unique_AmaterasuWolf_FireCharge": 22,
-            "EPalWazaID::FlareTornado": 30,
-            "EPalWazaID::Inferno": 40,
-            "EPalWazaID::FireBall": 50
+            "EPalWazaID::FlameFunnel": 1,
+            "EPalWazaID::FireSeed": 2,
+            "EPalWazaID::GhostFlame": 3,
+            "EPalWazaID::Unique_AmaterasuWolf_FireCharge": 4,
+            "EPalWazaID::FlameWall": 5,
+            "EPalWazaID::Inferno": 6,
+            "EPalWazaID::FireBall": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 100,
+            "HP": 120,
             "ATK": 115,
             "DEF": 100,
             "MELEE": 70,
@@ -4347,15 +4360,18 @@
         ],
         "Attacks": {
             "EPalWazaID::WindCutter": 1,
-            "EPalWazaID::Unique_FlowerDinosaur_Whip": 7,
-            "EPalWazaID::DragonWave": 15,
-            "EPalWazaID::SeedMine": 22,
-            "EPalWazaID::DragonBreath": 30,
-            "EPalWazaID::RootAttack": 40,
-            "EPalWazaID::SolarBeam": 50
+            "EPalWazaID::Unique_FlowerDinosaur_Whip": 2,
+            "EPalWazaID::Commet": 3,
+            "EPalWazaID::SeedMine": 4,
+            "EPalWazaID::BlastCanon": 5,
+            "EPalWazaID::RootAttack": 6,
+            "EPalWazaID::SpecialCutter": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 85,
             "DEF": 90,
             "MELEE": 90,
@@ -4583,17 +4599,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::FlareArrow": 15,
-            "EPalWazaID::DarkWave": 22,
-            "EPalWazaID::GhostFlame": 30,
-            "EPalWazaID::Unique_GhostBeast_Tossin": 35,
-            "EPalWazaID::ShadowBall": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::Unique_GhostBeast_Tossin": 1,
+            "EPalWazaID::GhostFlame": 5,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::DarkLegion": 4,
+            "EPalWazaID::Apocalypse": 6,
+            "EPalWazaID::DarkArrow": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 75,
+            "HP": 90,
             "ATK": 105,
             "DEF": 80,
             "MELEE": 50,
@@ -4678,16 +4695,17 @@
             "Ground"
         ],
         "Attacks": {
-            "EPalWazaID::WaterGun": 1,
-            "EPalWazaID::StoneShotgun": 7,
-            "EPalWazaID::Unique_DrillGame_ShellAttack": 15,
-            "EPalWazaID::ThrowRock": 22,
-            "EPalWazaID::SandTornado": 30,
-            "EPalWazaID::WaterBall": 40,
-            "EPalWazaID::RockLance": 50
+            "EPalWazaID::SandTwister": 1,
+            "EPalWazaID::Unique_DrillGame_ShellAttack": 2,
+            "EPalWazaID::ThrowRock": 3,
+            "EPalWazaID::Tremor": 4,
+            "EPalWazaID::RockLance": 5,
+            "EPalWazaID::PredatorBeam": 6,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 8
         },
         "Stats": {
-            "HP": 80,
+            "HP": 96,
             "ATK": 95,
             "DEF": 120,
             "MELEE": 80,
@@ -4820,15 +4838,16 @@
         ],
         "Attacks": {
             "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::PoisonShot": 7,
-            "EPalWazaID::DarkWave": 15,
-            "EPalWazaID::AcidRain": 22,
-            "EPalWazaID::PowerBall": 30,
-            "EPalWazaID::SelfDestruct": 40,
-            "EPalWazaID::HyperBeam": 50
+            "EPalWazaID::BubbleShower": 2,
+            "EPalWazaID::AirBlade": 3,
+            "EPalWazaID::RootAttack": 4,
+            "EPalWazaID::PowerBall": 5,
+            "EPalWazaID::PredatorBeam": 6,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 8
         },
         "Stats": {
-            "HP": 120,
+            "HP": 144,
             "ATK": 70,
             "DEF": 70,
             "MELEE": 70,
@@ -4964,16 +4983,18 @@
         ],
         "Attacks": {
             "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::FireBlast": 7,
-            "EPalWazaID::FireSeed": 15,
-            "EPalWazaID::Flamethrower": 22,
-            "EPalWazaID::Unique_BirdDragon_FireBreath": 26,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::FireBall": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::Unique_BirdDragon_FireBreath": 2,
+            "EPalWazaID::FlareArrow": 3,
+            "EPalWazaID::Inferno": 4,
+            "EPalWazaID::FlareTornado": 5,
+            "EPalWazaID::FireBall": 6,
+            "EPalWazaID::FlameWall": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 90,
+            "HP": 108,
             "ATK": 115,
             "DEF": 90,
             "MELEE": 100,
@@ -5156,17 +5177,17 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::FireSeed": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkCanon": 15,
+            "EPalWazaID::PredatorBeam": 1,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 15,
             "EPalWazaID::DarkArrow": 22,
             "EPalWazaID::GhostFlame": 30,
             "EPalWazaID::FlameWall": 40,
             "EPalWazaID::Apocalypse": 50
         },
         "Stats": {
-            "HP": 80,
-            "ATK": 130,
+            "HP": 96,
+            "ATK": 125,
             "DEF": 80,
             "MELEE": 100,
             "CRAFTSPEED": 100,
@@ -5300,16 +5321,19 @@
         ],
         "Attacks": {
             "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::FireSeed": 7,
-            "EPalWazaID::FlareArrow": 15,
-            "EPalWazaID::SandTornado": 22,
-            "EPalWazaID::Unique_RedArmorBird_TriplePeck": 26,
-            "EPalWazaID::FlareTornado": 30,
-            "EPalWazaID::Flamethrower": 40,
-            "EPalWazaID::FireBall": 50
+            "EPalWazaID::FireSeed": 2,
+            "EPalWazaID::FlareArrow": 3,
+            "EPalWazaID::FlareTornado": 4,
+            "EPalWazaID::FlameWall": 5,
+            "EPalWazaID::FlameFunnel": 6,
+            "EPalWazaID::FireBall": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10,
+            "EPalWazaID::Unique_RedArmorBird_TriplePeck": 11
         },
         "Stats": {
-            "HP": 95,
+            "HP": 114,
             "ATK": 105,
             "DEF": 120,
             "MELEE": 100,
@@ -5726,16 +5750,18 @@
             "Dragon"
         ],
         "Attacks": {
-            "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::DragonWave": 7,
-            "EPalWazaID::FlareArrow": 15,
-            "EPalWazaID::Unique_FairyDragon_FairyTornado": 22,
-            "EPalWazaID::DragonBreath": 30,
-            "EPalWazaID::HyperBeam": 40,
-            "EPalWazaID::DragonMeteor": 50
+            "EPalWazaID::DragonMeteor": 1,
+            "EPalWazaID::ThreeCommet": 2,
+            "EPalWazaID::BeamSlicer": 3,
+            "EPalWazaID::Unique_FairyDragon_FairyTornado": 4,
+            "EPalWazaID::BlastCanon": 6,
+            "EPalWazaID::DragonBreath": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 80,
             "DEF": 90,
             "MELEE": 80,
@@ -6059,18 +6085,19 @@
             "Ground"
         ],
         "Attacks": {
-            "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::StoneShotgun": 7,
-            "EPalWazaID::ThrowRock": 15,
-            "EPalWazaID::SandTornado": 22,
-            "EPalWazaID::Unique_WhiteTiger_Ground_IronScratch": 30,
-            "EPalWazaID::Tremor": 35,
-            "EPalWazaID::RockLance": 40,
-            "EPalWazaID::RockBeat": 50
+            "EPalWazaID::StoneShotgun": 1,
+            "EPalWazaID::RockLance": 2,
+            "EPalWazaID::Tremor": 3,
+            "EPalWazaID::SandTwister": 4,
+            "EPalWazaID::AirBlade": 5,
+            "EPalWazaID::Unique_WhiteTiger_Ground_IronScratch": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 100,
-            "ATK": 105,
+            "HP": 120,
+            "ATK": 100,
             "DEF": 110,
             "MELEE": 140,
             "CRAFTSPEED": 100,
@@ -6205,17 +6232,19 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkWave": 1,
-            "EPalWazaID::FlareArrow": 7,
-            "EPalWazaID::Flamethrower": 15,
-            "EPalWazaID::GhostFlame": 22,
-            "EPalWazaID::Inferno": 30,
-            "EPalWazaID::Unique_Manticore_InfernoStrike": 35,
-            "EPalWazaID::FireBall": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::GhostFlame": 1,
+            "EPalWazaID::ShadowBall": 2,
+            "EPalWazaID::DarkArrow": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::Inferno": 5,
+            "EPalWazaID::FlameWall": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9,
+            "EPalWazaID::Unique_Manticore_InfernoStrike": 10
         },
         "Stats": {
-            "HP": 105,
+            "HP": 126,
             "ATK": 115,
             "DEF": 80,
             "MELEE": 100,
@@ -6303,15 +6332,18 @@
         ],
         "Attacks": {
             "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::WaterGun": 7,
-            "EPalWazaID::DragonWave": 15,
-            "EPalWazaID::BubbleShot": 22,
-            "EPalWazaID::DragonBreath": 30,
-            "EPalWazaID::WaterBall": 40,
-            "EPalWazaID::DragonMeteor": 50
+            "EPalWazaID::Commet": 2,
+            "EPalWazaID::ChargeCanon": 3,
+            "EPalWazaID::LineGeyser": 4,
+            "EPalWazaID::DragonBreath": 5,
+            "EPalWazaID::WaterBall": 6,
+            "EPalWazaID::DragonMeteor": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 100,
             "DEF": 70,
             "MELEE": 110,
@@ -6636,16 +6668,17 @@
             "Ground"
         ],
         "Attacks": {
-            "EPalWazaID::IceMissile": 1,
-            "EPalWazaID::StoneShotgun": 7,
-            "EPalWazaID::BlizzardLance": 15,
-            "EPalWazaID::FrostBreath": 22,
-            "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": 30,
-            "EPalWazaID::IcicleThrow": 40,
-            "EPalWazaID::RockLance": 50
+            "EPalWazaID::BlizzardLance": 1,
+            "EPalWazaID::IcicleThrow": 2,
+            "EPalWazaID::FrostBreath": 3,
+            "EPalWazaID::IceAge": 4,
+            "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": 5,
+            "EPalWazaID::PredatorBeam": 6,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 8
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 105,
             "DEF": 130,
             "MELEE": 100,
@@ -6919,17 +6952,18 @@
             "Ice"
         ],
         "Attacks": {
-            "EPalWazaID::IceMissile": 1,
-            "EPalWazaID::WindCutter": 7,
-            "EPalWazaID::IceBlade": 15,
-            "EPalWazaID::BlizzardLance": 22,
-            "EPalWazaID::FrostBreath": 30,
-            "EPalWazaID::Unique_Yeti_SnowBall": 35,
-            "EPalWazaID::IcicleThrow": 40,
-            "EPalWazaID::SolarBeam": 50
+            "EPalWazaID::IciclePierce": 1,
+            "EPalWazaID::IcicleThrow": 2,
+            "EPalWazaID::Unique_Yeti_SnowBall": 3,
+            "EPalWazaID::IceBlade": 4,
+            "EPalWazaID::FrostBreath": 5,
+            "EPalWazaID::DiamondFall": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 140,
+            "HP": 168,
             "ATK": 80,
             "DEF": 100,
             "MELEE": 100,
@@ -7443,13 +7477,16 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::DragonWave": 1,
-            "EPalWazaID::Flamethrower": 7,
-            "EPalWazaID::FlameWall": 15,
-            "EPalWazaID::Commet": 22,
-            "EPalWazaID::BeamSlicer": 30,
-            "EPalWazaID::Unique_KingBahamut_ArmSmash": 40,
-            "EPalWazaID::Unique_KingBahamut_AirCrash": 50
+            "EPalWazaID::Unique_KingBahamut_AirCrash": 1,
+            "EPalWazaID::Unique_KingBahamut_ArmSmash": 2,
+            "EPalWazaID::CommetRain": 3,
+            "EPalWazaID::BlastCanon": 5,
+            "EPalWazaID::DragonMeteor": 6,
+            "EPalWazaID::BeamSlicer": 7,
+            "EPalWazaID::Eruption": 8,
+            "EPalWazaID::FireBall": 9,
+            "EPalWazaID::FlameWall": 10,
+            "EPalWazaID::FlameFunnel": 11
         },
         "Stats": {
             "HP": 105,
@@ -7492,13 +7529,16 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::DragonWave": 1,
-            "EPalWazaID::Flamethrower": 7,
-            "EPalWazaID::FlameWall": 15,
-            "EPalWazaID::Commet": 22,
-            "EPalWazaID::BeamSlicer": 30,
-            "EPalWazaID::Unique_KingBahamut_ArmSmash": 40,
-            "EPalWazaID::Unique_KingBahamut_AirCrash": 50
+            "EPalWazaID::Unique_KingBahamut_AirCrash": 1,
+            "EPalWazaID::Unique_KingBahamut_ArmSmash": 2,
+            "EPalWazaID::ThreeCommet": 3,
+            "EPalWazaID::BlastCanon": 5,
+            "EPalWazaID::DragonMeteor": 6,
+            "EPalWazaID::BeamSlicer": 7,
+            "EPalWazaID::Eruption": 8,
+            "EPalWazaID::FireBall": 9,
+            "EPalWazaID::FlameWall": 10,
+            "EPalWazaID::FlameFunnel": 11
         },
         "Stats": {
             "HP": 105,
@@ -7683,16 +7723,16 @@
             "Electric"
         ],
         "Attacks": {
-            "EPalWazaID::SpreadPulse": 1,
-            "EPalWazaID::ElecWave": 7,
-            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::PredatorBeam": 1,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 15,
             "EPalWazaID::ShadowBall": 22,
             "EPalWazaID::TriSpark": 30,
             "EPalWazaID::ThunderRain": 40,
             "EPalWazaID::ThunderStorm": 50
         },
         "Stats": {
-            "HP": 105,
+            "HP": 126,
             "ATK": 125,
             "DEF": 100,
             "MELEE": 100,
@@ -8021,17 +8061,20 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::DragonCanon": 7,
-            "EPalWazaID::FlareTornado": 15,
-            "EPalWazaID::Flamethrower": 22,
-            "EPalWazaID::ThreeThunder": 30,
-            "EPalWazaID::Unique_Umihebi_Fire_FireWindingTackle": 35,
-            "EPalWazaID::FireBall": 40,
-            "EPalWazaID::DragonMeteor": 50
+            "EPalWazaID::Inferno": 1,
+            "EPalWazaID::DragonCanon": 2,
+            "EPalWazaID::Eruption": 3,
+            "EPalWazaID::BlastCanon": 4,
+            "EPalWazaID::ThunderStorm": 5,
+            "EPalWazaID::FireBall": 6,
+            "EPalWazaID::DragonMeteor": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10,
+            "EPalWazaID::Unique_Umihebi_Fire_FireWindingTackle": 11
         },
         "Stats": {
-            "HP": 130,
+            "HP": 156,
             "ATK": 130,
             "DEF": 100,
             "MELEE": 150,
@@ -8211,20 +8254,22 @@
             "Electric"
         ],
         "Attacks": {
-            "EPalWazaID::SpreadPulse": 1,
-            "EPalWazaID::ElecWave": 7,
-            "EPalWazaID::Unique_ElecPanda_ElecScratch": 15,
-            "EPalWazaID::LineThunder": 22,
-            "EPalWazaID::ThreeThunder": 30,
-            "EPalWazaID::LightningStrike": 40,
-            "EPalWazaID::Thunderbolt": 50,
-            "EPalWazaID::Unique_ElecPanda_GatlingAttack": 55
+            "EPalWazaID::Unique_ElecPanda_GatlingAttack": 1,
+            "EPalWazaID::Unique_ElecPanda_ElecScratch": 2,
+            "EPalWazaID::LineThunder": 3,
+            "EPalWazaID::LightningStrike": 4,
+            "EPalWazaID::Thunderbolt": 5,
+            "EPalWazaID::ShokeiLaser": 6,
+            "EPalWazaID::RootAttack": 7,
+            "EPalWazaID::SeedMine": 8,
+            "EPalWazaID::GrassTornado": 9,
+            "EPalWazaID::TriSpark": 10
         },
         "Stats": {
             "HP": 105,
             "ATK": 100,
             "DEF": 100,
-            "MELEE": 120,
+            "MELEE": 100,
             "CRAFTSPEED": 100,
             "FOOD": 475
         },
@@ -8260,20 +8305,18 @@
             "Electric"
         ],
         "Attacks": {
-            "EPalWazaID::SpreadPulse": 1,
-            "EPalWazaID::ElecWave": 7,
-            "EPalWazaID::Unique_ElecPanda_ElecScratch": 15,
-            "EPalWazaID::LineThunder": 22,
-            "EPalWazaID::ThreeThunder": 30,
-            "EPalWazaID::LightningStrike": 40,
-            "EPalWazaID::Thunderbolt": 50,
-            "EPalWazaID::Unique_ElecPanda_GatlingAttack": 55
+            "EPalWazaID::Unique_ElecPanda_ElecScratch": 1,
+            "EPalWazaID::SpreadPulse": 2,
+            "EPalWazaID::ElecWave": 3,
+            "EPalWazaID::ThunderBall": 4,
+            "EPalWazaID::ThunderFunnel": 5,
+            "EPalWazaID::LockonLaser": 6
         },
         "Stats": {
             "HP": 105,
             "ATK": 100,
             "DEF": 100,
-            "MELEE": 120,
+            "MELEE": 100,
             "CRAFTSPEED": 100,
             "FOOD": 475
         },
@@ -8356,14 +8399,18 @@
             "Grass"
         ],
         "Attacks": {
-            "EPalWazaID::WindCutter": 1,
-            "EPalWazaID::SeedMachinegun": 7,
-            "EPalWazaID::SeedMine": 15,
-            "EPalWazaID::WaterBall": 22,
-            "EPalWazaID::GrassTornado": 30,
-            "EPalWazaID::RootAttack": 40,
-            "EPalWazaID::SolarBeam": 50,
-            "EPalWazaID::Unique_LilyQueen_LilyHealing": 55
+            "EPalWazaID::Unique_LilyQueen_LilyHealing": 1,
+            "EPalWazaID::SeedMine": 2,
+            "EPalWazaID::RaidCutter": 3,
+            "EPalWazaID::RootAttack": 4,
+            "EPalWazaID::RootLance": 5,
+            "EPalWazaID::HydroPump": 6,
+            "EPalWazaID::LineGeyser": 7,
+            "EPalWazaID::WallSplash": 8,
+            "EPalWazaID::AcidRain": 9,
+            "EPalWazaID::WindEdge": 10,
+            "EPalWazaID::WaterBall": 11,
+            "EPalWazaID::BubbleShot": 12
         },
         "Stats": {
             "HP": 110,
@@ -8371,7 +8418,7 @@
             "DEF": 105,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 400
+            "FOOD": 475
         },
         "I18n": {
             "en": "Lily & Lyleen",
@@ -8405,14 +8452,13 @@
             "Grass"
         ],
         "Attacks": {
-            "EPalWazaID::WindCutter": 1,
-            "EPalWazaID::SeedMachinegun": 7,
-            "EPalWazaID::SeedMine": 15,
-            "EPalWazaID::WaterBall": 22,
-            "EPalWazaID::GrassTornado": 30,
-            "EPalWazaID::RootAttack": 40,
-            "EPalWazaID::SolarBeam": 50,
-            "EPalWazaID::Unique_LilyQueen_LilyHealing": 55
+            "EPalWazaID::PoisonFog": 1,
+            "EPalWazaID::BubbleShot": 2,
+            "EPalWazaID::SeedMine": 3,
+            "EPalWazaID::WaterBall": 4,
+            "EPalWazaID::SpecialCutter": 5,
+            "EPalWazaID::GrassTornado": 6,
+            "EPalWazaID::RootAttack": 7
         },
         "Stats": {
             "HP": 110,
@@ -8420,7 +8466,7 @@
             "DEF": 105,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 400
+            "FOOD": 475
         },
         "I18n": {
             "en": "Lily & Lyleen",
@@ -8597,14 +8643,15 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::FlareArrow": 7,
-            "EPalWazaID::FireSeed": 15,
-            "EPalWazaID::Flamethrower": 22,
-            "EPalWazaID::Unique_Horus_FlareBird": 30,
-            "EPalWazaID::Inferno": 40,
-            "EPalWazaID::FireBall": 50,
-            "EPalWazaID::Unique_Horus_PerfectStorm": 55
+            "EPalWazaID::Unique_Horus_PerfectStorm": 1,
+            "EPalWazaID::FlareArrow": 2,
+            "EPalWazaID::FireBall": 3,
+            "EPalWazaID::FlameWall": 4,
+            "EPalWazaID::Eruption": 5,
+            "EPalWazaID::TriSpark": 6,
+            "EPalWazaID::ThunderRain": 7,
+            "EPalWazaID::ThunderStorm": 8,
+            "EPalWazaID::Railbolt": 9
         },
         "Stats": {
             "HP": 100,
@@ -8646,14 +8693,17 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::FlareArrow": 7,
-            "EPalWazaID::FireSeed": 15,
-            "EPalWazaID::Flamethrower": 22,
-            "EPalWazaID::Unique_Horus_FlareBird": 30,
-            "EPalWazaID::Inferno": 40,
-            "EPalWazaID::FireBall": 50,
-            "EPalWazaID::Unique_Horus_PerfectStorm": 55
+            "EPalWazaID::Unique_Horus_FlareBird": 1,
+            "EPalWazaID::FlareArrow": 2,
+            "EPalWazaID::RockLance": 3,
+            "EPalWazaID::Flamethrower": 4,
+            "EPalWazaID::ThreeThunder": 5,
+            "EPalWazaID::Inferno": 6,
+            "EPalWazaID::FireBall": 7,
+            "EPalWazaID::LightningStrike": 8,
+            "EPalWazaID::Thunderbolt": 9,
+            "EPalWazaID::FireSeed": 10,
+            "EPalWazaID::FireBlast": 11
         },
         "Stats": {
             "HP": 100,
@@ -8742,16 +8792,18 @@
         ],
         "Attacks": {
             "EPalWazaID::AquaJet": 1,
-            "EPalWazaID::BubbleShot": 7,
-            "EPalWazaID::AcidRain": 15,
-            "EPalWazaID::LineGeyser": 22,
-            "EPalWazaID::WallSplash": 30,
-            "EPalWazaID::Unique_Horus_Water_AquaStorm": 40,
-            "EPalWazaID::HydroPump": 50
+            "EPalWazaID::AcidRain": 2,
+            "EPalWazaID::LineGeyser": 3,
+            "EPalWazaID::WaterBall": 4,
+            "EPalWazaID::Unique_Horus_Water_AquaStorm": 5,
+            "EPalWazaID::WallSplash": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 100,
-            "ATK": 110,
+            "HP": 120,
+            "ATK": 105,
             "DEF": 110,
             "MELEE": 100,
             "CRAFTSPEED": 100,
@@ -8838,19 +8890,19 @@
             "Electric"
         ],
         "Attacks": {
-            "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": 1,
-            "EPalWazaID::LightningStrike": 7,
-            "EPalWazaID::SpreadPulse": 15,
-            "EPalWazaID::DragonBreath": 22,
-            "EPalWazaID::LineThunder": 30,
-            "EPalWazaID::ThreeThunder": 40,
-            "EPalWazaID::Thunderbolt": 50,
-            "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack": 55
+            "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack": 1,
+            "EPalWazaID::RangeThunder": 2,
+            "EPalWazaID::Commet": 3,
+            "EPalWazaID::BeamSlicer": 4,
+            "EPalWazaID::BlastCanon": 5,
+            "EPalWazaID::RootLance": 6,
+            "EPalWazaID::SolarBeam": 7,
+            "EPalWazaID::WindEdge": 8
         },
         "Stats": {
             "HP": 100,
             "ATK": 130,
-            "DEF": 100,
+            "DEF": 110,
             "MELEE": 100,
             "CRAFTSPEED": 100,
             "FOOD": 475
@@ -8889,18 +8941,19 @@
         ],
         "Attacks": {
             "EPalWazaID::Unique_ThunderDragonMan_ThunderSwordAttack": 1,
-            "EPalWazaID::LightningStrike": 7,
-            "EPalWazaID::SpreadPulse": 15,
-            "EPalWazaID::DragonBreath": 22,
-            "EPalWazaID::LineThunder": 30,
-            "EPalWazaID::ThreeThunder": 40,
-            "EPalWazaID::Thunderbolt": 50,
-            "EPalWazaID::Unique_ThunderDragonMan_NumerousSwordAttack": 55
+            "EPalWazaID::LightningStrike": 2,
+            "EPalWazaID::DragonWave": 3,
+            "EPalWazaID::DragonBreath": 4,
+            "EPalWazaID::LineThunder": 5,
+            "EPalWazaID::DragonCanon": 6,
+            "EPalWazaID::Thunderbolt": 7,
+            "EPalWazaID::AcidRain": 8,
+            "EPalWazaID::DragonMeteor": 9
         },
         "Stats": {
             "HP": 100,
             "ATK": 130,
-            "DEF": 100,
+            "DEF": 110,
             "MELEE": 100,
             "CRAFTSPEED": 100,
             "FOOD": 475
@@ -8984,14 +9037,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::DarkWave": 15,
-            "EPalWazaID::GhostFlame": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 40,
-            "EPalWazaID::DarkLaser": 50,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser2": 55
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser2": 2,
+            "EPalWazaID::DarkLaser": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::IciclePierce": 5,
+            "EPalWazaID::DoubleIcicleThrow": 6,
+            "EPalWazaID::IcicleLine": 7,
+            "EPalWazaID::BeamSlicer": 8,
+            "EPalWazaID::ShokeiLaser": 9,
+            "EPalWazaID::SandTwister": 10,
+            "EPalWazaID::WallSplash": 11,
+            "EPalWazaID::FlameFunnel": 12
         },
         "Stats": {
             "HP": 120,
@@ -9033,14 +9090,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::DarkWave": 15,
-            "EPalWazaID::GhostFlame": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 40,
-            "EPalWazaID::DarkLaser": 50,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser2": 55
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser2": 2,
+            "EPalWazaID::DarkLaser": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::IciclePierce": 5,
+            "EPalWazaID::DoubleIcicleThrow": 6,
+            "EPalWazaID::IcicleLine": 7,
+            "EPalWazaID::BeamSlicer": 8,
+            "EPalWazaID::ShokeiLaser": 9,
+            "EPalWazaID::SandTwister": 10,
+            "EPalWazaID::WallSplash": 11,
+            "EPalWazaID::FlameFunnel": 12
         },
         "Stats": {
             "HP": 120,
@@ -9082,14 +9143,17 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::DarkWave": 15,
-            "EPalWazaID::GhostFlame": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 40,
-            "EPalWazaID::DarkLaser": 50,
-            "EPalWazaID::Unique_BlackGriffon_TackleLaser2": 55
+            "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,
+            "EPalWazaID::DarkLegion": 2,
+            "EPalWazaID::GhostFlame": 3,
+            "EPalWazaID::ShadowBall": 4,
+            "EPalWazaID::IcicleThrow": 5,
+            "EPalWazaID::BlizzardLance": 6,
+            "EPalWazaID::DarkLaser": 7,
+            "EPalWazaID::FrostBreath": 8,
+            "EPalWazaID::HyperBeam": 9,
+            "EPalWazaID::IceMissile": 10,
+            "EPalWazaID::IceBlade": 11
         },
         "Stats": {
             "HP": 120,
@@ -9422,21 +9486,22 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkArrow": 15,
-            "EPalWazaID::GhostFlame": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Apocalypse": 40,
-            "EPalWazaID::Unique_NightLady_WarpBeam_Straight": 50
+            "EPalWazaID::GhostFlame": 1,
+            "EPalWazaID::DarkPulse": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::DarkLaser": 4,
+            "EPalWazaID::DarkCanon": 5,
+            "EPalWazaID::DarkArrow": 6,
+            "EPalWazaID::Apocalypse": 7,
+            "EPalWazaID::Unique_NightLady_WarpBeam_Straight": 8
         },
         "Stats": {
             "HP": 120,
-            "ATK": 150,
+            "ATK": 140,
             "DEF": 100,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 300
+            "FOOD": 150
         },
         "I18n": {
             "en": "Eclipsed Siren Bellanoir",
@@ -9516,13 +9581,15 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkArrow": 15,
-            "EPalWazaID::ShadowBall": 22,
-            "EPalWazaID::Apocalypse": 30,
-            "EPalWazaID::Unique_NightLady_FlameNightmare": 40,
-            "EPalWazaID::Unique_NightLady_WarpBeam": 50
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::ShadowBall": 2,
+            "EPalWazaID::DarkLaser": 3,
+            "EPalWazaID::DarkCanon": 4,
+            "EPalWazaID::DarkLegion": 5,
+            "EPalWazaID::DarkArrow": 6,
+            "EPalWazaID::Apocalypse": 7,
+            "EPalWazaID::Unique_NightLady_FlameNightmare": 8,
+            "EPalWazaID::Unique_NightLady_WarpBeam": 9
         },
         "Stats": {
             "HP": 120,
@@ -9530,7 +9597,7 @@
             "DEF": 100,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 300
+            "FOOD": 150
         },
         "I18n": {
             "en": "Twilight Siren (Ultra) Bellanoir Libero",
@@ -9564,13 +9631,15 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkArrow": 15,
-            "EPalWazaID::ShadowBall": 22,
-            "EPalWazaID::Apocalypse": 30,
-            "EPalWazaID::Unique_NightLady_FlameNightmare": 40,
-            "EPalWazaID::Unique_NightLady_WarpBeam": 50
+            "EPalWazaID::DarkPulse": 1,
+            "EPalWazaID::ShadowBall": 2,
+            "EPalWazaID::DarkLaser": 3,
+            "EPalWazaID::DarkCanon": 4,
+            "EPalWazaID::DarkLegion": 5,
+            "EPalWazaID::DarkArrow": 6,
+            "EPalWazaID::Apocalypse": 7,
+            "EPalWazaID::Unique_NightLady_FlameNightmare": 8,
+            "EPalWazaID::Unique_NightLady_WarpBeam": 9
         },
         "Stats": {
             "HP": 120,
@@ -9578,7 +9647,7 @@
             "DEF": 100,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 300
+            "FOOD": 150
         },
         "I18n": {
             "en": "Twilight Siren Bellanoir Libero",
@@ -9660,13 +9729,13 @@
             "Neutral"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkArrow": 7,
-            "EPalWazaID::AirBlade": 15,
-            "EPalWazaID::HolyBlast": 22,
-            "EPalWazaID::Unique_MoonQueen_MoonBlade": 30,
-            "EPalWazaID::StarMine": 40,
-            "EPalWazaID::Unique_MoonQueen_MoonBeam": 50
+            "EPalWazaID::AirBlade": 1,
+            "EPalWazaID::PowerBall": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::IcicleThrow": 4,
+            "EPalWazaID::Commet": 5,
+            "EPalWazaID::GhostFlame": 6,
+            "EPalWazaID::DarkArrow": 7
         },
         "Stats": {
             "HP": 130,
@@ -9709,13 +9778,19 @@
             "Neutral"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkArrow": 7,
-            "EPalWazaID::AirBlade": 15,
-            "EPalWazaID::HolyBlast": 22,
-            "EPalWazaID::Unique_MoonQueen_MoonBlade": 30,
-            "EPalWazaID::StarMine": 40,
-            "EPalWazaID::Unique_MoonQueen_MoonBeam": 50
+            "EPalWazaID::Unique_MoonQueen_MoonBeam": 1,
+            "EPalWazaID::Unique_MoonQueen_IceMoonBlade": 2,
+            "EPalWazaID::StarMine": 3,
+            "EPalWazaID::AirBlade": 4,
+            "EPalWazaID::HolyBlast": 5,
+            "EPalWazaID::IciclePierce": 6,
+            "EPalWazaID::ShadowBall": 7,
+            "EPalWazaID::IceAge": 8,
+            "EPalWazaID::DoubleIcicleThrow": 9,
+            "EPalWazaID::DiamondFall": 10,
+            "EPalWazaID::ThreeCommet": 11,
+            "EPalWazaID::BlastCanon": 12,
+            "EPalWazaID::DarkCanon": 13
         },
         "Stats": {
             "HP": 130,
@@ -9758,13 +9833,17 @@
             "Neutral"
         ],
         "Attacks": {
-            "EPalWazaID::DarkCanon": 1,
-            "EPalWazaID::DarkArrow": 7,
-            "EPalWazaID::AirBlade": 15,
-            "EPalWazaID::HolyBlast": 22,
-            "EPalWazaID::Unique_MoonQueen_MoonBlade": 30,
-            "EPalWazaID::StarMine": 40,
-            "EPalWazaID::Unique_MoonQueen_MoonBeam": 50
+            "EPalWazaID::StarMine": 1,
+            "EPalWazaID::PowerBall": 2,
+            "EPalWazaID::Commet": 3,
+            "EPalWazaID::IcicleThrow": 4,
+            "EPalWazaID::Unique_MoonQueen_MoonBeam": 5,
+            "EPalWazaID::Unique_MoonQueen_MoonBlade": 6,
+            "EPalWazaID::HolyBlast": 7,
+            "EPalWazaID::AirBlade": 8,
+            "EPalWazaID::DarkArrow": 9,
+            "EPalWazaID::ShadowBall": 10,
+            "EPalWazaID::DiamondFall": 11
         },
         "Stats": {
             "HP": 130,
@@ -9947,15 +10026,18 @@
         ],
         "Attacks": {
             "EPalWazaID::PoisonShot": 1,
-            "EPalWazaID::SeedMachinegun": 7,
-            "EPalWazaID::GrassTornado": 15,
-            "EPalWazaID::SeedMine": 22,
-            "EPalWazaID::RootAttack": 30,
-            "EPalWazaID::RootLance": 40,
-            "EPalWazaID::SolarBeam": 50
+            "EPalWazaID::WindEdge": 2,
+            "EPalWazaID::RaidCutter": 3,
+            "EPalWazaID::SeedMine": 4,
+            "EPalWazaID::RootAttack": 5,
+            "EPalWazaID::RootLance": 6,
+            "EPalWazaID::BubbleShower": 7,
+            "EPalWazaID::PredatorBeam": 8,
+            "EPalWazaID::PredatorWave": 9,
+            "EPalWazaID::PredatorLockon": 10
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 80,
             "DEF": 90,
             "MELEE": 100,
@@ -10137,16 +10219,16 @@
             "Fire"
         ],
         "Attacks": {
-            "EPalWazaID::FireBlast": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::FireSeed": 15,
+            "EPalWazaID::PredatorBeam": 1,
+            "EPalWazaID::PredatorWave": 7,
+            "EPalWazaID::PredatorLockon": 15,
             "EPalWazaID::GhostFlame": 22,
             "EPalWazaID::ShadowBall": 30,
             "EPalWazaID::FlameFunnel": 40,
             "EPalWazaID::Eruption": 50
         },
         "Stats": {
-            "HP": 105,
+            "HP": 126,
             "ATK": 125,
             "DEF": 90,
             "MELEE": 100,
@@ -10234,15 +10316,17 @@
         ],
         "Attacks": {
             "EPalWazaID::PoisonShot": 1,
-            "EPalWazaID::DarkCanon": 7,
-            "EPalWazaID::StoneShotgun": 15,
-            "EPalWazaID::SandTornado": 22,
-            "EPalWazaID::Unique_ScorpionMan_Uppercut": 30,
-            "EPalWazaID::RockLance": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::StoneShotgun": 2,
+            "EPalWazaID::SandTwister": 3,
+            "EPalWazaID::Unique_ScorpionMan_Uppercut": 4,
+            "EPalWazaID::RockLance": 5,
+            "EPalWazaID::BubbleShower": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 90,
+            "HP": 108,
             "ATK": 110,
             "DEF": 90,
             "MELEE": 100,
@@ -10336,7 +10420,7 @@
             "EPalWazaID::SandTwister": 50
         },
         "Stats": {
-            "HP": 105,
+            "HP": 126,
             "ATK": 110,
             "DEF": 135,
             "MELEE": 100,
@@ -10469,16 +10553,18 @@
             "Neutral"
         ],
         "Attacks": {
-            "EPalWazaID::AirCanon": 1,
-            "EPalWazaID::PowerShot": 7,
-            "EPalWazaID::ThrowRock": 15,
-            "EPalWazaID::PowerBall": 22,
-            "EPalWazaID::AirBlade": 30,
-            "EPalWazaID::Unique_SifuDog_Counter": 40,
-            "EPalWazaID::HyperBeam": 50
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::PowerBall": 2,
+            "EPalWazaID::PoisonFog": 3,
+            "EPalWazaID::AirBlade": 4,
+            "EPalWazaID::Unique_SifuDog_Counter": 5,
+            "EPalWazaID::HolyBlast": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 90,
+            "HP": 108,
             "ATK": 100,
             "DEF": 100,
             "MELEE": 100,
@@ -10563,16 +10649,18 @@
             "Ground"
         ],
         "Attacks": {
-            "EPalWazaID::MudShot": 1,
-            "EPalWazaID::PowerShot": 7,
-            "EPalWazaID::StoneShotgun": 15,
-            "EPalWazaID::ThrowRock": 22,
-            "EPalWazaID::Unique_FeatherOstrich_Tossin": 30,
-            "EPalWazaID::Tremor": 40,
-            "EPalWazaID::SandTwister": 50
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::StoneShotgun": 2,
+            "EPalWazaID::RockLance": 3,
+            "EPalWazaID::Tremor": 4,
+            "EPalWazaID::Unique_FeatherOstrich_Tossin": 5,
+            "EPalWazaID::SandTwister": 6,
+            "EPalWazaID::PredatorBeam": 7,
+            "EPalWazaID::PredatorWave": 8,
+            "EPalWazaID::PredatorLockon": 9
         },
         "Stats": {
-            "HP": 95,
+            "HP": 114,
             "ATK": 90,
             "DEF": 80,
             "MELEE": 100,
@@ -10752,13 +10840,9 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::PoisonShot": 7,
-            "EPalWazaID::DarkPulse": 15,
-            "EPalWazaID::DarkArrow": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_DarkAlien_JumpScractch": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::Unique_DarkAlien_JumpScractch": 1,
+            "EPalWazaID::ShadowBall": 2,
+            "EPalWazaID::DarkCanon": 3
         },
         "Stats": {
             "HP": 90,
@@ -10799,13 +10883,9 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::PoisonShot": 7,
-            "EPalWazaID::DarkPulse": 15,
-            "EPalWazaID::DarkArrow": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_DarkAlien_JumpScractch": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::Unique_DarkAlien_JumpScractch": 1,
+            "EPalWazaID::PoisonShot": 2,
+            "EPalWazaID::DarkCanon": 3
         },
         "Stats": {
             "HP": 90,
@@ -10894,12 +10974,8 @@
         ],
         "Attacks": {
             "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::DragonWave": 7,
-            "EPalWazaID::AirBlade": 15,
-            "EPalWazaID::DragonBreath": 22,
-            "EPalWazaID::IcicleLine": 30,
-            "EPalWazaID::Commet": 40,
-            "EPalWazaID::BeamSlicer": 50
+            "EPalWazaID::Commet": 2,
+            "EPalWazaID::BeamSlicer": 3
         },
         "Stats": {
             "HP": 110,
@@ -10940,13 +11016,9 @@
             "Dragon"
         ],
         "Attacks": {
-            "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::DragonWave": 7,
-            "EPalWazaID::AirBlade": 15,
-            "EPalWazaID::DragonBreath": 22,
-            "EPalWazaID::IcicleLine": 30,
-            "EPalWazaID::Commet": 40,
-            "EPalWazaID::BeamSlicer": 50
+            "EPalWazaID::DragonBreath": 1,
+            "EPalWazaID::Commet": 2,
+            "EPalWazaID::DragonCanon": 3
         },
         "Stats": {
             "HP": 110,
@@ -11036,13 +11108,24 @@
             "Dragon"
         ],
         "Attacks": {
-            "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::Unique_DarkMechaDragon_SetFunnel": 15,
-            "EPalWazaID::Unique_DarkMechaDragon_BeamSlash": 22,
-            "EPalWazaID::Unique_DarkMechaDragon_ConvergentBeam": 30,
-            "EPalWazaID::Unique_DarkMechaDragon_WarpComet": 40,
-            "EPalWazaID::Unique_DarkMechaDragon_FunnelLaser": 50
+            "EPalWazaID::Unique_DarkMechaDragon_SetFunnel": 1,
+            "EPalWazaID::Unique_DarkMechaDragon_ConvergentBeam": 2,
+            "EPalWazaID::Unique_DarkMechaDragon_FunnelLaser": 3,
+            "EPalWazaID::Unique_DarkMechaDragon_BeamSlash": 4,
+            "EPalWazaID::Unique_DarkMechaDragon_WarpComet": 5,
+            "EPalWazaID::BlastCanon": 6,
+            "EPalWazaID::FireBall": 7,
+            "EPalWazaID::DragonMeteor": 8,
+            "EPalWazaID::BeamSlicer": 9,
+            "EPalWazaID::CommetRain": 10,
+            "EPalWazaID::ChargeCanon": 11,
+            "EPalWazaID::DarkLegion": 12,
+            "EPalWazaID::ShadowBall": 13,
+            "EPalWazaID::FlameWall": 14,
+            "EPalWazaID::FlameFunnel": 15,
+            "EPalWazaID::Inferno": 16,
+            "EPalWazaID::RockBeat": 17,
+            "EPalWazaID::HolyBlast": 18
         },
         "Stats": {
             "HP": 130,
@@ -11050,7 +11133,7 @@
             "DEF": 120,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 565
+            "FOOD": 150
         },
         "I18n": {
             "en": "Invader from Space (Ultra) Xenolord",
@@ -11085,13 +11168,18 @@
             "Dragon"
         ],
         "Attacks": {
-            "EPalWazaID::DragonCanon": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::Unique_DarkMechaDragon_SetFunnel": 15,
-            "EPalWazaID::Unique_DarkMechaDragon_BeamSlash": 22,
-            "EPalWazaID::Unique_DarkMechaDragon_ConvergentBeam": 30,
-            "EPalWazaID::Unique_DarkMechaDragon_WarpComet": 40,
-            "EPalWazaID::Unique_DarkMechaDragon_FunnelLaser": 50
+            "EPalWazaID::Unique_DarkMechaDragon_SetFunnel": 1,
+            "EPalWazaID::Unique_DarkMechaDragon_ConvergentBeam": 2,
+            "EPalWazaID::Unique_DarkMechaDragon_BeamSlash": 3,
+            "EPalWazaID::Unique_DarkMechaDragon_WarpComet": 4,
+            "EPalWazaID::BlastCanon": 5,
+            "EPalWazaID::DragonMeteor": 6,
+            "EPalWazaID::BeamSlicer": 7,
+            "EPalWazaID::ThreeCommet": 8,
+            "EPalWazaID::ChargeCanon": 9,
+            "EPalWazaID::DarkLegion": 10,
+            "EPalWazaID::ShadowBall": 11,
+            "EPalWazaID::Unique_DarkMechaDragon_FunnelLaser": 12
         },
         "Stats": {
             "HP": 130,
@@ -11099,7 +11187,7 @@
             "DEF": 120,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 565
+            "FOOD": 150
         },
         "I18n": {
             "en": "Invader from Space Xenolord",
@@ -11226,16 +11314,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::MudShot": 1,
-            "EPalWazaID::DarkBall": 7,
-            "EPalWazaID::GhostFlame": 15,
-            "EPalWazaID::ShadowBall": 22,
-            "EPalWazaID::Inferno": 30,
-            "EPalWazaID::Apocalypse": 40,
-            "EPalWazaID::Unique_NightBlueHorse_DeathStep": 50
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::GhostFlame": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::PredatorBeam": 5,
+            "EPalWazaID::PredatorWave": 6,
+            "EPalWazaID::PredatorLockon": 7,
+            "EPalWazaID::Unique_NightBlueHorse_DeathStep": 8,
+            "EPalWazaID::Inferno": 9
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 100,
             "DEF": 100,
             "MELEE": 100,
@@ -11461,16 +11551,17 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkBall": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkCanon": 15,
-            "EPalWazaID::DarkWave": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_MysteryMask_LifeSteal": 40,
-            "EPalWazaID::DarkLaser": 50
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::GhostFlame": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::PredatorBeam": 5,
+            "EPalWazaID::PredatorWave": 6,
+            "EPalWazaID::PredatorLockon": 7,
+            "EPalWazaID::Unique_MysteryMask_LifeSteal": 8
         },
         "Stats": {
-            "HP": 95,
+            "HP": 114,
             "ATK": 105,
             "DEF": 100,
             "MELEE": 100,
@@ -11555,16 +11646,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::DarkBall": 1,
-            "EPalWazaID::DarkPulse": 7,
-            "EPalWazaID::DarkCanon": 15,
-            "EPalWazaID::DarkWave": 22,
-            "EPalWazaID::ShadowBall": 30,
-            "EPalWazaID::Unique_GrimGirl_BrutalMachete": 40,
-            "EPalWazaID::DarkLegion": 50
+            "EPalWazaID::DarkArrow": 1,
+            "EPalWazaID::GhostFlame": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::PredatorBeam": 5,
+            "EPalWazaID::PredatorWave": 6,
+            "EPalWazaID::PredatorLockon": 7,
+            "EPalWazaID::Unique_GrimGirl_BrutalMachete": 8,
+            "EPalWazaID::DarkLegion": 9
         },
         "Stats": {
-            "HP": 95,
+            "HP": 114,
             "ATK": 115,
             "DEF": 105,
             "MELEE": 100,
@@ -11649,16 +11742,18 @@
             "Dark"
         ],
         "Attacks": {
-            "EPalWazaID::PoisonFog": 1,
-            "EPalWazaID::PoisonShot": 7,
-            "EPalWazaID::DarkPulse": 15,
-            "EPalWazaID::DarkArrow": 22,
-            "EPalWazaID::Unique_PurpleSpider_SpiderRaid": 30,
-            "EPalWazaID::BubbleShower": 40,
-            "EPalWazaID::Apocalypse": 50
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::GhostFlame": 2,
+            "EPalWazaID::ShadowBall": 3,
+            "EPalWazaID::Apocalypse": 4,
+            "EPalWazaID::PredatorBeam": 5,
+            "EPalWazaID::PredatorWave": 6,
+            "EPalWazaID::PredatorLockon": 7,
+            "EPalWazaID::Unique_PurpleSpider_SpiderRaid": 8,
+            "EPalWazaID::BubbleShower": 9
         },
         "Stats": {
-            "HP": 110,
+            "HP": 132,
             "ATK": 100,
             "DEF": 100,
             "MELEE": 100,
@@ -11791,14 +11886,23 @@
             "Ice"
         ],
         "Attacks": {
-            "EPalWazaID::ThrowRock": 1,
-            "EPalWazaID::BlizzardLance": 7,
-            "EPalWazaID::FrostBreath": 15,
-            "EPalWazaID::Unique_SnowTigerBeastman_TrampleSlash": 22,
-            "EPalWazaID::Tremor": 30,
-            "EPalWazaID::RockBeat": 40,
-            "EPalWazaID::DiamondFall": 50,
-            "EPalWazaID::Unique_SnowTigerBeastman_SnowImpact": 55
+            "EPalWazaID::GhostFlame": 1,
+            "EPalWazaID::DoubleIcicleThrow": 2,
+            "EPalWazaID::DarkArrow": 3,
+            "EPalWazaID::Unique_SnowTigerBeastman_TrampleSlash": 4,
+            "EPalWazaID::BubbleShot": 5,
+            "EPalWazaID::RockBeat": 6,
+            "EPalWazaID::DiamondFall": 7,
+            "EPalWazaID::Unique_SnowTigerBeastman_SnowImpact": 8,
+            "EPalWazaID::Apocalypse": 9,
+            "EPalWazaID::ShadowBall": 10,
+            "EPalWazaID::LineGeyser": 11,
+            "EPalWazaID::WallSplash": 12,
+            "EPalWazaID::HydroPump": 13,
+            "EPalWazaID::DarkLegion": 14,
+            "EPalWazaID::WaterBall": 15,
+            "EPalWazaID::IciclePierce": 16,
+            "EPalWazaID::AcidRain": 17
         },
         "Stats": {
             "HP": 140,
@@ -11806,7 +11910,7 @@
             "DEF": 120,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 485
+            "FOOD": 150
         },
         "I18n": {
             "en": "Bjorn & Bastigor",
@@ -11841,13 +11945,18 @@
         ],
         "Attacks": {
             "EPalWazaID::ThrowRock": 1,
-            "EPalWazaID::BlizzardLance": 7,
-            "EPalWazaID::FrostBreath": 15,
-            "EPalWazaID::Unique_SnowTigerBeastman_TrampleSlash": 22,
-            "EPalWazaID::Tremor": 30,
-            "EPalWazaID::RockBeat": 40,
-            "EPalWazaID::DiamondFall": 50,
-            "EPalWazaID::Unique_SnowTigerBeastman_SnowImpact": 55
+            "EPalWazaID::IciclePierce": 2,
+            "EPalWazaID::Unique_SnowTigerBeastman_TrampleSlash": 4,
+            "EPalWazaID::Tremor": 5,
+            "EPalWazaID::RockBeat": 6,
+            "EPalWazaID::DiamondFall": 7,
+            "EPalWazaID::IceAge": 8,
+            "EPalWazaID::Unique_SnowTigerBeastman_SnowImpact": 9,
+            "EPalWazaID::WallSplash": 10,
+            "EPalWazaID::LineGeyser": 11,
+            "EPalWazaID::WaterBall": 12,
+            "EPalWazaID::HydroPump": 13,
+            "EPalWazaID::IcicleThrow": 14
         },
         "Stats": {
             "HP": 140,
@@ -11855,7 +11964,7 @@
             "DEF": 120,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 485
+            "FOOD": 150
         },
         "I18n": {
             "en": "Bjorn & Bastigor",
@@ -12031,15 +12140,17 @@
         ],
         "Attacks": {
             "EPalWazaID::PowerShot": 1,
-            "EPalWazaID::MudShot": 7,
-            "EPalWazaID::StoneShotgun": 15,
-            "EPalWazaID::PowerBall": 22,
-            "EPalWazaID::Tremor": 30,
-            "EPalWazaID::Unique_GoldenHorse_StoneDash": 40,
-            "EPalWazaID::RockBeat": 50
+            "EPalWazaID::StoneShotgun": 2,
+            "EPalWazaID::RockLance": 3,
+            "EPalWazaID::Tremor": 4,
+            "EPalWazaID::PredatorBeam": 5,
+            "EPalWazaID::PredatorWave": 6,
+            "EPalWazaID::PredatorLockon": 7,
+            "EPalWazaID::RockBeat": 8,
+            "EPalWazaID::Unique_GoldenHorse_StoneDash": 9
         },
         "Stats": {
-            "HP": 120,
+            "HP": 144,
             "ATK": 110,
             "DEF": 110,
             "MELEE": 100,
@@ -12071,12 +12182,6 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
-
-
-
-
-
-    
     "BrownRabbit": {
         "InternalName": "BrownRabbit",
         "Elements": [

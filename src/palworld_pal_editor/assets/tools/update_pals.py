@@ -5,7 +5,7 @@ import requests
 import json
 import re
 import os
-
+from urllib.parse import quote
 
 # URLs for the different languages
 urls = {
@@ -24,67 +24,53 @@ def pal_t(internal_name):
         "Stats": {"HP": 0, "ATK": 0, "DEF": 0, "MELEE": 0, "CRAFTSPEED": 0, "FOOD": 0},
         "I18n": {"en": "", "zh-CN": "", "ja": ""},
         "SortingKey": {"paldeck": ""},
-        "Suitabilities": {
-            "EmitFlame": 0,
-            "Watering": 0,
-            "Seeding": 0,
-            "GenerateElectricity": 0,
-            "Handcraft": 0,
-            "Collection": 0,
-            "Deforest": 0,
-            "Mining": 0,
-            "OilExtraction": 0,
-            "ProductMedicine": 0,
-            "Cool": 0,
-            "Transport": 0,
-            "MonsterFarm": 0,
-        },
+        "Suitabilities": suitabilities_t(),
     }
 
 
 def suitabilities_t():
     return {
-        "EmitFlame": 0,
-        "Watering": 0,
-        "Seeding": 0,
-        "GenerateElectricity": 0,
-        "Handcraft": 0,
-        "Collection": 0,
-        "Deforest": 0,
-        "Mining": 0,
-        "OilExtraction": 0,
-        "ProductMedicine": 0,
-        "Cool": 0,
-        "Transport": 0,
-        "MonsterFarm": 0,
+        "EPalWorkSuitability::EmitFlame": 0,
+        "EPalWorkSuitability::Watering": 0,
+        "EPalWorkSuitability::Seeding": 0,
+        "EPalWorkSuitability::GenerateElectricity": 0,
+        "EPalWorkSuitability::Handcraft": 0,
+        "EPalWorkSuitability::Collection": 0,
+        "EPalWorkSuitability::Deforest": 0,
+        "EPalWorkSuitability::Mining": 0,
+        "EPalWorkSuitability::OilExtraction": 0,
+        "EPalWorkSuitability::ProductMedicine": 0,
+        "EPalWorkSuitability::Cool": 0,
+        "EPalWorkSuitability::Transport": 0,
+        "EPalWorkSuitability::MonsterFarm": 0,
     }
 
+
 name_replace_map = {
+    "PAL Genetic Research Unit Commander Victor & Shadowbeak": "Victor & Shadowbeak",
+    "帕鲁基因研究部队-队长 维克托 & 异构格里芬": "维克托 & 异构格里芬",
+    "パル遺伝子研究部隊 隊長 ヴィクター＆ゼノグリフ": "ヴィクター＆ゼノグリフ",
+    "Commandant de l'unité de recherche sur les gènes Victor & Shadowbeak": "Victor & Shadowbeak",
     "Rayne Syndicate Officer Zoe & Grizzbolt": "Zoe & Grizzbolt",
     "雷恩盗猎团的干部 佐伊 & 暴电熊": "佐伊 & 暴电熊",
     "レイン密猟団の幹部 ゾーイ＆エレパンダ": "ゾーイ＆エレパンダ",
     "Officiel du syndicat de Rayne Zoe & Grizzbolt": "Zoe & Grizzbolt",
-    
     "Free Pal Alliance Founder Lily & Lyleen": "Lily & Lyleen",
     "帕鲁保护团体-创始人 莉莉 & 百合女王": "莉莉 & 百合女王",
     "パル愛護団体 創始者 リリィ＆リリクイン": "リリィ＆リリクイン",
     "Membre fondateur de la LPP Lily & Lyleen": "Lily & Lyleen",
-    
     "PIDF Officer Marcus & Faleris": "Marcus & Faleris",
     "帕洛斯群岛自卫队干部 马库斯 & 荷鲁斯": "马库斯 & 荷鲁斯",
     "パルパゴス島自警団の幹部 マーカス＆ホルス": "マーカス＆ホルス",
     "Cadre de la milice populaire de Palpagos Marcus & Faleris": "Marcus & Faleris",
-
     "Brothers of the Eternal Pyre Soul Leader Axel & Orserk": "Axel & Orserk",
     "永炎同心会-灵魂领袖 阿克塞尔 & 波鲁杰克斯": "阿克塞尔 & 波鲁杰克斯",
     "永炎の同志 ソウルリーダー アクセル＆ボルゼクス": "アクセル＆ボルゼクス",
     "Chef spirituel de la confrérie des Flammes éternelles Axel & Orserk": "Axel & Orserk",
-
     "Leader of the Moonflowers Saya & Selyne": "Saya & Selyne",
     "月花众的首领 纱夜 & 辉月伊": "纱夜 & 辉月伊",
     "月花衆の長 サヤ＆セレムーン": "サヤ＆セレムーン",
     "Chef de la Société des fleurs lunaires Saya & Selyne": "Saya & Selyne",
-
     "Jarl of Feybreak  Bjorn & Bastigor": "Bjorn & Bastigor",
     "天坠之民 首领 比约恩 & 霜牙王": "比约恩 & 霜牙王",
     "天落の民 首領 ビョルン＆ヒョウガオー": "ビョルン＆ヒョウガオー",
@@ -186,10 +172,10 @@ def extract_pals():
                 f"{external_res}/{internal_name}.json", "r", encoding="utf-8"
             ) as file:
                 pal_json = json.load(file)
-                suitabilities["OilExtraction"] = (
+                suitabilities["EPalWorkSuitability::OilExtraction"] = (
                     pal_json["Suitabilities"]["OilExtraction"] or 0
                 )
-                print("\t", "OilExtraction: ", suitabilities["OilExtraction"])
+                print("\t", "OilExtraction: ", suitabilities["EPalWorkSuitability::OilExtraction"])
 
         pal["Suitabilities"] = suitabilities
 
@@ -214,22 +200,38 @@ def extract_pals():
 def extract_pal_details(internal_name, en_name, pal):
     pal_variants = {}
     for lang in urls:
-        response = requests.get(f"{urls[lang]}{"_".join(en_name.split(' '))}")
+        url = f"{urls[lang]}{quote("_".join(en_name.split(' ')), safe="/:")}"
+        response = requests.get(url)
         while response.status_code != 200:
-            print(f"Failed to fetch {urls[lang]}{"_".join(en_name.split(' '))}")
+            print(f"Failed to fetch {url}")
             time.sleep(10)
-            response = requests.get(f"{urls[lang]}{"_".join(en_name.split(' '))}")
+            response = requests.get(url)
 
         detail_soup = BeautifulSoup(response.text, "html.parser")
 
+        if internal_name == "GYM_ElecPanda_2":
+            # debug
+            pass
+
         # <a class="itemname" data-hover="?s=Pals/SheepBall" href="Lamball">Lamball</a>
-        i18n_name = detail_soup.find(
-            "a", attrs={"class": "itemname", "data-hover": f"?s=Pals/{internal_name}"}
-        ).text.strip()
+        anchor_node = detail_soup.find(
+            "a",
+            attrs={"class": "itemname", "data-hover": f"?s=Pals/{internal_name}"},
+            string=True,
+        )
+        potential_root = anchor_node.find_parent(
+            "div", attrs={"id": re.compile(r"Pals(?:-\d+)?")}
+        )
+        if potential_root:
+            detail_soup = potential_root
+
+        i18n_name = anchor_node.text.strip()
         if i18n_name in name_replace_map:
             i18n_name = name_replace_map[i18n_name]
         print("\t", lang, i18n_name)
-        pal["I18n"][lang] = i18n_name if (i18n_name != "en_text" and i18n_name != "-") else en_name
+        pal["I18n"][lang] = (
+            i18n_name if (i18n_name != "en_text" and i18n_name != "-") else en_name
+        )
 
         if lang == "en":
             # <div class="d-flex justify-content-between p-2 align-items-center border-bottom">
@@ -314,6 +316,7 @@ def extract_pal_details(internal_name, en_name, pal):
             ).find_next("div")
             if skills_body:
                 # Extract all <div class="col"> within the found card-body
+                pal["Attacks"] = {}
                 cols = skills_body.find_all("div", class_="col", recursive=True)
                 for col in cols:
                     atk_node = col.find(
@@ -378,6 +381,7 @@ while len(pal_internal_names) > 0:
             pal_internal_names.insert(0, variant_internal_name)
             variant_pal = copy.deepcopy(pal)
             variant_pal["InternalName"] = variant_internal_name
+            variant_pal["I18n"]["en"] = pal_variants[variant_internal_name]
             all_pals_raw[variant_internal_name] = variant_pal
 
     if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.*)", internal_name):
@@ -924,7 +928,7 @@ with open("tmp_pal_data.json", "w", encoding="utf-8") as file:
 #     else:
 #         current_pals.append(pal)
 
-        
+
 # print("\n\n#### current_pals - new_pal: ")
 # print(set(current_pals) - set(pal_list))
 

@@ -61,6 +61,8 @@ export default {
     Editor_Skill_EL: "元素: ",
     Editor_Mastered_Skills: "学会的主动技能 (升级帕鲁时对应的技能会被自动添加)",
 
+    Editor_Suitabilities: "工作适应性",
+
     Editor_Btn_Export_Data: "导出数据",
     Editor_Btn_Dupe_Pal: "复制帕鲁",
     Editor_Btn_Delete_Pal: "删除帕鲁",

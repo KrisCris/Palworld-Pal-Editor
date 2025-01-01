@@ -59,6 +59,8 @@ export default {
     Editor_Skill_EL: "Élément : ",
     Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES (LES COMPÉTENCES SONT AJOUTÉES AUTOMATIQUEMENT LORS DE LA MONTÉE EN NIVEAU DES PALS)",
 
+    Editor_Suitabilities: "Capacités de travail",
+
     Editor_Btn_Export_Data: "Exporter les données",
     Editor_Btn_Dupe_Pal: "Dupliquer Pal",
     Editor_Btn_Delete_Pal: "Supprimer Pal",

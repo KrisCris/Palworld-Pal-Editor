@@ -164,6 +164,9 @@ button.op:hover {
 
 button.op:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.op.save {
@@ -176,6 +179,9 @@ button.op.save:hover {
 
 button.op.save:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.op.toggled {
@@ -188,5 +194,8 @@ button.op.toggled:hover {
 
 button.op.toggled:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 </style>
