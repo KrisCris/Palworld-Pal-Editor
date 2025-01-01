@@ -14,7 +14,7 @@ requires-python = ">=3.11"
 readme = "README.md"
 version = "0.11.0-pre-06"
 dependencies = [
-    "setuptools==69.1.0",
+    "setuptools==70.0.0",
     "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git#main",
     "wheel==0.42.0",
     "Flask==3.0.2",
