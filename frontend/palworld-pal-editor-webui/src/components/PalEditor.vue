@@ -202,8 +202,7 @@ const suitabilityIconSrc = key => {
           ❤️ {{ palStore.getTranslatedText("Editor_IV_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
         </p>
-        <input class="slider" type="range" name="Talent_HP" min="0" max="100"
-          :disabled="palStore.LOADING_FLAG"
+        <input class="slider" type="range" name="Talent_HP" min="0" max="100" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -211,8 +210,7 @@ const suitabilityIconSrc = key => {
           🛡️ {{ palStore.getTranslatedText("Editor_IV_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
         </p>
-        <input class="slider" type="range" name="Talent_Defense" min="0" max="100"
-          :disabled="palStore.LOADING_FLAG"
+        <input class="slider" type="range" name="Talent_Defense" min="0" max="100" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -221,8 +219,7 @@ const suitabilityIconSrc = key => {
           ⚔️ {{ palStore.getTranslatedText("Editor_IV_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
         </p>
-        <input class="slider" type="range" name="Talent_Shot" min="0" max="100"
-          :disabled="palStore.LOADING_FLAG"
+        <input class="slider" type="range" name="Talent_Shot" min="0" max="100" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -230,8 +227,7 @@ const suitabilityIconSrc = key => {
           {{ palStore.getTranslatedText("Editor_IV_MELEE") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
         </p>
-        <input class="slider" type="range" name="Talent_Melee" min="0" max="100"
-          :disabled="palStore.LOADING_FLAG"
+        <input class="slider" type="range" name="Talent_Melee" min="0" max="100" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -245,8 +241,8 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
         <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
@@ -254,8 +250,8 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
         <input class="slider" type="range" name="Rank_Attack" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
@@ -263,9 +259,8 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
         <input class="slider" type="range" name="Rank_Defence" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
@@ -273,9 +268,8 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
         <input class="slider" type="range" name="Rank_CraftSpeed" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <hr>
       <p class="cat">
@@ -287,25 +281,27 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
         <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
-          :disabled="palStore.LOADING_FLAG"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+          :disabled="palStore.LOADING_FLAG" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
     </div>
-    <div class="EditorItem flex-v item left"
-        v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
+    <div class="EditorItem flex-v item left skillPanel"
+      v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
       <p class="cat">
         {{ palStore.getTranslatedText("Editor_Suitabilities") }}
       </p>
-      <div class="editField spaceBetween"
-        v-for="(value, key) in filteredSuits()">
-        <p class="const">
-          <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
-          {{ palStore.suitabilityValue(key) }}
-        </p>
-        <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
-          :disabled="palStore.LOADING_FLAG">🔽</button>
-        <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
-          :disabled="palStore.LOADING_FLAG">🔼</button>
+      <div class="flex-h">
+        <div class="editField skillList">
+          <div v-for="(value, key) in filteredSuits()">
+            <p class="const">
+              <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
+              {{ palStore.suitabilityValue(key) }}
+            </p>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
+              :disabled="palStore.LOADING_FLAG">🔽</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
+              :disabled="palStore.LOADING_FLAG">🔼</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="EditorItem item flex-v left skillPanel">
