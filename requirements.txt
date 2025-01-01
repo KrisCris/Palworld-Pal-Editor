@@ -1,4 +1,4 @@
-setuptools==69.1.0
+setuptools==70.0.0
 git+https://github.com/KrisCris/palworld-save-tools.git@main#egg=palworld-save-tools
 wheel==0.42.0
 Flask==3.0.2
