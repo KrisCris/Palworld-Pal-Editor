@@ -10875,7 +10875,8 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        }
+        },
+        "Invalid": true
     },
     "SUMMON_DarkAlien": {
         "InternalName": "SUMMON_DarkAlien",
@@ -10918,7 +10919,8 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        }
+        },
+        "Invalid": true
     },
     "WhiteAlienDragon": {
         "InternalName": "WhiteAlienDragon",
@@ -11008,7 +11010,8 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        }
+        },
+        "Invalid": true
     },
     "SUMMON_WhiteAlienDragon": {
         "InternalName": "SUMMON_WhiteAlienDragon",
@@ -11051,7 +11054,8 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        }
+        },
+        "Invalid": true
     },
     "DarkMechaDragon": {
         "InternalName": "DarkMechaDragon",

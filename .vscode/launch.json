@@ -46,7 +46,8 @@
             "args": [
                 "--mode=web",
                 "--lang=zh-CN",
-                "--debug"
+                "--debug",
+                "--port=58080"
             ],
             "justMyCode": false
         }

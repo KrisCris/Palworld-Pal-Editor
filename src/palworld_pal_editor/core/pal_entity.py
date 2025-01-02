@@ -211,6 +211,11 @@ class PalEntity:
                 key = key.split("BOSS_")[1]
         if self.IsOilrig:
             key = key.split("_Oilrig")[0]
+        if self.IsSUMMON:
+            pattern = r"SUMMON_([A-Za-z_]+?)(?:_MAX)?(?:_\d+.*)?$"
+            match = re.search(pattern, self.CharacterID)
+            if match:
+                key = match.group(1)
         if self.IsTower:
             pattern = r"GYM_([A-Za-z_]+?)(?:_\d+.*)?$"
             match = re.search(pattern, self.CharacterID)
@@ -228,6 +233,12 @@ class PalEntity:
                 key = match.group(1)
         return key
 
+    @property
+    def IsSUMMON(self) -> bool:
+        if re.match(r"SUMMON_(.+)", self.CharacterID):
+            return True
+        return False
+    
     @property
     def IsOilrig(self) -> bool:
         if re.match(r"(.+)_Oilrig", self.CharacterID):
@@ -285,13 +296,13 @@ class PalEntity:
             match = re.search(pattern, self.CharacterID)
             if match:
                 return match.group(1)
-        if self.IsRAID or self.IsPREDATOR or self.IsOilrig:
+        if self.IsRAID or self.IsPREDATOR or self.IsOilrig or self.IsSUMMON:
             return self.RawSpecieKey
         return self.DataAccessKey
 
     @property
     def DataAccessKey(self) -> Optional[str]:
-        if self.IsTower or self.IsRAID or self.IsPREDATOR or self.IsOilrig:
+        if self.IsTower or self.IsRAID or self.IsPREDATOR or self.IsOilrig or self.IsSUMMON:
             return self.CharacterID
 
         key = self.RawSpecieKey
