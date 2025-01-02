@@ -31,16 +31,15 @@ function filterInvalid(list) {
   })
 }
 
-function filteredSuits() {
-  const suits = palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities ?? {}
-  const retval = {}
-  for (const [key, value] of Object.entries(suits)) {
-    if (value > 0 || !palStore.HIDE_INVALID_OPTIONS) {
-      retval[key] = value
-    }
-  }
-  return retval;
-}
+const isMaxSuit = key => {
+  return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= 5;
+};
+
+const isMinSuit = key => {
+  console.log(palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key], palStore.SELECTED_PAL_DATA.Suitabilities[key])
+  return  palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] == 
+          palStore.SELECTED_PAL_DATA.Suitabilities[key];
+};
 
 const suitabilityIconSrc = key => {
   return key ? `/image/suitabilities/${key.split("::").pop()}` : '';
@@ -297,15 +296,15 @@ const suitabilityIconSrc = key => {
       </p>
       <div class="flex-h">
         <div class="editField skillList">
-          <div v-for="(value, key) in filteredSuits()">
+          <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities">
             <p class="const">
               <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
-              {{ palStore.suitabilityValue(key) }}
+              {{ value }}
             </p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
-              :disabled="palStore.LOADING_FLAG">🔽</button>
+              :disabled="palStore.LOADING_FLAG || isMinSuit(key)">🔽</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
-              :disabled="palStore.LOADING_FLAG">🔼</button>
+              :disabled="palStore.LOADING_FLAG || isMaxSuit(key)">🔼</button>
           </div>
         </div>
       </div>

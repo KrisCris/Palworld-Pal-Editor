@@ -400,26 +400,40 @@ class PalObjects:
 
     @staticmethod
     def set_WorkSuitability(container, suitability: str | PalSuitability, rank: int):
+        if isinstance(suitability, PalSuitability):
+            suitability = suitability.value
         suitabilities = PalObjects.get_ArrayProperty(container)
-        exists = False
-        for idx, ability in enumerate(suitabilities):
-            if (
-                PalObjects.get_EnumProperty(ability.get("WorkSuitability"))
-                == suitability
-            ):
-                exists = True
-                break
-
-        if exists:
-            if rank == 0:
-                suitabilities.pop(idx)
-            else:
-                PalObjects.set_BaseType(ability.get("Rank"), rank)
-        elif rank != 0:
+        # exists = False
+        # to fix mistakes made by previous version
+        filtered_numbers = [
+            suit
+            for suit in suitabilities
+            if PalObjects.get_EnumProperty(suit.get("WorkSuitability")) != suitability
+        ]
+        suitabilities.clear()
+        suitabilities.extend(filtered_numbers)
+        if rank > 0:
             suitabilities.append(PalObjects.WorkSuitability(suitability, rank))
+        # for idx, ability in enumerate(suitabilities):
+        #     if (
+        #         PalObjects.get_EnumProperty(ability.get("WorkSuitability"))
+        #         == suitability
+        #     ):
+        #         exists = True
+        #         break
+
+        # if exists:
+        #     if rank == 0:
+        #         suitabilities.pop(idx)
+        #     else:
+        #         PalObjects.set_BaseType(ability.get("Rank"), rank)
+        # elif rank != 0:
+        #     suitabilities.append(PalObjects.WorkSuitability(suitability, rank))
 
     @staticmethod
     def pop_WorkSuitability(container, suitability: str | PalSuitability):
+        if isinstance(suitability, PalSuitability):
+            suitability = suitability.value
         suitabilities = PalObjects.get_ArrayProperty(container)
         for idx, ability in enumerate(suitabilities):
             if (

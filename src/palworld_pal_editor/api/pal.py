@@ -155,10 +155,7 @@ def _pal_data(pal: PalEntity):
         "PassiveSkillList": pal.PassiveSkillList or [],
         "EquipWaza": pal.EquipWaza or [],
         "MasteredWaza": pal.MasteredWaza or [],
-        "Suitabilities": {
-            k.value: pal.WorkSuitabilities.get(k)
-            for k in (pal.WorkSuitabilities or {})
-        },
+        "Suitabilities": pal.WorkSuitabilities or {},
     }
 
 

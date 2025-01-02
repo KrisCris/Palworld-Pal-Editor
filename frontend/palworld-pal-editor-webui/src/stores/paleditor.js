@@ -70,8 +70,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.EquipWaza = obj.EquipWaza;
             this.MasteredWaza = obj.MasteredWaza;
             this.Suitabilities = obj.Suitabilities;
-
-            console.log(this.Suitabilities);
         }
 
         displaySpecialType() {
@@ -157,7 +155,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 alert("Select a skill first!");
                 return;
             }
-            if (HIDE_INVALID_OPTIONS.value && this.PassiveSkillList.length >= 4) {
+            if (
+                HIDE_INVALID_OPTIONS.value &&
+                this.PassiveSkillList.length >= 4
+            ) {
                 alert("you can't add more than 4 passive skills");
                 return;
             }
@@ -230,16 +231,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         suitUp(e) {
-            const name = e.target.name;
-            const value = suitabilityValue(name) + 1;
-            this.set_Suitability(name, value);
+            try {
+                const name = e.target.name;
+                const value = SELECTED_PAL_DATA.value.Suitabilities[name] + 1;
+                this.set_Suitability(name, value);
+            } catch (error) {
+                console.log(error);
+                return;
+            }
         }
 
         suitDown(e) {
-          const name = e.target.name;
-          const value = suitabilityValue(name) - 1;
-          this.set_Suitability(name, value);
-      }
+            try {
+                const name = e.target.name;
+                const value = SELECTED_PAL_DATA.value.Suitabilities[name] - 1;
+                this.set_Suitability(name, value);
+            } catch (error) {
+                console.log(error);
+                return;
+            }
+        }
 
         set_Suitability(name, value) {
             const min =
@@ -253,6 +264,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 return;
             }
             value = Math.min(Math.max(value, min), max);
+            if (value == SELECTED_PAL_DATA.value.Suitabilities[name]) {
+                return
+            }
             updatePal({
                 target: {
                     name: "set_Suitability",
@@ -1314,18 +1328,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return "⚪";
     }
 
-    function suitabilityValue(key) {
-        try {
-            return Math.max(
-                PAL_STATIC_DATA.value[SELECTED_PAL_DATA.value.DataAccessKey]
-                    ?.Suitabilities[key],
-                SELECTED_PAL_DATA.value.Suitabilities[key] ?? 0
-            );
-        } catch (e) {
-            return 0;
-        }
-    }
-
     return {
         MAX_LEVEL,
         MAX_SOULS_LEVEL,
@@ -1379,7 +1381,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         displayElement,
         skillIcon,
         displayRating,
-        suitabilityValue,
 
         reset,
         updateI18n,

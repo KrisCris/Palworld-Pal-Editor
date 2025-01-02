@@ -185,11 +185,13 @@ class PalEntity:
             # Unset invalid movesets
             self.remove_unique_attacks()
             # Unset invalid work suitabilities
-            if self.WorkSuitabilities:
+            if self.AddedWorkSuitabilities:
                 new_suits = DataProvider.get_pal_suitabilities(self.DataAccessKey)
-                for suit in self.WorkSuitabilities:
+                for suit, rank in self.AddedWorkSuitabilities.items():
                     if new_suits is None or new_suits[suit.value] == 0:
                         self.set_WorkSuitability(suit, 0)
+                    elif rank + new_suits[suit.value] > 5:
+                        self.set_WorkSuitability(suit, 5)
 
         self.learn_attacks()
         if self.IsTower or self.IsRAID or self.IsPREDATOR:
@@ -829,31 +831,63 @@ class PalEntity:
             LOGGER.warning(f"{e}")
 
     @property
-    def WorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:
+    def AddedWorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:
         return PalObjects.get_WorkSuitabilities(
             self._pal_param.get("GotWorkSuitabilityAddRankList")
         )
+    
+    @property
+    def WorkSuitabilities(self) -> Optional[dict[str, int]]:
+        suits_data = DataProvider.get_pal_suitabilities(self.DataAccessKey)
+        if not suits_data:
+            return None
+        
+        suits = {key: value for key, value in suits_data.items() if value > 0}
+
+        if self.AddedWorkSuitabilities:
+            for suit, rank in self.AddedWorkSuitabilities.items():
+                suit = suit.value
+                if suit in suits:
+                    suits[suit] += rank
+
+        return suits
 
     @LOGGER.change_logger("WorkSuitabilities")
+    @LOGGER.change_logger("AddedWorkSuitabilities")
     @type_guard
     def set_WorkSuitability(self, suit: PalSuitability | str, rank: int) -> None:
-        if self.WorkSuitabilities is None:
+        if self.AddedWorkSuitabilities is None:
             self._pal_param["GotWorkSuitabilityAddRankList"] = (
                 PalObjects.GotWorkSuitabilityAddRankList()
             )
 
-        suits = DataProvider.get_pal_suitabilities(self.DataAccessKey) or {}
-        if suits.get(suit) == rank or rank == 0:
+        if isinstance(suit, str):
+            suit = PalSuitability.from_value(suit)
+            if not suit:
+                LOGGER.warning(f"Invalid suit {suit}, skipping")
+                return
+
+        if rank <= 0:
             PalObjects.pop_WorkSuitability(
                 self._pal_param["GotWorkSuitabilityAddRankList"], suit
             )
-            # if not self.WorkSuitabilities:
-            #     self._pal_param.pop("GotWorkSuitabilityAddRankList", None)
-            return
-                
-        PalObjects.set_WorkSuitability(
-            self._pal_param["GotWorkSuitabilityAddRankList"], suit, rank
-        )
+        else:
+            suits = DataProvider.get_pal_suitabilities(self.DataAccessKey)
+            if not suits:
+                return
+
+            added_rank = rank - suits[suit.value]
+            if added_rank <= 0:
+                PalObjects.pop_WorkSuitability(
+                    self._pal_param["GotWorkSuitabilityAddRankList"], suit
+                )
+            else:
+                PalObjects.set_WorkSuitability(
+                    self._pal_param["GotWorkSuitabilityAddRankList"], suit, added_rank
+                )
+
+        if not self.AddedWorkSuitabilities:
+            self._pal_param.pop("GotWorkSuitabilityAddRankList", None)
 
     @property
     def Talent_HP(self) -> Optional[int]:
@@ -914,19 +948,6 @@ class PalEntity:
             self._pal_param["SanityValue"] = PalObjects.FloatProperty(val)
         else:
             PalObjects.set_BaseType(self._pal_param.get("SanityValue"), val)
-
-    # @property
-    # def MaxFullStomach(self) -> Optional[float]:
-    #     return PalObjects.get_BaseType(self._pal_param.get("MaxFullStomach"))
-
-    # @MaxFullStomach.setter
-    # @LOGGER.change_logger("MaxFullStomach")
-    # @type_guard
-    # def MaxFullStomach(self, val: float) :
-    #     if self.MaxFullStomach is None:
-    #         self._pal_param["MaxFullStomach"] = PalObjects.FloatProperty(val)
-    #     else:
-    #         PalObjects.set_BaseType(self._pal_param['MaxFullStomach'], val)
 
     @property
     def FullStomach(self) -> Optional[float]:
@@ -1092,17 +1113,6 @@ class PalEntity:
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
 
-    # @LOGGER.change_logger("WorkerSick")
-    # @LOGGER.change_logger("HungerType")
-    # def clear_worker_sick(self):
-    #     self._pal_param.pop("WorkerSick", None)
-    #     self._pal_param.pop("HungerType", None)
-    #     if self.MaxFullStomach:
-    #         self.FullStomach = self.MaxFullStomach
-    #     else:
-    #         self.FullStomach = 150.0
-    #     self.SanityValue = 100.0
-
     def max_lv_exp(self):
         exp = DataProvider.get_level_xp(self.Level)
         if isinstance(exp, int):
@@ -1169,54 +1179,3 @@ class PalEntity:
         for passive in self.PassiveSkillList or []:
             bonus += DataProvider.get_passive_buff(passive, buff_key)
         return bonus
-
-    # Deprecated since Palworld 0.2.x
-    # def _derive_hp_scaling(self) -> int:
-    #     try:
-    #         def adjust_number(n):
-    #             last_digit = n % 5
-    #             if last_digit < 3:
-    #                 return n - last_digit
-    #             else:
-    #                 return n - last_digit + 5
-
-    #         Level = self.Level or 1
-    #         HP_IV = (self.Talent_HP or 0) * 0.3 / 100 # 30% of Talent
-    #         HP_Bonus = self._get_passive_buff("b_HP") # 0
-    #         HP_SoulBonus = (self.Rank_HP or 0) * 0.03 # 3% per incr Rank_HP
-    #         CondenserBonus = ((self.Rank or PalRank.Rank0).value - 1) * 0.05 # 5% per incr Rank
-
-    #         HP_No_Bonus = math.ceil(self.MaxHP / 1000 / ((1 + HP_Bonus) * (1 + HP_SoulBonus) * (1 + CondenserBonus)))
-    #         HP_Stat = math.ceil((HP_No_Bonus - 500 - 5 * Level) / (.5 * Level * (1 + HP_IV)))
-    #         return adjust_number(HP_Stat)
-    #     except:
-    #         LOGGER.error(traceback.format_exc())
-
-    # TODO Guess empty value is good?
-    # "DecreaseFullStomachRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCF40>,
-    #     "id":"None",
-    #     "value":{
-
-    #     },
-    #     "type":"StructProperty"
-    # },
-    # "AffectSanityRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CCFD0>,
-    #     "id":"None",
-    #     "value":{
-
-    #     },
-    #     "type":"StructProperty"
-    # },
-    # "CraftSpeedRates":{
-    #     "struct_type":"FloatContainer",
-    #     "struct_id":<palworld_save_tools.archive.UUID object at 0x00000140854CD000>,
-    #     "id":"None",
-    #     "value":{
-
-    #     },
-    #     "type":"StructProperty"
-    # },
