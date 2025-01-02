@@ -10,7 +10,6 @@ from palworld_pal_editor.utils import LOGGER, clamp, DataProvider
 from palworld_pal_editor.core.pal_objects import (
     PalObjects,
     PalGender,
-    PalRank,
     PalSuitability,
     get_nested_attr,
     dumps,
@@ -507,32 +506,22 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["Exp"], value)
 
     @property
-    def Rank(self) -> Optional[PalRank]:
-        return PalRank.from_value(
-            PalObjects.get_ByteProperty(self._pal_param.get("Rank"))
-        )
+    def Rank(self) -> Optional[int]:
+        return PalObjects.get_ByteProperty(self._pal_param.get("Rank"))
 
     @Rank.setter
     @LOGGER.change_logger("Rank")
     @type_guard
-    def Rank(self, rank: PalRank | int) -> None:
-        if isinstance(rank, PalRank):
-            pal_rank = rank
-        else:
-            pal_rank = PalRank.from_value(rank)
-            if not pal_rank:
-                LOGGER.warning(f"Invalid rank value {rank}")
-                return
-
+    def Rank(self, rank: int) -> None:
         if self.Rank is None:
-            self._pal_param["Rank"] = PalObjects.ByteProperty(pal_rank.value)
+            self._pal_param["Rank"] = PalObjects.ByteProperty(rank)
         else:
-            PalObjects.set_ByteProperty(self._pal_param.get("Rank"), pal_rank.value)
+            PalObjects.set_ByteProperty(self._pal_param.get("Rank"), rank)
 
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
 
-        if self.Rank == PalRank.Rank0:
+        if self.Rank == 1:
             self._pal_param.pop("Rank", None)
 
     @property
@@ -590,7 +579,7 @@ class PalEntity:
         HP_Bonus = self._get_passive_buff("b_HP")  # 0
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03  # 3% per incr Rank_HP
         CondenserBonus = (
-            (self.Rank or PalRank.Rank0).value - 1
+            (self.Rank or 1) - 1
         ) * 0.05  # 5% per incr Rank
 
         # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
@@ -618,7 +607,7 @@ class PalEntity:
         Attack_Bonus = self._get_passive_buff("b_Attack")
         Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03  # 3% per incr Rank_HP
         CondenserBonus = (
-            (self.Rank or PalRank.Rank0).value - 1
+            (self.Rank or 1) - 1
         ) * 0.05  # 5% per incr Rank
 
         # slightly off when soul / condenser bonus presents...
@@ -641,7 +630,7 @@ class PalEntity:
         Defense_Bonus = self._get_passive_buff("b_Defense")
         Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03  # 3% per incr Rank_HP
         CondenserBonus = (
-            (self.Rank or PalRank.Rank0).value - 1
+            (self.Rank or 1) - 1
         ) * 0.05  # 5% per incr Rank
 
         # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong
@@ -686,7 +675,7 @@ class PalEntity:
 
     @LOGGER.change_logger("PassiveSkillList")
     @type_guard
-    def add_PassiveSkillList(self, skill: str) -> bool:
+    def add_PassiveSkillList(self, skill: str, force: bool = False) -> bool:
         if not DataProvider.has_passive_skill(skill):
             LOGGER.warning(f"Can't find pal passive {skill} in database, skipping")
             return False
@@ -696,11 +685,11 @@ class PalEntity:
                 "NameProperty", {"values": []}
             )
 
-        if skill in self.PassiveSkillList:
+        if not force and skill in self.PassiveSkillList:
             LOGGER.warning(f"{self} already has passive {skill}, skipping")
             return False
 
-        if len(self.PassiveSkillList) >= 4:
+        if not force and len(self.PassiveSkillList) >= 4:
             LOGGER.warning(
                 f"{self} PassiveSkillList has maxed out: {self.PassiveSkillList}, skipping"
             )
@@ -749,11 +738,11 @@ class PalEntity:
             self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
-        if waza in self.EquipWaza:
+        if not force and waza in self.EquipWaza:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
 
-        if len(self.EquipWaza) >= 3 and not force:
+        if not force and len(self.EquipWaza) >= 3:
             LOGGER.warning(
                 f"{self} EquipWaza has maxed out: {self.EquipWaza}, consider add to MasteredWaza instead."
             )

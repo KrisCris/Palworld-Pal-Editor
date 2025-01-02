@@ -38,7 +38,7 @@ def patch_paldata():
             case "pop_EquipWaza":
                 pal_entity.pop_EquipWaza(item=value)
             case "add_PassiveSkillList":
-                if not pal_entity.add_PassiveSkillList(value):
+                if not pal_entity.add_PassiveSkillList(value, True):
                     return reply(
                         1,
                         None,
@@ -143,7 +143,7 @@ def _pal_data(pal: PalEntity):
         "ComputedAttack": pal.ComputedAttack or None,
         "ComputedDefense": pal.ComputedDefense or None,
         "ComputedCraftSpeed": pal.ComputedCraftSpeed or None,
-        "Rank": pal.Rank.value if pal.Rank else 1,
+        "Rank": pal.Rank if pal.Rank else 1,
         "Rank_HP": pal.Rank_HP or 0,
         "Rank_Attack": pal.Rank_Attack or 0,
         "Rank_Defence": pal.Rank_Defence or 0,

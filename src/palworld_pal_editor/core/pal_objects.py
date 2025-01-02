@@ -65,26 +65,6 @@ class PalGender(Enum):
             LOGGER.warning(f"{value} is not a valid PalGender")
 
 
-class PalRank(Enum):
-    Rank0 = 1
-    Rank1 = 2
-    Rank2 = 3
-    Rank3 = 4
-    Rank4 = 5
-
-    def zero_indexed(self) -> int:
-        self.value - 1
-
-    @staticmethod
-    def from_value(value: int):
-        if value is None:
-            return None
-        try:
-            return PalRank(value)
-        except:
-            LOGGER.warning(f"{value} is not a valid PalRank")
-
-
 class PalSuitability(Enum):
     EmitFlame = "EPalWorkSuitability::EmitFlame"
     Watering = "EPalWorkSuitability::Watering"

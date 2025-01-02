@@ -157,7 +157,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 alert("Select a skill first!");
                 return;
             }
-            if (this.PassiveSkillList.length >= 4) {
+            if (HIDE_INVALID_OPTIONS.value && this.PassiveSkillList.length >= 4) {
                 alert("you can't add more than 4 passive skills");
                 return;
             }

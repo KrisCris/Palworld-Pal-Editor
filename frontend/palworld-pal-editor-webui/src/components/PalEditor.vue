@@ -322,7 +322,7 @@ const suitabilityIconSrc = key => {
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
+          <div class="editField" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
             <select class="PassiveSkill selector" name="add_PassiveSkillList"
               v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
               <option class="PassiveSkill" value="" key="">
