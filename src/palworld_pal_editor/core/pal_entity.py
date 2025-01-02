@@ -513,6 +513,8 @@ class PalEntity:
     @LOGGER.change_logger("Rank")
     @type_guard
     def Rank(self, rank: int) -> None:
+        # 1 = no star, 2 = 1 star, 3 = 2 star, 4 = 3 star, 5 = 4 star
+        rank = clamp(1, 255, rank)
         if self.Rank is None:
             self._pal_param["Rank"] = PalObjects.ByteProperty(rank)
         else:
@@ -1113,7 +1115,8 @@ class PalEntity:
         return dumps(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
-        rank = clamp(0, 20, rank)
+        # valid option is rank = clamp(0, 20, rank)
+        rank = clamp(0, 255, rank)
         if getattr(self, property_name) is None:
             self._pal_param[property_name] = PalObjects.ByteProperty(rank)
         else:
@@ -1123,7 +1126,8 @@ class PalEntity:
             self._pal_param.pop(property_name, None)
 
     def _set_iv(self, property_name: str, value: int):
-        iv = clamp(0, 100, value)
+        # valid option is value = clamp(0, 100, value)
+        iv = clamp(0, 255, value)
         if getattr(self, property_name) is None:
             self._pal_param[property_name] = PalObjects.ByteProperty(iv)
         else:

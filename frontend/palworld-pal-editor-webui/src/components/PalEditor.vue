@@ -202,15 +202,17 @@ const suitabilityIconSrc = key => {
           ❤️ {{ palStore.getTranslatedText("Editor_IV_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
         </p>
-        <input class="slider" type="range" name="Talent_HP" min="0" max="100" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           🛡️ {{ palStore.getTranslatedText("Editor_IV_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
         </p>
-        <input class="slider" type="range" name="Talent_Defense" min="0" max="100" :disabled="palStore.LOADING_FLAG"
+        <input class="slider" type="range" name="Talent_Defense" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -219,17 +221,18 @@ const suitabilityIconSrc = key => {
           ⚔️ {{ palStore.getTranslatedText("Editor_IV_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
         </p>
-        <input class="slider" type="range" name="Talent_Shot" min="0" max="100" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           {{ palStore.getTranslatedText("Editor_IV_MELEE") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
         </p>
-        <input class="slider" type="range" name="Talent_Melee" min="0" max="100" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_Melee" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <hr>
       <p class="cat">
@@ -240,36 +243,38 @@ const suitabilityIconSrc = key => {
           ❤️ {{ palStore.getTranslatedText("Editor_Souls_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
-        <input class="slider" type="range" name="Rank_HP" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_HP" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           ⚔️ {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
-        <input class="slider" type="range" name="Rank_Attack" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_Attack" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           🛡️ {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
-        <input class="slider" type="range" name="Rank_Defence" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_Defence" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           🔨 {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
-        <input class="slider" type="range" name="Rank_CraftSpeed" min="0" :max="palStore.MAX_SOULS_LEVEL"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_CraftSpeed" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <hr>
       <p class="cat">
@@ -280,8 +285,9 @@ const suitabilityIconSrc = key => {
           ⭐ {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
-        <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
-          :disabled="palStore.LOADING_FLAG" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
+          v-model="palStore.SELECTED_PAL_DATA.Rank" :disabled="palStore.LOADING_FLAG" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
     </div>
     <div class="EditorItem flex-v item left skillPanel"
@@ -322,7 +328,8 @@ const suitabilityIconSrc = key => {
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
-          <div class="editField" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
+          <div class="editField"
+            v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
             <select class="PassiveSkill selector" name="add_PassiveSkillList"
               v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
               <option class="PassiveSkill" value="" key="">
