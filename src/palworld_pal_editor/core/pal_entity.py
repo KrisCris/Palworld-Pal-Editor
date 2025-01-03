@@ -161,19 +161,23 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
 
         # Remove / Add Gender
-        match self.DataAccessKey:
-            case "GYM_ThunderDragonMan":
-                self.Gender = PalGender.MALE
-            case "GYM_LilyQueen":
-                self.Gender = PalGender.FEMALE
-            case "GYM_Horus":
-                self.Gender = PalGender.MALE
-            case "GYM_BlackGriffon":
-                self.Gender = PalGender.MALE
-            case "GYM_ElecPanda":
-                self.Gender = PalGender.FEMALE
-            case "GYM_MoonQueen":
-                self.Gender = PalGender.FEMALE
+        if self.IsTower:
+            match self.RawSpecieKey:
+                case "ThunderDragonMan":
+                    self.Gender = PalGender.MALE
+                case "LilyQueen":
+                    self.Gender = PalGender.FEMALE
+                case "Horus":
+                    self.Gender = PalGender.MALE
+                case "BlackGriffon":
+                    self.Gender = PalGender.MALE
+                case "ElecPanda":
+                    self.Gender = PalGender.FEMALE
+                case "MoonQueen":
+                    self.Gender = PalGender.FEMALE
+                case "SnowTigerBeastman":
+                    self.Gender = PalGender.MALE
+
         if self.Gender and self.IsHuman:
             self.del_Gender()
         elif not self.Gender and self.IsPal:
@@ -205,6 +209,9 @@ class PalEntity:
     @property
     def RawSpecieKey(self) -> Optional[str]:
         key = self.CharacterID
+        if self.IsHuman:
+            return key
+        
         if self._IsBOSS:
             if "Boss_" in key:
                 key = key.split("Boss_")[1]
@@ -270,7 +277,7 @@ class PalEntity:
 
     @property
     def IsHuman(self) -> bool:
-        return DataProvider.is_pal_human(self.DataAccessKey)
+        return DataProvider.is_pal_human(self.CharacterID)
 
     @property
     def IsPal(self):
@@ -306,7 +313,8 @@ class PalEntity:
     @property
     def DataAccessKey(self) -> Optional[str]:
         if (
-            self.IsTower
+            self.IsHuman
+            or self.IsTower
             or self.IsRAID
             or self.IsPREDATOR
             or self.IsOilrig
