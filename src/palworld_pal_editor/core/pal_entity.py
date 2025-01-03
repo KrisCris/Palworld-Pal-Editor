@@ -239,16 +239,18 @@ class PalEntity:
         if re.match(r"SUMMON_(.+)", self.CharacterID):
             return True
         return False
-    
+
     @property
     def IsOilrig(self) -> bool:
         if re.match(r"(.+)_Oilrig", self.CharacterID):
             return True
         return False
-    
+
     @property
     def IsExpeditionPal(self) -> bool:
-        return bool(self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition"))
+        return bool(
+            self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition")
+        )
 
     @property
     def IsRAID(self) -> bool:
@@ -283,7 +285,7 @@ class PalEntity:
     @property
     def HasRaidVariant(self) -> bool:
         return DataProvider.has_x_variant_pal(self.RawSpecieKey, "RAID")
-    
+
     @property
     def HasPredatorVariant(self) -> bool:
         return DataProvider.has_x_variant_pal(self.RawSpecieKey, "PREDATOR")
@@ -303,7 +305,13 @@ class PalEntity:
 
     @property
     def DataAccessKey(self) -> Optional[str]:
-        if self.IsTower or self.IsRAID or self.IsPREDATOR or self.IsOilrig or self.IsSUMMON:
+        if (
+            self.IsTower
+            or self.IsRAID
+            or self.IsPREDATOR
+            or self.IsOilrig
+            or self.IsSUMMON
+        ):
             return self.CharacterID
 
         key = self.RawSpecieKey
@@ -317,11 +325,11 @@ class PalEntity:
             case "Blueplatypus":
                 key = "BluePlatypus"
         return key
-    
+
     @property
     def IsFavoritePal(self) -> Optional[bool]:
         return PalObjects.get_BaseType(self._pal_param.get("IsFavoritePal"))
-    
+
     @IsFavoritePal.setter
     @LOGGER.change_logger("IsFavoritePal")
     @type_guard
@@ -582,9 +590,7 @@ class PalEntity:
         HP_IV = (self.Talent_HP or 0) * 0.3 / 100  # 30% of Talent
         HP_Bonus = self._get_passive_buff("b_HP")  # 0
         HP_SoulBonus = (self.Rank_HP or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = (
-            (self.Rank or 1) - 1
-        ) * 0.05  # 5% per incr Rank
+        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
 
         # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
         Alpha_Scaling = 1.2 if self._IsBOSS else 1
@@ -610,9 +616,7 @@ class PalEntity:
         Attack_IV = (self.Talent_Shot or 0) * 0.3 / 100  # 30% of Talent
         Attack_Bonus = self._get_passive_buff("b_Attack")
         Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = (
-            (self.Rank or 1) - 1
-        ) * 0.05  # 5% per incr Rank
+        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
 
         # slightly off when soul / condenser bonus presents...
         base_attack = math.floor(
@@ -633,9 +637,7 @@ class PalEntity:
         Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100  # 30% of Talent
         Defense_Bonus = self._get_passive_buff("b_Defense")
         Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = (
-            (self.Rank or 1) - 1
-        ) * 0.05  # 5% per incr Rank
+        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
 
         # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong
         base_defense = math.floor(
@@ -835,13 +837,13 @@ class PalEntity:
         return PalObjects.get_WorkSuitabilities(
             self._pal_param.get("GotWorkSuitabilityAddRankList")
         )
-    
+
     @property
     def WorkSuitabilities(self) -> Optional[dict[str, int]]:
         suits_data = DataProvider.get_pal_suitabilities(self.DataAccessKey)
         if not suits_data:
             return None
-        
+
         suits = {key: value for key, value in suits_data.items() if value > 0}
 
         if self.AddedWorkSuitabilities:
@@ -849,6 +851,8 @@ class PalEntity:
                 suit = suit.value
                 if suit in suits:
                     suits[suit] += rank
+                    if suits[suit] < 5 and (self.Rank or 0) >= 5:
+                        suits[suit] += 1
 
         return suits
 
@@ -876,7 +880,9 @@ class PalEntity:
             if not suits:
                 return
 
-            added_rank = rank - suits[suit.value]
+            added_rank = rank - (
+                suits[suit.value] + (1 if (self.Rank or 0) >= 5 else 0)
+            )
             if added_rank <= 0:
                 PalObjects.pop_WorkSuitability(
                     self._pal_param["GotWorkSuitabilityAddRankList"], suit
