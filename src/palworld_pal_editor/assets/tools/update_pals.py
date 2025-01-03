@@ -416,6 +416,8 @@ while len(pal_internal_names) > 0:
     if re.match(r"(GYM_[A-Za-z_]+?)(_2)$", internal_name):
         for lang in pal["I18n"]:
             pal["I18n"][lang] = pal["I18n"][lang] + " II"
+    if re.match(r"^SUMMON_.+", internal_name):
+        pal["Invalid"] = True
     if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.+)", internal_name):
         pal["Invalid"] = True
     if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.+)", internal_name):
