@@ -562,10 +562,9 @@ class PalObjects:
                                         {"values": []},
                                     ),
                                     "Hp": PalObjects.FixedPoint64(545000),
-                                    "Talent_HP": PalObjects.ByteProperty(50),
-                                    "Talent_Melee": PalObjects.ByteProperty(50),
-                                    "Talent_Shot": PalObjects.ByteProperty(50),
-                                    "Talent_Defense": PalObjects.ByteProperty(50),
+                                    "Talent_HP": PalObjects.ByteProperty(100),
+                                    "Talent_Shot": PalObjects.ByteProperty(100),
+                                    "Talent_Defense": PalObjects.ByteProperty(100),
                                     "FullStomach": PalObjects.FloatProperty(150.0),
                                     "PassiveSkillList": PalObjects.ArrayProperty(
                                         "NameProperty", {"values": []}

@@ -115,7 +115,7 @@ def get_json_names(directory):
         json_files = [f for f in os.listdir(directory) if f.endswith(".json")]
         names = {os.path.splitext(f)[0] for f in json_files}
         return names
-    except FileNotFoundError:
+    except Exception:
         print(f"Directory {directory} not found.")
         return set()
 
@@ -155,29 +155,29 @@ def extract_pals():
         if not paldeck_id:
             pal["Invalid"] = True
 
-        # <button class="btn btn-sm border rounded" style="padding: 0.1rem;" data-filter="Handiwork1" data-bs-toggle="tooltip" data-bs-title="Handiwork"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_04.webp" class="size24">1</button>
-        suitabilities = suitabilities_t()
-        for el in card.find_all(
-            "button", {"data-filter": re.compile(r"([a-zA-Z]+)(\d+)")}
-        ):
-            suitability_name = suitabilities_map[re.sub(r"\d+", "", el["data-filter"])]
-            suitability_value = int(re.sub(r"[a-zA-Z]+", "", el["data-filter"]))
-            print("\t", suitability_name, ": ", suitability_value)
-            if suitability_name not in suitabilities:
-                raise (f"Unknown suitability: {suitability_name}")
-            suitabilities[suitability_name] = suitability_value
+        # # <button class="btn btn-sm border rounded" style="padding: 0.1rem;" data-filter="Handiwork1" data-bs-toggle="tooltip" data-bs-title="Handiwork"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_04.webp" class="size24">1</button>
+        # suitabilities = suitabilities_t()
+        # for el in card.find_all(
+        #     "button", {"data-filter": re.compile(r"([a-zA-Z]+)(\d+)")}
+        # ):
+        #     suitability_name = suitabilities_map[re.sub(r"\d+", "", el["data-filter"])]
+        #     suitability_value = int(re.sub(r"[a-zA-Z]+", "", el["data-filter"]))
+        #     print("\t", suitability_name, ": ", suitability_value)
+        #     if suitability_name not in suitabilities:
+        #         raise (f"Unknown suitability: {suitability_name}")
+        #     suitabilities[suitability_name] = suitability_value
 
-        if internal_name in name_set:
-            with open(
-                f"{external_res}/{internal_name}.json", "r", encoding="utf-8"
-            ) as file:
-                pal_json = json.load(file)
-                suitabilities["EPalWorkSuitability::OilExtraction"] = (
-                    pal_json["Suitabilities"]["OilExtraction"] or 0
-                )
-                print("\t", "OilExtraction: ", suitabilities["EPalWorkSuitability::OilExtraction"])
+        # if internal_name in name_set:
+        #     with open(
+        #         f"{external_res}/{internal_name}.json", "r", encoding="utf-8"
+        #     ) as file:
+        #         pal_json = json.load(file)
+        #         suitabilities["EPalWorkSuitability::OilExtraction"] = (
+        #             pal_json["Suitabilities"]["OilExtraction"] or 0
+        #         )
+        #         print("\t", "OilExtraction: ", suitabilities["EPalWorkSuitability::OilExtraction"])
 
-        pal["Suitabilities"] = suitabilities
+        # pal["Suitabilities"] = suitabilities
 
         # <img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_Icon_element_s_01.webp" class="size24" data-bs-toggle="tooltip" data-bs-title="Fire">
         elements = card.find_all(
@@ -191,7 +191,6 @@ def extract_pals():
 
         pal["Elements"] = [el["data-bs-title"] for el in elements]
 
-        print(json.dumps(pal, indent=4, ensure_ascii=False))
         pal_data[internal_name] = pal
 
     return pal_data
@@ -224,7 +223,7 @@ def extract_pal_details(internal_name, en_name, pal):
         )
         if potential_root:
             detail_soup = potential_root
-
+        
         i18n_name = anchor_node.text.strip()
         if i18n_name in name_replace_map:
             i18n_name = name_replace_map[i18n_name]
@@ -234,6 +233,29 @@ def extract_pal_details(internal_name, en_name, pal):
         )
 
         if lang == "en":
+            basic_info_root = anchor_node.find_parent("div", class_="card itemPopup")
+            if basic_info_root:
+                # <div class="border-bottom d-flex justify-content-between py-1 px-3">
+                #     <div><a href="Lumbering"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_06.webp" class="size24"> Lumbering</a></div><div><span style="font-size:x-small">Lv</span>3</div>
+                # </div>
+                # Extract all <div class="border-bottom d-flex justify-content-between py-1 px-3"> within the found card-body and locate the text value of the first <a> tag and the Lv of the div
+                suitability_divs = basic_info_root.find_all("div", class_="border-bottom d-flex justify-content-between py-1 px-3")
+                if suitability_divs:
+                    suitabilities = suitabilities_t()
+                    for div in suitability_divs:
+                        name = div.find("a").get_text(strip=True)
+                        level = div.find_all("div")[-1].get_text(strip=True).replace("Lv", "").strip()
+                        suitabilities[suitabilities_map[name]] = int(level)
+                    pal["Suitabilities"] = suitabilities
+                else:
+                    print(pal["I18n"]["en"], "Suitabilities not found")
+                    pal.pop("Suitabilities", None)
+            else:
+                print(pal["I18n"]["en"], "Suitabilities not found")
+                pal.pop("Suitabilities", None)
+
+
+
             # <div class="d-flex justify-content-between p-2 align-items-center border-bottom">
             #   <div><img src="https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_00.webp">Health</div>
             #   <div>105</div>
@@ -360,7 +382,7 @@ def extract_pal_details(internal_name, en_name, pal):
                 if v_internal_name == internal_name:
                     continue
                 pal_variants[v_internal_name] = v_name
-
+    print(json.dumps(pal, indent=4, ensure_ascii=False))
     return pal_variants
 
 
@@ -382,6 +404,7 @@ while len(pal_internal_names) > 0:
             variant_pal = copy.deepcopy(pal)
             variant_pal["InternalName"] = variant_internal_name
             variant_pal["I18n"]["en"] = pal_variants[variant_internal_name]
+            variant_pal["Suitabilities"] = suitabilities_t()
             all_pals_raw[variant_internal_name] = variant_pal
 
     if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.*)", internal_name):

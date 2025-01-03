@@ -37,8 +37,8 @@ const isMaxSuit = key => {
 
 const isMinSuit = key => {
   console.log(palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key], palStore.SELECTED_PAL_DATA.Suitabilities[key])
-  return  palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] == 
-          palStore.SELECTED_PAL_DATA.Suitabilities[key];
+  return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
+    palStore.SELECTED_PAL_DATA.Suitabilities[key];
 };
 
 const suitabilityIconSrc = key => {
@@ -224,7 +224,7 @@ const suitabilityIconSrc = key => {
           :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
           @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
-      <div class="editField spaceBetween">
+      <div class="editField spaceBetween" v-if="!palStore.HIDE_INVALID_OPTIONS">
         <p class="const">
           {{ palStore.getTranslatedText("Editor_IV_MELEE") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
@@ -296,7 +296,8 @@ const suitabilityIconSrc = key => {
       </p>
       <div class="flex-h">
         <div class="editField skillList">
-          <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities">
+          <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities"
+            v-show="palStore.HIDE_INVALID_OPTIONS || value != 'EPalWorkSuitability::OilExtraction'">
             <p class="const">
               <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
               {{ value }}
