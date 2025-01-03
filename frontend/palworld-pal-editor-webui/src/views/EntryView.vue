@@ -20,7 +20,7 @@ const palStore = usePalEditorStore()
                 {{ palStore.getTranslatedText('EntryView_Period') }}
             </p>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_6') }}
-                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/README.md#Sponsor">Sponsor</a>
+                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md">Donate</a>
                 {{ palStore.getTranslatedText('EntryView_Greet_5') }}
             </p>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_7') }}

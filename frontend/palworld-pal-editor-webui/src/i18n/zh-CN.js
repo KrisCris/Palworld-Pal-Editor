@@ -12,7 +12,7 @@ export default {
     EntryView_Greet_4: " > 帕鲁编辑器的下载地址为：",
     EntryView_Greet_4_1: "或",
     EntryView_Greet_5: " 页面。",
-    EntryView_Greet_6: " > 如果你喜欢这个工具，并且希望赞助，可以考虑查看我的",
+    EntryView_Greet_6: " > 如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。访问我的",
     EntryView_Greet_7: " > 遇到问题？加入",
     EntryView_Greet_7_1: "或访问",
     EntryView_Greet_8: " > 我的BiliBili频道：",
@@ -75,7 +75,7 @@ export default {
     PlayerList_Text: "玩家列表",
     PlayerList_Viewing_Cage: "为玩家解锁观赏笼: ",
 
-    PlayerList_Base_Pal: "基地帕鲁",
+    PlayerList_Base_Pal: "基地",
 
     TopBar_Btn_Save: "保存更改",
     TopBar_Btn_Reload: "重新载入存档",
@@ -83,9 +83,11 @@ export default {
     TopBar_Btn_HealAllPals: "治愈所有帕鲁",
     TopBar_Btn_Pal_OOB: "显示不在身边的帕鲁",
     TopBar_Btn_Pal_Ghost: "显示不存在的帕鲁",
-    TopBar_Btn_Invalid_Options: "隐藏不可用的选项",
+    TopBar_Btn_Invalid_Options: "隐藏作弊选项",
+    TopBar_Btn_Invalid_Options_ADs: "我不想把这个功能做成单独的付费版来赚钱，所以如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。更多信息将会在弹出的页面展示。",
 
+    TopBar_Btn_HealAllPals_Tooltips: "治愈帕鲁的所有负面状态，回复血量，饱食度。",
     TopBar_Pal_OOB_Tooltips: "显示不在玩家的帕鲁容器中的帕鲁，即，观赏笼中的帕鲁，或被其他人拿走的帕鲁。",
     TopBar_Pal_Ghost_Tooltips: "显示不存在的帕鲁，即游戏中找不到的帕鲁，比如，你已将其出售，丢弃，宰杀。",
-    TopBar_Invalid_Options_Tooltips: "隐藏菜单中的不可用选项。"
+    TopBar_Invalid_Options_Tooltips: "隐藏游戏中通常不可用的一些选项和下拉菜单，使用时请注意。"
 };

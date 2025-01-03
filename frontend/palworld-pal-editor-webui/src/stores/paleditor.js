@@ -28,6 +28,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.CharacterID = obj.CharacterID;
             this.IconAccessKey = obj.IconAccessKey;
             this.DataAccessKey = obj.DataAccessKey;
+            this.DataAccessKeyOG = obj.DataAccessKey;
             this.I18nName = obj.I18nName;
             this.DisplayName = obj.DisplayName;
             this.NickName = obj.NickName;

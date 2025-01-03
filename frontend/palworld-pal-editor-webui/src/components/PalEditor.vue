@@ -71,15 +71,12 @@ const suitabilityIconSrc = key => {
           {{ palStore.getTranslatedText("Editor_Basic_Info") }}
         </p>
         <div class="editField">
-          <div class="tooltip-container">
-            <p class="const" :title="palStore.SELECTED_PAL_DATA.InternalName">
-              {{ palStore.getTranslatedText("Editor_Species") }}
-              {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }}
-              {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n ||
-                palStore.SELECTED_PAL_DATA.DataAccessKey }}
-            </p>
-            <span class="tooltip-text">{{ palStore.SELECTED_PAL_DATA.CharacterID }}</span>
-          </div>
+          <p class="const" :title="palStore.SELECTED_PAL_DATA.InternalName">
+            {{ palStore.getTranslatedText("Editor_Species") }}
+            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKeyOG) }}
+            {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n ||
+              palStore.SELECTED_PAL_DATA.DataAccessKeyOG }}
+          </p>
           <!-- <p class="const"> Specie: </p> -->
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
             <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName"
@@ -87,11 +84,12 @@ const suitabilityIconSrc = key => {
               ${pal.Invalid || pal.IsHuman ? '⚠️' : ""}
               ${formatString(pal.SortingKey) || ""}
               ${palStore.displayPalElement(pal.InternalName)}
-              ${pal.I18n}`
+              ${pal.I18n}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${pal.InternalName}`}`
               }} </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
+
         </div>
         <div class="editField">
           <p class="const">
@@ -433,7 +431,7 @@ const suitabilityIconSrc = key => {
                 :key="skill.InternalName" :title="skill.I18n[1]">
                 {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)}
                 -
-                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
@@ -801,6 +799,7 @@ div.spaceBetween {
   bottom: 100%;
   left: 50%;
   margin-left: -60px;
+  margin-bottom: .25rem;
 }
 
 .tooltip-container:hover .tooltip-text {
@@ -817,6 +816,6 @@ select.selector {
   border-radius: .5rem;
   color: rgb(208, 212, 226);
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  max-width: 50%;
+  /* max-width: 50%; */
 }
 </style>

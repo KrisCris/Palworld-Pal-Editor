@@ -731,10 +731,10 @@
             "FOOD": 100
         },
         "I18n": {
-            "en": "Gumoss",
-            "zh-CN": "叶泥泥",
-            "ja": "ナエモチ",
-            "fr": "Gumoss"
+            "en": "Gumoss (Flower)",
+            "zh-CN": "叶泥泥 (花)",
+            "ja": "ナエモチ (花)",
+            "fr": "Gumoss (Flower)"
         },
         "SortingKey": {
             "paldeck": "13B"
@@ -7506,7 +7506,7 @@
             "paldeck": "96B"
         },
         "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 4,
+            "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
@@ -7558,7 +7558,7 @@
             "paldeck": "96B"
         },
         "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 4,
+            "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
@@ -7806,7 +7806,7 @@
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 4,
-            "EPalWorkSuitability::OilExtraction": 3,
+            "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
@@ -8432,9 +8432,9 @@
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 4,
+            "EPalWorkSuitability::Seeding": 3,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 3,
+            "EPalWorkSuitability::Handcraft": 2,
             "EPalWorkSuitability::Collection": 2,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
@@ -8480,9 +8480,9 @@
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 4,
+            "EPalWorkSuitability::Seeding": 3,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 3,
+            "EPalWorkSuitability::Handcraft": 2,
             "EPalWorkSuitability::Collection": 2,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
@@ -8920,7 +8920,7 @@
             "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 4,
+            "EPalWorkSuitability::GenerateElectricity": 3,
             "EPalWorkSuitability::Handcraft": 2,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
@@ -8971,7 +8971,7 @@
             "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 4,
+            "EPalWorkSuitability::GenerateElectricity": 3,
             "EPalWorkSuitability::Handcraft": 2,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
@@ -9426,7 +9426,7 @@
             "EPalWorkSuitability::Collection": 3,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 3,
+            "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
@@ -9522,7 +9522,7 @@
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 4,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
@@ -9618,7 +9618,7 @@
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 4,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
@@ -9668,7 +9668,7 @@
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 4,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
@@ -9759,14 +9759,14 @@
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 4,
+            "EPalWorkSuitability::Handcraft": 1,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 3,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 3,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
         },
         "Invalid": true
@@ -9814,14 +9814,14 @@
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 4,
+            "EPalWorkSuitability::Handcraft": 1,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 3,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 3,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
         },
         "Invalid": true
@@ -9867,14 +9867,14 @@
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 4,
+            "EPalWorkSuitability::Handcraft": 1,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 3,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 3,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
@@ -10875,8 +10875,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "SUMMON_DarkAlien": {
         "InternalName": "SUMMON_DarkAlien",
@@ -10919,8 +10918,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "WhiteAlienDragon": {
         "InternalName": "WhiteAlienDragon",
@@ -11010,8 +11008,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "SUMMON_WhiteAlienDragon": {
         "InternalName": "SUMMON_WhiteAlienDragon",
@@ -11054,8 +11051,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "DarkMechaDragon": {
         "InternalName": "DarkMechaDragon",
@@ -11932,11 +11928,11 @@
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 3,
-            "EPalWorkSuitability::Mining": 3,
+            "EPalWorkSuitability::Deforest": 2,
+            "EPalWorkSuitability::Mining": 2,
             "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 4,
+            "EPalWorkSuitability::Cool": 3,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
         },
@@ -11986,11 +11982,11 @@
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 3,
-            "EPalWorkSuitability::Mining": 3,
+            "EPalWorkSuitability::Deforest": 2,
+            "EPalWorkSuitability::Mining": 2,
             "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 4,
+            "EPalWorkSuitability::Cool": 3,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
         }
@@ -12130,7 +12126,7 @@
             "EPalWorkSuitability::Collection": 2,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 3,
+            "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
@@ -12179,7 +12175,7 @@
             "EPalWorkSuitability::Collection": 2,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 3,
+            "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
@@ -12218,7 +12214,7 @@
             "EPalWorkSuitability::Collection": 2,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 1,
-            "EPalWorkSuitability::OilExtraction": 1,
+            "EPalWorkSuitability::OilExtraction": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 1,
@@ -12289,21 +12285,6 @@
         "SortingKey": {
             "paldeck": ""
         },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
         "Invalid": true
     },
     "TentacleTurtle": {
@@ -12369,21 +12350,6 @@
         "SortingKey": {
             "paldeck": ""
         },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
         "Invalid": true
     },
     "WaterLizard": {
@@ -12408,21 +12374,6 @@
         },
         "SortingKey": {
             "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::OilExtraction": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
         },
         "Invalid": true
     },

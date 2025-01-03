@@ -10,7 +10,7 @@ export default {
     EntryView_Greet_4: " > The download link for the Editor is:",
     EntryView_Greet_4_1: "or",
     EntryView_Greet_5: " page.",
-    EntryView_Greet_6: " > If you like this tool and wish to support it, consider checking out my",
+    EntryView_Greet_6: " > If you like this tool, consider supporting me to help me continue developing and maintaining it. Visit my",
     EntryView_Greet_7: " > Encountering issues? Join",
     EntryView_Greet_7_1: "or visit",
     EntryView_Greet_8: " > My BiliBili channel (Chinese):",
@@ -73,7 +73,7 @@ export default {
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Viewing_Cage: "Unlock Viewing Cage for ",
 
-    PlayerList_Base_Pal: "BASE PAL",
+    PlayerList_Base_Pal: "BASECAMP",
 
     TopBar_Btn_Save: "SAVE CHANGES",
     TopBar_Btn_Reload: "Reload Save",
@@ -81,9 +81,11 @@ export default {
     TopBar_Btn_HealAllPals: "Heal All Pals",
     TopBar_Btn_Pal_OOB: "Show Out of Box Pal",
     TopBar_Btn_Pal_Ghost: "Toggle Ghost Pal",
-    TopBar_Btn_Invalid_Options: "Hide Invalid Options",
+    TopBar_Btn_Invalid_Options: "Hide Cheat Options",
+    TopBar_Btn_Invalid_Options_ADs: "I don't want to lock any features behind the paywall, but if you like this tool, consider supporting me to help me continue developing and maintaining it. More information will be shown in the GitHub readme's sponsor section.",
 
+    TopBar_Btn_HealAllPals_Tooltips: "Removes all negative statuses of Pal and restores health and satiety.",
     TopBar_Pal_OOB_Tooltips: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",
     TopBar_Pal_Ghost_Tooltips: "Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.",
-    TopBar_Invalid_Options_Tooltips: "Hide invalid dropdown menu options."
+    TopBar_Invalid_Options_Tooltips: "Hide some options and dropdowns that are not normally available in game, be careful when using it.",
 };

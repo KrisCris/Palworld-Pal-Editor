@@ -10,7 +10,7 @@ export default {
     EntryView_Greet_4: " > パルエディターのダウンロードリンクは、",
     EntryView_Greet_4_1: "または",
     EntryView_Greet_5: " ページです。",
-    EntryView_Greet_6: " > このツールが気に入り、支援したいと思ったら、私の",
+    EntryView_Greet_6: " > このツールを気に入っていただけたら、開発と維持を続けるためにサポートをご検討ください。訪問私の",
     EntryView_Greet_7: " > 問題が発生しましたか？",
     EntryView_Greet_7_1: "に参加するか、",
     EntryView_Greet_8: " > 私のBiliBiliチャンネル（中国語）：",
@@ -73,7 +73,7 @@ export default {
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Viewing_Cage: "観賞用ケージのロックを解除する: ",
 
-    PlayerList_Base_Pal: "拠点パル",
+    PlayerList_Base_Pal: "拠点",
 
     TopBar_Btn_Save: "変更を保存",
     TopBar_Btn_Reload: "セーブをリロード",
@@ -81,9 +81,11 @@ export default {
     TopBar_Btn_HealAllPals: "すべてのパルを回復する",
     TopBar_Btn_Pal_OOB: "ボックス外パルを表示",
     TopBar_Btn_Pal_Ghost: "ゴーストパルを表示",
-    TopBar_Btn_Invalid_Options: "無効なオプションを非表示",
+    TopBar_Btn_Invalid_Options: "チート非表示",
+    TopBar_Btn_Invalid_Options_ADs: "このツールの機能を有料壁の背後にロックしたくはありませんが、このツールを気に入っていただけた場合は、開発と維持を続けるためにご支援を検討いただけると幸いです。詳細はGitHubのREADMEのスポンサーセクションに記載されています。",
 
+    TopBar_Btn_HealAllPals_Tooltips: "パルのすべての負の状態を解除し、体力と満腹度を回復します。",
     TopBar_Pal_OOB_Tooltips: "所有者のプレイヤーパルコンテナにないパルを表示します。例：観賞用ケージ、他の人に取られたパル。",
     TopBar_Pal_Ghost_Tooltips: "ゲーム内で見つからないゴーストパルを表示します。例：売却された、落とされた、解体されたパル。",
-    TopBar_Invalid_Options_Tooltips: "無効なドロップダウンメニューオプションを非表示にします。"
+    TopBar_Invalid_Options_Tooltips: "ゲーム内で通常利用できないいくつかのオプションやドロップダウンを非表示にします。使用する際は注意してください。"
 };
