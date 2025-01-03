@@ -3,7 +3,9 @@ import EntryView from './views/EntryView.vue';
 import { usePalEditorStore } from '@/stores/paleditor'
 import EditorView from './views/EditorView.vue';
 import TopBar from './components/TopBar.vue'
+import MarkdownModal from "@/components/MarkdownModal.vue";
 import AuthView from './views/AuthView.vue';
+
 import { watch, ref, onMounted } from 'vue';
 const palStore = usePalEditorStore()
 
@@ -38,23 +40,13 @@ watch(palStore.LOADING_FLAG, (newValue) => {
 </script>
 
 <template>
-  <!-- <div v-if="palStore.LOADING_FLAG" class="loading-bar" :style="{ width: loadingWidth + '%' }"></div>
-  <div class="SaveDiv" v-if="palStore.SAVE_LOADED_FLAG">
-    <p>💾</p>
-    <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH" :placeholder="palStore.PAL_GAME_SAVE_PATH">
-    <button id="SAVE_BTN" @click="palStore.writeSave">SAVE CHANGES</button>
-  </div>
-  <div class="language-selector">
-    <p>🌐</p>
-    <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n" :disabled="palStore.LOADING_FLAG">
-      <option :value="key" v-for="translated, key in palStore.I18nList">{{ translated }}</option>
-    </select>
-  </div> -->
   <TopBar></TopBar>
   <AuthView v-if="palStore.IS_LOCKED"></AuthView>
   <div v-else>
     <EntryView v-if="!palStore.SAVE_LOADED_FLAG"></EntryView>
     <EditorView v-else></EditorView>
+    <MarkdownModal v-if="palStore.SHOW_DONATE_FLAG" url="/docs/keep_this_project_alive.md">
+    </MarkdownModal>
   </div>
 </template>
 

@@ -82,7 +82,7 @@ export default {
     TopBar_Btn_Pal_OOB: "Show Out of Box Pal",
     TopBar_Btn_Pal_Ghost: "Toggle Ghost Pal",
     TopBar_Btn_Invalid_Options: "Hide Cheat Options",
-    TopBar_Btn_Invalid_Options_ADs: "I don't want to lock any features behind the paywall, but if you like this tool, consider supporting me to help me continue developing and maintaining it. More information will be shown in the GitHub readme's sponsor section.",
+    TopBar_Btn_Invalid_Options_ADs: "[This message will only appear once. If you want to view the content again, you can access it from the entry page.] I don't want to lock any features behind the paywall, but if you like this tool, consider supporting me to help me continue developing and maintaining it. More information will be shown in the GitHub readme's sponsor section.",
 
     TopBar_Btn_HealAllPals_Tooltips: "Removes all negative statuses of Pal and restores health and satiety.",
     TopBar_Pal_OOB_Tooltips: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",

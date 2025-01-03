@@ -33,10 +33,7 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
 const toggleCheat = async () => {
   if (await palStore.showDonate()) {
     alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"))
-    const url = "https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
-    if (window.open(url, '_blank')) {
-      await palStore.shownDonate()
-    }
+    palStore.SHOW_DONATE_FLAG = true;
   }
   palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
 }

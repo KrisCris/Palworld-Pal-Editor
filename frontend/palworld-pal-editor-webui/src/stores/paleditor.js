@@ -301,6 +301,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const I18nLoadingPromises = {};
 
     // flags
+    const SHOW_DONATE_FLAG = ref(false);
     const LOADING_FLAG = ref(false);
     const SAVE_LOADED_FLAG = ref(false);
     const HAS_WORKING_PAL_FLAG = ref(false);
@@ -1369,6 +1370,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SELECTED_PLAYER_ID,
         SELECTED_PAL_ID,
         SELECTED_PAL_DATA,
+        SHOW_DONATE_FLAG,
         LOADING_FLAG,
         SAVE_LOADED_FLAG,
         // ADD_PAL_RESELECT_CTR,
@@ -1431,6 +1433,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         path_back,
 
         showDonate,
-        shownDonate
+        shownDonate,
     };
 });

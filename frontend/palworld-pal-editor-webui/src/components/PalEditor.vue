@@ -36,7 +36,6 @@ const isMaxSuit = key => {
 };
 
 const isMinSuit = key => {
-  console.log(palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key], palStore.SELECTED_PAL_DATA.Suitabilities[key])
   return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
     palStore.SELECTED_PAL_DATA.Suitabilities[key];
 };

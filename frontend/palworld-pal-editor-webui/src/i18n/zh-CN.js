@@ -84,7 +84,7 @@ export default {
     TopBar_Btn_Pal_OOB: "显示不在身边的帕鲁",
     TopBar_Btn_Pal_Ghost: "显示不存在的帕鲁",
     TopBar_Btn_Invalid_Options: "隐藏作弊选项",
-    TopBar_Btn_Invalid_Options_ADs: "我不想把这个功能做成单独的付费版来赚钱，所以如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。更多信息将会在弹出的页面展示。",
+    TopBar_Btn_Invalid_Options_ADs: "【此消息仅会显示一次。如果您想再次查看内容，可以从主页面访问。】我不想把这个功能做成单独的付费版来赚钱，所以如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。更多信息将会在弹出的页面展示。",
 
     TopBar_Btn_HealAllPals_Tooltips: "治愈帕鲁的所有负面状态，回复血量，饱食度。",
     TopBar_Pal_OOB_Tooltips: "显示不在玩家的帕鲁容器中的帕鲁，即，观赏笼中的帕鲁，或被其他人拿走的帕鲁。",
