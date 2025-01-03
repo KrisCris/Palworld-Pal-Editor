@@ -199,8 +199,13 @@ Custom:
 
 ## Videos
 
+> [!NOTE]
+> In case someone is running the macOS build... 
+
+https://github.com/user-attachments/assets/852662f7-b64a-49a6-8cde-0f800d5b5de0
+
 > [!IMPORTANT]
-> These videos show you how to run the code. If you are using the pre-built executable, you can skip these part.
+> These videos show you how to run the code (and they are pretty old, but you get the idea). If you are using the pre-built executable, you can skip these parts.
 
 - DOCKER
 
