@@ -28,6 +28,7 @@ def pal_t(internal_name):
             "fr": "",
         },
         "SortingKey": {},
+        "Suitabilities": suitabilities_t(),
     }
 
 

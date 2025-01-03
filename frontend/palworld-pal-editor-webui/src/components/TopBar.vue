@@ -30,14 +30,13 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
   }
 });
 
-const hasAdsPop = {}
-
-const toggleCheat = () => {
-  if (!hasAdsPop[palStore.I18n]) {
+const toggleCheat = async () => {
+  if (await palStore.showDonate()) {
     alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"))
-    console.log(palStore.I18n)
     const url = "https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
-    if (window.open(url, '_blank')) hasAdsPop[palStore.I18n] = true
+    if (window.open(url, '_blank')) {
+      await palStore.shownDonate()
+    }
   }
   palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
 }

@@ -1329,6 +1329,33 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return "⚪";
     }
 
+    async function shownDonate() {
+        let no_set_loading_flag = LOADING_FLAG.value;
+        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        await PATCH("/api/save/donate");
+        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+    }
+
+
+    async function showDonate() {
+        let no_set_loading_flag = LOADING_FLAG.value;
+        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const response = await GET("/api/save/donate");
+        if (response === false) return;
+        let res = true
+        if (response.status == 0) {
+            res = response.data?.shouldShowDonate == true
+            IS_LOCKED.value = false;
+        } else if (response.status == 2) {
+            IS_LOCKED.value = true;
+            reset();
+        } else {
+            alert(`Error occured: ${response.msg}`);
+        }
+        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return res;
+    }
+
     return {
         MAX_LEVEL,
         MAX_SOULS_LEVEL,
@@ -1402,5 +1429,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         show_file_picker,
         update_picker_result,
         path_back,
+
+        showDonate,
+        shownDonate
     };
 });

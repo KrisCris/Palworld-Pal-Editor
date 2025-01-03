@@ -227,6 +227,8 @@ def extract_pal_details(internal_name, en_name, pal):
         i18n_name = anchor_node.text.strip()
         if i18n_name in name_replace_map:
             i18n_name = name_replace_map[i18n_name]
+        if internal_name == "PlantSlime_Flower":
+            i18n_name = f"{i18n_name} {"(Flower)" if lang in ["en", "fr"] else "(花)"}"
         print("\t", lang, i18n_name)
         pal["I18n"][lang] = (
             i18n_name if (i18n_name != "en_text" and i18n_name != "-") else en_name
@@ -393,7 +395,11 @@ pal_internal_names = list(all_pals_raw.keys())
 while len(pal_internal_names) > 0:
     internal_name = pal_internal_names.pop(0)
     pal = all_pals_raw[internal_name]
-    pal_variants = extract_pal_details(internal_name, pal["I18n"]["en"], pal)
+    try:
+        pal_variants = extract_pal_details(internal_name, pal["I18n"]["en"], pal)
+    except:
+        print(f"Failed to extract details for {internal_name}")
+        continue
     for variant_internal_name in pal_variants:
         if (
             variant_internal_name not in all_pals_raw
@@ -407,9 +413,12 @@ while len(pal_internal_names) > 0:
             variant_pal["Suitabilities"] = suitabilities_t()
             all_pals_raw[variant_internal_name] = variant_pal
 
-    if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.*)", internal_name):
+    if re.match(r"(GYM_[A-Za-z_]+?)(_2)$", internal_name):
+        for lang in pal["I18n"]:
+            pal["I18n"][lang] = pal["I18n"][lang] + " II"
+    if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.+)", internal_name):
         pal["Invalid"] = True
-    if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.*)", internal_name):
+    if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.+)", internal_name):
         pal["Invalid"] = True
     if re.match(r"(PREDATOR_[A-Za-z_]+?)(_\d+.*)", internal_name):
         pal["Invalid"] = True

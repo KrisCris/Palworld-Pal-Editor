@@ -25,6 +25,7 @@ class Config:
     nocli: bool = False
     _password_hash: str = None
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
+    shownDonateInfo: dict[str, bool] = {}
 
     @classmethod
     def load_from_file(cls, file_path: str=CONFIG_PATH):
@@ -51,6 +52,11 @@ class Config:
         Config.save_to_file()
 
     @classmethod
+    def set_shown_donate_info(cls):
+        cls.shownDonateInfo[Config.i18n] = True
+        Config.save_to_file()
+
+    @classmethod
     def save_to_file(cls, file_path: str=CONFIG_PATH):
         """Save current configuration values to a JSON file using the to_dict method and pathlib."""
         config_data = cls.to_dict()
@@ -72,5 +78,6 @@ class Config:
             'port': Config.port,
             'path': Config.path,
             'password': Config.password,
-            'JWT_SECRET_KEY': Config.JWT_SECRET_KEY
+            'JWT_SECRET_KEY': Config.JWT_SECRET_KEY,
+            'shownDonateInfo': Config.shownDonateInfo
         }

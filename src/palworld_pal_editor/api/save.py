@@ -195,3 +195,14 @@ def path_back():
         Config.path = old_path
         LOGGER.error(traceback.format_exc())
         return reply(1, msg=f"Error, cannot open path {path}.")
+    
+@save_blueprint.route("donate", methods=["PATCH"])
+@jwt_required()
+def pop_up_donate():
+    Config.set_shown_donate_info()
+    return reply(0)
+
+@save_blueprint.route("donate", methods=["GET"])
+@jwt_required()
+def get_donate():
+    return reply(0, {"shouldShowDonate": not Config.shownDonateInfo.get(Config.i18n)})

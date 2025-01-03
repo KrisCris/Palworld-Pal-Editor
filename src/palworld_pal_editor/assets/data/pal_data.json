@@ -7519,8 +7519,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "RAID_KingBahamut_Dragon": {
         "InternalName": "RAID_KingBahamut_Dragon",
@@ -8274,10 +8273,10 @@
             "FOOD": 475
         },
         "I18n": {
-            "en": "Zoe & Grizzbolt",
-            "zh-CN": "佐伊 & 暴电熊",
-            "ja": "ゾーイ＆エレパンダ",
-            "fr": "Zoe & Grizzbolt"
+            "en": "Zoe & Grizzbolt II",
+            "zh-CN": "佐伊 & 暴电熊 II",
+            "ja": "ゾーイ＆エレパンダ II",
+            "fr": "Zoe & Grizzbolt II"
         },
         "SortingKey": {
             "paldeck": "103"
@@ -8296,8 +8295,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 3,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_ElecPanda": {
         "InternalName": "GYM_ElecPanda",
@@ -8421,10 +8419,10 @@
             "FOOD": 475
         },
         "I18n": {
-            "en": "Lily & Lyleen",
-            "zh-CN": "莉莉 & 百合女王",
-            "ja": "リリィ＆リリクイン",
-            "fr": "Lily & Lyleen"
+            "en": "Lily & Lyleen II",
+            "zh-CN": "莉莉 & 百合女王 II",
+            "ja": "リリィ＆リリクイン II",
+            "fr": "Lily & Lyleen II"
         },
         "SortingKey": {
             "paldeck": "104"
@@ -8443,8 +8441,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_LilyQueen": {
         "InternalName": "GYM_LilyQueen",
@@ -8662,10 +8659,10 @@
             "FOOD": 525
         },
         "I18n": {
-            "en": "Marcus & Faleris",
-            "zh-CN": "马库斯 & 荷鲁斯",
-            "ja": "マーカス＆ホルス",
-            "fr": "Marcus & Faleris"
+            "en": "Marcus & Faleris II",
+            "zh-CN": "马库斯 & 荷鲁斯 II",
+            "ja": "マーカス＆ホルス II",
+            "fr": "Marcus & Faleris II"
         },
         "SortingKey": {
             "paldeck": "105"
@@ -8684,8 +8681,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 3,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_Horus": {
         "InternalName": "GYM_Horus",
@@ -8908,10 +8904,10 @@
             "FOOD": 475
         },
         "I18n": {
-            "en": "Axel & Orserk",
-            "zh-CN": "阿克塞尔 & 波鲁杰克斯",
-            "ja": "アクセル＆ボルゼクス",
-            "fr": "Axel & Orserk"
+            "en": "Axel & Orserk II",
+            "zh-CN": "阿克塞尔 & 波鲁杰克斯 II",
+            "ja": "アクセル＆ボルゼクス II",
+            "fr": "Axel & Orserk II"
         },
         "SortingKey": {
             "paldeck": "106"
@@ -8930,8 +8926,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 3,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_ThunderDragonMan": {
         "InternalName": "GYM_ThunderDragonMan",
@@ -9112,10 +9107,10 @@
             "FOOD": 525
         },
         "I18n": {
-            "en": "Victor & Shadowbeak",
-            "zh-CN": "维克托 & 异构格里芬",
-            "ja": "ヴィクター＆ゼノグリフ",
-            "fr": "Victor & Shadowbeak"
+            "en": "Victor & Shadowbeak II",
+            "zh-CN": "维克托 & 异构格里芬 II",
+            "ja": "ヴィクター＆ゼノグリフ II",
+            "fr": "Victor & Shadowbeak II"
         },
         "SortingKey": {
             "paldeck": "107"
@@ -9134,8 +9129,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_BlackGriffon": {
         "InternalName": "GYM_BlackGriffon",
@@ -9622,8 +9616,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "RAID_NightLady_Dark": {
         "InternalName": "RAID_NightLady_Dark",
@@ -9801,10 +9794,10 @@
             "FOOD": 150
         },
         "I18n": {
-            "en": "Saya & Selyne",
-            "zh-CN": "纱夜 & 辉月伊",
-            "ja": "サヤ＆セレムーン",
-            "fr": "Saya & Selyne"
+            "en": "Saya & Selyne II",
+            "zh-CN": "纱夜 & 辉月伊 II",
+            "ja": "サヤ＆セレムーン II",
+            "fr": "Saya & Selyne II"
         },
         "SortingKey": {
             "paldeck": "113"
@@ -9823,8 +9816,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_MoonQueen": {
         "InternalName": "GYM_MoonQueen",
@@ -11158,8 +11150,7 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "RAID_DarkMechaDragon": {
         "InternalName": "RAID_DarkMechaDragon",
@@ -11913,10 +11904,10 @@
             "FOOD": 150
         },
         "I18n": {
-            "en": "Bjorn & Bastigor",
-            "zh-CN": "比约恩 & 霜牙王",
-            "ja": "ビョルン＆ヒョウガオー",
-            "fr": "Björn & Bastigor"
+            "en": "Bjorn & Bastigor II",
+            "zh-CN": "比约恩 & 霜牙王 II",
+            "ja": "ビョルン＆ヒョウガオー II",
+            "fr": "Björn & Bastigor II"
         },
         "SortingKey": {
             "paldeck": "137"
@@ -11935,8 +11926,7 @@
             "EPalWorkSuitability::Cool": 3,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
     "GYM_SnowTigerBeastman": {
         "InternalName": "GYM_SnowTigerBeastman",
