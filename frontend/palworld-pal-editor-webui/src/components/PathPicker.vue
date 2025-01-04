@@ -44,31 +44,46 @@ const savePickerResult = () => {
 //         checkScroll(); // Initial check to update shadow state
 //     }
 // });
+const abort = () => {
+    palStore.SHOW_FILE_PICKER = false
+}
 </script>
 
 <template>
-    <div class="popup">
-        <div class="currentPath">
-            <IconButton icon="⤴️" @click="palStore.path_back" />
-            <InputArea v-model="palStore.PAL_FILE_PICKER_PATH" />
-            <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
-        </div>
+    <div class="modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @click.self="abort">
+        <div class="popup">
+            <button class="close-btn" @click="abort">×</button>
+            <div class="currentPath">
+                <IconButton icon="⤴️" @click="palStore.path_back" />
+                <InputArea v-model="palStore.PAL_FILE_PICKER_PATH" />
+                <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
+            </div>
 
-        <ul ref="scrollElement">
-            <li v-for="([key, value], index) of sortedPathChildren" 
-                :key="index" 
-                :isdir="value.isDir"
-                @click="() => { if (value.isDir) palStore.update_picker_result(key) }" 
-                :fullpath="key"
-            >
-                {{ value.isDir ? "📁" : "📄" }} {{ value.filename }}
-            </li>
-        </ul>
-        <BarButton @click="savePickerResult" content="OK" :disabled="!palStore.IS_PAL_SAVE_PATH" />
+            <ul ref="scrollElement">
+                <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
+                    @click="() => { if (value.isDir) palStore.update_picker_result(key) }" :fullpath="key">
+                    {{ value.isDir ? "📁" : "📄" }} {{ value.filename }}
+                </li>
+            </ul>
+            <BarButton @click="savePickerResult" content="OK" :disabled="!palStore.IS_PAL_SAVE_PATH" />
+        </div>
     </div>
 </template>
 
 <style scoped>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(22, 27, 34, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
 .popup {
     position: fixed;
     top: 50%;
@@ -117,5 +132,24 @@ const savePickerResult = () => {
 
 .popup li:hover[isdir=true] {
     background-color: #4b8d5e;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(209, 209, 209, 0.206);
+    border-radius: 25%;
+    width: 30px;
+    height: 30px;
+    border: none;
+    color: #c9d1d9;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: rgba(62, 62, 62, 0.686);
+    color: #f85149;
 }
 </style>

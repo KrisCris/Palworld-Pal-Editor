@@ -45,7 +45,7 @@ watch(palStore.LOADING_FLAG, (newValue) => {
   <div v-else>
     <EntryView v-if="!palStore.SAVE_LOADED_FLAG"></EntryView>
     <EditorView v-else></EditorView>
-    <MarkdownModal v-if="palStore.SHOW_DONATE_FLAG" url="/docs/keep_this_project_alive.md">
+    <MarkdownModal url="/docs/keep_this_project_alive.md">
     </MarkdownModal>
   </div>
 </template>
