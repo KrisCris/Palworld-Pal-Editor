@@ -197,7 +197,8 @@ class SaveManager:
             try: 
                 if PalObjects.get_BaseType(entity_param.get("IsPlayer")):
                     uid_str = str(PalObjects.get_BaseType(entity["key"].get("PlayerUId")))
-
+                    nickname = str(PalObjects.get_BaseType(entity_param.get("NickName")))
+                    LOGGER.info(f"Players found: {nickname} - {uid_str}")
                     if uid_str in self.player_mapping:
                         LOGGER.error(f"Duplicated player found: \n\t{self.player_mapping[uid_str]}, skipping...")
                         continue
@@ -217,7 +218,7 @@ class SaveManager:
                         player_entity = PlayerEntity(group_id, entity, dict(), player_gvas_file, player_compress_times)
                 
                     self.player_mapping[uid_str] = player_entity
-                    LOGGER.info(f"Found player: {player_entity}")
+                    LOGGER.info(f"Player Object Created: {player_entity}")
                 else:
                     pal_entity = PalEntity(entity)
                     container_id, slot_idx = pal_entity.SlotID
@@ -466,7 +467,7 @@ class SaveManager:
         output_path = Path(file_path).resolve() 
 
         if not output_path.exists():
-            LOGGER.error(f"Path does not exist: {output_path}")
+            LOGGER.warning(f"Path does not exist: {output_path}")
             if output_path.parent.exists():
                 output_path.mkdir(parents=True, exist_ok=True)
                 LOGGER.debug(f"Path {output_path} created")
@@ -476,13 +477,13 @@ class SaveManager:
             
         file_path: Path = output_path / "Level.sav"
 
-        if file_path.exists():
+        if output_path.exists():
             BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
             backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
             try:
                 if output_path.exists():
                     LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
-                    shutil.copytree(output_path, backup_dir, 
+                    shutil.copytree(self._file_path, backup_dir, 
                                     ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
                 else:
                     LOGGER.info(f"No existing directory to backup: {output_path}")
@@ -492,7 +493,7 @@ class SaveManager:
 
         LOGGER.info("Saving Player Data...")
         for player in self.player_mapping.values():
-            self.save_player_sav(player)
+            self.save_player_sav(player, output_path)
 
         LOGGER.info("Saving Level.sav...")
         gvas_file = copy.deepcopy(self.gvas_file)
@@ -520,13 +521,19 @@ class SaveManager:
         return player_gvas_file, compression_times
     
     
-    def save_player_sav(self, player_entity: PlayerEntity) -> bool:
+    def save_player_sav(self, player_entity: PlayerEntity, save_path: Optional[Path] = None) -> bool:
         if player_entity.PlayerGVAS is None:
             return False
 
         player_entity.save_new_pal_records()
         gvas_file, compression_times = player_entity.PlayerGVAS
-        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
+        output_path = (save_path or self._file_path) / "Players"
+        if not output_path.exists() and output_path.parent.exists():
+            LOGGER.warning(f"Player path does not exist: {output_path}")
+            output_path.mkdir(parents=True, exist_ok=True)
+            LOGGER.info(f"Player path {output_path} created")
+
+        player_path: Path = output_path / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
 
         LOGGER.info(f"Compressing Player {player_entity} GVAS file")
         player_gvas_file = copy.deepcopy(gvas_file)
