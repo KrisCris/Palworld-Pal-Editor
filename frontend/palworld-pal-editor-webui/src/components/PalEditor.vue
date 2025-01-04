@@ -37,7 +37,7 @@ const isMaxSuit = key => {
 
 const isMinSuit = key => {
   return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
-    palStore.SELECTED_PAL_DATA.Suitabilities[key];
+    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >=5 ? 1 : 0);
 };
 
 const suitabilityIconSrc = key => {

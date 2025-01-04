@@ -859,8 +859,10 @@ class PalEntity:
                 suit = suit.value
                 if suit in suits:
                     suits[suit] += rank
-                    if suits[suit] < 5 and (self.Rank or 0) >= 5:
-                        suits[suit] += 1
+
+        if (self.Rank or 0) >= 5:
+            for suit in suits:
+                suits[suit] += 1 if suits[suit] < 5 else 0
 
         return suits
 
