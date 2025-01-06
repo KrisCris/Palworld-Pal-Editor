@@ -199,8 +199,13 @@ Custom:
 
 ## Videos
 
+> [!NOTE]
+> In case someone is running the macOS build... 
+
+https://github.com/user-attachments/assets/852662f7-b64a-49a6-8cde-0f800d5b5de0
+
 > [!IMPORTANT]
-> These videos show you how to run the code. If you are using the pre-built executable, you can skip these part.
+> These videos show you how to run the code (and they are pretty old, but you get the idea). If you are using the pre-built executable, you can skip these parts.
 
 - DOCKER
 
@@ -230,6 +235,10 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 ## Sponsor
 
 [ko-fi ❤️](https://ko-fi.com/connlost)
+
+[PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)
+
+<img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
 
 ## Thanks
 

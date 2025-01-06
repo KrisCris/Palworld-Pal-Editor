@@ -29,6 +29,14 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
     }, 250);
   }
 });
+
+const toggleCheat = async () => {
+  if (await palStore.showDonate()) {
+    alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"))
+    palStore.SHOW_DONATE_FLAG = true;
+  }
+  palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
+}
 </script>
 
 <template>
@@ -48,32 +56,39 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
         🏠 {{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}
       </button>
 
-      <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG">
+      <div class="tooltip-container">
+        <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG">
         💉 {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
       </button>
+        <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips') }}</span>
+      </div>
 
-      <button 
-        :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
-        @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" 
-        :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
-        🧊 {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
-      </button>
+      <div class="tooltip-container">
+        <button :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
+          @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
+          🧊 {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
+        </button>
+        <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips') }}</span>
+      </div>
 
-      <button 
-        :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
-        @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" 
-        :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips')">
-        👀 {{ palStore.getTranslatedText("TopBar_Btn_Pal_Ghost") }}
-      </button>
-      <button 
-        :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]"
-        @click="palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS" 
-        :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
-        ⚠️ {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
-      </button>
+      <div class="tooltip-container">
+        <button :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
+          @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips')">
+          👀 {{ palStore.getTranslatedText("TopBar_Btn_Pal_Ghost") }}
+        </button>
+        <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips') }}</span>
+      </div>
+
+      <div class="tooltip-container">
+        <button :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]" @click="toggleCheat"
+          :disabled="palStore.LOADING_FLAG" :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
+          ⚠️ {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
+        </button>
+        <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips') }}</span>
+      </div>
+
     </div>
     <div class="options">
       <p>🌐</p>
@@ -85,7 +100,7 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 div#topbar {
   position: fixed;
   top: 0;
@@ -164,6 +179,9 @@ button.op:hover {
 
 button.op:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.op.save {
@@ -176,6 +194,9 @@ button.op.save:hover {
 
 button.op.save:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.op.toggled {
@@ -188,5 +209,34 @@ button.op.toggled:hover {
 
 button.op.toggled:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: rgba(0, 0, 0, 0.65);
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 1rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
 }
 </style>

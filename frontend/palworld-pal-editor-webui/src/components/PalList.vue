@@ -97,7 +97,9 @@ function get_filtered_pal_list() {
                 <button
                     :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
                     :value="pal.InstanceId" @click="palStore.selectPal"
-                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
+                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
+                    :selected="palStore.SELECTED_PAL_ID == pal.InstanceId"
+                    >
                     <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
                     {{ pal.DisplayName }}
                 </button>
@@ -160,8 +162,8 @@ input.palFilter {
 }
 
 input.palFilter:focus {
-  background-color: #b4b7be;
-  color: rgb(0, 0, 0);
+    background-color: #b4b7be;
+    color: rgb(0, 0, 0);
 }
 
 img.palIcon {
@@ -200,10 +202,16 @@ button.pal:hover {
 
 button.pal:disabled {
     background-color: #8a8a8a;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 button.pal:disabled:hover {
     background-color: #8a8a8a;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 button.pal.male {
@@ -219,6 +227,16 @@ button.pal.male:hover {
 
 button.pal.male:disabled {
     background-color: #023b69;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
+button.pal.male:disabled[selected="true"] {
+    background-color: #023b69;
+    box-shadow: 0 0 0;
+    filter: none;
+    cursor: not-allowed;
 }
 
 button.pal.female {
@@ -233,6 +251,16 @@ button.pal.female:hover {
 
 button.pal.female:disabled {
     background-color: #5d0b32;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
+button.pal.female:disabled[selected="true"] {
+    background-color: #5d0b32;
+    box-shadow: 0 0 0;
+    filter: none;
+    cursor: not-allowed;
 }
 
 button.unref {
@@ -245,6 +273,9 @@ button.unref:hover {
 
 button.unref:disabled {
     background-color: #5e5e5e !important;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 button.out_of_container {
@@ -269,5 +300,8 @@ button.add_pal:hover {
 
 button.add_pal:disabled {
     background-color: #8a8a8a;
+    box-shadow: 0 0 0;
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 </style>

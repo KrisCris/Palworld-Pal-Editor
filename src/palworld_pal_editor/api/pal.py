@@ -10,6 +10,7 @@ from palworld_pal_editor.utils import LOGGER
 
 pal_blueprint = Blueprint("pal", __name__)
 
+
 # Update Pal Data
 @pal_blueprint.route("/paldata", methods=["PATCH"])
 @jwt_required()
@@ -24,36 +25,59 @@ def patch_paldata():
         pal_entity = SaveManager().get_player(PlayerUId).get_pal(PalGuid)
     try:
         match key:
-            case "HasWorkerSick": pal_entity.heal_pal()
-            case "IsFaintedPal": pal_entity.heal_pal()
-            case "pop_PassiveSkillList": pal_entity.pop_PassiveSkillList(item=value)
-            case "pop_MasteredWaza": pal_entity.pop_MasteredWaza(item=value)
-            case "pop_EquipWaza": pal_entity.pop_EquipWaza(item=value)
-            case "add_PassiveSkillList": 
-                if not pal_entity.add_PassiveSkillList(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
-            case "add_MasteredWaza": 
+            case "HasWorkerSick":
+                pal_entity.heal_pal()
+            case "IsFaintedPal":
+                pal_entity.heal_pal()
+            case "set_Suitability":
+                pal_entity.set_WorkSuitability(value.get("name"), value.get("level"))
+            case "pop_PassiveSkillList":
+                pal_entity.pop_PassiveSkillList(item=value)
+            case "pop_MasteredWaza":
+                pal_entity.pop_MasteredWaza(item=value)
+            case "pop_EquipWaza":
+                pal_entity.pop_EquipWaza(item=value)
+            case "add_PassiveSkillList":
+                if not pal_entity.add_PassiveSkillList(value, True):
+                    return reply(
+                        1,
+                        None,
+                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
+                    )
+            case "add_MasteredWaza":
                 if not pal_entity.add_MasteredWaza(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
-            case "add_EquipWaza": 
-                if not pal_entity.add_EquipWaza(value):
-                    return reply(1, None, f"Too many skills, or skill {value} already exists! Or we can't find it in database.")
+                    return reply(
+                        1,
+                        None,
+                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
+                    )
+            case "add_EquipWaza":
+                if not pal_entity.add_EquipWaza(value, True):
+                    return reply(
+                        1,
+                        None,
+                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
+                    )
             case "in_owner_palbox":
                 if PlayerUId == "PAL_BASE_WORKER_BTN":
                     return reply(1, None, f"Moving pal to basecamp is unsupported.")
                 player = SaveManager().get_player(PlayerUId)
-                if not SaveManager().move_pal(pal_entity.InstanceId, [player.OtomoCharacterContainerId, player.PalStorageContainerId]):
+                if not SaveManager().move_pal(
+                    pal_entity.InstanceId,
+                    [player.OtomoCharacterContainerId, player.PalStorageContainerId],
+                ):
                     return reply(1, None, f"No enough slot in pal container.")
-            case "heal_all_pals": 
+            case "heal_all_pals":
                 SaveManager().heal_all_pals()
             case _:
-                if isinstance(err:=setattr(pal_entity, key, value), TypeError):
+                if isinstance(err := setattr(pal_entity, key, value), TypeError):
                     return reply(1, None, f"Error in patch_paldata {err}")
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")
         return reply(1, None, f"Error in patch_paldata {stack_trace}")
     return reply(0)
+
 
 # Get Pal Data
 @pal_blueprint.route("/paldata", methods=["POST"])
@@ -83,51 +107,57 @@ def paldata():
         1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
     )
 
+
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
     return {
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
+        "group_id": str(pal.group_id) if pal.group_id else None,
+        "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
+        "SlotIndex": pal.SlotIndex,
         "OwnerName": pal.OwnerName or None,
+        "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,
         "DataAccessKey": pal.DataAccessKey or None,
         "I18nName": pal.I18nName or None,
         "DisplayName": pal.DisplayName or None,
+        "NickName": pal.NickName or "",
+        "Gender": pal.Gender.value if pal.Gender else None,
+        "Level": pal.Level or 1,
         "HasTowerVariant": pal.HasTowerVariant,
+        "HasWorkerSick": pal.HasWorkerSick,
+        "IsFaintedPal": pal.IsFaintedPal,
+        "Is_Unref_Pal": pal.is_unreferenced_pal,
+        "in_owner_palbox": pal.in_owner_palbox,
         "IsPal": pal.IsPal,
         "IsHuman": pal.IsHuman,
-        "Gender": pal.Gender.value if pal.Gender else None,
-        "IsTower": pal.IsTower or False,
         "IsBOSS": pal.IsBOSS or False,
         "IsRarePal": pal.IsRarePal or False,
+        "IsTower": pal.IsTower or False,
         "IsRAID": pal.IsRAID or False,
-        "NickName": pal.NickName or "",
-        "Level": pal.Level or 1,
-        "Rank": pal.Rank.value if pal.Rank else 1,
-        "Rank_HP": pal.Rank_HP or 0,
-        "Rank_Attack": pal.Rank_Attack or 0,
-        "Rank_Defence": pal.Rank_Defence or 0,
-        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
-        # "MaxHP": pal.MaxHP or None,
+        "IsPREDATOR": pal.IsPREDATOR or False,
+        "IsOilrig": pal.IsOilrig or False,
+        "IsExpeditionPal": pal.IsExpeditionPal,
         "ComputedMaxHP": pal.ComputedMaxHP or None,
         "ComputedAttack": pal.ComputedAttack or None,
         "ComputedDefense": pal.ComputedDefense or None,
         "ComputedCraftSpeed": pal.ComputedCraftSpeed or None,
-        "PassiveSkillList": pal.PassiveSkillList or [],
-        "EquipWaza": pal.EquipWaza or [],
-        "MasteredWaza": pal.MasteredWaza or [],
+        "Rank": pal.Rank if pal.Rank else 1,
+        "Rank_HP": pal.Rank_HP or 0,
+        "Rank_Attack": pal.Rank_Attack or 0,
+        "Rank_Defence": pal.Rank_Defence or 0,
+        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
         "Talent_HP": pal.Talent_HP or 0,
         "Talent_Melee": pal.Talent_Melee or 0,
         "Talent_Shot": pal.Talent_Shot or 0,
         "Talent_Defense": pal.Talent_Defense or 0,
-        "HasWorkerSick": pal.HasWorkerSick,
-        "IsFaintedPal":pal.IsFaintedPal,
-        "group_id": str(pal.group_id) if pal.group_id else None,
-        "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
-        "SlotIndex": pal.SlotIndex,
-        "Is_Unref_Pal": pal.is_unreferenced_pal,
-        "in_owner_palbox": pal.in_owner_palbox,
+        "PassiveSkillList": pal.PassiveSkillList or [],
+        "EquipWaza": pal.EquipWaza or [],
+        "MasteredWaza": pal.MasteredWaza or [],
+        "Suitabilities": pal.WorkSuitabilities or {},
     }
+
 
 @pal_blueprint.route("/dump_data", methods=["POST"])
 @jwt_required()
@@ -147,7 +177,10 @@ def dump_data():
     if pal:
         return reply(0, pal.dump_obj())
     LOGGER.warning(f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
-    return reply(1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
+    return reply(
+        1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}"
+    )
+
 
 @pal_blueprint.route("/pal/<pal_id>", methods=["DELETE"])
 @jwt_required()
@@ -168,9 +201,17 @@ def add_pal():
         try:
             pal_entity = SaveManager().add_pal(PlayerUId)
             if not pal_entity:
-                return reply(1, None, f"Failed adding pal, likely your pal containers are full, check logs for detail.")
+                return reply(
+                    1,
+                    None,
+                    f"Failed adding pal, likely your pal containers are full, check logs for detail.",
+                )
         except:
-            return reply(1, None, f"Error happened during adding pal, check logs for detail. {traceback.format_exc()}")
+            return reply(
+                1,
+                None,
+                f"Error happened during adding pal, check logs for detail. {traceback.format_exc()}",
+            )
     return reply(0, _pal_data(pal_entity))
 
 
@@ -189,7 +230,15 @@ def dupe_pal():
 
             pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
             if not pal_entity:
-                return reply(1, None, f"Failed duping pal, likely your pal containers are full, check logs for detail.")
+                return reply(
+                    1,
+                    None,
+                    f"Failed duping pal, likely your pal containers are full, check logs for detail.",
+                )
         except:
-            return reply(1, None, f"Error happened during duping pal, check logs for detail. {traceback.format_exc()}")
+            return reply(
+                1,
+                None,
+                f"Error happened during duping pal, check logs for detail. {traceback.format_exc()}",
+            )
     return reply(0, _pal_data(pal_entity))

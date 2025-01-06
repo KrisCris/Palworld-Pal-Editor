@@ -59,7 +59,6 @@ def save():
 @jwt_required()
 def get_passive_skills():
     passives_raw = DataProvider.get_sorted_passives()
-    passives_raw.reverse()
     passive_dict = {}
     passive_arr = []
     for passive in passives_raw:
@@ -99,7 +98,7 @@ def get_active_skills():
             "Invalid": attack.get("Invalid", False)
         }
         if data["Invalid"]:
-            data["I18n"][0] = "❌ " + data["I18n"][0]
+            data["I18n"][0] = "⚠️ " + data["I18n"][0]
         atk_dict[attack["InternalName"]] = data
         atk_arr.append(data)
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
@@ -129,6 +128,7 @@ def get_pal_data():
             "InternalName": pal["InternalName"],
             "Elements": pal["Elements"],
             "Invalid": pal.get("Invalid", False),
+            "Suitabilities": DataProvider.get_pal_suitabilities(pal["InternalName"]),
             "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
             or pal["InternalName"],
             "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),
@@ -195,3 +195,14 @@ def path_back():
         Config.path = old_path
         LOGGER.error(traceback.format_exc())
         return reply(1, msg=f"Error, cannot open path {path}.")
+    
+@save_blueprint.route("donate", methods=["PATCH"])
+@jwt_required()
+def pop_up_donate():
+    Config.set_shown_donate_info()
+    return reply(0)
+
+@save_blueprint.route("donate", methods=["GET"])
+@jwt_required()
+def get_donate():
+    return reply(0, {"shouldShowDonate": not Config.shownDonateInfo.get(Config.i18n)})

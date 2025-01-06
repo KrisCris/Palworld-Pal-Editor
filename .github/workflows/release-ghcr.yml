@@ -3,7 +3,7 @@ name: Build and Push Docker image
 on:
   push:
     tags:
-      - "v*"
+      - "*"
   workflow_dispatch:
 
 jobs:

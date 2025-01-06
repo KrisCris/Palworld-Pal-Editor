@@ -2,12 +2,8 @@
 import PalList from '@/components/PalList.vue';
 import PlayerList from '@/components/PlayerList.vue';
 import PalEditor from '@/components/PalEditor.vue';
-
 import { usePalEditorStore } from '@/stores/paleditor'
-
 const palStore = usePalEditorStore()
-
-
 </script>
 
 <template>
@@ -28,6 +24,7 @@ div#EditorDiv {
     justify-content: center;
     align-items: center;
 }
+
 div#EditorMain {
     display: flex;
     flex-direction: row;

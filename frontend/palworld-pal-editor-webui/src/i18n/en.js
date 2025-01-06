@@ -7,9 +7,13 @@ export default {
     EntryView_Greet_2: " > Thank you for using this tool!",
     EntryView_Greet_3:
         " > If you are running this tool on webui mode, or from a docker container, consider setup a password to prevent unauthorized remote access.",
-    EntryView_Greet_4: " > If you have any issue, or want to contribute, check out ",
+    EntryView_Greet_4: " > The download link for the Editor is:",
+    EntryView_Greet_4_1: "or",
     EntryView_Greet_5: " page.",
-    EntryView_Greet_6: " > If you love this tool and wish to donate, check out my ",
+    EntryView_Greet_6: " > If you like this tool, consider supporting me to help me continue developing and maintaining it. Visit my",
+    EntryView_Greet_7: " > Encountering issues? Join",
+    EntryView_Greet_7_1: "or visit",
+    EntryView_Greet_8: " > My BiliBili channel (Chinese):",
     EntryView_Note_1:
         " > If you are running this program for the first time, you will need to manually enter the correct path to your save folder, i.e. the parent folder of Level.sav.",
     EntryView_Note_2:
@@ -18,6 +22,7 @@ export default {
         " > If you are running from the docker container, please make sure you have mapped the directory correctly, and setup the correct file access permission. Then all you need is to enter the mapped path.",
     EntryView_BTN_Path_Picker: "Select Path",
     EntryView_BTN_Load: "Load Save",
+    EntryView_Period: ".",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
@@ -54,6 +59,8 @@ export default {
     Editor_Skill_EL: "Element: ",
     Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
 
+    Editor_Suitabilities: "Work Suitability",
+
     Editor_Btn_Export_Data: "Dump Data",
     Editor_Btn_Dupe_Pal: "Dupe Pal",
     Editor_Btn_Delete_Pal: "Del Pal",
@@ -66,7 +73,7 @@ export default {
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Viewing_Cage: "Unlock Viewing Cage for ",
 
-    PlayerList_Base_Pal: "BASE PAL",
+    PlayerList_Base_Pal: "BASECAMP",
 
     TopBar_Btn_Save: "SAVE CHANGES",
     TopBar_Btn_Reload: "Reload Save",
@@ -74,9 +81,11 @@ export default {
     TopBar_Btn_HealAllPals: "Heal All Pals",
     TopBar_Btn_Pal_OOB: "Show Out of Box Pal",
     TopBar_Btn_Pal_Ghost: "Toggle Ghost Pal",
-    TopBar_Btn_Invalid_Options: "Hide Invalid Options",
+    TopBar_Btn_Invalid_Options: "Hide Cheat Options",
+    TopBar_Btn_Invalid_Options_ADs: "[This message will only appear once. If you want to view the content again, you can access it from the entry page.] I don't want to lock any features behind the paywall, but if you like this tool, consider supporting me to help me continue developing and maintaining it. More information will be shown in the GitHub readme's sponsor section.",
 
+    TopBar_Btn_HealAllPals_Tooltips: "Removes all negative statuses of Pal and restores health and satiety.",
     TopBar_Pal_OOB_Tooltips: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",
     TopBar_Pal_Ghost_Tooltips: "Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.",
-    TopBar_Invalid_Options_Tooltips: "Hide invalid dropdown menu options."
+    TopBar_Invalid_Options_Tooltips: "Hide some options and dropdowns that are not normally available in game, be careful when using it.",
 };

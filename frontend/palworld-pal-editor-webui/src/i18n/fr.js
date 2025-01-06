@@ -1,3 +1,5 @@
+import TopBar from "@/components/TopBar.vue";
+
 export default {
     AuthView_PW_Prompt_1: "Bonjour ! Il semble que vous ayez défini un mot de passe de protection 🔐.",
     AuthView_PW_Prompt_2: "Avant de continuer, veuillez entrer le mot de passe :",
@@ -7,9 +9,13 @@ export default {
     EntryView_Greet_2: " > Merci d'utiliser cet outil !",
     EntryView_Greet_3:
         " > Si vous utilisez cet outil en mode webui, ou depuis un conteneur Docker, pensez à configurer un mot de passe pour empêcher tout accès à distance non autorisé.",
-    EntryView_Greet_4: " > Si vous avez des problèmes ou souhaitez contribuer, consultez ",
+    EntryView_Greet_4: " > Le lien de téléchargement pour Pal Editor est :",
+    EntryView_Greet_4_1: "ou",
     EntryView_Greet_5: " page.",
-    EntryView_Greet_6: " > Si vous aimez cet outil et souhaitez faire un don, consultez mon ",
+    EntryView_Greet_6: " > Si vous aimez cet outil, envisagez de me soutenir pour m’aider à continuer à le développer et à l’entretenir. Visitez mon",
+    EntryView_Greet_7: " > Vous rencontrez un problème ? Rejoignez",
+    EntryView_Greet_7_1: "ou visitez",
+    EntryView_Greet_8: " > Ma chaîne BiliBili (chinois) :",
     EntryView_Note_1:
         " > Si vous utilisez ce programme pour la première fois, vous devrez entrer manuellement le chemin correct vers votre dossier de sauvegarde, c'est-à-dire le dossier parent de Level.sav.",
     EntryView_Note_2:
@@ -18,6 +24,7 @@ export default {
         " > Si vous utilisez un conteneur Docker, assurez-vous d'avoir correctement mappé le répertoire et configuré les permissions d'accès aux fichiers. Ensuite, il vous suffira d'entrer le chemin mappé.",
     EntryView_BTN_Path_Picker: "Sélectionner le chemin",
     EntryView_BTN_Load: "Charger la sauvegarde",
+    EntryView_Period: ".",
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
@@ -54,6 +61,8 @@ export default {
     Editor_Skill_EL: "Élément : ",
     Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES (LES COMPÉTENCES SONT AJOUTÉES AUTOMATIQUEMENT LORS DE LA MONTÉE EN NIVEAU DES PALS)",
 
+    Editor_Suitabilities: "Capacités de travail",
+
     Editor_Btn_Export_Data: "Exporter les données",
     Editor_Btn_Dupe_Pal: "Dupliquer Pal",
     Editor_Btn_Delete_Pal: "Supprimer Pal",
@@ -66,16 +75,19 @@ export default {
     PlayerList_Text: "LISTE DES JOUEURS",
     PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour ",
 
-    PlayerList_Base_Pal: "PAL DE BASE",
+    PlayerList_Base_Pal: "Camp De Base",
 
     TopBar_Btn_Save: "ENREGISTRER LES MODIFICATIONS",
     TopBar_Btn_Reload: "Recharger la sauvegarde",
     TopBar_Btn_Main_Page: "Retour à la page principale",
+    TopBar_Btn_HealAllPals: "Guérir tous les Pals",
     TopBar_Btn_Pal_OOB: "Afficher Pal hors boîte",
     TopBar_Btn_Pal_Ghost: "Basculer Pal fantôme",
-    TopBar_Btn_Invalid_Options: "Masquer les options invalides",
+    TopBar_Btn_Invalid_Options: "Masquer triche",
+    TopBar_Btn_Invalid_Options_ADs: "[Ce message n’apparaîtra qu’une seule fois. Si vous souhaitez consulter le contenu à nouveau, vous pouvez y accéder depuis la page d’entrée.] Je ne souhaite pas restreindre des fonctionnalités derrière un mur de paiement, mais si cet outil vous plaît, envisagez de me soutenir pour m’aider à continuer à le développer et à l’entretenir. Plus d’informations sont disponibles dans la section sponsor du README sur GitHub.",
 
+    TopBar_Btn_HealAllPals_Tooltips: "Supprime tous les états négatifs de Pal et rétablit la santé et la satiété.",
     TopBar_Pal_OOB_Tooltips: "Afficher les pals qui ne sont pas dans les conteneurs de pals du joueur propriétaire, c'est-à-dire la cage d'observation, ou pris par quelqu'un.",
     TopBar_Pal_Ghost_Tooltips: "Afficher les pals fantômes, ceux qui ne peuvent plus être trouvés dans le jeu, c'est-à-dire vendus, lâchés, abattus.",
-    TopBar_Invalid_Options_Tooltips: "Masquer les options de menu déroulant invalides."
+    TopBar_Invalid_Options_Tooltips: "Masquez certaines options et menus déroulants qui ne sont normalement pas disponibles dans le jeu. Faites attention lors de leur utilisation."
 };

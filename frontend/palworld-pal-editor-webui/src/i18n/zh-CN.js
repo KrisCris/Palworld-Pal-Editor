@@ -1,3 +1,5 @@
+import EntryView from "@/views/EntryView.vue";
+
 export default {
     AuthView_PW_Prompt_1: "你好! 似乎你在运行这个工具时设置了认证密码 🔐。",
     AuthView_PW_Prompt_2: "你现在需要输入正确的密码，以进行后续操作：",
@@ -7,9 +9,13 @@ export default {
     EntryView_Greet_2: " > 感谢你下载并使用Palworld Pal Editor！",
     EntryView_Greet_3:
         " > 如果你正在以WebUI模式，或远程访问Docker容器的方式使用这个工具，请考虑设置密码，以防止未经授权的远程访问。",
-    EntryView_Greet_4: " > 如果你在使用这个工具的途中遇到了任何问题，可以访问项目的",
+    EntryView_Greet_4: " > 帕鲁编辑器的下载地址为：",
+    EntryView_Greet_4_1: "或",
     EntryView_Greet_5: " 页面。",
-    EntryView_Greet_6: " > 如果你喜欢这个工具，并且希望赞助，可以考虑查看我的",
+    EntryView_Greet_6: " > 如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。访问我的",
+    EntryView_Greet_7: " > 遇到问题？加入",
+    EntryView_Greet_7_1: "或访问",
+    EntryView_Greet_8: " > 我的BiliBili频道：",
     EntryView_Note_1:
         " > 如果你是第一次使用这个工具，你需要手动输入或选择 (仅限GUI模式) 正确的存档路径，即包含 Level.sav 文件的那个文件夹的目录。",
     EntryView_Note_2:
@@ -18,6 +24,7 @@ export default {
         " > 如果你在通过Docker容器的方式使用这个工具，请确保已经正确的映射了存档的路径，并且容器具有合适的文件访问权限。这里你只需要输入映射的路径。",
     EntryView_BTN_Path_Picker: "选择路径",
     EntryView_BTN_Load: "载入存档",
+    EntryView_Period: "。",
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
@@ -54,6 +61,8 @@ export default {
     Editor_Skill_EL: "元素: ",
     Editor_Mastered_Skills: "学会的主动技能 (升级帕鲁时对应的技能会被自动添加)",
 
+    Editor_Suitabilities: "工作适应性",
+
     Editor_Btn_Export_Data: "导出数据",
     Editor_Btn_Dupe_Pal: "复制帕鲁",
     Editor_Btn_Delete_Pal: "删除帕鲁",
@@ -66,7 +75,7 @@ export default {
     PlayerList_Text: "玩家列表",
     PlayerList_Viewing_Cage: "为玩家解锁观赏笼: ",
 
-    PlayerList_Base_Pal: "基地帕鲁",
+    PlayerList_Base_Pal: "基地",
 
     TopBar_Btn_Save: "保存更改",
     TopBar_Btn_Reload: "重新载入存档",
@@ -74,9 +83,11 @@ export default {
     TopBar_Btn_HealAllPals: "治愈所有帕鲁",
     TopBar_Btn_Pal_OOB: "显示不在身边的帕鲁",
     TopBar_Btn_Pal_Ghost: "显示不存在的帕鲁",
-    TopBar_Btn_Invalid_Options: "隐藏不可用的选项",
+    TopBar_Btn_Invalid_Options: "隐藏作弊选项",
+    TopBar_Btn_Invalid_Options_ADs: "【此消息仅会显示一次。如果您想再次查看内容，可以从主页面访问。】我不想把这个功能做成单独的付费版来赚钱，所以如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。更多信息将会在弹出的页面展示。",
 
+    TopBar_Btn_HealAllPals_Tooltips: "治愈帕鲁的所有负面状态，回复血量，饱食度。",
     TopBar_Pal_OOB_Tooltips: "显示不在玩家的帕鲁容器中的帕鲁，即，观赏笼中的帕鲁，或被其他人拿走的帕鲁。",
     TopBar_Pal_Ghost_Tooltips: "显示不存在的帕鲁，即游戏中找不到的帕鲁，比如，你已将其出售，丢弃，宰杀。",
-    TopBar_Invalid_Options_Tooltips: "隐藏菜单中的不可用选项。"
+    TopBar_Invalid_Options_Tooltips: "隐藏游戏中通常不可用的一些选项和下拉菜单，使用时请注意。"
 };

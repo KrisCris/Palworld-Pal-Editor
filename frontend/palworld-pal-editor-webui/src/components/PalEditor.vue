@@ -24,12 +24,25 @@ function formatString(input) {
 function filterInvalid(list) {
   return list.filter(item => {
     if (palStore.HIDE_INVALID_OPTIONS) {
-      // return !(item.Invalid || item.IsHuman)
-      return !item.Invalid
+      return !(item.Invalid || item.IsHuman)
+      // return !item.Invalid
     }
     return true
   })
 }
+
+const isMaxSuit = key => {
+  return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= 5;
+};
+
+const isMinSuit = key => {
+  return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
+    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >=5 ? 1 : 0);
+};
+
+const suitabilityIconSrc = key => {
+  return key ? `/image/suitabilities/${key.split("::").pop()}` : '';
+};
 
 </script>
 
@@ -57,26 +70,29 @@ function filterInvalid(list) {
           {{ palStore.getTranslatedText("Editor_Basic_Info") }}
         </p>
         <div class="editField">
-          <p class="const"> 
-            {{ palStore.getTranslatedText("Editor_Species") }} 
-            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKey) }} 
-            {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKey }}
+          <p class="const" :title="palStore.SELECTED_PAL_DATA.InternalName">
+            {{ palStore.getTranslatedText("Editor_Species") }}
+            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKeyOG) }}
+            {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n ||
+              palStore.SELECTED_PAL_DATA.DataAccessKeyOG }}
           </p>
           <!-- <p class="const"> Specie: </p> -->
           <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.DataAccessKey">
-            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName" :key="pal.InternalName" :title="pal.I18n"> {{ `
-                ${formatString(pal.SortingKey) || ""} 
-                ${pal.Invalid ? '❌' : ""} 
-                ${palStore.displayPalElement(pal.InternalName)} 
-                ${pal.I18n}` 
+            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName"
+              :key="pal.InternalName" :title="pal.InternalName"> {{ `
+              ${pal.Invalid || pal.IsHuman ? '⚠️' : ""}
+              ${formatString(pal.SortingKey) || ""}
+              ${palStore.displayPalElement(pal.InternalName)}
+              ${pal.I18n}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${pal.InternalName}`}`
               }} </option>
           </select>
           <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
             :disabled="palStore.LOADING_FLAG">✅</button>
+
         </div>
         <div class="editField">
-          <p class="const"> 
-            {{ palStore.getTranslatedText("Editor_Nickname") }} 
+          <p class="const">
+            {{ palStore.getTranslatedText("Editor_Nickname") }}
           </p>
           <input class="edit" type="text" name="NickName" v-model="palStore.SELECTED_PAL_DATA.NickName"
             :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
@@ -85,7 +101,7 @@ function filterInvalid(list) {
         </div>
         <div class="flex-h">
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender">
-            <p class="const"> 
+            <p class="const">
               {{ palStore.getTranslatedText("Editor_Gender") }}
               {{ palStore.SELECTED_PAL_DATA.displayGender() }}
             </p>
@@ -94,7 +110,7 @@ function filterInvalid(list) {
           </div>
 
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsPal">
-            <p class="const"> 
+            <p class="const">
               {{ palStore.getTranslatedText("Editor_Variant") }}
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
             </p>
@@ -128,7 +144,7 @@ function filterInvalid(list) {
           <p :class="['const', { 'out_of_container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }]"
             :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
             📦 {{ palStore.getTranslatedText("Editor_Pal_Slot") }}
-            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ 
+            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @
             {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
           </p>
           <button class="edit edit_text" @click="palStore.updatePal" name="in_owner_palbox"
@@ -139,8 +155,8 @@ function filterInvalid(list) {
 
         <p class="const">
           🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}
-          {{ palStore.SELECTED_PAL_DATA.OwnerName || 
-          palStore.getTranslatedText("Editor_Pal_No_Owner") }}
+          {{ palStore.SELECTED_PAL_DATA.OwnerName ||
+            palStore.getTranslatedText("Editor_Pal_No_Owner") }}
         </p>
         <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
           <p class="const">
@@ -162,8 +178,7 @@ function filterInvalid(list) {
         </div>
 
         <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
-          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick"
-            :disabled="palStore.LOADING_FLAG">
+          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
             💊 {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
           </button>
         </div>
@@ -183,15 +198,17 @@ function filterInvalid(list) {
           ❤️ {{ palStore.getTranslatedText("Editor_IV_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
         </p>
-        <input class="slider" type="range" name="Talent_HP" min="0" max="100"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           🛡️ {{ palStore.getTranslatedText("Editor_IV_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
         </p>
-        <input class="slider" type="range" name="Talent_Defense" min="0" max="100"
+        <input class="slider" type="range" name="Talent_Defense" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -200,17 +217,18 @@ function filterInvalid(list) {
           ⚔️ {{ palStore.getTranslatedText("Editor_IV_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
         </p>
-        <input class="slider" type="range" name="Talent_Shot" min="0" max="100"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
-      <div class="editField spaceBetween">
+      <div class="editField spaceBetween" v-if="!palStore.HIDE_INVALID_OPTIONS">
         <p class="const">
           {{ palStore.getTranslatedText("Editor_IV_MELEE") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
         </p>
-        <input class="slider" type="range" name="Talent_Melee" min="0" max="100"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Talent_Melee" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
+          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <hr>
       <p class="cat">
@@ -221,15 +239,17 @@ function filterInvalid(list) {
           ❤️ {{ palStore.getTranslatedText("Editor_Souls_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
-        <input class="slider" type="range" name="Rank_HP" min="0" max="10" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank_HP" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
+          v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
         <p class="const">
           ⚔️ {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
-        <input class="slider" type="range" name="Rank_Attack" min="0" max="10"
+        <input class="slider" type="range" name="Rank_Attack" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
       </div>
       <div class="editField spaceBetween">
@@ -237,7 +257,8 @@ function filterInvalid(list) {
           🛡️ {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
-        <input class="slider" type="range" name="Rank_Defence" min="0" max="10"
+        <input class="slider" type="range" name="Rank_Defence" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -246,7 +267,8 @@ function filterInvalid(list) {
           🔨 {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
-        <input class="slider" type="range" name="Rank_CraftSpeed" min="0" max="10"
+        <input class="slider" type="range" name="Rank_CraftSpeed" min="0"
+          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
           v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
       </div>
@@ -259,8 +281,30 @@ function filterInvalid(list) {
           ⭐ {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
-        <input class="slider" type="range" name="Rank" min="1" max="5" v-model="palStore.SELECTED_PAL_DATA.Rank"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
+        <input class="slider" type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
+          v-model="palStore.SELECTED_PAL_DATA.Rank" :disabled="palStore.LOADING_FLAG" @mouseup="palStore.updatePal"
+          @touchend="palStore.updatePal">
+      </div>
+    </div>
+    <div class="EditorItem flex-v item left skillPanel"
+      v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
+      <p class="cat">
+        {{ palStore.getTranslatedText("Editor_Suitabilities") }}
+      </p>
+      <div class="flex-h">
+        <div class="editField skillList">
+          <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities"
+            v-show="palStore.HIDE_INVALID_OPTIONS || value != 'EPalWorkSuitability::OilExtraction'">
+            <p class="const">
+              <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
+              {{ value }}
+            </p>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
+              :disabled="palStore.LOADING_FLAG || isMinSuit(key)">🔽</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
+              :disabled="palStore.LOADING_FLAG || isMaxSuit(key)">🔼</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="EditorItem item flex-v left skillPanel">
@@ -273,7 +317,7 @@ function filterInvalid(list) {
             <div class="tooltip-container">
               <p class="const" :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
                 {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
-    palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
+                  palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
             </div>
@@ -281,7 +325,8 @@ function filterInvalid(list) {
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
+          <div class="editField"
+            v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
             <select class="PassiveSkill selector" name="add_PassiveSkillList"
               v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
               <option class="PassiveSkill" value="" key="">
@@ -289,7 +334,7 @@ function filterInvalid(list) {
               </option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
                 :key="skill.InternalName" :title="skill.I18n[1]">{{ palStore.displayRating(skill.Rating) }} {{
-    skill.I18n[0] }}</option>
+                  skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
               :disabled="palStore.LOADING_FLAG">➕</button>
@@ -305,9 +350,9 @@ function filterInvalid(list) {
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
-    palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
-    palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
-  }}
+                palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+                  palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
+                }}
               </p>
               <span class="tooltip-text">
                 <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
@@ -315,17 +360,17 @@ function filterInvalid(list) {
                 <p> --- </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
                   {{ palStore.getTranslatedText("Editor_Skill_CD") }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
                 </p>
               </span>
@@ -345,7 +390,7 @@ function filterInvalid(list) {
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                 {{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">
@@ -354,24 +399,24 @@ function filterInvalid(list) {
                 <p> --- </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} | 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
                   {{ palStore.getTranslatedText("Editor_Skill_CD") }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} 
+                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }} 
+                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
                 </p>
               </span>
             </div>
-            <button
-              v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill) && !palStore.SELECTED_PAL_DATA.isEquipSkillFull()"
-              class="edit" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+            <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
+              && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)" class="edit"
+              @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">🔼</button>
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
@@ -381,10 +426,11 @@ function filterInvalid(list) {
               <option value="" key="">
                 {{ palStore.getTranslatedText("Editor_Select_Skill") }}
               </option>
-              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName" :key="skill.InternalName"
-                :title="skill.I18n[1]">
-                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)} -
-                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}` }}
+              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName"
+                :key="skill.InternalName" :title="skill.I18n[1]">
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)}
+                -
+                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
@@ -510,6 +556,12 @@ img.palIcon {
   margin-bottom: 1rem;
 }
 
+img.suitIcon {
+  height: 1.8rem;
+  margin: .2rem;
+  padding: .2rem .2rem;
+}
+
 img.palIcon.unref {
   filter: grayscale(100%);
 }
@@ -531,7 +583,7 @@ button.edit {
   height: 2rem;
   padding: 0rem;
   margin: 0rem;
-  background-color: #73aa83;
+  background-color: #848484;
   color: whitesmoke;
   border: none;
   outline: none;
@@ -540,13 +592,16 @@ button.edit {
 }
 
 button.edit:hover {
-  background-color: #4b8d5e;
+  background-color: #9c9c9c;
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
   transition: all 0.15s ease-in-out;
 }
 
 button.edit:disabled {
-  background-color: #8a8a8a;
+  background-color: #8b8b8b;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.text {
@@ -562,6 +617,9 @@ button.text:hover {
 
 button.text:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.edit_text {
@@ -577,6 +635,9 @@ button.edit_text:hover {
 
 button.edit_text:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.del {
@@ -589,6 +650,9 @@ button.del:hover {
 
 button.del:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#dump_btn {
@@ -618,6 +682,9 @@ button#dump_btn:hover {
 
 button#dump_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#del_btn {
@@ -646,6 +713,9 @@ button#del_btn:hover {
 
 button#del_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button#dupe_btn {
@@ -674,6 +744,9 @@ button#dupe_btn:hover {
 
 button#dupe_btn:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 input.edit {
@@ -725,6 +798,7 @@ div.spaceBetween {
   bottom: 100%;
   left: 50%;
   margin-left: -60px;
+  margin-bottom: .25rem;
 }
 
 .tooltip-container:hover .tooltip-text {
@@ -741,6 +815,6 @@ select.selector {
   border-radius: .5rem;
   color: rgb(208, 212, 226);
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  max-width: 50%;
+  /* max-width: 50%; */
 }
 </style>

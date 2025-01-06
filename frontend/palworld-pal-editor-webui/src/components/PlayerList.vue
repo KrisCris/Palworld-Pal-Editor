@@ -126,12 +126,21 @@ button.player.real:hover {
 
 button.player.real:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 
 button.player:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 button.playerSettings:disabled {
   background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
 }
 </style>

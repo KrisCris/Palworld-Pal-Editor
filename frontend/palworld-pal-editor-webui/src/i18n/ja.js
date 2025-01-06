@@ -7,9 +7,13 @@ export default {
     EntryView_Greet_2: " > このツールをご利用いただきありがとうございます！",
     EntryView_Greet_3:
         " > WebUIモードやDockerコンテナでこのツールを実行している場合は、無許可のリモートアクセスを防ぐためにパスワードの設定を検討してください。",
-    EntryView_Greet_4: " > 何か問題がある場合、または貢献したい場合は、",
-    EntryView_Greet_5: " ページを確認してください。",
-    EntryView_Greet_6: " > このツールが気に入って寄付を検討しているなら、私の",
+    EntryView_Greet_4: " > パルエディターのダウンロードリンクは、",
+    EntryView_Greet_4_1: "または",
+    EntryView_Greet_5: " ページです。",
+    EntryView_Greet_6: " > このツールを気に入っていただけたら、開発と維持を続けるためにサポートをご検討ください。訪問私の",
+    EntryView_Greet_7: " > 問題が発生しましたか？",
+    EntryView_Greet_7_1: "に参加するか、",
+    EntryView_Greet_8: " > 私のBiliBiliチャンネル（中国語）：",
     EntryView_Note_1:
         " > このプログラムを初めて実行する場合、正しい保存フォルダのパス（Level.savの親フォルダ）を手動で入力する必要があります。",
     EntryView_Note_2:
@@ -18,6 +22,7 @@ export default {
         " > Dockerコンテナから実行している場合は、ディレクトリが正しくマッピングされており、適切なファイルアクセス権限が設定されていることを確認してください。その後、マッピングされたパスを入力するだけです。",
     EntryView_BTN_Path_Picker: "パスを選択",
     EntryView_BTN_Load: "ロード",
+    EntryView_Period: "。",
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
@@ -54,6 +59,8 @@ export default {
     Editor_Skill_EL: "属性: ",
     Editor_Mastered_Skills: "習得したアクティブスキル（パルをレベルアップすると自動的に追加されるスキル）",
 
+    Editor_Suitabilities: "作業適性",
+
     Editor_Btn_Export_Data: "データをダンプ",
     Editor_Btn_Dupe_Pal: "パルを複製",
     Editor_Btn_Delete_Pal: "パルを削除",
@@ -66,7 +73,7 @@ export default {
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Viewing_Cage: "観賞用ケージのロックを解除する: ",
 
-    PlayerList_Base_Pal: "拠点パル",
+    PlayerList_Base_Pal: "拠点",
 
     TopBar_Btn_Save: "変更を保存",
     TopBar_Btn_Reload: "セーブをリロード",
@@ -74,9 +81,11 @@ export default {
     TopBar_Btn_HealAllPals: "すべてのパルを回復する",
     TopBar_Btn_Pal_OOB: "ボックス外パルを表示",
     TopBar_Btn_Pal_Ghost: "ゴーストパルを表示",
-    TopBar_Btn_Invalid_Options: "無効なオプションを非表示",
+    TopBar_Btn_Invalid_Options: "チート非表示",
+    TopBar_Btn_Invalid_Options_ADs: "【このメッセージは一度だけ表示されます。内容をもう一度見たい場合は、エントリーページからアクセスできます。】このツールの機能を有料壁の背後にロックしたくはありませんが、このツールを気に入っていただけた場合は、開発と維持を続けるためにご支援を検討いただけると幸いです。詳細はGitHubのREADMEのスポンサーセクションに記載されています。",
 
+    TopBar_Btn_HealAllPals_Tooltips: "パルのすべての負の状態を解除し、体力と満腹度を回復します。",
     TopBar_Pal_OOB_Tooltips: "所有者のプレイヤーパルコンテナにないパルを表示します。例：観賞用ケージ、他の人に取られたパル。",
     TopBar_Pal_Ghost_Tooltips: "ゲーム内で見つからないゴーストパルを表示します。例：売却された、落とされた、解体されたパル。",
-    TopBar_Invalid_Options_Tooltips: "無効なドロップダウンメニューオプションを非表示にします。"
+    TopBar_Invalid_Options_Tooltips: "ゲーム内で通常利用できないいくつかのオプションやドロップダウンを非表示にします。使用する際は注意してください。"
 };
