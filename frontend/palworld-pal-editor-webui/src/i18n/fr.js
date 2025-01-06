@@ -89,5 +89,7 @@ export default {
     TopBar_Btn_HealAllPals_Tooltips: "Supprime tous les états négatifs de Pal et rétablit la santé et la satiété.",
     TopBar_Pal_OOB_Tooltips: "Afficher les pals qui ne sont pas dans les conteneurs de pals du joueur propriétaire, c'est-à-dire la cage d'observation, ou pris par quelqu'un.",
     TopBar_Pal_Ghost_Tooltips: "Afficher les pals fantômes, ceux qui ne peuvent plus être trouvés dans le jeu, c'est-à-dire vendus, lâchés, abattus.",
-    TopBar_Invalid_Options_Tooltips: "Masquez certaines options et menus déroulants qui ne sont normalement pas disponibles dans le jeu. Faites attention lors de leur utilisation."
+    TopBar_Invalid_Options_Tooltips: "Masquez certaines options et menus déroulants qui ne sont normalement pas disponibles dans le jeu. Faites attention lors de leur utilisation.",
+
+    Alert_Successful_Save: "Modifications enregistrées avec succès dans {{path}}.",
 };

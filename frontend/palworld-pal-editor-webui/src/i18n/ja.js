@@ -87,5 +87,7 @@ export default {
     TopBar_Btn_HealAllPals_Tooltips: "パルのすべての負の状態を解除し、体力と満腹度を回復します。",
     TopBar_Pal_OOB_Tooltips: "所有者のプレイヤーパルコンテナにないパルを表示します。例：観賞用ケージ、他の人に取られたパル。",
     TopBar_Pal_Ghost_Tooltips: "ゲーム内で見つからないゴーストパルを表示します。例：売却された、落とされた、解体されたパル。",
-    TopBar_Invalid_Options_Tooltips: "ゲーム内で通常利用できないいくつかのオプションやドロップダウンを非表示にします。使用する際は注意してください。"
+    TopBar_Invalid_Options_Tooltips: "ゲーム内で通常利用できないいくつかのオプションやドロップダウンを非表示にします。使用する際は注意してください。",
+
+    Alert_Successful_Save: "変更が {{path}} に正常に保存されました。",
 };

@@ -89,5 +89,7 @@ export default {
     TopBar_Btn_HealAllPals_Tooltips: "治愈帕鲁的所有负面状态，回复血量，饱食度。",
     TopBar_Pal_OOB_Tooltips: "显示不在玩家的帕鲁容器中的帕鲁，即，观赏笼中的帕鲁，或被其他人拿走的帕鲁。",
     TopBar_Pal_Ghost_Tooltips: "显示不存在的帕鲁，即游戏中找不到的帕鲁，比如，你已将其出售，丢弃，宰杀。",
-    TopBar_Invalid_Options_Tooltips: "隐藏游戏中通常不可用的一些选项和下拉菜单，使用时请注意。"
+    TopBar_Invalid_Options_Tooltips: "隐藏游戏中通常不可用的一些选项和下拉菜单，使用时请注意。",
+
+    Alert_Successful_Save: "更改已成功保存到 {{path}}。",
 };
