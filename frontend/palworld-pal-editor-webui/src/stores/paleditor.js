@@ -888,6 +888,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function writeSave() {
+        let retval = false;
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const response = await POST("/api/save/save", {
@@ -896,9 +897,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
-            alert(`Changes saved to ${PAL_WRITE_BACK_PATH.value}`);
-            // YOU HAVE TO RELOAD FOR NOW, THIS HOW MY BACKEND WORKS.
-            // loadSave()
+            const Alert_Successful_Save = getTranslatedText("Alert_Successful_Save").replace("{{path}}", PAL_WRITE_BACK_PATH.value);
+            alert(Alert_Successful_Save);
+            retval = true;
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
             IS_LOCKED.value = true;
@@ -907,6 +908,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             alert(`- writeSave - Error occured: ${response.msg}`);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return retval;
     }
 
     async function fetchPlayerPal(playerUId) {

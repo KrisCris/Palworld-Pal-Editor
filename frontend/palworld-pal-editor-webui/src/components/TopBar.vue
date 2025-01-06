@@ -30,12 +30,22 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
   }
 });
 
-const toggleCheat = async () => {
+const donate = async () => {
   if (await palStore.showDonate()) {
-    alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"))
+    alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"));
     palStore.SHOW_DONATE_FLAG = true;
   }
-  palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
+}
+
+const show_cheats = async () => {
+  await donate();
+  palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS;
+}
+
+const save = async () => {
+  if (await palStore.writeSave()) {
+    await donate();
+  }
 }
 </script>
 
@@ -46,7 +56,7 @@ const toggleCheat = async () => {
       <p>💾</p>
       <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
         :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
-      <button class="op save" @click="palStore.writeSave" :disabled="palStore.LOADING_FLAG">
+      <button class="op save" @click="save" :disabled="palStore.LOADING_FLAG">
         💾 {{ palStore.getTranslatedText("TopBar_Btn_Save") }}
       </button>
       <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
@@ -58,8 +68,8 @@ const toggleCheat = async () => {
 
       <div class="tooltip-container">
         <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG">
-        💉 {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
-      </button>
+          💉 {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+        </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips') }}</span>
       </div>
 
@@ -82,7 +92,7 @@ const toggleCheat = async () => {
       </div>
 
       <div class="tooltip-container">
-        <button :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]" @click="toggleCheat"
+        <button :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
           :disabled="palStore.LOADING_FLAG" :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
           ⚠️ {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
         </button>

@@ -88,4 +88,6 @@ export default {
     TopBar_Pal_OOB_Tooltips: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",
     TopBar_Pal_Ghost_Tooltips: "Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.",
     TopBar_Invalid_Options_Tooltips: "Hide some options and dropdowns that are not normally available in game, be careful when using it.",
+
+    Alert_Successful_Save: "Changes successfully saved to {{path}}.",
 };
