@@ -9,11 +9,22 @@
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/kriscris/palworld-pal-editor?display_name=tag&style=for-the-badge"></a>
 <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;
 </p>
+
 <p align='center'>
 <img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;
 <a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/palworld-pal-editor?style=for-the-badge"></a>&nbsp;
 <a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/palworld-pal-editor?style=for-the-badge&label=PYPI%20DOWNLOADS"></a>&nbsp;
 </p>
+
+<p align='center'>
+<a href="https://ko-fi.com/connlost"><img alt="Ko-Fi" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"></a>&nbsp;
+<a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>&nbsp;
+<a href="https://afdian.com/a/_connlost"><img width="100" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a>&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="AliPay" src="https://img.shields.io/badge/alipay-00A1E9?style=for-the-badge&logo=alipay&logoColor=white"></a>&nbsp;
+<a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white"></a>&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor?tab=readme-ov-file#sponsor"><img alt="PayPal" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA"></a>&nbsp;
+</p>
+
 <p align='center'>
 <a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
 </p>
@@ -212,11 +223,22 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 
 ## 赞助
 
+**如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。**
+
+<p align='center'>
+<a href="https://ko-fi.com/connlost"><img alt="Ko-Fi" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"></a>&nbsp;
+<a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>&nbsp;
+<a href="https://afdian.com/a/_connlost"><img width="100" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a>&nbsp;
+<a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="AliPay" src="https://img.shields.io/badge/alipay-00A1E9?style=for-the-badge&logo=alipay&logoColor=white"></a>&nbsp;
+<a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white"></a>&nbsp;
+</p>
+
 [ko-fi ❤️](https://ko-fi.com/connlost)
 
 [PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)
 
 <img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
+<img width="256" alt="WeChat" src="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5">
 
 ## 感谢
 
