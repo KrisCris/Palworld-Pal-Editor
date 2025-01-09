@@ -23,6 +23,7 @@ export default {
     EntryView_BTN_Path_Picker: "Select Path",
     EntryView_BTN_Load: "Load Save",
     EntryView_Period: ".",
+    EntryView_Version_Warning: "This version was not built by the official CI/CD pipeline. Please exercise caution and verify the source.",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",

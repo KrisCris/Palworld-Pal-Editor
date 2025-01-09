@@ -5,7 +5,7 @@ import requests
 import traceback
 import webbrowser
 import webview
-from palworld_pal_editor.config import VERSION, Config
+from palworld_pal_editor.config import version_info, Config
 from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.webui import main as web_main
 
@@ -29,7 +29,7 @@ def main():
     LOGGER.info("If GUI doesn't work for you, check out this post: https://github.com/KrisCris/Palworld-Pal-Editor/issues/4")
 
     try:
-        webview.create_window(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {VERSION}", url=f"http://127.0.0.1:{Config.port}/", width=1600, height=1000, min_size=(960, 600))
+        webview.create_window(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {version_info()}", url=f"http://127.0.0.1:{Config.port}/", width=1600, height=1000, min_size=(960, 600))
         webview.start()
     except KeyboardInterrupt:
         pass

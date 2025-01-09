@@ -2,7 +2,7 @@ import argparse
 import traceback
 
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
-from palworld_pal_editor.config import PROGRAM_PATH, Config, VERSION, CONFIG_PATH
+from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, CONFIG_PATH
 
 from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main
@@ -59,7 +59,10 @@ def setup_config_from_args():
 def main():
     setup_config_from_args()
     LOGGER.info(Config.__str__())
-    LOGGER.info(f"Running Palworld-Pal-Editor version: {VERSION}")
+    VER = version_info()
+    LOGGER.info(f"Running Palworld-Pal-Editor version: {VER}")
+    if not is_gh_build():
+        LOGGER.warning("This version is not built by the official CI/CD pipeline. Be cautious and verify the source.")
     match Config.mode:
         case "cli": cli_main()
         case "gui": 

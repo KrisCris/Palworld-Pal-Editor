@@ -335,6 +335,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // let SELECTED_PAL_EL = null;
 
     // Configs
+    const VERSION = ref("0.0.0");
+    const IS_OFFICIAL_BUILD = ref(false);
     const I18n = ref(localStorage.getItem("PAL_I18n"));
     const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
     const HAS_PASSWORD = ref(false);
@@ -505,6 +507,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 PAL_GAME_SAVE_PATH.value = response.data.Path;
             }
             HAS_PASSWORD.value = response.data.HasPassword;
+            VERSION.value = response.data.VERSION;
+            IS_OFFICIAL_BUILD.value = response.data.IsOfficialBuild;
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
             IS_LOCKED.value = true;
@@ -1395,6 +1399,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         BASE_PAL_BTN_CLK_FLAG,
         PAL_GAME_SAVE_PATH,
         PAL_WRITE_BACK_PATH,
+        VERSION,
+        IS_OFFICIAL_BUILD,
         I18n,
         I18nList,
         PAL_STATIC_DATA,

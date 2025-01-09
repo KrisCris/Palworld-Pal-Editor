@@ -25,6 +25,8 @@ export default {
     EntryView_BTN_Path_Picker: "选择路径",
     EntryView_BTN_Load: "载入存档",
     EntryView_Period: "。",
+    EntryView_Version_Warning: "此版本不是由官方 CI/CD 管道构建。请谨慎使用并验证来源。",
+
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",

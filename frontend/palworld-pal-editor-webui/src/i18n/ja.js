@@ -23,6 +23,7 @@ export default {
     EntryView_BTN_Path_Picker: "パスを選択",
     EntryView_BTN_Load: "ロード",
     EntryView_Period: "。",
+    EntryView_Version_Warning: "このバージョンは公式の CI/CD パイプラインでビルドされたものではありません。注意してソースを確認してください。",
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",

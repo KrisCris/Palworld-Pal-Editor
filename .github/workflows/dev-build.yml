@@ -15,6 +15,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: false
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -27,6 +30,55 @@ jobs:
       with:
         node-version: 20
 
+    - name: Extract Project Name
+      shell: bash
+      id: extract_project_name
+      run: |
+        PROJECT_NAME=$(cat pyproject.toml | grep "^name" | awk -F'"' '{print $2}')
+        if [[ -z "$PROJECT_NAME" ]]; then
+          echo "Error: Could not extract project name from pyproject.toml"
+          exit 1
+        fi
+        echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+
+    - name: Set Build Metadata
+      shell: bash
+      run: |
+        CONFIG_FILE="src/palworld_pal_editor/config.py"
+        PYPROJECT_FILE="./pyproject.toml"
+
+        VERSION_TAG=$(git describe --tags --abbrev=0)
+        RELEASE_TYPE="NIGHTLY"
+        GIT_HASH=$(git rev-parse --short HEAD)
+        BUILD_TIME=$(date +%s)
+
+        REPO_OWNER="${{ github.repository_owner }}"
+        REPO_NAME="${{ github.event.repository.name }}"
+        BRANCH_NAME="${{ github.ref_name }}"
+        REPO="${REPO_OWNER}/${REPO_NAME}@${BRANCH_NAME}"
+
+        echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+        echo "GIT_HASH=$GIT_HASH" >> $GITHUB_ENV
+
+        if [[ "$RUNNER_OS" == "macOS" ]]; then
+          sed -i '' "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
+          sed -i '' "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
+          sed -i '' "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
+          sed -i '' "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
+          sed -i '' "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
+          sed -i '' "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
+        else
+          sed -i "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
+          sed -i "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
+          sed -i "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
+          sed -i "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
+          sed -i "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
+          sed -i "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
+        fi
+    
+        cat $CONFIG_FILE
+        cat $PYPROJECT_FILE
+
     - name: Run Windows Builder Script
       if: runner.os == 'Windows'
       shell: pwsh
@@ -37,8 +89,27 @@ jobs:
       shell: bash
       run: ./build_executable.sh
 
+    - name: Rename Built File
+      shell: bash
+      run: |
+        FILE_EXT=""
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          FILE_EXT=".exe"
+        fi
+
+        FILE_PATH="./dist/${{ env.PROJECT_NAME }}${FILE_EXT}"
+        if [[ ! -f "$FILE_PATH" ]]; then
+          echo "Error: Built file not found: $FILE_PATH"
+          exit 1
+        fi
+
+        NEW_NAME="Palworld-Pal-Editor_${{ runner.os }}_${{ env.VERSION_TAG }}_${{ env.GIT_HASH }}${FILE_EXT}"
+        mv "$FILE_PATH" "./dist/$NEW_NAME"
+
+        echo "Renamed file to: $NEW_NAME"
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Palworld_Pal_Editor_${{ runner.os }}_artifact
+        name: "Palworld-Pal-Editor_${{ runner.os }}_${{ env.VERSION_TAG }}_${{ env.GIT_HASH }}"
         path: ./dist/

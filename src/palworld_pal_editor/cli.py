@@ -29,7 +29,7 @@ class InteractThread(threading.Thread):
         return line
 
     def run(self):
-        LOGGER.info(f"Palworld Pal Editor v{VERSION}, made by _connlost with ❤.")
+        LOGGER.info(f"Palworld Pal Editor, made by _connlost with ❤.")
         import code
         try:
             code.interact(banner=InteractThread.banner_message, readfunc=self.interact_readfunc, local=globals())
