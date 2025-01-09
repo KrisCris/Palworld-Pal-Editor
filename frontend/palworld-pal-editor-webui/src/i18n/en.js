@@ -72,7 +72,7 @@ export default {
     PalList_Text: "PAL LIST",
 
     PlayerList_Text: "PLAYER LIST",
-    PlayerList_Viewing_Cage: "Unlock Viewing Cage for ",
+    PlayerList_Viewing_Cage: "Unlock the viewing cage for the selected player. Note: After unlocking, you can build it directly, but it will not appear in the technology unlock menu.",
 
     PlayerList_Base_Pal: "BASECAMP",
 

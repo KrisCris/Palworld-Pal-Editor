@@ -74,7 +74,7 @@ export default {
     PalList_Text: "LISTE DES PALS",
 
     PlayerList_Text: "LISTE DES JOUEURS",
-    PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour ",
+    PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour le joueur sélectionné. Remarque : Une fois déverrouillée, vous pouvez la construire directement, mais elle n'apparaîtra pas dans le menu de déverrouillage des technologies.",
 
     PlayerList_Base_Pal: "Camp De Base",
 

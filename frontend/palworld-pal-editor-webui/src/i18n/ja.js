@@ -72,7 +72,7 @@ export default {
     PalList_Text: "パルリスト",
 
     PlayerList_Text: "プレイヤーリスト",
-    PlayerList_Viewing_Cage: "観賞用ケージのロックを解除する: ",
+    PlayerList_Viewing_Cage: "選択したプレイヤーの観賞用ケージを解除します。注: 解除後は直接建設できますが、技術解除メニューには表示されません。",
 
     PlayerList_Base_Pal: "拠点",
 

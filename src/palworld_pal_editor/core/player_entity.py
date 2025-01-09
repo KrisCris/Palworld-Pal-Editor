@@ -110,6 +110,7 @@ class PlayerEntity:
             self._player_save_data.get("UnlockedRecipeTechnologyNames")
         )
 
+    @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
     def add_UnlockedRecipeTechnologyNames(self, tech: str) -> bool:
         if self.UnlockedRecipeTechnologyNames is None:
             self._player_save_data["UnlockedRecipeTechnologyNames"] = (

@@ -75,7 +75,7 @@ export default {
     PalList_Text: "帕鲁列表",
 
     PlayerList_Text: "玩家列表",
-    PlayerList_Viewing_Cage: "为玩家解锁观赏笼: ",
+    PlayerList_Viewing_Cage: "为选中的玩家解锁观赏笼。注：解锁后你可以直接建造它，但科技解锁菜单并不会显示。",
 
     PlayerList_Base_Pal: "基地",
 
