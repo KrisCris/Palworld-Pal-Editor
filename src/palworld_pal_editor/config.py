@@ -13,7 +13,22 @@ else:
 
 CONFIG_PATH = PROGRAM_PATH / 'config.json'
 
-VERSION = "0.11.9"
+VERSION = "0.0.0"
+RELEASE_TYPE = "NIGHTLY"
+BUILD_TIME = "0000000001"
+GIT_HASH = "0000000"
+REPO = "undefined"
+
+def version_info() -> str:
+    if GIT_HASH == "0000000":
+        return "development"
+    if RELEASE_TYPE == "NIGHTLY":
+        return f"{VERSION}-{RELEASE_TYPE}-{GIT_HASH}-{REPO}-{BUILD_TIME}"
+    if RELEASE_TYPE == "RELEASE":
+        return f"{VERSION}-{RELEASE_TYPE}-{GIT_HASH}"
+
+def is_gh_build() -> bool:
+    return version_info() != "development"
 
 class Config:
     i18n: str = "en"

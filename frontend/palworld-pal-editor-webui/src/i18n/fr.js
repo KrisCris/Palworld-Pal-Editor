@@ -25,6 +25,7 @@ export default {
     EntryView_BTN_Path_Picker: "Sélectionner le chemin",
     EntryView_BTN_Load: "Charger la sauvegarde",
     EntryView_Period: ".",
+    EntryView_Version_Warning: "Cette version n'a pas été construite par le pipeline CI/CD officiel. Veuillez faire preuve de prudence et vérifier la source.",
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
@@ -73,7 +74,7 @@ export default {
     PalList_Text: "LISTE DES PALS",
 
     PlayerList_Text: "LISTE DES JOUEURS",
-    PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour ",
+    PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour le joueur sélectionné. Remarque : Une fois déverrouillée, vous pouvez la construire directement, mais elle n'apparaîtra pas dans le menu de déverrouillage des technologies.",
 
     PlayerList_Base_Pal: "Camp De Base",
 

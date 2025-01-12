@@ -23,6 +23,7 @@ export default {
     EntryView_BTN_Path_Picker: "パスを選択",
     EntryView_BTN_Load: "ロード",
     EntryView_Period: "。",
+    EntryView_Version_Warning: "このバージョンは公式の CI/CD パイプラインでビルドされたものではありません。注意してソースを確認してください。",
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
@@ -71,7 +72,7 @@ export default {
     PalList_Text: "パルリスト",
 
     PlayerList_Text: "プレイヤーリスト",
-    PlayerList_Viewing_Cage: "観賞用ケージのロックを解除する: ",
+    PlayerList_Viewing_Cage: "選択したプレイヤーの観賞用ケージを解除します。注: 解除後は直接建設できますが、技術解除メニューには表示されません。",
 
     PlayerList_Base_Pal: "拠点",
 

@@ -5,7 +5,7 @@ import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.config import PROGRAM_PATH, Config
+from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import get_path_context, reply
@@ -22,6 +22,8 @@ def fetch_config():
             "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
             "HasPassword": Config.password != None,
+            "VERSION": version_info(),
+            "IsOfficialBuild": is_gh_build(),
         },
     )
 

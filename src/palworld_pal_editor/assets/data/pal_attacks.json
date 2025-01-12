@@ -1037,7 +1037,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::IceBlade": {
         "InternalName": "EPalWazaID::IceBlade",
@@ -1063,7 +1063,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_IceDeer_IceHorn": {
         "InternalName": "EPalWazaID::Unique_IceDeer_IceHorn",
@@ -1115,7 +1115,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_CaptainPenguin_BodySlide": {
         "InternalName": "EPalWazaID::Unique_CaptainPenguin_BodySlide",
@@ -1167,7 +1167,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack": {
         "InternalName": "EPalWazaID::Unique_VolcanicMonster_Ice_IceAttack",
@@ -1245,7 +1245,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::FireBlast": {
         "InternalName": "EPalWazaID::FireBlast",
@@ -1271,7 +1271,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::FireSeed": {
         "InternalName": "EPalWazaID::FireSeed",
@@ -1297,7 +1297,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_FlameBuffalo_FlameHorn": {
         "InternalName": "EPalWazaID::Unique_FlameBuffalo_FlameHorn",
@@ -1349,7 +1349,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Ronin_Iai": {
         "InternalName": "EPalWazaID::Unique_Ronin_Iai",
@@ -1401,7 +1401,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Baphomet_SwallowKite": {
         "InternalName": "EPalWazaID::Unique_Baphomet_SwallowKite",
@@ -1479,7 +1479,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_FireKirin_Tackle": {
         "InternalName": "EPalWazaID::Unique_FireKirin_Tackle",
@@ -1557,7 +1557,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Horus_FlareBird": {
         "InternalName": "EPalWazaID::Unique_Horus_FlareBird",
@@ -1609,7 +1609,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::ThunderRain": {
         "InternalName": "EPalWazaID::ThunderRain",
@@ -1999,7 +1999,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::StoneShotgun": {
         "InternalName": "EPalWazaID::StoneShotgun",
@@ -2025,7 +2025,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_DrillGame_ShellAttack": {
         "InternalName": "EPalWazaID::Unique_DrillGame_ShellAttack",
@@ -2077,7 +2077,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_HerculesBeetle_BeetleTackle": {
         "InternalName": "EPalWazaID::Unique_HerculesBeetle_BeetleTackle",
@@ -2129,7 +2129,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Anubis_LowRoundKick": {
         "InternalName": "EPalWazaID::Unique_Anubis_LowRoundKick",
@@ -2259,7 +2259,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::DragonCanon": {
         "InternalName": "EPalWazaID::DragonCanon",
@@ -2805,7 +2805,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::DiamondFall": {
         "InternalName": "EPalWazaID::DiamondFall",
@@ -2831,7 +2831,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::BeamSlicer": {
         "InternalName": "EPalWazaID::BeamSlicer",
@@ -3403,7 +3403,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_ElecPanda_GatlingAttack": {
         "InternalName": "EPalWazaID::Unique_ElecPanda_GatlingAttack",
@@ -3559,7 +3559,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::AirBlade": {
         "InternalName": "EPalWazaID::AirBlade",
@@ -3767,7 +3767,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::SandTwister": {
         "InternalName": "EPalWazaID::SandTwister",
@@ -3793,7 +3793,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::RangeThunder": {
         "InternalName": "EPalWazaID::RangeThunder",
@@ -4053,7 +4053,7 @@
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Manticore_InfernoStrike": {
         "InternalName": "EPalWazaID::Unique_Manticore_InfernoStrike",
@@ -5173,10 +5173,6 @@
         "UniqueSkill": true,
         "SkillFruit": false
     },
-
-
-
-    
     "EPalWazaID::TidalWave": {
         "InternalName": "EPalWazaID::TidalWave",
         "Element": "Water",

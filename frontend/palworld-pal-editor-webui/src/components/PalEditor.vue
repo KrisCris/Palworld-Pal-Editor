@@ -786,7 +786,7 @@ div.spaceBetween {
 .tooltip-text {
   visibility: hidden;
   width: 200px;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(0, 0, 0, 0.85);
   color: white;
   text-align: center;
   border-radius: 6px;

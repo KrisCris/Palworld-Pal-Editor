@@ -6,7 +6,7 @@ const palStore = usePalEditorStore()
 
 <template>
     <div id="entryDiv">
-        <PathPicker/>
+        <PathPicker />
         <div class="left">
             <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
             <p>{{ palStore.getTranslatedText('EntryView_Greet_1') }}</p>
@@ -20,7 +20,9 @@ const palStore = usePalEditorStore()
                 {{ palStore.getTranslatedText('EntryView_Period') }}
             </p>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_6') }}
-                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md" @click="palStore.SHOW_DONATE_FLAG = true">Donate</a>
+                <a target="_blank"
+                    href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
+                    @click="palStore.SHOW_DONATE_FLAG = true">Donate</a>
                 {{ palStore.getTranslatedText('EntryView_Greet_5') }}
             </p>
             <p>{{ palStore.getTranslatedText('EntryView_Greet_7') }}
@@ -51,6 +53,12 @@ const palStore = usePalEditorStore()
             <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
                 {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
             </button>
+        </div>
+        <div class="version-container">
+            <p class="version-info">VERSION: {{ palStore.VERSION }}</p>
+            <p v-if="!palStore.IS_OFFICIAL_BUILD" class="version-warning">
+                {{ palStore.getTranslatedText("EntryView_Version_Warning") }}
+            </p>
         </div>
     </div>
 </template>
@@ -153,5 +161,27 @@ button:disabled {
 
 button:disabled:hover {
     background-color: #8a8a8a;
+}
+
+/* Style for the version container */
+.version-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    text-align: right;
+}
+
+/* Style for the version text */
+.version-info {
+    font-size: 0.9rem;
+    color: #868686;
+    opacity: 0.7;
+}
+
+/* Style for the version warning */
+.version-warning {
+    font-size: 0.8rem;
+    color: red;
+    font-weight: bold;
 }
 </style>

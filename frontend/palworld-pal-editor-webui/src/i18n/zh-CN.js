@@ -25,6 +25,8 @@ export default {
     EntryView_BTN_Path_Picker: "选择路径",
     EntryView_BTN_Load: "载入存档",
     EntryView_Period: "。",
+    EntryView_Version_Warning: "此版本不是由官方 CI/CD 管道构建。请谨慎使用并验证来源。",
+
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
@@ -73,7 +75,7 @@ export default {
     PalList_Text: "帕鲁列表",
 
     PlayerList_Text: "玩家列表",
-    PlayerList_Viewing_Cage: "为玩家解锁观赏笼: ",
+    PlayerList_Viewing_Cage: "为选中的玩家解锁观赏笼。注：解锁后你可以直接建造它，但科技解锁菜单并不会显示。",
 
     PlayerList_Base_Pal: "基地",
 

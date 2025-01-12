@@ -4,7 +4,7 @@ import time
 import requests
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from palworld_pal_editor.config import VERSION, Config
+from palworld_pal_editor.config import version_info, Config
 from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.webui import main as web_main
 

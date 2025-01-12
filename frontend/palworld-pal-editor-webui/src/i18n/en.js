@@ -23,6 +23,7 @@ export default {
     EntryView_BTN_Path_Picker: "Select Path",
     EntryView_BTN_Load: "Load Save",
     EntryView_Period: ".",
+    EntryView_Version_Warning: "This version was not built by the official CI/CD pipeline. Please exercise caution and verify the source.",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
@@ -71,7 +72,7 @@ export default {
     PalList_Text: "PAL LIST",
 
     PlayerList_Text: "PLAYER LIST",
-    PlayerList_Viewing_Cage: "Unlock Viewing Cage for ",
+    PlayerList_Viewing_Cage: "Unlock the viewing cage for the selected player. Note: After unlocking, you can build it directly, but it will not appear in the technology unlock menu.",
 
     PlayerList_Base_Pal: "BASECAMP",
 

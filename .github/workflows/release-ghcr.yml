@@ -16,6 +16,52 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Set Build Metadata
+      shell: bash
+      run: |
+        CONFIG_FILE="src/palworld_pal_editor/config.py"
+        PYPROJECT_FILE="./pyproject.toml"
+
+        VERSION_TAG=$(git describe --tags --abbrev=0)
+        if git describe --tags --exact-match > /dev/null 2>&1; then
+            RELEASE_TYPE="RELEASE"
+        else
+            RELEASE_TYPE="NIGHTLY"
+        fi
+
+        GIT_HASH=$(git rev-parse --short HEAD)
+        BUILD_TIME=$(date +%s)
+
+        REPO_OWNER="${{ github.repository_owner }}"
+        REPO_NAME="${{ github.event.repository.name }}"
+        BRANCH_NAME="${{ github.ref_name }}"
+        REPO="${REPO_OWNER}/${REPO_NAME}@${BRANCH_NAME}"
+
+        echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+        echo "GIT_HASH=$GIT_HASH" >> $GITHUB_ENV
+
+        if [[ "$RUNNER_OS" == "macOS" ]]; then
+          sed -i '' "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
+          sed -i '' "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
+          sed -i '' "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
+          sed -i '' "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
+          sed -i '' "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
+          sed -i '' "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
+        else
+          sed -i "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
+          sed -i "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
+          sed -i "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
+          sed -i "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
+          sed -i "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
+          sed -i "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
+        fi
+    
+        cat $CONFIG_FILE
+        cat $PYPROJECT_FILE
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
