@@ -189,6 +189,7 @@ class PlayerEntity:
             if record['key'].lower() == name.lower():
                 record['value'] += 1
                 return
+        LOGGER.info(f"Creating new pal capture count record for {name}")
         self.PalCaptureCount.append({
             'key': name,
             'value': 1
