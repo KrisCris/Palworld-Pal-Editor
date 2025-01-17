@@ -37,7 +37,15 @@ const isMaxSuit = key => {
 
 const isMinSuit = key => {
   return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
-    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >=5 ? 1 : 0);
+    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >= 5 ? 1 : 0);
+};
+
+const isMaxLv = () => {
+  return palStore.SELECTED_PAL_DATA.Level >= (palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL);
+};
+
+const isMinLv = () => {
+  return palStore.SELECTED_PAL_DATA.Level <= 1;
 };
 
 const suitabilityIconSrc = key => {
@@ -125,11 +133,11 @@ const suitabilityIconSrc = key => {
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
             <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔽</button>
+              :disabled="palStore.LOADING_FLA || isMinLv()">🔽</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔼</button>
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔝</button>
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
           </div>
         </div>
         <p class="const">
@@ -814,7 +822,7 @@ select.selector {
   padding: .2rem .4rem;
   border-radius: .5rem;
   color: rgb(208, 212, 226);
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  box-shadow:2px 2px 10px rgb(38, 38, 38);
   /* max-width: 50%; */
 }
 </style>

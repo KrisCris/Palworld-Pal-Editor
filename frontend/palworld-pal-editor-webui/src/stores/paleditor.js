@@ -4,6 +4,7 @@ import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_LEVEL = 60;
+    const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 5;
     class Player {
@@ -110,14 +111,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         levelUp() {
-            if (this.Level < MAX_LEVEL) {
+            if (
+                this.Level < MAX_LEVEL ||
+                (!HIDE_INVALID_OPTIONS.value && this.Level < MAX_INVALID_LEVEL)
+            ) {
                 this.Level += 1;
                 updatePal({ target: { name: "Level", value: this.Level } });
             }
         }
 
         maxLevel() {
-            this.Level = MAX_LEVEL;
+            this.Level = HIDE_INVALID_OPTIONS.value
+                ? MAX_LEVEL
+                : MAX_INVALID_LEVEL;
             updatePal({ target: { name: "Level", value: this.Level } });
         }
 
@@ -266,7 +272,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             }
             value = Math.min(Math.max(value, min), max);
             if (value == SELECTED_PAL_DATA.value.Suitabilities[name]) {
-                return
+                return;
             }
             updatePal({
                 target: {
@@ -901,7 +907,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
-            const Alert_Successful_Save = getTranslatedText("Alert_Successful_Save").replace("{{path}}", PAL_WRITE_BACK_PATH.value);
+            const Alert_Successful_Save = getTranslatedText(
+                "Alert_Successful_Save"
+            ).replace("{{path}}", PAL_WRITE_BACK_PATH.value);
             alert(Alert_Successful_Save);
             retval = true;
         } else if (response.status == 2) {
@@ -1343,15 +1351,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-
     async function showDonate() {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const response = await GET("/api/save/donate");
         if (response === false) return;
-        let res = true
+        let res = true;
         if (response.status == 0) {
-            res = response.data?.shouldShowDonate == true
+            res = response.data?.shouldShowDonate == true;
             IS_LOCKED.value = false;
         } else if (response.status == 2) {
             IS_LOCKED.value = true;
@@ -1365,6 +1372,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     return {
         MAX_LEVEL,
+        MAX_INVALID_LEVEL,
         MAX_SOULS_LEVEL,
         MAX_SUITABILITY_LEVEL,
 

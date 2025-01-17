@@ -18,6 +18,9 @@ from palworld_pal_editor.utils.util import type_guard
 
 
 class PalEntity:
+    MAX_LEVEL = 60
+    MAX_INVALID_LEVEL = 100
+
     def __init__(self, pal_obj: dict) -> None:
         self._pal_obj: dict = pal_obj
 
@@ -498,7 +501,7 @@ class PalEntity:
     @LOGGER.change_logger("Level")
     @type_guard
     def Level(self, value: int) -> None:
-        value = clamp(1, 60, value)
+        value = clamp(1, PalEntity.MAX_INVALID_LEVEL, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
