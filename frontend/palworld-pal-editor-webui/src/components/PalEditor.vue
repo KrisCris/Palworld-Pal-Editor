@@ -25,7 +25,6 @@ function filterInvalid(list) {
   return list.filter(item => {
     if (palStore.HIDE_INVALID_OPTIONS) {
       return !(item.Invalid || item.IsHuman)
-      // return !item.Invalid
     }
     return true
   })
@@ -345,7 +344,7 @@ const suitabilityIconSrc = key => {
                   skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
-              :disabled="palStore.LOADING_FLAG">➕</button>
+              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)">➕</button>
           </div>
         </div>
       </div>
@@ -442,7 +441,7 @@ const suitabilityIconSrc = key => {
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
-              :disabled="palStore.LOADING_FLAG">➕</button>
+              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)">➕</button>
           </div>
         </div>
       </div>
@@ -822,7 +821,7 @@ select.selector {
   padding: .2rem .4rem;
   border-radius: .5rem;
   color: rgb(208, 212, 226);
-  box-shadow:2px 2px 10px rgb(38, 38, 38);
+  box-shadow: 2px 2px 10px rgb(38, 38, 38);
   /* max-width: 50%; */
 }
 </style>
