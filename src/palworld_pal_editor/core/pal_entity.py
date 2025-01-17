@@ -506,7 +506,7 @@ class PalEntity:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
             PalObjects.set_ByteProperty(self._pal_param["Level"], value)
-        self.Exp = DataProvider.get_level_xp(self.Level)
+        self.Exp = DataProvider.get_pal_level_xp(self.Level)
 
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
@@ -702,7 +702,7 @@ class PalEntity:
                 "NameProperty", {"values": []}
             )
 
-        if not force and skill in self.PassiveSkillList:
+        if skill in self.PassiveSkillList:
             LOGGER.warning(f"{self} already has passive {skill}, skipping")
             return False
 
@@ -755,7 +755,7 @@ class PalEntity:
             self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
-        if not force and waza in self.EquipWaza:
+        if waza in self.EquipWaza:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
 
@@ -1131,11 +1131,6 @@ class PalEntity:
                 self.pop_MasteredWaza(item=atk)
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
-
-    def max_lv_exp(self):
-        exp = DataProvider.get_level_xp(self.Level)
-        if isinstance(exp, int):
-            self.Exp = exp - 1
 
     def print_obj(self):
         print(self.dump_obj())

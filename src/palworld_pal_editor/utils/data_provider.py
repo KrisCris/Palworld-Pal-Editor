@@ -144,9 +144,9 @@ class DataProvider:
         return PAL_DATA[pal]["Suitabilities"]
 
     @staticmethod
-    def get_level_xp(lv: int) -> Optional[int]:
+    def get_pal_level_xp(lv: int) -> Optional[int]:
         try:
-            return PAL_EXP_TABLE[lv - 1]["PalTotalEXP"]
+            return PAL_EXP_TABLE[str(lv)]["PalTotalEXP"]
         except IndexError:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
@@ -248,3 +248,11 @@ class DataProvider:
     @staticmethod
     def get_i18n_options() -> list[str]:
         return I18N_LIST.keys()
+
+    @staticmethod
+    def get_player_level_xp(lv: int) -> Optional[int]:
+        try:
+            return PAL_EXP_TABLE[str(lv)]["TotalEXP"]
+        except IndexError:
+            LOGGER.warning(f"Level {lv} is out of bounds.")
+            return None
