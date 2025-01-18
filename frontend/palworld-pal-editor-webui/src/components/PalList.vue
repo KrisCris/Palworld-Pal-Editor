@@ -50,7 +50,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
         const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
             if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
-                palStore.selectPal({ target: button }, true)
+                palStore.selectPal(palStore.SELECTED_PAL_ID, true)
             }
             if (!palStore.isElementInViewport(button)) {
                 button.scrollIntoView({ behavior: "smooth" });
@@ -96,7 +96,7 @@ function get_filtered_pal_list() {
             <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
                 <button
                     :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
-                    :value="pal.InstanceId" @click="palStore.selectPal"
+                    :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
                     :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
                     :selected="palStore.SELECTED_PAL_ID == pal.InstanceId"
                     >

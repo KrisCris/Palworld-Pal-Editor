@@ -818,7 +818,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // player id and pal data never changed so this is safe
             // if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
             if (!updatePal)
-                await selectPal({ target: { value: pal_id_bk } }, true);
+                await selectPal(pal_id_bk, true);
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
             IS_LOCKED.value = true;
@@ -1028,11 +1028,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function selectPal(e, manual = false) {
+    async function selectPal(palId, manual = false) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-        // sometimes we manually construct a "e" target in a very hacked way
         if (!manual) {
             // SELECTED_PAL_EL = e.target;
             SELECTED_PAL_DATA.value = null;
@@ -1040,10 +1039,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         // set selected pal, and print out debug info
-        let palId = e.target.value;
         let palData = PAL_MAP.value.get(palId);
         if (palData == null) {
-            alert("Error selecting pal, try again or reload");
+            alert("Failed selecting pal, try again or reload");
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
@@ -1103,7 +1101,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             // A hack way to trigger vue re-rendering.
             // The object is simply too nested that I can't figure out how to have vue properly refresh.
-            await selectPal({ target: { value: SELECTED_PAL_ID.value } }, true);
+            await selectPal(SELECTED_PAL_ID.value, true);
             UPDATE_PAL_RESELECT_CTR.value++;
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
