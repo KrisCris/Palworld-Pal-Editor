@@ -1181,7 +1181,8 @@
     "NegativeOctopus": {
         "InternalName": "NegativeOctopus",
         "Elements": [
-            "Dark"
+            "Dark",
+            "Water"
         ],
         "Attacks": {
             "EPalWazaID::AquaJet": 1,
@@ -1211,7 +1212,7 @@
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Watering": 1,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
@@ -6807,7 +6808,8 @@
     "GrassMammoth": {
         "InternalName": "GrassMammoth",
         "Elements": [
-            "Grass"
+            "Grass",
+            "Ground"
         ],
         "Attacks": {
             "EPalWazaID::MudShot": 1,
@@ -6854,7 +6856,8 @@
     "GrassMammoth_Ice": {
         "InternalName": "GrassMammoth_Ice",
         "Elements": [
-            "Ice"
+            "Ice",
+            "Ground"
         ],
         "Attacks": {
             "EPalWazaID::ThrowRock": 1,
