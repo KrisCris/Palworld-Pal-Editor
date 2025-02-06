@@ -6,17 +6,23 @@ const palStore = usePalEditorStore()
 
 const palListContainer = ref(null);
 
-watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
-    await nextTick();
-    try {
-        const button = palListContainer.value.querySelector('button:not(:disabled)');
-        if (button) {
-            button.click();
-        }
-    } catch (error) {
-        return
-    }
-})
+// watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+//     await nextTick();
+//     if (palStore.SHOW_PLAYER_EDIT_FLAG) {
+//         return
+//     }
+//     try {
+//         if (palStore.BASE_PAL_BTN_CLK_FLAG == false) {
+//             return
+//         }
+//         const button = palListContainer.value.querySelector('button:not(:disabled)');
+//         if (button) {
+//             button.click();
+//         }
+//     } catch (error) {
+//         return
+//     }
+// })
 
 // watch(async () => palStore.ADD_PAL_RESELECT_CTR, async () => {
 //     await nextTick();
@@ -46,6 +52,9 @@ watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
 
 watch(async () => palStore.SELECTED_PAL_ID, async () => {
     await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
     try {
         const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
@@ -66,6 +75,9 @@ onMounted(async () => {
     // TODO Note: this is just a temp fix for pal selection when pal list is refreshed by updatePlayer
     await nextTick();
     await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
     const button = palListContainer.value.querySelector('button:not(:disabled)');
     if (button) {
         button.click();
@@ -88,7 +100,7 @@ function get_filtered_pal_list() {
             <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
                 :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
-                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
+                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).NickName}`"
                 :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">+</button>
         </div>
 

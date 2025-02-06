@@ -33,6 +33,7 @@ PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
+TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
@@ -256,3 +257,21 @@ class DataProvider:
         except IndexError:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
+
+    @staticmethod
+    def get_tech_data() -> dict[str, dict]:
+        return TECH_DATA
+
+    @none_guard(data_source=TECH_DATA, subkey="I18n")
+    @staticmethod
+    def get_tech_i18n(key: str) -> Optional[str]:
+        i18n_list: dict = TECH_DATA[key]["I18n"]
+        return i18n_list.get(Config.i18n, i18n_list.get("en"))
+
+    @staticmethod
+    def get_tech_lv(key: str) -> int:
+        return TECH_DATA.get(key, {}).get("Level", 0)
+
+    @staticmethod
+    def is_boss_tech(key: str) -> bool:
+        return TECH_DATA.get(key, {}).get("BossTechnology", False)

@@ -2,6 +2,7 @@
 import PalList from '@/components/PalList.vue';
 import PlayerList from '@/components/PlayerList.vue';
 import PalEditor from '@/components/PalEditor.vue';
+import PlayerEditor from '@/components/PlayerEditor.vue';
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 </script>
@@ -11,7 +12,9 @@ const palStore = usePalEditorStore()
         <div id="EditorMain">
             <PlayerList></PlayerList>
             <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG"></PalList>
-            <PalEditor v-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA"></PalEditor>
+            <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG"></PlayerEditor>
+            <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA"></PalEditor>
+            <p v-else>?error occured?</p>
         </div>
     </div>
 </template>

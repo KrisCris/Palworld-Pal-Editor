@@ -6,9 +6,13 @@ from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils.data_provider import DataProvider
+from palworld_pal_editor.utils.util import clamp, type_guard
 
 
 class PlayerEntity:
+    MAX_LEVEL = 60
+    MAX_INVALID_LEVEL = 100
+
     def __init__(
         self,
         group_id: UUID | str,
@@ -86,6 +90,46 @@ class PlayerEntity:
     @property
     def NickName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._player_param.get("NickName"))
+    
+    @NickName.setter
+    @LOGGER.change_logger("NickName")
+    @type_guard
+    def NickName(self, value: str) -> None:
+        if self.NickName is None:
+            self._player_param["NickName"] = PalObjects.StrProperty(value)
+        else:
+            self._player_param["NickName"]["value"] = value
+
+        if not self.NickName:
+            self._player_param.pop("NickName", None)
+
+    @property
+    def Level(self) -> Optional[int]:
+        return PalObjects.get_ByteProperty(self._player_param.get("Level"))
+    
+    @Level.setter
+    @LOGGER.change_logger("Level")
+    @type_guard
+    def Level(self, value: int) -> None:
+        value = clamp(1, PlayerEntity.MAX_INVALID_LEVEL, value)
+        if self.Level is None:
+            self._player_param["Level"] = PalObjects.ByteProperty(value)
+        else:
+            PalObjects.set_ByteProperty(self._player_param["Level"], value)
+        self.Exp = DataProvider.get_player_level_xp(self.Level)
+    
+    @property
+    def Exp(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_param.get("Exp"))
+    
+    @Exp.setter
+    @LOGGER.change_logger("Exp")
+    @type_guard
+    def Exp(self, value: int) -> None:
+        if self.Exp is None:
+            self._player_param["Exp"] = PalObjects.Int64Property(value)
+        else:
+            PalObjects.set_BaseType(self._player_param["Exp"], value)
 
     @property
     def OtomoCharacterContainerId(self) -> Optional[UUID]:
