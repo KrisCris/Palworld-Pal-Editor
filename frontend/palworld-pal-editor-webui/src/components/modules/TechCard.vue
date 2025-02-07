@@ -8,6 +8,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { usePalEditorStore } from '@/stores/paleditor'
+const palStore = usePalEditorStore()
 
 const props = defineProps({
     item: {
@@ -16,10 +18,8 @@ const props = defineProps({
     }
 })
 
-const isLocked = ref(false)
-
 function toggleLock() {
-    isLocked.value = !isLocked.value
+    palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.InternalName, isLocked.value)
 }
 
 const bgStyle = computed(() => {
@@ -32,6 +32,11 @@ const bgStyle = computed(() => {
         backgroundImage: `url('/image/${cat}/${internalName}')`
     }
 })
+
+const isLocked = computed(() => {
+    return !palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames.includes(props.item.InternalName)
+})
+
 </script>
 
 <style scoped>

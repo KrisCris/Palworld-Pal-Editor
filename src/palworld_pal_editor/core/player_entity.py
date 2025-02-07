@@ -155,17 +155,21 @@ class PlayerEntity:
         )
 
     @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
-    def add_UnlockedRecipeTechnologyNames(self, tech: str) -> bool:
+    def toggle_UnlockedRecipeTechnologyNames(self, tech: str, status: bool):
         if self.UnlockedRecipeTechnologyNames is None:
             self._player_save_data["UnlockedRecipeTechnologyNames"] = (
                 PalObjects.ArrayProperty("NameProperty", {"values": []})
             )
-
-        if tech in self.UnlockedRecipeTechnologyNames:
-            LOGGER.warning(f"{self} has already been unlocked, skipping")
-            return False
-
-        self.UnlockedRecipeTechnologyNames.append(tech)
+        if status:
+            if tech in self.UnlockedRecipeTechnologyNames:
+                LOGGER.warning(f"Attempt to unlock {self}, but it has already been unlocked, skipping")
+                return
+            self.UnlockedRecipeTechnologyNames.append(tech)
+        else:
+            if tech not in self.UnlockedRecipeTechnologyNames:
+                LOGGER.warning(f"Attempt to lock {self}, but it has not been unlocked, skipping")
+                return
+            self.UnlockedRecipeTechnologyNames.remove(tech)
 
     def has_viewing_cage(self) -> bool:
         if not self.UnlockedRecipeTechnologyNames:
@@ -173,7 +177,7 @@ class PlayerEntity:
         return "DisplayCharacter" in self.UnlockedRecipeTechnologyNames
 
     def unlock_viewing_cage(self):
-        self.add_UnlockedRecipeTechnologyNames("DisplayCharacter")
+        self.toggle_UnlockedRecipeTechnologyNames("DisplayCharacter", True)
 
     @property
     def PlayerGVAS(self) -> Optional[tuple[GvasFile, int]]:

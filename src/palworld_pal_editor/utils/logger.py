@@ -81,6 +81,7 @@ class Logger:
                 self.info(f"{entity} | {val_name}: Added {added}")
             if removed:
                 self.info(f"{entity} | {val_name}: Removed {removed}")
+            return
         self.info(f"{entity} | {val_name}: {old_val} -> {new_val}")
 
     def debug(self, message: str):

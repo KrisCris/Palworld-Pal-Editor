@@ -44,7 +44,7 @@ const isMinLv = () => {
                 {{ palStore.getTranslatedText("Editor_IV") }}
             </p>
         </div>
-        <div class="EditorItem flex-h">
+        <div class="EditorItem flex-h maxW">
             <div class="levels-container">
                 <div class="level-row" v-for="(items, level) in palStore.TECH_LV_DICT" :key="level">
                     <div class="level-indicator">
@@ -70,10 +70,6 @@ const isMinLv = () => {
     gap: .5rem;
 }
 
-.PalEditor.unref {
-    filter: grayscale(100%);
-}
-
 .EditorItem {
     display: flex;
     flex-shrink: 0;
@@ -82,10 +78,15 @@ const isMinLv = () => {
     border-radius: 1rem;
 }
 
+.EditorItem.maxW {
+    padding: 1rem;
+    max-width: var(--editor-panel-width);
+}
+
 div.editField {
     /* border-style: dashed;
-  border-width: 1px;
-  border-color: white; */
+    border-width: 1px;
+    border-color: white; */
     /* width: 100%; */
     /* flex-wrap: nowrap; */
     gap: 5px
@@ -94,7 +95,7 @@ div.editField {
 div.basicInfo {
     position: relative;
     max-width: calc(var(--editor-panel-width) - 380px);
-    min-width: 600px;
+    /* min-width: calc(max(100%,var(--editor-panel-width))); */
 }
 
 hr {
@@ -297,20 +298,18 @@ select.selector {
 
 .levels-container {
     display: flex;
-    /* Use Flexbox */
     flex-direction: column;
-    /* Stack each row vertically */
     max-height: 80vh;
-    /* limit vertical space */
     overflow-y: auto;
-    /* scroll vertically if needed */
+    max-width: 100%;
     padding: 8px;
-    justify-content: flex-start;
+    justify-content:left;
 }
 
 .level-row {
     display: flex;
     align-items: center;
+    max-width: 100%;
 }
 
 .level-indicator {

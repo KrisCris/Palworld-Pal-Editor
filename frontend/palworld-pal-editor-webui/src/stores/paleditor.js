@@ -16,6 +16,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
             this.pals = new Map();
+            this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
         }
 
         levelDown() {
@@ -40,6 +41,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 ? MAX_LEVEL
                 : MAX_INVALID_LEVEL;
                 updatePlayer({ target: { name: "Level", value: this.Level } });
+        }
+
+        toggleTech(tech, status) {
+            updatePlayer({
+                target: {
+                    name: "toggle_UnlockedRecipeTechnologyNames",
+                    value: {
+                        tech: tech,
+                        status: status,
+                    },
+                },
+            });
+
         }
     }
 
