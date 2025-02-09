@@ -39,11 +39,11 @@ const isMinLv = () => {
                 </div>
             </div>
         </div>
-        <div class="EditorItem flex-v item left">
+        <!-- <div class="EditorItem flex-v item left">
             <p class="cat">
                 {{ palStore.getTranslatedText("Editor_IV") }}
             </p>
-        </div>
+        </div> -->
         <div class="EditorItem flex-h maxW">
             <div class="levels-container">
                 <div class="level-row" v-for="(items, level) in palStore.TECH_LV_DICT" :key="level">

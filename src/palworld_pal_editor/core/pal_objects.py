@@ -94,6 +94,9 @@ class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
     TIME = 638486453957560000
 
+    UInt16Max = 65535
+    UInt16Min = 0
+
     @staticmethod
     def StrProperty(value: str):
         return {"id": None, "type": "StrProperty", "value": value}

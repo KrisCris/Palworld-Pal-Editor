@@ -14,7 +14,7 @@ const palStore = usePalEditorStore()
             <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG"></PalList>
             <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG"></PlayerEditor>
             <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA"></PalEditor>
-            <p v-else>?error occured?</p>
+            <p v-else>SELECT A PAL OR PLAYER TO START ;）</p>
         </div>
     </div>
 </template>

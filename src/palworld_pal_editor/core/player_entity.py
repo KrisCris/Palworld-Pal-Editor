@@ -65,6 +65,7 @@ class PlayerEntity:
             raise Exception(
                 f"InstanceId unmatch: Level.sav: {self.InstanceId} v.s. playerid.sav {sav_InstanceId}"
             )
+        
 
     def __str__(self) -> str:
         return "{} - {} - {}".format(self.NickName, self.PlayerUId, self.InstanceId)
@@ -104,6 +105,20 @@ class PlayerEntity:
             self._player_param.pop("NickName", None)
 
     @property
+    def UnusedStatusPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_param.get("UnusedStatusPoint"))
+    
+    @UnusedStatusPoint.setter
+    @LOGGER.change_logger("UnusedStatusPoint")
+    @type_guard
+    def UnusedStatusPoint(self, value: int) -> None:
+        value = clamp(PalObjects.UInt16Min, PalObjects.UInt16Max, value)
+        if self.UnusedStatusPoint is None:
+            self._player_param["UnusedStatusPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_param["UnusedStatusPoint"], value)
+
+    @property
     def Level(self) -> Optional[int]:
         return PalObjects.get_ByteProperty(self._player_param.get("Level"))
     
@@ -113,10 +128,17 @@ class PlayerEntity:
     def Level(self, value: int) -> None:
         value = clamp(1, PlayerEntity.MAX_INVALID_LEVEL, value)
         if self.Level is None:
-            self._player_param["Level"] = PalObjects.ByteProperty(value)
-        else:
-            PalObjects.set_ByteProperty(self._player_param["Level"], value)
+            self._player_param["Level"] = PalObjects.ByteProperty(1)
+        
+        status_points = value - self.Level
+        new_unused_status_point = (self.UnusedStatusPoint or 0) + status_points
+        if new_unused_status_point < 0:
+            LOGGER.warning(f"Player {self} has insufficient status points to level down.")
+            return
+        
+        PalObjects.set_ByteProperty(self._player_param["Level"], value)
         self.Exp = DataProvider.get_player_level_xp(self.Level)
+        self.UnusedStatusPoint = new_unused_status_point
     
     @property
     def Exp(self) -> Optional[int]:
@@ -200,6 +222,32 @@ class PlayerEntity:
         pal_entity.set_owner_player_entity(self)
         return True
     
+    @property
+    def TechnologPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("TechnologPoint"))
+    
+    @TechnologPoint.setter
+    @LOGGER.change_logger("TechnologPoint")
+    @type_guard
+    def TechnologPoint(self, value: int) -> None:
+        if self.TechnologPoint is None:
+            self._player_save_data["TechnologPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_save_data["TechnologPoint"], value)
+
+    @property
+    def bossTechPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("bossTechPoint"))
+    
+    @bossTechPoint.setter
+    @LOGGER.change_logger("bossTechPoint")
+    @type_guard
+    def bossTechPoint(self, value: int) -> None:
+        if self.bossTechPoint is None:
+            self._player_save_data["bossTechPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_save_data["bossTechPoint"], value)
+    
     def try_create_pal_record_data(self):
         if "RecordData" not in self._player_save_data:
             self._player_save_data["RecordData"] = PalObjects.PalLoggedinPlayerSaveDataRecordData()
@@ -276,8 +324,15 @@ class PlayerEntity:
                 continue
 
             key = handle_special_keys(pal_entity.RawSpecieKey)
-            self.inc_pal_capture_count(key)
             self.unlock_paldeck(key)
+            self.inc_pal_capture_count(key)
+
+            tech_key = "SkillUnlock_" + key
+            if DataProvider.get_tech_i18n(tech_key) is None:
+                LOGGER.warning(f"Technology {tech_key} not found, please report this to the dev.")
+            else:
+                self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
+
             pal_entity.is_new_pal = False
 
         self._new_palbox.clear()
