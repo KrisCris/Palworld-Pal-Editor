@@ -1346,6 +1346,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             temp_map.forEach((v, k) => PAL_MAP.value.set(k, v));
 
             // ADD_PAL_RESELECT_CTR.value++
+            SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.InstanceId;
             SELECTED_PAL_DATA.value = pal_data;
         } else if (response.status == 2) {
