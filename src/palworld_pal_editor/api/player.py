@@ -105,7 +105,7 @@ def get_player_data():
 def player_to_dict(player: PlayerEntity):
     return {
         "InstanceId": str(player.PlayerUId),
-        "NickName": player.NickName,
+        "NickName": player.NickName or "",
         "Level": player.Level or 1,
         "HasViewingCage": player.has_viewing_cage(),
         "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
