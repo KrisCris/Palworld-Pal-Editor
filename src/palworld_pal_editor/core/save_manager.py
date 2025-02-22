@@ -161,7 +161,7 @@ class SaveManager:
         if guid in self.player_mapping:
             player = self.player_mapping[guid]
             return player
-        LOGGER.warning(f"Player {guid} not exist")
+        # LOGGER.warning(f"Player {guid} not exist")
 
     def get_players_by_name(self, name: str) -> list[PlayerEntity]:
         return [player for player in self.get_players() if player.NickName == name]

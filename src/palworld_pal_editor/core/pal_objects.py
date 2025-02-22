@@ -89,6 +89,13 @@ class PalSuitability(Enum):
         except:
             LOGGER.warning(f"{value} is not a valid PalSuitability")
 
+class StatusName():
+    MaxHP = "最大HP"
+    MaxSP = "最大SP"
+    Attack = "攻撃力"
+    CarryWeight = "所持重量"
+    CaptureRate = "捕獲率"
+    WorkSpeed = "作業速度"
 
 class PalObjects:
     EMPTY_UUID = toUUID("00000000-0000-0000-0000-000000000000")
@@ -530,6 +537,38 @@ class PalObjects:
         }
 
     @staticmethod
+    def GotExStatusPointList():
+        return PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "GotExStatusPointList",
+                "prop_type": "StructProperty",
+                "values": [
+                    PalObjects.StatusPointStruct(name, 0)
+                    for name in PalObjects.ExStatusNames
+                ],
+                "type_name": "PalGotStatusPoint",
+                "id": PalObjects.EMPTY_UUID,
+            },
+        )
+    
+    @staticmethod
+    def GotStatusPointList():
+        return PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "GotStatusPointList",
+                "prop_type": "StructProperty",
+                "values": [
+                    PalObjects.StatusPointStruct(name, 0)
+                    for name in PalObjects.StatusNames
+                ],
+                "type_name": "PalGotStatusPoint",
+                "id": PalObjects.EMPTY_UUID,
+            },
+        )
+
+    @staticmethod
     def PalSaveParameter(InstanceId, OwnerPlayerUId, ContainerId, SlotIndex, group_id):
         return {
             "key": {
@@ -587,32 +626,8 @@ class PalObjects:
                                     "SlotID": PalObjects.PalCharacterSlotId(
                                         SlotIndex, ContainerId
                                     ),
-                                    "GotStatusPointList": PalObjects.ArrayProperty(
-                                        "StructProperty",
-                                        {
-                                            "prop_name": "GotStatusPointList",
-                                            "prop_type": "StructProperty",
-                                            "values": [
-                                                PalObjects.StatusPointStruct(name, 0)
-                                                for name in PalObjects.StatusNames
-                                            ],
-                                            "type_name": "PalGotStatusPoint",
-                                            "id": PalObjects.EMPTY_UUID,
-                                        },
-                                    ),
-                                    "GotExStatusPointList": PalObjects.ArrayProperty(
-                                        "StructProperty",
-                                        {
-                                            "prop_name": "GotExStatusPointList",
-                                            "prop_type": "StructProperty",
-                                            "values": [
-                                                PalObjects.StatusPointStruct(name, 0)
-                                                for name in PalObjects.ExStatusNames
-                                            ],
-                                            "type_name": "PalGotStatusPoint",
-                                            "id": PalObjects.EMPTY_UUID,
-                                        },
-                                    ),
+                                    "GotStatusPointList": PalObjects.GotStatusPointList(),
+                                    "GotExStatusPointList": PalObjects.GotExStatusPointList(),
                                     "LastNickNameModifierPlayerUid": PalObjects.Guid(
                                         OwnerPlayerUId
                                     ),

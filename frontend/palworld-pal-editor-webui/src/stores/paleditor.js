@@ -924,6 +924,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function loadSave() {
         reset();
 
+        if (I18n.value == "zh-CN") {
+            alert("警告：如果你从任何平台付费购买此工具，请立即退款，并选择支持原作者\n修改器主页包含所有信息。");
+            SHOW_DONATE_FLAG.value = true;
+        }
+
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
