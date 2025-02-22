@@ -656,6 +656,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function updateI18n() {
+        sorryandfuckyou();
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
@@ -921,14 +922,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function loadSave() {
-        reset();
-
+    async function sorryandfuckyou() {
         if (I18n.value == "zh-CN") {
             alert("警告：如果你从任何平台付费购买此工具，请立即退款，并选择支持原作者\n修改器主页包含所有信息。");
             SHOW_DONATE_FLAG.value = true;
         }
+    }
 
+    async function loadSave() {
+        reset();
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
@@ -1091,7 +1093,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             }
             SHOW_PLAYER_EDIT_FLAG.value = true;
             SELECTED_PLAYER_DATA.value = PLAYER_MAP.value.get(playerUId);
-            console.log("!!", SELECTED_PLAYER_DATA.value);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;

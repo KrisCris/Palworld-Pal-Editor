@@ -6,23 +6,23 @@ const palStore = usePalEditorStore()
 
 const palListContainer = ref(null);
 
-// watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
-//     await nextTick();
-//     if (palStore.SHOW_PLAYER_EDIT_FLAG) {
-//         return
-//     }
-//     try {
-//         if (palStore.BASE_PAL_BTN_CLK_FLAG == false) {
-//             return
-//         }
-//         const button = palListContainer.value.querySelector('button:not(:disabled)');
-//         if (button) {
-//             button.click();
-//         }
-//     } catch (error) {
-//         return
-//     }
-// })
+watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+    await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
+    try {
+        if (palStore.BASE_PAL_BTN_CLK_FLAG == false) {
+            return
+        }
+        const button = palListContainer.value.querySelector('button:not(:disabled)');
+        if (button) {
+            button.click();
+        }
+    } catch (error) {
+        return
+    }
+})
 
 // watch(async () => palStore.ADD_PAL_RESELECT_CTR, async () => {
 //     await nextTick();
