@@ -222,7 +222,7 @@ class SaveManager:
                     LOGGER.info(f"Player Object Created: {player_entity}")
                 else:
                     pal_entity = PalEntity(entity)
-                    container_id, slot_idx = pal_entity.SlotID
+                    container_id, slot_idx = pal_entity.SlotId
                     group_id = pal_entity.group_id
                     # is_unref_pal = not self.group_data.get_group(group_id).has_pal(pal_entity.InstanceId)
                     pal_container = self.container_data.get_container(container_id)
@@ -358,7 +358,7 @@ class SaveManager:
         if (slot_idx := pal_container.add_pal(pal_id)) == -1:
             return False
 
-        pal_entity.SlotID = (pal_container.ID, slot_idx)
+        pal_entity.SlotId = (pal_container.ID, slot_idx)
         return True
     
     def delete_pal(self, guid: str | UUID) -> bool:
@@ -434,7 +434,7 @@ class SaveManager:
                 pal_obj = copy.deepcopy(pal_obj)
                 pal_entity = PalEntity(pal_obj)
                 pal_entity.InstanceId = pal_instanceId
-                pal_entity.SlotID = (container_id, slot_idx)
+                pal_entity.SlotId = (container_id, slot_idx)
                 # I don't know why some captured pals have PlayerUId, 
                 # But having non-empty ID will cause the game to hide the duped pal
                 pal_entity.PlayerUId = PalObjects.EMPTY_UUID

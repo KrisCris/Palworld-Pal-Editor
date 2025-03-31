@@ -126,25 +126,25 @@ class PalEntity:
         return PalObjects.get_ArrayProperty(self._pal_param.get("OldOwnerPlayerUIds"))
 
     @property
-    def SlotID(self) -> Optional[tuple[UUID, int]]:
-        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotID"))
+    def SlotId(self) -> Optional[tuple[UUID, int]]:
+        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotId"))
 
-    @SlotID.setter
-    @LOGGER.change_logger("SlotID")
-    def SlotID(self, slot_id: tuple[UUID | str, int]):
-        self._pal_param["SlotID"] = PalObjects.PalCharacterSlotId(
+    @SlotId.setter
+    @LOGGER.change_logger("SlotId")
+    def SlotId(self, slot_id: tuple[UUID | str, int]):
+        self._pal_param["SlotId"] = PalObjects.PalCharacterSlotId(
             slot_id[1], slot_id[0]
         )
 
     @property
     def ContainerId(self) -> Optional[UUID]:
-        if (slot := self.SlotID) is None:
+        if (slot := self.SlotId) is None:
             return
         return slot[0]
 
     @property
     def SlotIndex(self) -> Optional[int]:
-        if (slot := self.SlotID) is None:
+        if (slot := self.SlotId) is None:
             return
         return slot[1]
 

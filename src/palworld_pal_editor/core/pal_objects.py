@@ -623,7 +623,7 @@ class PalObjects:
                                             "id": PalObjects.EMPTY_UUID,
                                         },
                                     ),
-                                    "SlotID": PalObjects.PalCharacterSlotId(
+                                    "SlotId": PalObjects.PalCharacterSlotId(
                                         SlotIndex, ContainerId
                                     ),
                                     "GotStatusPointList": PalObjects.GotStatusPointList(),
