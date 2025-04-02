@@ -508,11 +508,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             IS_LOCKED.value = false;
-        } else if (response.status == 2) {
+        } else {
             IS_LOCKED.value = true;
             reset();
-        } else {
-            alert(`- auth - Error occured: ${response.msg}`);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
