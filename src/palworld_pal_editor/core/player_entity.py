@@ -431,6 +431,8 @@ class PlayerEntity:
                 case 'SheepBall': return 'Sheepball'
                 case 'LazyCatFish': return 'LazyCatfish'
                 case 'Blueplatypus': return 'BluePlatypus'
+                case 'GhostAnglerFish': return 'GhostAnglerfish'
+                case 'GhostAnglerFish_Fire': return 'GhostAnglerfish_Fire'
             return key
         
         for guid in self._new_palbox:
@@ -448,7 +450,7 @@ class PlayerEntity:
 
             tech_key = "SkillUnlock_" + key
             if DataProvider.get_tech_i18n(tech_key) is None:
-                LOGGER.warning(f"Technology {tech_key} not found, please report this to the dev.")
+                LOGGER.warning(f"Technology {tech_key} not found, which may or may not be a bug. If you are unsure please report to the dev.")
             else:
                 self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
 

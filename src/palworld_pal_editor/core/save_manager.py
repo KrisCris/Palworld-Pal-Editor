@@ -500,7 +500,7 @@ class SaveManager:
         gvas_file = copy.deepcopy(self.gvas_file)
         LOGGER.info("Compressing Main GVAS file")
         sav_data = compress_gvas_to_sav(
-            gvas_file.write(MAIN_SKIP_PROPERTIES), self._compression_times
+            gvas_file.write(MAIN_SKIP_PROPERTIES), self._compression_times, True
         )
 
         LOGGER.info(f"Saving to {file_path}")
@@ -539,7 +539,7 @@ class SaveManager:
         LOGGER.info(f"Compressing Player {player_entity} GVAS file")
         player_gvas_file = copy.deepcopy(gvas_file)
         sav_data = compress_gvas_to_sav(
-            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times
+            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times, True
         )
 
         LOGGER.info(f"Saving to {player_path}")
