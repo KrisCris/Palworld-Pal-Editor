@@ -922,8 +922,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function sorryandfuckyou() {
         if (I18n.value == "zh-CN") {
-            alert("警告：如果你从任何平台付费购买此工具，请立即退款，并选择支持原作者\n修改器主页包含所有信息。");
-            SHOW_DONATE_FLAG.value = true;
+            alert("警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。");
+            //SHOW_DONATE_FLAG.value = true;
         }
     }
 
