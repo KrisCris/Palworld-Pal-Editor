@@ -45,8 +45,100 @@
             "EPalWorkSuitability::MonsterFarm": 1
         }
     },
+    "Quest_Farmer03_SheepBall": {
+        "InternalName": "Quest_Farmer03_SheepBall",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_SheepBall_Roll": 1,
+            "EPalWazaID::AirCanon": 7,
+            "EPalWazaID::PowerShot": 15,
+            "EPalWazaID::SelfDestruct": 22,
+            "EPalWazaID::ThunderBall": 30,
+            "EPalWazaID::PowerBall": 40,
+            "EPalWazaID::HyperBeam": 50
+        },
+        "Stats": {
+            "HP": 70,
+            "ATK": 70,
+            "DEF": 70,
+            "MELEE": 70,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "Lamball",
+            "zh-CN": "棉悠悠",
+            "ja": "モコロン",
+            "fr": "Lamball"
+        },
+        "SortingKey": {
+            "paldeck": "1"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 1
+        }
+    },
     "PinkCat": {
         "InternalName": "PinkCat",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_PinkCat_CatPunch": 1,
+            "EPalWazaID::AirCanon": 7,
+            "EPalWazaID::MudShot": 15,
+            "EPalWazaID::PowerShot": 22,
+            "EPalWazaID::WindCutter": 30,
+            "EPalWazaID::SeedMachinegun": 40,
+            "EPalWazaID::HyperBeam": 50
+        },
+        "Stats": {
+            "HP": 70,
+            "ATK": 70,
+            "DEF": 70,
+            "MELEE": 70,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "Cattiva",
+            "zh-CN": "捣蛋猫",
+            "ja": "ツッパニャン",
+            "fr": "Cattiva"
+        },
+        "SortingKey": {
+            "paldeck": "2"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 1,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "Quest_Farmer03_PinkCat": {
+        "InternalName": "Quest_Farmer03_PinkCat",
         "Elements": [
             "Neutral"
         ],
@@ -321,6 +413,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "BluePlatypus_Fire": {
+        "InternalName": "BluePlatypus_Fire",
+        "Elements": [
+            "Water",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::FireSeed": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::Flamethrower": 22,
+            "EPalWazaID::FlameWall": 30,
+            "EPalWazaID::HydroSlicer": 40,
+            "EPalWazaID::Eruption": 50
+        },
+        "Stats": {
+            "HP": 60,
+            "ATK": 85,
+            "DEF": 60,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "Fuack Ignis",
+            "zh-CN": "热浪鸭",
+            "ja": "モモノスケ",
+            "fr": "Fuack Ignis"
+        },
+        "SortingKey": {
+            "paldeck": "6B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 1,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "ElecCat": {
         "InternalName": "ElecCat",
         "Elements": [
@@ -506,6 +645,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "Penguin_Electric": {
+        "InternalName": "Penguin_Electric",
+        "Elements": [
+            "Water",
+            "Electric"
+        ],
+        "Attacks": {
+            "EPalWazaID::ThunderSpear": 1,
+            "EPalWazaID::ThunderBall": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::LineGeyser": 22,
+            "EPalWazaID::WaterBall": 30,
+            "EPalWazaID::TriSpark": 40,
+            "EPalWazaID::LightningStrike": 50
+        },
+        "Stats": {
+            "HP": 70,
+            "ATK": 80,
+            "DEF": 70,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "Pengullet Lux",
+            "zh-CN": "闪丸丸",
+            "ja": "デンタマ",
+            "fr": "Pengullet Lux"
+        },
+        "SortingKey": {
+            "paldeck": "10B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 2,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "CaptainPenguin": {
         "InternalName": "CaptainPenguin",
         "Elements": [
@@ -549,6 +735,53 @@
             "EPalWorkSuitability::Mining": 2,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 2,
+            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "CaptainPenguin_Black": {
+        "InternalName": "CaptainPenguin_Black",
+        "Elements": [
+            "Water",
+            "Electric"
+        ],
+        "Attacks": {
+            "EPalWazaID::ThunderSpear": 1,
+            "EPalWazaID::ThunderFunnel": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::TriSpark": 22,
+            "EPalWazaID::Unique_CaptainPenguin_Black_BodySlide_Electric": 30,
+            "EPalWazaID::RipTide": 40,
+            "EPalWazaID::ThunderStorm": 50
+        },
+        "Stats": {
+            "HP": 100,
+            "ATK": 100,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 525
+        },
+        "I18n": {
+            "en": "Penking Lux",
+            "zh-CN": "闪丸王",
+            "ja": "ペンキッド",
+            "fr": "Penking Lux"
+        },
+        "SortingKey": {
+            "paldeck": "11B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 2,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 2,
+            "EPalWorkSuitability::Handcraft": 2,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 2,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
         }
@@ -722,7 +955,7 @@
             "fr": "Gumoss (Flower)"
         },
         "SortingKey": {
-            "paldeck": "13B"
+            "paldeck": "13"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
@@ -1200,6 +1433,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "NegativeOctopus_Neutral": {
+        "InternalName": "NegativeOctopus_Neutral",
+        "Elements": [
+            "Neutral",
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::AirCanon": 1,
+            "EPalWazaID::PowerShot": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::PowerBall": 22,
+            "EPalWazaID::AcidRain": 30,
+            "EPalWazaID::DiversionLaser": 40,
+            "EPalWazaID::HydroPump": 50
+        },
+        "Stats": {
+            "HP": 70,
+            "ATK": 60,
+            "DEF": 70,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 225
+        },
+        "I18n": {
+            "en": "Killamari Primo",
+            "zh-CN": "蚀魂鱿",
+            "ja": "ユメイカ",
+            "fr": "Killamari Primo"
+        },
+        "SortingKey": {
+            "paldeck": "23B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "Bastet": {
         "InternalName": "Bastet",
         "Elements": [
@@ -1338,6 +1618,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "FlyingManta_Thunder": {
+        "InternalName": "FlyingManta_Thunder",
+        "Elements": [
+            "Water",
+            "Electric"
+        ],
+        "Attacks": {
+            "EPalWazaID::ThunderSpear": 1,
+            "EPalWazaID::ElecWave": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::LineThunder": 22,
+            "EPalWazaID::LineGeyser": 30,
+            "EPalWazaID::DiversionLaser": 40,
+            "EPalWazaID::Thunderbolt": 50
+        },
+        "Stats": {
+            "HP": 80,
+            "ATK": 75,
+            "DEF": 80,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 225
+        },
+        "I18n": {
+            "en": "Celaray Lux",
+            "zh-CN": "雷米儿",
+            "ja": "エレカイト",
+            "fr": "Celaray Lux"
+        },
+        "SortingKey": {
+            "paldeck": "25B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 1,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "Garm": {
         "InternalName": "Garm",
         "Elements": [
@@ -1412,7 +1739,7 @@
             "en": "Rampaging Direhowl",
             "zh-CN": "狂暴化的 猎狼",
             "ja": "狂暴化した ガウルフ",
-            "fr": "Esclave de sa rage Direhowl"
+            "fr": "Esclave de sa Rage Direhowl"
         },
         "SortingKey": {
             "paldeck": "26"
@@ -1874,7 +2201,7 @@
             "en": "Rampaging Mossanda",
             "zh-CN": "狂暴化的 叶胖达",
             "ja": "狂暴化した ササゾー",
-            "fr": "Esclave de sa rage Mossanda"
+            "fr": "Esclave de sa Rage Mossanda"
         },
         "SortingKey": {
             "paldeck": "33"
@@ -2520,7 +2847,7 @@
             "en": "Rampaging Incineram Noct",
             "zh-CN": "狂暴化的 暗魔羊",
             "ja": "狂暴化した アビスゴート",
-            "fr": "Esclave de sa rage Incineram Noct"
+            "fr": "Esclave de sa Rage Incineram Noct"
         },
         "SortingKey": {
             "paldeck": "40B"
@@ -2635,7 +2962,8 @@
     "LazyCatfish": {
         "InternalName": "LazyCatfish",
         "Elements": [
-            "Ground"
+            "Ground",
+            "Water"
         ],
         "Attacks": {
             "EPalWazaID::MudShot": 1,
@@ -2662,6 +2990,53 @@
         },
         "SortingKey": {
             "paldeck": "43"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 2,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 1
+        }
+    },
+    "LazyCatfish_Gold": {
+        "InternalName": "LazyCatfish_Gold",
+        "Elements": [
+            "Ground",
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::WaterGun": 7,
+            "EPalWazaID::StoneShotgun": 15,
+            "EPalWazaID::SandTornado": 22,
+            "EPalWazaID::DiversionLaser": 30,
+            "EPalWazaID::Tremor": 40,
+            "EPalWazaID::SandTwister": 50
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 75,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 300
+        },
+        "I18n": {
+            "en": "Dumud Gild",
+            "zh-CN": "梆梆鲶",
+            "ja": "ゴルドドン",
+            "fr": "Dumud Gild"
+        },
+        "SortingKey": {
+            "paldeck": "43B"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
@@ -2983,7 +3358,7 @@
             "en": "Rampaging Loupmoon Cryst",
             "zh-CN": "狂暴化的 霜镰魔",
             "ja": "狂暴化した ユキカゲ",
-            "fr": "Esclave de sa rage Loupmoon Cryst"
+            "fr": "Esclave de sa Rage Loupmoon Cryst"
         },
         "SortingKey": {
             "paldeck": "46B"
@@ -3216,7 +3591,7 @@
             "en": "Rampaging Gorirat",
             "zh-CN": "狂暴化的 铁拳猿",
             "ja": "狂暴化した ゴリレイジ",
-            "fr": "Esclave de sa rage Gorirat"
+            "fr": "Esclave de sa Rage Gorirat"
         },
         "SortingKey": {
             "paldeck": "49"
@@ -3914,7 +4289,7 @@
             "en": "Rampaging Rayhound",
             "zh-CN": "狂暴化的 霹雳犬",
             "ja": "狂暴化した イヌズマ",
-            "fr": "Esclave de sa rage Rayhound"
+            "fr": "Esclave de sa Rage Rayhound"
         },
         "SortingKey": {
             "paldeck": "60"
@@ -4009,7 +4384,7 @@
             "en": "Rampaging Kitsun",
             "zh-CN": "狂暴化的 苍焰狼",
             "ja": "狂暴化した シラヌイ",
-            "fr": "Esclave de sa rage Kitsun"
+            "fr": "Esclave de sa Rage Kitsun"
         },
         "SortingKey": {
             "paldeck": "61"
@@ -4214,6 +4589,44 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "DarkMutant": {
+        "InternalName": "DarkMutant",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {},
+        "Stats": {
+            "HP": 100,
+            "ATK": 100,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 525
+        },
+        "I18n": {
+            "en": "DarkMutant",
+            "zh-CN": "DarkMutant",
+            "ja": "ダクネシス",
+            "fr": "DarkMutant"
+        },
+        "SortingKey": {
+            "paldeck": "63"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 3,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 3,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "FlowerDinosaur": {
         "InternalName": "FlowerDinosaur",
         "Elements": [
@@ -4291,7 +4704,7 @@
             "en": "Rampaging Dinossom",
             "zh-CN": "狂暴化的 花冠龙",
             "ja": "狂暴化した アロアリュー",
-            "fr": "Esclave de sa rage Dinossom"
+            "fr": "Esclave de sa Rage Dinossom"
         },
         "SortingKey": {
             "paldeck": "64"
@@ -4525,7 +4938,7 @@
             "en": "Rampaging Maraith",
             "zh-CN": "狂暴化的 噬魂兽",
             "ja": "狂暴化した ソルレイス",
-            "fr": "Esclave de sa rage Maraith"
+            "fr": "Esclave de sa Rage Maraith"
         },
         "SortingKey": {
             "paldeck": "66"
@@ -4618,7 +5031,7 @@
             "en": "Rampaging Digtoise",
             "zh-CN": "狂暴化的 碎岩龟",
             "ja": "狂暴化した ドリタス",
-            "fr": "Esclave de sa rage Digtoise"
+            "fr": "Esclave de sa Rage Digtoise"
         },
         "SortingKey": {
             "paldeck": "67"
@@ -4757,7 +5170,7 @@
             "en": "Rampaging Lovander",
             "zh-CN": "狂暴化的 博爱蜥",
             "ja": "狂暴化した ラブマンダー",
-            "fr": "Esclave de sa rage Lovander"
+            "fr": "Esclave de sa Rage Lovander"
         },
         "SortingKey": {
             "paldeck": "69"
@@ -4901,7 +5314,7 @@
             "en": "Rampaging Vanwyrm",
             "zh-CN": "狂暴化的 烽歌龙",
             "ja": "狂暴化した カバネドリ",
-            "fr": "Esclave de sa rage Vanwyrm"
+            "fr": "Esclave de sa Rage Vanwyrm"
         },
         "SortingKey": {
             "paldeck": "71"
@@ -5025,6 +5438,7 @@
             "EPalWazaID::FireSeed": 1,
             "EPalWazaID::DarkPulse": 7,
             "EPalWazaID::DarkCanon": 15,
+            "EPalWazaID::Unique_Ronin_Iai": 18,
             "EPalWazaID::DarkArrow": 22,
             "EPalWazaID::GhostFlame": 30,
             "EPalWazaID::FlameWall": 40,
@@ -5072,6 +5486,7 @@
             "EPalWazaID::PredatorBeam": 1,
             "EPalWazaID::PredatorWave": 7,
             "EPalWazaID::PredatorLockon": 15,
+            "EPalWazaID::Unique_Ronin_Iai": 18,
             "EPalWazaID::DarkArrow": 22,
             "EPalWazaID::GhostFlame": 30,
             "EPalWazaID::FlameWall": 40,
@@ -5089,7 +5504,7 @@
             "en": "Rampaging Bushi Noct",
             "zh-CN": "狂暴化的 鬼刃武士",
             "ja": "狂暴化した ヤミウチ",
-            "fr": "Esclave de sa rage Bushi Noct"
+            "fr": "Esclave de sa Rage Bushi Noct"
         },
         "SortingKey": {
             "paldeck": "72B"
@@ -5233,7 +5648,7 @@
             "en": "Rampaging Ragnahawk",
             "zh-CN": "狂暴化的 燧火鸟",
             "ja": "狂暴化した イグニクス",
-            "fr": "Esclave de sa rage Ragnahawk"
+            "fr": "Esclave de sa Rage Ragnahawk"
         },
         "SortingKey": {
             "paldeck": "74"
@@ -5652,7 +6067,7 @@
             "en": "Rampaging Elphidran",
             "zh-CN": "狂暴化的 精灵龙",
             "ja": "狂暴化した シルフィア",
-            "fr": "Esclave de sa rage Elphidran"
+            "fr": "Esclave de sa Rage Elphidran"
         },
         "SortingKey": {
             "paldeck": "80"
@@ -5858,6 +6273,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "BlueDragon_Ice": {
+        "InternalName": "BlueDragon_Ice",
+        "Elements": [
+            "Ice",
+            "Dragon"
+        ],
+        "Attacks": {
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::DragonWave": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::DragonBreath": 22,
+            "EPalWazaID::FrostBreath": 30,
+            "EPalWazaID::ChargeCanon": 40,
+            "EPalWazaID::DiamondFall": 50
+        },
+        "Stats": {
+            "HP": 115,
+            "ATK": 105,
+            "DEF": 105,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 400
+        },
+        "I18n": {
+            "en": "Azurobe Cryst",
+            "zh-CN": "碧月龙",
+            "ja": "アズルーナ",
+            "fr": "Azurobe Cryst"
+        },
+        "SortingKey": {
+            "paldeck": "82B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 3,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "WhiteTiger": {
         "InternalName": "WhiteTiger",
         "Elements": [
@@ -5980,7 +6442,7 @@
             "en": "Rampaging Cryolinx Terra",
             "zh-CN": "狂暴化的 金棘兽",
             "ja": "狂暴化した グランドラー",
-            "fr": "Esclave de sa rage Cryolinx Terra"
+            "fr": "Esclave de sa Rage Cryolinx Terra"
         },
         "SortingKey": {
             "paldeck": "83B"
@@ -6125,7 +6587,7 @@
             "en": "Rampaging Blazehowl Noct",
             "zh-CN": "狂暴化的 狱阎王",
             "ja": "狂暴化した シンエンオ",
-            "fr": "Esclave de sa rage Blazehowl Noct"
+            "fr": "Esclave de sa Rage Blazehowl Noct"
         },
         "SortingKey": {
             "paldeck": "84B"
@@ -6222,7 +6684,7 @@
             "en": "Rampaging Relaxaurus",
             "zh-CN": "狂暴化的 佩克龙",
             "ja": "狂暴化した ペコドン",
-            "fr": "Esclave de sa rage Relaxaurus"
+            "fr": "Esclave de sa Rage Relaxaurus"
         },
         "SortingKey": {
             "paldeck": "85"
@@ -6550,7 +7012,7 @@
             "en": "Rampaging Reptyro Cryst",
             "zh-CN": "狂暴化的 寒霜兽",
             "ja": "狂暴化した フロスカノン",
-            "fr": "Esclave de sa rage Reptyro Cryst"
+            "fr": "Esclave de sa Rage Reptyro Cryst"
         },
         "SortingKey": {
             "paldeck": "88B"
@@ -6831,7 +7293,7 @@
             "en": "Rampaging Wumpo",
             "zh-CN": "狂暴化的 白绒雪怪",
             "ja": "狂暴化した ヒエティ",
-            "fr": "Esclave de sa rage Wumpo"
+            "fr": "Esclave de sa Rage Wumpo"
         },
         "SortingKey": {
             "paldeck": "91"
@@ -7346,7 +7808,7 @@
             "en": "Incarnation of the Eternal Flame (Ultra) Blazamut Ryu",
             "zh-CN": "永炎現世【极】 殁殃",
             "ja": "永炎の顕現【極】 ボルドラゴ",
-            "fr": "Manifestation des flammes éternelles (Ultra) Blazamut Ryu"
+            "fr": "Manifestation des Flammes Éternelles (Ultra) Blazamut Ryu"
         },
         "SortingKey": {
             "paldeck": "96B"
@@ -7396,7 +7858,7 @@
             "en": "Incarnation of the Eternal Flame Blazamut Ryu",
             "zh-CN": "永炎现世 殁殃",
             "ja": "永炎の顕現 ボルドラゴ",
-            "fr": "Manifestation des flammes éternelles Blazamut Ryu"
+            "fr": "Manifestation des Flammes Éternelles Blazamut Ryu"
         },
         "SortingKey": {
             "paldeck": "96B"
@@ -7583,7 +8045,7 @@
             "en": "Rampaging Helzephyr Lux",
             "zh-CN": "狂暴化的 雷鸣鸟",
             "ja": "狂暴化した ライガルダ",
-            "fr": "Esclave de sa rage Helzephyr Lux"
+            "fr": "Esclave de sa Rage Helzephyr Lux"
         },
         "SortingKey": {
             "paldeck": "97B"
@@ -7918,7 +8380,7 @@
             "en": "Rampaging Jormuntide Ignis",
             "zh-CN": "狂暴化的 腾炎龙",
             "ja": "狂暴化した アグニドラ",
-            "fr": "Esclave de sa rage Jormuntide Ignis"
+            "fr": "Esclave de sa Rage Jormuntide Ignis"
         },
         "SortingKey": {
             "paldeck": "101B"
@@ -8058,6 +8520,56 @@
             "zh-CN": "暴电熊",
             "ja": "エレパンダ",
             "fr": "Grizzbolt"
+        },
+        "SortingKey": {
+            "paldeck": "103"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 3,
+            "EPalWorkSuitability::Handcraft": 2,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 2,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 3,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "GYM_ElecPanda_Otomo": {
+        "InternalName": "GYM_ElecPanda_Otomo",
+        "Elements": [
+            "Electric"
+        ],
+        "Attacks": {
+            "EPalWazaID::SpreadPulse": 1,
+            "EPalWazaID::ElecWave": 3,
+            "EPalWazaID::ThunderBall": 7,
+            "EPalWazaID::ThunderFunnel": 10,
+            "EPalWazaID::LockonLaser": 12,
+            "EPalWazaID::Unique_ElecPanda_ElecScratch": 15,
+            "EPalWazaID::LineThunder": 22,
+            "EPalWazaID::ThreeThunder": 30,
+            "EPalWazaID::LightningStrike": 40,
+            "EPalWazaID::Thunderbolt": 50,
+            "EPalWazaID::Unique_ElecPanda_GatlingAttack": 55
+        },
+        "Stats": {
+            "HP": 110,
+            "ATK": 105,
+            "DEF": 105,
+            "MELEE": 120,
+            "CRAFTSPEED": 100,
+            "FOOD": 475
+        },
+        "I18n": {
+            "en": "Zoe & Grizzbolt",
+            "zh-CN": "佐伊 & 暴电熊",
+            "ja": "ゾーイ＆エレパンダ",
+            "fr": "Zoe & Grizzbolt"
         },
         "SortingKey": {
             "paldeck": "103"
@@ -8518,9 +9030,7 @@
             "EPalWazaID::Inferno": 6,
             "EPalWazaID::FireBall": 7,
             "EPalWazaID::LightningStrike": 8,
-            "EPalWazaID::Thunderbolt": 9,
-            "EPalWazaID::FireSeed": 10,
-            "EPalWazaID::FireBlast": 11
+            "EPalWazaID::FireSeed": 9
         },
         "Stats": {
             "HP": 100,
@@ -8628,7 +9138,7 @@
             "en": "Rampaging Faleris Aqua",
             "zh-CN": "狂暴化的 伊西斯",
             "ja": "狂暴化した イシス",
-            "fr": "Esclave de sa rage Faleris Aqua"
+            "fr": "Esclave de sa Rage Faleris Aqua"
         },
         "SortingKey": {
             "paldeck": "105B"
@@ -8757,9 +9267,8 @@
             "EPalWazaID::DragonBreath": 4,
             "EPalWazaID::LineThunder": 5,
             "EPalWazaID::DragonCanon": 6,
-            "EPalWazaID::Thunderbolt": 7,
-            "EPalWazaID::AcidRain": 8,
-            "EPalWazaID::DragonMeteor": 9
+            "EPalWazaID::AcidRain": 7,
+            "EPalWazaID::DragonMeteor": 8
         },
         "Stats": {
             "HP": 100,
@@ -8951,15 +9460,14 @@
         "Attacks": {
             "EPalWazaID::Unique_BlackGriffon_TackleLaser": 1,
             "EPalWazaID::DarkLegion": 2,
-            "EPalWazaID::GhostFlame": 3,
+            "EPalWazaID::DarkPulse": 3,
             "EPalWazaID::ShadowBall": 4,
             "EPalWazaID::IcicleThrow": 5,
             "EPalWazaID::BlizzardLance": 6,
             "EPalWazaID::DarkLaser": 7,
             "EPalWazaID::FrostBreath": 8,
-            "EPalWazaID::HyperBeam": 9,
-            "EPalWazaID::IceMissile": 10,
-            "EPalWazaID::IceBlade": 11
+            "EPalWazaID::IceMissile": 9,
+            "EPalWazaID::IceBlade": 10
         },
         "Stats": {
             "HP": 120,
@@ -9306,7 +9814,7 @@
             "en": "Eclipsed Siren Bellanoir",
             "zh-CN": "狂乱淑女 贝菈诺娃",
             "ja": "狂乱の淑女 ベラノワール",
-            "fr": "Furie nocturne Bellanoir"
+            "fr": "Furie Nocturne Bellanoir"
         },
         "SortingKey": {
             "paldeck": "112"
@@ -9400,7 +9908,7 @@
             "en": "Twilight Siren (Ultra) Bellanoir Libero",
             "zh-CN": "幽玄魔女【极】 贝菈露洁",
             "ja": "幽玄の魔女【極】 ベラルージュ",
-            "fr": "Sorcière occulte (Ultra) Bellanoir Libero"
+            "fr": "Sorcière Occulte (Ultra) Bellanoir Libero"
         },
         "SortingKey": {
             "paldeck": "112B"
@@ -9448,7 +9956,7 @@
             "en": "Twilight Siren Bellanoir Libero",
             "zh-CN": "幽玄魔女 贝菈露洁",
             "ja": "幽玄の魔女 ベラルージュ",
-            "fr": "Sorcière occulte Bellanoir Libero"
+            "fr": "Sorcière Occulte Bellanoir Libero"
         },
         "SortingKey": {
             "paldeck": "112B"
@@ -9713,6 +10221,53 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "KendoFrog_Dark": {
+        "InternalName": "KendoFrog_Dark",
+        "Elements": [
+            "Water",
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::GravityShot": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::AcidRain": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::HydroSlicer": 40,
+            "EPalWazaID::DarkLaser": 50
+        },
+        "Stats": {
+            "HP": 85,
+            "ATK": 110,
+            "DEF": 90,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "Croajiro Noct",
+            "zh-CN": "极道蛙",
+            "ja": "ドスガエル",
+            "fr": "Croajiro Noct"
+        },
+        "SortingKey": {
+            "paldeck": "114B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "LeafPrincess": {
         "InternalName": "LeafPrincess",
         "Elements": [
@@ -9834,7 +10389,7 @@
             "en": "Rampaging Shroomer",
             "zh-CN": "狂暴化的 菇咚",
             "ja": "狂暴化した キノッポ",
-            "fr": "Esclave de sa rage Shroomer"
+            "fr": "Esclave de sa Rage Shroomer"
         },
         "SortingKey": {
             "paldeck": "116"
@@ -10021,7 +10576,7 @@
             "en": "Rampaging Sootseer",
             "zh-CN": "狂暴化的 恐炬灵",
             "ja": "狂暴化した オドロクロ",
-            "fr": "Esclave de sa rage Sootseer"
+            "fr": "Esclave de sa Rage Sootseer"
         },
         "SortingKey": {
             "paldeck": "118"
@@ -10117,7 +10672,7 @@
             "en": "Rampaging Prixter",
             "zh-CN": "狂暴化的 蛊刺妖",
             "ja": "狂暴化した ブッサソリ",
-            "fr": "Esclave de sa rage Prixter"
+            "fr": "Esclave de sa Rage Prixter"
         },
         "SortingKey": {
             "paldeck": "119"
@@ -10350,7 +10905,7 @@
             "en": "Rampaging Dogen",
             "zh-CN": "狂暴化的 汪宗师",
             "ja": "狂暴化した ワンフー",
-            "fr": "Esclave de sa rage Dogen"
+            "fr": "Esclave de sa Rage Dogen"
         },
         "SortingKey": {
             "paldeck": "122"
@@ -10444,7 +10999,7 @@
             "en": "Rampaging Dazemu",
             "zh-CN": "狂暴化的 战冠雀",
             "ja": "狂暴化した トリステップ",
-            "fr": "Esclave de sa rage Dazemu"
+            "fr": "Esclave de sa Rage Dazemu"
         },
         "SortingKey": {
             "paldeck": "123"
@@ -10906,7 +11461,7 @@
             "en": "Invader from Space (Ultra) Xenolord",
             "zh-CN": "来自宇宙的侵略者【极】 杰诺多兰",
             "ja": "宇宙からの侵略者【極】 ゼノドラン",
-            "fr": "Envahisseur de l'espace (Ultra) Xenolord"
+            "fr": "Envahisseur de l’Espace (Ultra) Xenolord"
         },
         "SortingKey": {
             "paldeck": "127"
@@ -10958,7 +11513,7 @@
             "en": "Invader from Space Xenolord",
             "zh-CN": "来自宇宙的侵略者 杰诺多兰",
             "ja": "宇宙からの侵略者 ゼノドラン",
-            "fr": "Envahisseur de l'espace Xenolord"
+            "fr": "Envahisseur de l’Espace Xenolord"
         },
         "SortingKey": {
             "paldeck": "127"
@@ -11098,7 +11653,7 @@
             "en": "Rampaging Starryon",
             "zh-CN": "狂暴化的 夜冥驹",
             "ja": "狂暴化した ナイトロット",
-            "fr": "Esclave de sa rage Starryon"
+            "fr": "Esclave de sa Rage Starryon"
         },
         "SortingKey": {
             "paldeck": "129"
@@ -11329,7 +11884,7 @@
             "en": "Rampaging Omascul",
             "zh-CN": "狂暴化的 面惧",
             "ja": "狂暴化した オーメン",
-            "fr": "Esclave de sa rage Omascul"
+            "fr": "Esclave de sa Rage Omascul"
         },
         "SortingKey": {
             "paldeck": "133"
@@ -11423,7 +11978,7 @@
             "en": "Rampaging Splatterina",
             "zh-CN": "狂暴化的 幽恋娜",
             "ja": "狂暴化した ヤンデリナ",
-            "fr": "Esclave de sa rage Splatterina"
+            "fr": "Esclave de sa Rage Splatterina"
         },
         "SortingKey": {
             "paldeck": "134"
@@ -11517,7 +12072,7 @@
             "en": "Rampaging Tarantriss",
             "zh-CN": "狂暴化的 桃蛛娘",
             "ja": "狂暴化した モモンチュラ",
-            "fr": "Esclave de sa rage Tarantriss"
+            "fr": "Esclave de sa Rage Tarantriss"
         },
         "SortingKey": {
             "paldeck": "135"
@@ -11905,7 +12460,7 @@
             "en": "Rampaging Gildane",
             "zh-CN": "狂暴化的 金驰兽",
             "ja": "狂暴化した キンガゼル",
-            "fr": "Esclave de sa rage Gildane"
+            "fr": "Esclave de sa Rage Gildane"
         },
         "SortingKey": {
             "paldeck": "140"
@@ -11925,28 +12480,83 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
-    "BrownRabbit": {
-        "InternalName": "BrownRabbit",
+    "LeafMomonga": {
+        "InternalName": "LeafMomonga",
         "Elements": [
-            "Ground"
+            "Grass",
+            "Neutral"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::WindCutter": 1,
+            "EPalWazaID::SeedMachinegun": 7,
+            "EPalWazaID::GrassTornado": 15,
+            "EPalWazaID::AirBlade": 22,
+            "EPalWazaID::Unique_LeafMomonga_SomerSault": 30,
+            "EPalWazaID::ReflectiveShuriken": 40,
+            "EPalWazaID::CrossWind": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 110,
-            "DEF": 100,
+            "HP": 80,
+            "ATK": 75,
+            "DEF": 75,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 225
+            "FOOD": 150
         },
         "I18n": {
-            "en": "BrownRabbit",
-            "zh-CN": "BrownRabbit",
-            "ja": "フラビット",
-            "fr": "BrownRabbit"
+            "en": "Herbil",
+            "zh-CN": "达鼠泥",
+            "ja": "モモンパ",
+            "fr": "Herbil"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "141"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 2,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "IceWitch": {
+        "InternalName": "IceWitch",
+        "Elements": [
+            "Ice"
+        ],
+        "Attacks": {
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::IceBlade": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::FrostBreath": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::IcicleThrow": 40,
+            "EPalWazaID::DiamondFall": 50
+        },
+        "Stats": {
+            "HP": 95,
+            "ATK": 115,
+            "DEF": 105,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 160
+        },
+        "I18n": {
+            "en": "Icelyn",
+            "zh-CN": "冰姬灵",
+            "ja": "チルウィッチ",
+            "fr": "Icelyn"
+        },
+        "SortingKey": {
+            "paldeck": "142"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
@@ -11954,42 +12564,189 @@
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 2,
-            "EPalWorkSuitability::Collection": 2,
+            "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 1,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 2,
+            "EPalWorkSuitability::Cool": 3,
             "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "ElecLion": {
-        "InternalName": "ElecLion",
+    "SnowPeafowl": {
+        "InternalName": "SnowPeafowl",
         "Elements": [
-            "Electric"
+            "Ice"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::IceBlade": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::FrostBreath": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::IciclePierce": 40,
+            "EPalWazaID::DiamondFall": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 110,
-            "DEF": 70,
+            "HP": 110,
+            "ATK": 100,
+            "DEF": 100,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 350
+            "FOOD": 180
         },
         "I18n": {
-            "en": "Boltmane",
-            "zh-CN": "Boltmane",
-            "ja": "リオサージ",
-            "fr": "Boltmane"
+            "en": "Frostplume",
+            "zh-CN": "白真雪雀",
+            "ja": "クジャンナ",
+            "fr": "Frostplume"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "143"
         },
         "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 2,
+            "EPalWorkSuitability::EmitFlame": 0,
             "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 2,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "TropicalOstrich": {
+        "InternalName": "TropicalOstrich",
+        "Elements": [
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::SeedMachinegun": 1,
+            "EPalWazaID::SeedMine": 7,
+            "EPalWazaID::GrassTornado": 15,
+            "EPalWazaID::WindEdge": 22,
+            "EPalWazaID::Unique_TropicalOstrich_DashKick": 30,
+            "EPalWazaID::ReflectiveShuriken": 40,
+            "EPalWazaID::CrossWind": 50
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 110,
+            "DEF": 115,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 340
+        },
+        "I18n": {
+            "en": "Palumba",
+            "zh-CN": "咕咕桑葩",
+            "ja": "ココヤンバ",
+            "fr": "Palumba"
+        },
+        "SortingKey": {
+            "paldeck": "144"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 2,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 2,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 3,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "Plesiosaur": {
+        "InternalName": "Plesiosaur",
+        "Elements": [
+            "Grass",
+            "Ground"
+        ],
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::SeedMine": 7,
+            "EPalWazaID::GrassTornado": 15,
+            "EPalWazaID::RootAttack": 22,
+            "EPalWazaID::Unique_Plesiosaur_LongBreath": 30,
+            "EPalWazaID::SolarBeam": 40,
+            "EPalWazaID::RockBeat": 50
+        },
+        "Stats": {
+            "HP": 130,
+            "ATK": 95,
+            "DEF": 120,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 460
+        },
+        "I18n": {
+            "en": "Braloha",
+            "zh-CN": "梁叶龙",
+            "ja": "トコナッツ",
+            "fr": "Braloha"
+        },
+        "SortingKey": {
+            "paldeck": "145"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 4,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 4,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 2,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "IceCrocodile": {
+        "InternalName": "IceCrocodile",
+        "Elements": [
+            "Ice",
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::WaterGun": 1,
+            "EPalWazaID::IceBlade": 7,
+            "EPalWazaID::FrostBreath": 15,
+            "EPalWazaID::Unique_IceCrocodile_SpitAttack": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::DiversionLaser": 40,
+            "EPalWazaID::DiamondFall": 50
+        },
+        "Stats": {
+            "HP": 75,
+            "ATK": 80,
+            "DEF": 85,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 310
+        },
+        "I18n": {
+            "en": "Munchill",
+            "zh-CN": "肚肚鳄",
+            "ja": "コチワニ",
+            "fr": "Munchill"
+        },
+        "SortingKey": {
+            "paldeck": "146"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 1,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
@@ -11997,63 +12754,92 @@
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::Cool": 2,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "PinkKangaroo": {
-        "InternalName": "PinkKangaroo",
+    "IceSeal": {
+        "InternalName": "IceSeal",
         "Elements": [
-            "Neutral"
+            "Ice",
+            "Water"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::WaterGun": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::LineGeyser": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::IcicleLine": 40,
+            "EPalWazaID::RipTide": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 95,
+            "ATK": 105,
+            "DEF": 105,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 350
+            "FOOD": 160
         },
         "I18n": {
-            "en": "PinkKangaroo",
-            "zh-CN": "PinkKangaroo",
-            "ja": "トゥインガル",
-            "fr": "PinkKangaroo"
+            "en": "Polapup",
+            "zh-CN": "香草豹冰",
+            "ja": "バニザラシ",
+            "fr": "Polapup"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "147"
         },
-        "Invalid": true
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 2,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 3,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
     },
     "TentacleTurtle": {
         "InternalName": "TentacleTurtle",
         "Elements": [
             "Water"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::AquaJet": 1,
+            "EPalWazaID::BubbleShot": 7,
+            "EPalWazaID::Unique_TentacleTurtle_HydroSpin": 15,
+            "EPalWazaID::WaterBall": 22,
+            "EPalWazaID::DiversionLaser": 30,
+            "EPalWazaID::HydroSlicer": 40,
+            "EPalWazaID::HydroPump": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 75,
+            "ATK": 75,
+            "DEF": 115,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 300
+            "FOOD": 275
         },
         "I18n": {
-            "en": "TentacleTurtle",
-            "zh-CN": "TentacleTurtle",
-            "ja": "ターテクル",
-            "fr": "TentacleTurtle"
+            "en": "Turtacle",
+            "zh-CN": "盔盔仔",
+            "ja": "ヘルメッコ",
+            "fr": "Turtacle"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "148"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Watering": 2,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
@@ -12062,127 +12848,231 @@
             "EPalWorkSuitability::Mining": 1,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "BeardedDragon": {
-        "InternalName": "BeardedDragon",
+    "TentacleTurtle_Ground": {
+        "InternalName": "TentacleTurtle_Ground",
         "Elements": [
-            "Dragon"
+            "Water",
+            "Ground"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::MudShot": 1,
+            "EPalWazaID::BubbleShot": 7,
+            "EPalWazaID::Unique_TentacleTurtle_HydroSpin": 15,
+            "EPalWazaID::WaterBall": 22,
+            "EPalWazaID::Tremor": 30,
+            "EPalWazaID::RockLance": 40,
+            "EPalWazaID::RockBeat": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 85,
+            "ATK": 85,
+            "DEF": 125,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 600
+            "FOOD": 275
         },
         "I18n": {
-            "en": "BeardedDragon",
-            "zh-CN": "BeardedDragon",
-            "ja": "エンシュロン",
-            "fr": "BeardedDragon"
+            "en": "Turtacle Terra",
+            "zh-CN": "金盔仔",
+            "ja": "ゴルメッコ",
+            "fr": "Turtacle Terra"
         },
         "SortingKey": {
-            "paldeck": ""
-        },
-        "Invalid": true
-    },
-    "WaterLizard": {
-        "InternalName": "WaterLizard",
-        "Elements": [
-            "Fire"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 90,
-            "ATK": 90,
-            "DEF": 90,
-            "MELEE": 120,
-            "CRAFTSPEED": 100,
-            "FOOD": 350
-        },
-        "I18n": {
-            "en": "WaterLizard",
-            "zh-CN": "WaterLizard",
-            "ja": "オキシリュー",
-            "fr": "WaterLizard"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Invalid": true
-    },
-    "GrassDragon": {
-        "InternalName": "GrassDragon",
-        "Elements": [
-            "Grass"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 130,
-            "ATK": 120,
-            "DEF": 90,
-            "MELEE": 80,
-            "CRAFTSPEED": 100,
-            "FOOD": 475
-        },
-        "I18n": {
-            "en": "GrassDragon",
-            "zh-CN": "GrassDragon",
-            "ja": "ジャングロン",
-            "fr": "GrassDragon"
-        },
-        "SortingKey": {
-            "paldeck": ""
+            "paldeck": "148B"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Watering": 2,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::ProductMedicine": 1,
+            "EPalWorkSuitability::Mining": 1,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "BlackFurDragon": {
-        "InternalName": "BlackFurDragon",
+    "JellyfishGhost": {
+        "InternalName": "JellyfishGhost",
         "Elements": [
-            "Dark",
-            "Dragon"
+            "Water",
+            "Dark"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::PoisonShot": 1,
+            "EPalWazaID::DarkPulse": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::GhostFlame": 22,
+            "EPalWazaID::BubbleShower": 30,
+            "EPalWazaID::HydroSlicer": 40,
+            "EPalWazaID::DarkLegion": 50
+        },
         "Stats": {
-            "HP": 130,
-            "ATK": 130,
-            "DEF": 110,
+            "HP": 90,
+            "ATK": 75,
+            "DEF": 75,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 525
+            "FOOD": 145
         },
         "I18n": {
-            "en": "Dragostrophe",
-            "zh-CN": "Dragostrophe",
-            "ja": "シャドーラ",
-            "fr": "Dragostrophe"
+            "en": "Jellroy",
+            "zh-CN": "海月灵",
+            "ja": "ユララン",
+            "fr": "Jellroy"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "149"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Watering": 2,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 1,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "JellyfishFairy": {
+        "InternalName": "JellyfishFairy",
+        "Elements": [
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::AquaJet": 1,
+            "EPalWazaID::WaterGun": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::WaterBall": 22,
+            "EPalWazaID::WallSplash": 30,
+            "EPalWazaID::HydroSlicer": 40,
+            "EPalWazaID::RipTide": 50
+        },
+        "Stats": {
+            "HP": 75,
+            "ATK": 90,
+            "DEF": 70,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 145
+        },
+        "I18n": {
+            "en": "Jelliette",
+            "zh-CN": "海月仙",
+            "ja": "クララン",
+            "fr": "Jelliette"
+        },
+        "SortingKey": {
+            "paldeck": "150"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 2,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "OctopusGirl": {
+        "InternalName": "OctopusGirl",
+        "Elements": [
+            "Water",
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::AquaJet": 1,
+            "EPalWazaID::DarkWave": 7,
+            "EPalWazaID::Unique_OctopursGirl_InkJet": 15,
+            "EPalWazaID::LineGeyser": 22,
+            "EPalWazaID::ShadowBall": 30,
+            "EPalWazaID::DiversionLaser": 40,
+            "EPalWazaID::HydroSlicer": 50
+        },
+        "Stats": {
+            "HP": 70,
+            "ATK": 85,
+            "DEF": 70,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 280
+        },
+        "I18n": {
+            "en": "Gloopie",
+            "zh-CN": "墨沫姬",
+            "ja": "ヒメンダコ",
+            "fr": "Gloopie"
+        },
+        "SortingKey": {
+            "paldeck": "151"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 2,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 2,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "StuffedShark": {
+        "InternalName": "StuffedShark",
+        "Elements": [
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::WaterGun": 1,
+            "EPalWazaID::BubbleShot": 7,
+            "EPalWazaID::PowerBall": 15,
+            "EPalWazaID::DiversionLaser": 22,
+            "EPalWazaID::Unique_StuffedShark_HiddenWeapon": 30,
+            "EPalWazaID::WallSplash": 40,
+            "EPalWazaID::HydroPump": 50
+        },
+        "Stats": {
+            "HP": 75,
+            "ATK": 85,
+            "DEF": 80,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 210
+        },
+        "I18n": {
+            "en": "Finsider",
+            "zh-CN": "布偶鲨",
+            "ja": "ガブルミ",
+            "fr": "Finsider"
+        },
+        "SortingKey": {
+            "paldeck": "152"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 2,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
@@ -12191,73 +13081,229 @@
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 3,
+            "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "DarkMutant": {
-        "InternalName": "DarkMutant",
+    "StuffedShark_Fire": {
+        "InternalName": "StuffedShark_Fire",
         "Elements": [
-            "Dark"
+            "Water",
+            "Fire"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::FireSeed": 7,
+            "EPalWazaID::Flamethrower": 15,
+            "EPalWazaID::LineGeyser": 22,
+            "EPalWazaID::Unique_StuffedShark_HiddenWeapon": 30,
+            "EPalWazaID::FlameFunnel": 40,
+            "EPalWazaID::FireBall": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 75,
+            "ATK": 90,
+            "DEF": 80,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 525
+            "FOOD": 210
         },
         "I18n": {
-            "en": "DarkMutant",
-            "zh-CN": "DarkMutant",
-            "ja": "ダクネシス",
-            "fr": "DarkMutant"
+            "en": "Finsider Ignis",
+            "zh-CN": "粉粉布偶鲨",
+            "ja": "ヒグルミ",
+            "fr": "Finsider Ignis"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "152B"
         },
         "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::EmitFlame": 2,
+            "EPalWorkSuitability::Watering": 2,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 3,
+            "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::ProductMedicine": 3,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "GhostAnglerfish": {
+        "InternalName": "GhostAnglerfish",
+        "Elements": [
+            "Dark",
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::WaterGun": 1,
+            "EPalWazaID::DarkBall": 7,
+            "EPalWazaID::DarkArrow": 15,
+            "EPalWazaID::GhostFlame": 22,
+            "EPalWazaID::Unique_GhostAnglerfish_SweepBait": 30,
+            "EPalWazaID::DarkLaser": 40,
+            "EPalWazaID::RipTide": 50
+        },
+        "Stats": {
+            "HP": 90,
+            "ATK": 125,
+            "DEF": 105,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 270
+        },
+        "I18n": {
+            "en": "Ghangler",
+            "zh-CN": "冥灯鱼",
+            "ja": "アンドーン",
+            "fr": "Ghangler"
+        },
+        "SortingKey": {
+            "paldeck": "153"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 4,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 2,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "VolcanoDragon": {
-        "InternalName": "VolcanoDragon",
+    "GhostAnglerfish_Fire": {
+        "InternalName": "GhostAnglerfish_Fire",
         "Elements": [
             "Fire",
-            "Ground"
+            "Water"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::FlareArrow": 7,
+            "EPalWazaID::BubbleShot": 15,
+            "EPalWazaID::FlameWall": 22,
+            "EPalWazaID::Unique_GhostAnglerfish_Fire_SweepBait_Fire": 30,
+            "EPalWazaID::FireBall": 40,
+            "EPalWazaID::RipTide": 50
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 90,
+            "ATK": 130,
+            "DEF": 105,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 150
+            "FOOD": 270
         },
         "I18n": {
-            "en": "VolcanoDragon",
-            "zh-CN": "VolcanoDragon",
-            "ja": "ラヴェアース",
-            "fr": "VolcanoDragon"
+            "en": "Ghangler Ignis",
+            "zh-CN": "炙灯鱼",
+            "ja": "メラドーン",
+            "fr": "Ghangler Ignis"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "153B"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 3,
+            "EPalWorkSuitability::Watering": 4,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 2,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "IceNarwhal": {
+        "InternalName": "IceNarwhal",
+        "Elements": [
+            "Ice",
+            "Water"
+        ],
+        "Attacks": {
+            "EPalWazaID::IceMissile": 1,
+            "EPalWazaID::IceBlade": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::LineGeyser": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::Unique_IceNarwhal_JumpingHorn": 40,
+            "EPalWazaID::SeaGush": 50
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 115,
+            "DEF": 110,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 420
+        },
+        "I18n": {
+            "en": "Whalaska",
+            "zh-CN": "凉晶鲸",
+            "ja": "コゴエール",
+            "fr": "Whalaska"
+        },
+        "SortingKey": {
+            "paldeck": "154"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 3,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 4,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "IceNarwhal_Fire": {
+        "InternalName": "IceNarwhal_Fire",
+        "Elements": [
+            "Ice",
+            "Fire"
+        ],
+        "Attacks": {
+            "EPalWazaID::FireBlast": 1,
+            "EPalWazaID::FlareArrow": 7,
+            "EPalWazaID::BlizzardLance": 15,
+            "EPalWazaID::FlameWall": 22,
+            "EPalWazaID::IceWall": 30,
+            "EPalWazaID::Eruption": 40,
+            "EPalWazaID::Unique_IceNarwhal_JumpingHorn": 50
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 120,
+            "DEF": 110,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 420
+        },
+        "I18n": {
+            "en": "Whalaska Ignis",
+            "zh-CN": "桃晶鲸",
+            "ja": "モモエール",
+            "fr": "Whalaska Ignis"
+        },
+        "SortingKey": {
+            "paldeck": "154B"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 3,
@@ -12267,40 +13313,48 @@
             "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 3,
+            "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Cool": 4,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "KingWhale": {
-        "InternalName": "KingWhale",
+    "PoseidonOrca": {
+        "InternalName": "PoseidonOrca",
         "Elements": [
             "Water"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::WaterGun": 1,
+            "EPalWazaID::BubbleShot": 7,
+            "EPalWazaID::LineGeyser": 15,
+            "EPalWazaID::DiversionLaser": 22,
+            "EPalWazaID::WallSplash": 30,
+            "EPalWazaID::RipTide": 40,
+            "EPalWazaID::SeaGush": 50,
+            "EPalWazaID::Unique_PoseidonOrca_TorrentLaser": 60
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 105,
+            "ATK": 145,
+            "DEF": 125,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 150
+            "FOOD": 480
         },
         "I18n": {
-            "en": "KingWhale",
-            "zh-CN": "KingWhale",
-            "ja": "KingWhale",
-            "fr": "KingWhale"
+            "en": "Neptilius",
+            "zh-CN": "海皇鲸",
+            "ja": "ネプティオス",
+            "fr": "Neptilius"
         },
         "SortingKey": {
-            "paldeck": ""
+            "paldeck": "155"
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Watering": 4,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
             "EPalWorkSuitability::Handcraft": 0,
@@ -12311,28 +13365,29 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "HoodGhost": {
-        "InternalName": "HoodGhost",
+    "YakushimaMonster001": {
+        "InternalName": "YakushimaMonster001",
         "Elements": [
-            "Dark"
+            "Grass"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Leaf": 1
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 65,
+            "ATK": 70,
+            "DEF": 80,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 150
+            "FOOD": 180
         },
         "I18n": {
-            "en": "HoodGhost",
-            "zh-CN": "HoodGhost",
-            "ja": "HoodGhost",
-            "fr": "HoodGhost"
+            "en": "Green Slime",
+            "zh-CN": "绿史莱姆",
+            "ja": "グリーンスライム",
+            "fr": "Gelée verte"
         },
         "SortingKey": {
             "paldeck": ""
@@ -12342,7 +13397,7 @@
             "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
@@ -12350,235 +13405,39 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "Sekhmet": {
-        "InternalName": "Sekhmet",
-        "Elements": [
-            "Ground"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
-            "MELEE": 100,
-            "CRAFTSPEED": 100,
-            "FOOD": 150
-        },
-        "I18n": {
-            "en": "Sekhmet",
-            "zh-CN": "Sekhmet",
-            "ja": "Sekhmet",
-            "fr": "Sekhmet"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 1,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 1,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 1,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
-    },
-    "ElecLizard": {
-        "InternalName": "ElecLizard",
-        "Elements": [
-            "Electric"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
-            "MELEE": 100,
-            "CRAFTSPEED": 100,
-            "FOOD": 150
-        },
-        "I18n": {
-            "en": "ElecLizard",
-            "zh-CN": "ElecLizard",
-            "ja": "ElecLizard",
-            "fr": "ElecLizard"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 1,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
-    },
-    "RockBeast": {
-        "InternalName": "RockBeast",
-        "Elements": [
-            "Ground"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
-            "MELEE": 100,
-            "CRAFTSPEED": 100,
-            "FOOD": 150
-        },
-        "I18n": {
-            "en": "RockBeast",
-            "zh-CN": "RockBeast",
-            "ja": "RockBeast",
-            "fr": "RockBeast"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 0,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 1,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
-    },
-    "OctopusGirl": {
-        "InternalName": "OctopusGirl",
-        "Elements": [
-            "Water",
-            "Dark"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
-            "MELEE": 100,
-            "CRAFTSPEED": 100,
-            "FOOD": 150
-        },
-        "I18n": {
-            "en": "OctopusGirl",
-            "zh-CN": "OctopusGirl",
-            "ja": "OctopusGirl",
-            "fr": "OctopusGirl"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 1,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 1,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 0,
-            "EPalWorkSuitability::Transport": 1,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
-    },
-    "IceNarwhal": {
-        "InternalName": "IceNarwhal",
-        "Elements": [
-            "Ice",
-            "Water"
-        ],
-        "Attacks": {},
-        "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
-            "MELEE": 100,
-            "CRAFTSPEED": 100,
-            "FOOD": 150
-        },
-        "I18n": {
-            "en": "IceNarwhal",
-            "zh-CN": "IceNarwhal",
-            "ja": "IceNarwhal",
-            "fr": "IceNarwhal"
-        },
-        "SortingKey": {
-            "paldeck": ""
-        },
-        "Suitabilities": {
-            "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 1,
-            "EPalWorkSuitability::Seeding": 0,
-            "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 0,
-            "EPalWorkSuitability::Collection": 0,
-            "EPalWorkSuitability::Deforest": 0,
-            "EPalWorkSuitability::Mining": 0,
-            "EPalWorkSuitability::ProductMedicine": 0,
-            "EPalWorkSuitability::Cool": 1,
-            "EPalWorkSuitability::Transport": 0,
-            "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
-    },
-    "JellyfishFairy": {
-        "InternalName": "JellyfishFairy",
+    "YakushimaMonster001_Blue": {
+        "InternalName": "YakushimaMonster001_Blue",
         "Elements": [
             "Water"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Water": 1
+        },
         "Stats": {
-            "HP": 100,
-            "ATK": 100,
-            "DEF": 100,
+            "HP": 70,
+            "ATK": 70,
+            "DEF": 80,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 150
+            "FOOD": 210
         },
         "I18n": {
-            "en": "JellyfishFairy",
-            "zh-CN": "JellyfishFairy",
-            "ja": "JellyfishFairy",
-            "fr": "JellyfishFairy"
+            "en": "Blue Slime",
+            "zh-CN": "蓝史莱姆",
+            "ja": "ブルースライム",
+            "fr": "Gelée bleue"
         },
         "SortingKey": {
             "paldeck": ""
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 0,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
@@ -12586,47 +13445,367 @@
             "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     },
-    "KendoFrog_Dark": {
-        "InternalName": "KendoFrog_Dark",
+    "YakushimaMonster001_Red": {
+        "InternalName": "YakushimaMonster001_Red",
         "Elements": [
-            "Water",
-            "Dark"
+            "Fire"
         ],
-        "Attacks": {},
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Fire": 1
+        },
         "Stats": {
-            "HP": 80,
-            "ATK": 100,
+            "HP": 70,
+            "ATK": 75,
             "DEF": 85,
             "MELEE": 100,
             "CRAFTSPEED": 100,
-            "FOOD": 150
+            "FOOD": 240
         },
         "I18n": {
-            "en": "KendoFrog_Dark",
-            "zh-CN": "KendoFrog_Dark",
-            "ja": "ブシガエル亜種",
-            "fr": "KendoFrog_Dark"
+            "en": "Red Slime",
+            "zh-CN": "红史莱姆",
+            "ja": "レッドスライム",
+            "fr": "Gelée rouge"
         },
         "SortingKey": {
             "paldeck": ""
         },
         "Suitabilities": {
             "EPalWorkSuitability::EmitFlame": 0,
-            "EPalWorkSuitability::Watering": 1,
+            "EPalWorkSuitability::Watering": 0,
             "EPalWorkSuitability::Seeding": 0,
             "EPalWorkSuitability::GenerateElectricity": 0,
-            "EPalWorkSuitability::Handcraft": 1,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster001_Purple": {
+        "InternalName": "YakushimaMonster001_Purple",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Dark": 1
+        },
+        "Stats": {
+            "HP": 75,
+            "ATK": 70,
+            "DEF": 80,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 270
+        },
+        "I18n": {
+            "en": "Purple Slime",
+            "zh-CN": "紫史莱姆",
+            "ja": "パープルスライム",
+            "fr": "Gelée violette"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster001_Pink": {
+        "InternalName": "YakushimaMonster001_Pink",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Normal": 1
+        },
+        "Stats": {
+            "HP": 80,
+            "ATK": 75,
+            "DEF": 85,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 300
+        },
+        "I18n": {
+            "en": "Illuminant Slime",
+            "zh-CN": "夜明史莱姆",
+            "ja": "かがやくスライム",
+            "fr": "Gelée lumineuse"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster001_Rainbow": {
+        "InternalName": "YakushimaMonster001_Rainbow",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Rainbow": 1
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 95,
+            "DEF": 105,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 330
+        },
+        "I18n": {
+            "en": "Rainbow Slime",
+            "zh-CN": "彩虹史莱姆",
+            "ja": "レインボースライム",
+            "fr": "Gelée arc-en-ciel"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 1,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster002": {
+        "InternalName": "YakushimaMonster002",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster002_SwordCharge": 1
+        },
+        "Stats": {
+            "HP": 95,
+            "ATK": 105,
+            "DEF": 90,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 180
+        },
+        "I18n": {
+            "en": "Enchanted Sword",
+            "zh-CN": "附魔剑",
+            "ja": "まほうのつるぎ",
+            "fr": "Épée envoûtée"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 1,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster003": {
+        "InternalName": "YakushimaMonster003",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster003_BatCharge": 1
+        },
+        "Stats": {
+            "HP": 65,
+            "ATK": 75,
+            "DEF": 80,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 220
+        },
+        "I18n": {
+            "en": "Cave Bat",
+            "zh-CN": "洞穴蝙蝠",
+            "ja": "どうくつコウモリ",
+            "fr": "Chauve-souris des grottes"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
             "EPalWorkSuitability::Collection": 1,
             "EPalWorkSuitability::Deforest": 0,
             "EPalWorkSuitability::Mining": 0,
             "EPalWorkSuitability::ProductMedicine": 0,
             "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaMonster003_Purple": {
+        "InternalName": "YakushimaMonster003_Purple",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaMonster003_BatCharge": 1
+        },
+        "Stats": {
+            "HP": 80,
+            "ATK": 80,
+            "DEF": 95,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 220
+        },
+        "I18n": {
+            "en": "Illuminant Bat",
+            "zh-CN": "夜明蝙蝠",
+            "ja": "かがやくコウモリ",
+            "fr": "Chauve-souris lumineuse"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaBoss001": {
+        "InternalName": "YakushimaBoss001",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_Yakushima_EyeTossin": 1,
+            "EPalWazaID::Unique_Yakushima_SummonServant": 2
+        },
+        "Stats": {
+            "HP": 110,
+            "ATK": 105,
+            "DEF": 95,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 240
+        },
+        "I18n": {
+            "en": "Eye of Cthulhu",
+            "zh-CN": "克苏鲁之眼",
+            "ja": "クトゥルフのめだま",
+            "fr": "Œil de Cthulhu"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 4,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "YakushimaBoss001_Small": {
+        "InternalName": "YakushimaBoss001_Small",
+        "Elements": [
+            "Dark"
+        ],
+        "Attacks": {
+            "EPalWazaID::Unique_YakushimaBoss001_Small_DemonEyeCharge": 1
+        },
+        "Stats": {
+            "HP": 105,
+            "ATK": 110,
+            "DEF": 95,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 220
+        },
+        "I18n": {
+            "en": "Demon Eye",
+            "zh-CN": "恶魔眼",
+            "ja": "あくまのめだま",
+            "fr": "Œil de démon"
+        },
+        "SortingKey": {
+            "paldeck": ""
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 0,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
             "EPalWorkSuitability::Transport": 1,
             "EPalWorkSuitability::MonsterFarm": 0
-        },
-        "Invalid": true
+        }
     }
 }
