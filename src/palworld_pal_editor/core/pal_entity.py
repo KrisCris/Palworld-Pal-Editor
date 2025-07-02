@@ -337,6 +337,10 @@ class PalEntity:
                 key = "Police_Handgun"
             case "Blueplatypus":
                 key = "BluePlatypus"
+            case "GhostAnglerFish":
+                key = "GhostAnglerfish"
+            case "GhostAnglerFish_Fire":
+                key = "GhostAnglerfish_Fire"
         return key
 
     @property
@@ -480,19 +484,45 @@ class PalEntity:
             self._IsBOSS = False
 
     @property
-    def NickName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+    def FilteredNickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
+    
+    @FilteredNickName.setter
+    @LOGGER.change_logger("FilteredNickName")
+    @type_guard
+    def FilteredNickName(self, value: str) -> None:
+        if self.FilteredNickName is None:
+            self._pal_param["FilteredNickName"] = PalObjects.StrProperty(value)
+        else:
+            self._pal_param["FilteredNickName"]["value"] = value
 
+        if not self.FilteredNickName:
+            self._pal_param.pop("FilteredNickName", None)
+
+    @property
+    def NickName(self) -> Optional[str]:
+        return self._NickName or self.FilteredNickName
+    
     @NickName.setter
-    @LOGGER.change_logger("NickName")
     @type_guard
     def NickName(self, value: str) -> None:
-        if self.NickName is None:
+        self._NickName = value
+        self.FilteredNickName = value
+
+    @property
+    def _NickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+
+    @_NickName.setter
+    @LOGGER.change_logger("NickName")
+    @type_guard
+    def _NickName(self, value: str) -> None:
+        if self._NickName is None:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
             self._pal_param["NickName"]["value"] = value
 
-        if not self.NickName:
+        if not self._NickName:
             self._pal_param.pop("NickName", None)
 
     @property
