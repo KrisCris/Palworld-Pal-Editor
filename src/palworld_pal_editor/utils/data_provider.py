@@ -129,6 +129,11 @@ class DataProvider:
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
+    
+    @none_guard(data_source=PAL_DATA)
+    @staticmethod
+    def has_human_icon(key: str) -> bool:
+        return PAL_DATA[key].get("HasIcon", False)
 
     @staticmethod
     def is_pal_invalid(key: str) -> bool:

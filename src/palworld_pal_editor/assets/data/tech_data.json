@@ -137,6 +137,29 @@
         },
         "BossTechnology": false
     },
+    "GlobalPalStorage": {
+        "InternalName": "GlobalPalStorage",
+        "Level": 1,
+        "I18n": {
+            "en": {
+                "Name": "Global Palbox",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "跨界帕鲁终端",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "グローバルパルボックス",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Boîte à Pals globale",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "PALBOX": {
         "InternalName": "PALBOX",
         "Level": 2,
@@ -689,6 +712,29 @@
         },
         "BossTechnology": false
     },
+    "FurnitureSet_3": {
+        "InternalName": "FurnitureSet_3",
+        "Level": 5,
+        "I18n": {
+            "en": {
+                "Name": "Wooden Tavern Furniture Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "木制酒吧家具套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "木の酒場家具セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de meubles pour bar en bois",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "Product_WorkBench_SkillUnlock": {
         "InternalName": "Product_WorkBench_SkillUnlock",
         "Level": 6,
@@ -804,24 +850,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_3": {
-        "InternalName": "FurnitureSet_3",
+    "FurnitureSet_2": {
+        "InternalName": "FurnitureSet_2",
         "Level": 6,
         "I18n": {
             "en": {
-                "Name": "Wooden Tavern Furniture Set",
+                "Name": "Wooden Tavern Cabinet Furniture Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "木制酒吧家具套装",
+                "Name": "木制酒吧收纳家具套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "木の酒場家具セット",
+                "Name": "木の酒場収納家具セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de meubles pour bar en bois",
+                "Name": "Ensemble de meubles de rangement pour bar en bois",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FurnitureSet_9": {
+        "InternalName": "FurnitureSet_9",
+        "Level": 6,
+        "I18n": {
+            "en": {
+                "Name": "Houseplant Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "观叶植物套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "観葉植物セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de plantes décoratives",
                 "Type": "Structures"
             }
         },
@@ -965,6 +1034,29 @@
         },
         "BossTechnology": false
     },
+    "FurnitureSet_4": {
+        "InternalName": "FurnitureSet_4",
+        "Level": 7,
+        "I18n": {
+            "en": {
+                "Name": "Wall-Mounted Houseplant Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "挂墙观叶植物套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "壁掛け観葉植物セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de plantes décoratives murales",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "Special_HatchingPalEgg": {
         "InternalName": "Special_HatchingPalEgg",
         "Level": 7,
@@ -1001,7 +1093,7 @@
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "破砕機",
+                "Name": "粉砕機",
                 "Type": "建築物"
             },
             "fr": {
@@ -1103,24 +1195,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_2": {
-        "InternalName": "FurnitureSet_2",
+    "FurnitureSet_21": {
+        "InternalName": "FurnitureSet_21",
         "Level": 8,
         "I18n": {
             "en": {
-                "Name": "Wooden Tavern Cabinet Furniture Set",
+                "Name": "Antique Storage Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "木制酒吧收纳家具套装",
+                "Name": "古典收纳套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "木の酒場収納家具セット",
+                "Name": "アンティークな収納セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de meubles de rangement pour bar en bois",
+                "Name": "Ensemble de rangements anciens",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FurnitureSet_28": {
+        "InternalName": "FurnitureSet_28",
+        "Level": 8,
+        "I18n": {
+            "en": {
+                "Name": "Fireplace Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "壁炉套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "暖炉セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de cheminées",
                 "Type": "Structures"
             }
         },
@@ -1260,6 +1375,29 @@
             "fr": {
                 "Name": "Gants pour Killamari",
                 "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FurnitureSet_17": {
+        "InternalName": "FurnitureSet_17",
+        "Level": 9,
+        "I18n": {
+            "en": {
+                "Name": "Carpet Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "地毯套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "カーペットセット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de tapis",
+                "Type": "Structures"
             }
         },
         "BossTechnology": false
@@ -1724,24 +1862,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_9": {
-        "InternalName": "FurnitureSet_9",
+    "SkillUnlock_NaughtyCat": {
+        "InternalName": "SkillUnlock_NaughtyCat",
         "Level": 12,
         "I18n": {
             "en": {
-                "Name": "Houseplant Set",
+                "Name": "Grintale Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "笑魇猫的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ニャンギマリのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Grintale",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FurnitureSet_19": {
+        "InternalName": "FurnitureSet_19",
+        "Level": 12,
+        "I18n": {
+            "en": {
+                "Name": "Antique Chair Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "观叶植物套装",
+                "Name": "古典椅子套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "観葉植物セット",
+                "Name": "アンティークな椅子セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de plantes décoratives",
+                "Name": "Ensemble de chaises anciennes",
                 "Type": "Structures"
             }
         },
@@ -1885,29 +2046,6 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_NaughtyCat": {
-        "InternalName": "SkillUnlock_NaughtyCat",
-        "Level": 13,
-        "I18n": {
-            "en": {
-                "Name": "Grintale Saddle",
-                "Type": "Items"
-            },
-            "zh-CN": {
-                "Name": "笑魇猫的鞍具",
-                "Type": "道具"
-            },
-            "ja": {
-                "Name": "ニャンギマリのサドル",
-                "Type": "アイテム"
-            },
-            "fr": {
-                "Name": "Selle pour Grintale",
-                "Type": "Objets"
-            }
-        },
-        "BossTechnology": false
-    },
     "SkillUnlock_WeaselDragon": {
         "InternalName": "SkillUnlock_WeaselDragon",
         "Level": 13,
@@ -1931,6 +2069,29 @@
         },
         "BossTechnology": false
     },
+    "FurnitureSet_22": {
+        "InternalName": "FurnitureSet_22",
+        "Level": 13,
+        "I18n": {
+            "en": {
+                "Name": "Antique Storage Cabinet Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "古典收纳柜套装",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "アンティークな収納キャビネットセット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble d'armoires anciennes",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "Special_PalSphere_Grade_02": {
         "InternalName": "Special_PalSphere_Grade_02",
         "Level": 14,
@@ -1948,7 +2109,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Méga sphère",
+                "Name": "Méga Sphère",
                 "Type": "Objets"
             }
         },
@@ -1972,6 +2133,29 @@
             },
             "fr": {
                 "Name": "Établi pour sphères",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "BaseCampWorkHard": {
+        "InternalName": "BaseCampWorkHard",
+        "Level": 14,
+        "I18n": {
+            "en": {
+                "Name": "Monitoring Stand",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "监控台",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "監視台",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Plateforme de surveillance",
                 "Type": "Structures"
             }
         },
@@ -2046,47 +2230,24 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_21": {
-        "InternalName": "FurnitureSet_21",
+    "FurnitureSet_24": {
+        "InternalName": "FurnitureSet_24",
         "Level": 14,
         "I18n": {
             "en": {
-                "Name": "Antique Storage Set",
+                "Name": "Antique Desk Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典收纳套装",
+                "Name": "古典书桌套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークな収納セット",
+                "Name": "アンティークな机セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de rangements anciens",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
-    "FurnitureSet_4": {
-        "InternalName": "FurnitureSet_4",
-        "Level": 14,
-        "I18n": {
-            "en": {
-                "Name": "Wall-Mounted Houseplant Set",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "挂墙观叶植物套装",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "壁掛け観葉植物セット",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Ensemble de plantes décoratives murales",
+                "Name": "Ensemble de bureaux anciens",
                 "Type": "Structures"
             }
         },
@@ -2114,6 +2275,29 @@
             }
         },
         "BossTechnology": true
+    },
+    "FishingSet1": {
+        "InternalName": "FishingSet1",
+        "Level": 15,
+        "I18n": {
+            "en": {
+                "Name": "Beginner Fishing Set",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "初级垂钓套组",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "初級釣りセット",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Ensemble de Pêche Basique",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
     },
     "Battle_RangeWeapon_BowGun_Fire": {
         "InternalName": "Battle_RangeWeapon_BowGun_Fire",
@@ -2202,29 +2386,6 @@
             },
             "fr": {
                 "Name": "Broyeur",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
-    "BaseCampWorkHard": {
-        "InternalName": "BaseCampWorkHard",
-        "Level": 15,
-        "I18n": {
-            "en": {
-                "Name": "Monitoring Stand",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "监控台",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "監視台",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Plateforme de surveillance",
                 "Type": "Structures"
             }
         },
@@ -2414,47 +2575,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_28": {
-        "InternalName": "FurnitureSet_28",
+    "FurnitureSet_20": {
+        "InternalName": "FurnitureSet_20",
         "Level": 16,
         "I18n": {
             "en": {
-                "Name": "Fireplace Set",
+                "Name": "Antique Bath Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "壁炉套装",
+                "Name": "古典浴室套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "暖炉セット",
+                "Name": "アンティークなお風呂セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de cheminées",
+                "Name": "Ensemble de baignoires anciennes",
                 "Type": "Structures"
             }
         },
         "BossTechnology": false
     },
-    "FurnitureSet_17": {
-        "InternalName": "FurnitureSet_17",
+    "FurnitureSet_16": {
+        "InternalName": "FurnitureSet_16",
         "Level": 16,
         "I18n": {
             "en": {
-                "Name": "Carpet Set",
+                "Name": "Antique Mirror Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "地毯套装",
+                "Name": "古典镜子套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "カーペットセット",
+                "Name": "アンティークな鏡セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de tapis",
+                "Name": "Ensemble de miroirs anciens",
                 "Type": "Structures"
             }
         },
@@ -2621,24 +2782,24 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_19": {
-        "InternalName": "FurnitureSet_19",
+    "FurnitureSet_15": {
+        "InternalName": "FurnitureSet_15",
         "Level": 17,
         "I18n": {
             "en": {
-                "Name": "Antique Chair Set",
+                "Name": "Piano Furniture Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典椅子套装",
+                "Name": "钢琴家具套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークな椅子セット",
+                "Name": "ピアノ家具セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de chaises anciennes",
+                "Name": "Ensemble de meubles pour piano",
                 "Type": "Structures"
             }
         },
@@ -2782,51 +2943,74 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_22": {
-        "InternalName": "FurnitureSet_22",
+    "FurnitureSet_30": {
+        "InternalName": "FurnitureSet_30",
         "Level": 18,
         "I18n": {
             "en": {
-                "Name": "Antique Storage Cabinet Set",
+                "Name": "Metal Shelf Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典收纳柜套装",
+                "Name": "金属书架套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークな収納キャビネットセット",
+                "Name": "金属の棚セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble d'armoires anciennes",
+                "Name": "Ensemble d'étagères en métal",
                 "Type": "Structures"
             }
         },
         "BossTechnology": false
     },
-    "FurnitureSet_24": {
-        "InternalName": "FurnitureSet_24",
+    "FurnitureSet_25": {
+        "InternalName": "FurnitureSet_25",
         "Level": 18,
         "I18n": {
             "en": {
-                "Name": "Antique Desk Set",
+                "Name": "Bathroom Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典书桌套装",
+                "Name": "厕所套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークな机セット",
+                "Name": "トイレセット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de bureaux anciens",
+                "Name": "Ensemble de toilettes",
                 "Type": "Structures"
             }
         },
         "BossTechnology": false
+    },
+    "Accessory_Nonkilling": {
+        "InternalName": "Accessory_Nonkilling",
+        "Level": 18,
+        "I18n": {
+            "en": {
+                "Name": "Ring of Mercy",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "慈悲戒指",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "手加減の指輪",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Anneau de manipulation",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": true
     },
     "BreedFarm": {
         "InternalName": "BreedFarm",
@@ -2966,47 +3150,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_20": {
-        "InternalName": "FurnitureSet_20",
+    "FurnitureSet_32": {
+        "InternalName": "FurnitureSet_32",
         "Level": 19,
         "I18n": {
             "en": {
-                "Name": "Antique Bath Set",
+                "Name": "Antique High Quality Furniture Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典浴室套装",
+                "Name": "古典高级家具套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークなお風呂セット",
+                "Name": "アンティークな高級家具セット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de baignoires anciennes",
+                "Name": "Ensemble de meubles anciens haut de gamme",
                 "Type": "Structures"
             }
         },
         "BossTechnology": false
     },
-    "Accessory_Nonkilling": {
-        "InternalName": "Accessory_Nonkilling",
+    "AutoMealPouch_Tier2": {
+        "InternalName": "AutoMealPouch_Tier2",
         "Level": 19,
         "I18n": {
             "en": {
-                "Name": "Ring of Mercy",
+                "Name": "Average Feed Bag",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "慈悲戒指",
+                "Name": "普通饲料袋",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "手加減の指輪",
+                "Name": "それなりのエサぶくろ",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Anneau de manipulation",
+                "Name": "Sac de nourriture",
                 "Type": "Objets"
             }
         },
@@ -3029,7 +3213,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Giga sphère",
+                "Name": "Giga Sphère",
                 "Type": "Objets"
             }
         },
@@ -3150,48 +3334,48 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_16": {
-        "InternalName": "FurnitureSet_16",
+    "FurnitureSet_18": {
+        "InternalName": "FurnitureSet_18",
         "Level": 20,
         "I18n": {
             "en": {
-                "Name": "Antique Mirror Set",
+                "Name": "Antique Couch Set",
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "古典镜子套装",
+                "Name": "古典沙发套装",
                 "Type": "建筑"
             },
             "ja": {
-                "Name": "アンティークな鏡セット",
+                "Name": "アンティークなソファセット",
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Ensemble de miroirs anciens",
+                "Name": "Ensemble de canapés anciens",
                 "Type": "Structures"
             }
         },
         "BossTechnology": false
     },
-    "AutoMealPouch_Tier2": {
-        "InternalName": "AutoMealPouch_Tier2",
+    "DimensionPalStorage": {
+        "InternalName": "DimensionPalStorage",
         "Level": 20,
         "I18n": {
             "en": {
-                "Name": "Average Feed Bag",
-                "Type": "Items"
+                "Name": "Dimensional Pal Storage",
+                "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "普通饲料袋",
-                "Type": "道具"
+                "Name": "帕鲁次元仓库",
+                "Type": "建筑"
             },
             "ja": {
-                "Name": "それなりのエサぶくろ",
-                "Type": "アイテム"
+                "Name": "パル次元ストレージ",
+                "Type": "建築物"
             },
             "fr": {
-                "Name": "Sac de nourriture",
-                "Type": "Objets"
+                "Name": "Stockage de Pals dimensionnel",
+                "Type": "Structures"
             }
         },
         "BossTechnology": true
@@ -3357,6 +3541,29 @@
         },
         "BossTechnology": false
     },
+    "TableDresser01_Stone": {
+        "InternalName": "TableDresser01_Stone",
+        "Level": 21,
+        "I18n": {
+            "en": {
+                "Name": "Antique Dresser",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "古典式化妆台",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "アンティークなドレッサー",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Buffet ancien",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": true
+    },
     "ElecBaton": {
         "InternalName": "ElecBaton",
         "Level": 22,
@@ -3375,6 +3582,29 @@
             },
             "fr": {
                 "Name": "Matraque électrique",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FishingBait_2": {
+        "InternalName": "FishingBait_2",
+        "Level": 22,
+        "I18n": {
+            "en": {
+                "Name": "High Quality Bait",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "优质钓饵",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "上質な釣りエサ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Appât Haut de Gamme",
                 "Type": "Objets"
             }
         },
@@ -3495,48 +3725,25 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_15": {
-        "InternalName": "FurnitureSet_15",
+    "Homeward": {
+        "InternalName": "Homeward",
         "Level": 22,
         "I18n": {
             "en": {
-                "Name": "Piano Furniture Set",
-                "Type": "Structures"
+                "Name": "Homeward Thundercloud",
+                "Type": "Items"
             },
             "zh-CN": {
-                "Name": "钢琴家具套装",
-                "Type": "建筑"
+                "Name": "归途雷云",
+                "Type": "道具"
             },
             "ja": {
-                "Name": "ピアノ家具セット",
-                "Type": "建築物"
+                "Name": "帰還の雷雲",
+                "Type": "アイテム"
             },
             "fr": {
-                "Name": "Ensemble de meubles pour piano",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
-    "TableDresser01_Stone": {
-        "InternalName": "TableDresser01_Stone",
-        "Level": 22,
-        "I18n": {
-            "en": {
-                "Name": "Antique Dresser",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "古典式化妆台",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "アンティークなドレッサー",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Buffet ancien",
-                "Type": "Structures"
+                "Name": "Nuage d'orage",
+                "Type": "Objets"
             }
         },
         "BossTechnology": true
@@ -3610,29 +3817,6 @@
         },
         "BossTechnology": false
     },
-    "PalMedicineBox": {
-        "InternalName": "PalMedicineBox",
-        "Level": 23,
-        "I18n": {
-            "en": {
-                "Name": "Medicine Rack",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "药品柜",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "薬棚",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Étagère à remèdes",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
     "Fountain": {
         "InternalName": "Fountain",
         "Level": 23,
@@ -3702,24 +3886,47 @@
         },
         "BossTechnology": false
     },
-    "Homeward": {
-        "InternalName": "Homeward",
+    "SkillUnlock_NegativeOctopus_Neutral": {
+        "InternalName": "SkillUnlock_NegativeOctopus_Neutral",
         "Level": 23,
         "I18n": {
             "en": {
-                "Name": "Homeward Thundercloud",
+                "Name": "Killamari Primo's Gloves",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "归途雷云",
+                "Name": "蚀魂鱿的手套",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "帰還の雷雲",
+                "Name": "ユメイカのグローブ",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Nuage d'orage",
+                "Name": "Gants pour Killamari Primo",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "AutoMealPouch_Tier3": {
+        "InternalName": "AutoMealPouch_Tier3",
+        "Level": 23,
+        "I18n": {
+            "en": {
+                "Name": "Large Feed Bag",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "大饲料袋",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "大きなエサぶくろ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Gros sac de nourriture",
                 "Type": "Objets"
             }
         },
@@ -3766,6 +3973,29 @@
             },
             "fr": {
                 "Name": "Lit pour Pal moelleux",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "PalMedicineBox": {
+        "InternalName": "PalMedicineBox",
+        "Level": 24,
+        "I18n": {
+            "en": {
+                "Name": "Medicine Rack",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "药品柜",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "薬棚",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Étagère à remèdes",
                 "Type": "Structures"
             }
         },
@@ -3863,29 +4093,6 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_30": {
-        "InternalName": "FurnitureSet_30",
-        "Level": 24,
-        "I18n": {
-            "en": {
-                "Name": "Metal Shelf Set",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "金属书架套装",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "金属の棚セット",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Ensemble d'étagères en métal",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
     "Product_CopperPit": {
         "InternalName": "Product_CopperPit",
         "Level": 24,
@@ -3908,6 +4115,52 @@
             }
         },
         "BossTechnology": true
+    },
+    "PalDopingShot": {
+        "InternalName": "PalDopingShot",
+        "Level": 25,
+        "I18n": {
+            "en": {
+                "Name": "Boost Gun",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "强化枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ブーストガン",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Pistolet Dopant",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "PalDopingShotBullet": {
+        "InternalName": "PalDopingShotBullet",
+        "Level": 25,
+        "I18n": {
+            "en": {
+                "Name": "Boost Gun Ammo",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "强化枪子弹",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ブーストガンの弾",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Balles de Pistolet Dopant",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
     },
     "FragGrenade": {
         "InternalName": "FragGrenade",
@@ -4047,47 +4300,24 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_25": {
-        "InternalName": "FurnitureSet_25",
+    "Unlock_Picking_Tier2": {
+        "InternalName": "Unlock_Picking_Tier2",
         "Level": 25,
         "I18n": {
             "en": {
-                "Name": "Bathroom Set",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "厕所套装",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "トイレセット",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Ensemble de toilettes",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
-    "AutoMealPouch_Tier3": {
-        "InternalName": "AutoMealPouch_Tier3",
-        "Level": 25,
-        "I18n": {
-            "en": {
-                "Name": "Large Feed Bag",
+                "Name": "Lockpicking Tool v2",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "大饲料袋",
+                "Name": "高级开锁工具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "大きなエサぶくろ",
+                "Name": "上質なピッキングツール",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Gros sac de nourriture",
+                "Name": "Outil de crochetage avancé",
                 "Type": "Objets"
             }
         },
@@ -4231,47 +4461,47 @@
         },
         "BossTechnology": false
     },
-    "FurnitureSet_32": {
-        "InternalName": "FurnitureSet_32",
+    "SkillUnlock_FlyingManta_Thunder": {
+        "InternalName": "SkillUnlock_FlyingManta_Thunder",
         "Level": 26,
         "I18n": {
             "en": {
-                "Name": "Antique High Quality Furniture Set",
-                "Type": "Structures"
+                "Name": "Celaray Lux's Gloves",
+                "Type": "Items"
             },
             "zh-CN": {
-                "Name": "古典高级家具套装",
-                "Type": "建筑"
+                "Name": "雷米儿的手套",
+                "Type": "道具"
             },
             "ja": {
-                "Name": "アンティークな高級家具セット",
-                "Type": "建築物"
+                "Name": "エレカイトのグローブ",
+                "Type": "アイテム"
             },
             "fr": {
-                "Name": "Ensemble de meubles anciens haut de gamme",
-                "Type": "Structures"
+                "Name": "Gants pour Celaray Lux",
+                "Type": "Objets"
             }
         },
         "BossTechnology": false
     },
-    "Unlock_Picking_Tier2": {
-        "InternalName": "Unlock_Picking_Tier2",
+    "Battle_RangeWeapon_SphereLauncher_Once": {
+        "InternalName": "Battle_RangeWeapon_SphereLauncher_Once",
         "Level": 26,
         "I18n": {
             "en": {
-                "Name": "Lockpicking Tool v2",
+                "Name": "Single-Shot Sphere Launcher",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "高级开锁工具",
+                "Name": "单发型帕鲁球发射器",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "上質なピッキングツール",
+                "Name": "単発型スフィアランチャー",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Outil de crochetage avancé",
+                "Name": "Lance-sphères à un coup",
                 "Type": "Objets"
             }
         },
@@ -4294,7 +4524,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Téra sphère",
+                "Name": "Téra Sphère",
                 "Type": "Objets"
             }
         },
@@ -4438,24 +4668,47 @@
         },
         "BossTechnology": false
     },
-    "Battle_RangeWeapon_SphereLauncher_Once": {
-        "InternalName": "Battle_RangeWeapon_SphereLauncher_Once",
+    "SkillUnlock_LeafMomonga": {
+        "InternalName": "SkillUnlock_LeafMomonga",
         "Level": 27,
         "I18n": {
             "en": {
-                "Name": "Single-Shot Sphere Launcher",
+                "Name": "Herbil's Harness",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "单发型帕鲁球发射器",
+                "Name": "达鼠泥的背带",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "単発型スフィアランチャー",
+                "Name": "モモンパのハーネス",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Lance-sphères à un coup",
+                "Name": "Harnais pour Herbil",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "AdditionalInventory_001": {
+        "InternalName": "AdditionalInventory_001",
+        "Level": 27,
+        "I18n": {
+            "en": {
+                "Name": "Small Pouch",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "小型扩展背包",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "小さな拡張ポーチ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Petite poche supplémentaire",
                 "Type": "Objets"
             }
         },
@@ -4576,6 +4829,29 @@
         },
         "BossTechnology": false
     },
+    "DefenseWall": {
+        "InternalName": "DefenseWall",
+        "Level": 28,
+        "I18n": {
+            "en": {
+                "Name": "Defensive Wall",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "防御墙",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "石の防壁",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Rempart",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "SkillUnlock_FairyDragon_Water": {
         "InternalName": "SkillUnlock_FairyDragon_Water",
         "Level": 28,
@@ -4622,28 +4898,51 @@
         },
         "BossTechnology": false
     },
-    "AdditionalInventory_001": {
-        "InternalName": "AdditionalInventory_001",
+    "Accessory_JumpPower_Increase": {
+        "InternalName": "Accessory_JumpPower_Increase",
         "Level": 28,
         "I18n": {
             "en": {
-                "Name": "Small Pouch",
+                "Name": "Anti-Gravity Belt",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "小型扩展背包",
+                "Name": "反重力腰带",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "小さな拡張ポーチ",
+                "Name": "反重力ベルト",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Petite poche supplémentaire",
+                "Name": "Ceinture anti-gravité",
                 "Type": "Objets"
             }
         },
         "BossTechnology": true
+    },
+    "FishingRod_02_1": {
+        "InternalName": "FishingRod_02_1",
+        "Level": 29,
+        "I18n": {
+            "en": {
+                "Name": "Intermediate Fishing Rod (Cattiva)",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "中级钓竿（捣蛋猫）",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "中級釣り竿（ツッパニャン）",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Canne à Pêche Standard (Cattiva)",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
     },
     "Katana": {
         "InternalName": "Katana",
@@ -4737,29 +5036,6 @@
         },
         "BossTechnology": false
     },
-    "DefenseWall": {
-        "InternalName": "DefenseWall",
-        "Level": 29,
-        "I18n": {
-            "en": {
-                "Name": "Defensive Wall",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "防御墙",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "石の防壁",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Rempart",
-                "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
     "SkillUnlock_GrassMammoth": {
         "InternalName": "SkillUnlock_GrassMammoth",
         "Level": 29,
@@ -4806,24 +5082,47 @@
         },
         "BossTechnology": false
     },
-    "Accessory_JumpPower_Increase": {
-        "InternalName": "Accessory_JumpPower_Increase",
+    "SkillUnlock_BlueDragon_Ice": {
+        "InternalName": "SkillUnlock_BlueDragon_Ice",
         "Level": 29,
         "I18n": {
             "en": {
-                "Name": "Anti-Gravity Belt",
+                "Name": "Azurobe Cryst Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "反重力腰带",
+                "Name": "碧月龙的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "反重力ベルト",
+                "Name": "アズルーナのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Ceinture anti-gravité",
+                "Name": "Selle pour Azurobe Cryst",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "Lantern_High": {
+        "InternalName": "Lantern_High",
+        "Level": 29,
+        "I18n": {
+            "en": {
+                "Name": "Enhanced Hip Lantern",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "强化腰挂提灯",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "強化腰付けランタン",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Lanterne de taille",
                 "Type": "Objets"
             }
         },
@@ -4944,24 +5243,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_FireKirin": {
-        "InternalName": "SkillUnlock_FireKirin",
+    "SkillUnlock_BirdDragon_Ice": {
+        "InternalName": "SkillUnlock_BirdDragon_Ice",
         "Level": 30,
         "I18n": {
             "en": {
-                "Name": "Pyrin Saddle",
+                "Name": "Vanwyrm Cryst Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "火麒麟的鞍具",
+                "Name": "霜歌龙的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "サラブレイズのサドル",
+                "Name": "シロカバネのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Pyrin",
+                "Name": "Selle pour Vanwyrm Cryst",
                 "Type": "Objets"
             }
         },
@@ -5082,6 +5381,29 @@
         },
         "BossTechnology": false
     },
+    "FishingPond1": {
+        "InternalName": "FishingPond1",
+        "Level": 31,
+        "I18n": {
+            "en": {
+                "Name": "Fishing Pond",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "垂钓池",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "釣り堀",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Bassin de pêche",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "Spa2": {
         "InternalName": "Spa2",
         "Level": 31,
@@ -5128,24 +5450,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_VolcanicMonster": {
-        "InternalName": "SkillUnlock_VolcanicMonster",
+    "SkillUnlock_FireKirin": {
+        "InternalName": "SkillUnlock_FireKirin",
         "Level": 31,
         "I18n": {
             "en": {
-                "Name": "Reptyro Saddle",
+                "Name": "Pyrin Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "熔岩兽的鞍具",
+                "Name": "火麒麟的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "ボルカノンのサドル",
+                "Name": "サラブレイズのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Reptyro",
+                "Name": "Selle pour Pyrin",
                 "Type": "Objets"
             }
         },
@@ -5243,6 +5565,29 @@
         },
         "BossTechnology": false
     },
+    "PalHealingGrenade": {
+        "InternalName": "PalHealingGrenade",
+        "Level": 32,
+        "I18n": {
+            "en": {
+                "Name": "Pal Recovery Grenade",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "帕鲁恢复手榴弹",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "パル回復グレネード",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Grenade à Régénération de Pal",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "Product_WeaponFactory_Dirty_Grade_02": {
         "InternalName": "Product_WeaponFactory_Dirty_Grade_02",
         "Level": 32,
@@ -5312,48 +5657,48 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_Manticore": {
-        "InternalName": "SkillUnlock_Manticore",
+    "BaseCampWorkerExtraStation": {
+        "InternalName": "BaseCampWorkerExtraStation",
         "Level": 32,
         "I18n": {
             "en": {
-                "Name": "Blazehowl Saddle",
-                "Type": "Items"
+                "Name": "Palbox Control Device",
+                "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "狱焰王的鞍具",
-                "Type": "道具"
+                "Name": "帕鲁终端控制台",
+                "Type": "建筑"
             },
             "ja": {
-                "Name": "ゴクエンオのサドル",
-                "Type": "アイテム"
+                "Name": "パルボックス操作端末",
+                "Type": "建築物"
             },
             "fr": {
-                "Name": "Selle pour Blazehowl",
-                "Type": "Objets"
+                "Name": "Terminal de Gestion de Boîte à Pals",
+                "Type": "Structures"
             }
         },
         "BossTechnology": false
     },
-    "FurnitureSet_18": {
-        "InternalName": "FurnitureSet_18",
+    "SkillUnlock_VolcanicMonster": {
+        "InternalName": "SkillUnlock_VolcanicMonster",
         "Level": 32,
         "I18n": {
             "en": {
-                "Name": "Antique Couch Set",
-                "Type": "Structures"
+                "Name": "Reptyro Saddle",
+                "Type": "Items"
             },
             "zh-CN": {
-                "Name": "古典沙发套装",
-                "Type": "建筑"
+                "Name": "熔岩兽的鞍具",
+                "Type": "道具"
             },
             "ja": {
-                "Name": "アンティークなソファセット",
-                "Type": "建築物"
+                "Name": "ボルカノンのサドル",
+                "Type": "アイテム"
             },
             "fr": {
-                "Name": "Ensemble de canapés anciens",
-                "Type": "Structures"
+                "Name": "Selle pour Reptyro",
+                "Type": "Objets"
             }
         },
         "BossTechnology": false
@@ -5514,6 +5859,29 @@
             },
             "fr": {
                 "Name": "Selle pour Helzephyr",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_Manticore": {
+        "InternalName": "SkillUnlock_Manticore",
+        "Level": 33,
+        "I18n": {
+            "en": {
+                "Name": "Blazehowl Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "狱焰王的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ゴクエンオのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Blazehowl",
                 "Type": "Objets"
             }
         },
@@ -5703,6 +6071,29 @@
         },
         "BossTechnology": false
     },
+    "SkillUnlock_IceSeal": {
+        "InternalName": "SkillUnlock_IceSeal",
+        "Level": 34,
+        "I18n": {
+            "en": {
+                "Name": "Polapup's Harness",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "香草豹冰的背带",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "バニザラシのハーネス",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Harnais pour Polapup",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "FurnitureSet_6": {
         "InternalName": "FurnitureSet_6",
         "Level": 34,
@@ -5766,7 +6157,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Ultra sphère",
+                "Name": "Ultra Sphère",
                 "Type": "Objets"
             }
         },
@@ -5859,6 +6250,29 @@
             },
             "fr": {
                 "Name": "Fibre de carbone",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_IceNarwhal": {
+        "InternalName": "SkillUnlock_IceNarwhal",
+        "Level": 35,
+        "I18n": {
+            "en": {
+                "Name": "Whalaska Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "凉晶鲸的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "コゴエールのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Whalaska",
                 "Type": "Objets"
             }
         },
@@ -5973,8 +6387,31 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Balles de fusil d'assaut",
+                "Name": "Balles de fusil",
                 "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "OperatingTable": {
+        "InternalName": "OperatingTable",
+        "Level": 36,
+        "I18n": {
+            "en": {
+                "Name": "Pal Surgery Table",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "帕鲁手术台",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "パル手術台",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Table d'opération de Pal",
+                "Type": "Structures"
             }
         },
         "BossTechnology": false
@@ -6232,24 +6669,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_VolcanicMonster_Ice": {
-        "InternalName": "SkillUnlock_VolcanicMonster_Ice",
+    "SkillUnlock_GhostAnglerfish": {
+        "InternalName": "SkillUnlock_GhostAnglerfish",
         "Level": 37,
         "I18n": {
             "en": {
-                "Name": "Reptyro Cryst Saddle",
+                "Name": "Ghangler Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "寒霜兽的鞍具",
+                "Name": "冥灯鱼的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "フロスカノンのサドル",
+                "Name": "アンドーンのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Reptyro Cryst Reptyro",
+                "Name": "Selle pour Ghangler",
                 "Type": "Objets"
             }
         },
@@ -6347,6 +6784,29 @@
         },
         "BossTechnology": false
     },
+    "FishingBait_3": {
+        "InternalName": "FishingBait_3",
+        "Level": 38,
+        "I18n": {
+            "en": {
+                "Name": "Deluxe Bait",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "奢华钓饵",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "贅沢な釣りエサ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Appât de Luxe",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "Refrigerator": {
         "InternalName": "Refrigerator",
         "Level": 38,
@@ -6393,24 +6853,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_KingBahamut": {
-        "InternalName": "SkillUnlock_KingBahamut",
+    "SkillUnlock_VolcanicMonster_Ice": {
+        "InternalName": "SkillUnlock_VolcanicMonster_Ice",
         "Level": 38,
         "I18n": {
             "en": {
-                "Name": "Blazamut Saddle",
+                "Name": "Reptyro Cryst Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "焰煌的鞍具",
+                "Name": "寒霜兽的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "ボルカイザーのサドル",
+                "Name": "フロスカノンのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Blazamut",
+                "Name": "Selle pour Reptyro Cryst",
                 "Type": "Objets"
             }
         },
@@ -6600,6 +7060,29 @@
         },
         "BossTechnology": false
     },
+    "SkillUnlock_Penguin_Electric": {
+        "InternalName": "SkillUnlock_Penguin_Electric",
+        "Level": 39,
+        "I18n": {
+            "en": {
+                "Name": "Pengullet Lux's Rocket Launcher",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "闪丸丸的火箭发射器",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "デンタマのロケットランチャー",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Lance-fusées pour Pengullet Lux",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "SkillUnlock_Umihebi": {
         "InternalName": "SkillUnlock_Umihebi",
         "Level": 39,
@@ -6761,24 +7244,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_Suzaku": {
-        "InternalName": "SkillUnlock_Suzaku",
+    "SkillUnlock_KingBahamut": {
+        "InternalName": "SkillUnlock_KingBahamut",
         "Level": 40,
         "I18n": {
             "en": {
-                "Name": "Suzaku Saddle",
+                "Name": "Blazamut Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "朱雀的鞍具",
+                "Name": "焰煌的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "スザクのサドル",
+                "Name": "ボルカイザーのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Suzaku",
+                "Name": "Selle pour Blazamut",
                 "Type": "Objets"
             }
         },
@@ -6968,24 +7451,24 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_BirdDragon_Ice": {
-        "InternalName": "SkillUnlock_BirdDragon_Ice",
+    "SkillUnlock_Suzaku": {
+        "InternalName": "SkillUnlock_Suzaku",
         "Level": 41,
         "I18n": {
             "en": {
-                "Name": "Vanwyrm Cryst Saddle",
+                "Name": "Suzaku Saddle",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "霜歌龙的鞍具",
+                "Name": "朱雀的鞍具",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "シロカバネのサドル",
+                "Name": "スザクのサドル",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Vanwyrm Cryst",
+                "Name": "Selle pour Suzaku",
                 "Type": "Objets"
             }
         },
@@ -7147,6 +7630,29 @@
             },
             "fr": {
                 "Name": "Selle pour Kingpaca Cryst",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_TropicalOstrich": {
+        "InternalName": "SkillUnlock_TropicalOstrich",
+        "Level": 42,
+        "I18n": {
+            "en": {
+                "Name": "Palumba Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "咕咕桑葩的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ココヤンバのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Palumba",
                 "Type": "Objets"
             }
         },
@@ -7422,7 +7928,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Sphère légendaire",
+                "Name": "Sphère Légendaire",
                 "Type": "Objets"
             }
         },
@@ -7635,6 +8141,52 @@
         },
         "BossTechnology": false
     },
+    "FishingRod_03_1": {
+        "InternalName": "FishingRod_03_1",
+        "Level": 45,
+        "I18n": {
+            "en": {
+                "Name": "Advanced Fishing Rod (Pengullet)",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "高级钓竿（企丸丸）",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "上級釣り竿（ペンタマ）",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Canne à Pêche Avancée (Pengullet)",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "CompositeDesk": {
+        "InternalName": "CompositeDesk",
+        "Level": 45,
+        "I18n": {
+            "en": {
+                "Name": "Drafting Table",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "制图桌",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "製図台",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Table de dessin",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
     "SkillUnlock_Yeti_Grass": {
         "InternalName": "SkillUnlock_Yeti_Grass",
         "Level": 45,
@@ -7767,7 +8319,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en paluminium",
+                "Name": "Armure en Paluminium",
                 "Type": "Objets"
             }
         },
@@ -7790,7 +8342,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Heaume en paluminium",
+                "Name": "Heaume en Paluminium",
                 "Type": "Objets"
             }
         },
@@ -7883,6 +8435,29 @@
             },
             "fr": {
                 "Name": "Selle pour Shroomer",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_Plesiosaur": {
+        "InternalName": "SkillUnlock_Plesiosaur",
+        "Level": 46,
+        "I18n": {
+            "en": {
+                "Name": "Braloha Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "梁叶龙的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "トコナッツのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Braloha",
                 "Type": "Objets"
             }
         },
@@ -8095,6 +8670,29 @@
         },
         "BossTechnology": false
     },
+    "MultiHatchingPalEgg": {
+        "InternalName": "MultiHatchingPalEgg",
+        "Level": 47,
+        "I18n": {
+            "en": {
+                "Name": "Large Incubator",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "大型帕鲁蛋孵化器",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "大型タマゴ孵化器",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Incubateur Géant",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": true
+    },
     "Battle_Armor_Grade_04_Steal_Heat": {
         "InternalName": "Battle_Armor_Grade_04_Steal_Heat",
         "Level": 48,
@@ -8112,7 +8710,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en paluminium réfrigérante",
+                "Name": "Armure en Paluminium Réfrigérante",
                 "Type": "Objets"
             }
         },
@@ -8127,7 +8725,7 @@
                 "Type": "Structures"
             },
             "zh-CN": {
-                "Name": "技能果实农园",
+                "Name": "技能果树园",
                 "Type": "建筑"
             },
             "ja": {
@@ -8135,7 +8733,7 @@
                 "Type": "建築物"
             },
             "fr": {
-                "Name": "Plantation de fruits de techniques",
+                "Name": "Plantation de Fruits de Maîtrise",
                 "Type": "Structures"
             }
         },
@@ -8480,7 +9078,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en paluminium chauffante",
+                "Name": "Armure en Paluminium Chauffante",
                 "Type": "Objets"
             }
         },
@@ -8505,52 +9103,6 @@
             "fr": {
                 "Name": "Lance-missiles monté",
                 "Type": "Structures"
-            }
-        },
-        "BossTechnology": false
-    },
-    "SkillUnlock_JetDragon": {
-        "InternalName": "SkillUnlock_JetDragon",
-        "Level": 50,
-        "I18n": {
-            "en": {
-                "Name": "Jetragon's Missile Launcher",
-                "Type": "Items"
-            },
-            "zh-CN": {
-                "Name": "空涡龙的导弹发射器",
-                "Type": "道具"
-            },
-            "ja": {
-                "Name": "ジェッドランのミサイルランチャー",
-                "Type": "アイテム"
-            },
-            "fr": {
-                "Name": "Lance-missiles pour Jetragon",
-                "Type": "Objets"
-            }
-        },
-        "BossTechnology": false
-    },
-    "Battle_Armor_Grade_05_Plastic": {
-        "InternalName": "Battle_Armor_Grade_05_Plastic",
-        "Level": 50,
-        "I18n": {
-            "en": {
-                "Name": "Plasteel Armor",
-                "Type": "Items"
-            },
-            "zh-CN": {
-                "Name": "塑钢盔甲",
-                "Type": "道具"
-            },
-            "ja": {
-                "Name": "プラスチールアーマー",
-                "Type": "アイテム"
-            },
-            "fr": {
-                "Name": "Armure en plastacier",
-                "Type": "Objets"
             }
         },
         "BossTechnology": false
@@ -8601,6 +9153,75 @@
         },
         "BossTechnology": false
     },
+    "JapaneseStyle_houseset": {
+        "InternalName": "JapaneseStyle_houseset",
+        "Level": 50,
+        "I18n": {
+            "en": {
+                "Name": "Japanese-Style Structure Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "和风建筑套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "和風建築セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Structures de style japonais",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_JetDragon": {
+        "InternalName": "SkillUnlock_JetDragon",
+        "Level": 50,
+        "I18n": {
+            "en": {
+                "Name": "Jetragon's Missile Launcher",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "空涡龙的导弹发射器",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ジェッドランのミサイルランチャー",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Lance-missiles pour Jetragon",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_WhiteAlienDragon": {
+        "InternalName": "SkillUnlock_WhiteAlienDragon",
+        "Level": 50,
+        "I18n": {
+            "en": {
+                "Name": "Xenogard Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "杰诺路达的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ゼノルーダのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Xenogard",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "Product_QuartzPit": {
         "InternalName": "Product_QuartzPit",
         "Level": 50,
@@ -8642,6 +9263,29 @@
             },
             "fr": {
                 "Name": "Sphère ultime",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "Battle_Armor_Grade_05_Plastic": {
+        "InternalName": "Battle_Armor_Grade_05_Plastic",
+        "Level": 51,
+        "I18n": {
+            "en": {
+                "Name": "Plasteel Armor",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "塑钢盔甲",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "プラスチールアーマー",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Armure en plastacier",
                 "Type": "Objets"
             }
         },
@@ -8739,48 +9383,25 @@
         },
         "BossTechnology": false
     },
-    "SkillUnlock_WhiteAlienDragon": {
-        "InternalName": "SkillUnlock_WhiteAlienDragon",
+    "SkillUnlock_RaijinDaughter_Water": {
+        "InternalName": "SkillUnlock_RaijinDaughter_Water",
         "Level": 51,
         "I18n": {
             "en": {
-                "Name": "Xenogard Saddle",
+                "Name": "Dazzi Noct's Necklace",
                 "Type": "Items"
             },
             "zh-CN": {
-                "Name": "杰诺路达的鞍具",
+                "Name": "天阴童子的项圈",
                 "Type": "道具"
             },
             "ja": {
-                "Name": "ゼノルーダのサドル",
+                "Name": "ヤミナラシの首輪",
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Xenogard",
+                "Name": "Collier pour Dazzi Noct",
                 "Type": "Objets"
-            }
-        },
-        "BossTechnology": false
-    },
-    "JapaneseStyle_houseset": {
-        "InternalName": "JapaneseStyle_houseset",
-        "Level": 51,
-        "I18n": {
-            "en": {
-                "Name": "Japanese-Style Structure Set",
-                "Type": "Structures"
-            },
-            "zh-CN": {
-                "Name": "和风建筑套组",
-                "Type": "建筑"
-            },
-            "ja": {
-                "Name": "和風建築セット",
-                "Type": "建築物"
-            },
-            "fr": {
-                "Name": "Structures de style japonais",
-                "Type": "Structures"
             }
         },
         "BossTechnology": false
@@ -8877,6 +9498,29 @@
         },
         "BossTechnology": false
     },
+    "FishingBait_3_A": {
+        "InternalName": "FishingBait_3_A",
+        "Level": 52,
+        "I18n": {
+            "en": {
+                "Name": "Alluring Bait",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "魅惑钓饵",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "魅惑の釣りエサ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Appât Séduisant",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
     "IceCrusher": {
         "InternalName": "IceCrusher",
         "Level": 52,
@@ -8941,29 +9585,6 @@
             },
             "fr": {
                 "Name": "Selle pour Fenglope Lux",
-                "Type": "Objets"
-            }
-        },
-        "BossTechnology": false
-    },
-    "SkillUnlock_RaijinDaughter_Water": {
-        "InternalName": "SkillUnlock_RaijinDaughter_Water",
-        "Level": 52,
-        "I18n": {
-            "en": {
-                "Name": "Dazzi Noct's Necklace",
-                "Type": "Items"
-            },
-            "zh-CN": {
-                "Name": "天阴童子的项圈",
-                "Type": "道具"
-            },
-            "ja": {
-                "Name": "ヤミナラシの首輪",
-                "Type": "アイテム"
-            },
-            "fr": {
-                "Name": "Collier pour Dazzi Noct",
                 "Type": "Objets"
             }
         },
@@ -9313,6 +9934,29 @@
             }
         },
         "BossTechnology": true
+    },
+    "FishingPond2": {
+        "InternalName": "FishingPond2",
+        "Level": 55,
+        "I18n": {
+            "en": {
+                "Name": "Large Fishing Pond",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "大型垂钓池",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "大きな釣り堀",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Grand Bassin de pêche",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
     },
     "Shield_05": {
         "InternalName": "Shield_05",
@@ -9699,7 +10343,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en hexolite",
+                "Name": "Armure en Hexolite",
                 "Type": "Objets"
             }
         },
@@ -9906,7 +10550,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Casque en hexolite",
+                "Name": "Casque en Hexolite",
                 "Type": "Objets"
             }
         },
@@ -9952,7 +10596,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Selle pour Silvegis",
+                "Name": "Selle pour Celesdir",
                 "Type": "Objets"
             }
         },
@@ -10067,7 +10711,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en hexolite réfrigérante",
+                "Name": "Armure en Hexolite réfrigérante",
                 "Type": "Objets"
             }
         },
@@ -10090,7 +10734,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en hexolite chauffante",
+                "Name": "Armure en Hexolite chauffante",
                 "Type": "Objets"
             }
         },
@@ -10205,7 +10849,7 @@
                 "Type": "アイテム"
             },
             "fr": {
-                "Name": "Armure en hexolite légère",
+                "Name": "Armure en Hexolite légère",
                 "Type": "Objets"
             }
         },
@@ -10256,5 +10900,580 @@
             }
         },
         "BossTechnology": true
+    },
+    "Salvage_TreasureBoxKey02": {
+        "InternalName": "Salvage_TreasureBoxKey02",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Powerful Fishing Magnet",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "强力渔用磁铁",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "強力釣りマグネット",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Aimant de Pêche Puissant",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "ManganeseIngot": {
+        "InternalName": "ManganeseIngot",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Coralum Ingot",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "珊瑚锭",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "コラルムインゴット",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Lingot de Korallium",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "Factory_Hard_04": {
+        "InternalName": "Factory_Hard_04",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Advanced Civilization Workshop",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "高等文明作业工厂",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "高度文明の作業工場",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Usine d'une Civilisation Avancée",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SF_houseset": {
+        "InternalName": "SF_houseset",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Futuristic Structure Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "未来风建筑套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "未来風建築セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Structures de Style Futuriste",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_GhostAnglerfish_Fire": {
+        "InternalName": "SkillUnlock_GhostAnglerfish_Fire",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Ghangler Ignis Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "炙灯鱼的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "メラドーンのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Ghangler Ignis",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "CrystalPit": {
+        "InternalName": "CrystalPit",
+        "Level": 61,
+        "I18n": {
+            "en": {
+                "Name": "Hexolite Quartz Mine",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "六棱晶矿采矿场",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "ヘクソクォーツ採掘場",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Mine d’Hexoquartz",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": true
+    },
+    "EnergyShotgun": {
+        "InternalName": "EnergyShotgun",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Energy Shotgun",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "能量霰弹枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "エネルギーショットガン",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Fusil à pompe Énergétique",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "EnergyShotgunBullet": {
+        "InternalName": "EnergyShotgunBullet",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Energy Shotgun Ammo",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "能量霰弹枪子弹",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "エネルギーショットガンの弾",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Balles de Fusil à pompe Énergétique",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "WeaponFactory_Dirty_04": {
+        "InternalName": "WeaponFactory_Dirty_04",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Advanced Civilization Weapon Assembly Line",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "高等文明武器工厂",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "高度文明の武器工場",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Usine d'armes d'une Civilisation Avancée",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "Spa3": {
+        "InternalName": "Spa3",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Japanese-Style Hot Spring",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "和风温泉",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "和風な温泉",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Onsen",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_IceNarwhal_Fire": {
+        "InternalName": "SkillUnlock_IceNarwhal_Fire",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Whalaska Ignis Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "桃晶鲸的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "モモエールのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Whalaska Ignis",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "Accessory_AirDash3": {
+        "InternalName": "Accessory_AirDash3",
+        "Level": 62,
+        "I18n": {
+            "en": {
+                "Name": "Triple Air Dash Boots",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "空中三段冲刺靴",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "トリプルエアダッシュブーツ",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Bottes de triple ruée aérienne",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": true
+    },
+    "PalDopingShot_2": {
+        "InternalName": "PalDopingShot_2",
+        "Level": 63,
+        "I18n": {
+            "en": {
+                "Name": "Megaboost Gun",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "高级强化枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "メガブーストガン",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Méga Pistolet Dopant",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "HunterFlagSet": {
+        "InternalName": "HunterFlagSet",
+        "Level": 63,
+        "I18n": {
+            "en": {
+                "Name": "Rayne Syndicate Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "盗猎团旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "密猟団の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux des Syndicats",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "BelieverFlagSet": {
+        "InternalName": "BelieverFlagSet",
+        "Level": 63,
+        "I18n": {
+            "en": {
+                "Name": "Free Pal Alliance Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "帕鲁保护团体旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "パル愛護団体の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux de la LPP",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "SkillUnlock_PoseidonOrca": {
+        "InternalName": "SkillUnlock_PoseidonOrca",
+        "Level": 63,
+        "I18n": {
+            "en": {
+                "Name": "Neptilius Saddle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "海皇鲸的鞍具",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ネプティオスのサドル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Selle pour Neptilius",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "GrapplingGun5": {
+        "InternalName": "GrapplingGun5",
+        "Level": 63,
+        "I18n": {
+            "en": {
+                "Name": "Ultra Grappling Gun",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "超级爪钩枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "ウルトラグラップリングガン",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Ultra pistolet-grappin",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": true
+    },
+    "OverheatRifle": {
+        "InternalName": "OverheatRifle",
+        "Level": 64,
+        "I18n": {
+            "en": {
+                "Name": "Overheat Rifle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "过热步枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "オーバーヒートライフル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Fusil à Surchauffe",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "OverheatRifleBullet": {
+        "InternalName": "OverheatRifleBullet",
+        "Level": 64,
+        "I18n": {
+            "en": {
+                "Name": "Overheat Rifle Ammo",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "过热步枪子弹",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "オーバーヒートライフルの弾",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Balles de Fusil à Surchauffe",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "FireCultFlagSet": {
+        "InternalName": "FireCultFlagSet",
+        "Level": 64,
+        "I18n": {
+            "en": {
+                "Name": "Brothers of the Eternal Pyre Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "永炎同心会旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "永炎の同志の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux de la Confrérie",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "PoliceFlagSet": {
+        "InternalName": "PoliceFlagSet",
+        "Level": 64,
+        "I18n": {
+            "en": {
+                "Name": "PIDF Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "自卫队旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "自警団の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux de la Milice",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "ChargeLaserRifle": {
+        "InternalName": "ChargeLaserRifle",
+        "Level": 65,
+        "I18n": {
+            "en": {
+                "Name": "Charge Rifle",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "充能步枪",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "チャージライフル",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Fusil Chargé",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "ChargeLaserRifleBullet": {
+        "InternalName": "ChargeLaserRifleBullet",
+        "Level": 65,
+        "I18n": {
+            "en": {
+                "Name": "Charge Rifle Ammo",
+                "Type": "Items"
+            },
+            "zh-CN": {
+                "Name": "充能步枪子弹",
+                "Type": "道具"
+            },
+            "ja": {
+                "Name": "チャージライフルの弾",
+                "Type": "アイテム"
+            },
+            "fr": {
+                "Name": "Balles de Fusil Chargé",
+                "Type": "Objets"
+            }
+        },
+        "BossTechnology": false
+    },
+    "ScientistFlagSet": {
+        "InternalName": "ScientistFlagSet",
+        "Level": 65,
+        "I18n": {
+            "en": {
+                "Name": "PAL Genetic Research Unit Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "基因研究部队旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "遺伝子研究部隊の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux de l'Unité de Recherche",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
+    },
+    "NinjaFlagSet": {
+        "InternalName": "NinjaFlagSet",
+        "Level": 65,
+        "I18n": {
+            "en": {
+                "Name": "Moonflower Flag Set",
+                "Type": "Structures"
+            },
+            "zh-CN": {
+                "Name": "月花众旗帜套组",
+                "Type": "建筑"
+            },
+            "ja": {
+                "Name": "月花衆の旗セット",
+                "Type": "建築物"
+            },
+            "fr": {
+                "Name": "Ensemble de Drapeaux des Fleurs Lunaires",
+                "Type": "Structures"
+            }
+        },
+        "BossTechnology": false
     }
 }

@@ -18,7 +18,7 @@
                 "Description": "敵に向かって 高速の水弾を発射する。"
             },
             "fr": {
-                "Name": "Jet d'eau",
+                "Name": "Jet d'Eau",
                 "Description": "Tire des balles d'eau rapides sur l'ennemi."
             }
         },
@@ -44,7 +44,7 @@
                 "Description": "対象に向かって一直線に飛んでゆく 水の弾を発射する。"
             },
             "fr": {
-                "Name": "Tir aquatique",
+                "Name": "Tir Aquatique",
                 "Description": "Tire des projectiles constitués d'eau qui filent droit sur la cible."
             }
         },
@@ -70,7 +70,7 @@
                 "Description": "敵をゆっくりと追尾する たくさんの泡を発射する。"
             },
             "fr": {
-                "Name": "Tir bulleux",
+                "Name": "Tir Bulleux",
                 "Description": "Tire de nombreuses bulles qui poursuivent lentement l'ennemi."
             }
         },
@@ -96,7 +96,7 @@
                 "Description": "酸性の雲を作り出し 敵の頭上から酸の雨を降らせる。"
             },
             "fr": {
-                "Name": "Pluie acide",
+                "Name": "Pluie Acide",
                 "Description": "Crée un nuage qui fait pleuvoir de l'acide au-dessus de l'ennemi."
             }
         },
@@ -148,7 +148,7 @@
                 "Description": "すごい勢いで水を放出し 前方広範囲を薙ぎ払う。"
             },
             "fr": {
-                "Name": "Hydro-courant",
+                "Name": "Hydro-Laser",
                 "Description": "Libère de l'eau à très haute pression pour ratisser une large zone devant lui."
             }
         },
@@ -174,7 +174,7 @@
                 "Description": "高速で飛ぶ空気の塊を発射する。"
             },
             "fr": {
-                "Name": "Canon à air",
+                "Name": "Canon à Air",
                 "Description": "Tire une masse d'air à grande vitesse."
             }
         },
@@ -200,7 +200,7 @@
                 "Description": "タマコッコの専用スキル。 敵を目がけて飛び掛かり、尖ったくちばしで突撃する。"
             },
             "fr": {
-                "Name": "Coup de bec",
+                "Name": "Coup de Bec",
                 "Description": "Compétence réservée à Chikipi. Bondit sur l'ennemi pour l'assaillir avec son bec pointu."
             }
         },
@@ -226,8 +226,8 @@
                 "Description": "エネルギーをチャージし 弾丸にして発射する。"
             },
             "fr": {
-                "Name": "Tir puissant",
-                "Description": "Accumule de l'énergie pour former et tirer un projectile."
+                "Name": "Tir Puissant",
+                "Description": "Accumule de l'énergie pour former un projectile, puis le tirer."
             }
         },
         "UniqueSkill": false,
@@ -252,7 +252,7 @@
                 "Description": "モコロンの専用スキル。 コロコロと転がりながら、敵を追いかける。 攻撃後は目が回って動けなくなってしまう。"
             },
             "fr": {
-                "Name": "Roulé-boulé",
+                "Name": "Roulé-Boulé",
                 "Description": "Compétence réservée à Lamball. Poursuit l'ennemi en roulant. Des vertiges l'empêchent de bouger après l'attaque."
             }
         },
@@ -278,7 +278,7 @@
                 "Description": "ツッパニャンの専用スキル。 敵を追いかけながら両腕を振り回し、 連続でパンチを繰り出す。"
             },
             "fr": {
-                "Name": "Double poing",
+                "Name": "Enchaînement de Poings",
                 "Description": "Compétence réservée à Cattiva. Agite ses deux pattes tout en poursuivant l'ennemi pour lui asséner des coups de poing successifs."
             }
         },
@@ -304,7 +304,7 @@
                 "Description": "メルパカの専用スキル。 かわいいオーラをまといながら突進する。"
             },
             "fr": {
-                "Name": "Tacle duveteux",
+                "Name": "Tacle Duveteux",
                 "Description": "Compétence exclusive à Melpaca. Charge vers l'avant enveloppé d'une jolie aura."
             }
         },
@@ -330,7 +330,7 @@
                 "Description": "ガウルフの専用スキル。 敵に向かって素早く飛び掛かり、噛みついて攻撃する。"
             },
             "fr": {
-                "Name": "Croc sauvage",
+                "Name": "Croc Sauvage",
                 "Description": "Compétence réservée à Direhowl. Se jette sur l'ennemi et l'attaque en le mordant."
             }
         },
@@ -356,7 +356,7 @@
                 "Description": "ツノガミ種の専用スキル。 敵に向かって突進し、角を振り上げて攻撃する。 ライド中に発動すると、進行方向を操作できる。"
             },
             "fr": {
-                "Name": "Corne ascendante",
+                "Name": "Corne Ascendante",
                 "Description": "Compétence réservée à Eikthyrdeer. Charge l'ennemi et l'attaque en levant ses cornes. À activer sur son dos pour contrôler sa direction."
             }
         },
@@ -382,7 +382,7 @@
                 "Description": "イノボウの専用スキル。 敵に狙いを定め、猛烈な勢いで猛進する。"
             },
             "fr": {
-                "Name": "Ruée mortelle",
+                "Name": "Charge Furieuse",
                 "Description": "Compétence réservée à Rushoar. Verrouille l'ennemi et se jette férocement dessus."
             }
         },
@@ -408,7 +408,7 @@
                 "Description": "エアムルグの専用スキル。 足爪を前に出しながら 勢い良く滑空突進を行う。"
             },
             "fr": {
-                "Name": "Griffe planante",
+                "Name": "Griffe Planante",
                 "Description": "Compétence exclusive à Galeclaw. Envoie ses serres en avant pour fendre l'air vigoureusement."
             }
         },
@@ -434,7 +434,7 @@
                 "Description": "ニャンギマリの専用スキル。 不敵な笑みを浮かべながら跳び上がり、 全身で敵を押しつぶす。"
             },
             "fr": {
-                "Name": "Presse féline",
+                "Name": "Presse Féline",
                 "Description": "Compétence exclusive à Grintale. Se jette sur l'ennemi avec un sourire effronté avant de l'écraser de tout son poids."
             }
         },
@@ -460,7 +460,7 @@
                 "Description": "ホークウィンの専用スキル。 前方に竜巻を発生させた後、 滑空しながら敵に突進する。"
             },
             "fr": {
-                "Name": "Attaque tornade",
+                "Name": "Attaque Tornade",
                 "Description": "Compétence exclusive à Nitewing. Crée une tornade devant lui pour charger l'ennemi en planant."
             }
         },
@@ -486,8 +486,8 @@
                 "Description": "大量のエネルギーをチャージし 巨大な球体にして発射する。"
             },
             "fr": {
-                "Name": "Rayon puissant",
-                "Description": "Accumule une grande quantité d'énergie pour former et tirer une énorme boule."
+                "Name": "Boule d'Énergie",
+                "Description": "Accumule une immense quantité d’énergie pour créer et lancer une gigantesque boule destructrice."
             }
         },
         "UniqueSkill": false,
@@ -512,7 +512,7 @@
                 "Description": "ラブラドン種の専用スキル。 体を横向きに構え、 前方にタックルをかまして敵を吹き飛ばす。"
             },
             "fr": {
-                "Name": "Fracas corporel",
+                "Name": "Fracas Corporel",
                 "Description": "Compétence exclusive à Broncherry. Fait pivoter son corps à quatre-vingt-dix degrés avant de charger l'ennemi pour l'envoyer valser."
             }
         },
@@ -538,7 +538,7 @@
                 "Description": "ゴリレイジ種の専用スキル。 地面を2度たたきつけたあとに飛び上がり、 最後に強烈なパンチをお見舞いする。"
             },
             "fr": {
-                "Name": "Combo gorille",
+                "Name": "Combo Gorille",
                 "Description": "Compétence exclusive à Gorirat. Frappe le sol à deux reprises puis bondit pour asséner un puissant coup de poing."
             }
         },
@@ -564,7 +564,7 @@
                 "Description": "ムラクモの専用スキル。 大気を操作し、風圧を纏いながら突進する。"
             },
             "fr": {
-                "Name": "Tempête nuageuse",
+                "Name": "Tempête Nuageuse",
                 "Description": "Compétence exclusive à Fenglope. Manipule l'atmosphère pour foncer vers l'avant en utilisant la pression du vent."
             }
         },
@@ -590,7 +590,7 @@
                 "Description": "アルパオー種の専用スキル。 大きく跳び上がった後、 ふくよかな巨体で敵を押しつぶす。"
             },
             "fr": {
-                "Name": "Presse royale",
+                "Name": "Presse Royale",
                 "Description": "Compétence exclusive à Kingpaca. Écrase l'ennemi avec son corps imposant et dodu après avoir sauté haut dans les airs."
             }
         },
@@ -616,7 +616,7 @@
                 "Description": "セイントールの専用スキル。 聖なる力をその身にまとい 左手の槍を前に突き出しながら突進する。 突進中、右手の盾はあらゆる攻撃を防ぐ。"
             },
             "fr": {
-                "Name": "Lance simple",
+                "Name": "Lance Sacrée",
                 "Description": "Compétence exclusive à Paladius. Concentre l'énergie sacrée dans son corps pour charger en pointant sa lance en avant avec sa main gauche. Le bouclier dans sa main droite permet de le protéger dans sa ruée."
             }
         },
@@ -642,7 +642,7 @@
                 "Description": "破壊エネルギーをチャージし 前方広範囲に超強力なビームを発射する。"
             },
             "fr": {
-                "Name": "Hyper rayon",
+                "Name": "Hyper Rayon",
                 "Description": "Accumule une énergie destructrice pour tirer un puissant rayon sur une zone étendue droit devant."
             }
         },
@@ -694,7 +694,7 @@
                 "Description": "命をかけて爆散する。 自身も殉職する名誉の技。"
             },
             "fr": {
-                "Name": "Silence",
+                "Name": "Sacrifice Ultime",
                 "Description": "Joue le tout pour le tout en s'autodétruisant. Une technique d'honneur basée sur le sacrifice."
             }
         },
@@ -720,7 +720,7 @@
                 "Description": "命をかけた大爆発を起こす。 自身は命を散らし、夜空に輝く星となる。"
             },
             "fr": {
-                "Name": "Autodestruction MT",
+                "Name": "Autodestruction Ultime",
                 "Description": "Crée une énorme explosion au prix de sa propre vie. Il peut ensuite aller rejoindre les étoiles dans le ciel."
             }
         },
@@ -746,7 +746,7 @@
                 "Description": "敵をめがけて、一直線に飛んでゆく 超高速な風の刃を発射する。"
             },
             "fr": {
-                "Name": "Coupe-rafale",
+                "Name": "Coupe-Rafale",
                 "Description": "Tire des lames de vent supersonique qui filent droit sur l'ennemi."
             }
         },
@@ -772,7 +772,7 @@
                 "Description": "たくさんの固い種を放出し 前方の敵を攻撃する。"
             },
             "fr": {
-                "Name": "Mitraille-graines",
+                "Name": "Mitraille-Graines",
                 "Description": "Libère une salve de graines dures comme la pierre pour attaquer les ennemis devant lui."
             }
         },
@@ -798,7 +798,7 @@
                 "Description": "アロアリュー種の専用スキル。 大きな尻尾を使って前方の地面をたたきつけ、 直線状に衝撃を与える。"
             },
             "fr": {
-                "Name": "Fracas botanique",
+                "Name": "Fracas Botanique",
                 "Description": "Compétence réservée à Dinossom. Utilise sa grande queue pour frapper le sol devant lui et toucher en ligne droite."
             }
         },
@@ -824,7 +824,7 @@
                 "Description": "敵をめがけて一直線に飛んでゆく 超高速な風の刃を3発発射する。"
             },
             "fr": {
-                "Name": "Multi-coupe",
+                "Name": "Multi-Coupe",
                 "Description": "Tire 3 lames de vent supersonique qui filent droit sur l'ennemi."
             }
         },
@@ -850,7 +850,7 @@
                 "Description": "危険なタネを発射する。 敵に当たると弾けて爆発する。"
             },
             "fr": {
-                "Name": "Explose-graines",
+                "Name": "Explose-Graines",
                 "Description": "Tire des graines létales qui explosent au contact de l'ennemi."
             }
         },
@@ -876,7 +876,7 @@
                 "Description": "フェザーロ種の専用スキル。 弓を引き絞って敵に狙いを定め 敵に射撃を行う。"
             },
             "fr": {
-                "Name": "Tir précis",
+                "Name": "Tir Précis",
                 "Description": "Compétence exclusive à Robinquill. Dégaine son arc pour viser l'ennemi et le cribler de flèches."
             }
         },
@@ -902,7 +902,7 @@
                 "Description": "クインビーナの専用スキル。 杖にパワーを集め、回転しながら解き放つ。"
             },
             "fr": {
-                "Name": "Bâton tournoyant",
+                "Name": "Bâton Tournoyant",
                 "Description": "Compétence exclusive à Elizabee. Accumule de la force dans son bâton pour la relâcher sur l'ennemi en tournoyant."
             }
         },
@@ -928,7 +928,7 @@
                 "Description": "左右に竜巻を発生させ 敵にけしかける。"
             },
             "fr": {
-                "Name": "Tornade verte",
+                "Name": "Tornade Verte",
                 "Description": "Génère des tornades des deux côtés pour assaillir l'ennemi."
             }
         },
@@ -954,7 +954,7 @@
                 "Description": "ササゾーの専用スキル。 右腕をグルグル回し、前方に強烈なパンチを繰り出す。"
             },
             "fr": {
-                "Name": "Poing musclé",
+                "Name": "Poing Musclé",
                 "Description": "Compétence exclusive à Mossanda. Fait tournoyer son bras droit avant de donner un violent coup de poing vers l'avant."
             }
         },
@@ -980,7 +980,7 @@
                 "Description": "地中の鋭い根が敵を追いかけ 足元から敵を貫く。"
             },
             "fr": {
-                "Name": "Lierre rampant",
+                "Name": "Lierre Rampant",
                 "Description": "Ses racines acérées dans le sol pourchassent l'ennemi et le transpercent sous ses pieds."
             }
         },
@@ -1006,7 +1006,7 @@
                 "Description": "太陽の力をチャージして 敵めがけて強力なビームを発射する。"
             },
             "fr": {
-                "Name": "Rayon solaire",
+                "Name": "Rayon Solaire",
                 "Description": "Accumule l'énergie solaire pour tirer un puissant rayon sur l'ennemi."
             }
         },
@@ -1032,7 +1032,7 @@
                 "Description": "上空に尖った氷を生成し 敵めがけてそれらを発射する。"
             },
             "fr": {
-                "Name": "Missile glacé",
+                "Name": "Missile de Glace",
                 "Description": "Crée une stalactite dans le ciel pour la faire s'abattre sur l'ennemi."
             }
         },
@@ -1058,7 +1058,7 @@
                 "Description": "三日月状の氷の刃を作り出し 前方に発射する。"
             },
             "fr": {
-                "Name": "Coupe-glace",
+                "Name": "Coupe-Glace",
                 "Description": "Crée une lame de glace en forme de croissant pour la projeter vers l'avant."
             }
         },
@@ -1084,7 +1084,7 @@
                 "Description": "ツララジカの専用スキル。 突進しながら荘厳な氷の角で敵を突き上げる。"
             },
             "fr": {
-                "Name": "Ruée glacée",
+                "Name": "Ruée Glacée",
                 "Description": "Compétence exclusive à Reindrix. Charge pour empaler l'ennemi avec sa majestueuse corne glacée."
             }
         },
@@ -1136,7 +1136,7 @@
                 "Description": "キャプペンの専用スキル。 地面にお腹をつけ、全身から冷気を発して 滑りながら敵にぶつかっていく。"
             },
             "fr": {
-                "Name": "Capitaine glissade",
+                "Name": "Capitaine Glissade",
                 "Description": "Compétence exclusive à Penking. S'allonge à plat ventre et émet de l'air froid pour glisser et entrer en collision avec l'ennemi."
             }
         },
@@ -1162,7 +1162,7 @@
                 "Description": "敵に向かって冷気を放出し 継続的にダメージを与える。"
             },
             "fr": {
-                "Name": "Souffle givré",
+                "Name": "Souffle Givré",
                 "Description": "Souffle de l'air glacé sur l'ennemi pour lui infliger des dégâts en continu."
             }
         },
@@ -1188,7 +1188,7 @@
                 "Description": "フロスカノンの専用スキル。 前足を振り上げて地面に叩きつけ 敵のいる地点に雪を噴出させる。 噴出時、周囲に雪の玉が降りかかる。"
             },
             "fr": {
-                "Name": "Explosion givrée",
+                "Name": "Explosion Givrée",
                 "Description": "Compétence exclusive à Reptyro Cryst. Lève ses pattes avant et les fait s'écraser sur le sol pour souffler un blizzard là où l'ennemi se trouve et faire pleuvoir des bombes de neige tout autour."
             }
         },
@@ -1214,7 +1214,7 @@
                 "Description": "グレイシャル種の専用スキル。 冷気を凝縮して翼に氷をまとわせ 疾走しながら氷翼で敵を切り裂く。"
             },
             "fr": {
-                "Name": "Ailes cristallines",
+                "Name": "Ailes Cristallines",
                 "Description": "Compétence exclusive à Frostallion. Condense l'air froid pour recouvrir ses ailes de glace et s'élance pour trancher l'ennemi."
             }
         },
@@ -1240,7 +1240,7 @@
                 "Description": "巨大な氷塊を作り出し 敵めがけて高速で発射する。 着弾すると、周囲にも衝撃を与える。"
             },
             "fr": {
-                "Name": "Morsure du blizzard",
+                "Name": "Morsure du Blizzard",
                 "Description": "Génère un énorme bloc de glace pour le lancer à toute vitesse sur l'ennemi. L'onde de choc impacte également la zone environnante."
             }
         },
@@ -1266,7 +1266,7 @@
                 "Description": "敵をめがけて、一直線に飛んでゆく 炎の弾を発射する。"
             },
             "fr": {
-                "Name": "Tir enflammé",
+                "Name": "Tir Enflammé",
                 "Description": "Tire des projectiles enflammés qui filent droit sur l'ennemi."
             }
         },
@@ -1292,7 +1292,7 @@
                 "Description": "敵に向かって火の玉を発射する。 少し進むと破裂して 小さな火の玉が前方に広がる。"
             },
             "fr": {
-                "Name": "Fente enflammée",
+                "Name": "Flammes Scindées",
                 "Description": "Tire une boule de feu sur l'ennemi. Elle explose après un certain temps pour en libérer de plus petites vers l'avant."
             }
         },
@@ -1318,7 +1318,7 @@
                 "Description": "ブルフェルノの専用スキル。 敵に狙いを定めた後、 猛烈な勢いで突進しながら角を振り上げる。"
             },
             "fr": {
-                "Name": "Corne brûlante",
+                "Name": "Corne Brûlante",
                 "Description": "Compétence exclusive à Arsox. Se concentre sur l'ennemi et le charge à pleine puissance en levant ses cornes vers le ciel."
             }
         },
@@ -1344,7 +1344,7 @@
                 "Description": "敵を追尾する、高速な火の矢を 3本連続で発射する。"
             },
             "fr": {
-                "Name": "Flèche de feu",
+                "Name": "Flèche de Feu",
                 "Description": "Tire 3 flèches de feu successives qui traquent l'ennemi."
             }
         },
@@ -1363,15 +1363,15 @@
             },
             "zh-CN": {
                 "Name": "居合斩",
-                "Description": "浪刃武士的专用技能。 摆出迎战姿势后瞬间移动至敌人面前， 并使出超高速的拔刀攻击。"
+                "Description": "浪刃武士及亚种的专用技能。 摆出迎战姿势后瞬间移动至敌人面前， 并使出超高速的拔刀攻击。"
             },
             "ja": {
                 "Name": "居合斬り",
-                "Description": "ツジギリの専用スキル。 刀を構えた後、一瞬で敵の目の前に現れて 超高速の抜刀攻撃を放つ。"
+                "Description": "ツジギリ種の専用スキル。 刀を構えた後、一瞬で敵の目の前に現れて 超高速の抜刀攻撃を放つ。"
             },
             "fr": {
                 "Name": "Iaigiri",
-                "Description": "Compétence exclusive à Bushi. Lève son épée pour apparaître instantanément devant l'ennemi et lui asséner un coup ultra rapide."
+                "Description": "Compétence exclusive à Bushi. Brandit son katana, réapparaît instantanément devant l’ennemi et déclenche une attaque éclair au sabre dégainé."
             }
         },
         "UniqueSkill": true,
@@ -1396,7 +1396,7 @@
                 "Description": "敵に向かって火炎を放出し、 継続的にダメージを与える。"
             },
             "fr": {
-                "Name": "Souffle enflammé",
+                "Name": "Souffle Enflammé",
                 "Description": "Lance des flammes sur l'ennemi pour lui infliger des dégâts en continu."
             }
         },
@@ -1422,7 +1422,7 @@
                 "Description": "ヘルゴート種の専用スキル。 接近しながら左手の爪で切り上げつつ跳躍し、 続けざまに右手の爪を素早く切り下ろす。"
             },
             "fr": {
-                "Name": "Griffe infernale",
+                "Name": "Griffe Infernale",
                 "Description": "Compétence exclusive à Incineram. S'approche en donnant des coups de griffes sautés avec sa patte gauche, suivis de coups de griffes rapides vers le bas avec sa patte droite."
             }
         },
@@ -1448,7 +1448,7 @@
                 "Description": "シラヌイの専用スキル。 全身に青い炎をまとい、勢いをつけて突進する。"
             },
             "fr": {
-                "Name": "Inébranlable",
+                "Name": "Flammes Azur",
                 "Description": "Compétence exclusive à Kitsun. Enveloppe tout son corps de flammes bleues avant de charger violemment."
             }
         },
@@ -1474,7 +1474,7 @@
                 "Description": "左右に灼熱の竜巻を発生させ 敵にけしかける。"
             },
             "fr": {
-                "Name": "Tempête ardente",
+                "Name": "Tempête Ardente",
                 "Description": "Génère des tornades brûlantes des deux côtés pour assaillir l'ennemi."
             }
         },
@@ -1500,7 +1500,7 @@
                 "Description": "サラブレイズの専用スキル。 炎をまといながら突進する。 その軌道上には火が燃え残る。"
             },
             "fr": {
-                "Name": "Charge-flammes",
+                "Name": "Charge-Flammes",
                 "Description": "Compétence exclusive à Pyrin. S'enveloppe de feu avant de charger vers l'avant. Des flammes restent en suspension après son passage."
             }
         },
@@ -1526,7 +1526,7 @@
                 "Description": "ボルカノンの専用スキル。 前足を振り上げて地面に叩きつけ 敵のいる地点を噴火させる。 噴火時、周囲に火山弾が降りかかる。"
             },
             "fr": {
-                "Name": "Éclat volcanique",
+                "Name": "Déchaînement Volcanique",
                 "Description": "Compétence exclusive à Reptyro. Lève ses pattes avant et les fait s'écraser sur le sol pour provoquer une éruption dans la zone où l'ennemi se trouve et faire pleuvoir des bombes volcaniques tout autour."
             }
         },
@@ -1578,7 +1578,7 @@
                 "Description": "ホルスの専用スキル。 灼熱の竜巻を巻き起こしたあと、 身体に獄炎を纏い、滑空しながら突進する。"
             },
             "fr": {
-                "Name": "Ailes flamboyantes",
+                "Name": "Ailes Flamboyantes",
                 "Description": "Compétence réservée à Faleris. Génère une tornade ardente avant de s'envelopper dans les flammes pour charger en planant."
             }
         },
@@ -1604,7 +1604,7 @@
                 "Description": "頭上に巨大な火球を作り出し、敵に向かって発射する。 着弾すると爆発し、広範囲に爆風が広がる。"
             },
             "fr": {
-                "Name": "Boule enflammée",
+                "Name": "Boule Enflammée",
                 "Description": "Génère une énorme sphère de feu au-dessus de sa tête pour la lancer sur l'ennemi. L'explosion à l'impact se propage sur une zone étendue."
             }
         },
@@ -1630,7 +1630,7 @@
                 "Description": "雷を呼んで 一定時間後にたくさんの落雷を起こす。"
             },
             "fr": {
-                "Name": "Pluie foudroyante",
+                "Name": "Pluie Foudroyante",
                 "Description": "Invoque le tonnerre pour faire s'abattre la foudre après un certain temps."
             }
         },
@@ -1656,7 +1656,7 @@
                 "Description": "扇状に広がる 雷の球を発射する。"
             },
             "fr": {
-                "Name": "Tir étincelant",
+                "Name": "Tir Étincelant",
                 "Description": "Génère des sphères de foudre qui se propagent en forme d'éventail."
             }
         },
@@ -1682,7 +1682,7 @@
                 "Description": "素早く放電し 周囲に衝撃を与える。"
             },
             "fr": {
-                "Name": "Onde électrique",
+                "Name": "Onde Électrique",
                 "Description": "Produit une décharge rapide touchant toute la zone autour de lui."
             }
         },
@@ -1708,7 +1708,7 @@
                 "Description": "ゆっくりと敵を追いかける 雷の球を発射する。"
             },
             "fr": {
-                "Name": "Boule de foudre",
+                "Name": "Boule de Foudre",
                 "Description": "Tire des boules de foudre qui poursuivent lentement l'ennemi."
             }
         },
@@ -1734,7 +1734,7 @@
                 "Description": "雷エネルギーをもつ2つの球を作り出し そこから、敵めがけて無数の雷球を発射する。"
             },
             "fr": {
-                "Name": "Cheminée plasmique",
+                "Name": "Boule de Plasma",
                 "Description": "Génère deux sphères d'énergie orageuse pour envoyer d'innombrables boules de foudre sur l'ennemi."
             }
         },
@@ -1760,7 +1760,7 @@
                 "Description": "敵に狙いを定めたあとに 超高速な雷のレーザーを発射する。"
             },
             "fr": {
-                "Name": "Laser chercheur",
+                "Name": "Laser Chercheur",
                 "Description": "Verrouille l'ennemi et tire un laser de foudre ultra-rapide."
             }
         },
@@ -1786,7 +1786,7 @@
                 "Description": "エレパンダの専用スキル。 敵に向かって飛び掛かり、電気を纏った爪で切り裂く。 2回飛び掛かった後、最後は地面に向かって爪をたて、 広範囲に電撃を拡げる。"
             },
             "fr": {
-                "Name": "Griffe éclair",
+                "Name": "Griffe Éclair",
                 "Description": "Compétence réservée à Grizzbolt. Se jette sur l'ennemi et le taillade avec ses griffes électrifiées. Tourne ses griffes vers le sol après deux assauts pour diffuser le choc électrique sur une zone étendue."
             }
         },
@@ -1812,7 +1812,7 @@
                 "Description": "一直線に進む雷撃を発生させる。"
             },
             "fr": {
-                "Name": "Éclair horizontal",
+                "Name": "Éclair Horizontal",
                 "Description": "Génère un éclair qui se déplace en ligne droite."
             }
         },
@@ -1838,7 +1838,7 @@
                 "Description": "ライゾーの専用スキル。 右腕をグルグル回し、前方に電撃のパンチを繰り出す。"
             },
             "fr": {
-                "Name": "Explo-poing",
+                "Name": "Explo-Poing",
                 "Description": "Compétence exclusive à Mossanda Lux. Fait tournoyer son bras droit avant d'asséner un coup de poing électrifié."
             }
         },
@@ -1864,7 +1864,7 @@
                 "Description": "敵の頭上から、3度の落雷を発生させる。"
             },
             "fr": {
-                "Name": "Triple éclair",
+                "Name": "Triple Éclair",
                 "Description": "Fait s'abattre trois éclairs au-dessus de l'ennemi."
             }
         },
@@ -1890,7 +1890,7 @@
                 "Description": "ライコーンの専用スキル。 自身の周囲に落雷を発生させながら、 敵に向かって突進する。"
             },
             "fr": {
-                "Name": "Ruée foudroyante",
+                "Name": "Ruée Foudroyante",
                 "Description": "Compétence exclusive à Univolt. Fait s'abattre la foudre autour de lui avant de se ruer sur l'ennemi."
             }
         },
@@ -1942,7 +1942,7 @@
                 "Description": "自らを避雷針として雷を落とし、 その場に放電爆発を引き起こす。"
             },
             "fr": {
-                "Name": "Coup de foudre",
+                "Name": "Coup de Foudre",
                 "Description": "Fait s'abattre la foudre en faisant office de paratonnerre pour provoquer une explosion électrique."
             }
         },
@@ -1968,7 +1968,7 @@
                 "Description": "雷の力をチャージして 敵めがけて強力な電撃を放出する。"
             },
             "fr": {
-                "Name": "Éclair fulgurant",
+                "Name": "Éclair Fulgurant",
                 "Description": "Accumule l'énergie orageuse pour libérer un puissant choc électrique sur l'ennemi."
             }
         },
@@ -1994,7 +1994,7 @@
                 "Description": "ベタベタの泥を 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Tir boueux",
+                "Name": "Tir Boueux",
                 "Description": "Lance de la boue collante sur l'ennemi."
             }
         },
@@ -2020,7 +2020,7 @@
                 "Description": "無数の小さな石のつぶてを 前方に発射する。"
             },
             "fr": {
-                "Name": "Explosion rocailleuse",
+                "Name": "Explosion Rocailleuse",
                 "Description": "Projette une multitude de pierres vers l'avant."
             }
         },
@@ -2046,7 +2046,7 @@
                 "Description": "ドリタスの専用スキル。 全身を高速で回転させながら移動する。 敵をドリルで削り、連続でダメージを与える。"
             },
             "fr": {
-                "Name": "Coquille rotative",
+                "Name": "Coquille Rotative",
                 "Description": "Compétence exclusive à Digtoise. Tournoie sur lui-même à grande vitesse afin de se déplacer et d'infliger des dégâts en continu à l'ennemi en lui assénant des taillades."
             }
         },
@@ -2072,7 +2072,7 @@
                 "Description": "目の前の地面から岩を取り出し 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Canon à pierre",
+                "Name": "Canon à Pierre",
                 "Description": "Extrait un rocher du sol devant lui pour le lancer sur l'ennemi."
             }
         },
@@ -2124,7 +2124,7 @@
                 "Description": "左右に砂の竜巻を発生させ 敵にけしかける。"
             },
             "fr": {
-                "Name": "Tornade de sable",
+                "Name": "Tornade de Sable",
                 "Description": "Génère des tornades de sable des deux côtés pour assaillir l'ennemi."
             }
         },
@@ -2150,7 +2150,7 @@
                 "Description": "アヌビスの専用スキル。 強靭な脚で回し蹴りをして、周囲を広範囲に薙ぎ払う。"
             },
             "fr": {
-                "Name": "Fauchage bas",
+                "Name": "Coup de Pied tournoyant",
                 "Description": "Compétence réservée à Anubis. Utilise ses puissantes jambes pour donner un coup de pied circulaire fauchant une large zone."
             }
         },
@@ -2176,7 +2176,7 @@
                 "Description": "グランモス種の専用スキル。 その巨体で大地を揺るがし、 自身を中心に広範囲へダメージを与える。"
             },
             "fr": {
-                "Name": "Impact terrestre",
+                "Name": "Impact Terrestre",
                 "Description": "Compétence exclusive à Mammorest. Utilise son corps gigantesque pour faire trembler la terre et infliger des dégâts sur une zone étendue."
             }
         },
@@ -2202,7 +2202,7 @@
                 "Description": "アヌビスの専用スキル。 敵を追いかけるように高速で移動し、 エネルギーを放出しながら強力なパンチを繰り出す。"
             },
             "fr": {
-                "Name": "Tacle puissant",
+                "Name": "Frappe Énergique",
                 "Description": "Compétence réservée à Anubis. Se déplace à grande vitesse pour pourchasser l'ennemi et libère toute son énergie dans un puissant coup de poing."
             }
         },
@@ -2228,7 +2228,7 @@
                 "Description": "アヌビスの専用スキル。 空高く跳び上がり、地面に向かってパンチする。 地面に衝撃が広がり、広範囲にダメージを与える。"
             },
             "fr": {
-                "Name": "Fracasse-sol",
+                "Name": "Fracasse-Sol",
                 "Description": "Compétence réservée à Anubis. S'envole haut dans les airs avant de frapper le sol. L'impact se propage pour infliger des dégâts sur une zone étendue."
             }
         },
@@ -2254,7 +2254,7 @@
                 "Description": "敵の足元から 鋭い岩の槍を出現させる。"
             },
             "fr": {
-                "Name": "Lance-roche",
+                "Name": "Lance-Roche",
                 "Description": "Fait apparaître des pics rocheux tranchants sous les pieds de l'ennemi."
             }
         },
@@ -2280,7 +2280,7 @@
                 "Description": "竜の力がこもったエネルギー弾を 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Canon draconique",
+                "Name": "Canon Draconique",
                 "Description": "Tire un projectile d'énergie imprégné du pouvoir des dragons sur l'ennemi."
             }
         },
@@ -2306,7 +2306,7 @@
                 "Description": "素早く竜の力を放出し 周囲に衝撃を与える。"
             },
             "fr": {
-                "Name": "Éclat draconique",
+                "Name": "Déchaînement Draconique",
                 "Description": "Libère rapidement le pouvoir des dragons pour toucher toute la zone autour de lui."
             }
         },
@@ -2332,7 +2332,7 @@
                 "Description": "竜の力がこもった息吹を 前方に吹き付け、継続的にダメージを与える。"
             },
             "fr": {
-                "Name": "Souffle draconique",
+                "Name": "Souffle Draconique",
                 "Description": "Expulse un air chargé du pouvoir des dragons droit devant pour infliger des dégâts en continu."
             }
         },
@@ -2358,7 +2358,7 @@
                 "Description": "シルフィア種の専用スキル。 不思議な力が込められた竜巻を2つ発射し、 敵を追いかける。"
             },
             "fr": {
-                "Name": "Ouragan mystique",
+                "Name": "Ouragan Mystique",
                 "Description": "Compétence réservée à Elphidran. Génère deux tornades imprégnées d'un pouvoir mystérieux pour pourchasser l'ennemi."
             }
         },
@@ -2384,7 +2384,7 @@
                 "Description": "ジェッドランの専用スキル。 翼を光らせ、敵めがけて飛んでいく 無数のビームを発射する。 ビームは着弾時に爆発を引き起こす。"
             },
             "fr": {
-                "Name": "Comète",
+                "Name": "Faisceau Stellaire",
                 "Description": "Compétence exclusive à Jetragon. Fait briller ses ailes pour tirer d'innombrables rayons sur l'ennemi qui provoquent une explosion à l'impact."
             }
         },
@@ -2410,7 +2410,7 @@
                 "Description": "小さな隕石をたくさん呼び出して 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Météore draconique",
+                "Name": "Météore Draconique",
                 "Description": "Invoque tout un tas de petites météorites pour les lancer sur l'ennemi."
             }
         },
@@ -2436,7 +2436,7 @@
                 "Description": "前方に毒の霧を発生させ、 相手を毒状態にする。"
             },
             "fr": {
-                "Name": "Nuage toxique",
+                "Name": "Nuage Toxique",
                 "Description": "Génère un brouillard toxique droit devant qui empoisonne l'adversaire."
             }
         },
@@ -2462,7 +2462,7 @@
                 "Description": "毒の力がこもったヘドロを 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Tir empoisonné",
+                "Name": "Tir Empoisonné",
                 "Description": "Tire une flaque saturée de poison sur l'ennemi."
             }
         },
@@ -2488,7 +2488,7 @@
                 "Description": "ゆっくりと敵を追いかける 闇の球を発射する。"
             },
             "fr": {
-                "Name": "Balle sombre",
+                "Name": "Balle Sombre",
                 "Description": "Tire des boules de ténèbres qui poursuivent lentement l'ennemi."
             }
         },
@@ -2514,7 +2514,7 @@
                 "Description": "素早く闇の力を放出し 周囲に衝撃を与える。"
             },
             "fr": {
-                "Name": "Éclat d'ombre",
+                "Name": "Déchaînement d'Ombre",
                 "Description": "Libère rapidement le pouvoir des ténèbres pour toucher toute la zone autour de lui."
             }
         },
@@ -2540,7 +2540,7 @@
                 "Description": "マスクロウの専用スキル。 敵のそばに瞬間移動した後、 くちばしによる攻撃を行う。"
             },
             "fr": {
-                "Name": "Assaut fantôme",
+                "Name": "Assaut Fantôme",
                 "Description": "Compétence exclusive à Cawgnito. Se téléporte à proximité de l'ennemi pour l'assaillir de coups de bec."
             }
         },
@@ -2566,7 +2566,7 @@
                 "Description": "ツキカゲの専用スキル。 前方に跳び上がり、素早く2回引っかく。 その斬撃には闇属性の力が込められている。"
             },
             "fr": {
-                "Name": "Griffe sautée",
+                "Name": "Griffe Sautée",
                 "Description": "Compétence exclusive à Loupmoon. S'élance vers l'avant pour donner deux coups de griffes rapides. Cet assaut est imprégné du pouvoir des ténèbres."
             }
         },
@@ -2592,7 +2592,7 @@
                 "Description": "執念深く敵を追いかける 3つの怨念を発射する。"
             },
             "fr": {
-                "Name": "Flamme spirituelle",
+                "Name": "Flamme Spirituelle",
                 "Description": "Lance trois malédictions qui poursuivent inlassablement l'ennemi."
             }
         },
@@ -2618,7 +2618,7 @@
                 "Description": "サラブラックの専用スキル。 暗黒の炎をまといながら突進する。 その軌道上には火が燃え残る。"
             },
             "fr": {
-                "Name": "Charge-ombre",
+                "Name": "Charge-Ombre",
                 "Description": "Compétence exclusive à Pyrin Noct. S'enveloppe de feu obscur avant de charger vers l'avant. Des flammes restent en suspension après son passage."
             }
         },
@@ -2644,7 +2644,7 @@
                 "Description": "大きな闇の球を作り出し 敵めがけて高速で発射する。"
             },
             "fr": {
-                "Name": "Balle cauchemar",
+                "Name": "Balle Cauchemar",
                 "Description": "Génère une grosse sphère d'ombre pour la lancer à toute vitesse sur l'ennemi."
             }
         },
@@ -2670,7 +2670,7 @@
                 "Description": "ベイントールの専用スキル。 旋風をまとった両腕の槍を 左右交互に突き出しながら突進する。"
             },
             "fr": {
-                "Name": "Lance double",
+                "Name": "Lance Double",
                 "Description": "Compétence exclusive à Necromus. Charge vers l'avant en faisant tourbillonner les lances dans ses mains en alternance."
             }
         },
@@ -2696,7 +2696,7 @@
                 "Description": "闇の力をチャージし 敵めがけて強力なビームを発射する。"
             },
             "fr": {
-                "Name": "Laser noir",
+                "Name": "Laser Noir",
                 "Description": "Accumule l'énergie obscure pour tirer un puissant rayon sur l'ennemi."
             }
         },
@@ -2722,7 +2722,7 @@
                 "Description": "ゼノグリフの専用スキル。 突進しながら、光の球体を出現させる。 光球は敵を自動で捕捉し、無数のレーザーを放つ。"
             },
             "fr": {
-                "Name": "Catastrophe divine",
+                "Name": "Catastrophe Divine",
                 "Description": "Compétence exclusive à Shadowbeak. Fait apparaître une boule lumineuse tout en chargeant. La boule suit l'ennemi automatiquement en libérant une multitude de lasers."
             }
         },
@@ -2748,12 +2748,12 @@
                 "Description": "敵を追いかける闇の球をいくつも発射する。"
             },
             "fr": {
-                "Name": "Légion sombre",
+                "Name": "Légion Sombre",
                 "Description": "Tire plusieurs boules de ténèbres qui poursuivent l'ennemi."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_WeaselDragon_FlyingTackle": {
         "InternalName": "EPalWazaID::Unique_WeaselDragon_FlyingTackle",
@@ -2774,7 +2774,7 @@
                 "Description": "オコチョ種の専用スキル。 少し力を溜めた後、前方に飛びかかる。 着地の瞬間はいつも怖くて目を瞑ってしまうようだ。"
             },
             "fr": {
-                "Name": "Piqué fusée",
+                "Name": "Piqué Fusée",
                 "Description": "Compétence exclusive à Chillet. Fait un bond en avant après avoir accumulé un peu de force. Ferme les yeux au moment d'atterrir pour avoir moins peur."
             }
         },
@@ -2826,7 +2826,7 @@
                 "Description": "敵の頭上に氷の塊を生成し 次々と降らせる。"
             },
             "fr": {
-                "Name": "Chute de diamants",
+                "Name": "Chute de Diamants",
                 "Description": "Fait s'abattre des blocs de glace à la chaîne sur l'ennemi."
             }
         },
@@ -2841,7 +2841,7 @@
         "I18n": {
             "en": {
                 "Name": "Beam Slicer",
-                "Description": "Mows down the frontal area with a beam imbued with dragon power. The area touched by the beam will also explode after a few moments."
+                "Description": "Mows down the frontal area with a beam imbued with dragon power. The area strucked by the beam will also explode after short delay."
             },
             "zh-CN": {
                 "Name": "切割龙息",
@@ -2852,7 +2852,7 @@
                 "Description": "竜の力がこもった光線で前方をなぎ払う。 なぎ払われた場所は時間差で爆発する。"
             },
             "fr": {
-                "Name": "Tranche-faisceau",
+                "Name": "Tranche-Faisceau",
                 "Description": "Un faisceau lumineux imprégné de force draconique balaie droit devant. La zone touchée explose en différé."
             }
         },
@@ -2878,7 +2878,7 @@
                 "Description": "ベラルージュの専用スキル。 不意に姿を消し、現れた瞬間に無数の光線を放つ。 光線は花開くかのごとく拡散する。"
             },
             "fr": {
-                "Name": "Floraison cauchemardesque",
+                "Name": "Floraison Cauchemardesque",
                 "Description": "Compétence exclusive à Bellanoir Libero. Disparaît et réapparaît avec des rayons lumineux. Les rayons se propagent telle une floraison."
             }
         },
@@ -2904,7 +2904,7 @@
                 "Description": "ベラルージュの専用スキル。 ゆらりと舞いながら 周囲に広がる炎の輪を発生させる。 さらに敵を追尾する妖しい炎を発射する。"
             },
             "fr": {
-                "Name": "Valse enflammée",
+                "Name": "Valse Enflammée",
                 "Description": "Compétence exclusive à Bellanoir Libero. Génère un anneau de feu qui se propage en ondulant. Il libère des flammes mystérieuses qui pourchassent l'ennemi."
             }
         },
@@ -2956,7 +2956,7 @@
                 "Description": "扇状に広がる 高速の闇の球を発射する。"
             },
             "fr": {
-                "Name": "Noirceur expansive",
+                "Name": "Noirceur Expansive",
                 "Description": "Génère des sphères de ténèbres qui se propagent rapidement en forme d'éventail."
             }
         },
@@ -2982,7 +2982,7 @@
                 "Description": "闇の力がこもった高速のエネルギー弾を 敵めがけて発射する。"
             },
             "fr": {
-                "Name": "Canon noir",
+                "Name": "Canon Noir",
                 "Description": "Tire un projectile d'énergie imprégné du pouvoir des ténèbres sur l'ennemi."
             }
         },
@@ -3008,7 +3008,7 @@
                 "Description": "闇の力で敵を追尾する複数の矢を 連続かつ高速で発射する。"
             },
             "fr": {
-                "Name": "Flèche noire",
+                "Name": "Flèche Noire",
                 "Description": "Tire plusieurs flèches de ténèbres successives qui traquent l'ennemi."
             }
         },
@@ -3060,7 +3060,7 @@
                 "Description": "ベラノワールの専用スキル。 不意に姿を消し、現れた瞬間に無数の光線を放つ。"
             },
             "fr": {
-                "Name": "Rayons cauchemardesques",
+                "Name": "Rayons Cauchemardesques",
                 "Description": "Compétence exclusive à Bellanoir. Disparaît et réapparaît avec des rayons lumineux."
             }
         },
@@ -3086,7 +3086,7 @@
                 "Description": "デスティング種の専用スキル。 高く跳び上がり、尻尾で勢いよく獲物を突き刺す。 尻尾には毒が含まれている。"
             },
             "fr": {
-                "Name": "Piqûre sautée",
+                "Name": "Piqûre Sautée",
                 "Description": "Compétence exclusive à Menasting. Saute haut dans les airs avant de perforer sa proie avec sa queue. Cette dernière contient du poison."
             }
         },
@@ -3112,7 +3112,7 @@
                 "Description": "触れると爆発する星を敵の周囲に生成する。 星は時間経過によっても爆発する。"
             },
             "fr": {
-                "Name": "Mine d'étoiles",
+                "Name": "Pluie d'Étoiles",
                 "Description": "Fait apparaître des étoiles autour de l'ennemi qui explosent au contact. Les étoiles explosent également après un certain temps."
             }
         },
@@ -3138,7 +3138,7 @@
                 "Description": "トリステップ種の専用スキル。 一気に加速し、前方に高速突進する。"
             },
             "fr": {
-                "Name": "Ruée terrestre",
+                "Name": "Ruée Terrestre",
                 "Description": "Compétence exclusive à Dazemu. Accélère brusquement pour charger à toute vitesse."
             }
         },
@@ -3164,8 +3164,8 @@
                 "Description": "敵のいる地点とその周囲に 鋭い根を突き出す。"
             },
             "fr": {
-                "Name": "Lierre circulaire",
-                "Description": "Tire des racines coupantes tout autour de l'ennemi."
+                "Name": "Lierre Circulaire",
+                "Description": "Fait jaillir des racines coupantes tout autour de l'ennemi."
             }
         },
         "UniqueSkill": false,
@@ -3216,7 +3216,7 @@
                 "Description": "ボルドラゴの専用スキル。 大きく跳び上がった後、空中を高速で移動しつつ 力を溜め、渾身のパンチを繰り出す。"
             },
             "fr": {
-                "Name": "Magna-écrasement",
+                "Name": "Magna-Écrasement",
                 "Description": "Compétence exclusive à Blazamut Ryu. Saute haut dans les airs et fend le ciel à vive allure pour concentrer sa force dans un coup de poing."
             }
         },
@@ -3268,12 +3268,12 @@
                 "Description": "竜の力を溜めたエネルギー弾を 敵めがけて発射する。弾は着弾時に 広範囲の爆発を起こす。"
             },
             "fr": {
-                "Name": "Canon chargé",
+                "Name": "Canon Chargé",
                 "Description": "Tire une boule d'énergie contenant le pouvoir des dragons sur l'ennemi. Celle-ci provoque une grosse explosion à l'impact."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_KingBahamut_ArmSmash": {
         "InternalName": "EPalWazaID::Unique_KingBahamut_ArmSmash",
@@ -3294,7 +3294,7 @@
                 "Description": "ボルカイザー種の専用スキル。 腕を振りかぶり、大きく膨らませた後に 叩き合わせて周囲に大爆発を起こす。"
             },
             "fr": {
-                "Name": "Impact brûlant",
+                "Name": "Impact Brûlant",
                 "Description": "Compétence exclusive à Blazamut. Balance ses bras et les gonfle avant de les faire s'entrechoquer pour créer une énorme explosion autour de lui."
             }
         },
@@ -3320,7 +3320,7 @@
                 "Description": "テラナイト種の専用スキル。 大きく振りかぶって背中の輪を投げる。 輪は円を描くような軌道で飛んでいく。"
             },
             "fr": {
-                "Name": "Coupe-sol",
+                "Name": "Coupe-Sol",
                 "Description": "Compétence exclusive à Knocklem. Se balance violemment avant de lancer l'anneau sur son dos. L'anneau virevolte alors en dessinant des cercles."
             }
         },
@@ -3346,7 +3346,7 @@
                 "Description": "敵のいる地点に竜の力がこもったエネルギー弾を発射する。 エネルギー弾は着弾時に拡散し、 前方広範囲に爆発を起こす。"
             },
             "fr": {
-                "Name": "Canon explosif",
+                "Name": "Canon Explosif",
                 "Description": "Tire un projectile d'énergie imprégné du pouvoir draconique sur l'ennemi. Le projectile se fragmente à l'impact pour créer des explosions sur la zone face à lui."
             }
         },
@@ -3372,7 +3372,7 @@
                 "Description": "無数の隕石を落とし、 周囲に衝撃波を発生させる。"
             },
             "fr": {
-                "Name": "Pluie de météorites",
+                "Name": "Pluie de Météorites",
                 "Description": "Fait tomber d'innombrables météorites pour créer des ondes de choc dans les environs."
             }
         },
@@ -3398,7 +3398,7 @@
                 "Description": "上空に向かって無数の火山弾を発射する。 しばらく経つと発射された火山弾が 発動者の周囲に降り注ぐ。"
             },
             "fr": {
-                "Name": "Pluie volcanique",
+                "Name": "Pluie Volcanique",
                 "Description": "Tire d'innombrables bombes volcaniques dans le ciel. Les bombes s'activent après un certain temps pour faire pleuvoir du feu autour du lanceur."
             }
         },
@@ -3424,7 +3424,7 @@
                 "Description": "エレパンダ種の専用スキル。 どこからか取り出したミニガンをぶっ放す。 最後に少しチャージした後、強力な弾を1発放つ。"
             },
             "fr": {
-                "Name": "Tank foudroyant",
+                "Name": "Tank Foudroyant",
                 "Description": "Compétence exclusive à Grizzbolt. Attaque au moyen d'un minigun sorti de nulle part. Termine sur une balle puissante après une courte charge."
             }
         },
@@ -3439,19 +3439,19 @@
         "I18n": {
             "en": {
                 "Name": "Bountiful Protection",
-                "Description": "Lyleen's exclusive skill. Uses her healing power to recover her health. Doesn't heal anyone else."
+                "Description": "Lyleen's exclusive skill. Restores health to all allies within range using the power of healing."
             },
             "zh-CN": {
                 "Name": "丰饶加护",
-                "Description": "百合女王的专用技能。 使用治愈的力量恢复自身的HP。 并不会帮玩家恢复生命值。"
+                "Description": "百合女王的专用技能。 使用治愈的力量恢复范围内同伴的HP。"
             },
             "ja": {
                 "Name": "豊穣の加護",
-                "Description": "リリクイン種の専用スキル。 癒しの力により自身のHPを回復する。 プレイヤーのことは回復してくれない。"
+                "Description": "リリクインの専用スキル。 癒しの力により、範囲内にいる味方全員のHPを回復する。"
             },
             "fr": {
-                "Name": "Protection de fertilité",
-                "Description": "Compétence exclusive à Lyleen. Utilise un pouvoir régénérateur pour restaurer ses PV. Ne soigne pas le joueur."
+                "Name": "Protection de Fertilité",
+                "Description": "Compétence exclusive à Lyleen. Grâce à son pouvoir de guérison, soigne tous les alliés à portée."
             }
         },
         "UniqueSkill": true,
@@ -3476,7 +3476,7 @@
                 "Description": "敵のいる地点とその周囲に 広範囲の光の爆発を起こす。"
             },
             "fr": {
-                "Name": "Éclat sacré",
+                "Name": "Explosion Sacrée",
                 "Description": "Crée une grosse explosion lumineuse tout autour de l'ennemi."
             }
         },
@@ -3502,7 +3502,7 @@
                 "Description": "ゼノベーダ種の専用スキル。 素早く跳びかかり、左手で切り裂く。"
             },
             "fr": {
-                "Name": "Griffe maléfique",
+                "Name": "Griffe Maléfique",
                 "Description": "Compétence exclusive à Xenovader. Bondit sur sa cible et la lacère de sa main gauche."
             }
         },
@@ -3528,7 +3528,7 @@
                 "Description": "セレムーン種の専用スキル。 背中の月にエネルギーを溜め、 前方に三日月型のビームを発射する。"
             },
             "fr": {
-                "Name": "Rayon lunaire",
+                "Name": "Rayon Lunaire",
                 "Description": "Compétence exclusive à Selyne. Concentre de l'énergie dans la lune sur son dos pour tirer un rayon en forme de croissant devant lui."
             }
         },
@@ -3554,7 +3554,7 @@
                 "Description": "敵のいる地点に燃え上がる炎の壁を発生させる。 炎の壁はしばらく残り続け、 触れた敵にダメージを与える。"
             },
             "fr": {
-                "Name": "Mur de flammes",
+                "Name": "Mur de Flammes",
                 "Description": "Crée un mur de flammes sur la position de l'ennemi. Celui-ci demeure quelque temps et inflige des dégâts aux ennemis qui le touchent."
             }
         },
@@ -3580,7 +3580,7 @@
                 "Description": "鋭い空気の刃を扇状に飛ばす。"
             },
             "fr": {
-                "Name": "Lame aérienne",
+                "Name": "Lame Aérienne",
                 "Description": "Libère des lames d'air tranchantes en forme d'éventail."
             }
         },
@@ -3606,7 +3606,7 @@
                 "Description": "セレムーン種の専用スキル。 月光の力を宿した高速の刃を2連続で飛ばす。"
             },
             "fr": {
-                "Name": "Lame seigetsu",
+                "Name": "Lame Seigetsu",
                 "Description": "Compétence exclusive à Selyne. Tire deux lames consécutives imprégnées de la puissance du clair de lune."
             }
         },
@@ -3632,7 +3632,7 @@
                 "Description": "ワンフー種の専用スキル。 合気の構えをとる。構え中は攻撃を受けても無効化し、 さらに一瞬で敵に迫って渾身の掌底を放つ。"
             },
             "fr": {
-                "Name": "Posture résolue",
+                "Name": "Posture Résolue",
                 "Description": "Compétence exclusive à Dogen. Se met en posture aiki afin d'annuler toute attaque subie et se téléporter sur l'ennemi en lui assénant un coup dévastateur."
             }
         },
@@ -3658,7 +3658,7 @@
                 "Description": "水柱でできた壁を敵のいる地点に連続で発生させる。"
             },
             "fr": {
-                "Name": "Éclabousse-mur",
+                "Name": "Éclabousse-Mur",
                 "Description": "Génère des murs consécutifs de colonnes d'eau sur l'ennemi."
             }
         },
@@ -3684,7 +3684,7 @@
                 "Description": "直線状に飛ぶ高速の雷球と 敵を追尾する遅めの雷球を同時に発射する。"
             },
             "fr": {
-                "Name": "Triple étincelle",
+                "Name": "Triple Étincelle",
                 "Description": "Tire une boule de foudre rapide en ligne droite et une boule de foudre lente qui poursuit l'ennemi."
             }
         },
@@ -3710,7 +3710,7 @@
                 "Description": "巨大な雷の竜巻を発生させる。 竜巻は敵に向かってゆっくりと移動する。"
             },
             "fr": {
-                "Name": "Tempête éclair",
+                "Name": "Tempête Éclair",
                 "Description": "Crée une gigantesque tornade orageuse qui se déplace lentement vers l'ennemi."
             }
         },
@@ -3736,7 +3736,7 @@
                 "Description": "ブッサソリ種の専用スキル。 敵との距離を高速で詰め、 思い切りハサミを振り上げる。"
             },
             "fr": {
-                "Name": "Fracas vertical",
+                "Name": "Fracas Vertical",
                 "Description": "Compétence exclusive à Prixter. Se rapproche de l'ennemi à toute vitesse en levant ses pinces au-dessus de sa tête."
             }
         },
@@ -3762,7 +3762,7 @@
                 "Description": "炎エネルギーをもつ球を複数作り出し、 そこから敵に向かっていく無数の火球を発射する。"
             },
             "fr": {
-                "Name": "Entonnoir enflammé",
+                "Name": "Concentration de Flammes",
                 "Description": "Génère plusieurs sphères d'énergie brûlante pour tirer d'innombrables boules de feu sur l'ennemi."
             }
         },
@@ -3788,8 +3788,8 @@
                 "Description": "複数の砂の竜巻を発生させる。 竜巻は円を描くようにグルグルと回り続ける。"
             },
             "fr": {
-                "Name": "Tornade de sable",
-                "Description": "Génère plusieurs tornades de sable qui tournent en dessinant des cercles."
+                "Name": "Tourbillon de Sable",
+                "Description": "Génère plusieurs tourbillons de sable qui tournent en dessinant des cercles."
             }
         },
         "UniqueSkill": false,
@@ -3814,12 +3814,12 @@
                 "Description": "一直線に進む雷撃を全方位に発生させる。"
             },
             "fr": {
-                "Name": "Tonnerre omniprésent",
+                "Name": "Tonnerre Omniprésent",
                 "Description": "Crée des éclairs qui se déplacent en ligne droite dans toutes les directions."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Railbolt": {
         "InternalName": "EPalWazaID::Railbolt",
@@ -3840,7 +3840,7 @@
                 "Description": "限界まで雷の力をチャージして 敵めがけて強力な電撃を複数同時発射する。"
             },
             "fr": {
-                "Name": "Rail tonitruant",
+                "Name": "Canon Fulgurant",
                 "Description": "Accumule l'énergie orageuse au maximum pour frapper l'ennemi de plusieurs chocs électriques simultanés."
             }
         },
@@ -3866,7 +3866,7 @@
                 "Description": "体に力を込め 全方位に毒の球をまき散らす。"
             },
             "fr": {
-                "Name": "Douche toxique",
+                "Name": "Douche Toxique",
                 "Description": "Concentre son énergie pour disperser des boules de poison dans toutes les directions."
             }
         },
@@ -3892,12 +3892,12 @@
                 "Description": "上空に尖った氷を複数生成し 敵めがけてそれらを発射する。"
             },
             "fr": {
-                "Name": "Stalagballe",
+                "Name": "Grêle Tranchante",
                 "Description": "Crée des stalactites dans le ciel pour les faire s'abattre sur l'ennemi."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::DoubleIcicleThrow": {
         "InternalName": "EPalWazaID::DoubleIcicleThrow",
@@ -3918,7 +3918,7 @@
                 "Description": "巨大な氷塊を2つ作り出し 敵めがけて続けざまに発射する。 着弾すると、周囲にも衝撃を与える。"
             },
             "fr": {
-                "Name": "Double morsure blizzard",
+                "Name": "Double Morsure blizzard",
                 "Description": "Génère deux énormes blocs de glace pour les lancer successivement sur l'ennemi. L'onde de choc impacte également la zone environnante."
             }
         },
@@ -3944,12 +3944,12 @@
                 "Description": "敵の足元から広範囲に氷柱を突き立てる。"
             },
             "fr": {
-                "Name": "Âge de glace",
+                "Name": "Ère Glaciaire",
                 "Description": "Plante des stalagmites aux pieds de l'ennemi sur une zone étendue."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::WindEdge": {
         "InternalName": "EPalWazaID::WindEdge",
@@ -3970,7 +3970,7 @@
                 "Description": "鋭利な風の刃を扇状に飛ばす。"
             },
             "fr": {
-                "Name": "Tranche venteuse",
+                "Name": "Tranche Venteuse",
                 "Description": "Libère des lames de vent tranchantes en forme d'éventail."
             }
         },
@@ -3996,7 +3996,7 @@
                 "Description": "ホルスの専用スキル。 複数の灼熱の竜巻を巻き起こしたあと、滑空しながら突進する。 竜巻は中央に集まっていき、最後は一つの巨大な竜巻になる。"
             },
             "fr": {
-                "Name": "Vague brûlante",
+                "Name": "Vague Brûlante",
                 "Description": "Compétence exclusive à Faleris. Génère plusieurs tornades brûlantes, puis s'enveloppe de flammes pour charger. Les tornades se rassemblent au centre pour en former une géante."
             }
         },
@@ -4022,7 +4022,7 @@
                 "Description": "ゼノグリフ種の専用スキル。 突進しつつ、体の光輪から無数の青い光線を放つ。 光線は敵を自動で捕捉し、追尾する。"
             },
             "fr": {
-                "Name": "Catastrophe divine II",
+                "Name": "Catastrophe Divine II",
                 "Description": "Compétence exclusive à Shadowbeak. Émet d'innombrables rayons bleus depuis le halo sur son corps en chargeant. Les rayons capturent et poursuivent automatiquement l'ennemi."
             }
         },
@@ -4048,7 +4048,7 @@
                 "Description": "一直線に進む氷柱を三方向に発生させる。"
             },
             "fr": {
-                "Name": "Ligne glacée",
+                "Name": "Ligne Glacée",
                 "Description": "Génère des pics de glace dans trois directions qui se déplacent en ligne droite."
             }
         },
@@ -4074,7 +4074,7 @@
                 "Description": "ゴクエンオ種の専用スキル。 勢いをつけながら敵に容赦なく飛びかかり、 飛びかかった先で炎を炸裂させる。"
             },
             "fr": {
-                "Name": "Croc volcanique",
+                "Name": "Croc Volcanique",
                 "Description": "Compétence exclusive à Blazehowl. Concentre sa force avant de se jeter sur l'ennemi en faisant jaillir des flammes là où il atterrit."
             }
         },
@@ -4100,7 +4100,7 @@
                 "Description": "ライバードの専用スキル。 まず、敵のいる地点に雷を落とす。 そして滑空突進しながら左右に雷を落としていく。"
             },
             "fr": {
-                "Name": "Plongeon éclair",
+                "Name": "Plongeon Éclair",
                 "Description": "Compétence exclusive à Beakon. Fait s'abattre la foudre sur la position de l'ennemi avant de le charger en faisant tomber des éclairs à gauche et à droite."
             }
         },
@@ -4126,7 +4126,7 @@
                 "Description": "ジオラーヴァの専用スキル。 前方に2回パンチを繰り出した後、 下に向かって竜属性のブレスを吐きつける。"
             },
             "fr": {
-                "Name": "Poing brûlant",
+                "Name": "Poing Brûlant",
                 "Description": "Compétence exclusive à Astegon. Après avoir asséné deux coups de poing devant lui, libère un souffle de type dragon vers le bas."
             }
         },
@@ -4152,7 +4152,7 @@
                 "Description": "ラベロットの専用スキル。 前方にジャンプしながら高速回転キックで 周囲を薙ぎ払う。"
             },
             "fr": {
-                "Name": "Ruée rotative",
+                "Name": "Ruée Rotative",
                 "Description": "Compétence exclusive à Verdash. Bondit vers l'avant en effectuant des coups de pied tourbillonnants pour balayer les alentours."
             }
         },
@@ -4178,7 +4178,7 @@
                 "Description": "ヒエティの専用スキル。 雪でつくった玉を転がしながら進んでいき、 大きくなりきったところで投げつけて炸裂させる。"
             },
             "fr": {
-                "Name": "Bouldeneige",
+                "Name": "Boule de Neige",
                 "Description": "Compétence exclusive à Wumpo. Fait rouler une boule de neige explosive en avançant, qu'il lance lorsqu'elle atteint sa taille maximale."
             }
         },
@@ -4204,7 +4204,7 @@
                 "Description": "レヴィドラの専用スキル。 雄たけびを上げ、水をまとった体をくねらせながら敵に向かって突進していく。"
             },
             "fr": {
-                "Name": "Serpent marin",
+                "Name": "Serpent Marin",
                 "Description": "Compétence exclusive à Jormuntide. Rugit avant de charger l'ennemi en remuant son corps aqueux."
             }
         },
@@ -4230,7 +4230,7 @@
                 "Description": "ビーナイトの専用スキル。 敵に向かって高速で突進する。 最後にダメ押しで槍を突く。"
             },
             "fr": {
-                "Name": "Lance aiguille",
+                "Name": "Lance Aiguille",
                 "Description": "Compétence exclusive à Beegarde. Se rue à toute vitesse sur l'ennemi et donne un coup de lance précis à la fin."
             }
         },
@@ -4256,7 +4256,7 @@
                 "Description": "イグニクスの専用スキル。 前方に羽ばたきながら正面、右、左と くちばしを突き立てて着火し、 小規模な爆発を起こす。"
             },
             "fr": {
-                "Name": "Ruée aviaire",
+                "Name": "Ruée Aviaire",
                 "Description": "Compétence exclusive à Ragnahawk. Bat des ailes vers l'avant en donnant des coups de bec enflammés devant, à droite et à gauche, créant ainsi de petites explosions."
             }
         },
@@ -4282,7 +4282,7 @@
                 "Description": "イヌズマの専用スキル。 前方に次々と稲妻を呼び寄せ、 降り注いだ稲妻の間を高速で突進していく。"
             },
             "fr": {
-                "Name": "Appel éclair",
+                "Name": "Appel Éclair",
                 "Description": "Compétence exclusive à Rayhound. Fait tomber plusieurs éclairs devant lui à la suite avant de foncer au milieu."
             }
         },
@@ -4308,7 +4308,7 @@
                 "Description": "ソルレイスの専用スキル。 ゆっくりと走りながら、揺らめく炎の玉を 敵に向かって飛ばし続ける。"
             },
             "fr": {
-                "Name": "Ruée spirituelle",
+                "Name": "Ruée Spirituelle",
                 "Description": "Compétence exclusive à Maraith. Tire des boules de feu vacillantes vers l'ennemi tout en courant lentement."
             }
         },
@@ -4334,7 +4334,7 @@
                 "Description": "カバネドリの専用スキル。 口から炎を吐きながら前進する。"
             },
             "fr": {
-                "Name": "Souffle aérien",
+                "Name": "Souffle Aérien",
                 "Description": "Compétence exclusive à Vanwyrm. Avance droit devant en crachant du feu."
             }
         },
@@ -4360,7 +4360,7 @@
                 "Description": "ツンドラーの専用スキル。 1撃、2撃と爪で切り裂き、最後に全身を 使って大きく切り裂く。爪を振るう際、 前方に氷柱を3本扇状に飛ばす。"
             },
             "fr": {
-                "Name": "Griffe blizzard",
+                "Name": "Griffe Blizzard",
                 "Description": "Compétence exclusive à Cryolinx. Donne deux coups de griffes avant d'utiliser tout son corps pour réduire l'ennemi en pièces. Envoie trois glaçons vers l'avant en forme d'éventail lorsqu'il agite ses griffes."
             }
         },
@@ -4386,7 +4386,7 @@
                 "Description": "ゼノドランの専用スキル。 自動攻撃機能を持つ衛星型の羽を４本生成する。 この羽は次の攻撃を放つ時に 自動で敵を追尾して攻撃する。"
             },
             "fr": {
-                "Name": "Foret satellite",
+                "Name": "Ailes Traqueuses",
                 "Description": "Compétence exclusive à Xenolord. Fait pousser quatre ailes satellites avec fonction d'attaque automatique. Celles-ci effectueront des assauts pourchassant automatiquement l'ennemi à la prochaine attaque."
             }
         },
@@ -4412,7 +4412,7 @@
                 "Description": "ゼノドランの専用スキル。 亜空間から呼び寄せた破滅の光を 縦横無尽に放ち続け、 その目に映る全てを焼き尽くす。"
             },
             "fr": {
-                "Name": "Laser oméga",
+                "Name": "Laser Oméga",
                 "Description": "Compétence exclusive à Xenolord. Émet une lumière destructrice directement issue de l'hyperespace dans toutes les directions pour carboniser tout ce qui se reflète dans ses yeux."
             }
         },
@@ -4438,7 +4438,7 @@
                 "Description": "ゼノドランの専用スキル。 暗黒に満ちたエネルギーを収束させ、 直線状に一気に放出する。"
             },
             "fr": {
-                "Name": "Rayon astral",
+                "Name": "Rayon Astral",
                 "Description": "Compétence exclusive à Xenolord. Accumule l'énergie obscure pour la libérer d'un seul coup en ligne droite."
             }
         },
@@ -4464,7 +4464,7 @@
                 "Description": "ゼノドランの専用スキル。 右手で高出力の剣を生成し、 高速で移動しながら２回切りつける。"
             },
             "fr": {
-                "Name": "Taillade rayonnante",
+                "Name": "Taillade Rayonnante",
                 "Description": "Compétence exclusive à Xenolord. Matérialise une puissante épée avec sa main droite et effectue deux taillades en se déplaçant à toute vitesse."
             }
         },
@@ -4490,7 +4490,7 @@
                 "Description": "ゼノドランの専用スキル。 光の速さで宙に舞い上がり、無数の流星弾を放つ。 その後、自ら彗星となって突進し、 衝突した場所に大爆発を引き起こす。"
             },
             "fr": {
-                "Name": "Météore cosmique",
+                "Name": "Météore Cosmique",
                 "Description": "Compétence exclusive à Xenolord. S'envole dans les airs à la vitesse de la lumière pour générer d'innombrables météorites. Se change ensuite en comète et charge vers l'avant, provoquant une énorme explosion au point d'impact."
             }
         },
@@ -4516,7 +4516,7 @@
                 "Description": "シロカバネの専用スキル。 口から冷気を吐きながら前進する。"
             },
             "fr": {
-                "Name": "Blizzard volant",
+                "Name": "Tempête de Glace",
                 "Description": "Compétence exclusive à Vanwyrm Cryst. Avance droit devant en crachant du froid."
             }
         },
@@ -4542,7 +4542,7 @@
                 "Description": "アグニドラの専用スキル。 雄たけびを上げ、炎をまとった体をくねらせながら敵に向かって突進していく。"
             },
             "fr": {
-                "Name": "Serpent de feu",
+                "Name": "Serpent de Feu",
                 "Description": "Compétence exclusive à Jormuntide Ignis. Rugit avant de charger l'ennemi en remuant son corps enflammé."
             }
         },
@@ -4568,7 +4568,7 @@
                 "Description": "グランドラーの専用スキル。 1撃、2撃と爪で切り裂き、最後に全身を 使って大きく切り裂く。爪を振るう際、 前方に岩石を3本扇状に飛ばす。"
             },
             "fr": {
-                "Name": "Griffe rocailleuse",
+                "Name": "Griffe Rocailleuse",
                 "Description": "Compétence exclusive à Cryolinx Terra. Donne deux coups de griffes avant d'utiliser tout son corps pour réduire l'ennemi en pièces. Envoie trois rochers vers l'avant en forme d'éventail lorsqu'il agite ses griffes."
             }
         },
@@ -4594,7 +4594,7 @@
                 "Description": "ムラサメの専用スキル。 大気を操作し、雷雲を纏いながら突進する。"
             },
             "fr": {
-                "Name": "Tempête orageuse",
+                "Name": "Tempête Orageuse",
                 "Description": "Compétence exclusive à Fenglope Lux. Manipule l'atmosphère pour foncer vers l'avant en utilisant un nuage d'orage."
             }
         },
@@ -4620,7 +4620,7 @@
                 "Description": "ユキカゲの専用スキル。 前方に跳び上がり、素早く2回引っかく。 その斬撃には氷属性の力が込められている。"
             },
             "fr": {
-                "Name": "Griffe neigeuse",
+                "Name": "Griffe Neigeuse",
                 "Description": "Compétence exclusive à Loupmoon Cryst. S'élance vers l'avant pour donner deux coups de griffes rapides. Cet assaut est imprégné du pouvoir de la glace."
             }
         },
@@ -4646,7 +4646,7 @@
                 "Description": "イシスの専用スキル。 大渦の竜巻を巻き起こしたあと、 身体に水を纏い、滑空しながら突進する。"
             },
             "fr": {
-                "Name": "Ailes aqueuses",
+                "Name": "Ailes Aqueuses",
                 "Description": "Compétence réservée à Faleris Aqua. Génère une grosse tornade avant de s'envelopper d'eau pour charger en planant."
             }
         },
@@ -4672,7 +4672,7 @@
                 "Description": "カゲヌイの専用スキル。 全身に紫色の炎をまとい、勢いをつけて突進する。"
             },
             "fr": {
-                "Name": "Éclair ardent de l'ombre",
+                "Name": "Éclair Ardent de l'Ombre",
                 "Description": "Compétence exclusive à Kitsun Noct. Enveloppe tout son corps de flammes violettes avant de charger violemment."
             }
         },
@@ -4698,12 +4698,12 @@
                 "Description": "地面を震わせ 巨大な岩塊を浮き上がらせる。"
             },
             "fr": {
-                "Name": "Fracas rocheux",
+                "Name": "Fracas Rocheux",
                 "Description": "Le sol tremble pour faire remonter une énorme masse rocheuse à la surface."
             }
         },
         "UniqueSkill": false,
-        "SkillFruit": false
+        "SkillFruit": true
     },
     "EPalWazaID::Unique_Yeti_Grass_GrassBall": {
         "InternalName": "EPalWazaID::Unique_Yeti_Grass_GrassBall",
@@ -4724,7 +4724,7 @@
                 "Description": "トロピティの専用スキル。 草でつくった玉を転がしながら進んでいき、 大きくなりきったところで投げつけて炸裂させる。"
             },
             "fr": {
-                "Name": "Roulade herbeuse",
+                "Name": "Roulade Herbeuse",
                 "Description": "Compétence exclusive à Wumpo Botan. Fait rouler une boule d'herbe explosive en avançant, qu'il lance lorsqu'elle atteint sa taille maximale."
             }
         },
@@ -4750,7 +4750,7 @@
                 "Description": "ヒョウガオーの専用スキル。 大きく咆哮して跳び上がった後、 両腕を地面に埋め込んで巨大な氷の亀裂を作る。 そのまま地面に力を込め続け、 最終的に氷属性の大爆発を起こす。"
             },
             "fr": {
-                "Name": "Glace pilée",
+                "Name": "Impact Glacial",
                 "Description": "Compétence exclusive à Bastigor. Après avoir poussé un grand rugissement et sauté, enfonce ses deux pattes dans le sol pour créer une énorme crevasse de glace. La pression continue exercée sur le sol finit par provoquer une grosse explosion de type glace."
             }
         },
@@ -4776,7 +4776,7 @@
                 "Description": "モモンチュラの専用スキル。 糸玉を吐き、当たった獲物を絡めとる。 その後、獲物のところまで全速力で駆け寄り、 ３回引っかいてとどめを刺す。"
             },
             "fr": {
-                "Name": "Charge arachnéenne",
+                "Name": "Charge Arachnéenne",
                 "Description": "Compétence exclusive à Tarantriss. Crache une boule de toile pour empêtrer la proie touchée. S'élance ensuite à toute vitesse pour la lacérer trois fois."
             }
         },
@@ -4802,7 +4802,7 @@
                 "Description": "ヒョウガオーの専用スキル。 地面を踏みしだき、 前方に氷の裂け目を発生させる。 その後一気に近づき、右手で切り裂く。"
             },
             "fr": {
-                "Name": "Griffe glacée",
+                "Name": "Griffe Glacée",
                 "Description": "Compétence exclusive à Bastigor. Écrase le sol pour créer une crevasse de glace devant lui. Se précipite ensuite vers sa cible pour la trancher de sa patte droite."
             }
         },
@@ -4828,7 +4828,7 @@
                 "Description": "オーメンの専用スキル。 急に敵の近くに現れて両腕でがっちり拘束し、 拘束された敵のHPを吸収する。"
             },
             "fr": {
-                "Name": "Vol d'âme",
+                "Name": "Vol d'Âme",
                 "Description": "Compétence exclusive à Omascul. Apparaît d'un coup près de l'ennemi pour l'immobiliser avec ses deux bras et absorber ses PV."
             }
         },
@@ -4854,7 +4854,7 @@
                 "Description": "ヤンデリナの専用スキル。 その場から瞬間移動して斬撃を飛ばす。 さらに敵の頭上に瞬間移動し、 得物を突き立てて闇の波動を発生させる。"
             },
             "fr": {
-                "Name": "Barrage amer",
+                "Name": "Rancune Déchaînée",
                 "Description": "Compétence exclusive à Splatterina. Se téléporte pour effectuer une attaque tranchante. Apparaît ensuite au-dessus de la tête de l'ennemi et plante son arme pour générer une vague d'obscurité."
             }
         },
@@ -4880,7 +4880,7 @@
                 "Description": "アイギルガの専用スキル。 前方にあらゆる攻撃を軽減するシールドを展開し、 突進しながら敵を圧し潰す。"
             },
             "fr": {
-                "Name": "Charge aegis",
+                "Name": "Charge Aegis",
                 "Description": "Compétence exclusive à Silvegis. Déploie un bouclier devant lui qui affaiblit toutes les attaques et charge l'ennemi avec pour l'écraser."
             }
         },
@@ -4906,7 +4906,7 @@
                 "Description": "オーマサンダの専用スキル。 雷のごとき速さで移動し、 軌道上に存在するもの全てを巻き込む。"
             },
             "fr": {
-                "Name": "Flash écrasant",
+                "Name": "Flash Écrasant",
                 "Description": "Compétence exclusive à Azurmane. Se déplace à la vitesse de l'éclair pour engloutir tout ce qui orbite autour de lui."
             }
         },
@@ -4932,7 +4932,7 @@
                 "Description": "セレスディアの専用スキル。 前方広範囲に聖なる光の爆発を引き起こした後、 歩きながら、自身の周囲に聖なる光を発生させる。"
             },
             "fr": {
-                "Name": "Nova sacrée",
+                "Name": "Nova Sacrée",
                 "Description": "Compétence exclusive à Celesdir. Après avoir provoqué une explosion sacrée sur une zone étendue devant lui, diffuse une lumière sacrée autour de lui en marchant."
             }
         },
@@ -4958,7 +4958,7 @@
                 "Description": "ナイトロットの専用スキル。 揺らめくステップで敵を翻弄しながら、 鋭利な角で斬撃を飛ばす。"
             },
             "fr": {
-                "Name": "Piétinement mortel",
+                "Name": "Piétinement Mortel",
                 "Description": "Compétence exclusive à Starryon. Malmène l'ennemi en titubant avant de le sabrer avec ses cornes acérées."
             }
         },
@@ -4984,8 +4984,502 @@
                 "Description": "キンガゼルの専用スキル。 勢い良く左右に岩を飛ばしながら突進する。"
             },
             "fr": {
-                "Name": "Ruée écrasante",
+                "Name": "Ruée Écrasante",
                 "Description": "Compétence exclusive à Gildane. Se rue vers l'avant en envoyant des rochers voler à gauche et à droite."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::SeaGush": {
+        "InternalName": "EPalWazaID::SeaGush",
+        "Element": "Water",
+        "CT": 60,
+        "Power": 180,
+        "I18n": {
+            "en": {
+                "Name": "Geyser Gush",
+                "Description": "Erupts massive pillars of water beneath and around the enemy."
+            },
+            "zh-CN": {
+                "Name": "潮涌迸发",
+                "Description": "在敌人所在位置及其周围区域 喷出大量水柱。"
+            },
+            "ja": {
+                "Name": "水柱噴出",
+                "Description": "敵のいる地点とその周囲に 大量の水柱を噴出させる。"
+            },
+            "fr": {
+                "Name": "Éruption Aquatique",
+                "Description": "Génère d'énormes colonnes d'eau aux endroits où se trouvent les ennemis, ainsi qu'autour d'eux, créant une explosion d'eau dévastatrice."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false
+    },
+    "EPalWazaID::RipTide": {
+        "InternalName": "EPalWazaID::RipTide",
+        "Element": "Water",
+        "CT": 56,
+        "Power": 160,
+        "I18n": {
+            "en": {
+                "Name": "Aqua Surge",
+                "Description": "Generates waves that surge around the enemy from all sides. They converge and explode at the center, erupting into a column of water."
+            },
+            "zh-CN": {
+                "Name": "漩涡新星",
+                "Description": "在敌人四周掀起波浪并涌向敌人， 最后在中心点爆炸，喷出高高的水柱。"
+            },
+            "ja": {
+                "Name": "アクアサージ",
+                "Description": "敵の周囲から押し寄せる波を発生させる。 波は最後、中心点で爆発して水柱を上げる。"
+            },
+            "fr": {
+                "Name": "Vague Scélérate",
+                "Description": "Fait surgir des vagues autour de l’ennemi, qui convergent ensuite vers le centre. À l’impact, une explosion d’eau jaillit en une puissante colonne."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::HydroSlicer": {
+        "InternalName": "EPalWazaID::HydroSlicer",
+        "Element": "Water",
+        "CT": 45,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Hydro Slicer",
+                "Description": "Mows down the frontal area with a blast of compressed water. The area struck by the blast erupts with water after a short delay."
+            },
+            "zh-CN": {
+                "Name": "水刀切割",
+                "Description": "用压缩水流一扫前方。 被扫过的区域会在片刻后喷出水柱。"
+            },
+            "ja": {
+                "Name": "ハイドロスライサー",
+                "Description": "圧縮された水流で前方をなぎ払う。 なぎ払われた場所からは時間差で水が噴出する。"
+            },
+            "fr": {
+                "Name": "Hydro Tranchant",
+                "Description": "Balaye l'ennemi devant lui avec un jet d'eau comprimée. Des jets d'eau jaillissent de l'endroit frappé après un court délai."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::DiversionLaser": {
+        "InternalName": "EPalWazaID::DiversionLaser",
+        "Element": "Water",
+        "CT": 35,
+        "Power": 110,
+        "I18n": {
+            "en": {
+                "Name": "Torrential Blast",
+                "Description": "Fires a high-pressure stream of water forward. After a short delay, the stream branches off to the left and right."
+            },
+            "zh-CN": {
+                "Name": "分流水炮",
+                "Description": "向前方发射高压水流。 片刻后，水流会向左右分岔。"
+            },
+            "ja": {
+                "Name": "高圧水撃",
+                "Description": "前方に高圧水流を発射する。 水流は少し時間をおいて左右に分岐する。"
+            },
+            "fr": {
+                "Name": "Double-Aqua",
+                "Description": "Lance un jet d'eau à haute pression vers l'avant. Après un court instant, le jet se divise et se dirige vers la gauche et la droite."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::CrossWind": {
+        "InternalName": "EPalWazaID::CrossWind",
+        "Element": "Grass",
+        "CT": 45,
+        "Power": 140,
+        "I18n": {
+            "en": {
+                "Name": "Crosswind",
+                "Description": "Conjures blades of wind in front of the enemy, converging to deliver a cutting cross attack."
+            },
+            "zh-CN": {
+                "Name": "十字风切",
+                "Description": "在敌人前方生成风刃， 并对其发动十字斩击。"
+            },
+            "ja": {
+                "Name": "クロスウィンド",
+                "Description": "敵の前方に生成した風の刃を クロスさせて攻撃する。"
+            },
+            "fr": {
+                "Name": "Vent Croisé",
+                "Description": "Crée des lames de vent devant l'ennemi et les croise pour les attaquer."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::IceWall": {
+        "InternalName": "EPalWazaID::IceWall",
+        "Element": "Ice",
+        "CT": 30,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Freeze Wall",
+                "Description": "Creates a wall of ice that rises from the ground. The ice wall remains standing for a while, and breaks after taking enough damage."
+            },
+            "zh-CN": {
+                "Name": "寒冰之壁",
+                "Description": "从地面召唤出冰墙。 冰墙会持续一段时间， 并在承受一定伤害后碎裂。"
+            },
+            "ja": {
+                "Name": "フリーズウォール",
+                "Description": "地面から氷の壁を出現させる。 氷の壁はしばらく残り続け、 一定ダメージを受けると壊れる。"
+            },
+            "fr": {
+                "Name": "Mur de Glace",
+                "Description": "Fait émerger un mur de glace du sol. Le mur reste en place pendant un certain temps et se brise après avoir reçu un certain nombre de dégâts."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::Unique_OctopursGirl_InkJet": {
+        "InternalName": "EPalWazaID::Unique_OctopursGirl_InkJet",
+        "Element": "Water",
+        "CT": 12,
+        "Power": 85,
+        "I18n": {
+            "en": {
+                "Name": "Smoke Jet",
+                "Description": "Gloopie's exclusive skill. Releases smoke to conceal itself, then launches a surprise headbutt from the shadows."
+            },
+            "zh-CN": {
+                "Name": "墨沫头槌",
+                "Description": "墨沫姬的专用技能。 向前方释放烟雾遮蔽自身， 从隐蔽状态中突然发动头槌，猛击敌人。"
+            },
+            "ja": {
+                "Name": "ジェットスモーク",
+                "Description": "ヒメンダコの専用スキル。 前方にスモークを発生させて自身の姿を隠し、 見えない状態から頭突きで強襲をかける。"
+            },
+            "fr": {
+                "Name": "Fumée de Jais",
+                "Description": "Compétence exclusive à Gloopie. Projette un écran de fumée devant elle pour masquer sa présence, puis lance une attaque surprise avec un violent coup de tête depuis sa cachette."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_TentacleTurtle_HydroSpin": {
+        "InternalName": "EPalWazaID::Unique_TentacleTurtle_HydroSpin",
+        "Element": "Water",
+        "CT": 15,
+        "Power": 95,
+        "I18n": {
+            "en": {
+                "Name": "Hydro Spin",
+                "Description": "Turtacle's exclusive skill. Uses jet-powered propulsion to spin rapidly and launch itself at the enemy."
+            },
+            "zh-CN": {
+                "Name": "漩涡回旋",
+                "Description": "盔盔仔及亚种的专用技能。 利用水流喷射推进力， 一边高速旋转一边向敌人飞旋而去。"
+            },
+            "ja": {
+                "Name": "ハイドロスピン",
+                "Description": "ヘルメッコ種の専用スキル。 ジェット噴射による推進力を利用し、 高速回転しながら敵に向かって飛んでいく。"
+            },
+            "fr": {
+                "Name": "Hydro-Tourbillon",
+                "Description": "Compétence exclusive de Turtacle. Utilise la poussée d’un jet d’eau pour foncer à toute vitesse vers l’ennemi en tournoyant violemment."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_LeafMomonga_SomerSault": {
+        "InternalName": "EPalWazaID::Unique_LeafMomonga_SomerSault",
+        "Element": "Grass",
+        "CT": 20,
+        "Power": 105,
+        "I18n": {
+            "en": {
+                "Name": "Konoha Flip",
+                "Description": "Herbil's exclusive skill. After a brief moment of preparation, charges at the enemy at high speed, finishing with a flip."
+            },
+            "zh-CN": {
+                "Name": "叶返",
+                "Description": "达鼠泥的专用技能。 短暂蓄力后高速撞击敌人， 同时做出后空翻动作。"
+            },
+            "ja": {
+                "Name": "木の葉返り",
+                "Description": "モモンパの専用スキル。 一瞬身構えた後、 敵に高速でぶつかって行きながら宙返りする。"
+            },
+            "fr": {
+                "Name": "Volte-Feuille",
+                "Description": "Compétence exclusive à Herbil. Après une brève préparation, il charge l’ennemi à grande vitesse pour infliger des dégâts, puis effectue un salto arrière pour revenir à sa position initiale."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_IceNarwhal_JumpingHorn": {
+        "InternalName": "EPalWazaID::Unique_IceNarwhal_JumpingHorn",
+        "Element": "Ice",
+        "CT": 40,
+        "Power": 165,
+        "I18n": {
+            "en": {
+                "Name": "High Breach",
+                "Description": "Whalaska's exclusive skill. Charges straight ahead and briefly submerges, then bursts high into the air to launch an attack. An ice-element explosion occurs upon emerging."
+            },
+            "zh-CN": {
+                "Name": "冰鲸跃",
+                "Description": "凉晶鲸及亚种的专用技能。 笔直突进后短暂潜伏， 接着高高跃起进行攻击。 跃起时会引发冰属性爆炸。"
+            },
+            "ja": {
+                "Name": "ハイブリーチ",
+                "Description": "コゴエール種の専用スキル。 直進して一瞬潜った後、 天高く飛び出して攻撃する。 飛び出す際、氷属性の爆発が起きる。"
+            },
+            "fr": {
+                "Name": "Cryolance",
+                "Description": "Compétence exclusive à Whalaska. Avance droit devant lui et passe brièvement sous l'eau avant de sauter haut dans le ciel pour attaquer. Une explosion de glace accompagne son saut."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_StuffedShark_HiddenWeapon": {
+        "InternalName": "EPalWazaID::Unique_StuffedShark_HiddenWeapon",
+        "Element": "Water",
+        "CT": 24,
+        "Power": 115,
+        "I18n": {
+            "en": {
+                "Name": "Trigger Happy",
+                "Description": "Finsider's exclusive skill. Draws twin water blasters from its mouth, firing six shots alternately left and right, then finishes by combining both blasters to unleash one powerful shot."
+            },
+            "zh-CN": {
+                "Name": "午时已到",
+                "Description": "布偶鲨及亚种的专用技能。 从口中取出两把水枪， 左右轮流射出6发水弹。 最后双枪合并，射出一发强力水弹。"
+            },
+            "ja": {
+                "Name": "トリガーハッピー",
+                "Description": "ガブルミ種の専用スキル。 口の中から二丁の水鉄砲を取り出し、 左右交互に水弾を6発撃つ。 最後は二丁を合わせ、強力な1発を放つ。"
+            },
+            "fr": {
+                "Name": "Fou de la Gâchette",
+                "Description": "Compétence exclusive à Finsider. Sort deux pistolets à eau de sa bouche pour tirer six projectiles en alternant gauche et droite. Termine en combinant ses deux armes pour effectuer un tir puissant."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::GravityShot": {
+        "InternalName": "EPalWazaID::GravityShot",
+        "Element": "Dark",
+        "CT": 4,
+        "Power": 40,
+        "I18n": {
+            "en": {
+                "Name": "Dark Shot",
+                "Description": "Fires a dark energy projectile that accelerates over time."
+            },
+            "zh-CN": {
+                "Name": "暗能弹",
+                "Description": "发射逐渐加速的黑暗能量弹"
+            },
+            "ja": {
+                "Name": "ダークショット",
+                "Description": "徐々に加速して飛んでゆく 暗黒のエネルギー弾を発射する。"
+            },
+            "fr": {
+                "Name": "Tir Obscur",
+                "Description": "Tire une balle d'énergie noire qui s'accélère progressivement en volant."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::ThunderSpear": {
+        "InternalName": "EPalWazaID::ThunderSpear",
+        "Element": "Electric",
+        "CT": 2,
+        "Power": 30,
+        "I18n": {
+            "en": {
+                "Name": "Thunder Spear",
+                "Description": "Fires a high-speed lightning spear straight ahead towards the enemy."
+            },
+            "zh-CN": {
+                "Name": "雷矛",
+                "Description": "向敌人发射高速直线飞行的雷枪。"
+            },
+            "ja": {
+                "Name": "サンダースピア",
+                "Description": "直線状に飛んでいく雷の槍を 敵めがけて高速で発射する。"
+            },
+            "fr": {
+                "Name": "Lance Foudroyante",
+                "Description": "Un Javelot de foudre qui vole en ligne droite est lancé à grande vitesse vers l'ennemi."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::ReflectiveShuriken": {
+        "InternalName": "EPalWazaID::ReflectiveShuriken",
+        "Element": "Grass",
+        "CT": 42,
+        "Power": 130,
+        "I18n": {
+            "en": {
+                "Name": "Reflect Leaf",
+                "Description": "Launches a blade of wind that rebounds off enemies or trees, striking repeatedly. Can ricochet up to four times."
+            },
+            "zh-CN": {
+                "Name": "连锁叶刃",
+                "Description": "发射风刃， 在击中敌人或树木时反弹并连续造成攻击， 最多可反弹4次。"
+            },
+            "ja": {
+                "Name": "リフレクトリーフ",
+                "Description": "敵や木に当たると跳ね返って連続攻撃になる 風の刃を飛ばす。 最大4回まで跳ね返る。"
+            },
+            "fr": {
+                "Name": "Feuille Ricochet",
+                "Description": "Lance des lames de vent qui rebondissent sur les ennemis ou les arbres, déclenchant des attaques consécutives. Peut rebondir jusqu'à 4 fois."
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": true
+    },
+    "EPalWazaID::Unique_IceCrocodile_SpitAttack": {
+        "InternalName": "EPalWazaID::Unique_IceCrocodile_SpitAttack",
+        "Element": "Ice",
+        "CT": 17,
+        "Power": 95,
+        "I18n": {
+            "en": {
+                "Name": "Chaotic Spray",
+                "Description": "Munchill's exclusive skill. Coughs up three cold grenades kept undigested inside its body and lobs them at enemies. May occasionally spit out something more dangerous...?"
+            },
+            "zh-CN": {
+                "Name": "妙玉连珠",
+                "Description": "肚肚鳄的专用技能。 连续喷吐3颗体内尚未消化 但已经冷却的手榴弹进行攻击。 有时还会喷出更危险的东西……？"
+            },
+            "ja": {
+                "Name": "乱れ吐き",
+                "Description": "コチワニの専用スキル。 体内で消化されず冷やされていたグレネードを 3つポンポン吐いて攻撃する。 たまにもっと危険なものを吐くことも…？"
+            },
+            "fr": {
+                "Name": "Crachat Glacé",
+                "Description": "Compétence exclusive à Munchill. Attaque en crachant trois grenades qui ont été refroidies sans être digérées à l'intérieur de son corps. Et s'il pouvait cracher quelque chose d'encore plus dangereux ?"
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_CaptainPenguin_Black_BodySlide_Electric": {
+        "InternalName": "EPalWazaID::Unique_CaptainPenguin_Black_BodySlide_Electric",
+        "Element": "Electric",
+        "CT": 35,
+        "Power": 145,
+        "I18n": {
+            "en": {
+                "Name": "Thunderslide",
+                "Description": "Penking Lux's exclusive skill. Lies on its belly while generating electric charge all around it before sliding at enemies at high speed."
+            },
+            "zh-CN": {
+                "Name": "王者闪击",
+                "Description": "闪丸王的专用技能。 全身电流涌动，腹部着地滑行 并用力撞向敌人。"
+            },
+            "ja": {
+                "Name": "サンダースライディング",
+                "Description": "ペンキッドの専用スキル。 地面にお腹をつけ、全身から電気を発して 滑りながら敵にぶつかっていく。"
+            },
+            "fr": {
+                "Name": "Glissade Foudroyante",
+                "Description": "Compétence exclusive à Penking Lux. Il se couche sur le ventre et émet de l’électricité à travers tout son corps, glissant sur le sol et percutant l'ennemi avec une décharge électrique."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_Plesiosaur_LongBreath": {
+        "InternalName": "EPalWazaID::Unique_Plesiosaur_LongBreath",
+        "Element": "Grass",
+        "CT": 30,
+        "Power": 135,
+        "I18n": {
+            "en": {
+                "Name": "Deep Breath",
+                "Description": "Braloha's exclusive skill. From the base of its long neck to the tip of its snout, it gradually spreads the breath of grass element."
+            },
+            "zh-CN": {
+                "Name": "花粉吐息",
+                "Description": "梁叶龙的专用技能。 从修长的颈部缓缓释放出草属性的气息， 逐渐向四周扩散。"
+            },
+            "ja": {
+                "Name": "ロングブレス",
+                "Description": "トコナッツの専用スキル。 その長い首元から首先にかけ、 徐々に草属性の息吹を拡散させていく。"
+            },
+            "fr": {
+                "Name": "Souffle Persistant",
+                "Description": "Compétence exclusive à Braloha. Il dresse son long cou et projette un souffle verdâtre au-dessus de l’ennemi, puis continue de souffler tout autour de lui, enveloppant la zone d’une haleine végétale persistante."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_TropicalOstrich_DashKick": {
+        "InternalName": "EPalWazaID::Unique_TropicalOstrich_DashKick",
+        "Element": "Grass",
+        "CT": 28,
+        "Power": 125,
+        "I18n": {
+            "en": {
+                "Name": "Dash Kick",
+                "Description": "Palumba's exclusive skill. Dashes to build up speed, then launches a devastating airborne kick at its target."
+            },
+            "zh-CN": {
+                "Name": "冲锋踢",
+                "Description": "咕咕桑葩的专用技能。 冲刺助跑后向敌人发动猛烈踢击。"
+            },
+            "ja": {
+                "Name": "ダッシュキック",
+                "Description": "ココヤンバの専用スキル。 ダッシュで勢いをつけながら、 敵に強烈な飛び蹴りを浴びせる。"
+            },
+            "fr": {
+                "Name": "Coup de Pied Fulgurant",
+                "Description": "Compétence exclusive à Palumba. Charge en sprintant pour asséner un violent coup de pied sauté à l’ennemi."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_PoseidonOrca_TorrentLaser": {
+        "InternalName": "EPalWazaID::Unique_PoseidonOrca_TorrentLaser",
+        "Element": "Water",
+        "CT": 60,
+        "Power": 200,
+        "I18n": {
+            "en": {
+                "Name": "Thalassonic Laser",
+                "Description": "Neptilius's exclusive skill. Rising slightly, it gathers water at its mouth, then sweeps a high-pressure stream vertically and horizontally three times. Fissures form at the swept locations, erupting with water."
+            },
+            "zh-CN": {
+                "Name": "风暴潮",
+                "Description": "海皇鲸的专用技能。 身体略微上浮并在口中凝聚水流。 随后纵横挥扫出三股高压水流。 被扫过的区域会出现裂缝并喷出水柱。"
+            },
+            "ja": {
+                "Name": "タラソニックレーザー",
+                "Description": "ネプティオスの専用スキル。 少し浮き上がりながら、口元に水を集める。 その後、高圧水流を縦横に三度なぎ払う。 なぎ払われた地点には裂け目ができ、水が噴出する。"
+            },
+            "fr": {
+                "Name": "Laser Torrentiel",
+                "Description": "Compétence exclusive à Neptilius. S’élève légèrement dans les airs tout en concentrant de l’eau au niveau de sa gueule. Puis projette à trois reprises un jet d’eau à haute pression, balayant horizontalement et verticalement. À chaque point d’impact, une fissure s’ouvre, laissant jaillir de puissantes colonnes d’eau."
             }
         },
         "UniqueSkill": true,
@@ -5010,7 +5504,7 @@
                 "Description": "隕石を続けざまに落とし、 周囲に衝撃波を発生させる。"
             },
             "fr": {
-                "Name": "Chute de comètes",
+                "Name": "Chute de Comètes",
                 "Description": "Fait tomber des météorites en continu pour créer des ondes de choc dans les environs."
             }
         },
@@ -5036,7 +5530,7 @@
                 "Description": "敵に狙いを定めたあと、 超高速な雷のレーザーを複数発射する。"
             },
             "fr": {
-                "Name": "Laser létal",
+                "Name": "Laser Léthal",
                 "Description": "Verrouille l'ennemi et tire plusieurs lasers de foudre ultra-rapides."
             }
         },
@@ -5062,7 +5556,7 @@
                 "Description": "敵をめがけて飛んでいく 無数の風の刃を発射する。"
             },
             "fr": {
-                "Name": "Pale à vent",
+                "Name": "Tranche-Rafale",
                 "Description": "Tire d'innombrables lames de vent qui filent droit sur l'ennemi."
             }
         },
@@ -5088,7 +5582,7 @@
                 "Description": "セレムーン種の専用スキル。 月光の力を宿した高速の刃を3連続で飛ばす。"
             },
             "fr": {
-                "Name": "Flash higetsu",
+                "Name": "Flash Seigetsu",
                 "Description": "Compétence exclusive à Selyne. Tire trois lames consécutives imprégnées de la puissance du clair de lune."
             }
         },
@@ -5114,7 +5608,7 @@
                 "Description": ""
             },
             "fr": {
-                "Name": "Vague prédatrice",
+                "Name": "Vague Prédatrice",
                 "Description": ""
             }
         },
@@ -5140,7 +5634,7 @@
                 "Description": ""
             },
             "fr": {
-                "Name": "Rayon prédateur",
+                "Name": "Rayon Prédateur",
                 "Description": ""
             }
         },
@@ -5166,8 +5660,580 @@
                 "Description": ""
             },
             "fr": {
-                "Name": "Ciblage prédateur",
+                "Name": "Ciblage Prédateur",
                 "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_GhostAnglerfish_SweepBait": {
+        "InternalName": "EPalWazaID::Unique_GhostAnglerfish_SweepBait",
+        "Element": "Water",
+        "CT": 15,
+        "Power": 95,
+        "I18n": {
+            "en": {
+                "Name": "Lantern Sweep",
+                "Description": "Ghangler's exclusive skill. Lashes forward with the lantern atop its head, sweeping broadly ahead."
+            },
+            "zh-CN": {
+                "Name": "提灯横扫",
+                "Description": "冥灯鱼的专用技能。 使用头部长长的提灯横扫前方大范围目标。"
+            },
+            "ja": {
+                "Name": "提灯払い",
+                "Description": "アンドーンの専用スキル。 頭部にある長い提灯で前方を大きくなぎ払う。"
+            },
+            "fr": {
+                "Name": "Fouet-Lanterne",
+                "Description": "Compétence exclusive à Ghangler. Balaye violemment l’avant avec sa longue lanterne frontale."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss002_PhantasmalDeathray": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss002_PhantasmalDeathray",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalDeathray",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalDeathray",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalDeathray",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalDeathray",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss002_PhantasmalEye": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss002_PhantasmalEye",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalEye",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalEye",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalEye",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalEye",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss002_PhantasmalBolt": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss002_PhantasmalBolt",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalBolt",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalBolt",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalBolt",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalBolt",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss002_PhantasmalSphere": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss002_PhantasmalSphere",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalSphere",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalSphere",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalSphere",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss002_PhantasmalSphere",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_Yakushima_EyeTossin": {
+        "InternalName": "EPalWazaID::Unique_Yakushima_EyeTossin",
+        "Element": "Dark",
+        "CT": 15,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Lock-On Lunge",
+                "Description": "Eye of Cthulhu's exclusive skill. Repeatedly charges at the enemy."
+            },
+            "zh-CN": {
+                "Name": "凝视突击",
+                "Description": "克苏鲁之眼的专用技能。 多次朝敌人发起冲锋。"
+            },
+            "ja": {
+                "Name": "凝視の突進",
+                "Description": "クトゥルフのめだまの専用スキル。 敵に向かって何度か突進する。"
+            },
+            "fr": {
+                "Name": "Charge Hypnotique",
+                "Description": "Compétence exclusive à Œil de Cthulhu. Charge l'ennemi à plusieurs reprises."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_Yakushima_SummonServant": {
+        "InternalName": "EPalWazaID::Unique_Yakushima_SummonServant",
+        "Element": "Dark",
+        "CT": 10,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Servant Call",
+                "Description": "Eye of Cthulhu's exclusive skill. Summons four Servants that charge at enemies to deal damage. Servants disappear after taking damage or after a short time."
+            },
+            "zh-CN": {
+                "Name": "召唤仆从",
+                "Description": "克苏鲁之眼的专用技能。 召唤4个仆从撞向敌人并造成伤害。仆从会在受到攻击或经过一定时间后消失。"
+            },
+            "ja": {
+                "Name": "しもべの召喚",
+                "Description": "クトゥルフのめだまの専用スキル。 ４体のしもべを召喚する。しもべは敵に向かっていき、ぶつかってダメージを与える。しもべは攻撃されるか一定時間が経過すると消滅する。"
+            },
+            "fr": {
+                "Name": "Invocation de Serviteurs",
+                "Description": "Compétence exclusive à Œil de Cthulhu. Fait appel à quatre serviteurs qui viennent se jeter sur l'ennemi pour lui infliger des dégâts. Les serviteurs disparaissent s'ils subissent une attaque ou après un certain temps."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_GhostAnglerfish_Fire_SweepBait_Fire": {
+        "InternalName": "EPalWazaID::Unique_GhostAnglerfish_Fire_SweepBait_Fire",
+        "Element": "Fire",
+        "CT": 15,
+        "Power": 95,
+        "I18n": {
+            "en": {
+                "Name": "Scorching Lantern Sweep",
+                "Description": "Ghangler Ignis's exclusive skill. Lashes forward with the flaming lantern atop its head, sweeping broadly ahead."
+            },
+            "zh-CN": {
+                "Name": "炽灯横扫",
+                "Description": "炙灯鱼的专用技能。 使用头部附着火焰的提灯横扫前方大范围目标。"
+            },
+            "ja": {
+                "Name": "灼熱提灯払い",
+                "Description": "メラドーンの専用スキル。 頭部にある炎をまとった提灯で前方を大きくなぎ払う。"
+            },
+            "fr": {
+                "Name": "Fouet-Lanterne Ardente",
+                "Description": "Compétence exclusive à Ghangler Ignis. Balaye violemment l’avant avec sa lanterne frontale enflammée."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalBolt": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalBolt",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalBolt",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalBolt",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalBolt",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalBolt",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalEye": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalEye",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalEye",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalEye",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalEye",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalEye",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalSphere": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalSphere",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalSphere",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalSphere",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalSphere",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalSphere",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalDeathray": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss001_Green_PhantasmalDeathray",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalDeathray",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalDeathray",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalDeathray",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Unique_YakushimaBoss001_Green_PhantasmalDeathray",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Normal": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Normal",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Neutral)",
+                "Description": "Illuminant Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（无）",
+                "Description": "夜明史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(無)",
+                "Description": "かがやくスライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Non Élémentaire )",
+                "Description": "Compétence exclusive à Gelée lumineuse. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Leaf": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Leaf",
+        "Element": "Grass",
+        "CT": 1,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Grass)",
+                "Description": "Green Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（草）",
+                "Description": "绿史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(草)",
+                "Description": "グリーンスライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Plante)",
+                "Description": "Compétence exclusive à Gelée verte. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Water": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Water",
+        "Element": "Water",
+        "CT": 1,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Water)",
+                "Description": "Blue Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（水）",
+                "Description": "蓝史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(水)",
+                "Description": "ブルースライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Eau)",
+                "Description": "Compétence exclusive à Gelée bleue. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Fire": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Fire",
+        "Element": "Fire",
+        "CT": 1,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Fire)",
+                "Description": "Red Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（火）",
+                "Description": "红史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(炎)",
+                "Description": "レッドスライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Feu)",
+                "Description": "Compétence exclusive à Gelée rouge. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Dark": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Dark",
+        "Element": "Dark",
+        "CT": 1,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Dark)",
+                "Description": "Purple Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（暗）",
+                "Description": "紫史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(闇)",
+                "Description": "パープルスライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Ténèbres)",
+                "Description": "Compétence exclusive à Gelée violette. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Rainbow": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster001_SlimePress_Rainbow",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Slime Press (Rainbow)",
+                "Description": "Rainbow Slime's exclusive skill. Leaps toward the enemy and delivers an attack."
+            },
+            "zh-CN": {
+                "Name": "史莱姆重压（彩虹）",
+                "Description": "彩虹史莱姆的专用技能。 跳向敌人发动攻击。"
+            },
+            "ja": {
+                "Name": "スライムプレス(虹)",
+                "Description": "レインボースライムの専用スキル。 敵に向かってジャンプして攻撃する。"
+            },
+            "fr": {
+                "Name": "Écrasement Gélatineux (Arc-en-ciel)",
+                "Description": "Compétence exclusive à Gelée arc-en-ciel. Saute sur l'ennemi pour l'attaquer."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaBoss001_Small_DemonEyeCharge": {
+        "InternalName": "EPalWazaID::Unique_YakushimaBoss001_Small_DemonEyeCharge",
+        "Element": "Dark",
+        "CT": 1,
+        "Power": 60,
+        "I18n": {
+            "en": {
+                "Name": "Ocular Rush",
+                "Description": "Demon Eye's exclusive skill. Charges at the enemy, bouncing off the ground or walls on impact."
+            },
+            "zh-CN": {
+                "Name": "眼球突击",
+                "Description": "恶魔眼的专用技能。 朝敌人发起冲锋。撞到地面或墙壁时会反弹。"
+            },
+            "ja": {
+                "Name": "めだま突進",
+                "Description": "あくまのめだまの専用スキル。 敵めがけて突進する。地面や壁に当たると跳ねる。"
+            },
+            "fr": {
+                "Name": "Charge Oculaire",
+                "Description": "Compétence exclusive à Œil de démon. Vise l'ennemi avant de lui foncer dessus. Rebondit lorsqu'il touche le sol ou un mur."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster002_SwordCharge": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster002_SwordCharge",
+        "Element": "Neutral",
+        "CT": 2,
+        "Power": 80,
+        "I18n": {
+            "en": {
+                "Name": "Sword Charge",
+                "Description": "Enchanted Sword's exclusive skill. Lunges forward to deliver a sharp thrust."
+            },
+            "zh-CN": {
+                "Name": "剑舞冲锋",
+                "Description": "附魔剑的专用技能。 朝敌人发动突刺攻击。"
+            },
+            "ja": {
+                "Name": "ソードチャージ",
+                "Description": "まほうのつるぎの専用スキル。 敵めがけて突き攻撃を行う。"
+            },
+            "fr": {
+                "Name": "Charge de l'Épée",
+                "Description": "Compétence exclusive à Épée envoûtée. Vise l'ennemi avant de se ruer dans sa direction."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_YakushimaMonster003_BatCharge": {
+        "InternalName": "EPalWazaID::Unique_YakushimaMonster003_BatCharge",
+        "Element": "Neutral",
+        "CT": 2,
+        "Power": 70,
+        "I18n": {
+            "en": {
+                "Name": "Winged Assault",
+                "Description": "Cave Bat's exclusive skill. Using its whole body, it lunges at the enemy, bouncing off the ground or walls on impact."
+            },
+            "zh-CN": {
+                "Name": "蝙蝠袭击",
+                "Description": "洞穴蝙蝠的专用技能。 利用全身扑向敌人发起进攻。撞到地面或墙壁时会反弹。"
+            },
+            "ja": {
+                "Name": "こうもりの襲撃",
+                "Description": "どうくつコウモリの専用スキル。 全身を使い、敵に襲いかかる。地面や壁に当たると跳ねる。"
+            },
+            "fr": {
+                "Name": "Assaut Vampire",
+                "Description": "Compétence exclusive à Chauve-souris des grottes. Utilise tout son poids pour se jeter sur l'ennemi. Rebondit lorsqu'il touche le sol ou un mur."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Weapon_Use": {
+        "InternalName": "EPalWazaID::Weapon_Use",
+        "Element": "",
+        "CT": -1,
+        "Power": -1,
+        "I18n": {
+            "en": {
+                "Name": "Use Weapon",
+                "Description": "Attack with held weapon."
+            },
+            "zh-CN": {
+                "Name": "使用武器",
+                "Description": "使用持有的武器进行攻击。"
+            },
+            "ja": {
+                "Name": "武器の使用",
+                "Description": "所持している武器を使って攻撃する。"
+            },
+            "fr": {
+                "Name": "Utiliser l'arme",
+                "Description": "Permet d'attaquer à l'aide de l'arme tenue."
             }
         },
         "UniqueSkill": true,
@@ -5184,7 +6250,7 @@
                 "Description": "Generates small waves over a wide area that slow an enemy's movements before assailing them with a giant wave."
             },
             "zh-CN": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "大范围掀起小波浪 延缓敌人行动后， 用大型波浪攻击敌人。"
             },
             "ja": {
@@ -5192,7 +6258,7 @@
                 "Description": "広範囲に小さな波を起こし 敵の動きを遅くしたあとに 大きな波で敵を攻撃する。"
             },
             "fr": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "Crée de petites vagues sur une zone étendue pour ralentir les mouvements de l'ennemi avant de l'attaquer avec une plus grosse."
             }
         },
@@ -5211,7 +6277,7 @@
                 "Description": "Creates a wall with a water vortex that slowly moves forward."
             },
             "zh-CN": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "用水之龙卷风在前方生成墙壁 并使其缓慢前进。"
             },
             "ja": {
@@ -5219,7 +6285,7 @@
                 "Description": "水の竜巻で前方に壁を作りだし ゆっくりと前進させる。"
             },
             "fr": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "Érige un mur devant lui avançant lentement au moyen d'une tornade d'eau."
             }
         },
@@ -5246,7 +6312,7 @@
                 "Description": ""
             },
             "fr": {
-                "Name": "Coud'surf",
+                "Name": "Coud'Surf",
                 "Description": ""
             }
         },
@@ -5300,8 +6366,8 @@
                 "Description": "己の拳を信じて、パンチする。"
             },
             "fr": {
-                "Name": "Coup de poing",
-                "Description": "Rassemble toute sa confiance en lui dans un coup de poing."
+                "Name": "Coup de Poing",
+                "Description": "Frappe avec conviction; croyez en la puissance de votre poing."
             }
         },
         "UniqueSkill": false,
@@ -5319,7 +6385,7 @@
                 "Description": "en Text"
             },
             "zh-CN": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": ""
             },
             "ja": {
@@ -5327,7 +6393,7 @@
                 "Description": "己の型を信じて、投げる。"
             },
             "fr": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": ""
             }
         },
@@ -5346,7 +6412,7 @@
                 "Description": "en Text"
             },
             "zh-CN": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": ""
             },
             "ja": {
@@ -5354,7 +6420,7 @@
                 "Description": "己の爪を信じて、ひっかく。"
             },
             "fr": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": ""
             }
         },
@@ -5400,7 +6466,7 @@
                 "Description": "The user gathers frozen winds, damaging enemies around it before blasting them with a blizzard."
             },
             "zh-CN": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "将冰冻之力聚集四周 攻击附近的敌人后 瞄准敌人释放暴风雪。"
             },
             "ja": {
@@ -5408,7 +6474,7 @@
                 "Description": "凍える力を周囲に集めて 近くの者を攻撃したあとで 敵めがけて吹雪を放出する。"
             },
             "fr": {
-                "Name": "BlueThunderHorse_PartnerSkill",
+                "Name": "Human_Rolling",
                 "Description": "Accumule de l'énergie glacée autour de lui et attaque les individus à proximité avant de libérer un blizzard sur l'ennemi."
             }
         },
@@ -5462,7 +6528,7 @@
                 "Description": "敵の左右をふさぐように 2方向に進む雷撃を発生させる。"
             },
             "fr": {
-                "Name": "Éclairs croisés",
+                "Name": "Éclairs Croisés",
                 "Description": "Génère des éclairs qui se déplacent dans deux directions pour prendre l'ennemi en tenaille."
             }
         },
@@ -5543,35 +6609,8 @@
                 "Description": "サイコキネシスで周囲の敵の自由を奪い 高い所から地面に叩きつける。"
             },
             "fr": {
-                "Name": "Gravité psy",
+                "Name": "Gravité Psy",
                 "Description": "Entrave les ennemis environnants avec la psychokinésie et les écrase au sol après les avoir élevés en hauteur."
-            }
-        },
-        "UniqueSkill": false,
-        "SkillFruit": false,
-        "Invalid": true
-    },
-    "EPalWazaID::DarkTornado": {
-        "InternalName": "EPalWazaID::DarkTornado",
-        "Element": "Dark",
-        "CT": 18,
-        "Power": 80,
-        "I18n": {
-            "en": {
-                "Name": "DarkTornado",
-                "Description": ""
-            },
-            "zh-CN": {
-                "Name": "DarkTornado",
-                "Description": ""
-            },
-            "ja": {
-                "Name": "DarkTornado",
-                "Description": ""
-            },
-            "fr": {
-                "Name": "DarkTornado",
-                "Description": ""
             }
         },
         "UniqueSkill": false,
@@ -5605,87 +6644,6 @@
         "SkillFruit": false,
         "Invalid": true
     },
-    "EPalWazaID::ChaosLaser": {
-        "InternalName": "EPalWazaID::ChaosLaser",
-        "Element": "Dark",
-        "CT": 60,
-        "Power": 300,
-        "I18n": {
-            "en": {
-                "Name": "Chaos Laser",
-                "Description": "Charge the power of chaos, Fires a beam of light and darkness at the enemy at the same time."
-            },
-            "zh-CN": {
-                "Name": "混沌射线",
-                "Description": ""
-            },
-            "ja": {
-                "Name": "カオスレーザー",
-                "Description": "混沌の力をチャージし、 敵めがけて光と闇のビームを同時に発射する。"
-            },
-            "fr": {
-                "Name": "Laser chaotique",
-                "Description": ""
-            }
-        },
-        "UniqueSkill": false,
-        "SkillFruit": false,
-        "Invalid": true
-    },
-    "EPalWazaID::GrassTyphoon": {
-        "InternalName": "EPalWazaID::GrassTyphoon",
-        "Element": "Grass",
-        "CT": 1,
-        "Power": 90,
-        "I18n": {
-            "en": {
-                "Name": "GrassTyphoon",
-                "Description": ""
-            },
-            "zh-CN": {
-                "Name": "GrassTyphoon",
-                "Description": ""
-            },
-            "ja": {
-                "Name": "GrassTyphoon",
-                "Description": ""
-            },
-            "fr": {
-                "Name": "GrassTyphoon",
-                "Description": ""
-            }
-        },
-        "UniqueSkill": false,
-        "SkillFruit": false,
-        "Invalid": true
-    },
-    "EPalWazaID::SeedShotgun": {
-        "InternalName": "EPalWazaID::SeedShotgun",
-        "Element": "Grass",
-        "CT": 1,
-        "Power": 90,
-        "I18n": {
-            "en": {
-                "Name": "SeedShotgun",
-                "Description": ""
-            },
-            "zh-CN": {
-                "Name": "SeedShotgun",
-                "Description": ""
-            },
-            "ja": {
-                "Name": "SeedShotgun",
-                "Description": ""
-            },
-            "fr": {
-                "Name": "SeedShotgun",
-                "Description": ""
-            }
-        },
-        "UniqueSkill": false,
-        "SkillFruit": false,
-        "Invalid": true
-    },
     "EPalWazaID::FlareTwister": {
         "InternalName": "EPalWazaID::FlareTwister",
         "Element": "Fire",
@@ -5706,33 +6664,6 @@
             },
             "fr": {
                 "Name": "Tornade flamboyante",
-                "Description": ""
-            }
-        },
-        "UniqueSkill": false,
-        "SkillFruit": false,
-        "Invalid": true
-    },
-    "EPalWazaID::TripleCannon": {
-        "InternalName": "EPalWazaID::TripleCannon",
-        "Element": "Dragon",
-        "CT": 40,
-        "Power": 120,
-        "I18n": {
-            "en": {
-                "Name": "TripleCannon",
-                "Description": ""
-            },
-            "zh-CN": {
-                "Name": "TripleCannon",
-                "Description": ""
-            },
-            "ja": {
-                "Name": "TripleCannon",
-                "Description": ""
-            },
-            "fr": {
-                "Name": "TripleCannon",
                 "Description": ""
             }
         },
@@ -5818,6 +6749,168 @@
             }
         },
         "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::HealingTree": {
+        "InternalName": "EPalWazaID::HealingTree",
+        "Element": "Grass",
+        "CT": 2,
+        "Power": 1,
+        "I18n": {
+            "en": {
+                "Name": "HealingTree",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "HealingTree",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "HealingTree",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "HealingTree",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_Yakushima_MouthTossin": {
+        "InternalName": "EPalWazaID::Unique_Yakushima_MouthTossin",
+        "Element": "Dark",
+        "CT": 15,
+        "Power": 100,
+        "I18n": {
+            "en": {
+                "Name": "Frenzied Charge",
+                "Description": "Eye of Cthulhu's exclusive skill. Repeatedly charges at the enemy at high speed."
+            },
+            "zh-CN": {
+                "Name": "高速突击",
+                "Description": "克苏鲁之眼的专用技能。 以极高速度多次朝敌人发起冲锋。"
+            },
+            "ja": {
+                "Name": "高速突進",
+                "Description": "クトゥルフのめだまの専用スキル。 敵に向かって猛スピードで何度も突進する。"
+            },
+            "fr": {
+                "Name": "Charge Fulgurante",
+                "Description": "Compétence exclusive à Œil de Cthulhu. Charge l'ennemi comme une fusée à plusieurs reprises."
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Unique_BluePlatypus_Toboggan_Fire": {
+        "InternalName": "EPalWazaID::Unique_BluePlatypus_Toboggan_Fire",
+        "Element": "Fire",
+        "CT": 120,
+        "Power": 115,
+        "I18n": {
+            "en": {
+                "Name": "Fire Tackle",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "热浪滚滚",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "ファイアータックル",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Tacle de Feu",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::PoseidonOrca_PartnerSkill": {
+        "InternalName": "EPalWazaID::PoseidonOrca_PartnerSkill",
+        "Element": "Water",
+        "CT": 55,
+        "Power": 60,
+        "I18n": {
+            "en": {
+                "Name": "PoseidonOrca_PartnerSkill",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "PoseidonOrca_PartnerSkill",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "PoseidonOrca_PartnerSkill",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "PoseidonOrca_PartnerSkill",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::PoseidonOrca_PartnerSkill_SpearBullet": {
+        "InternalName": "EPalWazaID::PoseidonOrca_PartnerSkill_SpearBullet",
+        "Element": "Water",
+        "CT": 55,
+        "Power": 50,
+        "I18n": {
+            "en": {
+                "Name": "PoseidonOrca_PartnerSkill_SpearBullet",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "PoseidonOrca_PartnerSkill_SpearBullet",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "PoseidonOrca_PartnerSkill_SpearBullet",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "PoseidonOrca_PartnerSkill_SpearBullet",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false,
+        "Invalid": true
+    },
+    "EPalWazaID::Human_Rolling": {
+        "InternalName": "EPalWazaID::Human_Rolling",
+        "Element": "Neutral",
+        "CT": 1,
+        "Power": 0,
+        "I18n": {
+            "en": {
+                "Name": "Human_Rolling",
+                "Description": ""
+            },
+            "zh-CN": {
+                "Name": "Human_Rolling",
+                "Description": ""
+            },
+            "ja": {
+                "Name": "Human_Rolling",
+                "Description": ""
+            },
+            "fr": {
+                "Name": "Human_Rolling",
+                "Description": ""
+            }
+        },
+        "UniqueSkill": false,
         "SkillFruit": false,
         "Invalid": true
     }

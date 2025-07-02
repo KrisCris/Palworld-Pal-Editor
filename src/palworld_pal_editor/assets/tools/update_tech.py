@@ -92,9 +92,9 @@ def extract_techs():
                     png_filename = f"{internal_name}.png"
                     if "SkillUnlock_" in internal_name:
                         png_filename = f"{internal_name.replace('SkillUnlock_', '')}.png"
-                        if not os.path.exists(f"/Users/connlost/Coding/Palworld-Pal-Editor/src/palworld_pal_editor/assets/icons/pals/{png_filename}"):
+                        if not os.path.exists(f"../icons/pals/{png_filename}"):
                             print(f"Missing Pal Skill Unlock {png_filename}")
-                    elif not os.path.exists(png_filename):
+                    elif not os.path.exists(f"../icons/tech/{png_filename}"):
                         try:
                             response = requests.get(icon_url, timeout=10)
                             if response.status_code == 200:

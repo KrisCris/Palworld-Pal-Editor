@@ -303,9 +303,11 @@ class PalEntity:
     @property
     def IconAccessKey(self) -> Optional[str]:
         if self.IsHuman:
+            if DataProvider.has_human_icon(self.CharacterID):
+                return self.CharacterID
             return "Human"
         if self.IsTower:
-            pattern = r"(GYM_[A-Za-z_]+?)(?:_\d+.*)?$"
+            pattern = r"^(GYM_[^_]+)"
             match = re.search(pattern, self.CharacterID)
             if match:
                 return match.group(1)

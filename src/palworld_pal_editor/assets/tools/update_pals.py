@@ -38,7 +38,7 @@ def suitabilities_t():
         "EPalWorkSuitability::Collection": 0,
         "EPalWorkSuitability::Deforest": 0,
         "EPalWorkSuitability::Mining": 0,
-        "EPalWorkSuitability::OilExtraction": 0,
+        # "EPalWorkSuitability::OilExtraction": 0,
         "EPalWorkSuitability::ProductMedicine": 0,
         "EPalWorkSuitability::Cool": 0,
         "EPalWorkSuitability::Transport": 0,
@@ -50,31 +50,31 @@ name_replace_map = {
     "PAL Genetic Research Unit Commander Victor & Shadowbeak": "Victor & Shadowbeak",
     "帕鲁基因研究部队-队长 维克托 & 异构格里芬": "维克托 & 异构格里芬",
     "パル遺伝子研究部隊 隊長 ヴィクター＆ゼノグリフ": "ヴィクター＆ゼノグリフ",
-    "Commandant de l'unité de recherche sur les gènes Victor & Shadowbeak": "Victor & Shadowbeak",
+    "Commandant de l’Unité de Recherche sur les Gènes Victor & Shadowbeak": "Victor & Shadowbeak",
     "Rayne Syndicate Officer Zoe & Grizzbolt": "Zoe & Grizzbolt",
     "雷恩盗猎团的干部 佐伊 & 暴电熊": "佐伊 & 暴电熊",
     "レイン密猟団の幹部 ゾーイ＆エレパンダ": "ゾーイ＆エレパンダ",
-    "Officiel du syndicat de Rayne Zoe & Grizzbolt": "Zoe & Grizzbolt",
+    "Officiel du Syndicat de Rayne Zoe & Grizzbolt": "Zoe & Grizzbolt",
     "Free Pal Alliance Founder Lily & Lyleen": "Lily & Lyleen",
     "帕鲁保护团体-创始人 莉莉 & 百合女王": "莉莉 & 百合女王",
     "パル愛護団体 創始者 リリィ＆リリクイン": "リリィ＆リリクイン",
-    "Membre fondateur de la LPP Lily & Lyleen": "Lily & Lyleen",
+    "Membre Fondateur de la LPP Lily & Lyleen": "Lily & Lyleen",
     "PIDF Officer Marcus & Faleris": "Marcus & Faleris",
     "帕洛斯群岛自卫队干部 马库斯 & 荷鲁斯": "马库斯 & 荷鲁斯",
     "パルパゴス島自警団の幹部 マーカス＆ホルス": "マーカス＆ホルス",
-    "Cadre de la milice populaire de Palpagos Marcus & Faleris": "Marcus & Faleris",
+    "Cadre de la Milice Populaire de Palpagos Marcus & Faleris": "Marcus & Faleris",
     "Brothers of the Eternal Pyre Soul Leader Axel & Orserk": "Axel & Orserk",
     "永炎同心会-灵魂领袖 阿克塞尔 & 波鲁杰克斯": "阿克塞尔 & 波鲁杰克斯",
     "永炎の同志 ソウルリーダー アクセル＆ボルゼクス": "アクセル＆ボルゼクス",
-    "Chef spirituel de la confrérie des Flammes éternelles Axel & Orserk": "Axel & Orserk",
+    "Chef Spirituel de la Confrérie des Flammes Éternelles Axel & Orserk": "Axel & Orserk",
     "Leader of the Moonflowers Saya & Selyne": "Saya & Selyne",
     "月花众的首领 纱夜 & 辉月伊": "纱夜 & 辉月伊",
     "月花衆の長 サヤ＆セレムーン": "サヤ＆セレムーン",
-    "Chef de la Société des fleurs lunaires Saya & Selyne": "Saya & Selyne",
+    "Chef du Clan des Fleurs Lunaires Saya & Selyne": "Saya & Selyne",
     "Jarl of Feybreak  Bjorn & Bastigor": "Bjorn & Bastigor",
     "天坠之民 首领 比约恩 & 霜牙王": "比约恩 & 霜牙王",
     "天落の民 首領 ビョルン＆ヒョウガオー": "ビョルン＆ヒョウガオー",
-    "Habitant du paradis déchu (chef) Björn et Bastigor": "Björn & Bastigor",
+    "Habitant du Paradis Déchu (Chef) Björn et Bastigor": "Björn & Bastigor",
 }
 
 
@@ -87,7 +87,7 @@ suitabilities_map = {
     "Gathering": "EPalWorkSuitability::Collection",
     "Lumbering": "EPalWorkSuitability::Deforest",
     "Mining": "EPalWorkSuitability::Mining",
-    "Oil Extraction": "EPalWorkSuitability::OilExtraction",
+    # "Oil Extraction": "EPalWorkSuitability::OilExtraction",
     "Medicine Production": "EPalWorkSuitability::ProductMedicine",
     "Cooling": "EPalWorkSuitability::Cool",
     "Transporting": "EPalWorkSuitability::Transport",
@@ -154,6 +154,64 @@ def extract_pals():
         pal["I18n"]["en"] = name
         if not paldeck_id:
             pal["Invalid"] = True
+
+        # copied from update_tech, just for reference of the converting logic
+        # if icon_url:
+        #     png_filename = f"{internal_name}.png"
+        #     if "SkillUnlock_" in internal_name:
+        #         png_filename = f"{internal_name.replace('SkillUnlock_', '')}.png"
+        #         if not os.path.exists(f"/Users/connlost/Coding/Palworld-Pal-Editor/src/palworld_pal_editor/assets/icons/pals/{png_filename}"):
+        #             print(f"Missing Pal Skill Unlock {png_filename}")
+        #     elif not os.path.exists(png_filename):
+        #         try:
+        #             response = requests.get(icon_url, timeout=10)
+        #             if response.status_code == 200:
+        #                 # Open the image (likely WebP) and convert to RGBA
+        #                 image = Image.open(BytesIO(response.content)).convert("RGBA")
+        #                 image.save(png_filename, "PNG")
+        #         except Exception as err:
+        #             print(f"Failed to download/convert {icon_url} for {internal_name}: {err}")
+        # <div class="col" data-filters="搬运1 草属性"><div class="card h-100" style="border-radius: 32px"><div class="d-flex">
+        #     <div class="flex-shrink-0">
+        #         <a class="" data-hover="?s=Pals/YakushimaMonster001" href="Green_Slime"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/PalIcon/Normal/Yakushima/T_YakushimaMonster001_icon_normal.webp" class="size64 rounded-circle border"></a>
+        #     </div>
+        #     <div class="flex-grow-1 ms-2">
+        #         <div class="d-flex">
+        #         <div>
+        #             <div><span class="text-white-50 small">#</span> <a class="itemname" data-hover="?s=Pals/YakushimaMonster001" href="Green_Slime">绿史莱姆</a> <img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_Icon_element_s_04.webp" class="size24" data-bs-toggle="tooltip" data-bs-title="草属性"></div><div class="my-1"><button class="btn btn-sm border rounded" style="padding: 0.1rem;" data-filter="搬运1" data-bs-toggle="tooltip" data-bs-title="搬运"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_11.webp" class="size24">1</button></div>
+        #         </div>
+        #         <div class="ms-auto">
+        #             <input type="checkbox" style="scale: 1.7" name="image[]" value="YakushimaMonster001">
+        #         </div>
+        #         </div>
+        #     </div>
+        #     </div>
+        # </div></div>
+        # could also be <img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/PalIcon/Normal/T_GoldenHorse_icon_normal.webp" class="size64 rounded-circle border">
+        # download https://cdn.paldb.cc/image/Pal/Texture/PalIcon/Normal/Yakushima/T_YakushimaMonster001_icon_normal.webp for me
+        icon_url = card.find(
+            "img",
+            {
+                "src": re.compile(
+                    r"https://cdn\.paldb\.cc/image/Pal/Texture/PalIcon/Normal/.+\.webp"
+                )
+            },
+        )["src"]
+        if icon_url:
+            png_filename = f"{internal_name}.png"
+            if not os.path.exists(f"../icons/pals/{png_filename}"):
+                try:
+                    print(f"downloading icon for {internal_name}")
+                    response = requests.get(icon_url, timeout=10)
+                    if response.status_code == 200:
+                        # Open the image (likely WebP) and convert to RGBA
+                        with open(f"./{png_filename}", "wb") as f:
+                            f.write(response.content)
+                except Exception as err:
+                    print(
+                        f"Failed to download/convert {icon_url} for {internal_name}: {err}"
+                    )
+
 
         # # <button class="btn btn-sm border rounded" style="padding: 0.1rem;" data-filter="Handiwork1" data-bs-toggle="tooltip" data-bs-title="Handiwork"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_04.webp" class="size24">1</button>
         # suitabilities = suitabilities_t()
@@ -391,6 +449,8 @@ def extract_pal_details(internal_name, en_name, pal):
 all_pals_raw = extract_pals()
 all_pals = {}
 
+exit()
+
 pal_internal_names = list(all_pals_raw.keys())
 while len(pal_internal_names) > 0:
     internal_name = pal_internal_names.pop(0)
@@ -419,6 +479,8 @@ while len(pal_internal_names) > 0:
     if re.match(r"^SUMMON_.+", internal_name):
         pal["Invalid"] = True
     if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.+)", internal_name):
+        pal["Invalid"] = True
+    if re.match(r"(Quest_.+)", internal_name):
         pal["Invalid"] = True
     if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.+)", internal_name):
         pal["Invalid"] = True
