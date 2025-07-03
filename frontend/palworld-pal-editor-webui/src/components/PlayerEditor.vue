@@ -37,6 +37,10 @@ const isMinLv = () => {
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
                         :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
                 </div>
+                <div class="editField" v-if="palStore.SELECTED_PLAYER_DATA.Level">
+                    <button class="edit text" @click="palStore.updatePlayer" name="unlock_all_techs"
+                        :disabled="palStore.LOADING_FLAG">Unlock All Tech</button>
+                </div>
             </div>
         </div>
         <!-- <div class="EditorItem flex-v item left">
@@ -303,7 +307,7 @@ select.selector {
     overflow-y: auto;
     max-width: 100%;
     padding: 8px;
-    justify-content:left;
+    align-items: flex-start;
 }
 
 .level-row {

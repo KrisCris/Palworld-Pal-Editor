@@ -16,7 +16,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
             this.pals = new Map();
-            this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
+            this.UnlockedRecipeTechnologyNames =
+                obj.UnlockedRecipeTechnologyNames;
         }
 
         levelDown() {
@@ -40,7 +41,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Level = HIDE_INVALID_OPTIONS.value
                 ? MAX_LEVEL
                 : MAX_INVALID_LEVEL;
-                updatePlayer({ target: { name: "Level", value: this.Level } });
+            updatePlayer({ target: { name: "Level", value: this.Level } });
         }
 
         toggleTech(tech, status) {
@@ -53,7 +54,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     },
                 },
             });
-
         }
     }
 
@@ -392,6 +392,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     const SHOW_FILE_PICKER = ref(false);
     const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value);
+
+    const CN_WARNING_ON_LOAD = ref(true);
 
     // auth
     let auth_token = "";
@@ -921,9 +923,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function sorryandfuckyou() {
-        if (I18n.value == "zh-CN") {
-            alert("警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。");
-            //SHOW_DONATE_FLAG.value = true;
+        if ((I18n.value == "zh-CN") & CN_WARNING_ON_LOAD.value) {
+            alert(
+                "警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。"
+            );
+            CN_WARNING_ON_LOAD.value = false;
         }
     }
 
