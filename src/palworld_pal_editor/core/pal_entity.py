@@ -41,6 +41,11 @@ class PalEntity:
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
+        
+        if self.CharacterID is None:
+            raise Exception(
+                f"No CharacterID, skipping {dumps(pal_obj)}"
+            )
 
         if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError(
