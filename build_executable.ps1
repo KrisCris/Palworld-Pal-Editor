@@ -61,11 +61,4 @@ pip install pyinstaller
 
 Remove-Item ".\dist" -Recurse -Force
 
-$dll = "venv/Lib/site-packages/palworld_save_tools/libs/ooz/libooz.dll"
-$maybeDllArg = @()
-
-if (Test-Path $dll) {
-    $maybeDllArg = @("--add-data=$dll;palworld_save_tools/libs/ooz")
-}
-
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets;assets" --add-data="src/palworld_pal_editor/webui;webui" @maybeDllArg .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO --hidden-import="pkg_resources.extern"
+pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets;assets" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO --hidden-import="pkg_resources.extern"

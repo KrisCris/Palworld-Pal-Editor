@@ -20,6 +20,7 @@ from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
+from palworld_pal_editor.config import ASSETS_PATH
 
 
 def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
@@ -109,6 +110,7 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip
 MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
+MAIN_SKIP_PROPERTIES[".worldSaveData.FixedWeaponDestroySaveData"] = (skip_decode, skip_encode)
 
 MAIN_SKIP_PROPERTIES[".worldSaveData.OilrigSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.SupplySaveData"] = (skip_decode, skip_encode)
@@ -149,40 +151,170 @@ class SaveManager:
     def __init__(self):
         if not hasattr(self, "initialized"):
             self.initialized = True
+                
+    def open(self, file_path: str) -> Optional[GvasFile]:
+        self._file_path = Path(file_path).resolve()
 
-    def get_players(self) -> list[PlayerEntity]:
-        return self.player_mapping.values()
+        level_sav_path = self._file_path / "Level.sav"
+
+        if not level_sav_path.exists():
+            LOGGER.error(f"Save file does not exist: {level_sav_path}.")
+            return None
+
+        LOGGER.info(f"Opening {level_sav_path}")
+        with level_sav_path.open("rb") as file:
+            data = file.read()
+
+            try:
+                LOGGER.info("Decompressing sav")
+                self._raw_gvas, self._compression_times = decompress_sav_to_gvas(data)
+
+                # LOGGER.info("Compressing Main GVAS file")
+                # sav_data = compress_gvas_to_sav(
+                #     self._raw_gvas, 
+                #     # self._compression_times, 
+                #     0x32,
+                #     True
+                # )
+
+                # with level_sav_path.open("wb") as file:
+                #     file.write(sav_data)
+
+                # return
+            except Exception as e:
+                LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
+                return None
+
+            LOGGER.info("Reading GVAS file")
+            self.gvas_file = GvasFile.read(
+                self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
+            )
+
+            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
+
+            try:
+                self.group_data = GroupData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing group data: {e}")
+                return None
+            
+            try:
+                self.camp_data = BaseCampData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing base camp data: {e}")
+                return None
+            
+            try:
+                self.container_data = ContainerData(self.gvas_file)
+            except Exception as e:
+                LOGGER.error(f"Error parsing container data: {e}")
+                return None
+
+            try:
+                self._entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
+            except Exception as e:
+                LOGGER.error(f"Unable to retrieve pal data: {e}")
+                return None
+
+            self._load_entities()
+
+            LOGGER.info("Done")
+        return self.gvas_file
+
+    def save(self, file_path: str) -> bool:
+        if self.gvas_file is None:
+            LOGGER.error("No gvas_file stored in save manager, aborting")
+            return False
+        if self._compression_times is None:
+            LOGGER.warning("_compression_times is None, aborting")
+            return False
+
+        output_path = Path(file_path).resolve() 
+
+        if not output_path.exists():
+            LOGGER.warning(f"Path does not exist: {output_path}")
+            if output_path.parent.exists():
+                output_path.mkdir(parents=True, exist_ok=True)
+                LOGGER.debug(f"Path {output_path} created")
+            else:
+                LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
+                return False
+            
+        file_path: Path = output_path / "Level.sav"
+
+        if output_path.exists():
+            BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
+            backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
+            try:
+                if output_path.exists():
+                    LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
+                    shutil.copytree(self._file_path, backup_dir, 
+                                    ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
+                else:
+                    LOGGER.info(f"No existing directory to backup: {output_path}")
+            except Exception as e:
+                LOGGER.error(f"Error backing up directory: {e}")
+                return False
+
+        LOGGER.info("Saving Player Data...")
+        for player in self.player_mapping.values():
+            self.save_player_sav(player, output_path)
+
+        LOGGER.info("Saving Level.sav...")
+        gvas_file = copy.deepcopy(self.gvas_file)
+        LOGGER.info("Compressing Main GVAS file")
+        sav_data = compress_gvas_to_sav(
+            gvas_file.write(MAIN_SKIP_PROPERTIES), 
+            # self._compression_times, 
+            0x32,
+            True
+        )
+
+        LOGGER.info(f"Saving to {file_path}")
+        with file_path.open("wb") as file:
+            file.write(sav_data)
+        LOGGER.info(f"Saved to {file_path}")
+        return True
     
-    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
-        if guid is None: return
-        # TODO Use str instead of UUID
-        # actually uuid and str works the same because both eq and hash methods are using str
-        guid = str(guid)
-        if guid in self.player_mapping:
-            player = self.player_mapping[guid]
-            return player
-        # LOGGER.warning(f"Player {guid} not exist")
-
-    def get_players_by_name(self, name: str) -> list[PlayerEntity]:
-        return [player for player in self.get_players() if player.NickName == name]
+    def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
+        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
+        LOGGER.info(f"Loading Player SAV: {player_path}")
+        if not player_path.exists():
+            LOGGER.error(f"Player SAV {str(player_path.absolute())} not exist")
+            raise Exception(f"Player SAV {str(player_path.absolute())} not exist")
+        with player_path.open("rb") as player_file:
+            player_data = player_file.read()
+        raw_gvas, compression_times = decompress_sav_to_gvas(player_data, ASSETS_PATH / "libs/oo2core_9_win64.dll")
+        player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PLAYER_SKIP_PROPERTIES)
+        return player_gvas_file, compression_times
     
-    def get_working_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        return self.baseworker_mapping.get(str(guid), None)
+    
+    def save_player_sav(self, player_entity: PlayerEntity, save_path: Optional[Path] = None) -> bool:
+        if player_entity.PlayerGVAS is None:
+            return False
 
-    def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        if guid in self.baseworker_mapping:
-            return self.baseworker_mapping[guid]
-        if guid in self._dangling_pals:
-            return self._dangling_pals[guid]
-        for player in self.get_players():
-            if pal := player.get_pal(guid, disable_warning=True):
-                return pal
+        player_entity.save_new_pal_records()
+        gvas_file, compression_times = player_entity.PlayerGVAS
+        output_path = (save_path or self._file_path) / "Players"
+        if not output_path.exists() and output_path.parent.exists():
+            LOGGER.warning(f"Player path does not exist: {output_path}")
+            output_path.mkdir(parents=True, exist_ok=True)
+            LOGGER.info(f"Player path {output_path} created")
 
-        LOGGER.warning(f"Can't find pal {guid}")
+        player_path: Path = output_path / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
 
-    def get_working_pals(self) -> list[PalEntity]:
-        return sorted(self.baseworker_mapping.values(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
+        LOGGER.info(f"Compressing Player {player_entity} GVAS file")
+        player_gvas_file = copy.deepcopy(gvas_file)
+        sav_data = compress_gvas_to_sav(
+            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), 0x32, True
+        )
 
+        LOGGER.info(f"Saving to {player_path}")
+        with player_path.open("wb") as file:
+            file.write(sav_data)
+        LOGGER.info(f"Saved to {player_path}")
+        return True
+    
     def _load_entities(self):
         self.player_mapping = {}
         self._dangling_pals = {}
@@ -277,62 +409,38 @@ class SaveManager:
             for pal in pal_list.values():
                 self._dangling_pals[str(pal.InstanceId)] = pal
                 LOGGER.warning(f"\t{pal}")
-                
-    def open(self, file_path: str) -> Optional[GvasFile]:
-        self._file_path = Path(file_path).resolve()
 
-        level_sav_path = self._file_path / "Level.sav"
+    def get_players(self) -> list[PlayerEntity]:
+        return self.player_mapping.values()
+    
+    def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
+        if guid is None: return
+        guid = str(guid)
+        if guid in self.player_mapping:
+            player = self.player_mapping[guid]
+            return player
+        # LOGGER.warning(f"Player {guid} not exist")
 
-        if not level_sav_path.exists():
-            LOGGER.error(f"Save file does not exist: {level_sav_path}.")
-            return None
+    def get_players_by_name(self, name: str) -> list[PlayerEntity]:
+        return [player for player in self.get_players() if player.NickName == name]
+    
+    def get_working_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+        return self.baseworker_mapping.get(str(guid), None)
 
-        LOGGER.info(f"Opening {level_sav_path}")
-        with level_sav_path.open("rb") as file:
-            data = file.read()
+    def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
+        if guid in self.baseworker_mapping:
+            return self.baseworker_mapping[guid]
+        if guid in self._dangling_pals:
+            return self._dangling_pals[guid]
+        for player in self.get_players():
+            if pal := player.get_pal(guid, disable_warning=True):
+                return pal
 
-            try:
-                LOGGER.info("Decompressing sav")
-                self._raw_gvas, self._compression_times = decompress_sav_to_gvas(data)
-            except Exception as e:
-                LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
-                return None
+        LOGGER.warning(f"Can't find pal {guid}")
 
-            LOGGER.info("Reading GVAS file")
-            self.gvas_file = GvasFile.read(
-                self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
-            )
+    def get_working_pals(self) -> list[PalEntity]:
+        return sorted(self.baseworker_mapping.values(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
 
-            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
-
-            try:
-                self.group_data = GroupData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing group data: {e}")
-                return None
-            
-            try:
-                self.camp_data = BaseCampData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing base camp data: {e}")
-                return None
-            
-            try:
-                self.container_data = ContainerData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing container data: {e}")
-                return None
-
-            try:
-                self._entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
-            except Exception as e:
-                LOGGER.error(f"Unable to retrieve pal data: {e}")
-                return None
-
-            self._load_entities()
-
-            LOGGER.info("Done")
-        return self.gvas_file
     
     def move_pal(self, pal_id: UUID | str, target_container_ids: list[UUID | str]) -> bool:
         pal_entity = self.get_pal(pal_id)
@@ -456,94 +564,3 @@ class SaveManager:
             return None
         LOGGER.info(f"Added Pal {pal_entity} to Player {player}")
         return pal_entity
-
-    def save(self, file_path: str) -> bool:
-        if self.gvas_file is None:
-            LOGGER.error("No gvas_file stored in save manager, aborting")
-            return False
-        if self._compression_times is None:
-            LOGGER.warning("_compression_times is None, aborting")
-            return False
-
-        output_path = Path(file_path).resolve() 
-
-        if not output_path.exists():
-            LOGGER.warning(f"Path does not exist: {output_path}")
-            if output_path.parent.exists():
-                output_path.mkdir(parents=True, exist_ok=True)
-                LOGGER.debug(f"Path {output_path} created")
-            else:
-                LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
-                return False
-            
-        file_path: Path = output_path / "Level.sav"
-
-        if output_path.exists():
-            BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
-            backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
-            try:
-                if output_path.exists():
-                    LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
-                    shutil.copytree(self._file_path, backup_dir, 
-                                    ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
-                else:
-                    LOGGER.info(f"No existing directory to backup: {output_path}")
-            except Exception as e:
-                LOGGER.error(f"Error backing up directory: {e}")
-                return False
-
-        LOGGER.info("Saving Player Data...")
-        for player in self.player_mapping.values():
-            self.save_player_sav(player, output_path)
-
-        LOGGER.info("Saving Level.sav...")
-        gvas_file = copy.deepcopy(self.gvas_file)
-        LOGGER.info("Compressing Main GVAS file")
-        sav_data = compress_gvas_to_sav(
-            gvas_file.write(MAIN_SKIP_PROPERTIES), self._compression_times, True
-        )
-
-        LOGGER.info(f"Saving to {file_path}")
-        with file_path.open("wb") as file:
-            file.write(sav_data)
-        LOGGER.info(f"Saved to {file_path}")
-        return True
-    
-    def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
-        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
-        LOGGER.info(f"Loading Player SAV: {player_path}")
-        if not player_path.exists():
-            LOGGER.error(f"Player SAV {str(player_path.absolute())} not exist")
-            raise Exception(f"Player SAV {str(player_path.absolute())} not exist")
-        with player_path.open("rb") as player_file:
-            player_data = player_file.read()
-        raw_gvas, compression_times = decompress_sav_to_gvas(player_data)
-        player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PLAYER_SKIP_PROPERTIES)
-        return player_gvas_file, compression_times
-    
-    
-    def save_player_sav(self, player_entity: PlayerEntity, save_path: Optional[Path] = None) -> bool:
-        if player_entity.PlayerGVAS is None:
-            return False
-
-        player_entity.save_new_pal_records()
-        gvas_file, compression_times = player_entity.PlayerGVAS
-        output_path = (save_path or self._file_path) / "Players"
-        if not output_path.exists() and output_path.parent.exists():
-            LOGGER.warning(f"Player path does not exist: {output_path}")
-            output_path.mkdir(parents=True, exist_ok=True)
-            LOGGER.info(f"Player path {output_path} created")
-
-        player_path: Path = output_path / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
-
-        LOGGER.info(f"Compressing Player {player_entity} GVAS file")
-        player_gvas_file = copy.deepcopy(gvas_file)
-        sav_data = compress_gvas_to_sav(
-            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times, True
-        )
-
-        LOGGER.info(f"Saving to {player_path}")
-        with player_path.open("wb") as file:
-            file.write(sav_data)
-        LOGGER.info(f"Saved to {player_path}")
-        return True
