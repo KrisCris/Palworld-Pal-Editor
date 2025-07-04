@@ -15,7 +15,7 @@ readme = "README.md"
 version = "0.13.0"
 dependencies = [
     "setuptools==70.0.0",
-    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git#0.6.x",
+    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git@eb012db7d21bf00639ecb8bfa79b2d128133329e",
     "pyooz==0.0.8",
     "wheel==0.42.0",
     "Flask==3.0.2",
