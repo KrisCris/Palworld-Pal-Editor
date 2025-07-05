@@ -75,7 +75,7 @@ class PalContainer:
 
     def del_pal(self, pal_id: UUID):
         slot_idx = self.get_pal_idx(pal_id)
-        if not slot_idx:
+        if slot_idx is None or slot_idx < 0:
             LOGGER.warning(
                     f"Can't find PalID on del_pal: {str(pal_id)}."
                 )

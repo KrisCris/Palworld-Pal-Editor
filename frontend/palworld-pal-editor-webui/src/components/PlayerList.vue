@@ -20,7 +20,7 @@ onMounted(async () => {
       </p>
       <div class="tooltip-container">
         <button class="playerSettings"
-          v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).hasViewingCage"
+          v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).HasViewingCage"
           :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')" :disabled="palStore.LOADING_FLAG"
           @click="palStore.updatePlayer" name="unlock_viewing_cage">🧊</button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('PlayerList_Viewing_Cage') }}</span>
@@ -28,15 +28,16 @@ onMounted(async () => {
     </div>
     <div class="overflow-list" ref="playerListContainer">
       <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
-        <button class="player" @click="palStore.selectPlayer"
-          :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG" :value="palStore.PAL_BASE_WORKER_BTN">
+        <button class="player" @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
+          :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
           {{ palStore.getTranslatedText('PlayerList_Base_Pal') }}
         </button>
       </div>
       <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
-        <button class="player real" :value="player.id" @click="palStore.selectPlayer" :title="player.id"
-          :disabled="player.id == palStore.SELECTED_PLAYER_ID || palStore.LOADING_FLAG">
-          {{ player.name }}
+        <button class="player real" @click="palStore.selectPlayer(player.InstanceId)" :title="player.InstanceId"
+          :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG) || palStore.LOADING_FLAG"
+          :selected="player.InstanceId == palStore.SELECTED_PLAYER_ID">
+          {{ player.NickName }}
         </button>
       </div>
     </div>
@@ -142,6 +143,14 @@ button.playerSettings:disabled {
   box-shadow: 0 0 0;
   filter: grayscale(100%);
   cursor: not-allowed;
+}
+
+button.player[selected="true"] {
+  box-shadow: 0 0 0;
+  filter: grayscale(60%);
+  border-color: #1cff4d;
+  border-style: solid;
+  border-width: 0.15rem;
 }
 
 .tooltip-text {

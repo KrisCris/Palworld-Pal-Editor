@@ -25,7 +25,6 @@ function filterInvalid(list) {
   return list.filter(item => {
     if (palStore.HIDE_INVALID_OPTIONS) {
       return !(item.Invalid || item.IsHuman)
-      // return !item.Invalid
     }
     return true
   })
@@ -37,7 +36,15 @@ const isMaxSuit = key => {
 
 const isMinSuit = key => {
   return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
-    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >=5 ? 1 : 0);
+    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >= 5 ? 1 : 0);
+};
+
+const isMaxLv = () => {
+  return palStore.SELECTED_PAL_DATA.Level >= (palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL);
+};
+
+const isMinLv = () => {
+  return palStore.SELECTED_PAL_DATA.Level <= 1;
 };
 
 const suitabilityIconSrc = key => {
@@ -125,11 +132,11 @@ const suitabilityIconSrc = key => {
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
             <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔽</button>
+              :disabled="palStore.LOADING_FLA || isMinLv()">🔽</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔼</button>
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
-              :disabled="palStore.LOADING_FLAG">🔝</button>
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
           </div>
         </div>
         <p class="const">
@@ -337,7 +344,7 @@ const suitabilityIconSrc = key => {
                   skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
-              :disabled="palStore.LOADING_FLAG">➕</button>
+              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)">➕</button>
           </div>
         </div>
       </div>
@@ -434,7 +441,7 @@ const suitabilityIconSrc = key => {
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
-              :disabled="palStore.LOADING_FLAG">➕</button>
+              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)">➕</button>
           </div>
         </div>
       </div>

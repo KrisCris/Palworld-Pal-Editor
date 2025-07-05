@@ -1,6 +1,7 @@
 import traceback
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
+from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.core import SaveManager
@@ -72,14 +73,7 @@ def get_player_list():
         0,
         {
             "players": [
-                {
-                    "id": str(player.PlayerUId),
-                    "name": player.NickName,
-                    "hasViewingCage": player.has_viewing_cage(),
-                    "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
-                    "PalStorageContainerId": str(player.PalStorageContainerId)
-                }
-                for player in SaveManager().get_players()
+                player_to_dict(player) for player in SaveManager().get_players()
             ],
             "hasWorkingPal": (True if len(workingpals) else False),
         },
@@ -100,16 +94,24 @@ def get_player_data():
         LOGGER.warning(f"Player {PlayerUId} not exist")
         return reply(1, None, f"Player {PlayerUId} not exist")
 
-    return reply(
-        0,
-        {
-            "id": str(player_entity.PlayerUId),
-            "name": player_entity.NickName,
-            "hasViewingCage": player_entity.has_viewing_cage(),
-            "OtomoCharacterContainerId": str(player_entity.OtomoCharacterContainerId),
-            "PalStorageContainerId": str(player_entity.PalStorageContainerId)
-        },
+    player_dict = player_to_dict(player_entity)
+    player_dict["UnlockedRecipeTechnologyNames"] = (
+        player_entity.UnlockedRecipeTechnologyNames or []
     )
+
+    return reply(0, player_dict)
+
+
+def player_to_dict(player: PlayerEntity):
+    return {
+        "InstanceId": str(player.PlayerUId),
+        "NickName": player.NickName or "",
+        "Level": player.Level or 1,
+        "HasViewingCage": player.has_viewing_cage(),
+        "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
+        "PalStorageContainerId": str(player.PalStorageContainerId),
+        "UnlockedRecipeTechnologyNames": [],
+    }
 
 
 @player_blueprint.route("/player_data", methods=["PATCH"])
@@ -130,12 +132,17 @@ def patch_player_data():
 
     try:
         match key:
+            case "toggle_UnlockedRecipeTechnologyNames":
+                player_entity.toggle_UnlockedRecipeTechnologyNames(value["tech"], value["status"])
+            case "unlock_all_techs":
+                player_entity.unlock_all_techs()
             case "unlock_viewing_cage":
                 player_entity.unlock_viewing_cage()
             case _:
-                pass
+                if isinstance(err := setattr(player_entity, key, value), TypeError):
+                    return reply(1, None, f"Error in patch_player_data {err}")
     except Exception as e:
         stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error in patching player data {stack_trace}")
+        LOGGER.error(f"Error in patching player data {stack_trace}, key: {key}, value: {value}")
         return reply(1, None, f"Error in patching player data {stack_trace}")
     return reply(0)

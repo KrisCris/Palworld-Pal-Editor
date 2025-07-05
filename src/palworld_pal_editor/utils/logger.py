@@ -72,6 +72,16 @@ class Logger:
         print("")
 
     def _print_change(self, entity, val_name, old_val, new_val):
+        if type(old_val) == list and type(new_val) == list:
+            old_set = set(old_val)
+            new_set = set(new_val)
+            added = new_set - old_set
+            removed = old_set - new_set
+            if added:
+                self.info(f"{entity} | {val_name}: Added {added}")
+            if removed:
+                self.info(f"{entity} | {val_name}: Removed {removed}")
+            return
         self.info(f"{entity} | {val_name}: {old_val} -> {new_val}")
 
     def debug(self, message: str):

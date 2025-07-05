@@ -3,17 +3,57 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    const MAX_LEVEL = 60;
+    const MAX_LEVEL = 65;
+    const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 5;
     class Player {
         constructor(obj) {
-            this.id = obj.id;
-            this.name = obj.name;
-            this.hasViewingCage = obj.hasViewingCage;
+            this.InstanceId = obj.InstanceId;
+            this.NickName = obj.NickName;
+            this.Level = obj.Level;
+            this.HasViewingCage = obj.HasViewingCage;
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
             this.pals = new Map();
+            this.UnlockedRecipeTechnologyNames =
+                obj.UnlockedRecipeTechnologyNames;
+        }
+
+        levelDown() {
+            if (this.Level > 1) {
+                this.Level -= 1;
+                updatePlayer({ target: { name: "Level", value: this.Level } });
+            }
+        }
+
+        levelUp() {
+            if (
+                this.Level < MAX_LEVEL ||
+                (!HIDE_INVALID_OPTIONS.value && this.Level < MAX_INVALID_LEVEL)
+            ) {
+                this.Level += 1;
+                updatePlayer({ target: { name: "Level", value: this.Level } });
+            }
+        }
+
+        maxLevel() {
+            this.Level = HIDE_INVALID_OPTIONS.value
+                ? MAX_LEVEL
+                : MAX_INVALID_LEVEL;
+            updatePlayer({ target: { name: "Level", value: this.Level } });
+        }
+
+        toggleTech(tech, status) {
+            updatePlayer({
+                target: {
+                    name: "toggle_UnlockedRecipeTechnologyNames",
+                    value: {
+                        tech: tech,
+                        status: status,
+                    },
+                },
+            });
         }
     }
 
@@ -110,14 +150,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         levelUp() {
-            if (this.Level < MAX_LEVEL) {
+            if (
+                this.Level < MAX_LEVEL ||
+                (!HIDE_INVALID_OPTIONS.value && this.Level < MAX_INVALID_LEVEL)
+            ) {
                 this.Level += 1;
                 updatePal({ target: { name: "Level", value: this.Level } });
             }
         }
 
         maxLevel() {
-            this.Level = MAX_LEVEL;
+            this.Level = HIDE_INVALID_OPTIONS.value
+                ? MAX_LEVEL
+                : MAX_INVALID_LEVEL;
             updatePal({ target: { name: "Level", value: this.Level } });
         }
 
@@ -266,7 +311,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             }
             value = Math.min(Math.max(value, min), max);
             if (value == SELECTED_PAL_DATA.value.Suitabilities[name]) {
-                return
+                return;
             }
             updatePal({
                 target: {
@@ -288,7 +333,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     const PAL_BASE_WORKER_BTN = ref("PAL_BASE_WORKER_BTN");
 
-    // i18n mapping of passive and active skills
+    const TECH_LV_DICT = ref({});
     const PASSIVE_SKILLS = ref({});
     const PASSIVE_SKILLS_LIST = ref([]);
     const ACTIVE_SKILLS = ref({});
@@ -306,6 +351,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SAVE_LOADED_FLAG = ref(false);
     const HAS_WORKING_PAL_FLAG = ref(false);
     const BASE_PAL_BTN_CLK_FLAG = ref(false);
+    const SHOW_PLAYER_EDIT_FLAG = ref(false);
     // const ADD_PAL_RESELECT_CTR = ref(0);
     // const DEL_PAL_RESELECT_CTR = ref(0)
     const UPDATE_PAL_RESELECT_CTR = ref(0);
@@ -325,6 +371,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // display data
     const SELECTED_PAL_DATA = ref(new Map());
+    const SELECTED_PLAYER_DATA = ref(new Map());
     const PAL_MAP = ref(new Map());
 
     // selected id
@@ -346,6 +393,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SHOW_FILE_PICKER = ref(false);
     const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value);
 
+    const CN_WARNING_ON_LOAD = ref(true);
+
     // auth
     let auth_token = "";
     const IS_LOCKED = ref(true);
@@ -358,12 +407,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 },
             });
 
-            // console.log(response.data);
             return response.data;
         } catch (error) {
             if (error.response) {
-                console.log(error.response.data);
-                return error.response.data;
+                const errmsg =
+                    error.response.statusText + ": " + error.response.status;
+                console.log(errmsg);
+                return { msg: errmsg };
             } else if (error.request) {
                 alert(
                     `no response from the backend, make sure it is running, error: ${error.request}`
@@ -382,12 +432,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
-            // console.log(response.data);
             return response.data;
         } catch (error) {
             if (error.response) {
-                console.log(error.response.data);
-                return error.response.data;
+                const errmsg =
+                    error.response.statusText + ": " + error.response.status;
+                console.log(errmsg);
+                return { msg: errmsg };
             } else if (error.request) {
                 alert(
                     `no response from the backend, make sure it is running, error: ${error.request}`
@@ -406,12 +457,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
-            // console.log(response.data);
             return response.data;
         } catch (error) {
             if (error.response) {
-                console.log(error.response.data);
-                return error.response.data;
+                const errmsg =
+                    error.response.statusText + ": " + error.response.status;
+                console.log(errmsg);
+                return { msg: errmsg };
             } else if (error.request) {
                 alert(
                     `no response from the backend, make sure it is running, error: ${error.request}`
@@ -430,12 +482,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
-            // console.log(response.data);
             return response.data;
         } catch (error) {
             if (error.response) {
-                console.log(error.response.data);
-                return error.response.data;
+                const errmsg =
+                    error.response.statusText + ": " + error.response.status;
+                console.log(errmsg);
+                return { msg: errmsg };
             } else if (error.request) {
                 alert(
                     `no response from the backend, make sure it is running, error: ${error.request}`
@@ -457,11 +510,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             IS_LOCKED.value = false;
-        } else if (response.status == 2) {
+        } else {
             IS_LOCKED.value = true;
             reset();
-        } else {
-            alert(`- auth - Error occured: ${response.msg}`);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -514,7 +565,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             IS_LOCKED.value = true;
             reset();
         } else {
-            alert("- fetch_config - Error occured: ", response.msg);
+            alert(`- fetch_config - Error occured: ${response.msg}`);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -605,6 +656,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function updateI18n() {
+        sorryandfuckyou();
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
@@ -678,6 +730,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 `- fetchStaticData:pal_data - Error occured: ${pal_data_raw.msg}`
             );
         }
+
+        const tech_data_raw = await GET("/api/save/tech_data");
+        if (tech_data_raw === false) return;
+
+        if (tech_data_raw.status == 0) {
+            TECH_LV_DICT.value = tech_data_raw.data.techLvDict;
+        } else if (tech_data_raw.status == 2) {
+            IS_LOCKED.value = true;
+            reset();
+        } else {
+            alert(
+                `- fetchStaticData:tech_data - Error occured: ${tech_data_raw.msg}`
+            );
+        }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
@@ -697,6 +763,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_LIST_SEARCH_KEYWORD.value = "";
         SHOW_UNREF_PAL_FLAG.value = false;
         SHOW_OOB_PAL_FLAG.value = true;
+        SHOW_PLAYER_EDIT_FLAG.value = false;
 
         // display data
         SELECTED_PAL_DATA.value = new Map();
@@ -716,7 +783,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!I18nLoadingPromises[I18nKey]) {
             I18nLoadingPromises[I18nKey] = import(`../i18n/${I18nKey}.js`)
                 .then((module) => {
-                    console.log(`${I18nKey} imported`);
                     TranslationKeyMap.value[I18nKey] = module.default;
                     delete I18nLoadingPromises[I18nKey];
                 })
@@ -731,7 +797,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                         delete I18nLoadingPromises[I18nKey];
                     } else {
                         import(`../i18n/en.js`).then((module) => {
-                            console.log(`en imported`);
                             TranslationKeyMap.value[I18nKey] = module.default;
                             delete I18nLoadingPromises[I18nKey];
                         });
@@ -758,11 +823,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return;
         }
 
-        // console.log(
-        //   `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
-        //     PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).name
-        //   } key=${key}, value=${value}`
-        // );
+        console.log(
+            `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
+                PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).NickName
+            } key=${key}, value=${value}`
+        );
 
         const response = await PATCH("/api/player/player_data", {
             key: key,
@@ -807,12 +872,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
             const pal_id_bk = SELECTED_PAL_ID.value;
             // const pal_data_bk = SELECTED_PAL_DATA.value;
-            await selectPlayer({ target: { value: playerUId } });
+            await selectPlayer(playerUId, true);
 
             // player id and pal data never changed so this is safe
             // if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
-            if (!updatePal)
-                await selectPal({ target: { value: pal_id_bk } }, true);
+            if (!updatePal && pal_id_bk) await selectPal(pal_id_bk, true);
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
             IS_LOCKED.value = true;
@@ -840,8 +904,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
             for (let player of response.data.players) {
                 let p = new Player(player);
-                PLAYER_MAP.value.set(p.id, p);
-                // console.log(`Found player: ${p.name} - ${p.id}`);
+                PLAYER_MAP.value.set(p.InstanceId, p);
+                // console.log(`Found player: ${p.NickName} - ${p.InstanceId}`);
             }
 
             if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG) {
@@ -858,9 +922,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
+    async function sorryandfuckyou() {
+        if ((I18n.value == "zh-CN") & CN_WARNING_ON_LOAD.value) {
+            alert(
+                "警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。"
+            );
+            CN_WARNING_ON_LOAD.value = false;
+        }
+    }
+
     async function loadSave() {
         reset();
-
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
@@ -901,7 +973,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
-            const Alert_Successful_Save = getTranslatedText("Alert_Successful_Save").replace("{{path}}", PAL_WRITE_BACK_PATH.value);
+            const Alert_Successful_Save = getTranslatedText(
+                "Alert_Successful_Save"
+            ).replace("{{path}}", PAL_WRITE_BACK_PATH.value);
             alert(Alert_Successful_Save);
             retval = true;
         } else if (response.status == 2) {
@@ -949,15 +1023,46 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function selectPlayer(e) {
+    async function fetchPlayerData(playerUId) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-        let playerUId = e.target.value;
+        if (SELECTED_PLAYER_ID.value == null) {
+            alert("Select a player first!");
+            return;
+        }
+
+        const response = await POST("/api/player/player_data", {
+            PlayerUId: playerUId,
+        });
+        if (response === false) return;
+
+        if (response.status == 0) {
+            const player_obj = new Player(response.data);
+            if (PLAYER_MAP.value.has(playerUId)) {
+                player_obj.pals = PLAYER_MAP.value.get(playerUId).pals;
+            }
+            PLAYER_MAP.value.set(playerUId, player_obj);
+        } else if (response.status == 2) {
+            alert("Unauthorized Access, Please Login. ");
+            IS_LOCKED.value = true;
+            reset();
+        } else {
+            alert(`- fetchPlayerData - Error occured: ${response.msg}`);
+        }
+
+        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+    }
+
+    async function selectPlayer(playerUId, manual = false) {
+        let no_set_loading_flag = LOADING_FLAG.value;
+        if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         // clear selected playerId
         SELECTED_PLAYER_ID.value = null;
+        SELECTED_PLAYER_DATA.value = null;
         BASE_PAL_BTN_CLK_FLAG.value = false;
+        SHOW_PLAYER_EDIT_FLAG.value = false;
 
         // clear pal selection
         SELECTED_PAL_ID.value = null;
@@ -981,9 +1086,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 : PLAYER_MAP.value.get(playerUId).pals;
 
         // properly setup selected player flag
-        if (playerUId == PAL_BASE_WORKER_BTN.value)
+        if (playerUId == PAL_BASE_WORKER_BTN.value) {
             BASE_PAL_BTN_CLK_FLAG.value = true;
-        else SELECTED_PLAYER_ID.value = playerUId;
+        } else {
+            SELECTED_PLAYER_ID.value = playerUId;
+            if (!manual) {
+                await fetchPlayerData(playerUId);
+            }
+            SHOW_PLAYER_EDIT_FLAG.value = true;
+            SELECTED_PLAYER_DATA.value = PLAYER_MAP.value.get(playerUId);
+        }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
@@ -1020,11 +1132,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function selectPal(e, manual = false) {
+    async function selectPal(palId, manual = false) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-        // sometimes we manually construct a "e" target in a very hacked way
         if (!manual) {
             // SELECTED_PAL_EL = e.target;
             SELECTED_PAL_DATA.value = null;
@@ -1032,10 +1143,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         // set selected pal, and print out debug info
-        let palId = e.target.value;
         let palData = PAL_MAP.value.get(palId);
         if (palData == null) {
-            alert("Error selecting pal, try again or reload");
+            alert("Failed selecting pal, try again or reload");
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
@@ -1050,6 +1160,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // Update selected pal id and pal data
         SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
         SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+        SHOW_PLAYER_EDIT_FLAG.value = false;
 
         // Scroll to selected pal
         // if (!isElementInViewport(SELECTED_PAL_EL)) {
@@ -1095,7 +1206,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             // A hack way to trigger vue re-rendering.
             // The object is simply too nested that I can't figure out how to have vue properly refresh.
-            await selectPal({ target: { value: SELECTED_PAL_ID.value } }, true);
+            await selectPal(SELECTED_PAL_ID.value, true);
             UPDATE_PAL_RESELECT_CTR.value++;
         } else if (response.status == 2) {
             alert("Unauthorized Access, Please Login. ");
@@ -1243,6 +1354,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             temp_map.forEach((v, k) => PAL_MAP.value.set(k, v));
 
             // ADD_PAL_RESELECT_CTR.value++
+            SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.InstanceId;
             SELECTED_PAL_DATA.value = pal_data;
         } else if (response.status == 2) {
@@ -1343,15 +1455,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-
     async function showDonate() {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const response = await GET("/api/save/donate");
         if (response === false) return;
-        let res = true
+        let res = true;
         if (response.status == 0) {
-            res = response.data?.shouldShowDonate == true
+            res = response.data?.shouldShowDonate == true;
             IS_LOCKED.value = false;
         } else if (response.status == 2) {
             IS_LOCKED.value = true;
@@ -1365,6 +1476,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     return {
         MAX_LEVEL,
+        MAX_INVALID_LEVEL,
         MAX_SOULS_LEVEL,
         MAX_SUITABILITY_LEVEL,
 
@@ -1374,6 +1486,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PLAYER_MAP,
         PAL_MAP,
         SELECTED_PLAYER_ID,
+        SELECTED_PLAYER_DATA,
         SELECTED_PAL_ID,
         SELECTED_PAL_DATA,
         SHOW_DONATE_FLAG,
@@ -1395,6 +1508,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_FILE_PICKER_PATH,
         IS_PAL_SAVE_PATH,
 
+        SHOW_PLAYER_EDIT_FLAG,
         HAS_WORKING_PAL_FLAG,
         BASE_PAL_BTN_CLK_FLAG,
         PAL_GAME_SAVE_PATH,
@@ -1409,6 +1523,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PASSIVE_SKILLS_LIST,
         ACTIVE_SKILLS,
         ACTIVE_SKILLS_LIST,
+        TECH_LV_DICT,
 
         getTranslatedText,
 

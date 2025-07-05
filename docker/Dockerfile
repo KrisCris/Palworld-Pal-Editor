@@ -19,8 +19,8 @@ RUN cd "/app/frontend/palworld-pal-editor-webui" \
     && npm run build \
     && mv "/app/frontend/palworld-pal-editor-webui/dist" "/app/src/palworld_pal_editor/webui" 
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install -e .
+RUN pip install --no-cache-dir --force-reinstall --upgrade -r requirements.txt \
+    && pip install -e .  --no-cache-dir --force-reinstall --upgrade
 
 RUN chmod +x /app/docker/app.sh
 

@@ -18,6 +18,9 @@ from palworld_pal_editor.utils.util import type_guard
 
 
 class PalEntity:
+    MAX_LEVEL = 60
+    MAX_INVALID_LEVEL = 100
+
     def __init__(self, pal_obj: dict) -> None:
         self._pal_obj: dict = pal_obj
 
@@ -38,6 +41,11 @@ class PalEntity:
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
+        
+        if self.CharacterID is None:
+            raise Exception(
+                f"No CharacterID, skipping {dumps(pal_obj)}"
+            )
 
         if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError(
@@ -123,25 +131,25 @@ class PalEntity:
         return PalObjects.get_ArrayProperty(self._pal_param.get("OldOwnerPlayerUIds"))
 
     @property
-    def SlotID(self) -> Optional[tuple[UUID, int]]:
-        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotID"))
+    def SlotId(self) -> Optional[tuple[UUID, int]]:
+        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotId"))
 
-    @SlotID.setter
-    @LOGGER.change_logger("SlotID")
-    def SlotID(self, slot_id: tuple[UUID | str, int]):
-        self._pal_param["SlotID"] = PalObjects.PalCharacterSlotId(
+    @SlotId.setter
+    @LOGGER.change_logger("SlotId")
+    def SlotId(self, slot_id: tuple[UUID | str, int]):
+        self._pal_param["SlotId"] = PalObjects.PalCharacterSlotId(
             slot_id[1], slot_id[0]
         )
 
     @property
     def ContainerId(self) -> Optional[UUID]:
-        if (slot := self.SlotID) is None:
+        if (slot := self.SlotId) is None:
             return
         return slot[0]
 
     @property
     def SlotIndex(self) -> Optional[int]:
-        if (slot := self.SlotID) is None:
+        if (slot := self.SlotId) is None:
             return
         return slot[1]
 
@@ -300,9 +308,11 @@ class PalEntity:
     @property
     def IconAccessKey(self) -> Optional[str]:
         if self.IsHuman:
+            if DataProvider.has_human_icon(self.CharacterID):
+                return self.CharacterID
             return "Human"
         if self.IsTower:
-            pattern = r"(GYM_[A-Za-z_]+?)(?:_\d+.*)?$"
+            pattern = r"^(GYM_[^_]+)"
             match = re.search(pattern, self.CharacterID)
             if match:
                 return match.group(1)
@@ -332,6 +342,10 @@ class PalEntity:
                 key = "Police_Handgun"
             case "Blueplatypus":
                 key = "BluePlatypus"
+            case "GhostAnglerFish":
+                key = "GhostAnglerfish"
+            case "GhostAnglerFish_Fire":
+                key = "GhostAnglerfish_Fire"
         return key
 
     @property
@@ -475,19 +489,45 @@ class PalEntity:
             self._IsBOSS = False
 
     @property
-    def NickName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+    def FilteredNickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
+    
+    @FilteredNickName.setter
+    @LOGGER.change_logger("FilteredNickName")
+    @type_guard
+    def FilteredNickName(self, value: str) -> None:
+        if self.FilteredNickName is None:
+            self._pal_param["FilteredNickName"] = PalObjects.StrProperty(value)
+        else:
+            self._pal_param["FilteredNickName"]["value"] = value
 
+        if not self.FilteredNickName:
+            self._pal_param.pop("FilteredNickName", None)
+
+    @property
+    def NickName(self) -> Optional[str]:
+        return self._NickName or self.FilteredNickName
+    
     @NickName.setter
-    @LOGGER.change_logger("NickName")
     @type_guard
     def NickName(self, value: str) -> None:
-        if self.NickName is None:
+        self._NickName = value
+        self.FilteredNickName = value
+
+    @property
+    def _NickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+
+    @_NickName.setter
+    @LOGGER.change_logger("NickName")
+    @type_guard
+    def _NickName(self, value: str) -> None:
+        if self._NickName is None:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
             self._pal_param["NickName"]["value"] = value
 
-        if not self.NickName:
+        if not self._NickName:
             self._pal_param.pop("NickName", None)
 
     @property
@@ -498,12 +538,12 @@ class PalEntity:
     @LOGGER.change_logger("Level")
     @type_guard
     def Level(self, value: int) -> None:
-        value = clamp(1, 60, value)
+        value = clamp(1, PalEntity.MAX_INVALID_LEVEL, value)
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
             PalObjects.set_ByteProperty(self._pal_param["Level"], value)
-        self.Exp = DataProvider.get_level_xp(self.Level)
+        self.Exp = DataProvider.get_pal_level_xp(self.Level)
 
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
@@ -699,7 +739,7 @@ class PalEntity:
                 "NameProperty", {"values": []}
             )
 
-        if not force and skill in self.PassiveSkillList:
+        if skill in self.PassiveSkillList:
             LOGGER.warning(f"{self} already has passive {skill}, skipping")
             return False
 
@@ -752,7 +792,7 @@ class PalEntity:
             self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
-        if not force and waza in self.EquipWaza:
+        if waza in self.EquipWaza:
             LOGGER.warning(f"{self} has already equipped waza {waza}, skipping")
             return False
 
@@ -1128,11 +1168,6 @@ class PalEntity:
                 self.pop_MasteredWaza(item=atk)
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
-
-    def max_lv_exp(self):
-        exp = DataProvider.get_level_xp(self.Level)
-        if isinstance(exp, int):
-            self.Exp = exp - 1
 
     def print_obj(self):
         print(self.dump_obj())

@@ -3,6 +3,8 @@ import requests
 import json
 import re
 
+internal_name_arr = []
+
 # URLs for the different languages
 urls = {
     "en": "https://paldb.cc/en/Passive_Skills#PalPassiveSkills",
@@ -81,14 +83,16 @@ def get_node_id(lang):
     elif lang == "fr":
         return "PalCompétencespassives"
 
-def extract_skills(html_content, lang):
+def extract_skills(html_content, lang, mappings):
     soup = BeautifulSoup(html_content, 'html.parser')
     pal_passive_skills = soup.find(id=get_node_id(lang))
     skills_data = {}
 
     if pal_passive_skills:
         rows = pal_passive_skills.find_all("div", class_="col")
-        for row in rows:
+        # row and index
+        for i, row in enumerate(rows):
+        # for row in rows:
             # Find the border div
             border_div = row.find("div", class_="border")
             if not border_div:
@@ -111,6 +115,20 @@ def extract_skills(html_content, lang):
 
             name = name_div.text.strip()
             internal_name = name_div.get("data-hover", "").split("/")[-1]
+            if internal_name == "" or internal_name is None:
+                if lang == "en":
+                    matched = False
+                    for key, value in mappings.items():
+                        if value == name:
+                            internal_name = key
+                            matched = True
+                            break
+                    if not matched:
+                        print(f"can't find internal name for {name}")
+                else:
+                    internal_name = internal_name_arr[i]
+
+            internal_name_arr.append(internal_name) if lang == "en" else None
 
             # Extract the description
             description_div = border_div.find("div", class_="p-2")
@@ -142,12 +160,16 @@ def extract_skills(html_content, lang):
 
     return skills_data
 
+
+with open("mappings.json", "r", encoding="utf-8") as file:
+    mappings = json.load(file)
+
 # Fetch and parse HTML for each language
 all_skills = {}
 for lang, url in urls.items():
     response = requests.get(url)
     if response.status_code == 200:
-        skills = extract_skills(response.text, lang)
+        skills = extract_skills(response.text, lang, mappings)
         for skill_name, skill_data in skills.items():
             if skill_name not in all_skills:
                 all_skills[skill_name] = skill_data

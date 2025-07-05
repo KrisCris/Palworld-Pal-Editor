@@ -28,7 +28,7 @@ def version_info() -> str:
         return f"{VERSION}-{RELEASE_TYPE}-{GIT_HASH}"
 
 def is_gh_build() -> bool:
-    return version_info() != "development"
+    return GIT_HASH != "0000000"
 
 class Config:
     i18n: str = "en"

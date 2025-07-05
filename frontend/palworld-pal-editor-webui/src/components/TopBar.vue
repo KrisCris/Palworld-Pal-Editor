@@ -82,14 +82,14 @@ const save = async () => {
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips') }}</span>
       </div>
 
-      <div class="tooltip-container">
+      <!-- <div class="tooltip-container">
         <button :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
           @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
           :title="palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips')">
           👀 {{ palStore.getTranslatedText("TopBar_Btn_Pal_Ghost") }}
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips') }}</span>
-      </div>
+      </div> -->
 
       <div class="tooltip-container">
         <button :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
@@ -98,6 +98,10 @@ const save = async () => {
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips') }}</span>
       </div>
+
+      <button class="op blue" @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
+        ❤️ {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
+      </button>
 
     </div>
     <div class="options">
@@ -188,6 +192,29 @@ button.op:hover {
 }
 
 button.op:disabled {
+  background-color: #8a8a8a;
+  box-shadow: 0 0 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
+}
+
+button.op.blue {
+  height: 2rem;
+  background-color: rgb(55, 139, 243);
+  color: whitesmoke;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+}
+
+button.op.blue:hover {
+  background-color: rgb(11, 84, 173);
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+button.op.blue:disabled {
   background-color: #8a8a8a;
   box-shadow: 0 0 0;
   filter: grayscale(100%);

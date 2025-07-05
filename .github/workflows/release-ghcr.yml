@@ -84,6 +84,7 @@ jobs:
         push: true
         tags: ghcr.io/${{ env.REPO_OWNER }}/palworld-pal-editor:latest
         platforms: linux/amd64,linux/arm64
+        no-cache: true
 
     - name: Verify image digest
       run: echo "The new image digest is ${{ steps.build-and-push.outputs.digest }}"

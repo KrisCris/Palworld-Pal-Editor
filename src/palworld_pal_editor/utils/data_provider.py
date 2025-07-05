@@ -33,6 +33,7 @@ PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
+TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
@@ -128,6 +129,11 @@ class DataProvider:
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
+    
+    @none_guard(data_source=PAL_DATA)
+    @staticmethod
+    def has_human_icon(key: str) -> bool:
+        return PAL_DATA[key].get("HasIcon", False)
 
     @staticmethod
     def is_pal_invalid(key: str) -> bool:
@@ -144,9 +150,9 @@ class DataProvider:
         return PAL_DATA[pal]["Suitabilities"]
 
     @staticmethod
-    def get_level_xp(lv: int) -> Optional[int]:
+    def get_pal_level_xp(lv: int) -> Optional[int]:
         try:
-            return PAL_EXP_TABLE[lv - 1]["PalTotalEXP"]
+            return PAL_EXP_TABLE[str(lv)]["PalTotalEXP"]
         except IndexError:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
@@ -248,3 +254,29 @@ class DataProvider:
     @staticmethod
     def get_i18n_options() -> list[str]:
         return I18N_LIST.keys()
+
+    @staticmethod
+    def get_player_level_xp(lv: int) -> Optional[int]:
+        try:
+            return PAL_EXP_TABLE[str(lv)]["TotalEXP"]
+        except IndexError:
+            LOGGER.warning(f"Level {lv} is out of bounds.")
+            return None
+
+    @staticmethod
+    def get_tech_data() -> dict[str, dict]:
+        return TECH_DATA
+
+    @none_guard(data_source=TECH_DATA, subkey="I18n")
+    @staticmethod
+    def get_tech_i18n(key: str) -> Optional[str]:
+        i18n_list: dict = TECH_DATA[key]["I18n"]
+        return i18n_list.get(Config.i18n, i18n_list.get("en"))
+
+    @staticmethod
+    def get_tech_lv(key: str) -> int:
+        return TECH_DATA.get(key, {}).get("Level", 0)
+
+    @staticmethod
+    def is_boss_tech(key: str) -> bool:
+        return TECH_DATA.get(key, {}).get("BossTechnology", False)

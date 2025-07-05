@@ -33,13 +33,13 @@
 
 ## 支持的语言
 
-- **English** | **日本語** | **简体中文**
+- **English** | **日本語** | **简体中文** | **French**
 
 ## 这是什么？
 
 ### 幻兽帕鲁 帕鲁 编辑器
 
-<https://www.bilibili.com/video/av1952608324>
+<https://www.bilibili.com/video/BV1cN6oYMEqL>
 
 > [!NOTE]
 > 帕鲁 Steam 版 本地游戏 存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
@@ -50,6 +50,8 @@
 >
 > - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
 > - [Palworld XGP Save Importer (Steam -> XGP)](https://github.com/HarukaMa/palworld-xgp-import)
+> 
+> 我们的 Discord 服务器里也有一些人提供了教程。
 
 > [!IMPORTANT]
 > **为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)。**
@@ -65,6 +67,7 @@
   - [这是什么？](#这是什么)
     - [幻兽帕鲁 帕鲁 编辑器](#幻兽帕鲁-帕鲁-编辑器)
   - [这个工具能干啥](#这个工具能干啥)
+  - [未来计划 (No ETA)](#未来计划-no-eta)
   - [使用](#使用)
     - [方案 A. 使用打包的可执行文件](#方案-a-使用打包的可执行文件)
     - [方案 B. 通过 pip 安装](#方案-b-通过-pip-安装)
@@ -74,7 +77,6 @@
     - [可选命令行参数](#可选命令行参数)
     - [配置文件](#配置文件)
   - [视频](#视频)
-  - [未来开发计划？ (无ETA)](#未来开发计划-无eta)
   - [贡献](#贡献)
   - [赞助](#赞助)
   - [感谢](#感谢)
@@ -84,15 +86,14 @@
 
 ## 这个工具能干啥
 
-- [x] 生成帕鲁
-- [x] 复制帕鲁
-- [x] 删除帕鲁
-- [x] 显示 / 隐藏 不在玩家帕鲁栏位中的帕鲁
-- [x] 显示 / 隐藏 无用的帕鲁数据
 - [x] 列出玩家和帕鲁
 - [x] 查看帕鲁数据
+- [x] 修改 帕鲁种族
+- [x] 添加帕鲁
+- [x] 复制帕鲁
+- [x] 删除帕鲁
 - [x] 改变帕鲁性别
-- [x] 切换 BOSS / 稀有 / 塔主
+- [x] 切换 BOSS / 稀有 / 塔主 / 石板 等特殊品种
 - [x] 修改 / 删除帕鲁昵称
 - [x] 增删 帕鲁学会的主动技能
 - [x] 增删 帕鲁装备的主动技能
@@ -100,12 +101,22 @@
 - [x] 修改 帕鲁等级
 - [x] 修改 帕鲁浓缩机等级
 - [x] 修改 帕鲁魂强化等级
-- [x] 修改 帕鲁种族
 - [x] 修改 帕鲁个体值
+- [x] 修改帕鲁工作适应性
 - [x] 计算并展示 最大生命值，攻击力，防御力，工作速度
-- [x] 移除 帕鲁工作疾病
-- [x] 复活帕鲁
+- [x] 治愈（复活）所有帕鲁，移除所有负面效果
+- [x] 允许作弊，超出游戏内允许的数值上限，比如255级强化等级，装备超过三个技能等。（需要手动启用作弊功能）
 - [x] 修改 食物BUFF 的时间 （目前只支持CLI）
+- [x] 显示 / 隐藏 不在所有者玩家帕鲁栏位中的帕鲁
+- [x] 显示 / 隐藏 无用的帕鲁数据
+
+## 未来计划 (No ETA)
+
+- [ ] 修改玩家属性加点等数值。
+- [ ] 为玩家解锁科技树。
+- [ ] 用户可以自定义的技能预设组合。
+- [ ] 重写帕鲁工会和背包的代码，实现切换所有者，帕鲁按存放容器分类等功能。
+- [ ] 用户界面。。。
 
 ## 使用
 
@@ -114,10 +125,13 @@
 ***直接运行可执行文件，你不需要安装Python等依赖。***
 
 - 稳定版:
-  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
   - [Nexusmods](https://www.nexusmods.com/palworld/mods/995)
+  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
 - 最新（你可能会遇到问题）:
   - [Github Actions Artifacts](https://github.com/KrisCris/Palworld-Pal-Editor/actions)
+
+> [!NOTE]
+> 如果你的目标只是简单修改帕鲁存档，那就不需要往下读了。后面的内容为开发者，及更进阶的用户参考。
 
 ### 方案 B. 通过 pip 安装
 
@@ -207,13 +221,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-40
 - CLI: (old, but you get the idea)
 
 https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
-
-## 未来开发计划？ (无ETA)
-
-- [ ] 改进网页端（一开始是打算做桌面端程序的，但想着dockerfile都写了，就临时改主意搓了一个。我这坨屎山vue实在是写的太乱了qwq）。
-- [ ] 桌面端, 或者干脆用 [Textual](https://textualize.io/) 做一个控制台UI， XD。
-- [ ] 移动帕鲁存储栏位？或者修改主人？ idk
-- [ ] More Stuff...
 
 ## 贡献
 

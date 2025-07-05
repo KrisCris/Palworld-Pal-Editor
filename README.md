@@ -34,22 +34,15 @@
 
 ## Supported Language
 
-- **English** | **日本語** | **简体中文**
-
-> [!NOTE]
-> If the UI isn't in your language, that means the UI I18n is missing. Your contribution is always welcomed!
->
-> But don't worry, all Pals and Skills are translated for the supported languages.
->
-> At the end of the day, you can always use Chrome translation, if you are running it in web mode. ***(You don't need to worry about translation messing up the data we write to the save, we are not using plain text.)***
+- **English** | **日本語** | **简体中文** | **French**
 
 ## What is this?
 
-### A Palworld Pal Editor developed by _connlost with ❤️
+### A Palworld Pal Editor developed by _connlost with ❤️.
 
  ~~(yeah i am just too lazy to change github username)~~
 
-<https://youtu.be/v9U60jj5Ugw>
+[An old showcase video posted on youtube](https://youtu.be/v9U60jj5Ugw), the idea should be the same though.
 
 > [!NOTE]
 > Steam Palworld Local Save Dir: `%localappdata%\Pal\Saved\SaveGames`
@@ -61,7 +54,9 @@
 > - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
 > - [Palworld XGP Save Importer (Steam -> XGP)](https://github.com/HarukaMa/palworld-xgp-import)
 >
-> Meanwhile, you are welcomed to submit a xbox game save, so that I can look into.
+> There are also some pinned messages in our Discord Server that provide knowledges on this topic.
+>
+> Be aware that these tools can be outdated.
 
 > [!IMPORTANT]
 > ***Always backup your save in case corruption happens. (The tool does backup files for you.)***
@@ -75,8 +70,9 @@
 - [Palworld Pal Editor](#palworld-pal-editor)
   - [Supported Language](#supported-language)
   - [What is this?](#what-is-this)
-    - [A Palworld Pal Editor developed by \_connlost with ❤️](#a-palworld-pal-editor-developed-by-_connlost-with-️)
+    - [A Palworld Pal Editor developed by \_connlost with ❤️.](#a-palworld-pal-editor-developed-by-_connlost-with-️)
   - [What This Tool Can Do](#what-this-tool-can-do)
+  - [Future TODOs (No ETA)](#future-todos-no-eta)
   - [Usage](#usage)
     - [Option A. Use Pre-Built Binary](#option-a-use-pre-built-binary)
     - [Option B. Install via pip](#option-b-install-via-pip)
@@ -86,7 +82,6 @@
     - [Optional Command-line Args](#optional-command-line-args)
     - [Config File](#config-file)
   - [Videos](#videos)
-  - [Possible Roadmap? (NO ETA)](#possible-roadmap-no-eta)
   - [Contribution](#contribution)
   - [Sponsor](#sponsor)
   - [Thanks](#thanks)
@@ -96,46 +91,57 @@
 
 ## What This Tool Can Do
 
-- [x] Spawn Pal
-- [x] Duplicate Pal
+- [x] List Players and Their Pals
+- [x] Show Pal Stats
+- [x] Change Pal Species
+- [x] Add Pal (To your inventory)
 - [x] Delete Pal
-- [x] Show / Hide pals that are not in player pal containers (e.g. Pals in viewing cage, (or taken away by other players, prior Palworld v0.1.5))
-- [x] Show (so you can delete them) / hide pals that are not displayed in game (Ghost Pals).
-- [x] Unlock Viewing Cage for Selected player (multiplayer server)
-- [x] List Players and Pals
-- [x] Inspect Pal Stats
+- [x] Duplicate Pal
 - [x] Change Pal Gender
-- [x] Toggle BOSS / Rare / Tower
+- [x] Toggle Boss / Rare / Tower / Raid, etc.
 - [x] Change Pal NickName
 - [x] Add / Remove Pal Learned Attacks
 - [x] Add / Remove Pal Equipped Attacks
-- [x] Change Pal Level / Exp
-- [x] Change Pal Condenser Level
-- [x] Change Pal Soul Levels
-- [x] Change CharacterID (Pal Species)
-- [x] Change Pal Passive Skills
-- [x] Change Pal IV
-- [x] ~~Calculate MaxHP~~ (MaxHP no longer stored in game save.)
-- [x] Remove Pal Sicks
-- [x] Revive Pals
+- [x] Modify Pal Level / Exp
+- [x] Modify Pal Condenser Level
+- [x] Modify Pal Soul Levels
+- [x] Modify Pal Work Suitabilities
+- [x] Modify Pal Passive Skills
+- [x] Modify Pal IV
+- [x] Heal (and Revive) all pals and remove all negative effects.
+- [x] Allow you to surpass the in-game limit, e.g. IV 255, Souls Level 255, Condenser Level 254; if you have the cheat option ON.
 - [x] Edit Food Buff Timer (Only if the pal has food buff, and cli only)
+- [x] Show / hide pals that are not stored in the player inventory (e.g. Pals in viewing cage, ~~(or taken away by other players, prior Palworld v0.1.5)~~)
+- [x] Show / hide pals that are not displayed in game (Ghost Pals), so you can properly delete them.
+- [x] Unlock Viewing Cage for Selected player (multiplayer server)
+- And More...
+
+## Future TODOs (No ETA)
+
+- [ ] Editing player character stats.
+- [ ] Unlocking technologies for player characters.
+- [ ] User defined skill presets.
+- [ ] The player group and pal container implementation overhaul, which enables me to properly label the containers (i.e. the inventory), and group the pals based on that and change pal ownerships.
+- [ ] A better UI?
 
 ## Usage
-
-> [!NOTE]
-> You can always run the editor in a modern web browser, in case the GUI isn't working properly for you.
->
-> Alternatively you can find the version that uses Chromium [here](https://github.com/KrisCris/Palworld-Pal-Editor/actions?query=branch%3AQWebEngineView), which should hopefully fix all the GUI issues.
 
 ### Option A. Use Pre-Built Binary
 
 ***Just run the executable, you don't need to install Python.***
 
-- Stable Version:
-  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
+- Release Version:
   - [Nexusmods](https://www.nexusmods.com/palworld/mods/995)
-- Nightly Builds:
+  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
+- Dev Builds:
   - [Github Actions Artifacts](https://github.com/KrisCris/Palworld-Pal-Editor/actions)
+
+> [!NOTE]
+> There is no need for you to read further if your goal is simply downloading the tool and modify your game save.
+> 
+> You can always run the editor in a modern web browser, in case the GUI isn't working properly for you. Also there is an [issue ticket](https://github.com/KrisCris/Palworld-Pal-Editor/issues/4) that you may found useful.
+>
+> Alternatively you can find the version that uses Chromium [here](https://github.com/KrisCris/Palworld-Pal-Editor/actions?query=branch%3AQWebEngineView), which should hopefully fix all the GUI issues.
 
 ### Option B. Install via pip
 
@@ -230,13 +236,6 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-40
 - CLI: (old, but you get the idea)
 
 https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
-
-## Possible Roadmap? (NO ETA)
-
-- [ ] Improve WebUI (I am bad at frontend dev, sorry! Contribution appreciated.)
-- [ ] Real GUI, or maybe just a Terminal GUI using [Textual](https://textualize.io/).
-- [ ] Move Pal to Different Slots? Change owner? IDK...
-- [ ] More Stuff...
 
 ## Contribution
 

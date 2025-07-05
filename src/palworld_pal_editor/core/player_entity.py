@@ -4,11 +4,15 @@ from palworld_save_tools.gvas import GvasFile
 
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.core.pal_objects import PalObjects, StatusName
 from palworld_pal_editor.utils.data_provider import DataProvider
+from palworld_pal_editor.utils.util import clamp, type_guard
 
 
 class PlayerEntity:
+    MAX_LEVEL = 60
+    MAX_INVALID_LEVEL = 100
+
     def __init__(
         self,
         group_id: UUID | str,
@@ -61,6 +65,7 @@ class PlayerEntity:
             raise Exception(
                 f"InstanceId unmatch: Level.sav: {self.InstanceId} v.s. playerid.sav {sav_InstanceId}"
             )
+        
 
     def __str__(self) -> str:
         return "{} - {} - {}".format(self.NickName, self.PlayerUId, self.InstanceId)
@@ -86,6 +91,186 @@ class PlayerEntity:
     @property
     def NickName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._player_param.get("NickName"))
+    
+    @NickName.setter
+    @LOGGER.change_logger("NickName")
+    @type_guard
+    def NickName(self, value: str) -> None:
+        if self.NickName is None:
+            self._player_param["NickName"] = PalObjects.StrProperty(value)
+        else:
+            self._player_param["NickName"]["value"] = value
+
+        if not self.NickName:
+            self._player_param.pop("NickName", None)
+
+    @property
+    def UnusedStatusPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_param.get("UnusedStatusPoint"))
+    
+    @UnusedStatusPoint.setter
+    @LOGGER.change_logger("UnusedStatusPoint")
+    @type_guard
+    def UnusedStatusPoint(self, value: int) -> None:
+        value = clamp(PalObjects.UInt16Min, PalObjects.UInt16Max, value)
+        if self.UnusedStatusPoint is None:
+            self._player_param["UnusedStatusPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_param["UnusedStatusPoint"], value)
+
+    @property
+    def GotStatusPointList(self) -> Optional[list[dict]]:
+        return PalObjects.get_ArrayProperty(self._player_param.get("GotStatusPointList"))
+    
+    @property
+    def GotExStatusPointList(self) -> Optional[list[dict]]:
+        return PalObjects.get_ArrayProperty(self._player_param.get("GotExStatusPointList"))
+    
+    @property
+    def StatusPointHP(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.MaxHP):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def StatusPointSP(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.MaxSP):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def StatusPointATK(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.Attack):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def StatusPointCarryWeight(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.CarryWeight):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def StatusPointCaptureRate(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.CaptureRate):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def StatusPointWorkSpeed(self) -> Optional[int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+
+        for sp in self.GotStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.WorkSpeed):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    # do this for ex points as well, while ex points do not have the capture rate thing
+    @property
+    def ExStatusPointHP(self) -> Optional[int]:
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+
+        for sp in self.GotExStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.MaxHP):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def ExStatusPointSP(self) -> Optional[int]:
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+
+        for sp in self.GotExStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.MaxSP):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+    
+    @property
+    def ExStatusPointATK(self) -> Optional[int]:
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+        
+        for sp in self.GotExStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.Attack):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def ExStatusPointCarryWeight(self) -> Optional[int]:
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+
+        for sp in self.GotExStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.CarryWeight):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+            
+    @property
+    def ExStatusPointWorkSpeed(self) -> Optional[int]:
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+
+        for sp in self.GotExStatusPointList:
+            if (PalObjects.get_BaseType(sp.get("StatusName")) == StatusName.WorkSpeed):
+                status_point = PalObjects.get_BaseType(sp.get("StatusPoint"))
+                return status_point
+
+    @property
+    def Level(self) -> Optional[int]:
+        return PalObjects.get_ByteProperty(self._player_param.get("Level"))
+    
+    @Level.setter
+    @LOGGER.change_logger("Level")
+    @type_guard
+    def Level(self, value: int) -> None:
+        value = clamp(1, PlayerEntity.MAX_INVALID_LEVEL, value)
+        if self.Level is None:
+            self._player_param["Level"] = PalObjects.ByteProperty(1)
+        
+        status_points = value - self.Level
+        new_unused_status_point = (self.UnusedStatusPoint or 0) + status_points
+        if new_unused_status_point < 0:
+            LOGGER.warning(f"Player {self} has insufficient status points to level down.")
+            return
+        
+        PalObjects.set_ByteProperty(self._player_param["Level"], value)
+        self.Exp = DataProvider.get_player_level_xp(self.Level)
+        self.UnusedStatusPoint = new_unused_status_point
+    
+    @property
+    def Exp(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_param.get("Exp"))
+    
+    @Exp.setter
+    @LOGGER.change_logger("Exp")
+    @type_guard
+    def Exp(self, value: int) -> None:
+        if self.Exp is None:
+            self._player_param["Exp"] = PalObjects.Int64Property(value)
+        else:
+            PalObjects.set_BaseType(self._player_param["Exp"], value)
 
     @property
     def OtomoCharacterContainerId(self) -> Optional[UUID]:
@@ -111,17 +296,32 @@ class PlayerEntity:
         )
 
     @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
-    def add_UnlockedRecipeTechnologyNames(self, tech: str) -> bool:
+    def toggle_UnlockedRecipeTechnologyNames(self, tech: str, status: bool):
         if self.UnlockedRecipeTechnologyNames is None:
             self._player_save_data["UnlockedRecipeTechnologyNames"] = (
                 PalObjects.ArrayProperty("NameProperty", {"values": []})
             )
+        if status:
+            if tech in self.UnlockedRecipeTechnologyNames:
+                LOGGER.warning(f"Attempt to unlock {tech}, but it has already been unlocked, skipping")
+                return
+            self.UnlockedRecipeTechnologyNames.append(tech)
+        else:
+            if tech not in self.UnlockedRecipeTechnologyNames:
+                LOGGER.warning(f"Attempt to lock {tech}, but it has not been unlocked, skipping")
+                return
+            self.UnlockedRecipeTechnologyNames.remove(tech)
 
-        if tech in self.UnlockedRecipeTechnologyNames:
-            LOGGER.warning(f"{self} has already been unlocked, skipping")
-            return False
-
-        self.UnlockedRecipeTechnologyNames.append(tech)
+    @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
+    def unlock_all_techs(self):
+        if self.UnlockedRecipeTechnologyNames is None:
+            self._player_save_data["UnlockedRecipeTechnologyNames"] = (
+                PalObjects.ArrayProperty("NameProperty", {"values": []})
+            )
+        for tech in DataProvider.get_tech_data():
+            if tech not in self.UnlockedRecipeTechnologyNames:
+                self.UnlockedRecipeTechnologyNames.append(tech)
+        LOGGER.info(f"Unlocked all techs for {self}")
 
     def has_viewing_cage(self) -> bool:
         if not self.UnlockedRecipeTechnologyNames:
@@ -129,7 +329,7 @@ class PlayerEntity:
         return "DisplayCharacter" in self.UnlockedRecipeTechnologyNames
 
     def unlock_viewing_cage(self):
-        self.add_UnlockedRecipeTechnologyNames("DisplayCharacter")
+        self.toggle_UnlockedRecipeTechnologyNames("DisplayCharacter", True)
 
     @property
     def PlayerGVAS(self) -> Optional[tuple[GvasFile, int]]:
@@ -151,6 +351,32 @@ class PlayerEntity:
         self._palbox[pal_guid] = pal_entity
         pal_entity.set_owner_player_entity(self)
         return True
+    
+    @property
+    def TechnologPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("TechnologPoint"))
+    
+    @TechnologPoint.setter
+    @LOGGER.change_logger("TechnologPoint")
+    @type_guard
+    def TechnologPoint(self, value: int) -> None:
+        if self.TechnologPoint is None:
+            self._player_save_data["TechnologPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_save_data["TechnologPoint"], value)
+
+    @property
+    def bossTechPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("bossTechPoint"))
+    
+    @bossTechPoint.setter
+    @LOGGER.change_logger("bossTechPoint")
+    @type_guard
+    def bossTechPoint(self, value: int) -> None:
+        if self.bossTechPoint is None:
+            self._player_save_data["bossTechPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._player_save_data["bossTechPoint"], value)
     
     def try_create_pal_record_data(self):
         if "RecordData" not in self._player_save_data:
@@ -189,6 +415,7 @@ class PlayerEntity:
             if record['key'].lower() == name.lower():
                 record['value'] += 1
                 return
+        LOGGER.info(f"Creating new pal capture count record for {name}")
         self.PalCaptureCount.append({
             'key': name,
             'value': 1
@@ -215,6 +442,8 @@ class PlayerEntity:
                 case 'SheepBall': return 'Sheepball'
                 case 'LazyCatFish': return 'LazyCatfish'
                 case 'Blueplatypus': return 'BluePlatypus'
+                case 'GhostAnglerFish': return 'GhostAnglerfish'
+                case 'GhostAnglerFish_Fire': return 'GhostAnglerfish_Fire'
             return key
         
         for guid in self._new_palbox:
@@ -227,8 +456,15 @@ class PlayerEntity:
                 continue
 
             key = handle_special_keys(pal_entity.RawSpecieKey)
-            self.inc_pal_capture_count(key)
             self.unlock_paldeck(key)
+            self.inc_pal_capture_count(key)
+
+            tech_key = "SkillUnlock_" + key
+            if DataProvider.get_tech_i18n(tech_key) is None:
+                LOGGER.warning(f"Technology {tech_key} not found, which may or may not be a bug. If you are unsure please report to the dev.")
+            else:
+                self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
+
             pal_entity.is_new_pal = False
 
         self._new_palbox.clear()

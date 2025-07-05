@@ -34,10 +34,15 @@ def fetch_config():
 def load():
     path = request.json.get("ReadPath", None)
     path = path or Config.path
-    if path and SaveManager().open(path):
-        Config.path = path
-        Config.save_to_file(PROGRAM_PATH / 'config.json')
-        return reply(0)
+    try:
+        if path and SaveManager().open(path):
+            Config.path = path
+            Config.save_to_file(PROGRAM_PATH / 'config.json')
+            return reply(0)
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error Loading Save {stack_trace}")
+        return reply(1, msg=f"Error occored during loading, please make sure both the editor and your game save is up to date! Check debug console for further details.")
     
     LOGGER.warning(f"Failed to load, check path: {path}")
     return reply(1, None, f"Failed to load, check path: {path}")
@@ -140,6 +145,26 @@ def get_pal_data():
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
 
+
+@save_blueprint.route("/tech_data", methods=["GET"])
+@jwt_required()
+def get_tech_data():
+    tech_data = DataProvider.get_tech_data()
+    tech_lv_dict: dict[str, list] = {}
+    for tech in tech_data:
+        lv = DataProvider.get_tech_lv(tech)
+        lv_arr = tech_lv_dict.get(lv, [])
+        data = {
+            "InternalName": tech,
+            "I18n": DataProvider.get_tech_i18n(tech),
+            "BossTechnology": DataProvider.is_boss_tech(tech),
+        }
+        lv_arr.append(data)
+        tech_lv_dict[lv] = lv_arr
+
+    return reply(0, {
+        "techLvDict": tech_lv_dict
+    })
 
 @save_blueprint.route("/path", methods=["GET"])
 @jwt_required()

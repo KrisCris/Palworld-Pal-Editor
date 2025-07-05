@@ -8,7 +8,13 @@ const palListContainer = ref(null);
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
     await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
     try {
+        if (palStore.BASE_PAL_BTN_CLK_FLAG == false) {
+            return
+        }
         const button = palListContainer.value.querySelector('button:not(:disabled)');
         if (button) {
             button.click();
@@ -46,11 +52,14 @@ watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
 
 watch(async () => palStore.SELECTED_PAL_ID, async () => {
     await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
     try {
         const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
         if (button) {
             if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
-                palStore.selectPal({ target: button }, true)
+                palStore.selectPal(palStore.SELECTED_PAL_ID, true)
             }
             if (!palStore.isElementInViewport(button)) {
                 button.scrollIntoView({ behavior: "smooth" });
@@ -66,6 +75,9 @@ onMounted(async () => {
     // TODO Note: this is just a temp fix for pal selection when pal list is refreshed by updatePlayer
     await nextTick();
     await nextTick();
+    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
+        return
+    }
     const button = palListContainer.value.querySelector('button:not(:disabled)');
     if (button) {
         button.click();
@@ -88,7 +100,7 @@ function get_filtered_pal_list() {
             <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
                 :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
-                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).name}`"
+                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).NickName}`"
                 :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">+</button>
         </div>
 
@@ -96,7 +108,7 @@ function get_filtered_pal_list() {
             <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
                 <button
                     :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
-                    :value="pal.InstanceId" @click="palStore.selectPal"
+                    :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
                     :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
                     :selected="palStore.SELECTED_PAL_ID == pal.InstanceId"
                     >
