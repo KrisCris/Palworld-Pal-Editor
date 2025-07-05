@@ -33,6 +33,7 @@ export default {
     Editor_Nickname: "Surnom : ",
     Editor_Gender: "Genre : ",
     Editor_Variant: "Variante : ",
+    Editor_Pal_CharacterID: "Nom interne du Pal : ",
     Editor_Pal_ID: "ID de l'instance de Pal : ",
     Editor_Pal_Guild_ID: "ID de la guilde de Pal : ",
     Editor_Pal_Slot: "Emplacement du conteneur de Pal : ",

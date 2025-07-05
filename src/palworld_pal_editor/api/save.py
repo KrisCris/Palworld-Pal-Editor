@@ -131,17 +131,20 @@ def get_pal_data():
     pal_dict = {}
     pal_arr = []
     for pal in pals_raw:
+        iname = pal["InternalName"]
+        if "BOSS_" in iname and DataProvider.boss_has_base_variant(iname) or \
+            "Boss_" in iname and DataProvider.boss_has_base_variant(iname):
+            continue
         data = {
-            "InternalName": pal["InternalName"],
+            "InternalName": iname,
             "Elements": pal["Elements"],
             "Invalid": pal.get("Invalid", False),
-            "Suitabilities": DataProvider.get_pal_suitabilities(pal["InternalName"]),
-            "I18n": DataProvider.get_pal_i18n(pal["InternalName"])
-            or pal["InternalName"],
-            "SortingKey": DataProvider.get_pal_sorting_key(pal["InternalName"]),
-            "IsHuman": DataProvider.is_pal_human(pal["InternalName"]) or False
+            "Suitabilities": DataProvider.get_pal_suitabilities(iname),
+            "I18n": DataProvider.get_pal_i18n(iname) or iname,
+            "SortingKey": DataProvider.get_pal_sorting_key(iname),
+            "IsHuman": DataProvider.is_pal_human(iname) or False
         }
-        pal_dict[pal["InternalName"]] = data
+        pal_dict[iname] = data
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
 

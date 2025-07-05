@@ -75,13 +75,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Gender = obj.Gender;
             this.Level = obj.Level;
 
+            this.HasBaseVariant = obj.HasBaseVariant;
+            this.HasBossVariant = obj.HasBossVariant;
             this.HasTowerVariant = obj.HasTowerVariant;
             this.HasWorkerSick = obj.HasWorkerSick;
             this.IsFaintedPal = obj.IsFaintedPal;
             this.Is_Unref_Pal = obj.Is_Unref_Pal;
             this.in_owner_palbox = obj.in_owner_palbox;
 
-            this.IsPal = obj.IsPal;
             this.IsHuman = obj.IsHuman;
             this.IsBOSS = obj.IsBOSS;
             this.IsRarePal = obj.IsRarePal;
@@ -115,7 +116,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         displaySpecialType() {
             if (this.IsTower) return "🗼";
-            if (this.IsBOSS) return "💀";
+            if (this.IsBOSS) return "👑";
             if (this.IsRarePal) return "✨";
             if (this.IsRAID) return "RAID";
             if (this.IsPREDATOR) return "Rampaging";
@@ -172,17 +173,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             } else if (this.Gender == "EPalGenderType::Male") {
                 return "♂️";
             } else {
-                return null;
+                return "";
             }
         }
 
         swapGender() {
+            let gender = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
             if (this.Gender == "EPalGenderType::Female") {
-                this.Gender = "EPalGenderType::Male";
-            } else if (this.Gender == "EPalGenderType::Male") {
-                this.Gender = "EPalGenderType::Female";
-            } else return;
-            updatePal({ target: { name: "Gender", value: this.Gender } });
+                gender = "EPalGenderType::Male";
+            }
+            if (this.Gender == "EPalGenderType::Male") {
+                gender = "EPalGenderType::Female";
+            }
+            updatePal({ target: { name: "Gender", value: gender } });
         }
 
         pop_PassiveSkillList(e) {
