@@ -11,7 +11,7 @@ from palworld_pal_editor.webui import main as web_main
 class MainWindow(QWebEngineView):
     def __init__(self, url):
         super().__init__()
-        self.setWindowTitle(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {VERSION}")
+        self.setWindowTitle(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {version_info}")
         self.setMinimumSize(1280, 720)
         self.load(url)
         self.resize(1600, 900)
