@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    const MAX_LEVEL = 60;
+    const MAX_LEVEL = 65;
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 5;
@@ -16,7 +16,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
             this.pals = new Map();
-            this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
+            this.UnlockedRecipeTechnologyNames =
+                obj.UnlockedRecipeTechnologyNames;
         }
 
         levelDown() {
@@ -40,7 +41,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Level = HIDE_INVALID_OPTIONS.value
                 ? MAX_LEVEL
                 : MAX_INVALID_LEVEL;
-                updatePlayer({ target: { name: "Level", value: this.Level } });
+            updatePlayer({ target: { name: "Level", value: this.Level } });
         }
 
         toggleTech(tech, status) {
@@ -53,7 +54,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     },
                 },
             });
-
         }
     }
 
@@ -75,13 +75,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Gender = obj.Gender;
             this.Level = obj.Level;
 
+            this.HasBaseVariant = obj.HasBaseVariant;
+            this.HasBossVariant = obj.HasBossVariant;
             this.HasTowerVariant = obj.HasTowerVariant;
             this.HasWorkerSick = obj.HasWorkerSick;
             this.IsFaintedPal = obj.IsFaintedPal;
             this.Is_Unref_Pal = obj.Is_Unref_Pal;
             this.in_owner_palbox = obj.in_owner_palbox;
 
-            this.IsPal = obj.IsPal;
             this.IsHuman = obj.IsHuman;
             this.IsBOSS = obj.IsBOSS;
             this.IsRarePal = obj.IsRarePal;
@@ -115,7 +116,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         displaySpecialType() {
             if (this.IsTower) return "🗼";
-            if (this.IsBOSS) return "💀";
+            if (this.IsBOSS) return "👑";
             if (this.IsRarePal) return "✨";
             if (this.IsRAID) return "RAID";
             if (this.IsPREDATOR) return "Rampaging";
@@ -172,17 +173,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             } else if (this.Gender == "EPalGenderType::Male") {
                 return "♂️";
             } else {
-                return null;
+                return "";
             }
         }
 
         swapGender() {
+            let gender = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
             if (this.Gender == "EPalGenderType::Female") {
-                this.Gender = "EPalGenderType::Male";
-            } else if (this.Gender == "EPalGenderType::Male") {
-                this.Gender = "EPalGenderType::Female";
-            } else return;
-            updatePal({ target: { name: "Gender", value: this.Gender } });
+                gender = "EPalGenderType::Male";
+            }
+            if (this.Gender == "EPalGenderType::Male") {
+                gender = "EPalGenderType::Female";
+            }
+            updatePal({ target: { name: "Gender", value: gender } });
         }
 
         pop_PassiveSkillList(e) {
@@ -392,6 +395,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     const SHOW_FILE_PICKER = ref(false);
     const PAL_FILE_PICKER_PATH = ref(PAL_GAME_SAVE_PATH.value);
+
+    const CN_WARNING_ON_LOAD = ref(true);
 
     // auth
     let auth_token = "";
@@ -921,9 +926,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function sorryandfuckyou() {
-        if (I18n.value == "zh-CN") {
-            alert("警告：如果你从任何平台付费购买此工具，请立即退款，并选择支持原作者\n修改器主页包含所有信息。");
-            SHOW_DONATE_FLAG.value = true;
+        if ((I18n.value == "zh-CN") & CN_WARNING_ON_LOAD.value) {
+            alert(
+                "警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。"
+            );
+            CN_WARNING_ON_LOAD.value = false;
         }
     }
 

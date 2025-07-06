@@ -41,6 +41,11 @@ class PalEntity:
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
+        
+        if self.CharacterID is None:
+            raise Exception(
+                f"No CharacterID, skipping {dumps(pal_obj)}"
+            )
 
         if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError(
@@ -163,6 +168,10 @@ class PalEntity:
         else:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
 
+        self.update_UniqueNPCID()
+        if not self._IsBOSS:
+            self.IsRarePal = False
+
         # Remove / Add Gender
         if self.IsTower:
             match self.RawSpecieKey:
@@ -181,9 +190,10 @@ class PalEntity:
                 case "SnowTigerBeastman":
                     self.Gender = PalGender.MALE
 
-        if self.Gender and self.IsHuman:
+        if self.Gender and (self.IsHuman or self.IsOtomoTower):
             self.del_Gender()
-        elif not self.Gender and self.IsPal:
+        
+        if not self.Gender and not (self.IsHuman or self.IsOtomoTower):
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
 
@@ -227,13 +237,18 @@ class PalEntity:
             match = re.search(pattern, self.CharacterID)
             if match:
                 key = match.group(1)
-        if self.IsTower:
+        if self.IsOtomoTower:
+            pattern = r"GYM_([A-Za-z_]+?)(?:_Otomo)?(?:_\d+.*)?$"
+            match = re.search(pattern, self.CharacterID)
+            if match:
+                key = match.group(1)
+        elif self.IsTower:
             pattern = r"GYM_([A-Za-z_]+?)(?:_\d+.*)?$"
             match = re.search(pattern, self.CharacterID)
             if match:
                 key = match.group(1)
         if self.IsRAID:
-            pattern = r"RAID_([A-Za-z_]+?)(?:_\d+.*)?$"
+            pattern = r"RAID_([A-Za-z\d_]+?)(?:_\d+.*)?$"
             match = re.search(pattern, self.CharacterID)
             if match:
                 key = match.group(1)
@@ -264,7 +279,7 @@ class PalEntity:
 
     @property
     def IsRAID(self) -> bool:
-        pattern = r"RAID_([A-Za-z_]+?)(?:_\d+)?$"
+        pattern = r"^RAID_([A-Za-z_\d]+?)(?:_\d+)?$"
         match = re.search(pattern, self.CharacterID)
         if match:
             return True
@@ -280,13 +295,15 @@ class PalEntity:
 
     @property
     def IsHuman(self) -> bool:
-        return DataProvider.is_pal_human(self.CharacterID)
+        return DataProvider.is_pal_human(self.CharacterID) or False
 
     @property
-    def IsPal(self):
-        if DataProvider.get_pal_sorting_key(self.DataAccessKey) and not self.IsHuman:
-            return True
-        return False
+    def HasBaseVariant(self) -> bool:
+        return DataProvider.in_pal_data(self.RawSpecieKey)
+
+    @property
+    def HasBossVariant(self) -> bool:
+        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "BOSS")
 
     @property
     def HasTowerVariant(self) -> bool:
@@ -303,9 +320,13 @@ class PalEntity:
     @property
     def IconAccessKey(self) -> Optional[str]:
         if self.IsHuman:
+            if DataProvider.has_human_icon(self.CharacterID):
+                return self.CharacterID
             return "Human"
+        if self.IsOtomoTower:
+            return self.DataAccessKey
         if self.IsTower:
-            pattern = r"(GYM_[A-Za-z_]+?)(?:_\d+.*)?$"
+            pattern = r"^(GYM_[^_]+)"
             match = re.search(pattern, self.CharacterID)
             if match:
                 return match.group(1)
@@ -335,6 +356,14 @@ class PalEntity:
                 key = "Police_Handgun"
             case "Blueplatypus":
                 key = "BluePlatypus"
+            case "GhostAnglerFish":
+                key = "GhostAnglerfish"
+            case "GhostAnglerFish_Fire":
+                key = "GhostAnglerfish_Fire"
+            case "Icenarwhal_Fire":
+                key = "IceNarwhal_Fire"
+            case "Icenarwhal":
+                key = "IceNarwhal"
         return key
 
     @property
@@ -377,9 +406,11 @@ class PalEntity:
     @LOGGER.change_logger("Gender")
     @type_guard
     def Gender(self, gender: PalGender | str) -> None:
-        if not self.Gender and not self.IsPal:
-            LOGGER.warning("This pal has no gender.")
-            return
+        if gender == "NONE":
+            self._pal_param.pop("Gender", None)
+        if self.IsHuman or self.IsOtomoTower:
+            LOGGER.warning(f"Pal {self.CharacterID} has no gender by default!!")
+            # return
         if isinstance(gender, PalGender):
             pal_gender = gender
         else:
@@ -395,14 +426,23 @@ class PalEntity:
 
     @LOGGER.change_logger("Gender")
     def del_Gender(self):
-        if self.IsHuman or not self.IsPal:
+        if self.IsHuman or self.IsOtomoTower:
             self._pal_param.pop("Gender", None)
+            return
+        LOGGER.info("Only human or otomo tower can have no gender.")
 
     @property
     def IsTower(self) -> bool:
         if "GYM_" in self.CharacterID:
             return True
         return False
+    
+    @property
+    def IsOtomoTower(self) -> bool:
+        if not self.IsTower:
+            return False
+        otomo_re = re.compile(r"^.+_Otomo$")
+        return otomo_re.match(self.CharacterID) is not None
 
     @IsTower.setter
     @type_guard
@@ -478,19 +518,45 @@ class PalEntity:
             self._IsBOSS = False
 
     @property
-    def NickName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+    def FilteredNickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
+    
+    @FilteredNickName.setter
+    @LOGGER.change_logger("FilteredNickName")
+    @type_guard
+    def FilteredNickName(self, value: str) -> None:
+        if self.FilteredNickName is None:
+            self._pal_param["FilteredNickName"] = PalObjects.StrProperty(value)
+        else:
+            self._pal_param["FilteredNickName"]["value"] = value
 
+        if not self.FilteredNickName:
+            self._pal_param.pop("FilteredNickName", None)
+
+    @property
+    def NickName(self) -> Optional[str]:
+        return self._NickName or self.FilteredNickName
+    
     @NickName.setter
-    @LOGGER.change_logger("NickName")
     @type_guard
     def NickName(self, value: str) -> None:
-        if self.NickName is None:
+        self._NickName = value
+        self.FilteredNickName = value
+
+    @property
+    def _NickName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+
+    @_NickName.setter
+    @LOGGER.change_logger("NickName")
+    @type_guard
+    def _NickName(self, value: str) -> None:
+        if self._NickName is None:
             self._pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
             self._pal_param["NickName"]["value"] = value
 
-        if not self.NickName:
+        if not self._NickName:
             self._pal_param.pop("NickName", None)
 
     @property
@@ -1001,6 +1067,36 @@ class PalEntity:
     @property
     def HungerType(self) -> Optional[str]:
         return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
+    
+    
+    @property
+    def UniqueNPCID(self) -> str:
+        return PalObjects.get_BaseType(self._pal_param.get("UniqueNPCID"))
+    
+    @LOGGER.change_logger("UniqueNPCID")
+    def update_UniqueNPCID(self) -> None:
+        if self.CharacterID not in [
+            "GrassBoss",
+            "ForestBoss",
+            "DesertBoss",
+            "ElectricBoss",
+            "SnowBoss",
+            "SakurajimaBoss",
+            "VikingBoss"
+        ]:
+            LOGGER.info(
+                f"Pal {self.CharacterID} is not a Tower Human, UniqueNPCID will be unset."
+            )
+            self._pal_param.pop("UniqueNPCID", None)
+            return
+        
+        if self.UniqueNPCID is None:
+            self._pal_param["UniqueNPCID"] = PalObjects.NameProperty(self.CharacterID)
+        else:
+            PalObjects.set_BaseType(self._pal_param["UniqueNPCID"], self.CharacterID)
+
+        if not self.UniqueNPCID:
+            self._pal_param.pop("UniqueNPCID", None)
 
     @property
     def HasWorkerSick(self) -> bool:
@@ -1102,14 +1198,14 @@ class PalEntity:
         PalObjects.set_BaseType(self._pal_param["Tiemr_FoodWithStatusEffect"], val)
 
     def learn_attacks(self):
-        if self.IsHuman:
-            self.add_MasteredWaza("EPalWazaID::Human_Punch")
-        else:
-            for atk in DataProvider.get_attacks_to_learn(
-                self.DataAccessKey, self.Level or 1
-            ):
-                if atk not in (self.MasteredWaza or []):
-                    self.add_MasteredWaza(atk)
+        # if self.IsHuman:
+        #     self.add_MasteredWaza("EPalWazaID::Human_Punch")
+        # else:
+        for atk in DataProvider.get_attacks_to_learn(
+            self.DataAccessKey, self.Level or 1
+        ):
+            if atk not in (self.MasteredWaza or []):
+                self.add_MasteredWaza(atk)
 
     def equip_all_pal_attacks(self):
         atks = DataProvider.get_attacks_to_learn(self.DataAccessKey, self.Level or 1)
@@ -1165,24 +1261,25 @@ class PalEntity:
             self.IsRarePal,
             self.IsBOSS,
             self.IsTower,
-            self.Gender,
+            # self.Gender,
         )
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
             species_name = self.I18nName or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
-            boss_prefix = "💀" if self.IsBOSS else ""
+            boss_prefix = '👑'if self.IsBOSS else ""
             tower_prefix = "🗼" if self.IsTower else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
-            gender_suffix = ""
-            if self.Gender == PalGender.FEMALE:
-                gender_suffix = "♀"
-            elif self.Gender == PalGender.MALE:
-                gender_suffix = "♂"
+            # gender_suffix = ""
+            # if self.Gender == PalGender.FEMALE:
+            #     gender_suffix = "♀"
+            # elif self.Gender == PalGender.MALE:
+            #     gender_suffix = "♂"
 
-            name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}{gender_suffix}"
+            # name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}{gender_suffix}"
+            name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}"
             self._display_name_cache[cache_key] = name
             return name
 

@@ -31,6 +31,7 @@ export default {
     Editor_Nickname: "ニックネーム: ",
     Editor_Gender: "性別: ",
     Editor_Variant: "バリアント: ",
+    Editor_Pal_CharacterID: "パル内部名称: ",
     Editor_Pal_ID: "パルインスタンスID: ",
     Editor_Pal_Guild_ID: "パルギルドID: ",
     Editor_Pal_Slot: "パルコンテナスロット: ",
@@ -84,6 +85,7 @@ export default {
     TopBar_Btn_Pal_Ghost: "ゴーストパルを表示",
     TopBar_Btn_Invalid_Options: "チート非表示",
     TopBar_Btn_Invalid_Options_ADs: "【このメッセージは一度だけ表示されます。内容をもう一度見たい場合は、エントリーページからアクセスできます】このツールの機能を有料壁の背後にロックしたくはありませんが、このツールを気に入っていただけた場合は、開発と維持を続けるためにご支援を検討いただけると幸いです。詳細はGitHubのREADMEのスポンサーセクションに記載されています。",
+    TopBar_Btn_Donation: "スポンサー",
 
     TopBar_Btn_HealAllPals_Tooltips: "パルのすべての負の状態を解除し、体力と満腹度を回復します。",
     TopBar_Pal_OOB_Tooltips: "所有者のプレイヤーパルコンテナにないパルを表示します。例：観賞用ケージ、他の人に取られたパル。",

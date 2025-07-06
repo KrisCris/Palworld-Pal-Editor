@@ -303,14 +303,25 @@ class PlayerEntity:
             )
         if status:
             if tech in self.UnlockedRecipeTechnologyNames:
-                LOGGER.warning(f"Attempt to unlock {self}, but it has already been unlocked, skipping")
+                LOGGER.warning(f"Attempt to unlock {tech}, but it has already been unlocked, skipping")
                 return
             self.UnlockedRecipeTechnologyNames.append(tech)
         else:
             if tech not in self.UnlockedRecipeTechnologyNames:
-                LOGGER.warning(f"Attempt to lock {self}, but it has not been unlocked, skipping")
+                LOGGER.warning(f"Attempt to lock {tech}, but it has not been unlocked, skipping")
                 return
             self.UnlockedRecipeTechnologyNames.remove(tech)
+
+    @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
+    def unlock_all_techs(self):
+        if self.UnlockedRecipeTechnologyNames is None:
+            self._player_save_data["UnlockedRecipeTechnologyNames"] = (
+                PalObjects.ArrayProperty("NameProperty", {"values": []})
+            )
+        for tech in DataProvider.get_tech_data():
+            if tech not in self.UnlockedRecipeTechnologyNames:
+                self.UnlockedRecipeTechnologyNames.append(tech)
+        LOGGER.info(f"Unlocked all techs for {self}")
 
     def has_viewing_cage(self) -> bool:
         if not self.UnlockedRecipeTechnologyNames:
@@ -431,6 +442,10 @@ class PlayerEntity:
                 case 'SheepBall': return 'Sheepball'
                 case 'LazyCatFish': return 'LazyCatfish'
                 case 'Blueplatypus': return 'BluePlatypus'
+                case 'GhostAnglerFish': return 'GhostAnglerfish'
+                case 'GhostAnglerFish_Fire': return 'GhostAnglerfish_Fire'
+                case "Icenarwhal_Fire": return "IceNarwhal_Fire"
+                case "Icenarwhal": return "IceNarwhal"
             return key
         
         for guid in self._new_palbox:
@@ -448,7 +463,7 @@ class PlayerEntity:
 
             tech_key = "SkillUnlock_" + key
             if DataProvider.get_tech_i18n(tech_key) is None:
-                LOGGER.warning(f"Technology {tech_key} not found, please report this to the dev.")
+                LOGGER.warning(f"Technology {tech_key} not found, which may or may not be a bug. If you are unsure please report to the dev.")
             else:
                 self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
 

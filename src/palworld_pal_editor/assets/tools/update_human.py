@@ -42,7 +42,6 @@ def suitabilities_t():
         "EPalWorkSuitability::Collection": 0,
         "EPalWorkSuitability::Deforest": 0,
         "EPalWorkSuitability::Mining": 0,
-        "EPalWorkSuitability::OilExtraction": 0,
         "EPalWorkSuitability::ProductMedicine": 0,
         "EPalWorkSuitability::Cool": 0,
         "EPalWorkSuitability::Transport": 0,

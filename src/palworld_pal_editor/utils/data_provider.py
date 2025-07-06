@@ -1,5 +1,6 @@
 from functools import wraps
 import json
+import re
 from typing import Any, Callable, Optional
 
 # from PIL import Image
@@ -87,6 +88,23 @@ class DataProvider:
     #         LOGGER.warning(f"Pal icon {key} doesn't exist.")
     #         return
     #     return PAL_ICONS[key]
+    @staticmethod
+    def boss_has_base_variant(key: str) -> bool:
+        """
+        Checks if the key has a base variant that can be swapped to by removing BOSS_.
+        """
+        pattern = r"^[A-Z]+_(.+)"
+        match = re.search(pattern, key)
+        if match:
+            return DataProvider.in_pal_data(match.group(1))
+        return False
+    
+    @staticmethod
+    def in_pal_data(key: str) -> bool:
+        """
+        Checks if the key exists in the PAL_DATA dictionary.
+        """
+        return key in PAL_DATA
 
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
@@ -129,6 +147,11 @@ class DataProvider:
     @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
         return PAL_DATA[key].get("Human", False)
+    
+    @none_guard(data_source=PAL_DATA)
+    @staticmethod
+    def has_human_icon(key: str) -> bool:
+        return PAL_DATA[key].get("HasIcon", False)
 
     @staticmethod
     def is_pal_invalid(key: str) -> bool:

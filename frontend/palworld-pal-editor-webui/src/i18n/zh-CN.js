@@ -34,6 +34,7 @@ export default {
     Editor_Nickname: "昵称: ",
     Editor_Gender: "性别: ",
     Editor_Variant: "特殊种: ", // 不知道用什么词
+    Editor_Pal_CharacterID: "帕鲁内部名称: ",
     Editor_Pal_ID: "帕鲁对象 ID: ",
     Editor_Pal_Guild_ID: "帕鲁工会 ID: ",
     Editor_Pal_Slot: "帕鲁容器位置: ",
@@ -87,6 +88,7 @@ export default {
     TopBar_Btn_Pal_Ghost: "显示不存在的帕鲁",
     TopBar_Btn_Invalid_Options: "隐藏作弊选项",
     TopBar_Btn_Invalid_Options_ADs: "我不想把这个功能做成单独的付费版来赚钱，所以如果你喜欢这个工具，请考虑赞助我，以帮助我继续开发和维护这个工具。\n更多信息将会在弹出的页面展示。",
+    TopBar_Btn_Donation: "赞助作者",
 
     TopBar_Btn_HealAllPals_Tooltips: "治愈帕鲁的所有负面状态，回复血量，饱食度。",
     TopBar_Pal_OOB_Tooltips: "显示不在玩家的帕鲁容器中的帕鲁，即，观赏笼中的帕鲁，或被其他人拿走的帕鲁。",

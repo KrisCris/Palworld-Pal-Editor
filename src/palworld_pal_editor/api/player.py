@@ -134,6 +134,8 @@ def patch_player_data():
         match key:
             case "toggle_UnlockedRecipeTechnologyNames":
                 player_entity.toggle_UnlockedRecipeTechnologyNames(value["tech"], value["status"])
+            case "unlock_all_techs":
+                player_entity.unlock_all_techs()
             case "unlock_viewing_cage":
                 player_entity.unlock_viewing_cage()
             case _:
