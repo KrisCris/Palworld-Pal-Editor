@@ -31,6 +31,7 @@ export default {
     Editor_Nickname: "NickName: ",
     Editor_Gender: "Gender: ",
     Editor_Variant: "Variant: ",
+    Editor_Pal_CharacterID: "Pal Internal Name: ",
     Editor_Pal_ID: "Pal Instance ID: ",
     Editor_Pal_Guild_ID: "Pal Guild ID: ",
     Editor_Pal_Slot: "Pal ContainerSlot: ",

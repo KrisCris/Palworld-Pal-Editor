@@ -14,8 +14,8 @@ requires-python = ">=3.11"
 readme = "README.md"
 version = "0.13.0"
 dependencies = [
-    "setuptools==70.0.0",
-    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git@eb012db7d21bf00639ecb8bfa79b2d128133329e",
+    "setuptools==78.1.1",
+    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git@480f1f631295e32bd9c9fa5be689eb335bf912a7",
     "pyooz==0.0.8",
     "wheel==0.42.0",
     "Flask==3.0.2",
@@ -23,7 +23,7 @@ dependencies = [
     "waitress==3.0.1",
     "Flask-JWT-Extended==4.6.0",
     "PySide6==6.6.3",
-    "requests==2.32.2"
+    "requests==2.32.4"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

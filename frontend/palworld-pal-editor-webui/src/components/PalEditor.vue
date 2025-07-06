@@ -107,7 +107,7 @@ const suitabilityIconSrc = key => {
             :disabled="palStore.LOADING_FLAG">✅</button>
         </div>
         <div class="flex-h">
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender">
+          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
             <p class="const">
               {{ palStore.getTranslatedText("Editor_Gender") }}
               {{ palStore.SELECTED_PAL_DATA.displayGender() }}
@@ -116,7 +116,7 @@ const suitabilityIconSrc = key => {
               :disabled="palStore.LOADING_FLAG">🔄</button>
           </div>
 
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsPal">
+          <div class="editField" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
             <p class="const">
               {{ palStore.getTranslatedText("Editor_Variant") }}
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
@@ -124,9 +124,9 @@ const suitabilityIconSrc = key => {
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapTower" name="IsTower"
               v-if="palStore.SELECTED_PAL_DATA.HasTowerVariant" :disabled="palStore.LOADING_FLAG">🗼</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
-              :disabled="palStore.LOADING_FLAG">💀</button>
+              v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">👑</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
-              :disabled="palStore.LOADING_FLAG">✨</button>
+              v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">✨</button>
           </div>
 
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
@@ -139,6 +139,10 @@ const suitabilityIconSrc = key => {
               :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
           </div>
         </div>
+        <p class="const">
+          🪪 {{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}
+          {{ palStore.SELECTED_PAL_DATA.CharacterID }}
+        </p>
         <p class="const">
           🆔 {{ palStore.getTranslatedText("Editor_Pal_ID") }}
           {{ palStore.SELECTED_PAL_ID }}
@@ -165,7 +169,7 @@ const suitabilityIconSrc = key => {
           {{ palStore.SELECTED_PAL_DATA.OwnerName ||
             palStore.getTranslatedText("Editor_Pal_No_Owner") }}
         </p>
-        <div class="palInfo" v-if="palStore.SELECTED_PAL_DATA.IsPal">
+        <div class="palInfo">
           <p class="const">
             ❤️ {{ palStore.getTranslatedText("Editor_Estimated_HP") }}
             {{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}

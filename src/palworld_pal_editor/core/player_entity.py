@@ -444,6 +444,8 @@ class PlayerEntity:
                 case 'Blueplatypus': return 'BluePlatypus'
                 case 'GhostAnglerFish': return 'GhostAnglerfish'
                 case 'GhostAnglerFish_Fire': return 'GhostAnglerfish_Fire'
+                case "Icenarwhal_Fire": return "IceNarwhal_Fire"
+                case "Icenarwhal": return "IceNarwhal"
             return key
         
         for guid in self._new_palbox:

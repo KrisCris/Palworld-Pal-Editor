@@ -170,8 +170,8 @@ def print_example():
     #  >>> pal.IsBOSS
     #  False or True
     #  >>> pal.IsBOSS = True
-    #  [INFO] 💀Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | CharacterID: IceFox -> BOSS_IceFox
-    #  [INFO] 💀Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | IsBOSS: False -> True
+    #  [INFO] 👑Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | CharacterID: IceFox -> BOSS_IceFox
+    #  [INFO] 👑Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | IsBOSS: False -> True
     #  ...
     #  >>> pal.MasteredWaza
     #  ['EPalWazaID::AirCanon', 'EPalWazaID::IceMissile']
@@ -179,7 +179,7 @@ def print_example():
     #  [INFO]  - [Dark][30][🍎] Poison Blast: EPalWazaID::PoisonShot
     #  ...
     #  >>> pal.add_MasteredWaza("EPalWazaID::PoisonShot")
-    #  [INFO] 💀Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | MasteredWaza: ['EPalWazaID::AirCanon', 'EPalWazaID::IceMissile'] -> ['EPalWazaID::AirCanon', 'EPalWazaID::IceMissile', 'EPalWazaID::PoisonShot']
+    #  [INFO] 👑Foxcicle♂ - OwnerName - 66dbae51-1da3-43cb-ab62-44f2177a474e | MasteredWaza: ['EPalWazaID::AirCanon', 'EPalWazaID::IceMissile'] -> ['EPalWazaID::AirCanon', 'EPalWazaID::IceMissile', 'EPalWazaID::PoisonShot']
     #  >>> ...
     #  >>> save_manager.save(r"D:\gamesave\Level_new.sav")
     ##########################################################

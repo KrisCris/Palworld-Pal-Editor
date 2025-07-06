@@ -10077,7 +10077,7 @@
             "EPalWorkSuitability::Transport": 0,
             "EPalWorkSuitability::MonsterFarm": 0
         },
-        "HasIcon": false
+        "HasIcon": true
     },
     "ForestBoss": {
         "InternalName": "ForestBoss",
