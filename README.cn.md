@@ -39,7 +39,9 @@
 
 ### 幻兽帕鲁 帕鲁 编辑器
 
-<https://www.bilibili.com/video/BV1cN6oYMEqL>
+- [帕鲁、塔主NPC，词条，主被动技能 修改 | 帕鲁编辑器 Palworld Pal Editor 0.13.0 | 幻兽帕鲁 泰拉瑞亚联动 0.6.0更新](https://www.bilibili.com/video/BV1xV3qzbE9r/?share_source=copy_web&vd_source=fe2d6c1e59f6c8d600d221e1800972f5)
+- [Slightly updated video on Youtube](https://www.youtube.com/watch?v=PhSWpr0f70g&lc=Ugx1zdLQ-jqsf-O_ht14AaABAg)
+- [An old showcase video posted on youtube](https://youtu.be/v9U60jj5Ugw), the idea should be the same though.
 
 > [!NOTE]
 > 帕鲁 Steam 版 本地游戏 存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
@@ -87,6 +89,9 @@
 ## 这个工具能干啥
 
 - [x] 列出玩家和帕鲁
+- [x] 修改玩家等级
+- [x] 修改玩家昵称
+- [x] 解锁科技
 - [x] 查看帕鲁数据
 - [x] 修改 帕鲁种族
 - [x] 添加帕鲁
@@ -112,8 +117,6 @@
 
 ## 未来计划 (No ETA)
 
-- [ ] 修改玩家属性加点等数值。
-- [ ] 为玩家解锁科技树。
 - [ ] 用户可以自定义的技能预设组合。
 - [ ] 重写帕鲁工会和背包的代码，实现切换所有者，帕鲁按存放容器分类等功能。
 - [ ] 用户界面。。。

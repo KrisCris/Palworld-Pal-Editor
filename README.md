@@ -42,7 +42,9 @@
 
  ~~(yeah i am just too lazy to change github username)~~
 
-[An old showcase video posted on youtube](https://youtu.be/v9U60jj5Ugw), the idea should be the same though.
+- [0.13.0 Demo Video on BiliBili](https://www.bilibili.com/video/BV1xV3qzbE9r/?share_source=copy_web&vd_source=fe2d6c1e59f6c8d600d221e1800972f5)
+- [Slightly updated video on Youtube](https://www.youtube.com/watch?v=PhSWpr0f70g&lc=Ugx1zdLQ-jqsf-O_ht14AaABAg)
+- [An old showcase video posted on youtube](https://youtu.be/v9U60jj5Ugw), the idea should be the same though.
 
 > [!NOTE]
 > Steam Palworld Local Save Dir: `%localappdata%\Pal\Saved\SaveGames`
@@ -92,6 +94,9 @@
 ## What This Tool Can Do
 
 - [x] List Players and Their Pals
+- [x] Modify Player Level
+- [x] Modify Player Name
+- [x] Unlock Tech
 - [x] Show Pal Stats
 - [x] Change Pal Species
 - [x] Add Pal (To your inventory)
@@ -118,8 +123,6 @@
 
 ## Future TODOs (No ETA)
 
-- [ ] Editing player character stats.
-- [ ] Unlocking technologies for player characters.
 - [ ] User defined skill presets.
 - [ ] The player group and pal container implementation overhaul, which enables me to properly label the containers (i.e. the inventory), and group the pals based on that and change pal ownerships.
 - [ ] A better UI?
