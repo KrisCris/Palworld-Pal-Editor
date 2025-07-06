@@ -160,8 +160,8 @@
         },
         "BossTechnology": false
     },
-    "PALBOX": {
-        "InternalName": "PALBOX",
+    "PalBox": {
+        "InternalName": "PalBox",
         "Level": 2,
         "I18n": {
             "en": {
@@ -6968,8 +6968,8 @@
         },
         "BossTechnology": false
     },
-    "ShotGunBullet": {
-        "InternalName": "ShotGunBullet",
+    "ShotgunBullet": {
+        "InternalName": "ShotgunBullet",
         "Level": 39,
         "I18n": {
             "en": {

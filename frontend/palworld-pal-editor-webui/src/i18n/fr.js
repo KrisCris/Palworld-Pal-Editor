@@ -62,6 +62,10 @@ export default {
     Editor_Skill_CD: "CD : ",
     Editor_Skill_EL: "Élément : ",
     Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES (LES COMPÉTENCES SONT AJOUTÉES AUTOMATIQUEMENT LORS DE LA MONTÉE EN NIVEAU DES PALS)",
+    Editor_TechPoint: "Points technologiques : ",
+    Editor_BossTechPoint: "Points technologiques antiques : ",
+    Editor_TechEdit: "Éditeur de technologie",
+    Editor_UnlockAllTech: "Déverrouiller toutes les technologies",
 
     Editor_Suitabilities: "Capacités de travail",
 

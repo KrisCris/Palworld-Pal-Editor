@@ -28,7 +28,23 @@ const isMinLv = () => {
                     <button class="edit" @click="palStore.updatePlayer" name="NickName"
                         :value="palStore.SELECTED_PLAYER_DATA.NickName" :disabled="palStore.LOADING_FLAG">✅</button>
                 </div>
-                <div class="editField" v-if="palStore.SELECTED_PLAYER_DATA.Level">
+                <div class="editField">
+                    <p class="const">
+                        {{ palStore.getTranslatedText("Editor_TechPoint") }}
+                    </p>
+                    <input class="edit" type="number" name="TechnologyPoint" v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" min="0" max="65535">
+                    <button class="edit" @click="palStore.updatePlayer" name="TechnologyPoint"
+                        :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" :disabled="palStore.LOADING_FLAG">✅</button>
+                </div>
+                <div class="editField">
+                    <p class="const">
+                        {{ palStore.getTranslatedText("Editor_BossTechPoint") }}
+                    </p>
+                    <input class="edit" type="number" name="bossTechnologyPoint" v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" min="0" max="65535">
+                    <button class="edit" @click="palStore.updatePlayer" name="bossTechnologyPoint"
+                        :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" :disabled="palStore.LOADING_FLAG">✅</button>
+                </div>
+                <div class="editField">
                     <p class="const"> Lv: {{ palStore.SELECTED_PLAYER_DATA.Level }}</p>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.levelDown" name="Level"
                         :disabled="palStore.LOADING_FLA || isMinLv()">🔽</button>
@@ -36,10 +52,13 @@ const isMinLv = () => {
                         :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
                         :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
+                    <!-- <input class="edit" type="number" name="Level" v-model="palStore.SELECTED_PLAYER_DATA.Level" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL">
+                    <button class="edit" @click="palStore.updatePlayer" name="Level"
+                        :value="palStore.SELECTED_PLAYER_DATA.Level" :disabled="palStore.LOADING_FLAG">✅</button> -->
                 </div>
-                <div class="editField" v-if="palStore.SELECTED_PLAYER_DATA.Level">
+                <div class="editField">
                     <button class="edit text" @click="palStore.updatePlayer" name="unlock_all_techs"
-                        :disabled="palStore.LOADING_FLAG">Unlock All Tech</button>
+                        :disabled="palStore.LOADING_FLAG">{{ palStore.getTranslatedText("Editor_UnlockAllTech") }}</button>
                 </div>
             </div>
         </div>
@@ -48,22 +67,34 @@ const isMinLv = () => {
                 {{ palStore.getTranslatedText("Editor_IV") }}
             </p>
         </div> -->
-        <div class="EditorItem flex-h maxW">
-            <div class="levels-container">
-                <div class="level-row" v-for="(items, level) in palStore.TECH_LV_DICT" :key="level">
-                    <div class="level-indicator">
-                        Level {{ level }}
-                    </div>
-                    <div class="cards-row">
-                        <ItemCard v-for="item in items" :key="item.InternalName" :item="item" />
+        <div class="EditorItem item left flex-v">
+            <p class="cat">
+                {{ palStore.getTranslatedText("Editor_TechEdit") }}
+            </p>
+            <div class="EditorItem flex-h maxW no-margin">
+                <div class="levels-container">
+                    <div class="level-row" v-for="(items, level) in palStore.TECH_LV_DICT" :key="level">
+                        <div class="level-indicator">
+                            Level {{ level }}
+                        </div>
+                        <div class="cards-row">
+                            <ItemCard v-for="item in items" :key="item.InternalName" :item="item" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </template>
 
 <style scoped>
+div.no-margin {
+    margin: 0;
+}
+div.no-padding {
+    padding: 0;
+}
 .PalEditor {
     display: flex;
     height: var(--sub-height);

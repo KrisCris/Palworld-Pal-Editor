@@ -60,6 +60,10 @@ export default {
     Editor_Skill_CD: "CT: ",
     Editor_Skill_EL: "属性: ",
     Editor_Mastered_Skills: "習得したアクティブスキル（パルをレベルアップすると自動的に追加されるスキル）",
+    Editor_TechPoint: "テクノロジーポイント: ",
+    Editor_BossTechPoint: "古代テクノロジーポイント: ",
+    Editor_TechEdit: "テクノロジーエディター",
+    Editor_UnlockAllTech: "すべてのテクノロジーを解除",
 
     Editor_Suitabilities: "作業適性",
 

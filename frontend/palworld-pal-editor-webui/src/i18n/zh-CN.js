@@ -63,6 +63,10 @@ export default {
     Editor_Skill_CD: "冷却时间: ",
     Editor_Skill_EL: "元素: ",
     Editor_Mastered_Skills: "学会的主动技能 (升级帕鲁时对应的技能会被自动添加)",
+    Editor_TechPoint: "科技点: ",
+    Editor_BossTechPoint: "古代科技点: ",
+    Editor_TechEdit: "科技编辑器",
+    Editor_UnlockAllTech: "解锁所有科技",
 
     Editor_Suitabilities: "工作适应性",
 

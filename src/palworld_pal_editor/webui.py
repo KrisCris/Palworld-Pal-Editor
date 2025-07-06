@@ -28,6 +28,8 @@ jwt = JWTManager(app)
 
 @app.route('/image/<icon_type>/<filename>')
 def serve_image(icon_type, filename):
+    if icon_type == 'pals' and '-' in filename:
+        filename = filename.replace('-', '/')
     image_path: Path = ASSETS_PATH / 'assets/icons' / icon_type / f"{filename}.png"
     if image_path.exists():
         directory = image_path.parent

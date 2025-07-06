@@ -16,8 +16,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
             this.pals = new Map();
-            this.UnlockedRecipeTechnologyNames =
-                obj.UnlockedRecipeTechnologyNames;
+            this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
+            this.TechnologyPoint = obj.TechnologyPoint;
+            this.bossTechnologyPoint = obj.bossTechnologyPoint;
         }
 
         levelDown() {

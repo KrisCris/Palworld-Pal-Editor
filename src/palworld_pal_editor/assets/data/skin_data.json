@@ -1,0 +1,272 @@
+{
+    "PinkCat_Skin001": {
+        "SkinName": "PinkCat_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "PinkCat",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Skin001": {
+        "SkinName": "WeaselDragon_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": 21001
+    },
+    "LazyDragon_Skin001": {
+        "SkinName": "LazyDragon_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "LazyDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": 21002
+    },
+    "SkyDragon_Skin001": {
+        "SkinName": "SkyDragon_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "SkyDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": 21003
+    },
+    "PlantSlime_Skin001": {
+        "SkinName": "PlantSlime_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "PlantSlime",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "IceHorse_Skin001": {
+        "SkinName": "IceHorse_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "IceHorse",
+        "bAutoGetItem": false,
+        "PlatformItemID_Steam": -1
+    },
+    "Penguin_Skin001": {
+        "SkinName": "Penguin_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "Penguin",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "NegativeKoala_Skin001": {
+        "SkinName": "NegativeKoala_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "NegativeKoala",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "CatMage_Skin001": {
+        "SkinName": "CatMage_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "CatMage",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "NegativeKoala_Skin002": {
+        "SkinName": "NegativeKoala_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "NegativeKoala",
+        "bAutoGetItem": false,
+        "PlatformItemID_Steam": -1
+    },
+    "LilyQueen_Skin001": {
+        "SkinName": "LilyQueen_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "LilyQueen",
+        "bAutoGetItem": false,
+        "PlatformItemID_Steam": -1
+    },
+    "PinkCat_Skin002": {
+        "SkinName": "PinkCat_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "PinkCat",
+        "bAutoGetItem": false,
+        "PlatformItemID_Steam": -1
+    },
+    "ThunderDragonMan_Skin001": {
+        "SkinName": "ThunderDragonMan_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "ThunderDragonMan",
+        "bAutoGetItem": false,
+        "PlatformItemID_Steam": -1
+    },
+    "JetDragon_Skin001": {
+        "SkinName": "JetDragon_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "JetDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Skin002": {
+        "SkinName": "WeaselDragon_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "Anubis_Skin001": {
+        "SkinName": "Anubis_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "Anubis",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "IceHorse_Skin002": {
+        "SkinName": "IceHorse_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "IceHorse",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "BlackGriffon_Skin001": {
+        "SkinName": "BlackGriffon_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "BlackGriffon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "PinkCat_Skin003": {
+        "SkinName": "PinkCat_Skin003",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "PinkCat",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "KendoFrog_Skin001": {
+        "SkinName": "KendoFrog_Skin001",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "KendoFrog",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Fire_Skin002": {
+        "SkinName": "WeaselDragon_Fire_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon_Fire",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "PinkCat_Skin004": {
+        "SkinName": "PinkCat_Skin004",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "PinkCat",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Skin003": {
+        "SkinName": "WeaselDragon_Skin003",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Fire_Skin003": {
+        "SkinName": "WeaselDragon_Fire_Skin003",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon_Fire",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "LilyQueen_Skin002": {
+        "SkinName": "LilyQueen_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "LilyQueen",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "LilyQueen_Dark_Skin002": {
+        "SkinName": "LilyQueen_Dark_Skin002",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "LilyQueen_Dark",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    },
+    "WeaselDragon_Skin004": {
+        "SkinName": "WeaselDragon_Skin004",
+        "SkinType": "EPalSkinType::Pal",
+        "SkinStaticClass": "PalCharacterClass",
+        "bIsHairAccessory": false,
+        "TargetActorClassName": "None",
+        "TargetPalName": "WeaselDragon",
+        "bAutoGetItem": true,
+        "PlatformItemID_Steam": -1
+    }
+}

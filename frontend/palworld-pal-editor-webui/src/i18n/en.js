@@ -60,6 +60,10 @@ export default {
     Editor_Skill_CD: "CT: ",
     Editor_Skill_EL: "Element: ",
     Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
+    Editor_TechPoint: "Technology Points: ",
+    Editor_BossTechPoint: "Ancient Technology Points: ",
+    Editor_TechEdit: "Tech Editor",
+    Editor_UnlockAllTech: "Unlock All Tech",
 
     Editor_Suitabilities: "Work Suitability",
 
