@@ -1,8 +1,9 @@
 import argparse
 import traceback
+import asyncio
 
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
-from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, CONFIG_PATH
+from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, get_new_version, CONFIG_PATH, NEXUS_URL
 
 from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main
@@ -63,6 +64,19 @@ def main():
     LOGGER.info(f"Running Palworld-Pal-Editor version: {VER}")
     if not is_gh_build():
         LOGGER.warning("This version is not built by the official CI/CD pipeline. Be cautious and verify the source.")
+
+    async def check_new_version():
+        version = await get_new_version()
+        if version is not None:
+            LOGGER.info(f"New version available: {version[0]}")
+            LOGGER.info(f"Download from {NEXUS_URL} so we can get more downloads and visibility!")
+            LOGGER.info(f"Alternative GitHub Link: {version[1]}")
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(check_new_version())
+    except RuntimeError:
+        asyncio.run(check_new_version())
+
     match Config.mode:
         case "cli": cli_main()
         case "gui": 

@@ -387,6 +387,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // Configs
     const VERSION = ref("0.0.0");
+    const UPDATE_DATA = ref({});
     const IS_OFFICIAL_BUILD = ref(false);
     const I18n = ref(localStorage.getItem("PAL_I18n"));
     const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
@@ -573,6 +574,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+    }
+
+    async function get_updates() {
+        const response = await GET("/api/save/update");
+        if (response === false) return;
+
+        if (response.status == 0) {
+            return UPDATE_DATA.value = response.data;
+        }
     }
 
     function update_path_picker_result(data) {
@@ -776,12 +786,27 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PLAYER_MAP.value.clear();
     }
 
-    function getTranslatedText(translationKey) {
+    function getTranslatedText(translationKey, args = []) {
+        const getTranslation = (i18n, translationKey, args) => {
+            const i18nData = TranslationKeyMap.value[i18n];
+            let translation = i18nData[translationKey]
+            if (!translation) {
+                console.warn(
+                    `Translation key "${translationKey}" not found in "${i18n}" translations.`
+                );
+                return "I18N_MISSING";
+            }
+            for (let i = 0; i < args.length; i++) {
+                translation = translation.replace(`{{${i}}}`, args[i]);
+                console.log(`Replacing {{${i}}} with ${args[i]} in translation: ${translation}`);
+            }
+            return translation;
+        }
+
         const I18nKey = I18n.value || "en";
 
         if (TranslationKeyMap.value[I18nKey]) {
-            const i18nData = TranslationKeyMap.value[I18n.value];
-            return i18nData[translationKey] || "I18N_MISSING";
+            return getTranslation(I18nKey, translationKey, args);
         }
 
         if (!I18nLoadingPromises[I18nKey]) {
@@ -809,8 +834,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         return I18nLoadingPromises[I18nKey].then(() => {
-            const i18nData = TranslationKeyMap.value[I18nKey];
-            return i18nData?.translationKey || "I18N_MISSING";
+            return getTranslation(I18nKey, translationKey, args);
         });
     }
 
@@ -1518,6 +1542,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_GAME_SAVE_PATH,
         PAL_WRITE_BACK_PATH,
         VERSION,
+        UPDATE_DATA,
         IS_OFFICIAL_BUILD,
         I18n,
         I18nList,
@@ -1561,5 +1586,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         showDonate,
         shownDonate,
+        get_updates
     };
 });

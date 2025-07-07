@@ -24,6 +24,10 @@ export default {
     EntryView_BTN_Load: "ロード",
     EntryView_Period: "。",
     EntryView_Version_Warning: "このバージョンは公式の CI/CD パイプラインでビルドされたものではありません。注意してソースを確認してください。",
+    EntryView_Update_Notice: "新しいバージョンが利用可能です：{{0}}！",
+    EntryView_Update_Link1: "{{0}}から入手して、より多くのダウンロードと可視性を確保しましょう！",
+    EntryView_Update_Link2: "または、次の場所からダウンロードできます：",
+
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",

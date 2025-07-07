@@ -1,6 +1,9 @@
 import json
 from pathlib import Path
 import sys
+from typing import Optional
+import aiohttp
+import platform
 
 PROGRAM_PATH = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.resolve()
 if hasattr(sys, 'frozen'):
@@ -19,6 +22,8 @@ BUILD_TIME = "0000000001"
 GIT_HASH = "0000000"
 REPO = "undefined"
 
+NEXUS_URL = "https://www.nexusmods.com/palworld/mods/995?tab=files"
+
 def version_info() -> str:
     if GIT_HASH == "0000000":
         return "development"
@@ -26,9 +31,56 @@ def version_info() -> str:
         return f"{VERSION}-{RELEASE_TYPE}-{GIT_HASH}-{REPO}-{BUILD_TIME}"
     if RELEASE_TYPE == "RELEASE":
         return f"{VERSION}-{RELEASE_TYPE}-{GIT_HASH}"
-
+    
 def is_gh_build() -> bool:
     return GIT_HASH != "0000000"
+    
+async def get_new_version() -> Optional[tuple[str, str]]:
+    if not is_gh_build():
+        return None
+    releases_url = "https://api.github.com/repos/KrisCris/Palworld-Pal-Editor/releases/latest"
+    async def fetch_latest_release():
+        async with aiohttp.ClientSession() as session:
+            async with session.get(releases_url) as resp:
+                if resp.status != 200:
+                    return None
+                return await resp.json()
+
+    def get_platform_asset_name():
+        sys_platform = platform.system()
+        if sys_platform == "Windows":
+            return "Windows"
+        elif sys_platform == "Darwin":
+            return "macOS"
+        elif sys_platform == "Linux":
+            return "Linux"
+        return None
+
+    def parse_version(tag):
+        return tag
+
+    async def check_update() -> Optional[tuple[str, str]]:
+        release = await fetch_latest_release()
+        if not release or "tag_name" not in release:
+            return None
+        latest_version = parse_version(release["tag_name"])
+        current_version = VERSION
+        if latest_version == current_version:
+            return None
+        platform_name = get_platform_asset_name()
+        if not platform_name:
+            return None
+        for asset in release.get("assets", []):
+            if platform_name in asset["name"]:
+                return latest_version, asset["browser_download_url"]
+        return None
+    
+    try:
+        return await check_update()
+    except Exception as e:
+        print(f"Error checking for updates: {e}")
+        return None
+
 
 class Config:
     i18n: str = "en"

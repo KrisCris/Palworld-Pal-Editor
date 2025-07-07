@@ -2,6 +2,10 @@
 import { usePalEditorStore } from '@/stores/paleditor'
 import PathPicker from '@/components/PathPicker.vue';
 const palStore = usePalEditorStore()
+import { onMounted } from 'vue';
+onMounted( () => {
+    palStore.get_updates();
+});
 </script>
 
 <template>
@@ -60,6 +64,23 @@ const palStore = usePalEditorStore()
                 {{ palStore.getTranslatedText("EntryView_Version_Warning") }}
             </p>
         </div>
+
+        <div class="update_container" v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA">
+            <p class="version-new">
+                {{ palStore.getTranslatedText('EntryView_Update_Notice', [palStore.UPDATE_DATA.version]) }}🎉
+            </p>
+            <p class="version-new">
+                <span
+                    class="version-new"
+                    v-html="palStore.getTranslatedText('EntryView_Update_Link1', [`<a style='color: aquamarine; font-weight: bold; font-size: 1.5rem; font-size:0.8rem;' target='_blank' href='${palStore.UPDATE_DATA.download_nexus}'>Nexus Mods</a>`])">
+                </span>
+            </p>
+            <p class="version-new">
+                {{ palStore.getTranslatedText('EntryView_Update_Link2') }}
+                <a class="small" target="_blank" :href="palStore.UPDATE_DATA.download_gh">GitHub</a>
+                {{ palStore.getTranslatedText('EntryView_Period') }}
+            </p>
+        </div>
     </div>
 </template>
 
@@ -99,6 +120,10 @@ p.small {
     font-size: 0.8rem;
     margin: 0 0;
     color: grey;
+}
+
+a.small {
+    font-size: 0.8rem;
 }
 
 input {
@@ -171,11 +196,24 @@ button:disabled:hover {
     text-align: right;
 }
 
+.update_container {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    text-align: left;
+}
+
 /* Style for the version text */
 .version-info {
     font-size: 0.9rem;
     color: #868686;
     opacity: 0.7;
+}
+
+.version-new {
+    font-size: 0.9rem;
+    color: #6e9aff;
+    font-weight: bold;
 }
 
 /* Style for the version warning */
