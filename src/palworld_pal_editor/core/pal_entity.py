@@ -199,6 +199,7 @@ class PalEntity:
 
         new_specie = self.RawSpecieKey
         if new_specie != og_specie:
+            self.SkinName = None
             # Unset invalid movesets
             self.remove_unique_attacks()
             # Unset invalid work suitabilities
@@ -319,6 +320,8 @@ class PalEntity:
 
     @property
     def IconAccessKey(self) -> Optional[str]:
+        if self.SkinName:
+            return f"skin-{self.SkinName}"
         if self.IsHuman:
             if DataProvider.has_human_icon(self.CharacterID):
                 return self.CharacterID
@@ -1196,6 +1199,22 @@ class PalEntity:
             )
             return False
         PalObjects.set_BaseType(self._pal_param["Tiemr_FoodWithStatusEffect"], val)
+
+    @property
+    def SkinName(self) -> Optional[str]:
+        return PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+    
+    @SkinName.setter
+    @LOGGER.change_logger("SkinName")
+    @type_guard
+    def SkinName(self, value: str) -> None:
+        if not value or value == "None":
+            self._pal_param.pop("SkinName", None)
+            return
+        if self.SkinName is None:
+            self._pal_param["SkinName"] = PalObjects.NameProperty(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["SkinName"], value)
 
     def learn_attacks(self):
         # if self.IsHuman:

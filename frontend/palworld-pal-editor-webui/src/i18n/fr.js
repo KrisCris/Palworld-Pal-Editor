@@ -26,6 +26,9 @@ export default {
     EntryView_BTN_Load: "Charger la sauvegarde",
     EntryView_Period: ".",
     EntryView_Version_Warning: "Cette version n'a pas été construite par le pipeline CI/CD officiel. Veuillez faire preuve de prudence et vérifier la source.",
+    EntryView_Update_Notice: "Une nouvelle version est disponible : {{0}} !",
+    EntryView_Update_Link1: "Téléchargez-la depuis {{0}} pour que nous puissions avoir plus de téléchargements et de visibilité !",
+    EntryView_Update_Link2: "Vous pouvez également la télécharger depuis ",
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
@@ -62,6 +65,10 @@ export default {
     Editor_Skill_CD: "CD : ",
     Editor_Skill_EL: "Élément : ",
     Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES (LES COMPÉTENCES SONT AJOUTÉES AUTOMATIQUEMENT LORS DE LA MONTÉE EN NIVEAU DES PALS)",
+    Editor_TechPoint: "Points technologiques : ",
+    Editor_BossTechPoint: "Points technologiques antiques : ",
+    Editor_TechEdit: "Éditeur de technologie",
+    Editor_UnlockAllTech: "Déverrouiller toutes les technologies",
 
     Editor_Suitabilities: "Capacités de travail",
 

@@ -1,11 +1,18 @@
 import os
 from pathlib import Path
-import platform
 import traceback
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
+import asyncio
 
-from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build
+from palworld_pal_editor.config import (
+    PROGRAM_PATH,
+    NEXUS_URL,
+    Config,
+    version_info,
+    is_gh_build,
+    get_new_version,
+)
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import get_path_context, reply
@@ -37,13 +44,16 @@ def load():
     try:
         if path and SaveManager().open(path):
             Config.path = path
-            Config.save_to_file(PROGRAM_PATH / 'config.json')
+            Config.save_to_file(PROGRAM_PATH / "config.json")
             return reply(0)
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error Loading Save {stack_trace}")
-        return reply(1, msg=f"Error occored during loading, please make sure both the editor and your game save is up to date! Check debug console for further details.")
-    
+        return reply(
+            1,
+            msg=f"Error occored during loading, please make sure both the editor and your game save is up to date! Check debug console for further details.",
+        )
+
     LOGGER.warning(f"Failed to load, check path: {path}")
     return reply(1, None, f"Failed to load, check path: {path}")
 
@@ -59,7 +69,9 @@ def save():
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")
-        return reply(1, msg=f"Error occored during saving, check debug console. {stack_trace}")
+        return reply(
+            1, msg=f"Error occored during saving, check debug console. {stack_trace}"
+        )
 
 
 @save_blueprint.route("/passive_skills", methods=["GET"])
@@ -96,13 +108,16 @@ def get_active_skills():
             #         f'{"🍐" if DataProvider.has_skill_fruit(attack["InternalName"]) else ""}' \
             #         f'{"✨"if DataProvider.is_unique_attacks(attack["InternalName"]) else ""}' \
             #         f'{DataProvider.get_attack_i18n(attack["InternalName"]) or attack["InternalName"]}',
-            "I18n": list(DataProvider.get_attack_i18n(attack["InternalName"]) or [attack["InternalName"], ""]),
+            "I18n": list(
+                DataProvider.get_attack_i18n(attack["InternalName"])
+                or [attack["InternalName"], ""]
+            ),
             "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
             "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
             "Power": attack["Power"],
             "Element": attack["Element"],
             "CT": attack["CT"],
-            "Invalid": attack.get("Invalid", False)
+            "Invalid": attack.get("Invalid", False),
         }
         if data["Invalid"]:
             data["I18n"][0] = "⚠️ " + data["I18n"][0]
@@ -132,8 +147,12 @@ def get_pal_data():
     pal_arr = []
     for pal in pals_raw:
         iname = pal["InternalName"]
-        if "BOSS_" in iname and DataProvider.boss_has_base_variant(iname) or \
-            "Boss_" in iname and DataProvider.boss_has_base_variant(iname):
+        if (
+            "BOSS_" in iname
+            and DataProvider.boss_has_base_variant(iname)
+            or "Boss_" in iname
+            and DataProvider.boss_has_base_variant(iname)
+        ):
             continue
         data = {
             "InternalName": iname,
@@ -142,7 +161,7 @@ def get_pal_data():
             "Suitabilities": DataProvider.get_pal_suitabilities(iname),
             "I18n": DataProvider.get_pal_i18n(iname) or iname,
             "SortingKey": DataProvider.get_pal_sorting_key(iname),
-            "IsHuman": DataProvider.is_pal_human(iname) or False
+            "IsHuman": DataProvider.is_pal_human(iname) or False,
         }
         pal_dict[iname] = data
         pal_arr.append(data)
@@ -165,9 +184,8 @@ def get_tech_data():
         lv_arr.append(data)
         tech_lv_dict[lv] = lv_arr
 
-    return reply(0, {
-        "techLvDict": tech_lv_dict
-    })
+    return reply(0, {"techLvDict": tech_lv_dict})
+
 
 @save_blueprint.route("/path", methods=["GET"])
 @jwt_required()
@@ -177,7 +195,9 @@ def get_path():
         if not current_path.exists():
             raise Exception(f"Path {current_path} not exist.")
     except:
-        pal_local_path = Path(os.environ.get('LOCALAPPDATA', "/")) / 'Pal' / 'Saved' / 'SaveGames'
+        pal_local_path = (
+            Path(os.environ.get("LOCALAPPDATA", "/")) / "Pal" / "Saved" / "SaveGames"
+        )
         if pal_local_path.exists():
             current_path = pal_local_path
         else:
@@ -203,7 +223,7 @@ def update_path():
 
     old_path = Config.path
     Config.path = str(path)
-    
+
     try:
         return reply(0, get_path_context(path))
     except:
@@ -218,21 +238,44 @@ def path_back():
     path = Path(Config.path).parent.resolve()
     old_path = Config.path
     Config.path = str(path)
-    
+
     try:
         return reply(0, get_path_context(path))
     except:
         Config.path = old_path
         LOGGER.error(traceback.format_exc())
         return reply(1, msg=f"Error, cannot open path {path}.")
-    
+
+
 @save_blueprint.route("donate", methods=["PATCH"])
 @jwt_required()
 def pop_up_donate():
     Config.set_shown_donate_info()
     return reply(0)
 
+
 @save_blueprint.route("donate", methods=["GET"])
 @jwt_required()
 def get_donate():
     return reply(0, {"shouldShowDonate": not Config.shownDonateInfo.get(Config.i18n)})
+
+
+@save_blueprint.route("update", methods=["GET"])
+@jwt_required()
+def has_update():
+    try:
+        version = asyncio.run(get_new_version())
+    except RuntimeError:
+        loop = asyncio.get_event_loop()
+        version = loop.run_until_complete(get_new_version())
+    if version is not None:
+        return reply(
+            0,
+            {
+                "version": version[0],
+                "download_gh": version[1],
+                "download_nexus": NEXUS_URL,
+            },
+            msg="New version available.",
+        )
+    return reply(1, msg="Failed to get new version.")

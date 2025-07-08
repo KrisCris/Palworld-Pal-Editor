@@ -111,6 +111,8 @@ def player_to_dict(player: PlayerEntity):
         "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
         "PalStorageContainerId": str(player.PalStorageContainerId),
         "UnlockedRecipeTechnologyNames": [],
+        "TechnologyPoint": player.TechnologyPoint or 0,
+        "bossTechnologyPoint": player.bossTechnologyPoint or 0,
     }
 
 

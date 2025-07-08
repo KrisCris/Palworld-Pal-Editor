@@ -113,7 +113,20 @@ def extract_techs():
     return tech_data
 
 
-tech_data = extract_techs()
+tech_data_raw = extract_techs()
+tech_data = {}
+
+internal_names_replacement = {
+    "PALBOX": "PalBox",
+    "ShotGunBullet": "ShotgunBullet"
+}
+
+for internal_name in tech_data_raw:
+    row = tech_data_raw[internal_name]
+    if internal_name in internal_names_replacement:
+        internal_name = internal_names_replacement[internal_name]
+        row["InternalName"] = internal_name
+    tech_data[internal_name] = row
 
 tech_json = json.dumps(tech_data, indent=4, ensure_ascii=False)
 with open("tmp_tech_data.json", "w", encoding="utf-8") as file:

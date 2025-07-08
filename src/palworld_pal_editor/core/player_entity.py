@@ -353,30 +353,30 @@ class PlayerEntity:
         return True
     
     @property
-    def TechnologPoint(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._player_save_data.get("TechnologPoint"))
+    def TechnologyPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("TechnologyPoint"))
     
-    @TechnologPoint.setter
-    @LOGGER.change_logger("TechnologPoint")
+    @TechnologyPoint.setter
+    @LOGGER.change_logger("TechnologyPoint")
     @type_guard
-    def TechnologPoint(self, value: int) -> None:
-        if self.TechnologPoint is None:
-            self._player_save_data["TechnologPoint"] = PalObjects.IntProperty(value)
+    def TechnologyPoint(self, value: int) -> None:
+        if self.TechnologyPoint is None:
+            self._player_save_data["TechnologyPoint"] = PalObjects.IntProperty(value)
         else:
-            PalObjects.set_BaseType(self._player_save_data["TechnologPoint"], value)
+            PalObjects.set_BaseType(self._player_save_data["TechnologyPoint"], value)
 
     @property
-    def bossTechPoint(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._player_save_data.get("bossTechPoint"))
+    def bossTechnologyPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._player_save_data.get("bossTechnologyPoint"))
     
-    @bossTechPoint.setter
-    @LOGGER.change_logger("bossTechPoint")
+    @bossTechnologyPoint.setter
+    @LOGGER.change_logger("bossTechnologyPoint")
     @type_guard
-    def bossTechPoint(self, value: int) -> None:
-        if self.bossTechPoint is None:
-            self._player_save_data["bossTechPoint"] = PalObjects.IntProperty(value)
+    def bossTechnologyPoint(self, value: int) -> None:
+        if self.bossTechnologyPoint is None:
+            self._player_save_data["bossTechnologyPoint"] = PalObjects.IntProperty(value)
         else:
-            PalObjects.set_BaseType(self._player_save_data["bossTechPoint"], value)
+            PalObjects.set_BaseType(self._player_save_data["bossTechnologyPoint"], value)
     
     def try_create_pal_record_data(self):
         if "RecordData" not in self._player_save_data:

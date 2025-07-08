@@ -24,6 +24,9 @@ export default {
     EntryView_BTN_Load: "Load Save",
     EntryView_Period: ".",
     EntryView_Version_Warning: "This version was not built by the official CI/CD pipeline. Please exercise caution and verify the source.",
+    EntryView_Update_Notice: "A new version is available: {{0}} !",
+    EntryView_Update_Link1: "Get it from {{0}} so we can have more downloads and visibility!",
+    EntryView_Update_Link2: "Alternatively, you can download it from ",
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
@@ -60,6 +63,10 @@ export default {
     Editor_Skill_CD: "CT: ",
     Editor_Skill_EL: "Element: ",
     Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
+    Editor_TechPoint: "Technology Points: ",
+    Editor_BossTechPoint: "Ancient Technology Points: ",
+    Editor_TechEdit: "Tech Editor",
+    Editor_UnlockAllTech: "Unlock All Tech",
 
     Editor_Suitabilities: "Work Suitability",
 

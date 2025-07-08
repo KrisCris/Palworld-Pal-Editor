@@ -26,7 +26,9 @@ export default {
     EntryView_BTN_Load: "载入存档",
     EntryView_Period: "。",
     EntryView_Version_Warning: "此版本不是由官方 CI/CD 管道构建。请谨慎使用并验证来源。",
-
+    EntryView_Update_Notice: "有可用的新版本：{{0}} ！",
+    EntryView_Update_Link1: "从 {{0}} 下载，以便我们可以获得更多的下载量和可见度！",
+    EntryView_Update_Link2: "或者，你可以从以下链接下载：",
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
@@ -63,6 +65,10 @@ export default {
     Editor_Skill_CD: "冷却时间: ",
     Editor_Skill_EL: "元素: ",
     Editor_Mastered_Skills: "学会的主动技能 (升级帕鲁时对应的技能会被自动添加)",
+    Editor_TechPoint: "科技点: ",
+    Editor_BossTechPoint: "古代科技点: ",
+    Editor_TechEdit: "科技编辑器",
+    Editor_UnlockAllTech: "解锁所有科技",
 
     Editor_Suitabilities: "工作适应性",
 
