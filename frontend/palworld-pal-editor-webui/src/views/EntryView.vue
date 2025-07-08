@@ -65,7 +65,7 @@ onMounted( () => {
             </p>
         </div>
 
-        <div class="update_container" v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA">
+        <div class="update_container" v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA.version">
             <p class="version-new">
                 {{ palStore.getTranslatedText('EntryView_Update_Notice', [palStore.UPDATE_DATA.version]) }}🎉
             </p>
