@@ -75,7 +75,7 @@ jobs:
           sed -i "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
           sed -i "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
         fi
-    
+
         cat $CONFIG_FILE
         cat $PYPROJECT_FILE
 
@@ -83,18 +83,23 @@ jobs:
         COMPARE_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}/compare/${LAST_TAG}...${VERSION_TAG}"
         echo "COMPARE_URL=$COMPARE_URL" >> $GITHUB_ENV
 
-
     - name: Windows Build
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
         ./build_executable.ps1
-        
-    - name: Unix-like Build
-      if: runner.os != 'Windows'
+
+    - name: macOS Build
+      if: runner.os == 'macOS'
       shell: bash
       run: |
         ./build_executable.sh
+
+    - name: Linux AppImage Build
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        ./build_appimage.sh
 
     - name: Rename Built File
       shell: bash
@@ -102,6 +107,8 @@ jobs:
         FILE_EXT=""
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           FILE_EXT=".exe"
+        elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          FILE_EXT="-x86_64.AppImage"
         fi
 
         FILE_PATH="./dist/${{ env.PROJECT_NAME }}${FILE_EXT}"

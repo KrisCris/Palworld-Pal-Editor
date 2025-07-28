@@ -75,7 +75,7 @@ jobs:
           sed -i "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
           sed -i "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
         fi
-    
+
         cat $CONFIG_FILE
         cat $PYPROJECT_FILE
 
@@ -84,10 +84,15 @@ jobs:
       shell: pwsh
       run: ./build_executable.ps1
 
-    - name: Run Unix-like Builder Script
-      if: runner.os != 'Windows'
+    - name: Run macOS Builder Script
+      if: runner.os == 'macOS'
       shell: bash
       run: ./build_executable.sh
+
+    - name: Run Linux AppImage Builder
+      if: runner.os == 'Linux'
+      shell: bash
+      run: ./build_appimage.sh
 
     - name: Rename Built File
       shell: bash
@@ -95,6 +100,8 @@ jobs:
         FILE_EXT=""
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           FILE_EXT=".exe"
+        elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          FILE_EXT="-x86_64.AppImage"
         fi
 
         FILE_PATH="./dist/${{ env.PROJECT_NAME }}${FILE_EXT}"
