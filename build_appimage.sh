@@ -70,8 +70,7 @@ pyinstaller --onefile \
   --name "$APPNAME" \
   --hidden-import="pkg_resources.extern"
 
-# Save path before deleting
-PYINSTALLER_BINARY="./dist/$APPNAME"
+PYINSTALLER_BINARY="$DISTDIR/$APPNAME"
 
 # Download appimagetool if not present
 if [ ! -f "$APPIMAGE_TOOL" ]; then
@@ -84,15 +83,25 @@ fi
 echo "📁 Preparing AppImage structure..."
 rm -rf "$APPDIR"
 mkdir -p "$APPDIR/usr/bin"
+mkdir -p "$APPDIR/usr/lib"
 cp "$PYINSTALLER_BINARY" "$APPDIR/usr/bin/"
 
 # Delete original binary
 rm -f "$PYINSTALLER_BINARY"
 
+# 🔧 Bundle necessary libraries (ldd-based)
+echo "📎 Copying shared libraries..."
+ldd "$APPDIR/usr/bin/$APPNAME" | awk '{print $3}' | grep -v '^(' | while read -r lib; do
+    if [ -f "$lib" ]; then
+        cp -v --parents "$lib" "$APPDIR/usr/lib/" 2>/dev/null || true
+    fi
+done
+
 # Create AppRun
 cat > "$APPDIR/AppRun" << EOF
 #!/bin/bash
 HERE="\$(dirname "\$(readlink -f "\$0")")"
+export LD_LIBRARY_PATH="\$HERE/usr/lib:\$LD_LIBRARY_PATH"
 exec "\$HERE/usr/bin/$APPNAME" "\$@"
 EOF
 chmod +x "$APPDIR/AppRun"
@@ -115,3 +124,4 @@ echo "📦 Building AppImage..."
 "$APPIMAGE_TOOL" "$APPDIR" "$DISTDIR/$APPIMAGE_NAME"
 
 echo "✅ Done! Output AppImage: $DISTDIR/$APPIMAGE_NAME"
+
