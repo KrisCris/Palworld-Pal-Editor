@@ -1,18 +1,28 @@
 import json
+import os
 from pathlib import Path
 import sys
 from typing import Optional
 import aiohttp
 import platform
 
-PROGRAM_PATH = Path(sys.executable).parent if getattr(sys, 'frozen', False) else Path(__file__).parent.resolve()
+def get_program_path():
+    # If running in AppImage, use the real file path
+    if "APPIMAGE" in os.environ:
+        return Path(os.environ["APPIMAGE"]).parent
+    elif getattr(sys, 'frozen', False):
+        return Path(sys.executable).parent
+    else:
+        return Path(__file__).parent.resolve()
+
+PROGRAM_PATH = get_program_path()
 if hasattr(sys, 'frozen'):
     if hasattr(sys, "_MEIPASS"):
         ASSETS_PATH = Path(sys._MEIPASS)
     else:
-        ASSETS_PATH = Path(sys.executable).parent
+        ASSETS_PATH = get_program_path()
 else:
-    ASSETS_PATH = Path(__file__).parent
+    ASSETS_PATH = get_program_path()
 
 CONFIG_PATH = PROGRAM_PATH / 'config.json'
 
@@ -148,3 +158,4 @@ class Config:
             'JWT_SECRET_KEY': Config.JWT_SECRET_KEY,
             'shownDonateInfo': Config.shownDonateInfo
         }
+
