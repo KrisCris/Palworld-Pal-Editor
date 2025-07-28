@@ -76,7 +76,7 @@ PYINSTALLER_BINARY="./dist/$APPNAME"
 # Download appimagetool if not present
 if [ ! -f "$APPIMAGE_TOOL" ]; then
     echo "⬇️  Downloading appimagetool..."
-    curl -L -o "$APPIMAGE_TOOL" "https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-$ARCH.AppImage"
+    curl -L -o "$APPIMAGE_TOOL" "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$ARCH.AppImage"
     chmod +x "$APPIMAGE_TOOL"
 fi
 
