@@ -55,6 +55,8 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 pip install pyinstaller
+pip install qtpy
+pip install pyside6
 
 # Clean previous build
 rm -rf "$DISTDIR"
