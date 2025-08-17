@@ -36,6 +36,7 @@ export default {
     Editor_Nickname: "昵称: ",
     Editor_Gender: "性别: ",
     Editor_Variant: "特殊种: ", // 不知道用什么词
+    Editor_Friendship_Level: "信赖度: ",
     Editor_Pal_CharacterID: "帕鲁内部名称: ",
     Editor_Pal_ID: "帕鲁对象 ID: ",
     Editor_Pal_Guild_ID: "帕鲁工会 ID: ",

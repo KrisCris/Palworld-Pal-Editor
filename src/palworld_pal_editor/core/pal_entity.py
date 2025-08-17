@@ -596,6 +596,31 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["Exp"], value)
 
     @property
+    def FriendshipLevel(self) -> Optional[int]:
+        return DataProvider.get_pal_friendship_level_from_pts(self.FriendshipPoint or 0)
+
+    @FriendshipLevel.setter
+    @type_guard
+    def FriendshipLevel(self, level: int) -> None:
+        self.FriendshipPoint = DataProvider.get_pal_friendship(level or 0)
+
+    @property
+    def FriendshipPoint(self) -> Optional[int]:
+        return PalObjects.get_BaseType(self._pal_param.get("FriendshipPoint"))
+
+    @FriendshipPoint.setter
+    @LOGGER.change_logger("FriendshipPoint")
+    @type_guard
+    def FriendshipPoint(self, value: int) -> None:
+        if self.FriendshipPoint is None:
+            self._pal_param["FriendshipPoint"] = PalObjects.IntProperty(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["FriendshipPoint"], value)
+
+        if maxHP := self.ComputedMaxHP:
+            self.Hp = maxHP
+
+    @property
     def Rank(self) -> Optional[int]:
         return PalObjects.get_ByteProperty(self._pal_param.get("Rank"))
 

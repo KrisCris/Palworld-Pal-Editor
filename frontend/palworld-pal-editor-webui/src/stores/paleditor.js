@@ -4,6 +4,7 @@ import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_LEVEL = 65;
+    const MAX_FRIENDSHIP_LEVEL = 10;
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 5;
@@ -75,6 +76,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.NickName = obj.NickName;
             this.Gender = obj.Gender;
             this.Level = obj.Level;
+            this.FriendshipLevel = obj.FriendshipLevel;
 
             this.HasBaseVariant = obj.HasBaseVariant;
             this.HasBossVariant = obj.HasBossVariant;
@@ -166,6 +168,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 ? MAX_LEVEL
                 : MAX_INVALID_LEVEL;
             updatePal({ target: { name: "Level", value: this.Level } });
+        }
+
+        friendshipLevelDown() {
+            if (this.FriendshipLevel > -3) {
+                this.FriendshipLevel -= 1;
+                updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
+            }
+        }
+
+        friendshipLevelUp() {
+            if (this.FriendshipLevel < MAX_FRIENDSHIP_LEVEL) {
+                this.FriendshipLevel += 1;
+                updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
+            }
+        }
+
+        maxFriendshipLevel() {
+            this.FriendshipLevel = MAX_FRIENDSHIP_LEVEL;
+            updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
         }
 
         displayGender() {
@@ -1507,6 +1528,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         MAX_INVALID_LEVEL,
         MAX_SOULS_LEVEL,
         MAX_SUITABILITY_LEVEL,
+        MAX_FRIENDSHIP_LEVEL,
 
         PAL_PASSIVE_SELECTED_ITEM,
         PAL_ACTIVE_SELECTED_ITEM,

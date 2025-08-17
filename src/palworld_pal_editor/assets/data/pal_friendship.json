@@ -1,0 +1,44 @@
+{
+  "0": {
+    "required_point": 0
+  },
+  "1": {
+    "required_point": 6000
+  },
+  "10": {
+    "required_point": 200000
+  },
+  "2": {
+    "required_point": 13000
+  },
+  "3": {
+    "required_point": 21000
+  },
+  "4": {
+    "required_point": 30000
+  },
+  "5": {
+    "required_point": 40000
+  },
+  "6": {
+    "required_point": 55000
+  },
+  "7": {
+    "required_point": 80000
+  },
+  "8": {
+    "required_point": 110000
+  },
+  "9": {
+    "required_point": 150000
+  },
+  "-1": {
+    "required_point": -1
+  },
+  "-2": {
+    "required_point": -1000
+  },
+  "-3": {
+    "required_point": -10000
+  }
+}

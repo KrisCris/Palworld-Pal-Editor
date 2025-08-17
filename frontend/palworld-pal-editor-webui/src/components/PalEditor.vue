@@ -47,6 +47,14 @@ const isMinLv = () => {
   return palStore.SELECTED_PAL_DATA.Level <= 1;
 };
 
+const isMaxFriendshipLv = () => {
+  return palStore.SELECTED_PAL_DATA.FriendshipLevel >= palStore.MAX_FRIENDSHIP_LEVEL;
+};
+
+const isMinFriendshipLv = () => {
+  return palStore.SELECTED_PAL_DATA.FriendshipLevel <= -3;
+};
+
 const suitabilityIconSrc = key => {
   return key ? `/image/suitabilities/${key.split("::").pop()}` : '';
 };
@@ -107,6 +115,26 @@ const suitabilityIconSrc = key => {
             :disabled="palStore.LOADING_FLAG">✅</button>
         </div>
         <div class="flex-h">
+          <div class="editField">
+            <p class="const">💙 {{ palStore.getTranslatedText("Editor_Friendship_Level") }} {{ palStore.SELECTED_PAL_DATA.FriendshipLevel }}</p>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.friendshipLevelDown" name="FriendshipLevel"
+              :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()">🔽</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.friendshipLevelUp" name="FriendshipLevel"
+              :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔼</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxFriendshipLevel" name="FriendshipLevel"
+              :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔝</button>
+          </div>
+          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
+            <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
+              :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
+              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
+          </div>
+        </div>
+        <div class="flex-h">
           <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
             <p class="const">
               {{ palStore.getTranslatedText("Editor_Gender") }}
@@ -127,16 +155,6 @@ const suitabilityIconSrc = key => {
               v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">👑</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
               v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">✨</button>
-          </div>
-
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
-            <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
-              :disabled="palStore.LOADING_FLA || isMinLv()">🔽</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
-              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
-              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
           </div>
         </div>
         <p class="const">
@@ -163,7 +181,6 @@ const suitabilityIconSrc = key => {
             {{ palStore.getTranslatedText("Editor_Btn_Retrieve_Pal") }}
           </button>
         </div>
-
         <p class="const">
           🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}
           {{ palStore.SELECTED_PAL_DATA.OwnerName ||

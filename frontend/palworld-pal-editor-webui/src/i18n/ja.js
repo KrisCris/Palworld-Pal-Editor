@@ -35,6 +35,7 @@ export default {
     Editor_Nickname: "ニックネーム: ",
     Editor_Gender: "性別: ",
     Editor_Variant: "バリアント: ",
+    Editor_Friendship_Level: "信頼度: ",
     Editor_Pal_CharacterID: "パル内部名称: ",
     Editor_Pal_ID: "パルインスタンスID: ",
     Editor_Pal_Guild_ID: "パルギルドID: ",
