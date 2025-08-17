@@ -34,6 +34,7 @@ PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
+PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
 TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
@@ -171,9 +172,25 @@ class DataProvider:
     def get_pal_level_xp(lv: int) -> Optional[int]:
         try:
             return PAL_EXP_TABLE[str(lv)]["PalTotalEXP"]
-        except IndexError:
+        except Exception:
             LOGGER.warning(f"Level {lv} is out of bounds.")
             return None
+        
+    @staticmethod
+    def get_pal_friendship(lv: str) -> Optional[int]:
+        try:
+            return PAL_FRIENDSHIP[str(lv)]["required_point"]
+        except Exception:
+            LOGGER.warning(f"Friendship level {lv} is out of bounds.")
+            return None
+        
+    @staticmethod
+    def get_pal_friendship_level_from_pts(pts: int) -> Optional[int]:
+        max_lv = -3
+        for level, data in PAL_FRIENDSHIP.items():
+            if pts >= data["required_point"]:
+                max_lv = max(max_lv, int(level))
+        return max_lv
 
     @none_guard(data_source=PAL_ATTACKS, subkey="I18n")
     @staticmethod

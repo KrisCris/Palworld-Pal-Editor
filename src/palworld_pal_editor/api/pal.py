@@ -125,6 +125,7 @@ def _pal_data(pal: PalEntity):
         "NickName": pal.NickName or "",
         "Gender": pal.Gender.value if pal.Gender else None,
         "Level": pal.Level or 1,
+        "FriendshipLevel": pal.FriendshipLevel or 0,
         "HasBaseVariant": pal.HasBaseVariant,
         "HasBossVariant": pal.HasBossVariant,
         "HasTowerVariant": pal.HasTowerVariant,
