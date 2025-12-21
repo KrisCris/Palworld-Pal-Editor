@@ -9,7 +9,8 @@ jobs:
   dev-build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -89,40 +90,40 @@ jobs:
       shell: bash
       run: ./build_executable.sh
 
-    - name: Linux AppImage Build
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        docker run --rm --privileged \
-          -v ${{ github.workspace }}:/app \
-          -w /app \
-          ubuntu:20.04 bash -c '
-            set -e
+    # - name: Linux AppImage Build
+    #   if: runner.os == 'Linux'
+    #   shell: bash
+    #   run: |
+    #     docker run --rm --privileged \
+    #       -v ${{ github.workspace }}:/app \
+    #       -w /app \
+    #       ubuntu:20.04 bash -c '
+    #         set -e
 
-            apt update
-            apt install -y software-properties-common curl gnupg2 ca-certificates
+    #         apt update
+    #         apt install -y software-properties-common curl gnupg2 ca-certificates
 
-            # Python 3.11
-            add-apt-repository -y ppa:deadsnakes/ppa
-            apt update
-            DEBIAN_FRONTEND=noninteractive apt install -y \
-              python3.11 python3.11-venv python3.11-dev \
-              build-essential git libgl1 libglib2.0-0 libfuse2 fuse \
-              libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev
+    #         # Python 3.11
+    #         add-apt-repository -y ppa:deadsnakes/ppa
+    #         apt update
+    #         DEBIAN_FRONTEND=noninteractive apt install -y \
+    #           python3.11 python3.11-venv python3.11-dev \
+    #           build-essential git libgl1 libglib2.0-0 libfuse2 fuse \
+    #           libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev
 
-            ln -sf /usr/bin/python3.11 /usr/bin/python3
+    #         ln -sf /usr/bin/python3.11 /usr/bin/python3
 
-            # Node.js 20
-            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-            apt install -y nodejs
+    #         # Node.js 20
+    #         curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    #         apt install -y nodejs
 
-            # Required by AppImageKit
-            mkdir -p /dev
-            mknod -m 666 /dev/fuse c 10 229 || true
-            chmod 666 /dev/fuse || true
+    #         # Required by AppImageKit
+    #         mkdir -p /dev
+    #         mknod -m 666 /dev/fuse c 10 229 || true
+    #         chmod 666 /dev/fuse || true
 
-            bash ./build_appimage.sh
-          '
+    #         bash ./build_appimage.sh
+    #       '
 
     - name: Fix dist file permissions after Docker build
       if: runner.os == 'Linux'
