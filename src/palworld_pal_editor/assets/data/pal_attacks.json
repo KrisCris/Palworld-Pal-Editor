@@ -3483,6 +3483,78 @@
         "UniqueSkill": false,
         "SkillFruit": true
     },
+    "EPalWazaID::RadiantBarrage": {
+        "InternalName": "EPalWazaID::RadiantBarrage",
+        "Element": "Neutral",
+        "CT": 40,
+        "Power": 120,
+        "I18n": {
+            "en": {
+                "Name": "Radiant Barrage",
+                "Description": "Unleashes a sphere of light that slowly tracks down an enemy. As it nears its target, it splits into countless light bullets that strike all at once."
+            },
+            "zh-CN": {
+                "Name": "光辉霰射",
+                "Description": "发射一个缓慢追踪敌人的光球。光球在接近目标时会分裂成无数光弹攻击敌人。"
+            }
+        },
+        "UniqueSkill": false,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_LegendDeer_RadiantWingRush": {
+        "InternalName": "EPalWazaID::Unique_LegendDeer_RadiantWingRush",
+        "Element": "Neutral",
+        "CT": 35,
+        "Power": 140,
+        "I18n": {
+            "en": {
+                "Name": "Divine Wing",
+                "Description": "Hartalis' exclusive skill. Leaps back and sprouts wings of light,then dives toward the enemy."
+            },
+            "zh-CN": {
+                "Name": "流光翼彩",
+                "Description": "默世鹿的专用技能。向后方跳跃并在背后展开光翼，从空中向敌人发起突击。"
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_LegendDeer_WarpPillarBurst": {
+        "InternalName": "EPalWazaID::Unique_LegendDeer_WarpPillarBurst",
+        "Element": "Neutral",
+        "CT": 60,
+        "Power": 200,
+        "I18n": {
+            "en": {
+                "Name": "Sacred Rain",
+                "Description": "Hartalis' exclusive skill. Fades from sight, then calls down a massive barrage of light pillars centered on its position."
+            },
+            "zh-CN": {
+                "Name": "光之雨",
+                "Description": "默世鹿的专用技能。一瞬间隐去身姿，然后以自身为中心在大范围召唤大量光柱落下。"
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
+    "EPalWazaID::Unique_LegendDeer_RadiantPurge_Otomo": {
+        "InternalName": "EPalWazaID::Unique_LegendDeer_RadiantPurge_Otomo",
+        "Element": "Neutral",
+        "CT": 100,
+        "Power": 250,
+        "I18n": {
+            "en": {
+                "Name": "Purifying Light",
+                "Description": "Hartalis' exclusive skill. Leaps high into the air, condensing immense energy into a descending sphere of light.When it strikes the ground, it purifies all on the ground below."
+            },
+            "zh-CN": {
+                "Name": "光辉净化",
+                "Description": "默世鹿的专用技能。跃向空中，凝聚巨大的能量然后投向地面。煌煌天光，涤净尘世。"
+            }
+        },
+        "UniqueSkill": true,
+        "SkillFruit": false
+    },
     "EPalWazaID::Unique_DarkAlien_JumpScractch": {
         "InternalName": "EPalWazaID::Unique_DarkAlien_JumpScractch",
         "Element": "Dark",

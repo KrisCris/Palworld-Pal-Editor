@@ -23432,6 +23432,186 @@
             "EPalWorkSuitability::MonsterFarm": 0
         }
     },
+    "LegendDeer": {
+        "InternalName": "LegendDeer",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::PowerBall": 7,
+            "EPalWazaID::HolyBlast": 15,
+            "EPalWazaID::RadiantBarrage": 22,
+            "EPalWazaID::Unique_LegendDeer_RadiantWingRush": 30,
+            "EPalWazaID::Unique_LegendDeer_WarpPillarBurst": 40,
+            "EPalWazaID::Unique_LegendDeer_RadiantPurge_Otomo": 50
+        },
+        "Stats": {
+            "HP": 135,
+            "ATK": 130,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 550
+        },
+        "I18n": {
+            "en": "Hartalis",
+            "zh-CN": "默世鹿"
+        },
+        "SortingKey": {
+            "paldeck": "156"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 3,
+            "EPalWorkSuitability::Deforest": 4,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::OilExtraction": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "BOSS_LegendDeer": {
+        "InternalName": "BOSS_LegendDeer",
+        "Elements": [
+            "Neutral"
+        ],
+        "Attacks": {
+            "EPalWazaID::PowerShot": 1,
+            "EPalWazaID::PowerBall": 7,
+            "EPalWazaID::HolyBlast": 15,
+            "EPalWazaID::RadiantBarrage": 22,
+            "EPalWazaID::Unique_LegendDeer_RadiantWingRush": 30,
+            "EPalWazaID::Unique_LegendDeer_WarpPillarBurst": 40,
+            "EPalWazaID::Unique_LegendDeer_RadiantPurge_Otomo": 50
+        },
+        "Stats": {
+            "HP": 162,
+            "ATK": 130,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 550
+        },
+        "I18n": {
+            "en": "King of Salvation Hartalis",
+            "zh-CN": "救赎之王 默世鹿"
+        },
+        "SortingKey": {
+            "paldeck": "156"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 3,
+            "EPalWorkSuitability::Deforest": 4,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::OilExtraction": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "RAID_LegendDeer": {
+        "InternalName": "RAID_LegendDeer",
+        "Elements": [
+            "Water",
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::RootLance": 1,
+            "EPalWazaID::CrossWind": 2,
+            "EPalWazaID::SolarBeam": 3,
+            "EPalWazaID::SeaGush": 4,
+            "EPalWazaID::WallSplash": 5,
+            "EPalWazaID::RipTide": 6
+        },
+        "Stats": {
+            "HP": 130,
+            "ATK": 120,
+            "DEF": 120,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "King of Salvation Hartalis",
+            "zh-CN": "救赎之王 默世鹿"
+        },
+        "SortingKey": {
+            "paldeck": "156"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::OilExtraction": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
+    "RAID_LegendDeer_2": {
+        "InternalName": "RAID_LegendDeer_2",
+        "Elements": [
+            "Water",
+            "Grass"
+        ],
+        "Attacks": {
+            "EPalWazaID::RootLance": 1,
+            "EPalWazaID::CrossWind": 2,
+            "EPalWazaID::SolarBeam": 3,
+            "EPalWazaID::SeaGush": 4,
+            "EPalWazaID::WallSplash": 5,
+            "EPalWazaID::RipTide": 6
+        },
+        "Stats": {
+            "HP": 130,
+            "ATK": 120,
+            "DEF": 120,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 150
+        },
+        "I18n": {
+            "en": "King of Salvation Hartalis",
+            "zh-CN": "救赎之王【极】 默世鹿"
+        },
+        "SortingKey": {
+            "paldeck": "156"
+        },
+        "Suitabilities": {
+            "EPalWorkSuitability::EmitFlame": 0,
+            "EPalWorkSuitability::Watering": 0,
+            "EPalWorkSuitability::Seeding": 0,
+            "EPalWorkSuitability::GenerateElectricity": 0,
+            "EPalWorkSuitability::Handcraft": 0,
+            "EPalWorkSuitability::Collection": 1,
+            "EPalWorkSuitability::Deforest": 0,
+            "EPalWorkSuitability::Mining": 0,
+            "EPalWorkSuitability::OilExtraction": 0,
+            "EPalWorkSuitability::ProductMedicine": 0,
+            "EPalWorkSuitability::Cool": 0,
+            "EPalWorkSuitability::Transport": 0,
+            "EPalWorkSuitability::MonsterFarm": 0
+        }
+    },
     "YakushimaMonster001": {
         "InternalName": "YakushimaMonster001",
         "Elements": [

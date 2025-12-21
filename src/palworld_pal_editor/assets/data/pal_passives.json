@@ -2546,5 +2546,25 @@
             "b_CraftSpeed": 0.0,
             "b_MoveSpeed": 0.0
         }
+    },
+    "Salvation": {
+        "InternalName": "Salvation",
+        "Rating": 5,
+        "I18n": {
+            "en": {
+                "Name": "Savior",
+                "Description": "30% increase in Grass attack damage. 30% increase in Neutral attack damage."
+            },
+            "zh-CN": {
+                "Name": "救世主",
+                "Description": "草属性攻击伤害增加30%。无属性攻击伤害增加30%。"
+            }
+        },
+        "Buff": {
+            "b_Attack": 0.0,
+            "b_Defense": 0.0,
+            "b_CraftSpeed": 0.0,
+            "b_MoveSpeed": 0.0
+        }
     }
 }
