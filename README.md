@@ -282,3 +282,7 @@ https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40
 2. For practicing my 2-year untouched Python skills.
 3. Fun, I am just too boring these days.
 4. This guy had a really bad time fixing both his corrupted game save, and bugs of a similar tool.
+
+## Related Resources
+
+- [Palworld Guides](https://palworldguides.xyz/) — Palworld tier lists, base builds, Pal breeding chains, and boss strategies.
