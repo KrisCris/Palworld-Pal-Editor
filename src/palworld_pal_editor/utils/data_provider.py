@@ -256,6 +256,22 @@ class DataProvider:
         return PAL_ATTACKS[key].get("UniqueSkill", False)
 
     @staticmethod
+    def is_non_inheritable_attack(key: str) -> bool:
+        return PAL_ATTACKS.get(key, {}).get("NonInheritable", False)
+
+    @staticmethod
+    def is_exclusive_attack(key: str) -> bool:
+        return PAL_ATTACKS.get(key, {}).get("Exclusive", False)
+
+    @staticmethod
+    def is_boss_attack(key: str) -> bool:
+        return PAL_ATTACKS.get(key, {}).get("BossSkill", False)
+
+    @staticmethod
+    def is_assignable_attack(key: str) -> bool:
+        return PAL_ATTACKS.get(key, {}).get("Assignable", False)
+
+    @staticmethod
     def get_sorted_attacks() -> list[dict]:
         sorted_list = sorted(
             PAL_ATTACKS.values(),

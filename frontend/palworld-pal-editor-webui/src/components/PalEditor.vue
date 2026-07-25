@@ -30,6 +30,17 @@ function filterInvalid(list) {
   })
 }
 
+const currentSkillIds = () => [
+  ...(palStore.SELECTED_PAL_DATA.EquipWaza || []),
+  ...(palStore.SELECTED_PAL_DATA.MasteredWaza || []),
+];
+
+const activeSkillOptions = () => palStore.filterSkillOptions(
+  palStore.ACTIVE_SKILLS_LIST,
+  currentSkillIds(),
+  palStore.HIDE_INVALID_OPTIONS,
+);
+
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
 };
@@ -421,8 +432,10 @@ const suitabilityIconSrc = key => {
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
+                  {{ palStore.skillBadgeText(palStore.ACTIVE_SKILLS[skill]) }}
+                </p>
+                <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
+                  {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
                 </p>
               </span>
             </div>
@@ -460,15 +473,18 @@ const suitabilityIconSrc = key => {
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.ACTIVE_SKILLS[skill]?.IsUniqueSkill ? "✨ Unique" : "" }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.HasSkillFruit ? "🍐 Fruit Available" : "" }}
+                  {{ palStore.skillBadgeText(palStore.ACTIVE_SKILLS[skill]) }}
+                </p>
+                <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
+                  {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
                 </p>
               </span>
             </div>
             <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
               && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)" class="edit"
               @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
-              :disabled="palStore.LOADING_FLAG">🔼</button>
+              :title="palStore.ACTIVE_SKILLS[skill]?.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
+              :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false">🔼</button>
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
               :disabled="palStore.LOADING_FLAG">❌</button>
           </div>
@@ -477,15 +493,19 @@ const suitabilityIconSrc = key => {
               <option value="" key="">
                 {{ palStore.getTranslatedText("Editor_Select_Skill") }}
               </option>
-              <option v-for="skill in filterInvalid(palStore.ACTIVE_SKILLS_LIST)" :value="skill.InternalName"
-                :key="skill.InternalName" :title="skill.I18n[1]">
-                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillIcon(skill.InternalName)}
+              <option v-for="skill in activeSkillOptions()" :value="skill.InternalName"
+                :key="skill.InternalName"
+                :disabled="skill.Assignable === false"
+                :title="skill.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : skill.I18n[1]">
+                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillBadgeText(skill)}
                 -
                 ⚔️ ${skill.Power} - ⏱️ ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
-              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)">➕</button>
+              :disabled="palStore.LOADING_FLAG
+                || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
+                || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false">➕</button>
           </div>
         </div>
       </div>
@@ -854,6 +874,10 @@ div.spaceBetween {
 
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
+}
+
+.skill-warning {
+  color: #ffd27a;
 }
 
 select.selector {

@@ -121,6 +121,12 @@ def get_active_skills():
             ),
             "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
             "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
+            "NonInheritable": DataProvider.is_non_inheritable_attack(
+                attack["InternalName"]
+            ),
+            "Exclusive": DataProvider.is_exclusive_attack(attack["InternalName"]),
+            "BossSkill": DataProvider.is_boss_attack(attack["InternalName"]),
+            "Assignable": DataProvider.is_assignable_attack(attack["InternalName"]),
             "Power": attack["Power"],
             "Element": attack["Element"],
             "CT": attack["CT"],

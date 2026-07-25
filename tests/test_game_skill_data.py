@@ -1,0 +1,224 @@
+import json
+from pathlib import Path
+
+from flask_jwt_extended import create_access_token
+
+from palworld_pal_editor.webui import app
+
+DATA = Path(__file__).parents[1] / "src/palworld_pal_editor/assets/data"
+LOCALES = {
+    "ja",
+    "de",
+    "en",
+    "es",
+    "es-MX",
+    "fr",
+    "id",
+    "it",
+    "ko",
+    "pl",
+    "pt-BR",
+    "ru",
+    "th",
+    "tr",
+    "vi",
+    "zh-CN",
+    "zh-TW",
+}
+ACTIVE_FIELDS = {
+    "InternalName",
+    "Element",
+    "CT",
+    "Power",
+    "I18n",
+    "UniqueSkill",
+    "Disabled",
+    "NonInheritable",
+    "SkillFruit",
+    "Exclusive",
+    "BossSkill",
+    "Assignable",
+    "Invalid",
+    "Category",
+    "Strength",
+    "Effects",
+    "Learners",
+}
+PASSIVE_FIELDS = {
+    "InternalName",
+    "Rating",
+    "I18n",
+    "Buff",
+    "Category",
+    "TargetElementType",
+    "Effects",
+    "Invocation",
+    "AddInvokeTriggerTypes",
+    "DescriptionSource",
+}
+INVOCATION_FIELDS = {
+    "ActiveOtomo",
+    "Worker",
+    "Riding",
+    "Reserve",
+    "InOtomo",
+    "Always",
+    "InBaseCamp",
+}
+
+
+def load(name):
+    return json.loads((DATA / name).read_text(encoding="utf-8"))
+
+
+def test_game_derived_active_skill_contract():
+    attacks = load("pal_attacks.json")
+    boss_skills = {skill_id for skill_id, row in attacks.items() if row["BossSkill"]}
+
+    assert len(attacks) == 384
+    assert sum(row["SkillFruit"] for row in attacks.values()) == 92
+    assert sum(row["Exclusive"] for row in attacks.values()) == 11
+    assert len(boss_skills) == 34
+    assert (
+        sum(
+            row["BossSkill"] and not row["Invalid"] and row["Assignable"]
+            for row in attacks.values()
+        )
+        == 1
+    )
+    assert attacks["EPalWazaID::Human_Punch"]["Invalid"] is False
+    assert attacks["EPalWazaID::Human_Punch"]["Assignable"] is False
+    psychokinesis = attacks["EPalWazaID::Psychokinesis"]
+    assert psychokinesis["SkillFruit"] is False
+    assert psychokinesis["BossSkill"] is True
+    assert psychokinesis["Invalid"] is False
+    assert psychokinesis["Assignable"] is True
+    assert attacks["EPalWazaID::Unique_DarkAlien_JumpScractch"]["BossSkill"] is False
+    super_tidal_bore = attacks["EPalWazaID::Unique_KingWhale_SuperTidalBore"]
+    assert super_tidal_bore["BossSkill"] is True
+    assert super_tidal_bore["Invalid"] is True
+    assert super_tidal_bore["Assignable"] is False
+    for skill_id in (
+        "EPalWazaID::PredatorBeam",
+        "EPalWazaID::PredatorLockon",
+        "EPalWazaID::PredatorWave",
+    ):
+        assert attacks[skill_id]["BossSkill"] is True
+        assert attacks[skill_id]["Invalid"] is True
+        assert attacks[skill_id]["Assignable"] is False
+    radiant_purge_otomo = attacks["EPalWazaID::Unique_LegendDeer_RadiantPurge_Otomo"]
+    assert radiant_purge_otomo["BossSkill"] is False
+    assert radiant_purge_otomo["Invalid"] is False
+    assert radiant_purge_otomo["Assignable"] is True
+    for skill_id in (
+        "EPalWazaID::Unique_LegendDeer_BarrierRelease_Normal",
+        "EPalWazaID::Unique_LegendDeer_BarrierRelease_Grass",
+        "EPalWazaID::Unique_LegendDeer_BarrierRelease_Water",
+        "EPalWazaID::Unique_LegendDeer_RadiantPurge",
+    ):
+        assert attacks[skill_id]["BossSkill"] is True
+        assert attacks[skill_id]["Invalid"] is True
+        assert attacks[skill_id]["Assignable"] is False
+    for skill_id, row in attacks.items():
+        assert set(row) == ACTIVE_FIELDS, skill_id
+        assert row["InternalName"] == skill_id
+        assert row["UniqueSkill"] == row["NonInheritable"]
+        assert set(row["I18n"]) == LOCALES
+        assert all(
+            set(text) == {"Name", "Description"}
+            and text["Name"]
+            and text["Description"]
+            for text in row["I18n"].values()
+        )
+        assert all(
+            set(learner) == {"CharacterID", "Level"}
+            and isinstance(learner["CharacterID"], str)
+            and isinstance(learner["Level"], int)
+            for learner in row["Learners"]
+        )
+
+
+def test_game_derived_pal_passive_contract():
+    passives = load("pal_passives.json")
+
+    assert len(passives) == 114
+    assert "MiniNushi" not in passives
+    assert "Nushi" in passives
+    for passive_id, row in passives.items():
+        assert set(row) == PASSIVE_FIELDS, passive_id
+        assert row["InternalName"] == passive_id
+        assert set(row["I18n"]) == LOCALES
+        assert set(row["DescriptionSource"]) == LOCALES
+        assert set(row["Invocation"]) == INVOCATION_FIELDS
+        assert all(type(value) is bool for value in row["Invocation"].values())
+        assert set(row["Buff"]) == {
+            "b_Attack",
+            "b_Defense",
+            "b_CraftSpeed",
+            "b_MoveSpeed",
+        }
+        assert all(
+            set(text) == {"Name", "Description"}
+            and text["Name"]
+            and text["Description"]
+            for text in row["I18n"].values()
+        )
+        assert all(
+            source in {"explicit", "composed"}
+            for source in row["DescriptionSource"].values()
+        )
+        assert all(
+            set(effect) == {"EffectType", "EffectValue", "TargetType"}
+            for effect in row["Effects"]
+        )
+
+
+def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
+    app.config.update(
+        TESTING=True,
+        JWT_SECRET_KEY="test-secret-key-with-at-least-32-bytes",
+    )
+    with app.app_context():
+        token = create_access_token(identity="test", expires_delta=False)
+    with app.test_client() as client:
+        response = client.get(
+            "/api/save/active_skills",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    payload = response.get_json()
+    assert response.status_code == 200
+    assert payload["status"] == 0
+    assert set(payload["data"]) == {"dict", "arr"}
+    assert len(payload["data"]["dict"]) == len(payload["data"]["arr"]) == 384
+
+    expected_fields = {
+        "InternalName",
+        "I18n",
+        "HasSkillFruit",
+        "IsUniqueSkill",
+        "NonInheritable",
+        "Exclusive",
+        "BossSkill",
+        "Assignable",
+        "Power",
+        "Element",
+        "CT",
+        "Invalid",
+    }
+    attacks = load("pal_attacks.json")
+    for row in payload["data"]["arr"]:
+        skill_id = row["InternalName"]
+        source = attacks[skill_id]
+        assert set(row) == expected_fields
+        assert payload["data"]["dict"][skill_id] == row
+        assert row["HasSkillFruit"] == source["SkillFruit"]
+        assert row["IsUniqueSkill"] == source["UniqueSkill"]
+        assert row["NonInheritable"] == source["NonInheritable"]
+        assert row["Exclusive"] == source["Exclusive"]
+        assert row["BossSkill"] == source["BossSkill"]
+        assert row["Assignable"] == source["Assignable"]
+
+    human_punch = payload["data"]["dict"]["EPalWazaID::Human_Punch"]
+    assert human_punch["Invalid"] is False
+    assert human_punch["Assignable"] is False

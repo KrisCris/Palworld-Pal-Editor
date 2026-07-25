@@ -32,6 +32,42 @@ export const backendErrorDetails = error => {
     return null;
 };
 
+export function skillBadges(skill = {}) {
+    return [
+        skill.NonInheritable && "nonInheritable",
+        skill.Exclusive && "exclusive",
+        skill.BossSkill && "boss",
+        (skill.HasSkillFruit || skill.SkillFruit) && "fruit",
+        (skill.Disabled || skill.Assignable === false) && "disabled",
+    ].filter(Boolean);
+}
+
+export function filterSkillOptions(skills, currentIds, hideInvalid) {
+    const rows = Array.isArray(skills) ? skills : [];
+    if (!hideInvalid) return rows.slice();
+
+    const retainedIds = new Set(currentIds ?? []);
+    return rows.filter(
+        skill => !skill?.Invalid || retainedIds.has(skill?.InternalName),
+    );
+}
+
+const SKILL_BADGE_ICONS = Object.freeze({
+    nonInheritable: "✨",
+    exclusive: "🔒",
+    boss: "👑",
+    fruit: "🍐",
+    disabled: "⚠️",
+});
+
+const SKILL_BADGE_TRANSLATION_KEYS = Object.freeze({
+    nonInheritable: "Editor_Skill_Badge_NonInheritable",
+    exclusive: "Editor_Skill_Badge_Exclusive",
+    boss: "Editor_Skill_Badge_Boss",
+    fruit: "Editor_Skill_Badge_Fruit",
+    disabled: "Editor_Skill_Badge_Disabled",
+});
+
 export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_LEVEL = 80;
     const MAX_FRIENDSHIP_LEVEL = 10;
@@ -1355,12 +1391,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function updatePal(e) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
-
         // sometimes we manually construct a "e" target in a very hacked way
         let key = e.target.name;
         let value = e.target.value;
+        if (
+            (key === "add_MasteredWaza" || key === "add_EquipWaza")
+            && ACTIVE_SKILLS.value[value]?.Assignable === false
+        ) {
+            showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+
+        let no_set_loading_flag = LOADING_FLAG.value;
+        if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         // console.log(
         //   `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
@@ -1601,10 +1644,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return elementEmojis[element] || "";
     }
 
-    function skillIcon(atk) {
-        if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
-        if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
-        return "";
+    function skillBadgeText(skill) {
+        return skillBadges(skill)
+            .map(badge => (
+                `${SKILL_BADGE_ICONS[badge]} ${getTranslatedText(SKILL_BADGE_TRANSLATION_KEYS[badge])}`
+            ))
+            .join(" · ");
     }
 
     function displayRating(rating) {
@@ -1707,7 +1752,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         displayPalElement,
         displayElement,
-        skillIcon,
+        filterSkillOptions,
+        skillBadges,
+        skillBadgeText,
         displayRating,
 
         reset,
