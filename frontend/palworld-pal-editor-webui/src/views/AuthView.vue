@@ -16,6 +16,9 @@ const unlock = async () => {
         <br>
         <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
         <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
+        <p v-if="palStore.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
+            {{ palStore.getTranslatedText(palStore.AUTH_MESSAGE_KEY) }}
+        </p>
 
         <label class="sr-only" for="password">{{ palStore.getTranslatedText('AuthView_Password_Label') }}</label>
         <input id="password" type="password" v-model="PW" autocomplete="current-password"
@@ -81,6 +84,11 @@ button:hover {
 
 button:disabled {
     background-color: #8a8a8a;
+}
+
+p.auth-error {
+    margin-top: 1rem;
+    color: #ffb2b2;
 }
 
 .remember {

@@ -302,3 +302,77 @@ test("healing all pals does not try to reselect a missing pal", async t => {
     assert.ok(calls.some(call => call[0] === "PATCH" && call[1] === "/api/pal/paldata"));
     assert.deepEqual(alerts, []);
 });
+
+test("wrong passwords remain on the auth page with inline feedback", async () => {
+    const store = newStore();
+    mockBackend({ password: true });
+    await store.bootstrap();
+    axios.post = async () => ({
+        data: { status: 2, msg: "wrong password" },
+    });
+
+    await store.unlock("wrong", false);
+
+    assert.equal(store.APP_STATE, "auth-required");
+    assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Wrong_Password");
+});
+
+test("expired sessions retain an inline authentication explanation", () => {
+    const store = newStore();
+
+    store.requireAuth("AuthView_Session_Expired");
+
+    assert.equal(store.APP_STATE, "auth-required");
+    assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Session_Expired");
+});
+
+test("missing player validation uses a nonblocking warning", async () => {
+    const store = newStore();
+
+    await store.updatePlayer({ target: { name: "Rank", value: 1 } });
+
+    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Select_Player");
+    assert.equal(store.CURRENT_MESSAGE.severity, "warning");
+    assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+    assert.equal(store.LOADING_FLAG, false);
+});
+
+test("unexpected request errors release loading before showing details", async t => {
+    const store = newStore();
+    const originalConsoleError = console.error;
+    console.error = () => {};
+    t.after(() => { console.error = originalConsoleError; });
+    axios.post = async () => { throw new TypeError("broken request adapter"); };
+
+    await store.writeSave();
+
+    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Unexpected_Frontend_Error");
+    assert.match(store.CURRENT_MESSAGE.log, /broken request adapter/);
+});
+
+test("donation failures do not open the donation panel", async () => {
+    const store = newStore();
+    axios.get = async () => ({
+        data: { status: 1, msg: "donation unavailable" },
+    });
+
+    assert.equal(await store.showDonate(), false);
+    assert.equal(store.CURRENT_MESSAGE.args[0].translationKey, "Operation_Donation");
+});
+
+test("successful saves use a nonblocking success message", async () => {
+    const store = newStore();
+    axios.post = async url => {
+        assert.equal(url, "/api/save/save");
+        return reply(null);
+    };
+    store.PAL_WRITE_BACK_PATH = "C:/output";
+
+    await store.writeSave();
+
+    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Save_Success");
+    assert.deepEqual(store.CURRENT_MESSAGE.args, ["C:/output"]);
+    assert.equal(store.CURRENT_MESSAGE.severity, "success");
+    assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+});

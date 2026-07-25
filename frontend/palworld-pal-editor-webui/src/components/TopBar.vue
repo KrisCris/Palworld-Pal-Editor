@@ -32,7 +32,6 @@ watch(() => palStore.LOADING_FLAG, (newValue) => {
 
 const donate = async () => {
   if (await palStore.showDonate()) {
-    alert(palStore.getTranslatedText("TopBar_Btn_Invalid_Options_ADs"));
     palStore.SHOW_DONATE_FLAG = true;
   }
 }

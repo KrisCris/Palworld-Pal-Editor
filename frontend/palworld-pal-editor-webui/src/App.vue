@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, watch } from 'vue'
 
 import MarkdownModal from '@/components/MarkdownModal.vue'
+import MessageCenter from '@/components/MessageCenter.vue'
 import TopBar from '@/components/TopBar.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import AuthView from '@/views/AuthView.vue'
@@ -11,13 +12,15 @@ import EntryView from '@/views/EntryView.vue'
 
 const palStore = usePalEditorStore()
 const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
+const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
+const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
 const refreshPage = () => window.location.reload()
 let previousFocus
 const rememberFocus = event => {
   const control = event.target.closest?.('button, a[href], input, select, textarea, [tabindex]')
   if (control) previousFocus = control
 }
-watch(runtimeError, async (visible, wasVisible) => {
+watch(blockingOverlay, async (visible, wasVisible) => {
   if (!visible && wasVisible) {
     await nextTick()
     previousFocus?.focus()
@@ -29,8 +32,8 @@ onMounted(palStore.bootstrap)
 
 <template>
   <div
-    :class="['app-content', { obscured: runtimeError }]"
-    :inert="runtimeError || undefined"
+    :class="['app-content', { obscured: blockingOverlay }]"
+    :inert="blockingOverlay || undefined"
     @focusin="rememberFocus"
   >
     <TopBar />
@@ -68,6 +71,7 @@ onMounted(palStore.bootstrap)
     @retry="refreshPage"
     @dismiss="palStore.clearBackendError"
   />
+  <MessageCenter v-if="!palStore.BACKEND_ERROR" />
 </template>
 
 <style scoped>
