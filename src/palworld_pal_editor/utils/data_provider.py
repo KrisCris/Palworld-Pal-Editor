@@ -163,6 +163,22 @@ class DataProvider:
         return PAL_DATA[key].get("HasIcon", False)
 
     @staticmethod
+    def get_skin_data() -> dict[str, dict]:
+        return SKIN_DATA
+
+    @staticmethod
+    def get_skin(key: str) -> Optional[dict]:
+        return SKIN_DATA.get(key)
+
+    @staticmethod
+    def get_skins_for_pal(key: str) -> list[dict]:
+        return [
+            skin
+            for skin in SKIN_DATA.values()
+            if skin.get("TargetPalName") == key
+        ]
+
+    @staticmethod
     def is_pal_invalid(key: str) -> bool:
         if key not in PAL_DATA:
             return True

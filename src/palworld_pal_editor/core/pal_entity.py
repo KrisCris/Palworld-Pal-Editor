@@ -18,7 +18,7 @@ from palworld_pal_editor.utils.util import type_guard
 
 
 class PalEntity:
-    MAX_LEVEL = 60
+    MAX_LEVEL = 80
     MAX_INVALID_LEVEL = 100
 
     def __init__(self, pal_obj: dict) -> None:
@@ -554,6 +554,8 @@ class PalEntity:
     @type_guard
     def Level(self, value: int) -> None:
         value = clamp(1, PalEntity.MAX_INVALID_LEVEL, value)
+        if self.Level == value:
+            return
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
@@ -612,6 +614,7 @@ class PalEntity:
     @type_guard
     def Rank(self, rank: int) -> None:
         # 1 = no star, 2 = 1 star, 3 = 2 star, 4 = 3 star, 5 = 4 star
+        previous_rank = self.Rank or 1
         rank = clamp(1, 255, rank)
         if self.Rank is None:
             self._pal_param["Rank"] = PalObjects.ByteProperty(rank)
@@ -623,6 +626,36 @@ class PalEntity:
 
         if self.Rank == 1:
             self._pal_param.pop("Rank", None)
+
+        if rank != previous_rank:
+            self.RankUpExp = 0
+
+    @property
+    def RankUpExp(self) -> int:
+        return PalObjects.get_BaseType(self._pal_param.get("RankUpExp")) or 0
+
+    @RankUpExp.setter
+    @type_guard
+    def RankUpExp(self, value: int) -> None:
+        value = clamp(PalObjects.UInt16Min, PalObjects.UInt16Max, value)
+        if value == 0:
+            self._pal_param.pop("RankUpExp", None)
+        elif self.RankUpExp == 0:
+            self._pal_param["RankUpExp"] = PalObjects.UInt16Property(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["RankUpExp"], value)
+
+    @property
+    def IsAwakening(self) -> bool:
+        return bool(PalObjects.get_BaseType(self._pal_param.get("bIsAwakening")))
+
+    @IsAwakening.setter
+    @type_guard
+    def IsAwakening(self, value: bool) -> None:
+        if value:
+            self._pal_param["bIsAwakening"] = PalObjects.BoolProperty(True)
+        else:
+            self._pal_param.pop("bIsAwakening", None)
 
     @property
     def Rank_HP(self) -> Optional[int]:
@@ -1211,18 +1244,36 @@ class PalEntity:
     @property
     def SkinName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("SkinName"))
-    
+
+    @property
+    def SkinAppliedCharacterId(self) -> Optional[UUID]:
+        return PalObjects.get_BaseType(
+            self._pal_param.get("SkinAppliedCharacterId")
+        )
+
     @SkinName.setter
     @LOGGER.change_logger("SkinName")
     @type_guard
-    def SkinName(self, value: str) -> None:
+    def SkinName(self, value: str | None) -> None:
         if not value or value == "None":
             self._pal_param.pop("SkinName", None)
+            self._pal_param.pop("SkinAppliedCharacterId", None)
             return
+        skin = DataProvider.get_skin(value)
+        if skin is None or skin.get("TargetPalName") != self.DataAccessKey:
+            raise ValueError(f"Skin {value} is not valid for {self.DataAccessKey}")
+        skin_applier = self.OwnerPlayerUId or self.LastOwnerPlayerUId
+        if skin_applier is None:
+            raise ValueError(
+                "A Pal must have an owner or previous owner before a skin can be applied"
+            )
         if self.SkinName is None:
             self._pal_param["SkinName"] = PalObjects.NameProperty(value)
         else:
             PalObjects.set_BaseType(self._pal_param["SkinName"], value)
+        self._pal_param["SkinAppliedCharacterId"] = PalObjects.Guid(
+            skin_applier
+        )
 
     def learn_attacks(self):
         # if self.IsHuman:

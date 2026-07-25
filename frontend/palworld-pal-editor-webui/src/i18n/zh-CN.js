@@ -34,6 +34,8 @@ export default {
     Editor_Basic_Info: "基础信息",
     Editor_Species: "种族: ",
     Editor_Nickname: "昵称: ",
+    Editor_Skin: "外观: ",
+    Editor_Skin_Default: "默认",
     Editor_Gender: "性别: ",
     Editor_Variant: "特殊种: ", // 不知道用什么词
     Editor_Friendship_Level: "信赖度: ",
@@ -59,6 +61,8 @@ export default {
     Editor_Souls_CraftSpeed: "制作速度: ",
     Editor_Condenser: "帕鲁浓缩机",
     Editor_Condenser_Rank: "浓缩等级: ",
+    Editor_Awakening: "觉醒: ",
+    Editor_Awakened: "已觉醒",
     Editor_Passive_Skills: "被动技能",
     Editor_Select_Skill: "选择添加的技能",
     Editor_Equipped_Skills: "装备的主动技能",

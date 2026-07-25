@@ -39,6 +39,10 @@ const isMinSuit = key => {
     palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >= 5 ? 1 : 0);
 };
 
+const availableSkins = () => filterInvalid(palStore.SKIN_DATA_LIST).filter(
+  skin => skin.TargetPalName === palStore.SELECTED_PAL_DATA.DataAccessKeyOG
+);
+
 const isMaxLv = () => {
   return palStore.SELECTED_PAL_DATA.Level >= (palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL);
 };
@@ -113,6 +117,17 @@ const suitabilityIconSrc = key => {
             :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
           <button class="edit" @click="palStore.updatePal" name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
             :disabled="palStore.LOADING_FLAG">✅</button>
+        </div>
+        <div class="editField" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
+          <p class="const">{{ palStore.getTranslatedText("Editor_Skin") }}</p>
+          <select class="selector" name="SkinName" v-model="palStore.SELECTED_PAL_DATA.SkinName">
+            <option value="">{{ palStore.getTranslatedText("Editor_Skin_Default") }}</option>
+            <option v-for="skin in availableSkins()" :key="skin.SkinName" :value="skin.SkinName">
+              {{ skin.SkinName }}
+            </option>
+          </select>
+          <button class="edit" @click="palStore.updatePal" name="SkinName"
+            :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG">✅</button>
         </div>
         <div class="flex-h">
           <div class="editField">
@@ -229,6 +244,14 @@ const suitabilityIconSrc = key => {
         <input class="slider" type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
           :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal"
           @touchend="palStore.updatePal">
+      </div>
+      <div class="editField spaceBetween" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
+        <p class="const">
+          💎 {{ palStore.getTranslatedText("Editor_Awakening") }}
+          {{ palStore.SELECTED_PAL_DATA.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}
+        </p>
+        <button class="edit" @click="palStore.SELECTED_PAL_DATA.toggleAwakening" name="IsAwakening"
+          :disabled="palStore.LOADING_FLAG">🔄</button>
       </div>
       <div class="editField spaceBetween">
         <p class="const">

@@ -168,6 +168,21 @@ def get_pal_data():
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
 
 
+@save_blueprint.route("/skin_data", methods=["GET"])
+@jwt_required()
+def get_skin_data():
+    skins = [
+        {
+            "SkinName": skin["SkinName"],
+            "TargetPalName": skin["TargetPalName"],
+            "Invalid": skin.get("Invalid", False),
+        }
+        for skin in DataProvider.get_skin_data().values()
+        if skin.get("SkinType") == "EPalSkinType::Pal"
+    ]
+    return reply(0, {"arr": skins})
+
+
 @save_blueprint.route("/tech_data", methods=["GET"])
 @jwt_required()
 def get_tech_data():

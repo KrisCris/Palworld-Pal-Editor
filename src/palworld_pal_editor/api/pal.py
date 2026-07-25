@@ -70,8 +70,10 @@ def patch_paldata():
             case "heal_all_pals":
                 SaveManager().heal_all_pals()
             case _:
-                if isinstance(err := setattr(pal_entity, key, value), TypeError):
-                    return reply(1, None, f"Error in patch_paldata {err}")
+                field = getattr(type(pal_entity), key, None)
+                if not isinstance(field, property) or field.fset is None:
+                    return reply(1, None, f"Unsupported Pal field: {key}")
+                setattr(pal_entity, key, value)
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")
@@ -123,6 +125,7 @@ def _pal_data(pal: PalEntity):
         "I18nName": pal.I18nName or None,
         "DisplayName": pal.DisplayName or None,
         "NickName": pal.NickName or "",
+        "SkinName": pal.SkinName or "",
         "Gender": pal.Gender.value if pal.Gender else None,
         "Level": pal.Level or 1,
         "FriendshipLevel": pal.FriendshipLevel or 0,
@@ -146,6 +149,8 @@ def _pal_data(pal: PalEntity):
         "ComputedDefense": pal.ComputedDefense or None,
         "ComputedCraftSpeed": pal.ComputedCraftSpeed or None,
         "Rank": pal.Rank if pal.Rank else 1,
+        "RankUpExp": pal.RankUpExp,
+        "IsAwakening": pal.IsAwakening,
         "Rank_HP": pal.Rank_HP or 0,
         "Rank_Attack": pal.Rank_Attack or 0,
         "Rank_Defence": pal.Rank_Defence or 0,

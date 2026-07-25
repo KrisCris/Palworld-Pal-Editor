@@ -117,6 +117,10 @@ class PalObjects:
         return {"id": None, "type": "IntProperty", "value": value}
 
     @staticmethod
+    def UInt16Property(value: int):
+        return {"id": None, "type": "UInt16Property", "value": value}
+
+    @staticmethod
     def Int64Property(value: int):
         return {"id": None, "type": "Int64Property", "value": value}
 

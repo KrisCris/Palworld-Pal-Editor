@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    const MAX_LEVEL = 65;
+    const MAX_LEVEL = 80;
     const MAX_FRIENDSHIP_LEVEL = 10;
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
@@ -77,6 +77,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.I18nName = obj.I18nName;
             this.DisplayName = obj.DisplayName;
             this.NickName = obj.NickName;
+            this.SkinName = obj.SkinName;
             this.Gender = obj.Gender;
             this.Level = obj.Level;
             this.FriendshipLevel = obj.FriendshipLevel;
@@ -104,6 +105,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.ComputedCraftSpeed = obj.ComputedCraftSpeed;
 
             this.Rank = obj.Rank;
+            this.IsAwakening = obj.IsAwakening;
             this.Rank_HP = obj.Rank_HP;
             this.Rank_Attack = obj.Rank_Attack;
             this.Rank_Defence = obj.Rank_Defence;
@@ -147,6 +149,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         swapRare() {
             this.IsRarePal = !this.IsRarePal;
             updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
+        }
+
+        toggleAwakening() {
+            this.IsAwakening = !this.IsAwakening;
+            updatePal({ target: { name: "IsAwakening", value: this.IsAwakening } });
         }
 
         levelDown() {
@@ -368,6 +375,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const ACTIVE_SKILLS_LIST = ref([]);
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
+    const SKIN_DATA_LIST = ref([]);
     const I18nList = ref({});
 
     const TranslationKeyMap = ref({});
@@ -781,6 +789,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             alert(
                 `- fetchStaticData:tech_data - Error occured: ${tech_data_raw.msg}`
             );
+        }
+
+        const skin_data_raw = await GET("/api/save/skin_data");
+        if (skin_data_raw === false) return;
+        if (skin_data_raw.status == 0) {
+            SKIN_DATA_LIST.value = skin_data_raw.data.arr;
+        } else if (skin_data_raw.status == 2) {
+            IS_LOCKED.value = true;
+            reset();
+        } else {
+            alert(`- fetchStaticData:skin_data - Error occured: ${skin_data_raw.msg}`);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
@@ -1573,6 +1592,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         I18nList,
         PAL_STATIC_DATA,
         PAL_STATIC_DATA_LIST,
+        SKIN_DATA_LIST,
         PASSIVE_SKILLS,
         PASSIVE_SKILLS_LIST,
         ACTIVE_SKILLS,
