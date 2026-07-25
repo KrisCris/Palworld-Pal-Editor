@@ -71,6 +71,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.IconAccessKey = obj.IconAccessKey;
             this.DataAccessKey = obj.DataAccessKey;
             this.DataAccessKeyOG = obj.DataAccessKey;
+            this.SelectionKey = PAL_STATIC_DATA.value[obj.CharacterID]
+                ? obj.CharacterID
+                : obj.DataAccessKey;
             this.I18nName = obj.I18nName;
             this.DisplayName = obj.DisplayName;
             this.NickName = obj.NickName;
@@ -350,7 +353,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             updatePal({
                 target: {
                     name: "CharacterID",
-                    value: this.DataAccessKey,
+                    value: this.SelectionKey,
                 },
             });
         }

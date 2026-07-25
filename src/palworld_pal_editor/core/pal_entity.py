@@ -225,12 +225,13 @@ class PalEntity:
         key = self.CharacterID
         if self.IsHuman:
             return key
-        
+
         if self._IsBOSS:
             if "Boss_" in key:
                 key = key.split("Boss_")[1]
             else:
                 key = key.split("BOSS_")[1]
+            key = re.sub(r"_(?:BossRush|otomo)$", "", key, flags=re.IGNORECASE)
         if self.IsOilrig:
             key = key.split("_Oilrig")[0]
         if self.IsSUMMON:
@@ -257,7 +258,7 @@ class PalEntity:
             pattern = r"PREDATOR_([A-Za-z_]+?)(?:_\d+.*)?$"
             match = re.search(pattern, self.CharacterID)
             if match:
-                key = match.group(1)
+                key = re.sub(r"_Quest$", "", match.group(1))
         return key
 
     @property
@@ -349,25 +350,7 @@ class PalEntity:
         ):
             return self.CharacterID
 
-        key = self.RawSpecieKey
-        match key:
-            case "Sheepball":
-                key = "SheepBall"
-            case "LazyCatFish":
-                key = "LazyCatfish"
-            case "Police_HandGun":
-                key = "Police_Handgun"
-            case "Blueplatypus":
-                key = "BluePlatypus"
-            case "GhostAnglerFish":
-                key = "GhostAnglerfish"
-            case "GhostAnglerFish_Fire":
-                key = "GhostAnglerfish_Fire"
-            case "Icenarwhal_Fire":
-                key = "IceNarwhal_Fire"
-            case "Icenarwhal":
-                key = "IceNarwhal"
-        return key
+        return DataProvider.resolve_pal_key(self.RawSpecieKey)
 
     @property
     def IsFavoritePal(self) -> Optional[bool]:

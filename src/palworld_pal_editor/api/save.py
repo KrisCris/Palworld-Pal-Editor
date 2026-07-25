@@ -176,8 +176,12 @@ def get_tech_data():
     for tech in tech_data:
         lv = DataProvider.get_tech_lv(tech)
         lv_arr = tech_lv_dict.get(lv, [])
+        icon_key = tech.removeprefix("SkillUnlock_")
+        if tech.startswith("SkillUnlock_"):
+            icon_key = DataProvider.resolve_pal_key(icon_key)
         data = {
             "InternalName": tech,
+            "IconAccessKey": icon_key,
             "I18n": DataProvider.get_tech_i18n(tech),
             "BossTechnology": DataProvider.is_boss_tech(tech),
         }

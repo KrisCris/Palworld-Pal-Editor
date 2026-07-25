@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
@@ -23,13 +23,9 @@ function toggleLock() {
 }
 
 const bgStyle = computed(() => {
-    let internalName = props.item.InternalName;
-    const cat = internalName.split('_')[0] == "SkillUnlock" ? "pals" : "tech";
-    if (cat == "pals") {
-        internalName = internalName.replace("SkillUnlock_", "")
-    }
+    const cat = props.item.InternalName.startsWith("SkillUnlock_") ? "pals" : "tech";
     return {
-        backgroundImage: `url('/image/${cat}/${internalName}')`
+        backgroundImage: `url('/image/${cat}/${props.item.IconAccessKey}')`
     }
 })
 

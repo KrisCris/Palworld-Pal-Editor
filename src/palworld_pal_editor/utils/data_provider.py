@@ -32,10 +32,12 @@ def load_json(filename: str) -> Any:
 
 PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
+PAL_DATA_BY_CASEFOLD = {key.casefold(): key for key in PAL_DATA}
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
 TECH_DATA: dict[str, dict] = load_json("tech_data.json")
+SKIN_DATA: dict[str, dict] = load_json("skin_data.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
@@ -106,6 +108,12 @@ class DataProvider:
         Checks if the key exists in the PAL_DATA dictionary.
         """
         return key in PAL_DATA
+
+    @staticmethod
+    def resolve_pal_key(key: Optional[str]) -> Optional[str]:
+        if not key or key in PAL_DATA:
+            return key
+        return PAL_DATA_BY_CASEFOLD.get(key.casefold(), key)
 
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
