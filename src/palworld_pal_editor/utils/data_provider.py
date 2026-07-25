@@ -224,8 +224,12 @@ class DataProvider:
     @staticmethod
     def get_attack_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_ATTACKS[key]["I18n"]
-        i18n: dict = i18n_list.get(Config.i18n, i18n_list.get("en"))
-        return (i18n.get("Name", key), i18n.get("Description", ""))
+        english: dict = i18n_list.get("en", {})
+        i18n: dict = i18n_list.get(Config.i18n, {})
+        return (
+            i18n.get("Name") or english.get("Name") or key,
+            i18n.get("Description") or english.get("Description", ""),
+        )
 
     @staticmethod
     def has_attack(key: str) -> bool:
@@ -270,8 +274,12 @@ class DataProvider:
     @staticmethod
     def get_passive_i18n(key: str) -> Optional[tuple[str, str]]:
         i18n_list: dict = PAL_PASSIVES[key]["I18n"]
-        i18n: dict = i18n_list.get(Config.i18n, i18n_list.get("en"))
-        return (i18n.get("Name", key), i18n.get("Description", ""))
+        english: dict = i18n_list.get("en", {})
+        i18n: dict = i18n_list.get(Config.i18n, {})
+        return (
+            i18n.get("Name") or english.get("Name") or key,
+            i18n.get("Description") or english.get("Description", ""),
+        )
 
     @staticmethod
     def has_passive_skill(key: str) -> bool:
