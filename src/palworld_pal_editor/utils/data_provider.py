@@ -192,6 +192,10 @@ class DataProvider:
     def get_pal_suitabilities(pal: str) -> Optional[dict[str, int]]:
         return PAL_DATA[pal]["Suitabilities"]
 
+    @none_guard(data_source=PAL_DATA, subkey="BestWorkSuitability")
+    def get_pal_best_work_suitability(pal: str) -> Optional[str]:
+        return PAL_DATA[pal]["BestWorkSuitability"]
+
     @staticmethod
     def get_pal_level_xp(lv: int) -> Optional[int]:
         try:

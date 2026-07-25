@@ -16,6 +16,58 @@ from palworld_pal_editor.core.pal_objects import (
 )
 from palworld_pal_editor.utils.util import type_guard
 
+MAX_WORK_SUITABILITY = 10
+
+
+def condensation_work_suitability_bonus(
+    base_suitabilities: dict[str, int], rank: int, best_work_suitability: Optional[str]
+) -> dict[str, int]:
+    """Return the derived 1.0 condensation bonus for each existing work type."""
+    base = {key: value for key, value in base_suitabilities.items() if value > 0}
+    bonus = {key: 0 for key in base}
+    if best_work_suitability == "EPalWorkSuitability::None":
+        best_work_suitability = None
+    if not base:
+        return bonus
+
+    current = base.copy()
+    order = tuple(
+        suit.value
+        for suit in PalSuitability
+        if suit is not PalSuitability.OilExtraction
+    )
+
+    def nth_highest(n: int) -> Optional[str]:
+        values = sorted(set(current.values()), reverse=True)
+        if n >= len(values):
+            return None
+        return next((key for key in order if current.get(key) == values[n]), None)
+
+    for step in range(1, min(rank - 1, 4) + 1):
+        if step == 4:
+            for key in base:
+                bonus[key] += 1
+                current[key] += 1
+            continue
+
+        if len(current) == 1:
+            target = next(iter(current))
+        elif step == 1:
+            target = best_work_suitability
+        elif step == 2:
+            target = nth_highest(1) or best_work_suitability
+        elif len(current) == 2:
+            target = best_work_suitability
+        else:
+            target = nth_highest(2) or nth_highest(1) or best_work_suitability
+
+        if target is not None:
+            if target in bonus:
+                bonus[target] += 1
+            current[target] = current.get(target, 0) + 1
+
+    return bonus
+
 
 class PalEntity:
     MAX_LEVEL = 80
@@ -205,11 +257,19 @@ class PalEntity:
             # Unset invalid work suitabilities
             if self.AddedWorkSuitabilities:
                 new_suits = DataProvider.get_pal_suitabilities(self.DataAccessKey)
+                new_bonus = condensation_work_suitability_bonus(
+                    new_suits or {},
+                    self.Rank or 1,
+                    DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+                )
                 for suit, rank in self.AddedWorkSuitabilities.items():
                     if new_suits is None or new_suits[suit.value] == 0:
                         self.set_WorkSuitability(suit, 0)
-                    elif rank + new_suits[suit.value] > 5:
-                        self.set_WorkSuitability(suit, 5)
+                    elif (
+                        rank + new_suits[suit.value] + new_bonus.get(suit.value, 0)
+                        > MAX_WORK_SUITABILITY
+                    ):
+                        self.set_WorkSuitability(suit, MAX_WORK_SUITABILITY)
 
         self.learn_attacks()
         if self.IsTower or self.IsRAID or self.IsPREDATOR:
@@ -961,21 +1021,33 @@ class PalEntity:
 
     @property
     def WorkSuitabilities(self) -> Optional[dict[str, int]]:
+        suits = self.MinimumWorkSuitabilities
+        if suits is None:
+            return None
+
+        if self.AddedWorkSuitabilities:
+            for suit, rank in self.AddedWorkSuitabilities.items():
+                suit = suit.value
+                if suit in suits:
+                    suits[suit] = min(MAX_WORK_SUITABILITY, suits[suit] + rank)
+
+        return suits
+
+    @property
+    def MinimumWorkSuitabilities(self) -> Optional[dict[str, int]]:
         suits_data = DataProvider.get_pal_suitabilities(self.DataAccessKey)
         if not suits_data:
             return None
 
         suits = {key: value for key, value in suits_data.items() if value > 0}
 
-        if self.AddedWorkSuitabilities:
-            for suit, rank in self.AddedWorkSuitabilities.items():
-                suit = suit.value
-                if suit in suits:
-                    suits[suit] += rank
-
-        if (self.Rank or 0) >= 5:
-            for suit in suits:
-                suits[suit] += 1 if suits[suit] < 5 else 0
+        condensation_bonus = condensation_work_suitability_bonus(
+            suits,
+            self.Rank or 1,
+            DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+        )
+        for suit, rank in condensation_bonus.items():
+            suits[suit] = min(MAX_WORK_SUITABILITY, suits[suit] + rank)
 
         return suits
 
@@ -1003,8 +1075,13 @@ class PalEntity:
             if not suits:
                 return
 
+            condensation_bonus = condensation_work_suitability_bonus(
+                suits,
+                self.Rank or 1,
+                DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+            )
             added_rank = rank - (
-                suits[suit.value] + (1 if (self.Rank or 0) >= 5 else 0)
+                suits[suit.value] + condensation_bonus.get(suit.value, 0)
             )
             if added_rank <= 0:
                 PalObjects.pop_WorkSuitability(

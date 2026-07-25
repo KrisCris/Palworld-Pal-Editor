@@ -31,12 +31,12 @@ function filterInvalid(list) {
 }
 
 const isMaxSuit = key => {
-  return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= 5;
+  return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
 };
 
 const isMinSuit = key => {
-  return palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities[key] ==
-    palStore.SELECTED_PAL_DATA.Suitabilities[key] - (palStore.SELECTED_PAL_DATA["Rank"] >= 5 ? 1 : 0);
+  return palStore.SELECTED_PAL_DATA.Suitabilities[key] <=
+    (palStore.SELECTED_PAL_DATA.SuitabilityMinimums[key] || 0);
 };
 
 const availableSkins = () => filterInvalid(palStore.SKIN_DATA_LIST).filter(
@@ -345,7 +345,7 @@ const suitabilityIconSrc = key => {
       <div class="flex-h">
         <div class="editField skillList">
           <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities"
-            v-show="palStore.HIDE_INVALID_OPTIONS || value != 'EPalWorkSuitability::OilExtraction'">
+            v-show="palStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
             <p class="const">
               <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
               {{ value }}

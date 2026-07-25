@@ -163,6 +163,7 @@ def _pal_data(pal: PalEntity):
         "EquipWaza": pal.EquipWaza or [],
         "MasteredWaza": pal.MasteredWaza or [],
         "Suitabilities": pal.WorkSuitabilities or {},
+        "SuitabilityMinimums": pal.MinimumWorkSuitabilities or {},
     }
 
 
