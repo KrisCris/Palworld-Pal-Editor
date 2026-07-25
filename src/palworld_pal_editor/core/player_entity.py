@@ -10,7 +10,7 @@ from palworld_pal_editor.utils.util import clamp, type_guard
 
 
 class PlayerEntity:
-    MAX_LEVEL = 60
+    MAX_LEVEL = 80
     MAX_INVALID_LEVEL = 100
 
     def __init__(
@@ -121,6 +121,48 @@ class PlayerEntity:
     @property
     def GotStatusPointList(self) -> Optional[list[dict]]:
         return PalObjects.get_ArrayProperty(self._player_param.get("GotStatusPointList"))
+
+    @property
+    def StatusPoints(self) -> dict[str, int]:
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+        return {
+            PalObjects.get_BaseType(entry.get("StatusName")): (
+                PalObjects.get_BaseType(entry.get("StatusPoint")) or 0
+            )
+            for entry in self.GotStatusPointList or []
+        }
+
+    @property
+    def ExStatusPoints(self) -> dict[str, int]:
+        return {
+            PalObjects.get_BaseType(entry.get("StatusName")): (
+                PalObjects.get_BaseType(entry.get("StatusPoint")) or 0
+            )
+            for entry in self.GotExStatusPointList or []
+        }
+
+    @property
+    def StatusPointMaximums(self) -> dict[str, int]:
+        maximums = PalObjects.StatusPointMaximums.copy()
+        ex_points = self.ExStatusPoints
+        for name in PalObjects.ExStatusNames:
+            maximums[name] = max(0, maximums[name] - max(0, ex_points.get(name, 0)))
+        return maximums
+
+    @LOGGER.change_logger("StatusPoints")
+    @type_guard
+    def set_StatusPoint(self, name: str, points: int) -> None:
+        if name not in PalObjects.StatusNames:
+            raise ValueError(f"Unknown player status upgrade: {name}")
+        points = clamp(0, self.StatusPointMaximums[name], points)
+        if not self.GotStatusPointList:
+            self._player_param["GotStatusPointList"] = PalObjects.GotStatusPointList()
+        for entry in self.GotStatusPointList or []:
+            if PalObjects.get_BaseType(entry.get("StatusName")) == name:
+                PalObjects.set_BaseType(entry["StatusPoint"], points)
+                return
+        self.GotStatusPointList.append(PalObjects.StatusPointStruct(name, points))
     
     @property
     def GotExStatusPointList(self) -> Optional[list[dict]]:
@@ -246,6 +288,8 @@ class PlayerEntity:
     @type_guard
     def Level(self, value: int) -> None:
         value = clamp(1, PlayerEntity.MAX_INVALID_LEVEL, value)
+        if self.Level == value:
+            return
         if self.Level is None:
             self._player_param["Level"] = PalObjects.ByteProperty(1)
         

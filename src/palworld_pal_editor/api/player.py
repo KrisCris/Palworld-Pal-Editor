@@ -107,6 +107,10 @@ def player_to_dict(player: PlayerEntity):
         "InstanceId": str(player.PlayerUId),
         "NickName": player.NickName or "",
         "Level": player.Level or 1,
+        "Exp": player.Exp or 0,
+        "UnusedStatusPoint": player.UnusedStatusPoint or 0,
+        "StatusPoints": player.StatusPoints,
+        "StatusPointMaximums": player.StatusPointMaximums,
         "HasViewingCage": player.has_viewing_cage(),
         "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
         "PalStorageContainerId": str(player.PalStorageContainerId),
@@ -140,9 +144,13 @@ def patch_player_data():
                 player_entity.unlock_all_techs()
             case "unlock_viewing_cage":
                 player_entity.unlock_viewing_cage()
+            case "set_StatusPoint":
+                player_entity.set_StatusPoint(value["name"], value["points"])
             case _:
-                if isinstance(err := setattr(player_entity, key, value), TypeError):
-                    return reply(1, None, f"Error in patch_player_data {err}")
+                field = getattr(type(player_entity), key, None)
+                if not isinstance(field, property) or field.fset is None:
+                    return reply(1, None, f"Unsupported player field: {key}")
+                setattr(player_entity, key, value)
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patching player data {stack_trace}, key: {key}, value: {value}")

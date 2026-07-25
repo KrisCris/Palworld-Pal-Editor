@@ -516,14 +516,30 @@ class PalObjects:
     def get_MapProperty(container: dict) -> Optional[list[dict]]:
         return get_nested_attr(container, ["value"])
 
-    StatusNames = [
-        "最大HP",
-        "最大SP",
-        "攻撃力",
-        "所持重量",
-        "捕獲率",
-        "作業速度",
-    ]
+    # Stored values are upgrade ranks, not percentages. The relic-backed limits
+    # come from Palworld 1.0's DT_PlayerStatusRankMasterDataTable. The five
+    # ordinary player stats share a combined normal + elixir limit of 50.
+    StatusPointMaximums = {
+        "最大HP": 50,
+        "最大SP": 50,
+        "攻撃力": 50,
+        "所持重量": 50,
+        "捕獲率": 15,
+        "作業速度": 50,
+        "空腹率低減": 20,
+        "泳ぎ速度": 20,
+        "食料腐敗低減": 20,
+        "ジャンプ力": 20,
+        "崖登り速度": 20,
+        "状態異常耐性": 20,
+        "スタミナ消費軽減": 20,
+        "パルスフィアホーミング": 4,
+        "移動速度アップ": 92,
+        "滑空速度": 20,
+        "経験値ボーナス": 4,
+        "虹パッシブ率": 4,
+    }
+    StatusNames = list(StatusPointMaximums)
 
     ExStatusNames = [
         "最大HP",

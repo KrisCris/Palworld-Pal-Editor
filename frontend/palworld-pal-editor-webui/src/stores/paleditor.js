@@ -13,6 +13,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.InstanceId = obj.InstanceId;
             this.NickName = obj.NickName;
             this.Level = obj.Level;
+            this.Exp = obj.Exp;
+            this.UnusedStatusPoint = obj.UnusedStatusPoint;
+            this.StatusPoints = obj.StatusPoints || {};
+            this.StatusPointMaximums = obj.StatusPointMaximums || {};
             this.HasViewingCage = obj.HasViewingCage;
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
@@ -20,6 +24,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
             this.TechnologyPoint = obj.TechnologyPoint;
             this.bossTechnologyPoint = obj.bossTechnologyPoint;
+        }
+
+        setStatusPoint(name) {
+            let points = Number(this.StatusPoints[name]);
+            if (!Number.isFinite(points)) points = 0;
+            const maximum = this.StatusPointMaximums[name] ?? 0;
+            points = Math.min(Math.max(Math.trunc(points), 0), maximum);
+            this.StatusPoints[name] = points;
+            updatePlayer({
+                target: {
+                    name: "set_StatusPoint",
+                    value: { name: name, points: points },
+                },
+            });
         }
 
         levelDown() {

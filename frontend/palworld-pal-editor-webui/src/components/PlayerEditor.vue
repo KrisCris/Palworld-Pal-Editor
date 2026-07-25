@@ -47,7 +47,7 @@ const isMinLv = () => {
                 <div class="editField">
                     <p class="const"> Lv: {{ palStore.SELECTED_PLAYER_DATA.Level }}</p>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.levelDown" name="Level"
-                        :disabled="palStore.LOADING_FLA || isMinLv()">🔽</button>
+                        :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.levelUp" name="Level"
                         :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
@@ -57,9 +57,33 @@ const isMinLv = () => {
                         :value="palStore.SELECTED_PLAYER_DATA.Level" :disabled="palStore.LOADING_FLAG">✅</button> -->
                 </div>
                 <div class="editField">
+                    <p class="const">
+                        {{ palStore.getTranslatedText("Editor_Exp") }} {{ palStore.SELECTED_PLAYER_DATA.Exp }}
+                    </p>
+                </div>
+                <div class="editField">
+                    <p class="const">{{ palStore.getTranslatedText("Editor_UnusedStatusPoints") }}</p>
+                    <input class="edit" type="number" name="UnusedStatusPoint" min="0" max="65535"
+                        v-model.number="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint">
+                    <button class="edit" @click="palStore.updatePlayer" name="UnusedStatusPoint"
+                        :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint"
+                        :disabled="palStore.LOADING_FLAG">✅</button>
+                </div>
+                <div class="editField">
                     <button class="edit text" @click="palStore.updatePlayer" name="unlock_all_techs"
                         :disabled="palStore.LOADING_FLAG">{{ palStore.getTranslatedText("Editor_UnlockAllTech") }}</button>
                 </div>
+            </div>
+        </div>
+        <div class="EditorItem item left flex-v" v-if="palStore.SELECTED_PLAYER_DATA.StatusPoints">
+            <p class="cat">{{ palStore.getTranslatedText("Editor_StatusUpgrades") }}</p>
+            <div class="editField" v-for="(points, name) in palStore.SELECTED_PLAYER_DATA.StatusPoints" :key="name">
+                <p class="const">{{ palStore.getTranslatedText(`StatusPoint_${name}`) }}</p>
+                <input class="edit" type="number" min="0"
+                    :max="palStore.SELECTED_PLAYER_DATA.StatusPointMaximums[name]"
+                    v-model.number="palStore.SELECTED_PLAYER_DATA.StatusPoints[name]">
+                <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)"
+                    :disabled="palStore.LOADING_FLAG">✅</button>
             </div>
         </div>
         <!-- <div class="EditorItem flex-v item left">
