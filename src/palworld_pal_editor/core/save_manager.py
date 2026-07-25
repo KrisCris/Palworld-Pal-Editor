@@ -20,7 +20,6 @@ from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.utils import LOGGER, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
-from palworld_pal_editor.config import ASSETS_PATH
 
 
 def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
@@ -264,10 +263,7 @@ class SaveManager:
         gvas_file = copy.deepcopy(self.gvas_file)
         LOGGER.info("Compressing Main GVAS file")
         sav_data = compress_gvas_to_sav(
-            gvas_file.write(MAIN_SKIP_PROPERTIES), 
-            # self._compression_times, 
-            0x32,
-            True
+            gvas_file.write(MAIN_SKIP_PROPERTIES), self._compression_times
         )
 
         LOGGER.info(f"Saving to {file_path}")
@@ -284,7 +280,7 @@ class SaveManager:
             raise Exception(f"Player SAV {str(player_path.absolute())} not exist")
         with player_path.open("rb") as player_file:
             player_data = player_file.read()
-        raw_gvas, compression_times = decompress_sav_to_gvas(player_data, ASSETS_PATH / "libs/oo2core_9_win64.dll")
+        raw_gvas, compression_times = decompress_sav_to_gvas(player_data)
         player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PLAYER_SKIP_PROPERTIES)
         return player_gvas_file, compression_times
     
@@ -306,7 +302,7 @@ class SaveManager:
         LOGGER.info(f"Compressing Player {player_entity} GVAS file")
         player_gvas_file = copy.deepcopy(gvas_file)
         sav_data = compress_gvas_to_sav(
-            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), 0x32, True
+            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times
         )
 
         LOGGER.info(f"Saving to {player_path}")

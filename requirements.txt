@@ -1,6 +1,5 @@
 setuptools==80.9.0
-git+https://github.com/KrisCris/palworld-save-tools.git@480f1f631295e32bd9c9fa5be689eb335bf912a7#egg=palworld-save-tools
-pyooz==0.0.8
+git+https://github.com/KrisCris/palworld-save-tools.git@2bcaea5b388dda955df2177e2dd88c05ba64f50f#egg=palworld-save-tools
 wheel==0.46.1
 Flask==3.1.2
 pyinstaller==6.17.0
