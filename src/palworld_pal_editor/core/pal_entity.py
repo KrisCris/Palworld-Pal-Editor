@@ -1,7 +1,5 @@
-import copy
 import math
 import re
-import traceback
 from typing import Optional
 from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
@@ -93,11 +91,9 @@ class PalEntity:
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
-        
+
         if self.CharacterID is None:
-            raise Exception(
-                f"No CharacterID, skipping {dumps(pal_obj)}"
-            )
+            raise Exception(f"No CharacterID, skipping {dumps(pal_obj)}")
 
         if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError(
@@ -244,7 +240,7 @@ class PalEntity:
 
         if self.Gender and (self.IsHuman or self.IsOtomoTower):
             self.del_Gender()
-        
+
         if not self.Gender and not (self.IsHuman or self.IsOtomoTower):
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
@@ -390,8 +386,7 @@ class PalEntity:
         if self.IsOtomoTower:
             return self.DataAccessKey
         if self.IsTower:
-            pattern = r"^(GYM_[^_]+)"
-            match = re.search(pattern, self.CharacterID)
+            match = re.search(r"^(GYM_[^_]+)", self.CharacterID)
             if match:
                 return match.group(1)
         if self.IsRAID or self.IsPREDATOR or self.IsOilrig or self.IsSUMMON:
@@ -482,7 +477,7 @@ class PalEntity:
         if "GYM_" in self.CharacterID:
             return True
         return False
-    
+
     @property
     def IsOtomoTower(self) -> bool:
         if not self.IsTower:
@@ -566,7 +561,7 @@ class PalEntity:
     @property
     def FilteredNickName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
-    
+
     @FilteredNickName.setter
     @LOGGER.change_logger("FilteredNickName")
     @type_guard
@@ -582,7 +577,7 @@ class PalEntity:
     @property
     def NickName(self) -> Optional[str]:
         return self._NickName or self.FilteredNickName
-    
+
     @NickName.setter
     @type_guard
     def NickName(self, value: str) -> None:
@@ -1188,12 +1183,11 @@ class PalEntity:
     @property
     def HungerType(self) -> Optional[str]:
         return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
-    
-    
+
     @property
     def UniqueNPCID(self) -> str:
         return PalObjects.get_BaseType(self._pal_param.get("UniqueNPCID"))
-    
+
     @LOGGER.change_logger("UniqueNPCID")
     def update_UniqueNPCID(self) -> None:
         if self.CharacterID not in [
@@ -1203,14 +1197,14 @@ class PalEntity:
             "ElectricBoss",
             "SnowBoss",
             "SakurajimaBoss",
-            "VikingBoss"
+            "VikingBoss",
         ]:
             LOGGER.info(
                 f"Pal {self.CharacterID} is not a Tower Human, UniqueNPCID will be unset."
             )
             self._pal_param.pop("UniqueNPCID", None)
             return
-        
+
         if self.UniqueNPCID is None:
             self._pal_param["UniqueNPCID"] = PalObjects.NameProperty(self.CharacterID)
         else:
@@ -1423,7 +1417,7 @@ class PalEntity:
         except KeyError:
             species_name = self.I18nName or self.DataAccessKey
             rare_prefix = "✨" if self.IsRarePal else ""
-            boss_prefix = '👑'if self.IsBOSS else ""
+            boss_prefix = "👑" if self.IsBOSS else ""
             tower_prefix = "🗼" if self.IsTower else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
