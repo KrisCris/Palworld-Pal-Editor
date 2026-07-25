@@ -1,17 +1,18 @@
+import asyncio
 import os
-from pathlib import Path
 import traceback
+from pathlib import Path
+
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
-import asyncio
 
 from palworld_pal_editor.config import (
-    PROGRAM_PATH,
     NEXUS_URL,
+    PROGRAM_PATH,
     Config,
-    version_info,
-    is_gh_build,
     get_new_version,
+    is_gh_build,
+    version_info,
 )
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
@@ -33,6 +34,12 @@ def fetch_config():
             "IsOfficialBuild": is_gh_build(),
         },
     )
+
+
+@save_blueprint.route("/status", methods=["GET"])
+@jwt_required()
+def status():
+    return reply(0, {"SaveLoaded": getattr(SaveManager(), "gvas_file", None) is not None})
 
 
 @save_blueprint.route("/load", methods=["POST"])

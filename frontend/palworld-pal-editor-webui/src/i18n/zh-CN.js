@@ -1,9 +1,12 @@
-import EntryView from "@/views/EntryView.vue";
-
 export default {
+    App_Connecting: "正在连接后端服务……",
     AuthView_PW_Prompt_1: "你好! 似乎你在运行这个工具时设置了认证密码 🔐。",
     AuthView_PW_Prompt_2: "你现在需要输入正确的密码，以进行后续操作：",
+    AuthView_Password_Label: "密码",
+    AuthView_Remember_7_Days: "7 天内不再询问",
+    AuthView_Wrong_Password: "密码错误，请重试。",
     AuthView_BTN_Unlock: "解锁",
+    TopBar_Language_Label: "界面语言",
 
     EntryView_Greet_1: "你好呀！",
     EntryView_Greet_2: " > 感谢你下载并使用Palworld Pal Editor！",
@@ -128,4 +131,15 @@ export default {
     TopBar_Invalid_Options_Tooltips: "隐藏游戏中通常不可用的一些选项和下拉菜单，使用时请注意。",
 
     Alert_Successful_Save: "更改已成功保存到 {{path}}。",
+    BackendError_Title: "发生错误了",
+    BackendError_Connection_Title: "后端服务不可用",
+    BackendError_Logo_Alt: "幻兽帕鲁帕鲁编辑器",
+    BackendError_Request_Failed: "后端请求失败：{{0}}",
+    BackendError_Startup: "无法连接到后端服务，请确认服务正在运行后刷新页面。",
+    BackendError_Application_Startup: "编辑器启动时后端发生错误。请查看下方错误详情，或刷新页面。",
+    BackendError_Runtime: "后端处理请求时发生错误。当前编辑状态已保留；请查看下方错误详情，或刷新页面。",
+    BackendError_Connection_Runtime: "与后端服务的连接已中断。当前编辑状态已保留；请确认服务恢复后刷新页面。",
+    BackendError_Details: "错误详情",
+    BackendError_Refresh: "刷新",
+    BackendError_Dismiss: "关闭",
 };

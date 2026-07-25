@@ -1,7 +1,12 @@
 export default {
+    App_Connecting: "Connecting to backend…",
     AuthView_PW_Prompt_1: "Hello! It seems you have set a protection password 🔐.",
     AuthView_PW_Prompt_2: "Before continue, please enter the password:",
+    AuthView_Password_Label: "Password",
+    AuthView_Remember_7_Days: "Don't ask again for 7 days",
+    AuthView_Wrong_Password: "Wrong password. Try again.",
     AuthView_BTN_Unlock: "Unlock",
+    TopBar_Language_Label: "Interface language",
 
     EntryView_Greet_1: "Hello there!",
     EntryView_Greet_2: " > Thank you for using this tool!",
@@ -126,4 +131,15 @@ export default {
     TopBar_Invalid_Options_Tooltips: "Hide some options and dropdowns that are not normally available in game, be careful when using it.",
 
     Alert_Successful_Save: "Changes successfully saved to {{path}}.",
+    BackendError_Title: "Something went wrong",
+    BackendError_Connection_Title: "Backend service unavailable",
+    BackendError_Logo_Alt: "Palworld Pal Editor",
+    BackendError_Request_Failed: "Backend request failed: {{0}}",
+    BackendError_Startup: "Unable to connect to the backend. Make sure it is running, then refresh the page.",
+    BackendError_Application_Startup: "The backend returned an error while starting the editor. Review the details below or refresh the page.",
+    BackendError_Runtime: "The backend returned an error. Your current editor state is preserved. Review the details below or refresh the page.",
+    BackendError_Connection_Runtime: "The connection to the backend was lost. Your current editor state is preserved. Refresh the page after the service is available.",
+    BackendError_Details: "Error details",
+    BackendError_Refresh: "Refresh",
+    BackendError_Dismiss: "Dismiss",
 };

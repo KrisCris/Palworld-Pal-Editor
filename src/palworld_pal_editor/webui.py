@@ -1,8 +1,10 @@
 from pathlib import Path
 import threading
+import traceback
 import webbrowser
 from flask import Flask, send_from_directory
 from flask_jwt_extended import JWTManager
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash
 
 from palworld_pal_editor.config import ASSETS_PATH, Config
@@ -70,6 +72,24 @@ def expired_token_callback(jwt_header, jwt_payload):
 @jwt.unauthorized_loader
 def missing_token_callback(error_string):
     return reply(status=2, msg="Authorization header missing"), 401
+
+
+@app.errorhandler(Exception)
+def unexpected_error(error):
+    if isinstance(error, HTTPException):
+        return error
+    stack_trace = traceback.format_exc()
+    LOGGER.error(f"Unhandled backend exception: {stack_trace}")
+    return reply(
+        status=1,
+        data={
+            "error": {
+                "code": type(error).__name__,
+                "log": stack_trace,
+            }
+        },
+        msg="An unexpected backend error occurred.",
+    ), 500
 
 
 def main():

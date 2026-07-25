@@ -1,9 +1,12 @@
-import TopBar from "@/components/TopBar.vue";
-
 export default {
+    App_Connecting: "Connexion au service…",
     AuthView_PW_Prompt_1: "Bonjour ! Il semble que vous ayez défini un mot de passe de protection 🔐.",
     AuthView_PW_Prompt_2: "Avant de continuer, veuillez entrer le mot de passe :",
+    AuthView_Password_Label: "Mot de passe",
+    AuthView_Remember_7_Days: "Ne plus demander pendant 7 jours",
+    AuthView_Wrong_Password: "Mot de passe incorrect. Réessayez.",
     AuthView_BTN_Unlock: "Déverrouiller",
+    TopBar_Language_Label: "Langue de l’interface",
 
     EntryView_Greet_1: "Bonjour !",
     EntryView_Greet_2: " > Merci d'utiliser cet outil !",
@@ -129,4 +132,15 @@ export default {
     TopBar_Invalid_Options_Tooltips: "Masquez certaines options et menus déroulants qui ne sont normalement pas disponibles dans le jeu. Faites attention lors de leur utilisation.",
 
     Alert_Successful_Save: "Modifications enregistrées avec succès dans {{path}}.",
+    BackendError_Title: "Une erreur s’est produite",
+    BackendError_Connection_Title: "Service indisponible",
+    BackendError_Logo_Alt: "Éditeur de Pals Palworld",
+    BackendError_Request_Failed: "La requête au service a échoué : {{0}}",
+    BackendError_Startup: "Impossible de joindre le service. Vérifiez qu’il est démarré, puis actualisez la page.",
+    BackendError_Application_Startup: "Le service a renvoyé une erreur au démarrage de l’éditeur. Consultez les détails ci-dessous ou actualisez la page.",
+    BackendError_Runtime: "Le service a renvoyé une erreur. L’état actuel de l’éditeur est conservé. Consultez les détails ci-dessous ou actualisez la page.",
+    BackendError_Connection_Runtime: "La connexion au service a été interrompue. L’état actuel de l’éditeur est conservé. Actualisez la page une fois le service disponible.",
+    BackendError_Details: "Détails de l’erreur",
+    BackendError_Refresh: "Actualiser",
+    BackendError_Dismiss: "Fermer",
 };

@@ -19,6 +19,9 @@ def patch_paldata():
     PlayerUId = request.json.get("PlayerUId")
     key = request.json.get("key")
     value = request.json.get("value")
+    if key == "heal_all_pals":
+        SaveManager().heal_all_pals()
+        return reply(0)
     if PlayerUId == "PAL_BASE_WORKER_BTN":
         pal_entity = SaveManager().get_working_pal(PalGuid)
     else:
@@ -67,8 +70,6 @@ def patch_paldata():
                     [player.OtomoCharacterContainerId, player.PalStorageContainerId],
                 ):
                     return reply(1, None, f"No enough slot in pal container.")
-            case "heal_all_pals":
-                SaveManager().heal_all_pals()
             case _:
                 field = getattr(type(pal_entity), key, None)
                 if not isinstance(field, property) or field.fset is None:

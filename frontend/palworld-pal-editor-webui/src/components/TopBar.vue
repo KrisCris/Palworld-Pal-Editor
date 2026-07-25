@@ -107,6 +107,7 @@ const save = async () => {
     <div class="options">
       <p>🌐</p>
       <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n"
+        :aria-label="palStore.getTranslatedText('TopBar_Language_Label')"
         :disabled="palStore.LOADING_FLAG">
         <option :value="key" v-for="translated, key in palStore.I18nList">{{ translated }}</option>
       </select>

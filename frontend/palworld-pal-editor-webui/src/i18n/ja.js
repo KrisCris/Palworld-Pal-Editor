@@ -1,7 +1,12 @@
 export default {
+    App_Connecting: "バックエンドに接続しています…",
     AuthView_PW_Prompt_1: "こんにちは！保護用のパスワードが設定されているようです 🔐。",
     AuthView_PW_Prompt_2: "続ける前に、パスワードを入力してください：",
+    AuthView_Password_Label: "パスワード",
+    AuthView_Remember_7_Days: "7日間再入力を求めない",
+    AuthView_Wrong_Password: "パスワードが正しくありません。もう一度お試しください。",
     AuthView_BTN_Unlock: "アンロック",
+    TopBar_Language_Label: "表示言語",
 
     EntryView_Greet_1: "こんにちは！",
     EntryView_Greet_2: " > このツールをご利用いただきありがとうございます！",
@@ -127,4 +132,15 @@ export default {
     TopBar_Invalid_Options_Tooltips: "ゲーム内で通常利用できないいくつかのオプションやドロップダウンを非表示にします。使用する際は注意してください。",
 
     Alert_Successful_Save: "変更が {{path}} に正常に保存されました。",
+    BackendError_Title: "エラーが発生しました",
+    BackendError_Connection_Title: "バックエンドサービスに接続できません",
+    BackendError_Logo_Alt: "Palworld パルエディター",
+    BackendError_Request_Failed: "バックエンドへのリクエストに失敗しました：{{0}}",
+    BackendError_Startup: "バックエンドが起動していることを確認してから、ページを再読み込みしてください。",
+    BackendError_Application_Startup: "エディターの起動中にバックエンドでエラーが発生しました。以下の詳細を確認するか、ページを再読み込みしてください。",
+    BackendError_Runtime: "バックエンドでエラーが発生しました。現在の編集状態は保持されています。以下の詳細を確認するか、ページを再読み込みしてください。",
+    BackendError_Connection_Runtime: "バックエンドとの接続が切断されました。現在の編集状態は保持されています。サービス復旧後にページを再読み込みしてください。",
+    BackendError_Details: "エラーの詳細",
+    BackendError_Refresh: "再読み込み",
+    BackendError_Dismiss: "閉じる",
 };

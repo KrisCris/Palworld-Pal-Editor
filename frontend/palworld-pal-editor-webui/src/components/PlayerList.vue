@@ -1,15 +1,6 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
-import { ref, computed, reactive, onMounted, nextTick } from "vue";
 const palStore = usePalEditorStore()
-const playerListContainer = ref(null);
-onMounted(async () => {
-  await nextTick(); // Wait for the DOM to update with the dynamic buttons
-  const buttons = playerListContainer.value.querySelectorAll('button:not(:disabled)');
-  if (buttons.length > 0) {
-    buttons[0].click(); // Simulate a click on the first enabled button
-  }
-});
 </script>
 
 <template>
@@ -26,7 +17,7 @@ onMounted(async () => {
         <span class="tooltip-text">{{ palStore.getTranslatedText('PlayerList_Viewing_Cage') }}</span>
       </div>
     </div>
-    <div class="overflow-list" ref="playerListContainer">
+    <div class="overflow-list">
       <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
         <button class="player" @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
           :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
