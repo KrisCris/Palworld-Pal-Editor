@@ -38,3 +38,7 @@ Documentation = "https://github.com/KrisCris/Palworld-Pal-Editor"
 Repository = "https://github.com/KrisCris/Palworld-Pal-Editor.git"
 Issues = "https://github.com/KrisCris/Palworld-Pal-Editor/issues"
 Changelog = "https://github.com/KrisCris/Palworld-Pal-Editor"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["palworld_pal_editor.assets.tools*"]
