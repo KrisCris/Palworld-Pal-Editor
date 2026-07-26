@@ -6,7 +6,7 @@ import traceback
 from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.core import SaveManager, PalEntity
-from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils import DataProvider, LOGGER
 
 pal_blueprint = Blueprint("pal", __name__)
 
@@ -113,6 +113,7 @@ def paldata():
 
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
+    record = DataProvider.get_pal_record(pal.CharacterID) or {}
     return {
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
@@ -122,7 +123,18 @@ def _pal_data(pal: PalEntity):
         "OwnerName": pal.OwnerName or None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,
+        "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
         "DataAccessKey": pal.DataAccessKey or None,
+        "FamilyID": pal.RawSpecieKey,
+        "VariantKind": DataProvider.get_pal_variant_kind(pal.CharacterID),
+        "VariantTags": list(DataProvider.get_pal_variant_tags(pal.CharacterID)),
+        "PaldeckRecordID": DataProvider.get_pal_paldeck_record_id(pal.CharacterID),
+        "PaldeckIndex": record.get("PaldeckIndex"),
+        "PaldeckSuffix": record.get("PaldeckSuffix", ""),
+        "Invalid": record.get("Invalid", True),
+        "RegularlyObtainable": record.get("RegularlyObtainable", False),
+        "AvailabilitySources": record.get("AvailabilitySources", []),
+        "ObtainMethods": record.get("ObtainMethods", []),
         "I18nName": pal.I18nName or None,
         "DisplayName": pal.DisplayName or None,
         "NickName": pal.NickName or "",
@@ -133,6 +145,8 @@ def _pal_data(pal: PalEntity):
         "HasBaseVariant": pal.HasBaseVariant,
         "HasBossVariant": pal.HasBossVariant,
         "HasTowerVariant": pal.HasTowerVariant,
+        "HasRaidVariant": pal.HasRaidVariant,
+        "HasPredatorVariant": pal.HasPredatorVariant,
         "HasWorkerSick": pal.HasWorkerSick,
         "IsFaintedPal": pal.IsFaintedPal,
         "Is_Unref_Pal": pal.is_unreferenced_pal,
@@ -143,7 +157,9 @@ def _pal_data(pal: PalEntity):
         "IsTower": pal.IsTower or False,
         "IsRAID": pal.IsRAID or False,
         "IsPREDATOR": pal.IsPREDATOR or False,
+        "IsSUMMON": pal.IsSUMMON or False,
         "IsOilrig": pal.IsOilrig or False,
+        "IsOtomoTower": pal.IsOtomoTower or False,
         "IsExpeditionPal": pal.IsExpeditionPal,
         "ComputedMaxHP": pal.ComputedMaxHP or None,
         "ComputedAttack": pal.ComputedAttack or None,

@@ -79,7 +79,7 @@ class PalUpgradeTests(unittest.TestCase):
         pal = next(
             item
             for item in self.manager.baseworker_mapping.values()
-            if item.DataAccessKey == "Anubis" and item.OwnerPlayerUId is None
+            if item.RawSpecieKey == "Anubis" and item.OwnerPlayerUId is None
         )
         original = copy.deepcopy(pal._pal_param)
         try:

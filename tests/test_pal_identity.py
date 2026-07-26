@@ -22,12 +22,23 @@ class PalIdentityTests(unittest.TestCase):
             "SaveParameter"
         ]["value"]
         PalObjects.set_BaseType(parameter["CharacterID"], character_id)
+        parameter.pop("OwnerPlayerUId", None)
         return PalEntity(pal_obj)
 
     def test_special_suffixes_resolve_without_replacing_internal_name(self):
         for character_id, raw_key, data_key, icon_key in (
-            ("BOSS_KingWhale_otomo", "KingWhale", "KingWhale", "KingWhale"),
-            ("BOSS_LilyQueen_BossRush", "LilyQueen", "LilyQueen", "LilyQueen"),
+            (
+                "BOSS_KingWhale_otomo",
+                "KingWhale",
+                "BOSS_KingWhale_otomo",
+                "KingWhale",
+            ),
+            (
+                "BOSS_LilyQueen_BossRush",
+                "LilyQueen",
+                "BOSS_LilyQueen_BossRush",
+                "LilyQueen",
+            ),
             (
                 "PREDATOR_WhiteShieldDragon_Quest",
                 "WhiteShieldDragon",
@@ -42,6 +53,87 @@ class PalIdentityTests(unittest.TestCase):
                 self.assertEqual(data_key, pal.DataAccessKey)
                 self.assertEqual(icon_key, pal.IconAccessKey)
 
+    def test_unknown_special_looking_id_remains_literal(self):
+        pal = self.make_pal("BOSS_UnknownPal_otomo")
+        self.assertEqual("BOSS_UnknownPal_otomo", pal.CharacterID)
+        self.assertEqual("BOSS_UnknownPal_otomo", pal.RawSpecieKey)
+        self.assertEqual("BOSS_UnknownPal_otomo", pal.DataAccessKey)
+        self.assertEqual("unknown", pal.IconAccessKey)
+        self.assertFalse(pal.IsBOSS)
+
+    def test_metadata_predicates_do_not_infer_from_prefixes(self):
+        boss_rush = self.make_pal("BOSS_ElecPanda_BossRush")
+        self.assertFalse(boss_rush._IsBOSS)
+        self.assertTrue(boss_rush.IsTower)
+
+        predator = self.make_pal("PREDATOR_WhiteShieldDragon_Quest")
+        self.assertTrue(predator.IsPREDATOR)
+        self.assertEqual(
+            "quest",
+            data_provider.DataProvider.get_pal_variant_kind(predator.CharacterID),
+        )
+
+        self.assertTrue(self.make_pal("RAID_NightLady").IsRAID)
+        self.assertTrue(self.make_pal("SUMMON_DarkAlien").IsSUMMON)
+        self.assertTrue(self.make_pal("WingGolem_Oilrig").IsOilrig)
+        self.assertTrue(self.make_pal("GYM_ElecPanda_Otomo").IsOtomoTower)
+
+    def test_legacy_setters_only_select_unambiguous_family_variants(self):
+        pal = self.make_pal("GrassPanda_Electric")
+        pal.IsTower = True
+        self.assertEqual("GrassPanda_Electric_Tower", pal.CharacterID)
+        pal.IsTower = False
+        self.assertEqual("GrassPanda_Electric", pal.CharacterID)
+
+        ambiguous = self.make_pal("BlackGriffon")
+        ambiguous.IsTower = True
+        self.assertEqual("BlackGriffon", ambiguous.CharacterID)
+
+    def test_rare_and_boss_toggles_preserve_alpha_behavior(self):
+        pal = self.make_pal("Anubis")
+        pal.IsRarePal = True
+        self.assertEqual("Boss_Anubis", pal.CharacterID)
+        self.assertTrue(pal.IsRarePal)
+        self.assertFalse(pal.IsBOSS)
+        self.assertTrue(pal._IsBOSS)
+
+        pal.IsRarePal = False
+        self.assertEqual("Anubis", pal.CharacterID)
+        self.assertFalse(pal.IsRarePal)
+        pal.IsBOSS = True
+        self.assertEqual("Boss_Anubis", pal.CharacterID)
+        self.assertTrue(pal.IsBOSS)
+
+    def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
+        for character_id in ("ElecPanda", "GYM_ElecPanda"):
+            with self.subTest(character_id=character_id):
+                pal = self.make_pal(character_id)
+                pal.IsRarePal = True
+                self.assertEqual("BOSS_ElecPanda", pal.CharacterID)
+                self.assertTrue(pal.IsRarePal)
+                self.assertTrue(pal._IsBOSS)
+
+    def test_exact_tower_patch_clears_rare_without_changing_target(self):
+        pal = self.make_pal("BOSS_ElecPanda")
+        pal.IsRarePal = True
+        self.assertTrue(pal.IsRarePal)
+
+        pal.CharacterID = "GYM_ElecPanda"
+
+        self.assertEqual("GYM_ElecPanda", pal.CharacterID)
+        self.assertFalse(pal.IsRarePal)
+
+    def test_rare_toggle_is_noop_without_unique_primary_boss_variant(self):
+        pal = self.make_pal("RAID_YakushimaBoss002")
+        pal.IsRarePal = True
+        self.assertEqual("RAID_YakushimaBoss002", pal.CharacterID)
+        self.assertIsNone(pal.IsRarePal)
+
+    def test_skin_target_is_compared_by_family(self):
+        pal = self.make_pal("Boss_Anubis")
+        pal.SkinName = "Anubis_Skin001"
+        self.assertEqual("Anubis_Skin001", pal.SkinName)
+
     def test_generated_data_resolves_save_id_casing(self):
         resolve = data_provider.DataProvider.resolve_pal_key
         for source, expected in {
@@ -52,6 +144,10 @@ class PalIdentityTests(unittest.TestCase):
         }.items():
             with self.subTest(source=source):
                 self.assertEqual(expected, resolve(source))
+        pal = self.make_pal("boss_kingwhale_OTOMO")
+        self.assertEqual("BOSS_KingWhale_otomo", pal.DataAccessKey)
+        self.assertEqual("KingWhale", pal.RawSpecieKey)
+        self.assertEqual("KingWhale", pal.IconAccessKey)
         self.assertEqual("UnknownPal", resolve("UnknownPal"))
         self.assertIsNone(resolve(None))
 

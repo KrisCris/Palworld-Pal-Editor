@@ -160,13 +160,7 @@ def get_pal_data():
     pal_arr = []
     for pal in pals_raw:
         iname = pal["InternalName"]
-        if (
-            "BOSS_" in iname
-            and DataProvider.boss_has_base_variant(iname)
-            or "Boss_" in iname
-            and DataProvider.boss_has_base_variant(iname)
-        ):
-            continue
+        tags = pal["VariantTags"]
         data = {
             "InternalName": iname,
             "Elements": pal["Elements"],
@@ -175,6 +169,24 @@ def get_pal_data():
             "I18n": DataProvider.get_pal_i18n(iname) or iname,
             "SortingKey": DataProvider.get_pal_sorting_key(iname),
             "IsHuman": DataProvider.is_pal_human(iname) or False,
+            "FamilyID": pal["FamilyID"],
+            "VariantKind": pal["VariantKind"],
+            "VariantTags": tags,
+            "IconKey": pal["IconKey"],
+            "IconAccessKey": pal["IconKey"],
+            "PaldeckRecordID": DataProvider.get_pal_paldeck_record_id(iname),
+            "PaldeckIndex": pal.get("PaldeckIndex"),
+            "PaldeckSuffix": pal.get("PaldeckSuffix", ""),
+            "RegularlyObtainable": pal["RegularlyObtainable"],
+            "AvailabilitySources": pal["AvailabilitySources"],
+            "ObtainMethods": pal["ObtainMethods"],
+            "IsBOSS": "boss" in tags,
+            "IsTower": "tower" in tags,
+            "IsRAID": "raid" in tags,
+            "IsPREDATOR": "predator" in tags,
+            "IsSUMMON": "summon" in tags,
+            "IsOilrig": "oilrig" in tags,
+            "IsOtomoTower": "tower" in tags and "otomo" in tags,
         }
         pal_dict[iname] = data
         pal_arr.append(data)

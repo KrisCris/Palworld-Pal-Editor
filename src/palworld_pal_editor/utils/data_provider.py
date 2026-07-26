@@ -1,6 +1,5 @@
 from functools import wraps
 import json
-import re
 from typing import Any, Callable, Optional
 
 # from PIL import Image
@@ -33,6 +32,47 @@ def load_json(filename: str) -> Any:
 PAL_ATTACKS: dict[str, dict] = load_json("pal_attacks.json")
 PAL_DATA: dict[str, dict] = load_json("pal_data.json") | load_json("human_data.json")
 PAL_DATA_BY_CASEFOLD = {key.casefold(): key for key in PAL_DATA}
+PALDECK_RECORD_ID_ALIASES = {
+    "Blueplatypus": "BluePlatypus",
+    "Werewolf_Ice": "WereWolf_Ice",
+}
+PAL_VARIANT_KIND_ORDER = {
+    kind: index
+    for index, kind in enumerate(
+        (
+            "base",
+            "alpha",
+            "boss",
+            "predator",
+            "quest",
+            "tower",
+            "raid",
+            "boss-rush",
+            "summon",
+            "oilrig",
+            "human",
+            "other",
+        )
+    )
+}
+
+
+def _variant_sort_key(character_id: str) -> tuple[int, int, str]:
+    record = PAL_DATA[character_id]
+    return (
+        0 if "base" in record.get("VariantTags", ()) else 1,
+        PAL_VARIANT_KIND_ORDER.get(record.get("VariantKind"), 999),
+        character_id,
+    )
+
+
+_pal_variants_by_family: dict[str, list[str]] = {}
+for _character_id, _record in PAL_DATA.items():
+    _pal_variants_by_family.setdefault(_record["FamilyID"], []).append(_character_id)
+PAL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
+    family_id: tuple(sorted(variants, key=_variant_sort_key))
+    for family_id, variants in _pal_variants_by_family.items()
+}
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
@@ -92,17 +132,6 @@ class DataProvider:
     #         return
     #     return PAL_ICONS[key]
     @staticmethod
-    def boss_has_base_variant(key: str) -> bool:
-        """
-        Checks if the key has a base variant that can be swapped to by removing BOSS_.
-        """
-        pattern = r"^[A-Z]+_(.+)"
-        match = re.search(pattern, key)
-        if match:
-            return DataProvider.in_pal_data(match.group(1))
-        return False
-    
-    @staticmethod
     def in_pal_data(key: str) -> bool:
         """
         Checks if the key exists in the PAL_DATA dictionary.
@@ -114,6 +143,59 @@ class DataProvider:
         if not key or key in PAL_DATA:
             return key
         return PAL_DATA_BY_CASEFOLD.get(key.casefold(), key)
+
+    @staticmethod
+    def get_pal_record(key: Optional[str]) -> Optional[dict]:
+        return PAL_DATA.get(DataProvider.resolve_pal_key(key))
+
+    @staticmethod
+    def get_pal_family_id(character_id: str) -> str:
+        record = DataProvider.get_pal_record(character_id)
+        return record["FamilyID"] if record else character_id
+
+    @staticmethod
+    def get_pal_variant_kind(character_id: str) -> str:
+        record = DataProvider.get_pal_record(character_id)
+        return record.get("VariantKind", "other") if record else "other"
+
+    @staticmethod
+    def get_pal_variant_tags(character_id: str) -> tuple[str, ...]:
+        record = DataProvider.get_pal_record(character_id)
+        return tuple(record.get("VariantTags", ())) if record else ()
+
+    @staticmethod
+    def get_pal_icon_key(character_id: str) -> str:
+        record = DataProvider.get_pal_record(character_id)
+        return record.get("IconKey", "unknown") if record else "unknown"
+
+    @staticmethod
+    def get_pal_paldeck_record_id(character_id: str) -> Optional[str]:
+        record = DataProvider.get_pal_record(character_id)
+        if not record or record.get("Human", False):
+            return None
+        record_id = record.get("PaldeckRecordID") or record["FamilyID"]
+        return PALDECK_RECORD_ID_ALIASES.get(record_id, record_id)
+
+    @staticmethod
+    def get_family_variants(
+        character_id: str, kind: Optional[str] = None
+    ) -> tuple[str, ...]:
+        record = DataProvider.get_pal_record(character_id)
+        if not record:
+            return (character_id,) if kind is None else ()
+        variants = PAL_VARIANTS_BY_FAMILY[record["FamilyID"]]
+        if kind is None:
+            return variants
+        return tuple(
+            variant
+            for variant in variants
+            if PAL_DATA[variant].get("VariantKind") == kind
+        )
+
+    @staticmethod
+    def get_pal_variant(character_id: str, kind: str) -> Optional[str]:
+        variants = DataProvider.get_family_variants(character_id, kind)
+        return variants[0] if len(variants) == 1 else None
 
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
@@ -149,18 +231,14 @@ class DataProvider:
         return sorted_list
 
     @staticmethod
-    def has_x_variant_pal(key: str, vtype: str) -> bool:
-        return f"{vtype}_{key}" in PAL_DATA
-
-    @none_guard(data_source=PAL_DATA)
-    @staticmethod
     def is_pal_human(key: str) -> Optional[bool]:
-        return PAL_DATA[key].get("Human", False)
-    
-    @none_guard(data_source=PAL_DATA)
+        record = DataProvider.get_pal_record(key)
+        return record.get("Human", False) if record else None
+
     @staticmethod
     def has_human_icon(key: str) -> bool:
-        return PAL_DATA[key].get("HasIcon", False)
+        record = DataProvider.get_pal_record(key)
+        return record.get("HasIcon", False) if record else False
 
     @staticmethod
     def get_skin_data() -> dict[str, dict]:

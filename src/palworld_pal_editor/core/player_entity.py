@@ -480,18 +480,6 @@ class PlayerEntity:
         """
         This should only be called on save
         """
-        def handle_special_keys(key) -> str:
-            match key:
-                case 'PlantSlime_Flower': return 'PlantSlime'
-                case 'SheepBall': return 'Sheepball'
-                case 'LazyCatFish': return 'LazyCatfish'
-                case 'Blueplatypus': return 'BluePlatypus'
-                case 'GhostAnglerFish': return 'GhostAnglerfish'
-                case 'GhostAnglerFish_Fire': return 'GhostAnglerfish_Fire'
-                case "Icenarwhal_Fire": return "IceNarwhal_Fire"
-                case "Icenarwhal": return "IceNarwhal"
-            return key
-        
         for guid in self._new_palbox:
             pal_entity = self._new_palbox[guid]
             if DataProvider.is_pal_invalid(pal_entity.DataAccessKey):
@@ -501,7 +489,10 @@ class PlayerEntity:
                 LOGGER.info(f"Skip player records update for pal: {pal_entity}")
                 continue
 
-            key = handle_special_keys(pal_entity.RawSpecieKey)
+            key = DataProvider.get_pal_paldeck_record_id(pal_entity.CharacterID)
+            if key is None:
+                LOGGER.info(f"Skip player records update for pal: {pal_entity}")
+                continue
             self.unlock_paldeck(key)
             self.inc_pal_capture_count(key)
 
