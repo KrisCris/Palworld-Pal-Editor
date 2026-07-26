@@ -65,6 +65,18 @@ INVOCATION_FIELDS = {
     "Always",
     "InBaseCamp",
 }
+SUPPORTED_KINGWHALE_SKILL_LEVELS = {
+    "EPalWazaID::Unique_KingWhale_AquaBlade": 15,
+    "EPalWazaID::Unique_KingWhale_AquaTornado": 60,
+    "EPalWazaID::Unique_KingWhale_Breaching": 40,
+    "EPalWazaID::Unique_KingWhale_HomingBubble": 1,
+    "EPalWazaID::Unique_KingWhale_Maelstrom": 30,
+    "EPalWazaID::Unique_KingWhale_WaveTackle": 22,
+}
+UNSUPPORTED_KINGWHALE_SKILL_IDS = {
+    "EPalWazaID::Unique_KingWhale_TidalBore",
+    "EPalWazaID::Unique_KingWhale_SuperTidalBore",
+}
 
 
 def load(name):
@@ -136,6 +148,32 @@ def test_game_derived_active_skill_contract():
             and isinstance(learner["Level"], int)
             for learner in row["Learners"]
         )
+
+
+def test_supported_kingwhale_runtime_skills_are_valid_and_assignable():
+    attacks = load("pal_attacks.json")
+
+    assert len(SUPPORTED_KINGWHALE_SKILL_LEVELS) == 6
+    assert SUPPORTED_KINGWHALE_SKILL_LEVELS.keys() <= attacks.keys()
+    assert {
+        skill_id
+        for skill_id in SUPPORTED_KINGWHALE_SKILL_LEVELS
+        if attacks[skill_id]["Invalid"] or not attacks[skill_id]["Assignable"]
+    } == set()
+    for skill_id, level in SUPPORTED_KINGWHALE_SKILL_LEVELS.items():
+        assert {
+            "CharacterID": "BOSS_KingWhale_otomo",
+            "Level": level,
+        } in attacks[skill_id]["Learners"]
+
+
+def test_unsupported_kingwhale_runtime_skills_remain_unassignable():
+    attacks = load("pal_attacks.json")
+
+    assert UNSUPPORTED_KINGWHALE_SKILL_IDS <= attacks.keys()
+    for skill_id in UNSUPPORTED_KINGWHALE_SKILL_IDS:
+        assert attacks[skill_id]["Invalid"] is True
+        assert attacks[skill_id]["Assignable"] is False
 
 
 def test_game_derived_pal_passive_contract():
