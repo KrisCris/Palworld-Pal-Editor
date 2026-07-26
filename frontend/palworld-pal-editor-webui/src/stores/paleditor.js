@@ -221,16 +221,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return this.Rank - 1;
         }
 
-        swapTower() {
-            this.IsTower = !this.IsTower;
-            updatePal({ target: { name: "IsTower", value: this.IsTower } });
-        }
-
-        swapBoss() {
-            this.IsBOSS = !this.IsBOSS;
-            updatePal({ target: { name: "IsBOSS", value: this.IsBOSS } });
-        }
-
         swapRare() {
             this.IsRarePal = !this.IsRarePal;
             updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
@@ -437,11 +427,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             });
         }
 
-        changeSpecie() {
+        changeSpecie(characterId = this.SelectionKey) {
             updatePal({
                 target: {
                     name: "CharacterID",
-                    value: this.SelectionKey,
+                    value: characterId,
                 },
             });
         }

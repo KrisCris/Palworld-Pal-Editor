@@ -1,25 +1,7 @@
 <script setup>
+import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
-
-function formatString(input) {
-  if (!input) return input;
-  // Separate the numeric part and the alphabetic suffix using a regular expression
-  const match = input.match(/^(\d+)([A-Za-z]*)$/);
-  if (!match) return input; // Return the input as is if it doesn't match the expected pattern
-
-  const [, numbers, suffix] = match;
-
-  // Pad the numeric part with leading zeros to make it at least 3 digits
-  const paddedNumbers = numbers.padStart(3, '0');
-
-  // Append the suffix if it exists; otherwise, append an empty space
-  const formatted = suffix ? paddedNumbers + suffix : paddedNumbers;
-  // if (suffix) {
-  //   console.log(formatted)
-  // }
-  return formatted;
-}
 
 function filterInvalid(list) {
   return list.filter(item => {
@@ -107,17 +89,14 @@ const suitabilityIconSrc = key => {
               palStore.SELECTED_PAL_DATA.DataAccessKeyOG }}
           </p>
           <!-- <p class="const"> Specie: </p> -->
-          <select class="selector" name="CharacterID" v-model="palStore.SELECTED_PAL_DATA.SelectionKey">
-            <option class="" v-for="pal in filterInvalid(palStore.PAL_STATIC_DATA_LIST)" :value="pal.InternalName"
-              :key="pal.InternalName" :title="pal.InternalName"> {{ `
-              ${pal.Invalid || pal.IsHuman ? '⚠️' : ""}
-              ${formatString(pal.SortingKey) || ""}
-              ${palStore.displayPalElement(pal.InternalName)}
-              ${pal.I18n}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${pal.InternalName}`}`
-              }} </option>
-          </select>
-          <button class="edit" @click="palStore.SELECTED_PAL_DATA.changeSpecie" name="CharacterID"
-            :disabled="palStore.LOADING_FLAG">✅</button>
+          <PalSpeciesSelector
+            v-model="palStore.SELECTED_PAL_DATA.SelectionKey"
+            :rows="palStore.PAL_STATIC_DATA_LIST"
+            :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
+            :locale="palStore.I18n"
+            :disabled="palStore.LOADING_FLAG"
+            @apply="palStore.SELECTED_PAL_DATA.changeSpecie"
+          />
 
         </div>
         <div class="editField">
@@ -175,12 +154,8 @@ const suitabilityIconSrc = key => {
               {{ palStore.getTranslatedText("Editor_Variant") }}
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
             </p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapTower" name="IsTower"
-              v-if="palStore.SELECTED_PAL_DATA.HasTowerVariant" :disabled="palStore.LOADING_FLAG">🗼</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
-              v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">👑</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
-              v-if="palStore.SELECTED_PAL_DATA.HasBossVariant" :disabled="palStore.LOADING_FLAG">✨</button>
+              :disabled="palStore.LOADING_FLAG">✨</button>
           </div>
         </div>
         <p class="const">
