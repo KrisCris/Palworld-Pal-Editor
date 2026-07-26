@@ -48,4 +48,4 @@ pip install pyinstaller
 
 rm -r ./dist
 
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets:assets" --add-data="src/palworld_pal_editor/webui:webui"  ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor --hidden-import="pkg_resources.extern"
+pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets/data:assets/data" --add-data="src/palworld_pal_editor/assets/icons:assets/icons" --add-data="src/palworld_pal_editor/webui:webui"  ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor --hidden-import="pkg_resources.extern"
