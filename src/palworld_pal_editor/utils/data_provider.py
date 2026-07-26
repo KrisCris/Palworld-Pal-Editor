@@ -432,11 +432,18 @@ class DataProvider:
     def get_tech_data() -> dict[str, dict]:
         return TECH_DATA
 
-    @none_guard(data_source=TECH_DATA, subkey="I18n")
     @staticmethod
-    def get_tech_i18n(key: str) -> Optional[str]:
-        i18n_list: dict = TECH_DATA[key]["I18n"]
-        return i18n_list.get(Config.i18n, i18n_list.get("en"))
+    def get_tech_i18n(key: str) -> dict | str | None:
+        record = TECH_DATA.get(key)
+        if record is None:
+            return None
+        i18n_list: dict = record.get("I18n", {})
+        return (
+            i18n_list.get(Config.i18n)
+            or i18n_list.get("en")
+            or i18n_list.get("ja")
+            or key
+        )
 
     @staticmethod
     def get_tech_lv(key: str) -> int:

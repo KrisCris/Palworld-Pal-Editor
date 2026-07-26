@@ -37,6 +37,29 @@ class SkillI18nFallbackTests(unittest.TestCase):
         finally:
             Config.i18n = original_locale
 
+    def test_content_fallback_order_is_selected_english_japanese_then_id(self):
+        key = next(iter(data_provider.TECH_DATA))
+        original_locale = Config.i18n
+        original = copy.deepcopy(data_provider.TECH_DATA[key]["I18n"])
+        try:
+            Config.i18n = "de"
+            data_provider.TECH_DATA[key]["I18n"] = {
+                "ja": {
+                    "Name": "Japanese",
+                    "Description": "Japanese",
+                    "Type": "Japanese",
+                }
+            }
+            self.assertEqual(
+                {"Name": "Japanese", "Description": "Japanese", "Type": "Japanese"},
+                data_provider.DataProvider.get_tech_i18n(key),
+            )
+            data_provider.TECH_DATA[key]["I18n"] = {}
+            self.assertEqual(key, data_provider.DataProvider.get_tech_i18n(key))
+        finally:
+            data_provider.TECH_DATA[key]["I18n"] = original
+            Config.i18n = original_locale
+
 
 if __name__ == "__main__":
     unittest.main()
