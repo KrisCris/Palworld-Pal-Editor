@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { createPinia, setActivePinia } from "pinia";
@@ -11,6 +12,7 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { GAME_LANGUAGES } = await import("../src/i18n/index.js");
 const locales = await Promise.all([
     import("../src/i18n/en.js"),
     import("../src/i18n/fr.js"),
@@ -26,10 +28,41 @@ test("startup translations are available synchronously without the backend", () 
     assert.notEqual(store.getTranslatedText("BackendError_Title"), "I18N_MISSING");
     assert.deepEqual(store.I18nList, {
         en: "English",
-        "zh-CN": "中文",
-        ja: "日本語",
+        de: "Deutsch",
+        es: "Español",
+        "es-MX": "Español (México)",
         fr: "Français",
+        id: "Bahasa Indonesia",
+        it: "Italiano",
+        ja: "日本語",
+        ko: "한국어",
+        pl: "Polski",
+        "pt-BR": "Português (Brasil)",
+        ru: "Русский",
+        th: "ไทย",
+        tr: "Türkçe",
+        vi: "Tiếng Việt",
+        "zh-CN": "简体中文",
+        "zh-TW": "繁體中文",
     });
+});
+
+test("offline and backend game-data locale maps stay identical", async () => {
+    const backendLanguages = JSON.parse(await readFile(
+        new URL("../../../src/palworld_pal_editor/assets/data/i18n_list.json", import.meta.url),
+        "utf8",
+    ));
+
+    assert.deepEqual(GAME_LANGUAGES, backendLanguages);
+});
+
+test("saved game-data locales remain selected with English chrome fallback", () => {
+    values.set("PAL_I18n", "zh-TW");
+    setActivePinia(createPinia());
+    const store = usePalEditorStore();
+
+    assert.equal(store.I18n, "zh-TW");
+    assert.equal(store.getTranslatedText("BackendError_Title"), "Something went wrong");
 });
 
 test("bootstrap, authentication, and error controls are translated in every locale", () => {

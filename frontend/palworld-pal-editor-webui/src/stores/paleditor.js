@@ -1,18 +1,11 @@
 import { ref, computed, reactive, nextTick } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import en from "../i18n/en.js";
-import fr from "../i18n/fr.js";
-import ja from "../i18n/ja.js";
-import zhCN from "../i18n/zh-CN.js";
-
-const UI_LANGUAGES = Object.freeze({
-    en: "English",
-    "zh-CN": "中文",
-    ja: "日本語",
-    fr: "Français",
-});
-const UI_TRANSLATIONS = Object.freeze({ en, fr, ja, "zh-CN": zhCN });
+import {
+    DEFAULT_UI_TRANSLATION,
+    GAME_LANGUAGES,
+    UI_TRANSLATIONS,
+} from "../i18n/index.js";
 
 export const backendErrorDetails = error => {
     const status = error?.response?.status;
@@ -49,6 +42,18 @@ export function filterSkillOptions(skills, currentIds, hideInvalid) {
     const retainedIds = new Set(currentIds ?? []);
     return rows.filter(
         skill => !skill?.Invalid || retainedIds.has(skill?.InternalName),
+    );
+}
+
+export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
+    const target = selectedPal?.FamilyID
+        || selectedPal?.DataAccessKeyOG
+        || selectedPal?.CharacterID;
+    return (skins ?? []).filter(skin =>
+        skin?.TargetPalName === target
+        && (!hideInvalid
+            || !skin.Invalid
+            || skin.SkinName === selectedPal?.SkinName)
     );
 }
 
@@ -152,6 +157,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.SlotIndex = obj.SlotIndex;
             this.OwnerName = obj.OwnerName;
             this.CharacterID = obj.CharacterID;
+            this.FamilyID = obj.FamilyID;
             this.IconAccessKey = obj.IconAccessKey;
             this.DataAccessKey = obj.DataAccessKey;
             this.DataAccessKeyOG = obj.DataAccessKey;
@@ -447,7 +453,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
     const SKIN_DATA_LIST = ref([]);
-    const I18nList = ref(UI_LANGUAGES);
+    const I18nList = ref(GAME_LANGUAGES);
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
@@ -490,7 +496,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const UPDATE_DATA = ref({});
     const IS_OFFICIAL_BUILD = ref(false);
     const savedI18n = localStorage.getItem("PAL_I18n");
-    const I18n = ref(UI_TRANSLATIONS[savedI18n] ? savedI18n : "en");
+    const I18n = ref(GAME_LANGUAGES[savedI18n] ? savedI18n : "en");
     const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
     const HAS_PASSWORD = ref(false);
     const PAL_WRITE_BACK_PATH = ref("");
@@ -709,7 +715,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return false;
 
         if (response.status == 0) {
-            if (!localStorage.getItem("PAL_I18n") && UI_TRANSLATIONS[response.data.I18n]) {
+            if (response.data.I18nList) {
+                I18nList.value = response.data.I18nList;
+            }
+            if (!localStorage.getItem("PAL_I18n") && I18nList.value[response.data.I18n]) {
                 I18n.value = response.data.I18n;
             }
             if (!PAL_GAME_SAVE_PATH.value) {
@@ -997,7 +1006,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function getTranslatedText(translationKey, args = []) {
         let translation = UI_TRANSLATIONS[I18n.value]?.[translationKey]
-            ?? en[translationKey];
+            ?? DEFAULT_UI_TRANSLATION[translationKey];
         if (!translation) {
             console.warn(`Translation key "${translationKey}" not found.`);
             return "I18N_MISSING";

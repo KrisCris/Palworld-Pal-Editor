@@ -1,6 +1,6 @@
 <script setup>
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
 function filterInvalid(list) {
@@ -32,8 +32,10 @@ const isMinSuit = key => {
     (palStore.SELECTED_PAL_DATA.SuitabilityMinimums[key] || 0);
 };
 
-const availableSkins = () => filterInvalid(palStore.SKIN_DATA_LIST).filter(
-  skin => skin.TargetPalName === palStore.SELECTED_PAL_DATA.DataAccessKeyOG
+const availableSkins = () => filterPalSkins(
+  palStore.SKIN_DATA_LIST,
+  palStore.SELECTED_PAL_DATA,
+  palStore.HIDE_INVALID_OPTIONS,
 );
 
 const isMaxLv = () => {

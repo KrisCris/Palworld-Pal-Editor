@@ -41,7 +41,7 @@ def setup_config_from_args():
 
         if not DataProvider.is_valid_i18n(Config.i18n):
             LOGGER.warning(f"Invalid --i18n {Config.i18n}, default to en.")
-            Config.set_config("i18n", DataProvider.default_i18n)
+            Config.set_config("i18n", DataProvider.default_i18n())
 
         modes = ["cli", "gui", "web"]
         if Config.mode not in modes:

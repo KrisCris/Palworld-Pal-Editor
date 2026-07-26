@@ -27,14 +27,17 @@ function mockBackend({
     loaded = false,
     hasWorkingPal = false,
     players = [],
+    pals = [],
+    locale = "en",
+    locales = { en: "English" },
 } = {}) {
     const calls = [];
     axios.get = async url => {
         calls.push(["GET", url]);
         if (url.endsWith("fetch_config")) {
             return reply({
-                I18n: "en",
-                I18nList: { en: "English" },
+                I18n: locale,
+                I18nList: locales,
                 Path: "C:/save",
                 HasPassword: password,
                 VERSION: "test",
@@ -61,7 +64,10 @@ function mockBackend({
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
         if (url.endsWith("/save/load")) return reply(null);
-        if (url.endsWith("/player_pals")) return reply([]);
+        if (url.endsWith("/player_pals")) return reply(pals);
+        if (url.endsWith("/paldata")) {
+            return reply(pals.find(pal => pal.InstanceId === data.InstanceId));
+        }
         if (url.endsWith("/player_data")) {
             return reply(players.find(player => player.InstanceId === data.PlayerUId));
         }
@@ -282,6 +288,42 @@ test("loaded-save hydration selects the first player when there is no base camp"
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
+});
+
+test("selected Pal data retains its game-derived family", async () => {
+    const store = newStore();
+    mockBackend({
+        password: false,
+        loaded: true,
+        players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{
+            InstanceId: "pal-1",
+            CharacterID: "Boss_Anubis",
+            DataAccessKey: "Boss_Anubis",
+            FamilyID: "Anubis",
+        }],
+    });
+
+    await store.bootstrap();
+    await store.selectPal("pal-1");
+
+    assert.equal(store.SELECTED_PAL_DATA.FamilyID, "Anubis");
+});
+
+test("fetch_config publishes backend locales and accepts its untranslated locale", async () => {
+    const store = newStore();
+    const locales = {
+        en: "English",
+        de: "Deutsch",
+        "zh-TW": "繁體中文",
+    };
+    mockBackend({ password: false, locale: "de", locales });
+
+    await store.bootstrap();
+
+    assert.deepEqual(store.I18nList, locales);
+    assert.equal(store.I18n, "de");
+    assert.equal(store.getTranslatedText("BackendError_Title"), "Something went wrong");
 });
 
 test("healing all pals does not try to reselect a missing pal", async t => {

@@ -118,9 +118,9 @@ def none_guard(
 class DataProvider:
     icon_cache = {}
 
-    @property
+    @staticmethod
     def default_i18n() -> str:
-        return I18N_LIST.keys()[0]
+        return "en"
 
     def get_i18n_map() -> dict[str, str]:
         return I18N_LIST
