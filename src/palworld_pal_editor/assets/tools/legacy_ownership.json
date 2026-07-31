@@ -1,0 +1,20 @@
+{
+  "accepted_count": 844,
+  "backup_inventory_sha256": "6cb87d0a7c5960aba964335771fc6ff0c8e5fc7d7fe8e0af3438483e33806fa6",
+  "baseline_commit": "ffe29c70c436829675a017cde178620c6c7c713e",
+  "candidate_artifact": "legacy_ownership_candidate.json",
+  "candidate_artifact_sha256": "4ed82f171de68f9788788384d0af9ecb78c4efac9a35eaa13522f11ce15ee7a8",
+  "kind": "legacy_ownership_evidence",
+  "ownership_plan_sha256": "eb99bf29804fd5b5cc72a72788599280caf10c0e85497f492da6c0cace427ddb",
+  "review": {
+    "decision": "approved_ownership_evidence_only",
+    "review_date": "2026-07-26",
+    "reviewer": "/root/task1c_review"
+  },
+  "schema_version": 1,
+  "scope_counts": {
+    "pals": 350,
+    "skin": 25,
+    "tech": 469
+  }
+}
