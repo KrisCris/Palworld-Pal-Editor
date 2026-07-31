@@ -41,9 +41,16 @@ export function filterSkillOptions(skills, currentIds, hideInvalid) {
 
     const retainedIds = new Set(currentIds ?? []);
     return rows.filter(
-        skill => !skill?.Invalid || retainedIds.has(skill?.InternalName),
+        skill => (
+            (!skill?.Invalid && skill?.Assignable !== false)
+            || retainedIds.has(skill?.InternalName)
+        ),
     );
 }
+
+export const canToggleBossVariant = pal => Boolean(
+    pal?.HasBaseVariant && pal?.HasBossVariant,
+);
 
 export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
     const target = selectedPal?.FamilyID
@@ -230,6 +237,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         swapRare() {
             this.IsRarePal = !this.IsRarePal;
             updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
+        }
+
+        swapBoss() {
+            this.IsBOSS = !this.IsBOSS;
+            updatePal({ target: { name: "IsBOSS", value: this.IsBOSS } });
         }
 
         toggleAwakening() {
@@ -1634,10 +1646,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             Fire: "🔥",
             Dragon: "🐉",
             Grass: "☘️",
+            Leaf: "☘️",
             Ground: "🪨",
+            Earth: "🪨",
             Ice: "❄️",
             Electric: "⚡",
+            Electricity: "⚡",
             Neutral: "🔵",
+            Normal: "🔵",
             Dark: "🌑",
         };
         return elementEmojis[element] || "";
@@ -1653,6 +1669,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function displayRating(rating) {
         if (!rating) return "";
+        if (rating >= 5) return "🟣";
         if (rating == 4) return "🟢";
         if (rating >= 2) return "🟡";
         if (rating < 0) return "🔴";

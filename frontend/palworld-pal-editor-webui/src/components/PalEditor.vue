@@ -1,6 +1,6 @@
 <script setup>
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
-import { filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
+import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
 function filterInvalid(list) {
@@ -156,7 +156,11 @@ const suitabilityIconSrc = key => {
               {{ palStore.getTranslatedText("Editor_Variant") }}
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
             </p>
+            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
+              v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
+              :disabled="palStore.LOADING_FLAG">👑</button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
+              v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
               :disabled="palStore.LOADING_FLAG">✨</button>
           </div>
         </div>
@@ -521,8 +525,18 @@ const suitabilityIconSrc = key => {
 
 div.basicInfo {
   position: relative;
-  max-width: calc(var(--editor-panel-width) - 380px);
-  min-width: 600px;
+  width: min(750px, 100%);
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  flex: 1 1 750px;
+}
+
+div.basicInfo > div.left,
+div.basicInfo div.editField {
+  width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 div.palInfo {
@@ -585,12 +599,13 @@ p.const {
   display: flex;
   align-items: center;
   background-color: #272727;
-  height: 1.8rem;
+  min-height: 1.8rem;
   margin: .2rem;
   padding: .2rem .4rem;
   border-radius: .5rem;
   color: rgb(208, 212, 226);
   box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  overflow-wrap: anywhere;
 }
 
 p.out_of_container {

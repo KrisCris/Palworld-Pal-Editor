@@ -8,6 +8,7 @@ import {
     matchesPalQuery,
     moveListboxIndex,
     paldeckForRow,
+    palLabel,
 } from "../src/components/modules/pal-species-selector.js";
 
 const locales = await Promise.all([
@@ -206,6 +207,8 @@ test("Paldeck numbers keep the existing three-digit display format", () => {
     assert.equal(formatPaldeck("102B"), "102B");
     assert.equal(formatPaldeck("unknown"), "unknown");
     assert.equal(paldeckForRow({ SortingKey: "", PaldeckRecordID: "InternalFamilyKey" }), "");
+    assert.equal(palLabel({ SortingKey: "", I18n: "Unknown Pal" }), "Unknown Pal");
+    assert.equal(palLabel({ SortingKey: "7", I18n: "Tanzee" }), "007 Tanzee");
 });
 
 test("selector UI labels exist in every supported UI locale", () => {

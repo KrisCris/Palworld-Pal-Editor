@@ -6,10 +6,16 @@ import { createPinia, setActivePinia } from "pinia";
 import { watch } from "vue";
 
 import {
+    canToggleBossVariant,
     filterSkillOptions,
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
+
+test("boss toggles require both a base and boss family member", () => {
+    assert.equal(canToggleBossVariant({ HasBaseVariant: true, HasBossVariant: true }), true);
+    assert.equal(canToggleBossVariant({ HasBaseVariant: false, HasBossVariant: true }), false);
+});
 
 const storage = new Map();
 globalThis.localStorage = {
@@ -59,28 +65,29 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
     ];
     const snapshot = structuredClone(skills);
 
-    assert.deepEqual(filterSkillOptions(skills, undefined, true), [
-        skills[0],
-        skills[3],
-    ]);
+    assert.deepEqual(filterSkillOptions(skills, undefined, true), [skills[0]]);
     assert.deepEqual(filterSkillOptions(skills, ["current-invalid"], true), [
         skills[0],
         skills[1],
-        skills[3],
     ]);
     assert.deepEqual(
         filterSkillOptions(skills, ["current-invalid-family-extra"], true),
-        [skills[0], skills[3]],
+        [skills[0]],
     );
     assert.deepEqual(filterSkillOptions(skills, [], false), skills);
     assert.deepEqual(filterSkillOptions(undefined, undefined, true), []);
     assert.deepEqual(skills, snapshot);
 
-    const humanPunch = filterSkillOptions(skills, [], true).find(
-        skill => skill.InternalName === "EPalWazaID::Human_Punch",
+    assert.equal(
+        filterSkillOptions(skills, [], true).some(
+            skill => skill.InternalName === "EPalWazaID::Human_Punch",
+        ),
+        false,
     );
-    assert.equal(humanPunch.Assignable, false);
-    assert.deepEqual(skillBadges(humanPunch), ["disabled"]);
+    assert.deepEqual(filterSkillOptions(skills, ["EPalWazaID::Human_Punch"], true), [
+        skills[0],
+        skills[3],
+    ]);
 
     const retainedInvalid = filterSkillOptions(
         skills,
@@ -89,6 +96,19 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
     ).find(skill => skill.InternalName === "current-invalid");
     assert.equal(retainedInvalid.Invalid, true);
     assert.deepEqual(skillBadges(retainedInvalid), ["disabled"]);
+});
+
+test("game element enums and top passive tier use visible markers", () => {
+    setActivePinia(createPinia());
+    const store = usePalEditorStore();
+
+    assert.equal(store.displayElement("Leaf"), "☘️");
+    assert.equal(store.displayElement("Earth"), "🪨");
+    assert.equal(store.displayElement("Electricity"), "⚡");
+    assert.equal(store.displayElement("Normal"), "🔵");
+    assert.equal(store.displayRating(5), "🟣");
+    assert.equal(store.displayRating(4), "🟢");
+    assert.equal(store.displayRating(2), "🟡");
 });
 
 test("skill metadata labels and non-assignable warning exist in every UI locale", () => {

@@ -9,7 +9,7 @@ import {
   buildPalFamilies,
   hasVisibleVariant,
   moveListboxIndex,
-  paldeckForRow,
+  palLabel,
 } from "./pal-species-selector.js";
 
 const props = defineProps({
@@ -109,7 +109,6 @@ const variantTabindex = (variant, index) => (
     : (index ? -1 : 0)
 );
 
-const paldeck = row => paldeckForRow(row) || "—";
 </script>
 
 <template>
@@ -128,14 +127,16 @@ const paldeck = row => paldeckForRow(row) || "—";
         <span>
           <span v-if="displayRow?.Invalid" class="warning" aria-hidden="true">⚠️</span>
           <span v-if="displayRow?.Invalid" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
-          {{ paldeck(displayRow) }} {{ displayRow?.I18n || pendingId || t('Editor_Pal_Selector_Select') }}
+          {{ palLabel(displayRow, displayRow?.I18n || pendingId || t('Editor_Pal_Selector_Select')) }}
         </span>
         <small>{{ displayRow?.InternalName || props.modelValue }}</small>
       </span>
       <span aria-hidden="true">{{ open ? "▴" : "▾" }}</span>
     </button>
 
-    <div v-if="open" class="selector-popover" role="dialog" :aria-label="t('Editor_Pal_Selector_Title')">
+    <Teleport to="body">
+    <div v-if="open" class="selector-popover" role="dialog" :aria-label="t('Editor_Pal_Selector_Title')"
+      @keydown.esc.stop="close">
       <label class="search-label">
         <span>{{ t("Editor_Pal_Selector_Search") }}</span>
         <input
@@ -173,7 +174,7 @@ const paldeck = row => paldeckForRow(row) || "—";
                 <span>
                   <span v-if="family.invalidOnly" class="warning" aria-hidden="true">⚠️</span>
                   <span v-if="family.invalidOnly" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
-                  {{ family.Paldeck || "—" }} {{ family.Name }}
+                  {{ palLabel(family, family.Name) }}
                 </span>
                 <small>{{ family.FamilyID }}</small>
               </span>
@@ -207,7 +208,7 @@ const paldeck = row => paldeckForRow(row) || "—";
                 <span>
                   <span v-if="variant.warning" class="warning" aria-hidden="true">⚠️</span>
                   <span v-if="variant.warning" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
-                  {{ paldeck(variant) }} {{ variant.I18n || variant.InternalName }}
+                  {{ palLabel(variant) }}
                 </span>
                 <small>{{ variant.InternalName }}</small>
               </span>
@@ -227,13 +228,16 @@ const paldeck = row => paldeckForRow(row) || "—";
         >{{ t("Editor_Pal_Selector_Apply") }}</button>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
 <style scoped>
 .pal-species-selector {
   position: relative;
-  width: min(42rem, 75vw);
+  width: min(42rem, 100%);
+  min-width: 0;
+  flex: 1 1 24rem;
 }
 
 button {
@@ -295,20 +299,23 @@ small {
 }
 
 .selector-popover {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + .35rem);
-  left: 0;
+  position: fixed;
+  z-index: 30;
+  top: 50%;
+  left: 50%;
   display: flex;
-  width: 100%;
+  width: min(52rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
   box-sizing: border-box;
   flex-direction: column;
   gap: .5rem;
+  overflow-y: auto;
   padding: .75rem;
   border: 1px solid #777;
   border-radius: .75rem;
   background: #202020;
   box-shadow: 0 .5rem 2rem #111;
+  transform: translate(-50%, -50%);
 }
 
 .search-label {
@@ -342,7 +349,8 @@ button:focus-visible {
 
 .selector-pane {
   display: flex;
-  height: 18rem;
+  height: min(32rem, calc(100vh - 12rem));
+  min-height: 18rem;
   min-width: 0;
   box-sizing: border-box;
   flex-direction: column;
@@ -401,7 +409,7 @@ button:focus-visible {
 
 @media (max-width: 760px) {
   .pal-species-selector {
-    width: min(32rem, 70vw);
+    width: 100%;
   }
 
   .selector-panes {
@@ -409,7 +417,8 @@ button:focus-visible {
   }
 
   .selector-pane {
-    height: 10rem;
+    height: min(16rem, 30vh);
+    min-height: 8rem;
   }
 }
 </style>

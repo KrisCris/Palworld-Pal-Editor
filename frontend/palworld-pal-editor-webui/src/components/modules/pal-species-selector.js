@@ -29,6 +29,10 @@ export const paldeckForRow = row => formatPaldeck(
         : `${row.PaldeckIndex}${row.PaldeckSuffix ?? ""}`),
 );
 
+export const palLabel = (row, name = row?.I18n || row?.InternalName || "") => (
+    [paldeckForRow(row), name].filter(Boolean).join(" ")
+);
+
 const variantSortKey = row => [
     row?.VariantTags?.includes("base") ? -1 : (KIND_ORDER.get(row?.VariantKind) ?? 99),
     normalize(row?.InternalName),
