@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -29,6 +30,7 @@ EXPECTED_SOURCES = {
     "gender-male": "Pal/Content/Pal/Texture/UI/Main_Menu/T_Icon_PanGender_Male",
     "gender-female": "Pal/Content/Pal/Texture/UI/Main_Menu/T_Icon_PanGender_Female",
     "rare": "Pal/Content/Pal/Texture/UI/InGame/T_icon_pal_rare",
+    "boss": "Pal/Content/Pal/Texture/UI/InGame/T_icon_enemy_strong",
     "condense": "Pal/Content/Pal/Texture/UI/IngameMenu/T_icon_condense",
     "heal": (
         "Pal/Content/Pal/Texture/UI/InGame/SkillIcon/"
@@ -48,6 +50,7 @@ EXPECTED_DIMENSIONS = {
     "gender-male": (34, 34),
     "gender-female": (34, 34),
     "rare": (36, 36),
+    "boss": (64, 64),
     "condense": (28, 32),
     "heal": (128, 128),
     "revive": (128, 128),
@@ -57,11 +60,15 @@ EXPECTED_DIMENSIONS = {
 def load_module():
     if not MODULE_PATH.is_file():
         raise AssertionError(f"missing UI icon extractor: {MODULE_PATH}")
-    spec = importlib.util.spec_from_file_location("extract_ui_icons", MODULE_PATH)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
+    sys.path.insert(0, str(MODULE_PATH.parent))
+    try:
+        spec = importlib.util.spec_from_file_location("extract_ui_icons", MODULE_PATH)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        sys.path.pop(0)
 
 
 class UiIconExtractorTests(unittest.TestCase):

@@ -61,7 +61,7 @@ test("player and Pal rows preserve selection contracts without grayscale selecti
     assert.match(pals, /import \{ paldeckForRow \}/);
     assert.match(pals, /const paldeck = paldeckForRow\(row\)/);
     assert.match(pals, /v-if="pal\.IsRarePal"[^>]*:src="'\/image\/ui\/rare'"/);
-    assert.match(pals, /v-if="pal\.IsBOSS"[^>]*name="crown"/);
+    assert.match(pals, /v-if="pal\.IsBOSS"[^>]*:src="'\/image\/ui\/boss'"/);
     assert.doesNotMatch(players + pals, /\[selected|filter:\s*grayscale[^}]*selected/s);
 });
 

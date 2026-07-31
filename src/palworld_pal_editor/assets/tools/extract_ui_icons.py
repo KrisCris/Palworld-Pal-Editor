@@ -42,6 +42,7 @@ UI_ICON_SOURCES = (
         "Pal/Content/Pal/Texture/UI/Main_Menu/T_Icon_PanGender_Female",
     ),
     ("rare", "Pal/Content/Pal/Texture/UI/InGame/T_icon_pal_rare"),
+    ("boss", "Pal/Content/Pal/Texture/UI/InGame/T_icon_enemy_strong"),
     ("condense", "Pal/Content/Pal/Texture/UI/IngameMenu/T_icon_condense"),
     (
         "heal",
@@ -62,6 +63,7 @@ UI_ICON_DIMENSIONS = {
     "gender-male": (34, 34),
     "gender-female": (34, 34),
     "rare": (36, 36),
+    "boss": (64, 64),
     "condense": (28, 32),
     "heal": (128, 128),
     "revive": (128, 128),

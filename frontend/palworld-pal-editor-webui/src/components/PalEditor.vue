@@ -199,11 +199,11 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
               {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') || '-' }}
             </span>
             <div class="editor-field__actions">
-              <button class="editor-button editor-button--secondary editor-button--icon"
+              <button class="editor-button editor-button--danger editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
                 v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG"><UiIcon name="crown" /></button>
+                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="'/image/ui/boss'" alt=""></button>
               <button class="editor-button editor-button--secondary editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"

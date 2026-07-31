@@ -90,7 +90,7 @@ function palMetadata(pal) {
         <span class="pal-copy">
           <strong class="pal-name">
             <img v-if="pal.IsRarePal" class="pal-status-icon" :src="'/image/ui/rare'" alt="">
-            <UiIcon v-if="pal.IsBOSS" class="pal-status-icon" name="crown" />
+            <img v-if="pal.IsBOSS" class="pal-status-icon" :src="'/image/ui/boss'" alt="">
             <span>{{ pal.DisplayName }}</span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>

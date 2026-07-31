@@ -19,6 +19,29 @@ const locales = await Promise.all([
     import("../src/i18n/ja.js"),
     import("../src/i18n/zh-CN.js"),
 ]);
+const [{ default: en }, { default: fr }, { default: ja }, { default: zhCN }] = locales;
+
+test("variant labels distinguish Alpha bosses from Lucky Pals", () => {
+    assert.equal(en.Editor_Variant_boss, "Alpha");
+    assert.equal(en.Editor_Variant_rare, "Lucky");
+    assert.equal(fr.Editor_Variant_boss, "Alpha");
+    assert.equal(fr.Editor_Variant_rare, "Chanceux");
+    assert.equal(ja.Editor_Variant_boss, "ボス");
+    assert.equal(ja.Editor_Variant_rare, "希少");
+    assert.equal(zhCN.Editor_Variant_boss, "头目");
+    assert.equal(zhCN.Editor_Variant_rare, "稀有");
+});
+
+test("variant action labels use the same Alpha and Lucky semantics", () => {
+    assert.equal(en.Editor_Btn_Toggle_Boss, "Toggle Alpha status");
+    assert.equal(en.Editor_Btn_Toggle_Rare, "Toggle Lucky status");
+    assert.equal(fr.Editor_Btn_Toggle_Boss, "Basculer le statut Alpha");
+    assert.equal(fr.Editor_Btn_Toggle_Rare, "Basculer le statut Chanceux");
+    assert.equal(ja.Editor_Btn_Toggle_Boss, "ボス状態を切り替える");
+    assert.equal(ja.Editor_Btn_Toggle_Rare, "希少状態を切り替える");
+    assert.equal(zhCN.Editor_Btn_Toggle_Boss, "切换头目状态");
+    assert.equal(zhCN.Editor_Btn_Toggle_Rare, "切换稀有状态");
+});
 
 test("startup translations are available synchronously without the backend", () => {
     setActivePinia(createPinia());
