@@ -20,7 +20,7 @@ const [source, mainCss, editorCss, selectorSource] = await Promise.all([
 
 const basicPanel = () => {
   const start = source.indexOf('data-testid="pal-basic-info"');
-  const end = source.indexOf('<div class="EditorItem flex-v item left">');
+  const end = source.indexOf('<div class="pal-progression-grid">');
   assert.notEqual(start, -1, "Pal basic info boundary");
   assert.notEqual(end, -1, "Pal basic info end");
   return source.slice(start, end);
@@ -74,7 +74,7 @@ test("Pal basic info is isolated from legacy visual classes", () => {
   }
   assert.doesNotMatch(panel, /(?:class|:class)="[^"]*\b(?:EditorItem|const|edit|selector)\b/);
   assert.doesNotMatch(source, /button#(?:dump|dupe|del)_btn\s*\{/);
-  assert.match(source, /\.PalEditor\s*>\s*div/);
+  assert.match(source, /\.pal-editor\s*\{/);
 });
 
 test("Pal basic info composes by container size instead of viewport size", () => {

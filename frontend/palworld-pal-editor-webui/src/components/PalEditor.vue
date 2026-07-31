@@ -6,15 +6,6 @@ import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
-function filterInvalid(list) {
-  return list.filter(item => {
-    if (palStore.HIDE_INVALID_OPTIONS) {
-      return item.InternalName === palStore.SELECTED_PAL_DATA?.CharacterID || !(item.Invalid || item.IsHuman)
-    }
-    return true
-  })
-}
-
 const currentSkillIds = () => [
   ...(palStore.SELECTED_PAL_DATA.EquipWaza || []),
   ...(palStore.SELECTED_PAL_DATA.MasteredWaza || []),
@@ -98,7 +89,7 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
 </script>
 
 <template>
-  <div :class="['PalEditor', { 'unref': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]">
+  <div class="pal-editor" :class="{ 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }">
     <section
       data-testid="pal-basic-info"
       :class="['pal-basic-info editor-surface', { 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]"
@@ -299,298 +290,209 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
         </button>
       </div>
     </section>
-    <div class="EditorItem flex-v item left">
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_IV") }}
-      </p>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}
-          {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
-        </p>
-        <input class="slider" type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
-        <p class="const">
-          {{ palStore.getTranslatedText("Editor_Awakening") }}
-          {{ palStore.SELECTED_PAL_DATA.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}
-        </p>
-        <button class="edit" @click="palStore.SELECTED_PAL_DATA.toggleAwakening" name="IsAwakening"
-          :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
-      </div>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}
-          {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
-        </p>
-        <input class="slider" type="range" name="Talent_Defense" min="0"
-          :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}
-          {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
-        </p>
-        <input class="slider" type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween" v-if="!palStore.HIDE_INVALID_OPTIONS">
-        <p class="const">
-          {{ palStore.getTranslatedText("Editor_IV_MELEE") }}
-          {{ palStore.SELECTED_PAL_DATA.Talent_Melee }}
-        </p>
-        <input class="slider" type="range" name="Talent_Melee" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-          :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
-          @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
-      </div>
-      <hr>
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}
-      </p>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}
-          {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
-        </p>
-        <input class="slider" type="range" name="Rank_HP" min="0"
-          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
-          {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
-        </p>
-        <input class="slider" type="range" name="Rank_Attack" min="0"
-          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @mouseup="palStore.updatePal" @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
-          {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
-        </p>
-        <input class="slider" type="range" name="Rank_Defence" min="0"
-          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
-      </div>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/stat-work-speed'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
-          {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
-        </p>
-        <input class="slider" type="range" name="Rank_CraftSpeed" min="0"
-          :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" :disabled="palStore.LOADING_FLAG"
-          v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
-      </div>
-      <hr>
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Condenser") }}
-      </p>
-      <div class="editField spaceBetween">
-        <p class="const">
-          <img class="game-icon" :src="'/image/ui/condense'" alt=""> {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}
-          {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
-        </p>
-        <input class="slider" type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
-          v-model="palStore.SELECTED_PAL_DATA.Rank" :disabled="palStore.LOADING_FLAG" @mouseup="palStore.updatePal"
-          @touchend="palStore.updatePal">
-      </div>
+    <div class="pal-progression-grid">
+      <section class="pal-panel editor-surface">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_IV") }}</h2>
+        <div class="range-grid">
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Talent_HP }}</strong>
+            <input type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @change="palStore.updatePal">
+          </label>
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</strong>
+            <input type="range" name="Talent_Defense" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @change="palStore.updatePal">
+          </label>
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</strong>
+            <input type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @change="palStore.updatePal">
+          </label>
+          <label class="range-control" v-if="!palStore.HIDE_INVALID_OPTIONS">
+            <span>{{ palStore.getTranslatedText("Editor_IV_MELEE") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Melee }}</strong>
+            <input type="range" name="Talent_Melee" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @change="palStore.updatePal">
+          </label>
+        </div>
+        <div class="pal-inline-action" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
+          <span>{{ palStore.getTranslatedText("Editor_Awakening") }}</span>
+          <strong>{{ palStore.SELECTED_PAL_DATA.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}</strong>
+          <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.toggleAwakening"
+            name="IsAwakening" :aria-label="palStore.getTranslatedText('Editor_Awakening')"
+            :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
+        </div>
+      </section>
+
+      <section class="pal-panel editor-surface">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
+        <div class="range-grid">
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Rank_HP }}</strong>
+            <input type="range" name="Rank_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @change="palStore.updatePal">
+          </label>
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</strong>
+            <input type="range" name="Rank_Attack" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @change="palStore.updatePal">
+          </label>
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</strong>
+            <input type="range" name="Rank_Defence" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @change="palStore.updatePal">
+          </label>
+          <label class="range-control">
+            <span><img class="game-icon" :src="'/image/ui/stat-work-speed'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
+            <strong>{{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</strong>
+            <input type="range" name="Rank_CraftSpeed" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @change="palStore.updatePal">
+          </label>
+        </div>
+        <label class="range-control range-control--wide">
+          <span><img class="game-icon" :src="'/image/ui/condense'" alt=""> {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
+          <strong>{{ palStore.SELECTED_PAL_DATA.Rank - 1 }}</strong>
+          <input type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
+            :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank" @change="palStore.updatePal">
+        </label>
+      </section>
     </div>
-    <div class="EditorItem flex-v item left skillPanel"
+
+    <section class="pal-panel editor-surface"
       v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Suitabilities") }}
-      </p>
-      <div class="flex-h">
-        <div class="editField skillList">
-          <div v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities"
-            v-show="palStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
-            <p class="const">
-              <img :class="['suitIcon']" :src="suitabilityIconSrc(key)" alt="">
-              {{ value }}
-            </p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
-              :disabled="palStore.LOADING_FLAG || isMinSuit(key)"><UiIcon name="minus" /></button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
-              :disabled="palStore.LOADING_FLAG || isMaxSuit(key)"><UiIcon name="plus" /></button>
+      <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
+      <div class="suitability-grid">
+        <div class="suitability-control" v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities" :key="key"
+          v-show="palStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
+          <img class="suitability-icon" :src="suitabilityIconSrc(key)" :alt="key.split('::').pop()" :title="key.split('::').pop()">
+          <strong>{{ value }}</strong>
+          <div class="suitability-control__actions">
+            <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
+              :aria-label="`${key} -`" :disabled="palStore.LOADING_FLAG || isMinSuit(key)"><UiIcon name="minus" /></button>
+            <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
+              :aria-label="`${key} +`" :disabled="palStore.LOADING_FLAG || isMaxSuit(key)"><UiIcon name="plus" /></button>
           </div>
         </div>
       </div>
-    </div>
-    <div class="EditorItem item flex-v left skillPanel">
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Passive_Skills") }}
-      </p>
-      <div class="flex-h">
-        <div class="editField skillList">
-          <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
-            <div class="tooltip-container">
-              <p class="const" :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
-                <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span> {{
-                  palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
-              </p>
-              <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
-            </div>
+    </section>
 
-            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
+    <section class="pal-panel editor-surface">
+      <div class="skill-section">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Passive_Skills") }}</h2>
+        <div class="skill-cards">
+          <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList" :key="skill"
+            :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
+            <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span>
+            <div class="skill-card__identity">
+              <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+              <small>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</small>
+            </div>
+            <button class="editor-button editor-button--icon editor-button--danger"
+              @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
+              :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`"
               :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
-          </div>
-          <div class="editField"
-            v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
-            <SearchSelect class="PassiveSkill selector" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM"
-              placement="top"
-              :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
-              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
-              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-              :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG" />
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
-              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
-          </div>
+          </article>
+        </div>
+        <div class="skill-add" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
+          <SearchSelect v-model="palStore.PAL_PASSIVE_SELECTED_ITEM" placement="top"
+            :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
+            :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
+            :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
+            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG" />
+          <button class="editor-button editor-button--icon editor-button--primary"
+            @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
+            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
+            :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
         </div>
       </div>
-      <hr>
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Equipped_Skills") }}
-      </p>
-      <div class="flex-h">
-        <div class="editField skillList">
-          <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
-            <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-                <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
-                  :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt=""> {{
-                  palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
-                }}
-              </p>
-              <span class="tooltip-text">
-                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
-                <p> --- </p>
-                <p>
-                  {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
-                  {{ palStore.getTranslatedText("Editor_Skill_CD") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
-                </p>
-                <p>
-                  {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
-                </p>
-                <p>
-                  {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}
-                </p>
-                <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
-                  {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
-                </p>
-              </span>
-            </div>
 
-            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
-              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <p class="cat">
-        {{ palStore.getTranslatedText("Editor_Mastered_Skills") }}
-      </p>
-      <div class="flex-h">
-        <div class="editField skillList">
-          <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
-            <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-                <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
-                  :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt="">
-                {{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}
-              </p>
-              <span class="tooltip-text">
-                <h3>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</h3>
-                <p>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[1] || "" }}</p>
-                <p> --- </p>
-                <p>
-                  {{ palStore.getTranslatedText("Editor_Skill_ATK") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Power }} |
-                  {{ palStore.getTranslatedText("Editor_Skill_CD") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.CT }}
-                </p>
-                <p>
-                  {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
-                </p>
-                <p>
-                  {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}
-                </p>
-                <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
-                  {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
-                </p>
-              </span>
+      <div class="skill-section">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Equipped_Skills") }}</h2>
+        <div class="skill-cards">
+          <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza" :key="skill"
+            :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
+            <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
+              :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt="">
+            <div class="skill-card__identity">
+              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
+              <small class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
             </div>
-            <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
-              && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)" class="edit"
-              @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
-              :title="palStore.ACTIVE_SKILLS[skill]?.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-              :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false"><UiIcon name="plus" /></button>
-            <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
+            <button class="editor-button editor-button--icon editor-button--danger"
+              @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
+              :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`"
               :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
-          </div>
-          <div class="editField">
-            <SearchSelect class="selector" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM"
-              placement="top"
-              :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
-              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
-              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-              :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG" />
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
-              :disabled="palStore.LOADING_FLAG
-                || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-                || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false"><UiIcon name="plus" /></button>
-          </div>
+          </article>
         </div>
       </div>
-    </div>
+
+      <div class="skill-section">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
+        <div class="skill-cards">
+          <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza" :key="skill"
+            :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
+            <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
+              :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt="">
+            <div class="skill-card__identity">
+              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
+              <small class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+            </div>
+            <div class="skill-card__actions">
+              <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
+                && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
+                class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+                :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
+                :title="palStore.ACTIVE_SKILLS[skill]?.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
+                :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false"><UiIcon name="plus" /></button>
+              <button class="editor-button editor-button--icon editor-button--danger"
+                @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
+                :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
+                :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
+            </div>
+          </article>
+        </div>
+        <div class="skill-add">
+          <SearchSelect v-model="palStore.PAL_ACTIVE_SELECTED_ITEM" placement="top"
+            :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
+            :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
+            :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
+            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG" />
+          <button class="editor-button editor-button--icon editor-button--primary"
+            @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
+            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
+            :disabled="palStore.LOADING_FLAG
+              || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
+              || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false"><UiIcon name="plus" /></button>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.PalEditor {
-  display: flex;
-  height: var(--sub-height);
-  overflow-y: auto;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  align-content: flex-start;
-  gap: .5rem;
+.pal-editor {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: var(--editor-space-3);
+  container: pal-editor / inline-size;
 }
 
-.PalEditor.unref {
+.pal-editor.is-unreferenced {
   filter: grayscale(100%);
 }
 
-.EditorItem {
-  display: flex;
-  flex-shrink: 0;
-  background: #484848;
-  padding: 1.5rem;
-  border-radius: 1rem;
-}
-
-/* .EditorItem .Basic-Info {} */
-
-/* option.PassiveSkill{
-  background-color: red;
-} */
-
 .pal-basic-info {
   max-width: 100%;
-  flex: 1 1 62rem;
+  width: 100%;
   container-name: pal-basic-info;
   container-type: inline-size;
 }
@@ -707,88 +609,6 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
   }
 }
 
-div.skillPanel {
-  max-width: var(--editor-panel-width);
-  flex-wrap: wrap;
-}
-
-div.skillList {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-hr {
-  border: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #8a8a8a;
-  margin: 20px 0;
-}
-
-button {
-  cursor: pointer;
-}
-
-p.cat {
-  margin-top: -.8rem;
-  margin-left: -.5rem;
-}
-
-.PalEditor > div,
-.PalEditor > div div {
-  display: flex;
-  align-items: center;
-}
-
-/* div.item {
-  margin: .5rem;
-} */
-
-div.flex-v {
-  flex-direction: column;
-  gap: .2rem;
-}
-
-div.flex-h {
-  flex-direction: row;
-  gap: .5rem
-}
-
-div.left {
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-p.const {
-  display: flex;
-  align-items: center;
-  background-color: #272727;
-  min-height: 1.8rem;
-  margin: .2rem;
-  padding: .2rem .4rem;
-  border-radius: .5rem;
-  color: rgb(208, 212, 226);
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  overflow-wrap: anywhere;
-}
-
-p.out_of_container {
-  color: #3db15e !important;
-}
-
-img.palIcon {
-  max-width: 15vh;
-  border-radius: 50%;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  margin-bottom: 1rem;
-}
-
-img.suitIcon {
-  height: 1.8rem;
-  margin: .2rem;
-  padding: .2rem .2rem;
-}
-
 .game-icon,
 .element-icon {
   width: 1.25rem;
@@ -810,169 +630,161 @@ img.suitIcon {
 .passive-tier--positive { background: #e1b84b; }
 .passive-tier--negative { background: #e06363; }
 
-img.palIcon.unref {
-  filter: grayscale(100%);
+.pal-progression-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--editor-space-3);
+  min-width: 0;
 }
 
-div.editField {
-  /* border-style: dashed;
-  border-width: 1px;
-  border-color: white; */
-  /* width: 100%; */
-  /* flex-wrap: nowrap; */
-  gap: 5px
+.pal-panel.editor-surface {
+  width: 100%;
+  gap: var(--editor-space-3);
+  padding: var(--editor-space-4);
+  border-radius: var(--editor-radius-md);
 }
 
-button.edit {
-  display: flex;
+.pal-panel__heading {
+  margin: 0;
+  padding-bottom: var(--editor-space-2);
+  border-bottom: 1px solid var(--editor-color-border);
+  font-size: 1rem;
+}
+
+.range-grid,
+.suitability-grid,
+.skill-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--editor-space-2);
+  min-width: 0;
+}
+
+.range-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
+  gap: var(--editor-space-1) var(--editor-space-2);
+  min-width: 0;
+  padding: var(--editor-space-2) var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-surface-subtle);
+}
+
+.range-control > span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--editor-space-1);
+  color: var(--editor-color-muted);
+}
+
+.range-control input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--editor-color-focus);
+}
+
+.range-control--wide {
+  margin-top: var(--editor-space-1);
+}
+
+.pal-inline-action,
+.suitability-control,
+.skill-add,
+.skill-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--editor-space-2);
+}
+
+.pal-inline-action {
+  padding-top: var(--editor-space-2);
+  border-top: 1px solid var(--editor-color-border);
+}
+
+.pal-inline-action strong,
+.skill-card__identity {
+  min-width: 0;
+  flex: 1;
+}
+
+.suitability-control {
+  padding: var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-surface-subtle);
+}
+
+.suitability-icon {
   width: 2rem;
   height: 2rem;
-  padding: 0rem;
-  margin: 0rem;
-  background-color: #848484;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  transition: all 0.15s ease-in-out;
+  object-fit: contain;
 }
 
-button.edit:hover {
-  background-color: #9c9c9c;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  transition: all 0.15s ease-in-out;
-}
-
-button.edit:disabled {
-  background-color: #8b8b8b;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.text {
-  width: 100%;
-  background-color: #2c77c2;
-  padding: 1rem .5rem;
-  margin: .2rem;
-}
-
-button.text:hover {
-  background-color: #18518a;
-}
-
-button.text:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.edit_text {
-  width: 5rem;
-  background-color: #2c77c2;
-  padding: 1rem .5rem;
-  margin: .2rem;
-}
-
-button.edit_text:hover {
-  background-color: #18518a;
-}
-
-button.edit_text:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.del {
-  background-color: #ffcece;
-}
-
-button.del:hover {
-  background-color: #7c0f0f;
-}
-
-button.del:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-input.edit {
-  height: 2rem;
-  background-color: #6a6a6c;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  font-size: 1.2rem;
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
-}
-
-input.edit:focus {
-  background-color: #b8b8b8;
-  color: black;
-  /* border: 2px solid #6a6a6c; */
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-}
-
-input.edit::placeholder {
-  color: #cccccca2
-}
-
-div.spaceBetween {
+.suitability-control__actions,
+.skill-card__actions {
   display: flex;
-  width: 100%;
-  justify-content: space-between
+  margin-left: auto;
+  gap: var(--editor-space-1);
 }
 
-.tooltip-container {
-  position: relative;
-  display: inline-block;
+.skill-section {
+  display: grid;
+  gap: var(--editor-space-2);
+  min-width: 0;
 }
 
-.tooltip-text {
-  visibility: hidden;
-  width: 200px;
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  text-align: center;
-  border-radius: 6px;
-  padding: 1rem;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -60px;
-  margin-bottom: .25rem;
+.skill-section + .skill-section {
+  padding-top: var(--editor-space-3);
+  border-top: 1px solid var(--editor-color-border);
 }
 
-.tooltip-container:hover .tooltip-text {
-  visibility: visible;
+.skill-card {
+  padding: var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-surface-subtle);
+}
+
+.skill-card__identity {
+  display: grid;
+  gap: var(--editor-space-1);
+  overflow: hidden;
+}
+
+.skill-card__identity strong,
+.skill-card__identity small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skill-card__identity small {
+  color: var(--editor-color-muted);
+}
+
+.skill-add > :first-child {
+  min-width: 0;
+  flex: 1;
 }
 
 .skill-warning {
-  color: #ffd27a;
+  color: #ffd27a !important;
 }
 
-select.selector {
-  display: flex;
-  align-items: center;
-  background-color: #272727;
-  height: 1.8rem;
-  margin: .2rem;
-  padding: .2rem .4rem;
-  border-radius: .5rem;
-  color: rgb(208, 212, 226);
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  /* max-width: 50%; */
+@container pal-editor (max-width: 42rem) {
+  .pal-progression-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container pal-editor (max-width: 30rem) {
+  .range-grid,
+  .suitability-grid,
+  .skill-cards {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
