@@ -182,6 +182,33 @@ def test_game_derived_character_contract():
                 assert row["FamilyID"].casefold() not in pal_index
 
 
+def test_unique_breeding_requires_reachable_parents_and_alpha_follows_valid_base():
+    pals = load("pal_data.json")
+
+    for character_id in (
+        "BeardedDragon",
+        "BlackFurDragon",
+        "DarkMutant",
+        "ElecLion",
+        "FlowerPrince",
+        "GrassDragon",
+        "Mothman",
+        "PinkKangaroo",
+        "PoseidonOrca",
+        "WaterLizard",
+    ):
+        assert pals[character_id]["Invalid"] is True, character_id
+        assert pals[character_id]["RegularlyObtainable"] is False, character_id
+        assert pals[character_id]["AvailabilitySources"] == [], character_id
+
+    assert pals["GhostRabbit_Grass"]["Invalid"] is False
+    assert "unique-breeding" in pals["GhostRabbit_Grass"]["ObtainMethods"]
+    assert pals["BOSS_GhostRabbit_Grass"]["Invalid"] is False
+    assert pals["BOSS_GhostRabbit_Grass"]["AvailabilitySources"] == [
+        {"Kind": "alpha-form", "ID": "GhostRabbit_Grass"}
+    ]
+
+
 def test_authoritative_family_variant_and_source_values():
     pals = load("pal_data.json")
 

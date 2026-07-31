@@ -7474,10 +7474,17 @@
             "boss"
         ],
         "IconKey": "AmaterasuWolf",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "AmaterasuWolf"
+            }
+        ],
         "I18n": {
             "ja": "蒼炎の守り神 シラヌイ",
             "de": "Hüter der Azurflammen Kitsun",
@@ -8032,10 +8039,17 @@
             "boss"
         ],
         "IconKey": "Baphomet_Dark",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Baphomet_Dark"
+            }
+        ],
         "I18n": {
             "ja": "闇夜のハイエナ アビスゴート",
             "de": "Hyäne der mondlosen Nacht Incineram Noct",
@@ -9297,10 +9311,17 @@
             "boss"
         ],
         "IconKey": "BlackGriffon",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "BlackGriffon"
+            }
+        ],
         "I18n": {
             "ja": "未知の生命体 ゼノグリフ",
             "de": "Unbekannte Lebensform Shadowbeak",
@@ -12886,10 +12907,17 @@
             "boss"
         ],
         "IconKey": "Deer_Ground",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Deer_Ground"
+            }
+        ],
         "I18n": {
             "ja": "黄金の角 ヤマガミ",
             "de": "Güldenes Geweih Eikthyrdeer Terra",
@@ -13490,10 +13518,17 @@
             "boss"
         ],
         "IconKey": "ElecCat",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ElecCat"
+            }
+        ],
         "I18n": {
             "ja": "やんちゃなトラネコ ボルトラ",
             "de": "Verspieltes Funkenkätzchen Sparkit",
@@ -14028,10 +14063,17 @@
             "boss"
         ],
         "IconKey": "FairyDragon_Water",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "FairyDragon_Water"
+            }
+        ],
         "I18n": {
             "ja": "渦潮の怪物 シルティア",
             "de": "Bestie des Meeresstrudels Elphidran Aqua",
@@ -15203,10 +15245,17 @@
             "boss"
         ],
         "IconKey": "FlowerDoll",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "FlowerDoll"
+            }
+        ],
         "I18n": {
             "ja": "花園の姫君 フラリーナ",
             "de": "Prinzessin des Blumengartens Petallia",
@@ -15334,10 +15383,17 @@
             "boss"
         ],
         "IconKey": "FlowerDoll_Fire",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "FlowerDoll_Fire"
+            }
+        ],
         "I18n": {
             "ja": "灰園の姫君 チェリーナ",
             "de": "Prinzessin des Aschegartens Petallia Ignis",
@@ -17663,10 +17719,17 @@
             "boss"
         ],
         "IconKey": "GrassRabbitMan",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GrassRabbitMan"
+            }
+        ],
         "I18n": {
             "ja": "森を駆ける疾風 ラベロット",
             "de": "Windschneller Waldläufer Verdash",
@@ -17795,10 +17858,17 @@
             "boss"
         ],
         "IconKey": "HadesBird",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "HadesBird"
+            }
+        ],
         "I18n": {
             "ja": "冥府の翼 ヘルガルダ",
             "de": "Flügel der Verdammnis Helzephyr",
@@ -18375,10 +18445,17 @@
             "boss"
         ],
         "IconKey": "Hedgehog_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Hedgehog_Ice"
+            }
+        ],
         "I18n": {
             "ja": "踏むとキケン！ コチグリ",
             "de": "Pass auf, wo du hintrittst! Jolthog Cryst",
@@ -18506,10 +18583,17 @@
             "boss"
         ],
         "IconKey": "HerculesBeetle",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "HerculesBeetle"
+            }
+        ],
         "I18n": {
             "ja": "重鎧の闘士 グラクレス",
             "de": "Gepanzerter Titan Warsect",
@@ -18786,10 +18870,17 @@
             "boss"
         ],
         "IconKey": "Horus",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Horus"
+            }
+        ],
         "I18n": {
             "ja": "炎空の覇者 ホルス",
             "de": "Gebieter des glutheißen Himmels Faleris",
@@ -19056,10 +19147,17 @@
             "boss"
         ],
         "IconKey": "IceFox",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "IceFox"
+            }
+        ],
         "I18n": {
             "ja": "凍てつく氷狐 フブキツネ",
             "de": "Eisblauer Fuchs Foxcicle",
@@ -20629,10 +20727,17 @@
             "boss"
         ],
         "IconKey": "Kirin_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Kirin_Ice"
+            }
+        ],
         "I18n": {
             "ja": "氷雪狂嵐 レイコーン",
             "de": "Eisstürmender Mythos Univolt Cryst",
@@ -21359,10 +21464,17 @@
             "boss"
         ],
         "IconKey": "LazyDragon_Electric",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "LazyDragon_Electric"
+            }
+        ],
         "I18n": {
             "ja": "雷鳴の暴食竜 パリピドン",
             "de": "Verfressener Donnerdrache Relaxaurus Lux",
@@ -22771,10 +22883,17 @@
             "boss"
         ],
         "IconKey": "Monkey_Fire",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Monkey_Fire"
+            }
+        ],
         "I18n": {
             "ja": "火遊び好きの カレッパ",
             "de": "Feurige Finger Tanzee Ignis",
@@ -22902,10 +23021,17 @@
             "boss"
         ],
         "IconKey": "MopBaby",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MopBaby"
+            }
+        ],
         "I18n": {
             "ja": "謎のモフモフ コモップ",
             "de": "Flauschiger Kryptid Swee",
@@ -24868,10 +24994,17 @@
             "boss"
         ],
         "IconKey": "PlantSlime",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "PlantSlime"
+            }
+        ],
         "I18n": {
             "ja": "突然変異した ナエモチ",
             "de": "Spontan mutiertes Gumoss",
@@ -26276,10 +26409,17 @@
             "boss"
         ],
         "IconKey": "SakuraSaurus_Water",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SakuraSaurus_Water"
+            }
+        ],
         "I18n": {
             "ja": "夏を告げる波 スプラドン",
             "de": "Bote der Sommerfrische Broncherry Aqua",
@@ -27432,10 +27572,17 @@
             "boss"
         ],
         "IconKey": "SoldierBee",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SoldierBee"
+            }
+        ],
         "I18n": {
             "ja": "守衛隊長 ビーナイト",
             "de": "Hauptmann der honiglichen Wache Beegarde",
@@ -27983,10 +28130,17 @@
             "boss"
         ],
         "IconKey": "SweetsSheep_Ground",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SweetsSheep_Ground"
+            }
+        ],
         "I18n": {
             "ja": "特大スイーツ メリコロネ",
             "de": "Extragroßes Dessert Woolipop Terra",
@@ -28418,10 +28572,17 @@
             "boss"
         ],
         "IconKey": "ThunderBird_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ThunderBird_Ice"
+            }
+        ],
         "I18n": {
             "ja": "霜華の翼 チルバード",
             "de": "Schwingen der Frostblumen Beakon Cryst",
@@ -28699,10 +28860,17 @@
             "boss"
         ],
         "IconKey": "ThunderDog_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ThunderDog_Ice"
+            }
+        ],
         "I18n": {
             "ja": "氷迅の走者 フリーズマ",
             "de": "Schnellfüßiger Eisblitz Rayhound Cryst",
@@ -28832,10 +29000,17 @@
             "boss"
         ],
         "IconKey": "ThunderDragonMan",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ThunderDragonMan"
+            }
+        ],
         "I18n": {
             "ja": "疾走する轟雷 ボルゼクス",
             "de": "Rasender Donner Orserk",
@@ -29110,10 +29285,17 @@
             "boss"
         ],
         "IconKey": "Umihebi_Fire",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Umihebi_Fire"
+            }
+        ],
         "I18n": {
             "ja": "火山の覇者 アグニドラ",
             "de": "König der Vulkane Jormuntide Ignis",
@@ -29243,10 +29425,17 @@
             "boss"
         ],
         "IconKey": "VioletFairy",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "VioletFairy"
+            }
+        ],
         "I18n": {
             "ja": "紫紺の幻草 ヴィオレッタ",
             "de": "Purpurne Phantomblume Vaelet",
@@ -30358,10 +30547,17 @@
             "boss"
         ],
         "IconKey": "WhiteMoth_Neutral",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "WhiteMoth_Neutral"
+            }
+        ],
         "I18n": {
             "ja": "金彩の貴婦人 ソワレーヌ",
             "de": "Goldgeschmückte Madame Sibelyx Primo",
@@ -30783,10 +30979,17 @@
             "boss"
         ],
         "IconKey": "WindChimes_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "WindChimes_Ice"
+            }
+        ],
         "I18n": {
             "ja": "氷河の運び手 BOSS_WindChimes_Ice",
             "de": "Bote der Gletscher BOSS_WindChimes_Ice",
@@ -31808,10 +32011,17 @@
             "boss"
         ],
         "IconKey": "MoonQueen",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MoonQueen"
+            }
+        ],
         "I18n": {
             "ja": "黒夜に浮かぶ月 セレムーン",
             "de": "Mond in schwarzer Nacht Selyne",
@@ -33195,10 +33405,17 @@
             "boss"
         ],
         "IconKey": "WingGolem_Fire",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "WingGolem_Fire"
+            }
+        ],
         "I18n": {
             "ja": "燃える巨大鎧 マグナイト",
             "de": "Flammendes Bollwerk Knocklem Ignis",
@@ -33745,10 +33962,17 @@
             "boss"
         ],
         "IconKey": "MimicDog",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MimicDog"
+            }
+        ],
         "I18n": {
             "ja": "お宝たんまり ミミドッグ",
             "de": "Schlabbernde Schatztruhe Mimog",
@@ -33876,10 +34100,17 @@
             "boss"
         ],
         "IconKey": "DarkAlien",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "DarkAlien"
+            }
+        ],
         "I18n": {
             "ja": "外界からの侵略者 ゼノベーダ",
             "de": "Agressor aus dem All Xenovader",
@@ -34009,10 +34240,17 @@
             "boss"
         ],
         "IconKey": "WhiteAlienDragon",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "WhiteAlienDragon"
+            }
+        ],
         "I18n": {
             "ja": "惑星を喰らう竜 ゼノルーダ",
             "de": "Planetenfresser Xenogard",
@@ -34706,10 +34944,17 @@
             "boss"
         ],
         "IconKey": "GhostRabbit_Grass",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GhostRabbit_Grass"
+            }
+        ],
         "I18n": {
             "ja": "霊魂の翠兎 グラスメアリ",
             "de": "Smaragdgrüner Seelenhase Nitemary Botan",
@@ -34982,10 +35227,17 @@
             "boss"
         ],
         "IconKey": "NightBlueHorse_Neutral",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "NightBlueHorse_Neutral"
+            }
+        ],
         "I18n": {
             "ja": "白銀の鬣 ライトロット",
             "de": "Silberweiße Mähne Starryon Primo",
@@ -35394,10 +35646,17 @@
             "boss"
         ],
         "IconKey": "BlackPuppy_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "BlackPuppy_Ice"
+            }
+        ],
         "I18n": {
             "ja": "氷寒の小勇者 フユマル",
             "de": "Kleiner Held der eisblauen Flammen Smokie Cryst",
@@ -36087,10 +36346,17 @@
             "boss"
         ],
         "IconKey": "HoodGhost",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "HoodGhost"
+            }
+        ],
         "I18n": {
             "ja": "消失マジックマスター フードール",
             "de": "Magiemeister des Verschwindens Hoodle",
@@ -36218,10 +36484,17 @@
             "boss"
         ],
         "IconKey": "Sekhmet",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "Sekhmet"
+            }
+        ],
         "I18n": {
             "ja": "熾烈なる太陽の蹂躙者 セクメト",
             "de": "Peiniger der weißglühenden Sonne Sekhmet",
@@ -37059,10 +37332,17 @@
             "boss"
         ],
         "IconKey": "RockBeast_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "RockBeast_Ice"
+            }
+        ],
         "I18n": {
             "ja": "歩く大氷脈 フロスドン",
             "de": "Wandelnde Eisader Pierdon Cryst",
@@ -38208,10 +38488,17 @@
             "boss"
         ],
         "IconKey": "SnowTigerBeastman",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SnowTigerBeastman"
+            }
+        ],
         "I18n": {
             "ja": "氷雪の牙王 ヒョウガオー",
             "de": "König der eisklirrenden Fänge Bastigor",
@@ -39196,10 +39483,17 @@
             "boss"
         ],
         "IconKey": "SnakeGirl",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SnakeGirl"
+            }
+        ],
         "I18n": {
             "ja": "美容院嫌いの メドゥーナ",
             "de": "Friseurmuffel Venusa",
@@ -39609,10 +39903,17 @@
             "boss"
         ],
         "IconKey": "ClownRabbit",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ClownRabbit"
+            }
+        ],
         "I18n": {
             "ja": "幻惑の道化兎 ラピエール",
             "de": "Trughafter Hasenharlekin Dupin",
@@ -40035,10 +40336,17 @@
             "boss"
         ],
         "IconKey": "SmallYeti",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SmallYeti"
+            }
+        ],
         "I18n": {
             "ja": "雪原の小人 ユキボウ",
             "de": "Zwerg des Nordens Snugloo",
@@ -40449,10 +40757,17 @@
             "boss"
         ],
         "IconKey": "CactusDoll_Dark",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "CactusDoll_Dark"
+            }
+        ],
         "I18n": {
             "ja": "拘束の針千本 ハグユー",
             "de": "Anhängliches Nadelkissen Needoll Noct",
@@ -41596,10 +41911,17 @@
             "boss"
         ],
         "IconKey": "GhostBlackCat",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GhostBlackCat"
+            }
+        ],
         "I18n": {
             "ja": "キューティゴーストハンド ニャンシー",
             "de": "Possierliche Phantompfötchen Wispaw",
@@ -41727,10 +42049,17 @@
             "boss"
         ],
         "IconKey": "ThiefBird",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ThiefBird"
+            }
+        ],
         "I18n": {
             "ja": "漆黒の手癖 アルセーヴ",
             "de": "Finsterer Langfinger Roujay",
@@ -41858,10 +42187,17 @@
             "boss"
         ],
         "IconKey": "OniGhostGirl",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "OniGhostGirl"
+            }
+        ],
         "I18n": {
             "ja": "コワかわいい ウラミィ",
             "de": "Unheimlich süßes Bakemi",
@@ -42956,10 +43292,17 @@
             "boss"
         ],
         "IconKey": "CubeTurtle_Neutral",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "CubeTurtle_Neutral"
+            }
+        ],
         "I18n": {
             "ja": "砂海の守護岩 オシロガメ",
             "de": "Trutzfels des Sandmeeres Tetroise Primo",
@@ -43522,10 +43865,17 @@
             "boss"
         ],
         "IconKey": "MoonChild",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MoonChild"
+            }
+        ],
         "I18n": {
             "ja": "夜空を羽織る者 ホシノコ",
             "de": "In Sternennacht gehülltes Wistella",
@@ -43653,10 +44003,17 @@
             "boss"
         ],
         "IconKey": "SamuraiDog",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SamuraiDog"
+            }
+        ],
         "I18n": {
             "ja": "森の熱血ガキ大将 ポチムネ",
             "de": "Hitzköpfiger Waldrabauke Pupperai",
@@ -45871,10 +46228,17 @@
             "boss"
         ],
         "IconKey": "MummyPal",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MummyPal"
+            }
+        ],
         "I18n": {
             "ja": "冥界の黄金刃 ヨミーラ",
             "de": "Goldene Unterweltklinge Gildra",
@@ -46280,10 +46644,17 @@
             "boss"
         ],
         "IconKey": "MonochromeQueen",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "MonochromeQueen"
+            }
+        ],
         "I18n": {
             "ja": "常夜の幻舞姫 モノクローナ",
             "de": "Phantomtänzerin der ewigen Nacht Solenne",
@@ -46679,10 +47050,17 @@
             "boss"
         ],
         "IconKey": "ElecSnail_Ground",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ElecSnail_Ground"
+            }
+        ],
         "I18n": {
             "ja": "琥電の鈍足 ドンツム",
             "de": "Laaangsamer Beeernsteinblitz Snock Lux",
@@ -46811,10 +47189,17 @@
             "boss"
         ],
         "IconKey": "LanternButler",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "LanternButler"
+            }
+        ],
         "I18n": {
             "ja": "真実を照らす ヴィランタン",
             "de": "Licht der Wahrheit Loomen",
@@ -46943,10 +47328,17 @@
             "boss"
         ],
         "IconKey": "SumoDog",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SumoDog"
+            }
+        ],
         "I18n": {
             "ja": "横綱級わがままボディ ドスコイヌ",
             "de": "Starrsinniger Yokozuna Bulldosu",
@@ -47074,10 +47466,17 @@
             "boss"
         ],
         "IconKey": "VenusFlytrap",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "VenusFlytrap"
+            }
+        ],
         "I18n": {
             "ja": "食わず嫌いはしない カプリリス",
             "de": "Probieren geht über Studieren Carnibora",
@@ -47987,10 +48386,17 @@
             "boss"
         ],
         "IconKey": "ClioneTwins",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "ClioneTwins"
+            }
+        ],
         "I18n": {
             "ja": "仲良しミラクルリンク リオリネ",
             "de": "Wundersame Wunderbande Amione",
@@ -48118,10 +48524,17 @@
             "boss"
         ],
         "IconKey": "DarkFlameFox",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "DarkFlameFox"
+            }
+        ],
         "I18n": {
             "ja": "影を焼く妖炎 マジョルナ",
             "de": "Unheilvolle Schattenflamme Majex",
@@ -48652,10 +49065,17 @@
             "boss"
         ],
         "IconKey": "BlueSkyDragon",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "BlueSkyDragon"
+            }
+        ],
         "I18n": {
             "ja": "水神 シャオロン",
             "de": "Wassergott Shaolong",
@@ -48907,10 +49327,17 @@
             "boss"
         ],
         "IconKey": "PandaGirl",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "PandaGirl"
+            }
+        ],
         "I18n": {
             "ja": "失恋の型を極めし リーファン",
             "de": "Meister des Liebeskummers Leafan",
@@ -49038,10 +49465,17 @@
             "boss"
         ],
         "IconKey": "GrassMinotaur",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GrassMinotaur"
+            }
+        ],
         "I18n": {
             "ja": "新緑の猛牛 モリタロス",
             "de": "Wilder Frühlingsstier Elgrove",
@@ -49169,10 +49603,17 @@
             "boss"
         ],
         "IconKey": "GrassMinotaur_Ice",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GrassMinotaur_Ice"
+            }
+        ],
         "I18n": {
             "ja": "氷結の猛牛 ユキタロス",
             "de": "Wilder Winterstier Elgrove Cryst",
@@ -49424,10 +49865,17 @@
             "boss"
         ],
         "IconKey": "SleeveRabbit",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "SleeveRabbit"
+            }
+        ],
         "I18n": {
             "ja": "潔癖の長袖 ネモフィ",
             "de": "Langärmeliger Reinlichkeitsfanatiker Lapure",
@@ -49949,10 +50397,17 @@
             "boss"
         ],
         "IconKey": "GhostDragon_Fire",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "alpha-form"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "alpha-form",
+                "ID": "GhostDragon_Fire"
+            }
+        ],
         "I18n": {
             "ja": "不信の翼 ヘルバーン",
             "de": "Schwingen des Argwohns Eidrolon Ignis",
@@ -51645,17 +52100,10 @@
             "base"
         ],
         "IconKey": "unknown",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "62"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "Boltmane",
@@ -53339,17 +53787,10 @@
             "base"
         ],
         "IconKey": "DarkMutant",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "58"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "en_text",
@@ -54486,17 +54927,10 @@
             "base"
         ],
         "IconKey": "unknown",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "59"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "en_text",
@@ -54623,17 +55057,10 @@
             "base"
         ],
         "IconKey": "unknown",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "61"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "en_text",
@@ -54760,17 +55187,10 @@
             "base"
         ],
         "IconKey": "unknown",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "63"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "en_text",
@@ -121274,17 +121694,10 @@
             "base"
         ],
         "IconKey": "unknown",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "60"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "Dragostrophe",
@@ -168134,17 +168547,10 @@
             "base"
         ],
         "IconKey": "DarkMutant",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "64"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "-",
             "de": "en_text",
@@ -323387,17 +323793,10 @@
             "base"
         ],
         "IconKey": "PoseidonOrca",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "193"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "ネプティオス",
             "de": "Neptilius",
@@ -338475,17 +338874,10 @@
             "base"
         ],
         "IconKey": "Mothman",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "259"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "モスローン",
             "de": "Silvance",
@@ -339121,17 +339513,10 @@
             "base"
         ],
         "IconKey": "FlowerPrince",
-        "Invalid": false,
-        "RegularlyObtainable": true,
-        "ObtainMethods": [
-            "unique-breeding"
-        ],
-        "AvailabilitySources": [
-            {
-                "Kind": "unique-breeding",
-                "ID": "258"
-            }
-        ],
+        "Invalid": true,
+        "RegularlyObtainable": false,
+        "ObtainMethods": [],
+        "AvailabilitySources": [],
         "I18n": {
             "ja": "ノクサージュ",
             "de": "Dandilord",
