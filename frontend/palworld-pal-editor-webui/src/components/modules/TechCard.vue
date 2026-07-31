@@ -38,8 +38,8 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--editor-color-primary) 70%, var(--editor-color-border));
   border-radius: var(--editor-radius-sm);
-  color: #fff;
-  background-color: #1455a4;
+  color: var(--editor-color-text);
+  background-color: var(--editor-color-control);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 68%;
@@ -47,9 +47,15 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   cursor: pointer;
 }
 
-.tech--boss { border-color: #a45ec1; background-color: #5c2e6b; }
+.tech--boss { border-color: var(--editor-color-ancient); background-color: color-mix(in srgb, var(--editor-color-ancient) 24%, var(--editor-color-control)); }
 .tech--locked { filter: grayscale(.9); opacity: .62; }
-.tech:disabled { cursor: not-allowed; }
+.tech:disabled {
+  border-color: var(--editor-color-disabled);
+  color: var(--editor-color-muted);
+  background-color: var(--editor-color-surface-subtle);
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
 .tech-header,
 .tech-footer,
 .tech-state {
@@ -58,7 +64,7 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   right: 0;
   padding: .2rem .35rem;
   overflow: hidden;
-  background: rgba(0, 0, 0, .72);
+  background: color-mix(in srgb, var(--editor-color-background) 78%, transparent);
   font-size: .65rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -76,8 +82,8 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   right: .25rem;
   width: auto;
   border-radius: 999px;
-  color: #d8e8ff;
-  background: rgba(0, 0, 0, .64);
+  color: var(--editor-color-focus);
+  background: color-mix(in srgb, var(--editor-color-background) 85%, transparent);
 }
 .tech-footer {
   bottom: 0;

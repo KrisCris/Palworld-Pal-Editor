@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { createPinia, setActivePinia } from "pinia";
@@ -10,6 +11,10 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const messageCenterSource = await readFile(
+    new URL("../src/components/MessageCenter.vue", import.meta.url),
+    "utf8",
+);
 
 function newStore() {
     setActivePinia(createPinia());
@@ -41,6 +46,28 @@ test("dialogs interrupt toasts without reversing either queue", () => {
     assert.equal(store.CURRENT_MESSAGE.message, "first");
     store.dismissMessage(firstDialog);
     assert.equal(store.CURRENT_MESSAGE.message, "second");
+});
+
+test("blocking dialogs render their existing severity semantics", () => {
+    const store = newStore();
+    store.showMessage({
+        severity: "warning",
+        presentation: "dialog",
+        messageKey: "Message_CN_AntiScam",
+    });
+
+    assert.equal(store.CURRENT_MESSAGE.severity, "warning");
+    assert.match(messageCenterSource, /:class="\['message-dialog', current\.severity\]"/);
+    for (const [severity, token] of Object.entries({
+        warning: "warning",
+        success: "success",
+        error: "danger",
+    })) {
+        assert.match(
+            messageCenterSource,
+            new RegExp(`\\.message-dialog\\.${severity}\\s*\\{[^}]*var\\(--editor-color-${token}\\)`, "s"),
+        );
+    }
 });
 
 test("operation errors retain backend diagnostics and translatable context", () => {

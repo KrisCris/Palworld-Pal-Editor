@@ -258,10 +258,18 @@ const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Chan
 .level-controls button { flex: 0 0 2.35rem; width: 2.35rem; padding: 0; }
 .player-control button:hover,
 .level-controls button:hover,
-.unlock-all:hover { background: var(--editor-color-primary); }
+.unlock-all:hover { color: var(--editor-color-background); background: var(--editor-color-primary); }
 .player-control button:disabled,
 .level-controls button:disabled,
-.unlock-all:disabled { color: var(--editor-color-muted); background: var(--editor-color-disabled); cursor: not-allowed; }
+.unlock-all:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
+
+.player-control input:focus-visible,
+.player-control button:focus-visible,
+.level-controls button:focus-visible,
+.unlock-all:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
+}
 
 .player-field--level {
   display: flex;
@@ -282,7 +290,7 @@ const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Chan
   border-bottom: 1px solid var(--editor-color-border);
 }
 .technology-panel__header h2 { margin: 0; padding: 0; border: 0; }
-.unlock-all { gap: var(--editor-space-1); padding: 0 var(--editor-space-3); background: var(--editor-color-primary); }
+.unlock-all { gap: var(--editor-space-1); padding: 0 var(--editor-space-3); color: var(--editor-color-background); background: var(--editor-color-primary); }
 .technology-levels { display: grid; gap: var(--editor-space-3); }
 .technology-level {
   display: grid;

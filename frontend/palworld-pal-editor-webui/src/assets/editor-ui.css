@@ -1,18 +1,29 @@
 :root {
-  --editor-color-surface: #242629;
-  --editor-color-surface-raised: #2d3035;
-  --editor-color-surface-subtle: #202225;
-  --editor-color-control: #34373d;
-  --editor-color-control-hover: #3d4148;
-  --editor-color-border: #4b5059;
-  --editor-color-focus: #6d9cff;
-  --editor-color-text: #eef0f5;
-  --editor-color-muted: #aeb4c0;
-  --editor-color-primary: #3568b8;
-  --editor-color-primary-hover: #4077cf;
-  --editor-color-danger: #b52543;
-  --editor-color-danger-hover: #ce2d50;
-  --editor-color-disabled: #666b74;
+  --editor-color-background: #17191e;
+  --editor-color-surface: #22252b;
+  --editor-color-surface-raised: #2b2f37;
+  --editor-color-surface-subtle: #1c1f25;
+  --editor-color-control: #323741;
+  --editor-color-control-hover: #3c4350;
+  --editor-color-border: #515866;
+  --editor-color-focus: #18d4f2;
+  --editor-color-text: #f2f6ff;
+  --editor-color-muted: #aeb8c9;
+  --editor-color-primary: #2788f5;
+  --editor-color-primary-hover: #42a0ff;
+  --editor-color-danger: #ed3856;
+  --editor-color-danger-hover: #ff4b69;
+  --editor-color-warning: #f3b83f;
+  --editor-color-success: #36d47d;
+  --editor-color-ancient: #8e45d6;
+  --editor-color-lucky: #7bdcff;
+  --editor-color-male: #43a5ff;
+  --editor-color-female: #f06aab;
+  --editor-color-passive-top: #aa70ff;
+  --editor-color-passive-high: #45dc8a;
+  --editor-color-passive-positive: #f0c34b;
+  --editor-color-passive-negative: #ef6471;
+  --editor-color-disabled: #626978;
   --editor-space-1: .25rem;
   --editor-space-2: .5rem;
   --editor-space-3: .75rem;
@@ -154,6 +165,7 @@
 
 .editor-button--primary {
   border-color: var(--editor-color-primary);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
 }
 
@@ -163,11 +175,13 @@
 
 .editor-button--danger {
   border-color: var(--editor-color-danger);
-  background: var(--editor-color-danger);
+  color: var(--editor-color-text);
+  background: color-mix(in srgb, var(--editor-color-danger) 18%, var(--editor-color-surface-raised));
 }
 
 .editor-button--danger:hover {
-  background: var(--editor-color-danger-hover);
+  color: var(--editor-color-text);
+  background: color-mix(in srgb, var(--editor-color-danger) 30%, var(--editor-color-surface-raised));
 }
 
 .editor-button--icon {
@@ -179,7 +193,7 @@
 .editor-control:disabled {
   border-color: var(--editor-color-disabled);
   color: var(--editor-color-muted);
-  background: var(--editor-color-disabled);
+  background: var(--editor-color-surface-subtle);
   cursor: not-allowed;
 }
 

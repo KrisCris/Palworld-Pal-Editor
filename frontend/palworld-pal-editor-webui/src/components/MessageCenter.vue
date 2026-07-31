@@ -48,7 +48,7 @@ onBeforeUnmount(clearDismissTimer)
 <template>
   <div v-if="current?.presentation === 'dialog'" class="message-layer">
     <section
-      class="message-dialog"
+      :class="['message-dialog', current.severity]"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="message-center-title"
@@ -100,16 +100,29 @@ onBeforeUnmount(clearDismissTimer)
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, .62);
+  background: color-mix(in srgb, var(--editor-color-background) 82%, transparent);
 }
 
 .message-dialog {
   width: min(42rem, calc(100vw - 2rem));
   padding: 1rem;
-  border: 1px solid #b36b00;
+  border: 1px solid var(--editor-color-border);
   border-radius: .75rem;
-  background: #3b2c18;
-  box-shadow: 2px 2px 10px #262626;
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  box-shadow: var(--editor-shadow-compact);
+}
+
+.message-dialog.warning {
+  border-color: var(--editor-color-warning);
+}
+
+.message-dialog.success {
+  border-color: var(--editor-color-success);
+}
+
+.message-dialog.error {
+  border-color: var(--editor-color-danger);
 }
 
 .message-dialog h1,
@@ -128,10 +141,10 @@ onBeforeUnmount(clearDismissTimer)
   margin-top: .25rem;
   padding: .75rem;
   resize: vertical;
-  border: 1px solid #7e6847;
+  border: 1px solid var(--editor-color-border);
   border-radius: .4rem;
-  color: #ffcf87;
-  background: #181818;
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-subtle);
   font-family: monospace;
 }
 
@@ -141,8 +154,8 @@ onBeforeUnmount(clearDismissTimer)
   padding: .5rem 1rem;
   border: 0;
   border-radius: .5rem;
-  color: whitesmoke;
-  background: #3365da;
+  color: var(--editor-color-background);
+  background: var(--editor-color-primary);
   cursor: pointer;
 }
 
@@ -156,16 +169,23 @@ onBeforeUnmount(clearDismissTimer)
   align-items: flex-start;
   width: min(30rem, calc(100vw - 2rem));
   padding: .8rem 1rem;
-  border: 1px solid #d39a32;
+  border: 1px solid var(--editor-color-border);
   border-radius: .6rem;
-  color: whitesmoke;
-  background: #3b2c18;
-  box-shadow: 2px 2px 10px #111;
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  box-shadow: var(--editor-shadow-compact);
 }
 
 .message-toast.success {
-  border-color: #2eaa67;
-  background: #183b29;
+  border-color: var(--editor-color-success);
+}
+
+.message-toast.warning {
+  border-color: var(--editor-color-warning);
+}
+
+.message-toast.error {
+  border-color: var(--editor-color-danger);
 }
 
 .message-toast div {
@@ -179,9 +199,15 @@ onBeforeUnmount(clearDismissTimer)
 .message-toast button {
   padding: 0;
   border: 0;
-  color: whitesmoke;
+  color: var(--editor-color-text);
   background: transparent;
   font-size: 1.4rem;
   cursor: pointer;
+}
+
+.message-dialog button:focus-visible,
+.message-toast button:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
 }
 </style>

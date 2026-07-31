@@ -250,8 +250,9 @@ button {
 }
 
 button:disabled {
+  border-color: var(--editor-color-disabled);
   color: var(--editor-color-muted);
-  background: var(--editor-color-disabled);
+  background: var(--editor-color-surface-subtle);
   cursor: not-allowed;
 }
 
@@ -289,7 +290,7 @@ small {
 }
 
 .warning {
-  color: #ffd27a;
+  color: var(--editor-color-warning);
 }
 
 .sr-only {
@@ -395,7 +396,20 @@ button:focus-visible {
 .selector-pane button:hover,
 .selector-pane button.selected {
   border-color: var(--editor-color-focus);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
+}
+
+.selector-pane button:hover small,
+.selector-pane button.selected small {
+  color: var(--editor-color-background);
+}
+
+.selector-pane button:hover .warning,
+.selector-pane button.selected .warning {
+  border-radius: 50%;
+  color: var(--editor-color-warning);
+  background: var(--editor-color-background);
 }
 
 .selector-actions {
@@ -413,7 +427,14 @@ button:focus-visible {
 
 .selector-actions .apply {
   border-color: var(--editor-color-primary);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
+}
+
+.selector-actions .apply:disabled {
+  border-color: var(--editor-color-disabled);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-surface-subtle);
 }
 
 @media (max-width: 760px) {

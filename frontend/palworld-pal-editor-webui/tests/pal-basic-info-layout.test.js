@@ -30,11 +30,15 @@ test("the shared editor design foundation is globally loaded", () => {
   assert.match(mainCss, /@import ['"]\.\/editor-ui\.css['"]/);
 
   for (const token of [
+    "--editor-color-background",
     "--editor-color-surface",
     "--editor-color-surface-raised",
     "--editor-color-control",
     "--editor-color-border",
     "--editor-color-focus",
+    "--editor-color-success",
+    "--editor-color-warning",
+    "--editor-color-passive-top",
     "--editor-control-height",
   ]) {
     assert.equal(editorCss.includes(token), true, token);

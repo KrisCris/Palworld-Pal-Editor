@@ -124,7 +124,7 @@ const save = async () => {
   top: 0;
   left: 0;
   height: 2px;
-  background: #35c982;
+  background: var(--editor-color-success);
   transition: width 1s ease-out;
 }
 
@@ -176,22 +176,50 @@ const save = async () => {
   cursor: pointer;
 }
 
-.op:hover,
-.op.toggled {
+.editor-app-bar__primary .op,
+.editor-context-bar .op {
+  border-color: var(--editor-color-primary);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
+}
+
+.op:hover {
+  color: var(--editor-color-background);
+  background: var(--editor-color-primary-hover);
+}
+
+.op.toggled {
+  border-color: var(--editor-color-success);
+  color: var(--editor-color-success);
+  background: color-mix(in srgb, var(--editor-color-success) 18%, var(--editor-color-surface-raised));
 }
 
 .op.save {
   border-color: var(--editor-color-danger);
-  background: var(--editor-color-danger);
+  color: var(--editor-color-text);
+  background: color-mix(in srgb, var(--editor-color-danger) 18%, var(--editor-color-surface-raised));
+}
+
+.op.save:hover {
+  color: var(--editor-color-text);
+  background: color-mix(in srgb, var(--editor-color-danger) 30%, var(--editor-color-surface-raised));
 }
 
 .op:disabled,
+.op:disabled:hover,
 #languageSelect:disabled,
 .savePath:disabled {
+  border-color: var(--editor-color-disabled);
   color: var(--editor-color-muted);
-  background: var(--editor-color-disabled);
+  background: var(--editor-color-surface-subtle);
   cursor: not-allowed;
+}
+
+.op:focus-visible,
+#languageSelect:focus-visible,
+.savePath:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
 }
 
 .savePath {

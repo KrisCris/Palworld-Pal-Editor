@@ -564,7 +564,7 @@ const portraitBorder = pal => pal.IsBOSS
 }
 
 .is-out-of-container {
-  color: #58c779;
+  color: var(--editor-color-success);
 }
 
 @container pal-basic-info (max-width: 720px) {
@@ -628,13 +628,13 @@ const portraitBorder = pal => pal.IsBOSS
   height: .65rem;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: #aeb4c0;
+  background: var(--editor-color-muted);
 }
 
-.passive-tier--top { background: #a875ff; }
-.passive-tier--high { background: #55c987; }
-.passive-tier--positive { background: #e1b84b; }
-.passive-tier--negative { background: #e06363; }
+.passive-tier--top { background: var(--editor-color-passive-top); }
+.passive-tier--high { background: var(--editor-color-passive-high); }
+.passive-tier--positive { background: var(--editor-color-passive-positive); }
+.passive-tier--negative { background: var(--editor-color-passive-negative); }
 
 .pal-progression-grid {
   display: grid;
@@ -777,7 +777,7 @@ const portraitBorder = pal => pal.IsBOSS
 }
 
 .skill-warning {
-  color: #ffd27a !important;
+  color: var(--editor-color-warning) !important;
 }
 
 @container pal-editor (max-width: 42rem) {

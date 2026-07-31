@@ -205,17 +205,20 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 
 .pal-row[aria-current="true"] {
   border-color: var(--editor-color-focus);
-  background: color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-surface-raised));
+  color: var(--editor-color-background);
+  background: linear-gradient(135deg, var(--editor-color-primary), var(--editor-color-focus));
+  box-shadow: 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 35%, transparent);
 }
 
 .pal-row:disabled {
   cursor: default;
 }
 
-.pal-row.male { border-left-color: #3789ce; }
-.pal-row.female { border-left-color: #c5558a; }
+.pal-row.male { border-left-color: var(--editor-color-male); }
+.pal-row.female { border-left-color: var(--editor-color-female); }
 .pal-row.unref { filter: grayscale(1); }
-.pal-row.out-of-container small { color: #58c779; }
+.pal-row.out-of-container small { color: var(--editor-color-success); }
+.pal-row[aria-current="true"] small { color: var(--editor-color-background); }
 
 .pal-copy {
   display: grid;
@@ -261,9 +264,23 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   place-items: center;
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  color: var(--editor-color-text);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
   cursor: pointer;
+}
+
+.roster-icon-button:disabled {
+  border-color: var(--editor-color-disabled);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-surface-subtle);
+  cursor: not-allowed;
+}
+
+.pal-search:focus-within,
+.pal-row:focus-visible,
+.roster-icon-button:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {

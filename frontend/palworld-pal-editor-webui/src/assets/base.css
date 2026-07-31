@@ -23,15 +23,15 @@
 
 /* semantic color variables for this project */
 :root {
-  --color-background: var(--vt-c-black);
-  --color-background-soft: var(--vt-c-black-soft);
-  --color-background-mute: var(--vt-c-black-mute);
+  --color-background: var(--editor-color-background);
+  --color-background-soft: var(--editor-color-surface);
+  --color-background-mute: var(--editor-color-surface-raised);
 
-  --color-border: var(--vt-c-divider-dark-2);
-  --color-border-hover: var(--vt-c-divider-dark-1);
+  --color-border: var(--editor-color-border);
+  --color-border-hover: var(--editor-color-focus);
 
-  --color-heading: var(--vt-c-text-dark-1);
-  --color-text: var(--vt-c-text-dark-2);
+  --color-heading: var(--editor-color-text);
+  --color-text: var(--editor-color-text);
 
   --section-gap: 160px;
 }

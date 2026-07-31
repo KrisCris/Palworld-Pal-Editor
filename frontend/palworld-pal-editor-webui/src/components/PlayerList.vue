@@ -107,7 +107,9 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 
 .roster-row[aria-current="true"] {
   border-color: var(--editor-color-focus);
-  background: color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-surface-raised));
+  color: var(--editor-color-background);
+  background: linear-gradient(135deg, var(--editor-color-primary), var(--editor-color-focus));
+  box-shadow: 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 35%, transparent);
 }
 
 .roster-row:disabled {
@@ -126,14 +128,14 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   height: 2rem;
   place-items: center;
   border-radius: 50%;
-  color: var(--editor-color-text);
+  color: var(--editor-color-background);
   background: var(--editor-color-primary);
   font-size: .7rem;
   font-weight: 700;
 }
 
 .roster-row--base .player-avatar {
-  background: #9b7424;
+  background: var(--editor-color-warning);
   font-size: .55rem;
 }
 
@@ -147,6 +149,12 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   color: var(--editor-color-text);
   background: var(--editor-color-control);
   cursor: pointer;
+}
+
+.roster-row:focus-visible,
+.roster-icon-button:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
