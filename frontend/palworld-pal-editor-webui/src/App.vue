@@ -75,6 +75,14 @@ onMounted(palStore.bootstrap)
 </template>
 
 <style scoped>
+.app-content {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .app-content.obscured {
   filter: blur(4px);
   pointer-events: none;

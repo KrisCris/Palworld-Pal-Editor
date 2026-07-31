@@ -1360,9 +1360,6 @@ class PalEntity:
             Config.i18n,
             self.DataAccessKey,
             self.NickName,
-            self.IsRarePal,
-            self.IsBOSS,
-            self.IsTower,
             # self.Gender,
         )
         try:
@@ -1373,9 +1370,6 @@ class PalEntity:
             if tags and tags.issubset({"alpha", "boss"}):
                 species_key = DataProvider.get_pal_variant(species_key, "base") or species_key
             species_name = DataProvider.get_pal_i18n(species_key) or species_key
-            rare_prefix = "✨" if self.IsRarePal else ""
-            boss_prefix = "👑" if self.IsBOSS else ""
-            tower_prefix = "🗼" if self.IsTower else ""
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
             # gender_suffix = ""
@@ -1385,7 +1379,7 @@ class PalEntity:
             #     gender_suffix = "♂"
 
             # name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}{gender_suffix}"
-            name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}"
+            name = f"{species_name}{nickname_suffix}"
             self._display_name_cache[cache_key] = name
             return name
 

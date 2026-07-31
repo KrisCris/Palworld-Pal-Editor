@@ -113,14 +113,14 @@ class PalIdentityTests(unittest.TestCase):
         pal.NickName = ""
 
         self.assertEqual(
-            f"👑{data_provider.DataProvider.get_pal_i18n('GhostRabbit_Grass')}",
+            data_provider.DataProvider.get_pal_i18n("GhostRabbit_Grass"),
             pal.DisplayName,
         )
 
         scenario = self.make_pal("BOSS_KingWhale_otomo")
         scenario.NickName = ""
         self.assertEqual(
-            f"👑{data_provider.DataProvider.get_pal_i18n('BOSS_KingWhale_otomo')}",
+            data_provider.DataProvider.get_pal_i18n("BOSS_KingWhale_otomo"),
             scenario.DisplayName,
         )
 

@@ -143,11 +143,16 @@ export default {
     Editor_Btn_Revive_Pal: "パルを復活",
 
     PalList_Text: "パルリスト",
+    PalList_Search: "パルを検索",
+    PalList_Add: "パルを追加",
 
     PlayerList_Text: "プレイヤーリスト",
+    PlayerList_Unknown: "名前のないプレイヤー",
     PlayerList_Viewing_Cage: "選択したプレイヤーの観賞用ケージを解除します。注: 解除後は直接建設できますが、技術解除メニューには表示されません。",
 
     PlayerList_Base_Pal: "拠点",
+    TopBar_More: "その他",
+    Editor_Select_Prompt: "パルまたはプレイヤーを選択してください。",
 
     TopBar_Btn_Save: "変更を保存",
     TopBar_Btn_Reload: "セーブをリロード",

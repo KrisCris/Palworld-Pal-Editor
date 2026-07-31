@@ -142,11 +142,16 @@ export default {
     Editor_Btn_Revive_Pal: "Revive Pal",
 
     PalList_Text: "PAL LIST",
+    PalList_Search: "Search Pals",
+    PalList_Add: "Add Pal",
 
     PlayerList_Text: "PLAYER LIST",
+    PlayerList_Unknown: "Unnamed player",
     PlayerList_Viewing_Cage: "Unlock the viewing cage for the selected player. Note: After unlocking, you can build it directly, but it will not appear in the technology unlock menu.",
 
     PlayerList_Base_Pal: "BASECAMP",
+    TopBar_More: "More",
+    Editor_Select_Prompt: "Select a Pal or player to start.",
 
     TopBar_Btn_Save: "SAVE CHANGES",
     TopBar_Btn_Reload: "Reload Save",

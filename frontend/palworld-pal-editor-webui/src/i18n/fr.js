@@ -142,11 +142,16 @@ export default {
     Editor_Btn_Revive_Pal: "Réanimer Pal",
 
     PalList_Text: "LISTE DES PALS",
+    PalList_Search: "Rechercher des Pals",
+    PalList_Add: "Ajouter un Pal",
 
     PlayerList_Text: "LISTE DES JOUEURS",
+    PlayerList_Unknown: "Joueur sans nom",
     PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour le joueur sélectionné. Remarque : Une fois déverrouillée, vous pouvez la construire directement, mais elle n'apparaîtra pas dans le menu de déverrouillage des technologies.",
 
     PlayerList_Base_Pal: "Camp De Base",
+    TopBar_More: "Plus",
+    Editor_Select_Prompt: "Sélectionnez un Pal ou un joueur pour commencer.",
 
     TopBar_Btn_Save: "ENREGISTRER LES MODIFICATIONS",
     TopBar_Btn_Reload: "Recharger la sauvegarde",

@@ -142,11 +142,16 @@ export default {
     Editor_Btn_Revive_Pal: "复活帕鲁",
 
     PalList_Text: "帕鲁列表",
+    PalList_Search: "搜索帕鲁",
+    PalList_Add: "添加帕鲁",
 
     PlayerList_Text: "玩家列表",
+    PlayerList_Unknown: "未命名玩家",
     PlayerList_Viewing_Cage: "为选中的玩家解锁观赏笼。注：解锁后你可以直接建造它，但科技解锁菜单并不会显示。",
 
     PlayerList_Base_Pal: "基地",
+    TopBar_More: "更多",
+    Editor_Select_Prompt: "请选择一只帕鲁或玩家。",
 
     TopBar_Btn_Save: "保存更改",
     TopBar_Btn_Reload: "重新载入存档",

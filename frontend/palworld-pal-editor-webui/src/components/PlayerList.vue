@@ -1,166 +1,151 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { usePalEditorStore } from '@/stores/paleditor'
+
 const palStore = usePalEditorStore()
+const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
+const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 </script>
 
 <template>
-  <div class="flex">
-    <div class="title">
-      <p>
-        {{ palStore.getTranslatedText("PlayerList_Text") }}
-      </p>
-      <div class="tooltip-container">
-        <button class="playerSettings"
-          v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).HasViewingCage"
-          :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')" :disabled="palStore.LOADING_FLAG"
-          @click="palStore.updatePlayer" name="unlock_viewing_cage"><UiIcon name="unlock" /></button>
-        <span class="tooltip-text">{{ palStore.getTranslatedText('PlayerList_Viewing_Cage') }}</span>
-      </div>
+  <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
+    <header class="roster-header">
+      <h2>{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
+      <button class="roster-icon-button"
+        v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)?.HasViewingCage"
+        :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
+        :aria-label="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
+        :disabled="palStore.LOADING_FLAG" @click="palStore.updatePlayer" name="unlock_viewing_cage">
+        <UiIcon name="unlock" />
+      </button>
+    </header>
+
+    <div class="roster-list">
+      <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
+        @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
+        :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"
+        :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
+        <span class="player-avatar">PAL</span>
+        <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
+      </button>
+
+      <button v-for="player in palStore.PLAYER_MAP.values()" :key="player.InstanceId"
+        class="roster-row" @click="palStore.selectPlayer(player.InstanceId)" :title="player.InstanceId"
+        :aria-current="player.InstanceId == palStore.SELECTED_PLAYER_ID ? 'true' : undefined"
+        :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG) || palStore.LOADING_FLAG">
+        <span class="player-avatar">{{ playerInitial(player) }}</span>
+        <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
+      </button>
     </div>
-    <div class="overflow-list">
-      <div class="overflow-container" v-if="palStore.HAS_WORKING_PAL_FLAG">
-        <button class="player" @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
-          :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
-          {{ palStore.getTranslatedText('PlayerList_Base_Pal') }}
-        </button>
-      </div>
-      <div class="overflow-container" v-for="player in palStore.PLAYER_MAP.values()">
-        <button class="player real" @click="palStore.selectPlayer(player.InstanceId)" :title="player.InstanceId"
-          :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG) || palStore.LOADING_FLAG"
-          :selected="player.InstanceId == palStore.SELECTED_PLAYER_ID">
-          {{ player.NickName }}
-        </button>
-      </div>
-    </div>
-  </div>
+  </nav>
 </template>
 
 <style scoped>
-div.flex {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  height: var(--sub-height);
-  width: 10rem;
-  padding-right: 0.3rem;
-  /* scrollbar */
+.player-roster {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
 }
 
-div.title {
+.roster-header {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
   align-items: center;
-  gap: .5rem;
+  justify-content: space-between;
+  gap: var(--editor-space-2);
+  padding: var(--editor-space-3);
+  border-bottom: 1px solid var(--editor-color-border);
 }
 
-div.overflow-list {
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-  gap: .2rem 0rem;
+.roster-header h2 {
+  margin: 0;
+  color: var(--editor-color-muted);
+  font-size: .8rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
-div.overflow-container {
+.roster-list {
+  display: grid;
+  min-height: 0;
+  align-content: start;
+  gap: var(--editor-space-1);
+  overflow-y: auto;
+  padding: var(--editor-space-2);
+}
+
+.roster-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
   align-items: center;
-  display: flex;
-  overflow-x: auto;
+  gap: var(--editor-space-2);
+  min-height: 2.75rem;
+  padding: var(--editor-space-1) var(--editor-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  text-align: left;
+  cursor: pointer;
+}
+
+.roster-row:hover {
+  background: var(--editor-color-control-hover);
+}
+
+.roster-row[aria-current="true"] {
+  border-color: var(--editor-color-focus);
+  background: color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-surface-raised));
+}
+
+.roster-row:disabled {
+  cursor: default;
+}
+
+.roster-copy {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  max-height: 3.5rem;
-  flex-shrink: 0;
-  padding-bottom: 0.1rem;
-  /* scrollbar */
 }
 
-button.player {
-  min-width: 100%;
-  max-height: 5rem;
-  padding: .5rem 1rem;
-  background-color: #ce9716;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  font-size: 1.2rem;
-  transition: all 0.15s ease-in-out;
+.player-avatar {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--editor-color-text);
+  background: var(--editor-color-primary);
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.roster-row--base .player-avatar {
+  background: #9b7424;
+  font-size: .55rem;
+}
+
+.roster-icon-button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
   cursor: pointer;
 }
 
-button.playerSettings {
-  background-color: rgb(54, 54, 54);
-  padding: 0;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.2rem;
-  font-size: 1rem;
+@media (max-width: 760px) {
+  .roster-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-button.playerSettings:hover {
-  background-color: rgb(123, 123, 123);
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  cursor: pointer;
-}
-
-button.player:hover {
-  background-color: #9b7210;
-  transition: all 0.15s ease-in-out;
-}
-
-button.player.real {
-  background-color: #3365da;
-}
-
-button.player.real:hover {
-  background-color: #1b49b4;
-}
-
-button.player.real:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.player:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.playerSettings:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button.player[selected="true"] {
-  box-shadow: 0 0 0;
-  filter: grayscale(60%);
-  border-color: #1cff4d;
-  border-style: solid;
-  border-width: 0.15rem;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  width: 200px;
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  text-align: center;
-  border-radius: 6px;
-  padding: 1rem;
-
-  position: absolute;
-  z-index: 1;
-  top: 5rem;
-  margin-left: -60px;
-}
-
-.tooltip-container:hover .tooltip-text {
-  visibility: visible;
+@media (max-width: 480px) {
+  .roster-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

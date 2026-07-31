@@ -1,320 +1,256 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
+import { nextTick, onMounted, ref, watch } from 'vue'
+
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { ref, computed, reactive, onMounted, nextTick, watch } from "vue";
+import { paldeckForRow } from '@/components/modules/pal-species-selector'
+import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
-
-const palListContainer = ref(null);
+const palListContainer = ref(null)
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
-    await nextTick();
-    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
-        return
-    }
-    try {
-        if (palStore.BASE_PAL_BTN_CLK_FLAG == false) {
-            return
-        }
-        const button = palListContainer.value.querySelector('button:not(:disabled)');
-        if (button) {
-            button.click();
-        }
-    } catch (error) {
-        return
-    }
+  await nextTick()
+  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  try {
+    if (palStore.BASE_PAL_BTN_CLK_FLAG == false) return
+    palListContainer.value.querySelector('button:not(:disabled)')?.click()
+  } catch (error) {
+    return
+  }
 })
 
-// watch(async () => palStore.ADD_PAL_RESELECT_CTR, async () => {
-//     await nextTick();
-//     try {
-//         const button = palListContainer.value.querySelector('button:not(:disabled)');
-//         if (button) {
-//             button.click();
-//         }
-//     } catch (error) {
-//         return
-//     }
-// })
-
 watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
-    await nextTick();
-    try {
-        const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
-        if (button) {
-            if (!palStore.isElementInViewport(button)) {
-                button.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    } catch (error) {
-        return
-    }
+  await nextTick()
+  try {
+    const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
+    if (button && !palStore.isElementInViewport(button)) button.scrollIntoView({ behavior: 'smooth' })
+  } catch (error) {
+    return
+  }
 })
 
 watch(async () => palStore.SELECTED_PAL_ID, async () => {
-    await nextTick();
-    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
-        return
+  await nextTick()
+  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  try {
+    const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
+    if (button) {
+      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
+        palStore.selectPal(palStore.SELECTED_PAL_ID, true)
+      }
+      if (!palStore.isElementInViewport(button)) button.scrollIntoView({ behavior: 'smooth' })
     }
-    try {
-        const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`);
-        if (button) {
-            if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
-                palStore.selectPal(palStore.SELECTED_PAL_ID, true)
-            }
-            if (!palStore.isElementInViewport(button)) {
-                button.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    } catch (error) {
-        return
-    }
+  } catch (error) {
+    return
+  }
 })
 
 onMounted(async () => {
-    await nextTick();
-    // TODO Note: this is just a temp fix for pal selection when pal list is refreshed by updatePlayer
-    await nextTick();
-    await nextTick();
-    if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) {
-        return
-    }
-    const button = palListContainer.value.querySelector('button:not(:disabled)');
-    if (button) {
-        button.click();
-    }
-});
+  await nextTick()
+  await nextTick()
+  await nextTick()
+  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  palListContainer.value.querySelector('button:not(:disabled)')?.click()
+})
 
-function get_filtered_pal_list() {
-    // console.log("FILTER")
-    return Array.from(palStore.PAL_MAP.values()).filter(pal => !palStore.isFilteredPal(pal))
+const filteredPals = () => Array.from(palStore.PAL_MAP.values())
+  .filter(pal => !palStore.isFilteredPal(pal))
+
+function palMetadata(pal) {
+  const row = palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]
+  const paldeck = paldeckForRow(row)
+  const id = pal.CharacterID || pal.DataAccessKeyOG
+  return paldeck ? `PAL ${paldeck} · ${id}` : id
 }
-
 </script>
 
 <template>
-    <div class="flex">
-        <div class="title">
-            <p>
-                {{ palStore.getTranslatedText("PalList_Text") }}
-            </p>
-            <input class="palFilter" type="text" v-model="palStore.PAL_LIST_SEARCH_KEYWORD" placeholder="Search Pal"
-                :disabled="palStore.LOADING_FLAG">
-            <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
-                :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).NickName}`"
-                :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal"><UiIcon name="plus" /></button>
-        </div>
+  <nav class="pal-roster" :aria-label="palStore.getTranslatedText('PalList_Text')">
+    <header class="roster-header">
+      <h2>{{ palStore.getTranslatedText("PalList_Text") }}</h2>
+      <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+        :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
+        :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">
+        <UiIcon name="plus" />
+      </button>
+      <label class="pal-search">
+        <UiIcon name="search" />
+        <input type="search" v-model="palStore.PAL_LIST_SEARCH_KEYWORD"
+          :placeholder="palStore.getTranslatedText('PalList_Search')" :disabled="palStore.LOADING_FLAG">
+      </label>
+    </header>
 
-        <div class="overflow-list" ref="palListContainer">
-            <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
-                <button
-                    :class="['pal', { 'male': palStore.genderKey(pal.Gender) === 'male', 'female': palStore.genderKey(pal.Gender) === 'female', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
-                    :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
-                    :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
-                    :selected="palStore.SELECTED_PAL_ID == pal.InstanceId"
-                    >
-                    <img :class="['palIcon']" :src="`/image/pals/${pal.IconAccessKey}`">
-                    {{ pal.DisplayName }}
-                </button>
-            </div>
-        </div>
+    <div class="roster-list" ref="palListContainer">
+      <button v-for="pal in filteredPals()" :key="pal.InstanceId"
+        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': !pal.in_owner_palbox }]"
+        :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
+        :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
+        :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
+        <img class="pal-icon" :src="`/image/pals/${pal.IconAccessKey}`" alt="">
+        <span class="pal-copy">
+          <strong class="pal-name">
+            <img v-if="pal.IsRarePal" class="pal-status-icon" :src="'/image/ui/rare'" alt="">
+            <UiIcon v-if="pal.IsBOSS" class="pal-status-icon" name="crown" />
+            <span>{{ pal.DisplayName }}</span>
+          </strong>
+          <small>{{ palMetadata(pal) }}</small>
+        </span>
+      </button>
     </div>
+  </nav>
 </template>
 
 <style scoped>
-div.flex {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    width: 15rem;
-    height: var(--sub-height);
-    padding-right: 0.3rem;
-    /* scrollbar */
+.pal-roster {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
 }
 
-div.title {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: .5rem;
-    /* justify-content: space-between; */
+.roster-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--editor-space-2);
+  padding: var(--editor-space-3);
+  border-bottom: 1px solid var(--editor-color-border);
 }
 
-div.overflow-list {
-    display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    gap: .2rem 0rem;
+.roster-header h2 {
+  margin: 0;
+  color: var(--editor-color-muted);
+  font-size: .8rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
-.overflow-container {
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    max-height: 3.5rem;
-    flex-shrink: 0;
-    padding-bottom: 0.1rem;
-    /* scrollbar */
-    width: 100%;
+.pal-search {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--editor-space-2);
+  min-height: 2.25rem;
+  padding: 0 var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-control);
 }
 
-input.palFilter {
-    display: flex;
-    align-items: center;
-    background-color: #34353a;
-    width: 7rem;
-    height: 1rem;
-    margin: .2rem;
-    padding: .2rem .6rem;
-    border-radius: 1rem;
-    color: rgb(208, 212, 226);
-    box-shadow: 2px 2px 10px rgb(38, 38, 38);
-    border: none;
-    outline: none;
+.pal-search input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--editor-color-text);
+  background: transparent;
 }
 
-input.palFilter:focus {
-    background-color: #b4b7be;
-    color: rgb(0, 0, 0);
+.roster-list {
+  display: grid;
+  min-height: 0;
+  align-content: start;
+  gap: var(--editor-space-1);
+  overflow-y: auto;
+  padding: var(--editor-space-2);
 }
 
-img.palIcon {
-    width: 2rem;
-    border-radius: 50%;
+.pal-row {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--editor-space-2);
+  min-height: 3.25rem;
+  padding: var(--editor-space-1) var(--editor-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  text-align: left;
+  cursor: pointer;
 }
 
-button {
-    cursor: pointer;
+.pal-row:hover {
+  background: var(--editor-color-control-hover);
 }
 
-button.pal {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    white-space: nowrap;
-    min-width: 100%;
-    max-height: 3rem;
-    padding: 0rem;
-    padding-left: .3rem;
-    min-height: 3rem;
-    background-color: #323232;
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    text-align: left;
-    transition: all 0.15s ease-in-out;
+.pal-row[aria-current="true"] {
+  border-color: var(--editor-color-focus);
+  background: color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-surface-raised));
 }
 
-button.pal:hover {
-    background-color: #686868;
-    transition: all 0.15s ease-in-out;
+.pal-row:disabled {
+  cursor: default;
 }
 
-button.pal:disabled {
-    background-color: #8a8a8a;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
+.pal-row.male { border-left-color: #3789ce; }
+.pal-row.female { border-left-color: #c5558a; }
+.pal-row.unref { filter: grayscale(1); }
+.pal-row.out-of-container small { color: #58c779; }
+
+.pal-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
 }
 
-button.pal:disabled:hover {
-    background-color: #8a8a8a;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
+.pal-copy {
+  display: grid;
+  min-width: 0;
 }
 
-button.pal.male {
-    /* background-color: #095594; */
-    border-color: #095594;
-    border-style: solid;
-    border-width: 0.15rem;
+.pal-name {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-1);
 }
 
-button.pal.male:hover {
-    background-color: #023b69;
+.pal-name span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-button.pal.male:disabled {
-    background-color: #023b69;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
+.pal-status-icon {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  object-fit: contain;
+  color: var(--editor-color-warning);
 }
 
-button.pal.male:disabled[selected="true"] {
-    background-color: #023b69;
-    box-shadow: 0 0 0;
-    filter: none;
-    cursor: not-allowed;
+.pal-copy strong,
+.pal-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-button.pal.female {
-    border-color: #a13268;
-    border-style: solid;
-    border-width: 0.15rem;
+.pal-copy small {
+  color: var(--editor-color-muted);
+  font-size: .7rem;
 }
 
-button.pal.female:hover {
-    background-color: #5d0b32;
+.roster-icon-button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-primary);
+  cursor: pointer;
 }
 
-button.pal.female:disabled {
-    background-color: #5d0b32;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
+@media (max-width: 760px) {
+  .roster-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-button.pal.female:disabled[selected="true"] {
-    background-color: #5d0b32;
-    box-shadow: 0 0 0;
-    filter: none;
-    cursor: not-allowed;
-}
-
-button.unref {
-    filter: grayscale(100%);
-}
-
-button.unref:hover {
-    background-color: #5e5e5e !important;
-}
-
-button.unref:disabled {
-    background-color: #5e5e5e !important;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
-}
-
-button.out_of_container {
-    color: #3db15e;
-}
-
-button.add_pal {
-    background-color: #3db15e;
-    /* padding: 0; */
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.2rem;
-    font-size: 1rem;
-}
-
-button.add_pal:hover {
-    background-color: #4b8d5e;
-    box-shadow: 2px 2px 10px rgb(38, 38, 38);
-    cursor: pointer;
-}
-
-button.add_pal:disabled {
-    background-color: #8a8a8a;
-    box-shadow: 0 0 0;
-    filter: grayscale(100%);
-    cursor: not-allowed;
+@media (max-width: 480px) {
+  .roster-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
