@@ -1,5 +1,6 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { ref, computed, reactive, onMounted, nextTick, watch } from "vue";
 
 const palStore = usePalEditorStore()
@@ -101,13 +102,13 @@ function get_filtered_pal_list() {
                 :disabled="palStore.LOADING_FLAG">
             <button class="add_pal" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
                 :title="`Add Pal for Player ${palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).NickName}`"
-                :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">+</button>
+                :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal"><UiIcon name="plus" /></button>
         </div>
 
         <div class="overflow-list" ref="palListContainer">
             <div class="overflow-container" v-for="pal in get_filtered_pal_list()">
                 <button
-                    :class="['pal', { 'male': pal.displayGender() == '♂️', 'female': pal.displayGender() == '♀️', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
+                    :class="['pal', { 'male': palStore.genderKey(pal.Gender) === 'male', 'female': palStore.genderKey(pal.Gender) === 'female', 'unref': pal.Is_Unref_Pal, 'out_of_container': !pal.in_owner_palbox }]"
                     :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
                     :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG"
                     :selected="palStore.SELECTED_PAL_ID == pal.InstanceId"

@@ -1,5 +1,6 @@
 <script setup>
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
@@ -63,6 +64,11 @@ const currentPaldeck = () => paldeckForRow(
   palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG],
 );
 
+const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
+const skillBadgeLabels = skill => palStore.skillBadges(skill)
+  .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge)))
+  .join(' · ');
+
 </script>
 
 <template>
@@ -84,11 +90,14 @@ const currentPaldeck = () => paldeckForRow(
           </h2>
           <code class="editor-summary__meta">{{ palStore.SELECTED_PAL_DATA.InternalName }}</code>
           <div class="pal-basic-tags">
-            <span class="editor-tag">{{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKeyOG) }}</span>
+            <span class="editor-tag" v-if="palStore.palElementKeys(palStore.SELECTED_PAL_DATA.DataAccessKeyOG).length">
+              <img v-for="element in palStore.palElementKeys(palStore.SELECTED_PAL_DATA.DataAccessKeyOG)"
+                :key="element" class="element-icon" :src="`/image/elements/Element_${element}`" :alt="element">
+            </span>
             <span class="editor-tag" v-if="palStore.SELECTED_PAL_DATA.Level">Lv. {{ palStore.SELECTED_PAL_DATA.Level }}</span>
             <span class="editor-tag"
-              v-if="!palStore.SELECTED_PAL_DATA.IsHuman && palStore.SELECTED_PAL_DATA.displaySpecialType() !== 'N/A'">
-              {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
+              v-if="!palStore.SELECTED_PAL_DATA.IsHuman && palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).length">
+              {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') }}
             </span>
           </div>
           <p class="pal-basic-note" v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">
@@ -106,7 +115,7 @@ const currentPaldeck = () => paldeckForRow(
           </button>
           <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal"
             :disabled="palStore.LOADING_FLAG">
-            🗑️ {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
+            <UiIcon name="delete" /> {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
           </button>
         </div>
       </header>
@@ -139,7 +148,7 @@ const currentPaldeck = () => paldeckForRow(
               <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
                 name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
                 :aria-label="palStore.getTranslatedText('Editor_Nickname')"
-                :disabled="palStore.LOADING_FLAG">✅</button>
+                :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
             </div>
           </div>
           <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
@@ -153,33 +162,37 @@ const currentPaldeck = () => paldeckForRow(
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
                 name="SkinName" :aria-label="palStore.getTranslatedText('Editor_Skin')"
-                :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG">✅</button>
+                :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
             </div>
           </div>
           <div class="editor-field" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
-            <span class="editor-tag">{{ palStore.SELECTED_PAL_DATA.displayGender() }}</span>
+            <span class="editor-tag" v-if="palStore.genderKey(palStore.SELECTED_PAL_DATA.Gender)">
+              <img class="game-icon" :src="`/image/ui/gender-${palStore.genderKey(palStore.SELECTED_PAL_DATA.Gender)}`" alt="">
+            </span>
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
                 :aria-label="palStore.getTranslatedText('Editor_Gender')"
-                :disabled="palStore.LOADING_FLAG">🔄</button>
+                :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
             </div>
           </div>
           <div class="editor-field" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
-            <span class="editor-tag">{{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}</span>
+            <span class="editor-tag">
+              {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') || '-' }}
+            </span>
             <div class="editor-field__actions">
               <button class="editor-button editor-button--secondary editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
                 v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG">👑</button>
+                :disabled="palStore.LOADING_FLAG"><UiIcon name="crown" /></button>
               <button class="editor-button editor-button--secondary editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
                 v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG">✨</button>
+                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="'/image/ui/rare'" alt=""></button>
             </div>
           </div>
         </section>
@@ -188,19 +201,19 @@ const currentPaldeck = () => paldeckForRow(
           <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Growth") }}</h3>
           <div class="editor-stepper">
             <div>
-              <span class="editor-field__label">💙 {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
+              <span class="editor-field__label"><img class="game-icon" :src="'/image/ui/friendship'" alt=""> {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
               <strong class="editor-stepper__value">{{ palStore.SELECTED_PAL_DATA.FriendshipLevel }}</strong>
             </div>
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelDown"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Decrease')"
-                :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()">🔽</button>
+                :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelUp"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Increase')"
-                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔼</button>
+                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxFriendshipLevel"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Max')"
-                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔝</button>
+                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
           <div class="editor-stepper" v-if="palStore.SELECTED_PAL_DATA.Level">
@@ -211,20 +224,20 @@ const currentPaldeck = () => paldeckForRow(
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelDown"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"
-                :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
+                :disabled="palStore.LOADING_FLAG || isMinLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelUp"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
+                :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxLevel"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
+                :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
           <div class="editor-stat-grid">
-            <div class="editor-stat"><span class="editor-stat__label">❤️ {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}</strong></div>
-            <div class="editor-stat"><span class="editor-stat__label">⚔️ {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</strong></div>
-            <div class="editor-stat"><span class="editor-stat__label">🛡️ {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</strong></div>
-            <div class="editor-stat"><span class="editor-stat__label">🔨 {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="'/image/ui/stat-work-speed'" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</strong></div>
           </div>
         </section>
       </div>
@@ -232,11 +245,11 @@ const currentPaldeck = () => paldeckForRow(
       <details class="editor-disclosure">
         <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
         <div class="pal-technical-grid">
-          <div><span class="editor-disclosure__label">🪪 {{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
-          <div><span class="editor-disclosure__label">🆔 {{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_ID }}</code></div>
-          <div><span class="editor-disclosure__label">🏘️ {{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_ID }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
           <div class="pal-technical-slot">
-            <span class="editor-disclosure__label">📦 {{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
+            <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
             <code :class="{ 'is-out-of-container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }"
               :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
               {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
@@ -246,18 +259,18 @@ const currentPaldeck = () => paldeckForRow(
               {{ palStore.getTranslatedText("Editor_Btn_Retrieve_Pal") }}
             </button>
           </div>
-          <div><span class="editor-disclosure__label">🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
         </div>
       </details>
 
       <div class="pal-health-actions" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick || palStore.SELECTED_PAL_DATA.IsFaintedPal">
         <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick"
           @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
-          💊 {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
+          <img class="game-icon" :src="'/image/ui/heal'" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
         </button>
         <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal"
           @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">
-          💉 {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
+          <img class="game-icon" :src="'/image/ui/revive'" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
         </button>
       </div>
     </section>
@@ -267,7 +280,7 @@ const currentPaldeck = () => paldeckForRow(
       </p>
       <div class="editField spaceBetween">
         <p class="const">
-          ❤️ {{ palStore.getTranslatedText("Editor_IV_HP") }}
+          <img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_HP }}
         </p>
         <input class="slider" type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
@@ -276,15 +289,15 @@ const currentPaldeck = () => paldeckForRow(
       </div>
       <div class="editField spaceBetween" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
         <p class="const">
-          💎 {{ palStore.getTranslatedText("Editor_Awakening") }}
+          {{ palStore.getTranslatedText("Editor_Awakening") }}
           {{ palStore.SELECTED_PAL_DATA.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}
         </p>
         <button class="edit" @click="palStore.SELECTED_PAL_DATA.toggleAwakening" name="IsAwakening"
-          :disabled="palStore.LOADING_FLAG">🔄</button>
+          :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
       </div>
       <div class="editField spaceBetween">
         <p class="const">
-          🛡️ {{ palStore.getTranslatedText("Editor_IV_DEF") }}
+          <img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Defense }}
         </p>
         <input class="slider" type="range" name="Talent_Defense" min="0"
@@ -294,7 +307,7 @@ const currentPaldeck = () => paldeckForRow(
       </div>
       <div class="editField spaceBetween">
         <p class="const">
-          ⚔️ {{ palStore.getTranslatedText("Editor_IV_ATK") }}
+          <img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Talent_Shot }}
         </p>
         <input class="slider" type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
@@ -316,7 +329,7 @@ const currentPaldeck = () => paldeckForRow(
       </p>
       <div class="editField spaceBetween">
         <p class="const">
-          ❤️ {{ palStore.getTranslatedText("Editor_Souls_HP") }}
+          <img class="game-icon" :src="'/image/ui/stat-health'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_HP }}
         </p>
         <input class="slider" type="range" name="Rank_HP" min="0"
@@ -325,7 +338,7 @@ const currentPaldeck = () => paldeckForRow(
       </div>
       <div class="editField spaceBetween">
         <p class="const">
-          ⚔️ {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
+          <img class="game-icon" :src="'/image/ui/stat-attack'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Attack }}
         </p>
         <input class="slider" type="range" name="Rank_Attack" min="0"
@@ -334,7 +347,7 @@ const currentPaldeck = () => paldeckForRow(
       </div>
       <div class="editField spaceBetween">
         <p class="const">
-          🛡️ {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
+          <img class="game-icon" :src="'/image/ui/stat-defense'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_Defence }}
         </p>
         <input class="slider" type="range" name="Rank_Defence" min="0"
@@ -344,7 +357,7 @@ const currentPaldeck = () => paldeckForRow(
       </div>
       <div class="editField spaceBetween">
         <p class="const">
-          🔨 {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
+          <img class="game-icon" :src="'/image/ui/stat-work-speed'" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}
           {{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}
         </p>
         <input class="slider" type="range" name="Rank_CraftSpeed" min="0"
@@ -358,7 +371,7 @@ const currentPaldeck = () => paldeckForRow(
       </p>
       <div class="editField spaceBetween">
         <p class="const">
-          ⭐ {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}
+          <img class="game-icon" :src="'/image/ui/condense'" alt=""> {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}
           {{ palStore.SELECTED_PAL_DATA.Rank - 1 }}
         </p>
         <input class="slider" type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
@@ -380,9 +393,9 @@ const currentPaldeck = () => paldeckForRow(
               {{ value }}
             </p>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
-              :disabled="palStore.LOADING_FLAG || isMinSuit(key)">🔽</button>
+              :disabled="palStore.LOADING_FLAG || isMinSuit(key)"><UiIcon name="minus" /></button>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
-              :disabled="palStore.LOADING_FLAG || isMaxSuit(key)">🔼</button>
+              :disabled="palStore.LOADING_FLAG || isMaxSuit(key)"><UiIcon name="plus" /></button>
           </div>
         </div>
       </div>
@@ -396,14 +409,14 @@ const currentPaldeck = () => paldeckForRow(
           <div v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList">
             <div class="tooltip-container">
               <p class="const" :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
-                {{ palStore.displayRating(palStore.PASSIVE_SKILLS[skill]?.Rating) }} {{
+                <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span> {{
                   palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</span>
             </div>
 
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
-              :disabled="palStore.LOADING_FLAG">❌</button>
+              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
           </div>
           <div class="editField"
             v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
@@ -413,11 +426,11 @@ const currentPaldeck = () => paldeckForRow(
                 {{ palStore.getTranslatedText("Editor_Select_Skill") }}
               </option>
               <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
-                :key="skill.InternalName" :title="skill.I18n[1]">{{ palStore.displayRating(skill.Rating) }} {{
+                :key="skill.InternalName" :title="skill.I18n[1]" :class="`passive-option--${palStore.passiveTier(skill.Rating)}`">{{
                   skill.I18n[0] }}</option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
-              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)">➕</button>
+              :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
           </div>
         </div>
       </div>
@@ -429,8 +442,9 @@ const currentPaldeck = () => paldeckForRow(
         <div class="editField skillList">
           <div v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza">
             <div class="tooltip-container">
-              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">{{
-                palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }} {{
+              <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
+                <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
+                  :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt=""> {{
                   palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill
                 }}
               </p>
@@ -446,11 +460,10 @@ const currentPaldeck = () => paldeckForRow(
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.skillBadgeText(palStore.ACTIVE_SKILLS[skill]) }}
+                  {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}
                 </p>
                 <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
                   {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
@@ -459,7 +472,7 @@ const currentPaldeck = () => paldeckForRow(
             </div>
 
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
-              :disabled="palStore.LOADING_FLAG">❌</button>
+              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
           </div>
         </div>
       </div>
@@ -472,7 +485,8 @@ const currentPaldeck = () => paldeckForRow(
           <div v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza">
             <div class="tooltip-container">
               <p class="const" :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-                {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
+                <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
+                  :src="`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`" alt="">
                 {{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}
               </p>
               <span class="tooltip-text">
@@ -487,11 +501,10 @@ const currentPaldeck = () => paldeckForRow(
                 </p>
                 <p>
                   {{ palStore.getTranslatedText("Editor_Skill_EL") }}
-                  {{ palStore.displayElement(palStore.ACTIVE_SKILLS[skill]?.Element) }}
                   {{ palStore.ACTIVE_SKILLS[skill]?.Element }}
                 </p>
                 <p>
-                  {{ palStore.skillBadgeText(palStore.ACTIVE_SKILLS[skill]) }}
+                  {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}
                 </p>
                 <p class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">
                   {{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}
@@ -502,9 +515,9 @@ const currentPaldeck = () => paldeckForRow(
               && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)" class="edit"
               @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
               :title="palStore.ACTIVE_SKILLS[skill]?.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-              :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false">🔼</button>
+              :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false"><UiIcon name="plus" /></button>
             <button class="edit del" @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
-              :disabled="palStore.LOADING_FLAG">❌</button>
+              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
           </div>
           <div class="editField">
             <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
@@ -515,15 +528,13 @@ const currentPaldeck = () => paldeckForRow(
                 :key="skill.InternalName"
                 :disabled="skill.Assignable === false"
                 :title="skill.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : skill.I18n[1]">
-                {{ `${palStore.displayElement(skill.Element)} ${skill.I18n[0]} ${palStore.skillBadgeText(skill)}
-                -
-                ⚔️ ${skill.Power} - ⏱️ ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
+                {{ `${skill.Element} · ${skill.I18n[0]} · ${skillBadgeLabels(skill)} · ${palStore.getTranslatedText("Editor_Skill_ATK")} ${skill.Power} · ${palStore.getTranslatedText("Editor_Skill_CD")} ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
               </option>
             </select>
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
               :disabled="palStore.LOADING_FLAG
                 || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-                || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false">➕</button>
+                || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false"><UiIcon name="plus" /></button>
           </div>
         </div>
       </div>
@@ -760,6 +771,27 @@ img.suitIcon {
   margin: .2rem;
   padding: .2rem .2rem;
 }
+
+.game-icon,
+.element-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.passive-tier {
+  width: .65rem;
+  height: .65rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #aeb4c0;
+}
+
+.passive-tier--top { background: #a875ff; }
+.passive-tier--high { background: #55c987; }
+.passive-tier--positive { background: #e1b84b; }
+.passive-tier--negative { background: #e06363; }
 
 img.palIcon.unref {
   filter: grayscale(100%);

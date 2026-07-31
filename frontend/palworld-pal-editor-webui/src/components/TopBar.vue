@@ -1,4 +1,5 @@
 <script setup>
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { watch, ref } from 'vue';
 const palStore = usePalEditorStore()
@@ -52,22 +53,22 @@ const save = async () => {
   <div class="loading-bar" v-if="showLoading" :style="{ width: loadingWidth + '%' }"></div>
   <div id="topbar">
     <div class="options" v-if="palStore.SAVE_LOADED_FLAG">
-      <p>💾</p>
+      <UiIcon name="save" />
       <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
         :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
       <button class="op save" @click="save" :disabled="palStore.LOADING_FLAG">
-        💾 {{ palStore.getTranslatedText("TopBar_Btn_Save") }}
+        <UiIcon name="save" /> {{ palStore.getTranslatedText("TopBar_Btn_Save") }}
       </button>
       <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
-        🔄 {{ palStore.getTranslatedText("TopBar_Btn_Reload") }}
+        <UiIcon name="refresh" /> {{ palStore.getTranslatedText("TopBar_Btn_Reload") }}
       </button>
       <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">
-        🏠 {{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}
+        <UiIcon name="home" /> {{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}
       </button>
 
       <div class="tooltip-container">
         <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG">
-          💉 {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+          <img class="game-icon" :src="'/image/ui/heal'" alt=""> {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips') }}</span>
       </div>
@@ -76,7 +77,7 @@ const save = async () => {
         <button :class="['op', { 'toggled': palStore.SHOW_OOB_PAL_FLAG }]"
           @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
           :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
-          🧊 {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
+          <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips') }}</span>
       </div>
@@ -85,7 +86,7 @@ const save = async () => {
         <button :class="['op', { 'toggled': palStore.SHOW_UNREF_PAL_FLAG }]"
           @click="palStore.SHOW_UNREF_PAL_FLAG = !palStore.SHOW_UNREF_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
           :title="palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips')">
-          👀 {{ palStore.getTranslatedText("TopBar_Btn_Pal_Ghost") }}
+          <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_Ghost") }}
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Pal_Ghost_Tooltips') }}</span>
       </div> -->
@@ -93,18 +94,18 @@ const save = async () => {
       <div class="tooltip-container">
         <button :class="['op', { 'toggled': palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
           :disabled="palStore.LOADING_FLAG" :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
-          ⚠️ {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
+          <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
         </button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips') }}</span>
       </div>
 
       <button class="op blue" @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
-        ❤️ {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
+        <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
       </button>
 
     </div>
     <div class="options">
-      <p>🌐</p>
+      <UiIcon name="language" />
       <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n"
         :aria-label="palStore.getTranslatedText('TopBar_Language_Label')"
         :disabled="palStore.LOADING_FLAG">
@@ -176,6 +177,9 @@ input.savePath:focus {
 }
 
 button.op {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
   height: 2rem;
   background-color: #414141;
   color: whitesmoke;
@@ -183,6 +187,12 @@ button.op {
   outline: none;
   border-radius: 0.5rem;
   transition: all 0.15s ease-in-out;
+}
+
+.game-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  object-fit: contain;
 }
 
 button.op:hover {

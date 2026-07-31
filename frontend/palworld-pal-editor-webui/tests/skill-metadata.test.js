@@ -98,17 +98,17 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
     assert.deepEqual(skillBadges(retainedInvalid), ["disabled"]);
 });
 
-test("game element enums and top passive tier use visible markers", () => {
+test("game element enums and passive tiers use stable presentation keys", () => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
-
-    assert.equal(store.displayElement("Leaf"), "☘️");
-    assert.equal(store.displayElement("Earth"), "🪨");
-    assert.equal(store.displayElement("Electricity"), "⚡");
-    assert.equal(store.displayElement("Normal"), "🔵");
-    assert.equal(store.displayRating(5), "🟣");
-    assert.equal(store.displayRating(4), "🟢");
-    assert.equal(store.displayRating(2), "🟡");
+    assert.equal(typeof store.elementIconKey, "function");
+    assert.equal(store.elementIconKey("Leaf"), "Grass");
+    assert.equal(store.elementIconKey("Earth"), "Ground");
+    assert.equal(store.elementIconKey("Electricity"), "Electric");
+    assert.equal(store.elementIconKey("Normal"), "Neutral");
+    assert.equal(store.passiveTier(5), "top");
+    assert.equal(store.passiveTier(4), "high");
+    assert.equal(store.passiveTier(2), "positive");
 });
 
 test("skill metadata labels and non-assignable warning exist in every UI locale", () => {
@@ -119,6 +119,14 @@ test("skill metadata labels and non-assignable warning exist in every UI locale"
         "Editor_Skill_Badge_Fruit",
         "Editor_Skill_Badge_Disabled",
         "Message_Skill_Not_Assignable",
+        "Editor_Variant_tower",
+        "Editor_Variant_boss",
+        "Editor_Variant_rare",
+        "Editor_Variant_raid",
+        "Editor_Variant_predator",
+        "Editor_Variant_oilrig",
+        "PathPicker_Back",
+        "PathPicker_Open",
     ];
     for (const { default: locale } of locales) {
         for (const key of keys) assert.equal(typeof locale[key], "string", key);

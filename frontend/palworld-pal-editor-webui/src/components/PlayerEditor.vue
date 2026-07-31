@@ -1,6 +1,7 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
 import ItemCard from '@/components/modules/TechCard.vue'
+import UiIcon from '@/components/modules/UiIcon.vue'
 
 const palStore = usePalEditorStore()
 
@@ -26,7 +27,7 @@ const isMinLv = () => {
                     </p>
                     <input class="edit" type="text" name="NickName" v-model="palStore.SELECTED_PLAYER_DATA.NickName">
                     <button class="edit" @click="palStore.updatePlayer" name="NickName"
-                        :value="palStore.SELECTED_PLAYER_DATA.NickName" :disabled="palStore.LOADING_FLAG">✅</button>
+                        :value="palStore.SELECTED_PLAYER_DATA.NickName" :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
                 </div>
                 <div class="editField">
                     <p class="const">
@@ -34,7 +35,7 @@ const isMinLv = () => {
                     </p>
                     <input class="edit" type="number" name="TechnologyPoint" v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" min="0" max="65535">
                     <button class="edit" @click="palStore.updatePlayer" name="TechnologyPoint"
-                        :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" :disabled="palStore.LOADING_FLAG">✅</button>
+                        :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
                 </div>
                 <div class="editField">
                     <p class="const">
@@ -42,19 +43,16 @@ const isMinLv = () => {
                     </p>
                     <input class="edit" type="number" name="bossTechnologyPoint" v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" min="0" max="65535">
                     <button class="edit" @click="palStore.updatePlayer" name="bossTechnologyPoint"
-                        :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" :disabled="palStore.LOADING_FLAG">✅</button>
+                        :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
                 </div>
                 <div class="editField">
                     <p class="const"> Lv: {{ palStore.SELECTED_PLAYER_DATA.Level }}</p>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.levelDown" name="Level"
-                        :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
+                        :disabled="palStore.LOADING_FLAG || isMinLv()"><UiIcon name="minus" /></button>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.levelUp" name="Level"
-                        :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
+                        :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="plus" /></button>
                     <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
-                        :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
-                    <!-- <input class="edit" type="number" name="Level" v-model="palStore.SELECTED_PLAYER_DATA.Level" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL">
-                    <button class="edit" @click="palStore.updatePlayer" name="Level"
-                        :value="palStore.SELECTED_PLAYER_DATA.Level" :disabled="palStore.LOADING_FLAG">✅</button> -->
+                        :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="maximum" /></button>
                 </div>
                 <div class="editField">
                     <p class="const">
@@ -67,7 +65,7 @@ const isMinLv = () => {
                         v-model.number="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint">
                     <button class="edit" @click="palStore.updatePlayer" name="UnusedStatusPoint"
                         :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint"
-                        :disabled="palStore.LOADING_FLAG">✅</button>
+                        :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
                 </div>
                 <div class="editField">
                     <button class="edit text" @click="palStore.updatePlayer" name="unlock_all_techs"
@@ -83,7 +81,7 @@ const isMinLv = () => {
                     :max="palStore.SELECTED_PLAYER_DATA.StatusPointMaximums[name]"
                     v-model.number="palStore.SELECTED_PLAYER_DATA.StatusPoints[name]">
                 <button class="edit" @click="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)"
-                    :disabled="palStore.LOADING_FLAG">✅</button>
+                    :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
             </div>
         </div>
         <!-- <div class="EditorItem flex-v item left">

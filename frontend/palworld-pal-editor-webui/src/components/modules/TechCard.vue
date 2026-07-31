@@ -1,13 +1,14 @@
 <template>
-    <div :class="['tech', { bossTech: item.BossTechnology }, { locked: isLocked }]" :style="bgStyle"
-        @click="toggleLock">
-        <div class="techHeader">{{ item.I18n.Type ?? "⚠️ INVALID" }}</div>
+    <button type="button" :class="['tech', { bossTech: item.BossTechnology }, { locked: isLocked }]" :style="bgStyle"
+        :aria-pressed="!isLocked" :disabled="palStore.LOADING_FLAG" @click="toggleLock">
+        <div class="techHeader"><UiIcon v-if="!item.I18n.Type" name="warning" />{{ item.I18n.Type ?? "INVALID" }}</div>
         <div class="techFooter">{{ item.I18n.Name ?? item.internalName }}</div>
-    </div>
+    </button>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import UiIcon from './UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
@@ -37,6 +38,10 @@ const isLocked = computed(() => {
 
 <style scoped>
 .tech {
+    padding: 0;
+    border: 0;
+    color: inherit;
+    font: inherit;
     min-width: 8rem;
     max-width: 8rem;
     min-height: 10rem;

@@ -91,7 +91,8 @@ test("Pal summary uses Paldeck identity without duplicate or N/A tags", () => {
   assert.match(source, /import \{ paldeckForRow \}/);
   assert.match(panel, /PAL \$\{currentPaldeck\(\)\}/);
   assert.doesNotMatch(panel.match(/<h2[\s\S]*?<\/h2>/)?.[0] || "", /displayPalElement/);
-  assert.match(panel, /displaySpecialType\(\) !== 'N\/A'/);
+  assert.match(panel, /specialTypeKeys\(palStore\.SELECTED_PAL_DATA\)\.length/);
+  assert.doesNotMatch(panel, /displaySpecialType|displayPalElement/);
 });
 
 test("Pal basic info keeps specific translated icon action names", () => {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue";
+import UiIcon from "./UiIcon.vue";
 
 import en from "../../i18n/en.js";
 import fr from "../../i18n/fr.js";
@@ -125,7 +126,7 @@ const variantTabindex = (variant, index) => (
       <img :src="`/image/pals/${displayRow?.IconKey || displayRow?.IconAccessKey || 'unknown'}`" alt="">
       <span class="trigger-copy">
         <span>
-          <span v-if="displayRow?.Invalid" class="warning" aria-hidden="true">⚠️</span>
+          <UiIcon v-if="displayRow?.Invalid" class="warning" name="warning" />
           <span v-if="displayRow?.Invalid" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
           {{ palLabel(displayRow, displayRow?.I18n || pendingId || t('Editor_Pal_Selector_Select')) }}
         </span>
@@ -172,7 +173,7 @@ const variantTabindex = (variant, index) => (
               <img :src="`/image/pals/${family.IconKey}`" alt="" loading="lazy">
               <span>
                 <span>
-                  <span v-if="family.invalidOnly" class="warning" aria-hidden="true">⚠️</span>
+                  <UiIcon v-if="family.invalidOnly" class="warning" name="warning" />
                   <span v-if="family.invalidOnly" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
                   {{ palLabel(family, family.Name) }}
                 </span>
@@ -206,7 +207,7 @@ const variantTabindex = (variant, index) => (
               <img :src="`/image/pals/${variant.IconKey || variant.IconAccessKey || 'unknown'}`" alt="" loading="lazy">
               <span>
                 <span>
-                  <span v-if="variant.warning" class="warning" aria-hidden="true">⚠️</span>
+                  <UiIcon v-if="variant.warning" class="warning" name="warning" />
                   <span v-if="variant.warning" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
                   {{ palLabel(variant) }}
                 </span>

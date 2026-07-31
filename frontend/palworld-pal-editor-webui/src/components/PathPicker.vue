@@ -4,6 +4,7 @@ import { computed } from '@vue/reactivity';
 import { ref, onMounted } from 'vue'
 
 import IconButton from './modules/IconButton.vue';
+import UiIcon from './modules/UiIcon.vue';
 import InputArea from './modules/InputArea.vue'
 import BarButton from './modules/BarButton.vue'
 const palStore = usePalEditorStore()
@@ -54,15 +55,16 @@ const abort = () => {
         <div class="popup">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">
-                <IconButton icon="⤴️" @click="palStore.path_back" />
+                <IconButton icon="back" :label="palStore.getTranslatedText('PathPicker_Back')" @click="palStore.path_back" />
                 <InputArea v-model="palStore.PAL_FILE_PICKER_PATH" />
-                <IconButton icon="➡️" @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
+                <IconButton icon="forward" :label="palStore.getTranslatedText('PathPicker_Open')"
+                    @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
             </div>
 
             <ul ref="scrollElement">
                 <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
                     @click="() => { if (value.isDir) palStore.update_picker_result(key) }" :fullpath="key">
-                    {{ value.isDir ? "📁" : "📄" }} {{ value.filename }}
+                    <UiIcon :name="value.isDir ? 'folder' : 'file'" /> {{ value.filename }}
                 </li>
             </ul>
             <BarButton @click="savePickerResult" content="OK" :disabled="!palStore.IS_PAL_SAVE_PATH" />

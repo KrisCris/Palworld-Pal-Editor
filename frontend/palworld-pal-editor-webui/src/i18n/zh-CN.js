@@ -1,6 +1,6 @@
 export default {
     App_Connecting: "正在连接后端服务……",
-    AuthView_PW_Prompt_1: "你好! 似乎你在运行这个工具时设置了认证密码 🔐。",
+    AuthView_PW_Prompt_1: "你好! 似乎你在运行这个工具时设置了认证密码。",
     AuthView_PW_Prompt_2: "你现在需要输入正确的密码，以进行后续操作：",
     AuthView_Password_Label: "密码",
     AuthView_Remember_7_Days: "7 天内不再询问",
@@ -26,6 +26,8 @@ export default {
     EntryView_Note_3:
         " > 如果你在通过Docker容器的方式使用这个工具，请确保已经正确的映射了存档的路径，并且容器具有合适的文件访问权限。这里你只需要输入映射的路径。",
     EntryView_BTN_Path_Picker: "选择路径",
+    PathPicker_Back: "返回",
+    PathPicker_Open: "打开路径",
     EntryView_BTN_Load: "载入存档",
     EntryView_Period: "。",
     EntryView_Version_Warning: "此版本不是由官方 CI/CD 管道构建。请谨慎使用并验证来源。",
@@ -61,6 +63,12 @@ export default {
     Editor_Skin_Default: "默认",
     Editor_Gender: "性别: ",
     Editor_Variant: "特殊种: ", // 不知道用什么词
+    Editor_Variant_tower: "高塔",
+    Editor_Variant_boss: "头目",
+    Editor_Variant_rare: "大型",
+    Editor_Variant_raid: "突袭",
+    Editor_Variant_predator: "狂暴",
+    Editor_Variant_oilrig: "油田要塞",
     Editor_Friendship_Level: "信赖度: ",
     Editor_Pal_CharacterID: "帕鲁内部名称: ",
     Editor_Pal_ID: "帕鲁对象 ID: ",

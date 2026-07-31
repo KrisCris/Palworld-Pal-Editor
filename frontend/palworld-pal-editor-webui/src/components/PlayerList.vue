@@ -1,5 +1,6 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import UiIcon from '@/components/modules/UiIcon.vue'
 const palStore = usePalEditorStore()
 </script>
 
@@ -13,7 +14,7 @@ const palStore = usePalEditorStore()
         <button class="playerSettings"
           v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID).HasViewingCage"
           :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')" :disabled="palStore.LOADING_FLAG"
-          @click="palStore.updatePlayer" name="unlock_viewing_cage">🧊</button>
+          @click="palStore.updatePlayer" name="unlock_viewing_cage"><UiIcon name="unlock" /></button>
         <span class="tooltip-text">{{ palStore.getTranslatedText('PlayerList_Viewing_Cage') }}</span>
       </div>
     </div>

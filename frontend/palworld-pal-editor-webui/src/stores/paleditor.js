@@ -64,14 +64,6 @@ export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
     );
 }
 
-const SKILL_BADGE_ICONS = Object.freeze({
-    nonInheritable: "✨",
-    exclusive: "🔒",
-    boss: "👑",
-    fruit: "🍐",
-    disabled: "⚠️",
-});
-
 const SKILL_BADGE_TRANSLATION_KEYS = Object.freeze({
     nonInheritable: "Editor_Skill_Badge_NonInheritable",
     exclusive: "Editor_Skill_Badge_Exclusive",
@@ -79,6 +71,48 @@ const SKILL_BADGE_TRANSLATION_KEYS = Object.freeze({
     fruit: "Editor_Skill_Badge_Fruit",
     disabled: "Editor_Skill_Badge_Disabled",
 });
+
+const ELEMENT_ALIASES = Object.freeze({
+    Leaf: "Grass",
+    Earth: "Ground",
+    Electricity: "Electric",
+    Normal: "Neutral",
+});
+const ELEMENT_ICON_KEYS = new Set([
+    "Water", "Fire", "Dragon", "Grass", "Ground", "Ice", "Electric", "Neutral", "Dark",
+]);
+
+export function elementIconKey(element) {
+    const key = ELEMENT_ALIASES[element] ?? element;
+    return ELEMENT_ICON_KEYS.has(key) ? key : null;
+}
+
+export function passiveTier(rating) {
+    if (rating >= 5) return "top";
+    if (rating >= 4) return "high";
+    if (rating >= 2) return "positive";
+    if (rating < 0) return "negative";
+    return "neutral";
+}
+
+export const skillBadgeTranslationKey = badge => SKILL_BADGE_TRANSLATION_KEYS[badge];
+
+export function genderKey(gender) {
+    if (gender === "EPalGenderType::Female") return "female";
+    if (gender === "EPalGenderType::Male") return "male";
+    return null;
+}
+
+export function specialTypeKeys(pal = {}) {
+    return [
+        pal.IsTower && "tower",
+        pal.IsBOSS && "boss",
+        pal.IsRarePal && "rare",
+        pal.IsRAID && "raid",
+        pal.IsPREDATOR && "predator",
+        pal.IsOilrig && "oilrig",
+    ].filter(Boolean);
+}
 
 export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_LEVEL = 80;
@@ -220,16 +254,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.SuitabilityMinimums = obj.SuitabilityMinimums;
         }
 
-        displaySpecialType() {
-            if (this.IsTower) return "🗼";
-            if (this.IsBOSS) return "👑";
-            if (this.IsRarePal) return "✨";
-            if (this.IsRAID) return "RAID";
-            if (this.IsPREDATOR) return "Rampaging";
-            if (this.IsOilrig) return "Oilrig";
-            return "N/A";
-        }
-
         getRank() {
             return this.Rank - 1;
         }
@@ -290,16 +314,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         maxFriendshipLevel() {
             this.FriendshipLevel = MAX_FRIENDSHIP_LEVEL;
             updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
-        }
-
-        displayGender() {
-            if (this.Gender == "EPalGenderType::Female") {
-                return "♀️";
-            } else if (this.Gender == "EPalGenderType::Male") {
-                return "♂️";
-            } else {
-                return "";
-            }
         }
 
         swapGender() {
@@ -1629,51 +1643,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    function displayPalElement(DataAccessKey) {
-        const els = PAL_STATIC_DATA.value[DataAccessKey]?.Elements;
-        if (!els) return;
-
-        let str = "";
-        for (let e of els) {
-            str += displayElement(e);
-        }
-        return str;
-    }
-
-    function displayElement(element) {
-        const elementEmojis = {
-            Water: "💧",
-            Fire: "🔥",
-            Dragon: "🐉",
-            Grass: "☘️",
-            Leaf: "☘️",
-            Ground: "🪨",
-            Earth: "🪨",
-            Ice: "❄️",
-            Electric: "⚡",
-            Electricity: "⚡",
-            Neutral: "🔵",
-            Normal: "🔵",
-            Dark: "🌑",
-        };
-        return elementEmojis[element] || "";
-    }
-
-    function skillBadgeText(skill) {
-        return skillBadges(skill)
-            .map(badge => (
-                `${SKILL_BADGE_ICONS[badge]} ${getTranslatedText(SKILL_BADGE_TRANSLATION_KEYS[badge])}`
-            ))
-            .join(" · ");
-    }
-
-    function displayRating(rating) {
-        if (!rating) return "";
-        if (rating >= 5) return "🟣";
-        if (rating == 4) return "🟢";
-        if (rating >= 2) return "🟡";
-        if (rating < 0) return "🔴";
-        return "⚪";
+    function palElementKeys(DataAccessKey) {
+        return (PAL_STATIC_DATA.value[DataAccessKey]?.Elements ?? [])
+            .map(elementIconKey)
+            .filter(Boolean);
     }
 
     async function shownDonate() {
@@ -1766,12 +1739,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         isElementInViewport,
         isFilteredPal,
 
-        displayPalElement,
-        displayElement,
+        elementIconKey,
+        palElementKeys,
+        passiveTier,
+        genderKey,
+        specialTypeKeys,
         filterSkillOptions,
         skillBadges,
-        skillBadgeText,
-        displayRating,
+        skillBadgeTranslationKey,
 
         reset,
         updateI18n,
