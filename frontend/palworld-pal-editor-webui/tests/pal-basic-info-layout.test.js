@@ -89,6 +89,11 @@ test("Pal basic info composes by container size instead of viewport size", () =>
 test("Pal summary uses Paldeck identity without duplicate or N/A tags", () => {
   const panel = basicPanel();
   assert.match(source, /import \{ paldeckForRow \}/);
+  assert.match(source, /import PalPortrait from/);
+  assert.match(panel, /<PalPortrait[^>]*size="5\.5rem"/s);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-if="palStore\.SELECTED_PAL_DATA\.IsBOSS"[\s\S]*?:src="'\/image\/ui\/boss'"/);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="'\/image\/ui\/rare'"/);
+  assert.match(panel, /<template #top-right>[\s\S]*?v-if="palStore\.SELECTED_PAL_DATA\.IsBOSS && palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="'\/image\/ui\/rare'"/);
   assert.match(panel, /PAL \$\{currentPaldeck\(\)\}/);
   assert.doesNotMatch(panel.match(/<h2[\s\S]*?<\/h2>/)?.[0] || "", /displayPalElement/);
   assert.match(panel, /specialTypeKeys\(palStore\.SELECTED_PAL_DATA\)\.length/);

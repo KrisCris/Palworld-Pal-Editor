@@ -150,6 +150,10 @@ export default {
     PalList_Text: "LISTE DES PALS",
     PalList_Search: "Rechercher des Pals",
     PalList_Add: "Ajouter un Pal",
+    PalList_Status_Ordinary: "Statut : Ordinaire",
+    PalList_Status_Alpha: "Statut : Alpha",
+    PalList_Status_Lucky: "Statut : Chanceux",
+    PalList_Status_AlphaLucky: "Statut : Alpha et Chanceux",
 
     PlayerList_Text: "LISTE DES JOUEURS",
     PlayerList_Unknown: "Joueur sans nom",

@@ -150,6 +150,10 @@ export default {
     PalList_Text: "PAL LIST",
     PalList_Search: "Search Pals",
     PalList_Add: "Add Pal",
+    PalList_Status_Ordinary: "Status: Ordinary",
+    PalList_Status_Alpha: "Status: Alpha",
+    PalList_Status_Lucky: "Status: Lucky",
+    PalList_Status_AlphaLucky: "Status: Alpha and Lucky",
 
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Unknown: "Unnamed player",

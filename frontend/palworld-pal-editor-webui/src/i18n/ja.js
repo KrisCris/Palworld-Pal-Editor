@@ -151,6 +151,10 @@ export default {
     PalList_Text: "パルリスト",
     PalList_Search: "パルを検索",
     PalList_Add: "パルを追加",
+    PalList_Status_Ordinary: "状態：通常",
+    PalList_Status_Alpha: "状態：ボス",
+    PalList_Status_Lucky: "状態：希少",
+    PalList_Status_AlphaLucky: "状態：ボス・希少",
 
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Unknown: "名前のないプレイヤー",

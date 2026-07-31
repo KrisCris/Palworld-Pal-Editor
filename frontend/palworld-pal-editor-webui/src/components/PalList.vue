@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from 'vue'
 
+import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { usePalEditorStore } from '@/stores/paleditor'
@@ -62,6 +63,14 @@ function palMetadata(pal) {
   const id = pal.CharacterID || pal.DataAccessKeyOG
   return paldeck ? `PAL ${paldeck} · ${id}` : id
 }
+
+const portraitBorder = pal => pal.IsBOSS
+  ? 'var(--editor-color-danger)'
+  : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
+
+const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
+  ? pal.IsRarePal ? 'AlphaLucky' : 'Alpha'
+  : pal.IsRarePal ? 'Lucky' : 'Ordinary'}`)
 </script>
 
 <template>
@@ -86,14 +95,22 @@ function palMetadata(pal) {
         :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
         :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
         :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
-        <img class="pal-icon" :src="`/image/pals/${pal.IconAccessKey}`" alt="">
+        <PalPortrait :src="`/image/pals/${pal.IconAccessKey}`" alt="" size="2.5rem"
+          :border-color="portraitBorder(pal)">
+          <template #top-left>
+            <img v-if="pal.IsBOSS" :src="'/image/ui/boss'" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+          <template #top-right>
+            <img v-if="pal.IsBOSS && pal.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+        </PalPortrait>
         <span class="pal-copy">
           <strong class="pal-name">
-            <img v-if="pal.IsRarePal" class="pal-status-icon" :src="'/image/ui/rare'" alt="">
-            <img v-if="pal.IsBOSS" class="pal-status-icon" :src="'/image/ui/boss'" alt="">
             <span>{{ pal.DisplayName }}</span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>
+          <span class="sr-only">{{ palStatus(pal) }}</span>
         </span>
       </button>
     </div>
@@ -188,12 +205,6 @@ function palMetadata(pal) {
 .pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: #58c779; }
 
-.pal-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  object-fit: contain;
-}
-
 .pal-copy {
   display: grid;
   min-width: 0;
@@ -210,14 +221,6 @@ function palMetadata(pal) {
   text-overflow: ellipsis;
 }
 
-.pal-status-icon {
-  flex: 0 0 auto;
-  width: 1rem;
-  height: 1rem;
-  object-fit: contain;
-  color: var(--editor-color-warning);
-}
-
 .pal-copy strong,
 .pal-copy small {
   overflow: hidden;
@@ -228,6 +231,15 @@ function palMetadata(pal) {
 .pal-copy small {
   color: var(--editor-color-muted);
   font-size: .7rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .roster-icon-button {

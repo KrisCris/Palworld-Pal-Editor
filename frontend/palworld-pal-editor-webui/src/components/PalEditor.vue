@@ -1,4 +1,5 @@
 <script setup>
+import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
@@ -86,6 +87,10 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
   .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge)))
   .join(' · ');
 
+const portraitBorder = pal => pal.IsBOSS
+  ? 'var(--editor-color-danger)'
+  : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
+
 </script>
 
 <template>
@@ -95,8 +100,17 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
       :class="['pal-basic-info editor-surface', { 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]"
     >
       <header class="editor-summary">
-        <img class="pal-basic-avatar" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`"
-          :alt="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKeyOG">
+        <PalPortrait :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`"
+          :alt="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKeyOG"
+          size="5.5rem" :border-color="portraitBorder(palStore.SELECTED_PAL_DATA)">
+          <template #top-left>
+            <img v-if="palStore.SELECTED_PAL_DATA.IsBOSS" :src="'/image/ui/boss'" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="palStore.SELECTED_PAL_DATA.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+          <template #top-right>
+            <img v-if="palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+        </PalPortrait>
         <div class="editor-summary__identity">
           <span class="editor-summary__eyebrow">
             {{ currentPaldeck() ? `PAL ${currentPaldeck()}` : palStore.getTranslatedText("Editor_Basic_Info") }}
@@ -499,14 +513,6 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
 
 .pal-basic-info.is-unreferenced {
   filter: grayscale(100%);
-}
-
-.pal-basic-avatar {
-  width: 5.5rem;
-  height: 5.5rem;
-  object-fit: contain;
-  border-radius: 50%;
-  background: var(--editor-color-surface-subtle);
 }
 
 .pal-basic-tags,

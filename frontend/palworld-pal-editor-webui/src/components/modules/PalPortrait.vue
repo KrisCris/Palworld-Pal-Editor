@@ -1,0 +1,59 @@
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  src: { type: String, required: true },
+  alt: { type: String, default: '' },
+  size: { type: String, default: '2.5rem' },
+  borderColor: { type: String, default: 'var(--editor-color-border)' },
+})
+
+const style = computed(() => ({
+  '--pal-portrait-size': props.size,
+  '--pal-portrait-border': props.borderColor,
+}))
+</script>
+
+<template>
+  <span class="pal-portrait" :style="style">
+    <img class="pal-portrait__image" :src="src" :alt="alt">
+    <span class="pal-portrait__marker pal-portrait__marker--top-left" aria-hidden="true"><slot name="top-left" /></span>
+    <span class="pal-portrait__marker pal-portrait__marker--top-right" aria-hidden="true"><slot name="top-right" /></span>
+    <span class="pal-portrait__marker pal-portrait__marker--bottom-left" aria-hidden="true"><slot name="bottom-left" /></span>
+    <span class="pal-portrait__marker pal-portrait__marker--bottom-right" aria-hidden="true"><slot name="bottom-right" /></span>
+  </span>
+</template>
+
+<style scoped>
+.pal-portrait {
+  position: relative;
+  display: inline-block;
+  width: var(--pal-portrait-size);
+  height: var(--pal-portrait-size);
+  flex: 0 0 auto;
+}
+
+.pal-portrait__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--pal-portrait-border);
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--editor-color-surface-subtle);
+}
+
+.pal-portrait__marker {
+  position: absolute;
+  width: .9rem;
+  height: .9rem;
+  transform: translate(-25%, -25%);
+}
+
+.pal-portrait__marker:empty { display: none; }
+.pal-portrait__marker :deep(img) { display: block; width: 100%; height: 100%; object-fit: contain; }
+.pal-portrait__marker--top-left { top: 0; left: 0; }
+.pal-portrait__marker--top-right { top: 0; right: 0; transform: translate(25%, -25%); }
+.pal-portrait__marker--bottom-left { bottom: 0; left: 0; transform: translate(-25%, 25%); }
+.pal-portrait__marker--bottom-right { right: 0; bottom: 0; transform: translate(25%, 25%); }
+</style>
