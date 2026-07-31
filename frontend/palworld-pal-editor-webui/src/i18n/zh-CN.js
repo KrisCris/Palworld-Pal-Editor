@@ -96,6 +96,8 @@ export default {
     Editor_Awakened: "已觉醒",
     Editor_Passive_Skills: "被动技能",
     Editor_Select_Skill: "选择添加的技能",
+    Editor_Select_Search: "搜索选项",
+    Editor_Select_No_Results: "没有匹配的选项",
     Editor_Equipped_Skills: "装备的主动技能",
     Editor_Skill_ATK: "攻击力: ",
     Editor_Skill_CD: "冷却时间: ",

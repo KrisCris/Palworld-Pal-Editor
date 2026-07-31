@@ -1,5 +1,6 @@
 <script setup>
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
+import SearchSelect from '@/components/modules/SearchSelect.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
@@ -63,6 +64,31 @@ const suitabilityIconSrc = key => {
 const currentPaldeck = () => paldeckForRow(
   palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG],
 );
+
+const skinOptions = () => [
+  { value: '', label: palStore.getTranslatedText('Editor_Skin_Default') },
+  ...availableSkins().map(skin => ({ value: skin.SkinName, label: skin.SkinName })),
+]
+
+const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
+  value: skill.InternalName,
+  label: skill.I18n[0],
+  description: skill.I18n[1],
+  meta: skill.InternalName,
+  tone: palStore.passiveTier(skill.Rating),
+}))
+
+const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
+  const element = palStore.elementIconKey(skill.Element)
+  return {
+    value: skill.InternalName,
+    label: skill.I18n[0],
+    description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
+    meta: `${skill.InternalName} ${skill.Element}`,
+    disabled: skill.Assignable === false,
+    icon: element ? `/image/elements/Element_${element}` : '',
+  }
+})
 
 const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
 const skillBadgeLabels = skill => palStore.skillBadges(skill)
@@ -153,12 +179,11 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
           </div>
           <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Skin") }}</span>
-            <select class="editor-control" name="SkinName" v-model="palStore.SELECTED_PAL_DATA.SkinName">
-              <option value="">{{ palStore.getTranslatedText("Editor_Skin_Default") }}</option>
-              <option v-for="skin in availableSkins()" :key="skin.SkinName" :value="skin.SkinName">
-                {{ skin.SkinName }}
-              </option>
-            </select>
+            <SearchSelect class="editor-control" v-model="palStore.SELECTED_PAL_DATA.SkinName"
+              :options="skinOptions()" :placeholder="palStore.getTranslatedText('Editor_Skin_Default')"
+              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
+              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
+              :aria-label="palStore.getTranslatedText('Editor_Skin')" :disabled="palStore.LOADING_FLAG" />
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
                 name="SkinName" :aria-label="palStore.getTranslatedText('Editor_Skin')"
@@ -420,15 +445,12 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
           </div>
           <div class="editField"
             v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
-            <select class="PassiveSkill selector" name="add_PassiveSkillList"
-              v-model="palStore.PAL_PASSIVE_SELECTED_ITEM">
-              <option class="PassiveSkill" value="" key="">
-                {{ palStore.getTranslatedText("Editor_Select_Skill") }}
-              </option>
-              <option class="PassiveSkill" v-for="skill in palStore.PASSIVE_SKILLS_LIST" :value="skill.InternalName"
-                :key="skill.InternalName" :title="skill.I18n[1]" :class="`passive-option--${palStore.passiveTier(skill.Rating)}`">{{
-                  skill.I18n[0] }}</option>
-            </select>
+            <SearchSelect class="PassiveSkill selector" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM"
+              placement="top"
+              :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
+              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
+              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
+              :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG" />
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
               :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
           </div>
@@ -520,17 +542,12 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
               :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
           </div>
           <div class="editField">
-            <select class="selector" name="add_MasteredWaza" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM">
-              <option value="" key="">
-                {{ palStore.getTranslatedText("Editor_Select_Skill") }}
-              </option>
-              <option v-for="skill in activeSkillOptions()" :value="skill.InternalName"
-                :key="skill.InternalName"
-                :disabled="skill.Assignable === false"
-                :title="skill.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : skill.I18n[1]">
-                {{ `${skill.Element} · ${skill.I18n[0]} · ${skillBadgeLabels(skill)} · ${palStore.getTranslatedText("Editor_Skill_ATK")} ${skill.Power} · ${palStore.getTranslatedText("Editor_Skill_CD")} ${skill.CT}${palStore.HIDE_INVALID_OPTIONS ? '' : ` | ${skill.InternalName}`}` }}
-              </option>
-            </select>
+            <SearchSelect class="selector" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM"
+              placement="top"
+              :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
+              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
+              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
+              :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG" />
             <button class="edit" @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
               :disabled="palStore.LOADING_FLAG
                 || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)

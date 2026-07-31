@@ -97,6 +97,8 @@ export default {
     Editor_Awakened: "覚醒済み",
     Editor_Passive_Skills: "パッシブスキル",
     Editor_Select_Skill: "スキルを追加",
+    Editor_Select_Search: "選択肢を検索",
+    Editor_Select_No_Results: "一致する選択肢はありません",
     Editor_Equipped_Skills: "装備中のアクティブスキル",
     Editor_Skill_ATK: "攻撃力: ",
     Editor_Skill_CD: "CT: ",

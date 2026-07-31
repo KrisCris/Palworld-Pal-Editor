@@ -96,6 +96,8 @@ export default {
     Editor_Awakened: "Awakened",
     Editor_Passive_Skills: "PASSIVE SKILLS",
     Editor_Select_Skill: "Add Skills",
+    Editor_Select_Search: "Search options",
+    Editor_Select_No_Results: "No matching options",
     Editor_Equipped_Skills: "EQUIPPED ACTIVE SKILLS",
     Editor_Skill_ATK: "Attack: ",
     Editor_Skill_CD: "CT: ",
