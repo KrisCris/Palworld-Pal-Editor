@@ -165,13 +165,13 @@ class PalEntity:
             return self.OldOwnerPlayerUIds[-1]
 
     @property
-    def OwnerName(self) -> str:
+    def OwnerName(self) -> Optional[str]:
         from .save_manager import SaveManager
 
         player = SaveManager().get_player(self.OwnerPlayerUId)
         if player and player.NickName:
             return player.NickName
-        return self.OwnerPlayerUId
+        return str(self.OwnerPlayerUId) if self.OwnerPlayerUId else None
 
     @property
     def OldOwnerPlayerUIds(self) -> Optional[list[UUID]]:
@@ -1368,7 +1368,11 @@ class PalEntity:
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
-            species_name = self.I18nName or self.DataAccessKey
+            species_key = self.DataAccessKey
+            tags = set(DataProvider.get_pal_variant_tags(species_key))
+            if tags and tags.issubset({"alpha", "boss"}):
+                species_key = DataProvider.get_pal_variant(species_key, "base") or species_key
+            species_name = DataProvider.get_pal_i18n(species_key) or species_key
             rare_prefix = "✨" if self.IsRarePal else ""
             boss_prefix = "👑" if self.IsBOSS else ""
             tower_prefix = "🗼" if self.IsTower else ""

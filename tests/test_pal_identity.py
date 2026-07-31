@@ -1,7 +1,11 @@
+import json
 import unittest
+from unittest.mock import patch
+from uuid import UUID
 
 from flask_jwt_extended import create_access_token
 
+from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
@@ -103,6 +107,49 @@ class PalIdentityTests(unittest.TestCase):
         pal.IsBOSS = True
         self.assertEqual("Boss_Anubis", pal.CharacterID)
         self.assertTrue(pal.IsBOSS)
+
+    def test_ordinary_alpha_list_name_uses_base_species_localization(self):
+        pal = self.make_pal("BOSS_GhostRabbit_Grass")
+        pal.NickName = ""
+
+        self.assertEqual(
+            f"👑{data_provider.DataProvider.get_pal_i18n('GhostRabbit_Grass')}",
+            pal.DisplayName,
+        )
+
+        scenario = self.make_pal("BOSS_KingWhale_otomo")
+        scenario.NickName = ""
+        self.assertEqual(
+            f"👑{data_provider.DataProvider.get_pal_i18n('BOSS_KingWhale_otomo')}",
+            scenario.DisplayName,
+        )
+
+    def test_owner_name_uuid_fallback_is_json_serializable(self):
+        owner_id = UUID("23d87046-27f9-4399-9269-c7e9b4bac864")
+        pal_obj = PalObjects.PalSaveParameter(
+            PalObjects.EMPTY_UUID,
+            str(owner_id),
+            PalObjects.EMPTY_UUID,
+            0,
+            PalObjects.EMPTY_UUID,
+        )
+        pal = PalEntity(pal_obj)
+
+        class Player:
+            NickName = None
+
+        class Manager:
+            def get_player(self, _player_id):
+                return Player()
+
+        with patch(
+            "palworld_pal_editor.core.save_manager.SaveManager",
+            return_value=Manager(),
+        ):
+            payload = _pal_data(pal)
+
+        self.assertEqual(str(owner_id), payload["OwnerName"])
+        json.dumps(payload)
 
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
