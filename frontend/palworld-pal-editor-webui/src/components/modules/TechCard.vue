@@ -1,3 +1,7 @@
+<script>
+export const toggleTechnology = (player, item, isLocked) => player.toggleTech(item.InternalName, isLocked)
+</script>
+
 <script setup>
 import { computed } from 'vue'
 
@@ -12,18 +16,18 @@ const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Ed
 const bgStyle = computed(() => ({
   backgroundImage: `url('/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}')`
 }))
-const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.InternalName, isLocked.value)
+const toggleLock = () => toggleTechnology(palStore.SELECTED_PLAYER_DATA, props.item, isLocked.value)
 </script>
 
 <template>
   <button type="button" :class="['tech', { 'tech--boss': item.BossTechnology, 'tech--locked': isLocked }]"
-    :style="bgStyle" :aria-label="`${techName}: ${techState}`" :aria-pressed="!isLocked"
+    :style="bgStyle" :aria-label="`${techName}: ${techState}`" :title="`${techName}: ${techState}`" :aria-pressed="!isLocked"
     :disabled="palStore.LOADING_FLAG" @click="toggleLock">
-    <span class="tech-header">
+    <span class="tech-header tech-type">
       <UiIcon v-if="!item.I18n.Type" name="warning" />
       {{ item.I18n.Type ?? palStore.getTranslatedText('Editor_Tech_Invalid') }}
     </span>
-    <span class="tech-state">{{ techState }}</span>
+    <span class="tech-state tech-lock">{{ techState }}</span>
     <span class="tech-footer">{{ techName }}</span>
   </button>
 </template>
@@ -31,9 +35,9 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
 <style scoped>
 .tech {
   position: relative;
-  width: 100%;
-  min-width: 0;
-  aspect-ratio: 4 / 5;
+  inline-size: clamp(6.25rem, 8vw, 7.5rem);
+  max-inline-size: 100%;
+  aspect-ratio: 1;
   padding: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--editor-color-primary) 70%, var(--editor-color-border));
@@ -47,8 +51,10 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   cursor: pointer;
 }
 
+.tech:not(.tech--boss) { background-color: color-mix(in srgb, var(--editor-color-primary) 24%, var(--editor-color-control)); }
 .tech--boss { border-color: var(--editor-color-ancient); background-color: color-mix(in srgb, var(--editor-color-ancient) 24%, var(--editor-color-control)); }
-.tech--locked { filter: grayscale(.9); opacity: .62; }
+.tech--locked { filter: brightness(.58) saturate(.5); }
+.tech:focus-visible { outline: 2px solid var(--editor-color-focus); outline-offset: 2px; }
 .tech:disabled {
   border-color: var(--editor-color-disabled);
   color: var(--editor-color-muted);
@@ -69,27 +75,38 @@ const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.Int
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.tech-header {
+.tech-type {
   top: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: .2rem;
+  min-height: 1.25rem;
 }
-.tech-state {
+.tech-lock {
   top: 1.45rem;
   left: auto;
-  right: .25rem;
-  width: auto;
+  right: .2rem;
+  width: max-content;
+  max-width: calc(100% - .4rem);
+  padding: .1rem .2rem;
+  overflow: visible;
   border-radius: 999px;
   color: var(--editor-color-focus);
   background: color-mix(in srgb, var(--editor-color-background) 85%, transparent);
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-overflow: clip;
+  white-space: normal;
 }
 .tech-footer {
   bottom: 0;
   min-height: 2.6rem;
-  display: grid;
-  place-items: center;
+  display: -webkit-box;
+  align-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   white-space: normal;
 }
 </style>

@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
@@ -11,6 +13,11 @@ const isMaxLv = () => palStore.SELECTED_PLAYER_DATA.Level >= (
 )
 const isMinLv = () => palStore.SELECTED_PLAYER_DATA.Level <= 1
 const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(key)}`
+const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(([level, items]) => ({
+  level,
+  normal: items.filter(item => !item.BossTechnology),
+  ancient: items.filter(item => item.BossTechnology),
+})))
 </script>
 
 <template>
@@ -122,10 +129,13 @@ const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Chan
       </header>
 
       <div class="technology-levels">
-        <section class="technology-level" v-for="(items, level) in palStore.TECH_LV_DICT" :key="level">
-          <h3>Lv. {{ level }}</h3>
-          <div class="technology-cards">
-            <TechCard v-for="item in items" :key="item.InternalName" :item="item" />
+        <section class="technology-level" v-for="row in technologyRows" :key="row.level">
+          <div class="technology-level__track"><h3>Lv. {{ row.level }}</h3></div>
+          <div class="technology-lane technology-lane--normal">
+            <TechCard v-for="item in row.normal" :key="item.InternalName" :item="item" />
+          </div>
+          <div class="technology-lane technology-lane--ancient" :class="{ 'is-empty': !row.ancient.length }">
+            <TechCard v-for="item in row.ancient" :key="item.InternalName" :item="item" />
           </div>
         </section>
       </div>
@@ -294,24 +304,59 @@ const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Chan
 .technology-levels { display: grid; gap: var(--editor-space-3); }
 .technology-level {
   display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
-  align-items: start;
+  grid-template-columns: 4rem minmax(7.5rem, 1fr) minmax(7.5rem, 18rem);
+  align-items: stretch;
   gap: var(--editor-space-2);
+  min-height: 7.5rem;
 }
-.technology-level h3 {
-  position: sticky;
+.technology-level__track {
+  position: relative;
+  display: grid;
+  place-items: start center;
+}
+.technology-level__track::before {
+  position: absolute;
   top: 0;
+  bottom: calc(var(--editor-space-3) * -1);
+  width: 2px;
+  background: var(--editor-color-focus);
+  content: '';
+}
+.technology-level:last-child .technology-level__track::before { bottom: 50%; }
+.technology-level__track h3 {
+  z-index: 1;
+  display: grid;
+  width: 3.35rem;
+  aspect-ratio: 1;
+  place-items: center;
   margin: 0;
-  padding: var(--editor-space-2);
-  border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-control);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  color: var(--editor-color-background);
+  background: var(--editor-color-focus);
   font-size: .8rem;
+  font-weight: 700;
   text-align: center;
 }
-.technology-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+.technology-lane {
+  display: flex;
+  min-width: 0;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: var(--editor-space-2);
+}
+.technology-lane--ancient {
+  padding: var(--editor-space-1);
+  border-left: 2px solid var(--editor-color-ancient);
+  border-radius: var(--editor-radius-sm);
+  background: color-mix(in srgb, var(--editor-color-ancient) 9%, transparent);
+}
+.technology-lane--ancient.is-empty { opacity: .35; }
+
+@container (max-width: 58rem) {
+  .technology-level { grid-template-columns: 4rem minmax(0, 1fr); }
+  .technology-level__track { grid-row: 1 / span 2; }
+  .technology-lane--ancient { grid-column: 2; }
 }
 
 @container (max-width: 48rem) {
@@ -323,7 +368,6 @@ const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Chan
   .player-summary,
   .technology-panel__header { align-items: flex-start; }
   .technology-panel__header { flex-direction: column; }
-  .technology-level { grid-template-columns: 1fr; }
-  .technology-level h3 { position: static; text-align: left; }
+  .technology-level { grid-template-columns: 3.5rem minmax(0, 1fr); }
 }
 </style>
