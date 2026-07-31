@@ -132,6 +132,10 @@ export default {
     "StatusPoint_虹パッシブ率": "虹色の幸運",
     Editor_TechEdit: "テクノロジーエディター",
     Editor_UnlockAllTech: "すべてのテクノロジーを解除",
+    Editor_Apply_Change: "変更を適用",
+    Editor_Tech_Locked: "未解除",
+    Editor_Tech_Unlocked: "解除済み",
+    Editor_Tech_Invalid: "無効",
 
     Editor_Suitabilities: "作業適性",
 
@@ -149,6 +153,7 @@ export default {
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Unknown: "名前のないプレイヤー",
     PlayerList_Viewing_Cage: "選択したプレイヤーの観賞用ケージを解除します。注: 解除後は直接建設できますが、技術解除メニューには表示されません。",
+    PlayerEditor_Title: "プレイヤー",
 
     PlayerList_Base_Pal: "拠点",
     TopBar_More: "その他",

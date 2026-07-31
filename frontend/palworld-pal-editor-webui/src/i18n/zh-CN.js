@@ -131,6 +131,10 @@ export default {
     "StatusPoint_虹パッシブ率": "虹彩之运",
     Editor_TechEdit: "科技编辑器",
     Editor_UnlockAllTech: "解锁所有科技",
+    Editor_Apply_Change: "应用更改",
+    Editor_Tech_Locked: "未解锁",
+    Editor_Tech_Unlocked: "已解锁",
+    Editor_Tech_Invalid: "无效",
 
     Editor_Suitabilities: "工作适应性",
 
@@ -148,6 +152,7 @@ export default {
     PlayerList_Text: "玩家列表",
     PlayerList_Unknown: "未命名玩家",
     PlayerList_Viewing_Cage: "为选中的玩家解锁观赏笼。注：解锁后你可以直接建造它，但科技解锁菜单并不会显示。",
+    PlayerEditor_Title: "玩家",
 
     PlayerList_Base_Pal: "基地",
     TopBar_More: "更多",

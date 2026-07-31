@@ -131,6 +131,10 @@ export default {
     "StatusPoint_虹パッシブ率": "Porte-bonheur irisé",
     Editor_TechEdit: "Éditeur de technologie",
     Editor_UnlockAllTech: "Déverrouiller toutes les technologies",
+    Editor_Apply_Change: "Appliquer la modification",
+    Editor_Tech_Locked: "Verrouillé",
+    Editor_Tech_Unlocked: "Déverrouillé",
+    Editor_Tech_Invalid: "Invalide",
 
     Editor_Suitabilities: "Capacités de travail",
 
@@ -148,6 +152,7 @@ export default {
     PlayerList_Text: "LISTE DES JOUEURS",
     PlayerList_Unknown: "Joueur sans nom",
     PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour le joueur sélectionné. Remarque : Une fois déverrouillée, vous pouvez la construire directement, mais elle n'apparaîtra pas dans le menu de déverrouillage des technologies.",
+    PlayerEditor_Title: "Joueur",
 
     PlayerList_Base_Pal: "Camp De Base",
     TopBar_More: "Plus",

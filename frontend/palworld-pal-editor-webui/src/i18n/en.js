@@ -131,6 +131,10 @@ export default {
     "StatusPoint_虹パッシブ率": "Rainbow Fortune",
     Editor_TechEdit: "Tech Editor",
     Editor_UnlockAllTech: "Unlock All Tech",
+    Editor_Apply_Change: "Apply change",
+    Editor_Tech_Locked: "Locked",
+    Editor_Tech_Unlocked: "Unlocked",
+    Editor_Tech_Invalid: "Invalid",
 
     Editor_Suitabilities: "Work Suitability",
 
@@ -148,6 +152,7 @@ export default {
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Unknown: "Unnamed player",
     PlayerList_Viewing_Cage: "Unlock the viewing cage for the selected player. Note: After unlocking, you can build it directly, but it will not appear in the technology unlock menu.",
+    PlayerEditor_Title: "Player",
 
     PlayerList_Base_Pal: "BASECAMP",
     TopBar_More: "More",

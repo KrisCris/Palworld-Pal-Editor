@@ -1,90 +1,89 @@
-<template>
-    <button type="button" :class="['tech', { bossTech: item.BossTechnology }, { locked: isLocked }]" :style="bgStyle"
-        :aria-pressed="!isLocked" :disabled="palStore.LOADING_FLAG" @click="toggleLock">
-        <div class="techHeader"><UiIcon v-if="!item.I18n.Type" name="warning" />{{ item.I18n.Type ?? "INVALID" }}</div>
-        <div class="techFooter">{{ item.I18n.Name ?? item.internalName }}</div>
-    </button>
-</template>
-
 <script setup>
 import { computed } from 'vue'
+
 import UiIcon from './UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+
 const palStore = usePalEditorStore()
-
-const props = defineProps({
-    item: {
-        type: Object,
-        required: true
-    }
-})
-
-function toggleLock() {
-    palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.InternalName, isLocked.value)
-}
-
-const bgStyle = computed(() => {
-    const cat = props.item.InternalName.startsWith("SkillUnlock_") ? "pals" : "tech";
-    return {
-        backgroundImage: `url('/image/${cat}/${props.item.IconAccessKey}')`
-    }
-})
-
-const isLocked = computed(() => {
-    return !palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames.includes(props.item.InternalName)
-})
-
+const props = defineProps({ item: { type: Object, required: true } })
+const isLocked = computed(() => !palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames.includes(props.item.InternalName))
+const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
+const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
+const bgStyle = computed(() => ({
+  backgroundImage: `url('/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}')`
+}))
+const toggleLock = () => palStore.SELECTED_PLAYER_DATA.toggleTech(props.item.InternalName, isLocked.value)
 </script>
+
+<template>
+  <button type="button" :class="['tech', { 'tech--boss': item.BossTechnology, 'tech--locked': isLocked }]"
+    :style="bgStyle" :aria-label="`${techName}: ${techState}`" :aria-pressed="!isLocked"
+    :disabled="palStore.LOADING_FLAG" @click="toggleLock">
+    <span class="tech-header">
+      <UiIcon v-if="!item.I18n.Type" name="warning" />
+      {{ item.I18n.Type ?? palStore.getTranslatedText('Editor_Tech_Invalid') }}
+    </span>
+    <span class="tech-state">{{ techState }}</span>
+    <span class="tech-footer">{{ techName }}</span>
+  </button>
+</template>
 
 <style scoped>
 .tech {
-    padding: 0;
-    border: 0;
-    color: inherit;
-    font: inherit;
-    min-width: 8rem;
-    max-width: 8rem;
-    min-height: 10rem;
-    max-width: 10rem;
-    background-position: center;
-    background-size: 90px 90px;
-    background-repeat: no-repeat;
-    position: relative;
-    box-shadow: 3px 3px 3px rgb(0, 0, 0);
-    background-color: #1455a4;
-    margin: 8px;
-    cursor: pointer;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-color-primary) 70%, var(--editor-color-border));
+  border-radius: var(--editor-radius-sm);
+  color: #fff;
+  background-color: #1455a4;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 68%;
+  box-shadow: var(--editor-shadow-compact);
+  cursor: pointer;
 }
 
-.tech.bossTech {
-    background-color: #6b2f77;
-    border-color: #b74fff;
+.tech--boss { border-color: #a45ec1; background-color: #5c2e6b; }
+.tech--locked { filter: grayscale(.9); opacity: .62; }
+.tech:disabled { cursor: not-allowed; }
+.tech-header,
+.tech-footer,
+.tech-state {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: .2rem .35rem;
+  overflow: hidden;
+  background: rgba(0, 0, 0, .72);
+  font-size: .65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.tech.locked {
-    filter: grayscale(100%);
+.tech-header {
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .2rem;
 }
-
-.techHeader {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font-size: small;
-    padding: 2px 0;
+.tech-state {
+  top: 1.45rem;
+  left: auto;
+  right: .25rem;
+  width: auto;
+  border-radius: 999px;
+  color: #d8e8ff;
+  background: rgba(0, 0, 0, .64);
 }
-
-.techFooter {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.2);
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    font-size: small;
-    color: #fff;
-    padding: 2px 0;
+.tech-footer {
+  bottom: 0;
+  min-height: 2.6rem;
+  display: grid;
+  place-items: center;
+  white-space: normal;
 }
 </style>
