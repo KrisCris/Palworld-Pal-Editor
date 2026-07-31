@@ -1,186 +1,192 @@
-from bs4 import BeautifulSoup
-import requests
 import json
+from pathlib import Path
 import re
 
-internal_name_arr = []
+from bs4 import BeautifulSoup
+import requests
 
-# URLs for the different languages
-urls = {
-    "en": "https://paldb.cc/en/Passive_Skills#PalPassiveSkills",
-    "zh-CN": "https://paldb.cc/cn/Passive_Skills#%E5%B8%95%E9%B2%81%E8%A2%AB%E5%8A%A8%E6%8A%80%E8%83%BD",
-    "ja": "https://paldb.cc/ja/Passive_Skills#%E3%83%91%E3%83%AB%E3%83%91%E3%83%83%E3%82%B7%E3%83%96%E3%82%B9%E3%82%AD%E3%83%AB",
-    "fr": "https://paldb.cc/fr/Passive_Skills#PalCompétencespassives"
+
+URL_ROOTS = {
+    "en": "https://paldb.cc/en/",
+    "zh-CN": "https://paldb.cc/cn/",
+    "ja": "https://paldb.cc/ja/",
+    "fr": "https://paldb.cc/fr/",
 }
+
+PAL_SECTION_IDS = {
+    "en": "PalPassiveSkills",
+    "zh-CN": "帕鲁被动技能",
+    "ja": "パルパッシブスキル",
+    "fr": "PalCompétencespassives",
+}
+
+TOOLS_DIR = Path(__file__).resolve().parent
+EXTRA_PAL_PASSIVE_IDS = {"MiniNushi"}
+
+
+def fetch_soup(url):
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    return BeautifulSoup(response.text, "html.parser")
+
 
 def clean_description(description):
     description = description.replace("(ToSelf)", "").strip()
     description = re.sub(r"(\d+)\s*%", r"\1%", description)
     description = re.sub(r"\s+", " ", description)
-    description = re.sub(r"\s+\.", ".", description)
-    description = re.sub(r"\s+。", ".", description)
-    description = re.sub(r"\s+;", ";", description)
+    description = re.sub(r"\s+([.;。])", r"\1", description)
     return description
 
-def parse_buffs(descriptions, buffs=None):
-    buffs = {
+
+def empty_buffs():
+    return {
         "b_Attack": 0.0,
         "b_Defense": 0.0,
         "b_CraftSpeed": 0.0,
-        "b_MoveSpeed": 0.0
-    } if buffs is None else buffs
-
-    patterns = {
-            "b_Attack": r"(\d+)%\s*(?:increase|decrease)\s*to\s*(attack|攻击|攻撃|attaque)|(attack|攻击|攻撃|attaque)\s*(?:increases|decreases|to)?\s*([+-]?\d+)%|([+-]?\d+)%\s*(attack|攻击|攻撃|attaque)",
-            "b_Defense": r"(\d+)%\s*(?:increase|decrease)\s*to\s*(defense|防御|防御|défense)|(defense|防御|防御|défense)\s*(?:increases|decreases|to)?\s*([+-]?\d+)%|([+-]?\d+)%\s*(defense|防御|防御|défense)",
-            "b_CraftSpeed": r"(\d+)%\s*(?:increase|decrease)\s*to\s*(work speed|工作速度|作業速度|vitesse de travail)|(work speed|工作速度|作業速度|vitesse de travail)\s*(?:increases|decreases|to)?\s*([+-]?\d+)%|([+-]?\d+)%\s*(work speed|工作速度|作業速度|vitesse de travail)",
-            "b_MoveSpeed": r"(\d+)%\s*(?:increase|decrease)\s*to\s*(movement speed|移动速度|移動速度|vitesse de déplacement)|(movement speed|移动速度|移動速度|vitesse de déplacement)\s*(?:increases|decreases|to)?\s*([+-]?\d+)%|([+-]?\d+)%\s*(movement speed|移动速度|移動速度|vitesse de déplacement)"
+        "b_MoveSpeed": 0.0,
     }
 
-    for description in descriptions:
-        for key, pattern in patterns.items():
-            if buffs[key] != 0:
-                continue
-            match = re.search(pattern, description, re.IGNORECASE)
-            if match:
-                matches = [match.group(1), match.group(2), match.group(3), match.group(4)]
-                print(matches)
-                value = next((m for m in matches if m and any(char.isdigit() for char in m)), None)
-                numeric_value = float(value) / 100
-                if "decreases" in description.lower():
-                    numeric_value = -numeric_value
-                buffs[key] = numeric_value
-    return buffs
 
-def extract_description_list(description_div):
-    description_list = []
-
-    for child in description_div.children:
-        if child.name == "div":
-            nested_divs = child.find_all("div", recursive=False)
-            if len(nested_divs) > 0:
-                for nested_div in nested_divs:
-                    description_list.append(nested_div.get_text(separator=" ", strip=True))
-            else:
-                inner_html = child.decode_contents()
-                parts = re.split('<br>|<br/>|<br />', inner_html)
-                for part in parts:
-                    clean_text = BeautifulSoup(part, 'html.parser').get_text(separator=" ", strip=True)
-                    if clean_text:
-                        description_list.append(clean_text)
-        else:
+def parse_buffs(description):
+    buffs = empty_buffs()
+    labels = {
+        "b_Attack": "attack",
+        "b_Defense": "defense",
+        "b_CraftSpeed": "work speed",
+        "b_MoveSpeed": "movement speed",
+    }
+    for key, label in labels.items():
+        match = re.search(
+            rf"{label}\s*(?:increases?|decreases?)?\s*([+-]?\d+)%",
+            description,
+            re.IGNORECASE,
+        )
+        if match:
+            buffs[key] = float(match.group(1)) / 100
             continue
 
-    return [clean_description(item.strip()) for item in description_list if item.strip()]
+        match = re.search(
+            rf"([+-]?\d+)%\s*(increase|decrease)\w*\s+"
+            rf"(?:in|to)\s+{label}\b",
+            description,
+            re.IGNORECASE,
+        )
+        if match:
+            value = float(match.group(1)) / 100
+            if match.group(2).lower().startswith("decrease") and value > 0:
+                value = -value
+            buffs[key] = value
+    return buffs
 
-def get_node_id(lang):
-    if lang == "en":
-        return "PalPassiveSkills"
-    elif lang == "zh-CN":
-        return "帕鲁被动技能"
-    elif lang == "ja":
-        return "パルパッシブスキル"
-    elif lang == "fr":
-        return "PalCompétencespassives"
 
-def extract_skills(html_content, lang, mappings):
-    soup = BeautifulSoup(html_content, 'html.parser')
-    pal_passive_skills = soup.find(id=get_node_id(lang))
-    skills_data = {}
+def table_names(soup):
+    names = {}
+    for row in soup.select("div.col"):
+        box = row.select_one(".flex-grow-1.mx-2")
+        code_node = box.find("div", recursive=False) if box else None
+        if code_node is None:
+            continue
+        internal_name = code_node.get_text(strip=True)
+        name = " ".join(
+            text.strip()
+            for text in box.find_all(string=True, recursive=False)
+            if text.strip()
+        )
+        names[internal_name] = name
+    return names
 
-    if pal_passive_skills:
-        rows = pal_passive_skills.find_all("div", class_="col")
-        # row and index
-        for i, row in enumerate(rows):
-        # for row in rows:
-            # Find the border div
-            border_div = row.find("div", class_="border")
-            if not border_div:
-                continue
 
-            # Find the div containing the class for rating (passive_banner_rankX)
-            rating_div = border_div.find("div", class_=re.compile(r"passive_banner_rank"))
-            if not rating_div:
-                continue
+def passive_rows(soup, section_id=None):
+    root = soup.find(id=section_id) if section_id else soup
+    if root is None:
+        return
+    for row in root.select("div.col"):
+        name_node = row.find("div", class_=re.compile(r"^passive-rank-?\d+$"))
+        rating_node = row.find("div", class_=re.compile(r"passive_banner_rank-?\d+"))
+        description_node = row.find("div", class_="p-2")
+        if name_node is None or rating_node is None or description_node is None:
+            continue
+        rating_class = next(
+            value
+            for value in rating_node.get("class", [])
+            if value.startswith("passive_banner_rank")
+        )
+        rating = int(rating_class.removeprefix("passive_banner_rank"))
+        description = clean_description(
+            " ".join(description_node.stripped_strings)
+        )
+        yield name_node.get_text(strip=True), rating, description
 
-            # Extract the rating from the class name
-            rating_class = next((cls for cls in rating_div.get("class", []) if "passive_banner_rank" in cls), None)
-            rating = int(rating_class.replace("passive_banner_rank", "").replace("-", "")) if rating_class else 0
-            rating = -rating if "rank-" in rating_class else rating  # Adjust for negative ratings
 
-            # Extract the internal name and skill name
-            name_div = rating_div.find("div", class_=re.compile(r"passive-rank"))
-            if not name_div:
-                continue
+def extract_skills():
+    pages = {
+        lang: {
+            "table": fetch_soup(f"{root}PassiveSkills_Table"),
+            "skills": fetch_soup(f"{root}Passive_Skills"),
+        }
+        for lang, root in URL_ROOTS.items()
+    }
+    locale_names = {
+        lang: table_names(page["table"]) for lang, page in pages.items()
+    }
+    en_ids_by_name = {name: key for key, name in locale_names["en"].items()}
 
-            name = name_div.text.strip()
-            internal_name = name_div.get("data-hover", "").split("/")[-1]
-            if internal_name == "" or internal_name is None:
-                if lang == "en":
-                    matched = False
-                    for key, value in mappings.items():
-                        if value == name:
-                            internal_name = key
-                            matched = True
-                            break
-                    if not matched:
-                        print(f"can't find internal name for {name}")
-                else:
-                    internal_name = internal_name_arr[i]
+    skills = {}
+    for name, rating, description in passive_rows(
+        pages["en"]["skills"], PAL_SECTION_IDS["en"]
+    ):
+        internal_name = en_ids_by_name.get(name)
+        if internal_name is None:
+            raise ValueError(f"No PassiveSkills_Table ID for {name!r}")
+        skills[internal_name] = {
+            "InternalName": internal_name,
+            "Rating": rating,
+            "I18n": {
+                lang: {"Name": "", "Description": ""} for lang in URL_ROOTS
+            },
+            "Buff": parse_buffs(description),
+        }
 
-            internal_name_arr.append(internal_name) if lang == "en" else None
+    all_en_rows = {
+        name: (rating, description)
+        for name, rating, description in passive_rows(pages["en"]["skills"])
+    }
+    for internal_name in EXTRA_PAL_PASSIVE_IDS:
+        name = locale_names["en"][internal_name]
+        rating, description = all_en_rows[name]
+        skills[internal_name] = {
+            "InternalName": internal_name,
+            "Rating": rating,
+            "I18n": {
+                lang: {"Name": "", "Description": ""} for lang in URL_ROOTS
+            },
+            "Buff": parse_buffs(description),
+        }
 
-            # Extract the description
-            description_div = border_div.find("div", class_="p-2")
-            print(description_div.text)
-            description_list = extract_description_list(description_div)
-            print(description_list)
-
-            buffs = parse_buffs(description_list, skills_data.get("internal_name",{}).get("Buff",None))
-
-            # Initialize or update the skill data
-            if internal_name not in skills_data:
-                skills_data[internal_name] = {
-                    "InternalName": internal_name,
-                    "Rating": rating,
-                    "I18n": {
-                        "en": {"Name": "", "Description": ""},
-                        "zh-CN": {"Name": "", "Description": ""},
-                        "ja": {"Name": "", "Description": ""},
-                        "fr": {"Name": "", "Description": ""}
-                    },
-                    "Buff": buffs
+    for lang, page in pages.items():
+        target_by_name = {
+            locale_names[lang][internal_name]: internal_name
+            for internal_name in skills
+            if internal_name in locale_names[lang]
+        }
+        for name, _rating, description in passive_rows(page["skills"]):
+            internal_name = target_by_name.get(name)
+            if internal_name:
+                skills[internal_name]["I18n"][lang] = {
+                    "Name": name,
+                    "Description": description,
                 }
 
-            # Update the i18n field for the current language
-            skills_data[internal_name]["I18n"][lang] = {
-                "Name": name,
-                "Description": " ".join(description_list)
-            }
-
-    return skills_data
+    return skills
 
 
-with open("mappings.json", "r", encoding="utf-8") as file:
-    mappings = json.load(file)
+def main():
+    output_path = TOOLS_DIR / "tmp_passive_skills.json"
+    output_path.write_text(
+        json.dumps(extract_skills(), indent=4, ensure_ascii=False), encoding="utf-8"
+    )
+    print(f"Passive skills data extracted and saved to {output_path.name!r}.")
 
-# Fetch and parse HTML for each language
-all_skills = {}
-for lang, url in urls.items():
-    response = requests.get(url)
-    if response.status_code == 200:
-        skills = extract_skills(response.text, lang, mappings)
-        for skill_name, skill_data in skills.items():
-            if skill_name not in all_skills:
-                all_skills[skill_name] = skill_data
-            else:
-                all_skills[skill_name]["I18n"][lang] = skill_data["I18n"][lang]
 
-# Convert to JSON
-skills_json = json.dumps(all_skills, indent=4, ensure_ascii=False)
-
-# Save the JSON to a file
-with open("tmp_passive_skills.json", "w", encoding="utf-8") as file:
-    file.write(skills_json)
-
-print("Passive skills data extracted and saved to 'tmp_passive_skills.json'.")
+if __name__ == "__main__":
+    main()

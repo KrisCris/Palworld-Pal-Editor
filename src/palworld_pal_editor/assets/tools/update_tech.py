@@ -1,19 +1,29 @@
-import copy
 from io import BytesIO
-import time
 from bs4 import BeautifulSoup
 import requests
 import json
 import re
-import os
-from urllib.parse import quote
+from pathlib import Path
 from PIL import Image
+
+from palworld_pal_editor.assets.tools.paldb import hover_id, logical_pal_icon_id
 
 urls = {
     "en": "https://paldb.cc/en/Technologies",
     "zh-CN": "https://paldb.cc/cn/Technologies",
     "ja": "https://paldb.cc/ja/Technologies",
     "fr": "https://paldb.cc/fr/Technologies",
+}
+
+TOOLS_DIR = Path(__file__).resolve().parent
+ASSETS_DIR = TOOLS_DIR.parent
+PAL_ICON_DIR = ASSETS_DIR / "icons" / "pals"
+TECH_ICON_DIR = ASSETS_DIR / "icons" / "tech"
+
+internal_names_replacement = {
+    "PALBOX": "PalBox",
+    "ShotGunBullet": "ShotgunBullet",
+    "OverheatRifle": "OverHeatRifle",
 }
 
 def tech_t(internal_name):
@@ -29,18 +39,15 @@ def extract_techs():
 
     for lang in urls:
         url = urls[lang]
-        response = requests.get(url)
-        while response.status_code != 200:
-            print(f"Failed to fetch {url}")
-            time.sleep(5)
-            response = requests.get(url)
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
 
         soup = BeautifulSoup(response.text, "html.parser")
         rows = soup.select("div.col.pt-2.pb-1.border-bottom")
         for row in rows:
             # 1) Extract the "Level" from the first d-inline-block with a position: relative style
             #    e.g. <div class="d-inline-block" style="position: relative;height: 128px;width:64px;"> 
-            level_div = row.select_one('div.d-inline-block[style^="position: relative"]')
+            level_div = row.select_one('div.d-flex > div[style*="width:32px"]')
             
             level = 0
             if level_div:
@@ -59,14 +66,14 @@ def extract_techs():
                 
                 # Extract what's after "Technology/" 
                 # e.g. "?s=Technology/Workbench" → "Workbench"
-                internal_name = None
-                parts = data_hover.split("Technology/")
-                if len(parts) > 1:
-                    internal_name = parts[1].strip()
+                internal_name = hover_id(data_hover, "Technology")
                 
                 # If for some reason we don't find "Technology/", skip
                 if not internal_name:
                     continue
+                internal_name = internal_names_replacement.get(
+                    internal_name, internal_name
+                )
                 
                 # Extract the "Type" from the hoverTechHeader
                 # e.g. <div class="hoverTechHeader">Structures</div>
@@ -88,19 +95,23 @@ def extract_techs():
                 match = re.search(r'url\((.*?)\)', style_attr)
                 icon_url = match.group(1) if match else ""
                 
+                icon_access_key = None
                 if icon_url:
-                    png_filename = f"{internal_name}.png"
-                    if "SkillUnlock_" in internal_name:
-                        png_filename = f"{internal_name.replace('SkillUnlock_', '')}.png"
-                        if not os.path.exists(f"../icons/pals/{png_filename}"):
-                            print(f"Missing Pal Skill Unlock {png_filename}")
-                    elif not os.path.exists(f"../icons/tech/{png_filename}"):
+                    if internal_name.startswith("SkillUnlock_"):
+                        icon_access_key = logical_pal_icon_id(
+                            internal_name.removeprefix("SkillUnlock_")
+                        )
+                        pal_icon_path = PAL_ICON_DIR / f"{icon_access_key}.png"
+                        if not pal_icon_path.exists():
+                            print(f"Missing Pal Skill Unlock {pal_icon_path.name}")
+                    else:
+                        icon_path = TECH_ICON_DIR / f"{internal_name}.png"
+                    if not internal_name.startswith("SkillUnlock_") and not icon_path.exists():
                         try:
                             response = requests.get(icon_url, timeout=10)
-                            if response.status_code == 200:
-                                # Open the image (likely WebP) and convert to RGBA
-                                image = Image.open(BytesIO(response.content)).convert("RGBA")
-                                image.save(png_filename, "PNG")
+                            response.raise_for_status()
+                            image = Image.open(BytesIO(response.content)).convert("RGBA")
+                            image.save(icon_path, "PNG")
                         except Exception as err:
                             print(f"Failed to download/convert {icon_url} for {internal_name}: {err}")
 
@@ -113,21 +124,13 @@ def extract_techs():
     return tech_data
 
 
-tech_data_raw = extract_techs()
-tech_data = {}
+def main():
+    tech_data = extract_techs()
+    output_path = TOOLS_DIR / "tmp_tech_data.json"
+    output_path.write_text(
+        json.dumps(tech_data, indent=4, ensure_ascii=False), encoding="utf-8"
+    )
 
-internal_names_replacement = {
-    "PALBOX": "PalBox",
-    "ShotGunBullet": "ShotgunBullet"
-}
 
-for internal_name in tech_data_raw:
-    row = tech_data_raw[internal_name]
-    if internal_name in internal_names_replacement:
-        internal_name = internal_names_replacement[internal_name]
-        row["InternalName"] = internal_name
-    tech_data[internal_name] = row
-
-tech_json = json.dumps(tech_data, indent=4, ensure_ascii=False)
-with open("tmp_tech_data.json", "w", encoding="utf-8") as file:
-    file.write(tech_json)
+if __name__ == "__main__":
+    main()

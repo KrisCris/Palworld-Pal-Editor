@@ -1,11 +1,15 @@
 import copy
-import time
+from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
 from bs4 import BeautifulSoup
 import requests
 import json
 import re
-import os
-from urllib.parse import quote
+from pathlib import Path
+from time import sleep
+from PIL import Image
+
+from palworld_pal_editor.assets.tools.paldb import hover_id, labeled_int
 
 # URLs for the different languages
 urls = {
@@ -22,9 +26,10 @@ def pal_t(internal_name):
         "Elements": ["Dark"],
         "Attacks": {},
         "Stats": {"HP": 0, "ATK": 0, "DEF": 0, "MELEE": 0, "CRAFTSPEED": 0, "FOOD": 0},
-        "I18n": {"en": "", "zh-CN": "", "ja": ""},
+        "I18n": {"en": "", "zh-CN": "", "ja": "", "fr": ""},
         "SortingKey": {"paldeck": ""},
         "Suitabilities": suitabilities_t(),
+        "BestWorkSuitability": None,
     }
 
 
@@ -38,7 +43,7 @@ def suitabilities_t():
         "EPalWorkSuitability::Collection": 0,
         "EPalWorkSuitability::Deforest": 0,
         "EPalWorkSuitability::Mining": 0,
-        # "EPalWorkSuitability::OilExtraction": 0,
+        "EPalWorkSuitability::OilExtraction": 0,
         "EPalWorkSuitability::ProductMedicine": 0,
         "EPalWorkSuitability::Cool": 0,
         "EPalWorkSuitability::Transport": 0,
@@ -87,7 +92,7 @@ suitabilities_map = {
     "Gathering": "EPalWorkSuitability::Collection",
     "Lumbering": "EPalWorkSuitability::Deforest",
     "Mining": "EPalWorkSuitability::Mining",
-    # "Oil Extraction": "EPalWorkSuitability::OilExtraction",
+    "Oil Extraction": "EPalWorkSuitability::OilExtraction",
     "Medicine Production": "EPalWorkSuitability::ProductMedicine",
     "Cooling": "EPalWorkSuitability::Cool",
     "Transporting": "EPalWorkSuitability::Transport",
@@ -106,33 +111,139 @@ els = {
     "Ground",
 }
 
-external_res = (
-)
+TOOLS_DIR = Path(__file__).resolve().parent
+ASSETS_DIR = TOOLS_DIR.parent
+PAL_ICON_DIR = ASSETS_DIR / "icons" / "pals"
+DATA_PATH = ASSETS_DIR / "data" / "pal_data.json"
 
 
-def get_json_names(directory):
-    try:
-        json_files = [f for f in os.listdir(directory) if f.endswith(".json")]
-        names = {os.path.splitext(f)[0] for f in json_files}
-        return names
-    except Exception:
-        print(f"Directory {directory} not found.")
-        return set()
+def editor_row(internal_name, existing_data):
+    template = pal_t(internal_name)
+    row = copy.deepcopy(existing_data.get(internal_name, template))
+    row["InternalName"] = internal_name
+    for key, value in template.items():
+        row.setdefault(key, copy.deepcopy(value))
+    for lang in urls:
+        row["I18n"].setdefault(lang, "")
+    for key, value in template["Stats"].items():
+        row["Stats"].setdefault(key, value)
+    for key, value in template["Suitabilities"].items():
+        row["Suitabilities"].setdefault(key, value)
+    return row
+
+def fetch_soup(url):
+    for attempt in range(3):
+        try:
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            if soup.title is None:
+                raise requests.RequestException(f"PalDB returned invalid HTML for {url}")
+            return soup
+        except requests.RequestException:
+            if attempt == 2:
+                raise
+            sleep(2**attempt)
 
 
-name_set = get_json_names(external_res)
+detail_cache = {}
+DETAIL_PREFETCH_WORKERS = 16
+DETAIL_PREFETCH_PALS = 8
 
 
-def extract_pals():
+def prefetch_detail_soups(keys):
+    missing = list(dict.fromkeys(key for key in keys if key not in detail_cache))
+    if not missing:
+        return
+
+    with ThreadPoolExecutor(
+        max_workers=min(DETAIL_PREFETCH_WORKERS, len(missing))
+    ) as executor:
+        soups = executor.map(
+            lambda key: fetch_soup(f"{urls[key[0]]}{key[1]}"), missing
+        )
+        detail_cache.update(zip(missing, soups))
+
+
+def prefetch_pal_details(internal_names):
+    keys = [
+        (lang, pal_links[internal_name])
+        for internal_name in internal_names[:DETAIL_PREFETCH_PALS]
+        for lang in urls
+    ]
+    retained = set(keys)
+    for key in list(detail_cache):
+        if key[0] != "en" and key not in retained:
+            detail_cache.pop(key)
+    prefetch_detail_soups(keys)
+
+
+def get_detail_soup(lang, link):
+    cache_key = (lang, link)
+    if cache_key in detail_cache:
+        soup = detail_cache[cache_key]
+        if lang != "en":
+            detail_cache.pop(cache_key)
+        return soup
+
+    if lang != "en":
+        return fetch_soup(f"{urls[lang]}{link}")
+
+    detail_cache[cache_key] = fetch_soup(f"{urls[lang]}{link}")
+    return detail_cache[cache_key]
+
+
+def detail_internal_name(detail_soup):
+    code_label = detail_soup.find("div", string=lambda value: value and value.strip() == "Code")
+    if code_label is None:
+        raise ValueError("PalDB detail page has no Code field")
+    return code_label.find_next_sibling("div").get_text(strip=True)
+
+
+def detail_suitabilities(basic_info_root, preserved):
+    rows = (
+        basic_info_root.find_all(
+            "div",
+            class_="border-bottom d-flex justify-content-between py-1 px-3",
+        )
+        if basic_info_root
+        else []
+    )
+    if not rows:
+        if any((preserved or {}).values()):
+            raise ValueError("Expected work suitabilities were not found")
+        return suitabilities_t()
+
+    suitabilities = suitabilities_t()
+    for row in rows:
+        name = row.find("a").get_text(strip=True)
+        level = row.find_all("div")[-1].get_text(strip=True).replace("Lv", "")
+        suitabilities[suitabilities_map[name]] = int(level.strip())
+    return suitabilities
+
+
+def detail_best_work_suitability(detail_soup):
+    for row in detail_soup.find_all("div"):
+        columns = row.find_all("div", recursive=False)
+        if columns and columns[0].get_text(" ", strip=True) == "BestWorkSuitability":
+            value = columns[-1].get_text(strip=True)
+            known_values = {
+                *suitabilities_t(),
+                "EPalWorkSuitability::None",
+            }
+            value = f"EPalWorkSuitability::{value}"
+            if value in known_values:
+                return value
+            raise ValueError(f"Unknown BestWorkSuitability: {value}")
+    raise ValueError("PalDB field 'BestWorkSuitability' was not found")
+
+
+def extract_pals(existing_data=None):
     pal_data = {}
+    if existing_data is None:
+        existing_data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
 
-    response = requests.get(f"{urls["en"]}Pals")
-    while response.status_code != 200:
-        print(f"Failed to fetch {urls["en"]}Pals")
-        time.sleep(5)
-        response = requests.get(f"{urls["en"]}Pals")
-
-    soup = BeautifulSoup(response.text, "html.parser")
+    soup = fetch_soup(f'{urls["en"]}Pals')
     cards = soup.find_all("div", class_="col")
     for card in cards:
         # <span class="text-white-50 small">#1</span>, and extract the string after #
@@ -141,21 +252,26 @@ def extract_pals():
         )
 
         # <a class="itemname" data-hover="?s=Pals/SheepBall" href="Lamball">Lamball</a>
-        name_node = card.find(
-            "a", attrs={"class": "itemname", "data-hover": re.compile(r"\?s=Pals/.+")}
-        )
+        name_node = card.find("a", class_="itemname")
+        id_node = card.select_one('input[name="image[]"][value]')
+        internal_name = id_node["value"] if id_node else None
+        if not internal_name and name_node:
+            internal_name = hover_id(name_node.get("data-hover", ""), "Pals")
+        if not internal_name:
+            continue
         link = name_node["href"]
-        internal_name = name_node["data-hover"].split("/")[-1].strip()
         pal_links[internal_name] = link
         name = name_node.text.strip()
         print("# ", internal_name)
         print("\t", paldeck_id or None, internal_name, name)
 
-        pal = pal_t(internal_name)
+        pal = editor_row(internal_name, existing_data)
         pal["SortingKey"]["paldeck"] = paldeck_id
         pal["I18n"]["en"] = name
         if not paldeck_id:
             pal["Invalid"] = True
+        else:
+            pal.pop("Invalid", None)
 
         icon_url = card.find(
             "img",
@@ -166,15 +282,14 @@ def extract_pals():
             },
         )["src"]
         if icon_url:
-            png_filename = f"{internal_name}.png"
-            if not os.path.exists(f"../icons/pals/{png_filename}"):
+            icon_path = PAL_ICON_DIR / f"{internal_name}.png"
+            if not icon_path.exists():
                 try:
                     print(f"downloading icon for {internal_name}")
                     response = requests.get(icon_url, timeout=10)
-                    if response.status_code == 200:
-                        # Open the image (likely WebP) and convert to RGBA
-                        with open(f"./{png_filename}", "wb") as f:
-                            f.write(response.content)
+                    response.raise_for_status()
+                    image = Image.open(BytesIO(response.content)).convert("RGBA")
+                    image.save(icon_path, "PNG")
                 except Exception as err:
                     print(
                         f"Failed to download/convert {icon_url} for {internal_name}: {err}"
@@ -213,7 +328,7 @@ def extract_pals():
         print("\t", [el["data-bs-title"] for el in elements])
         for el in elements:
             if el["data-bs-title"] not in els:
-                raise (f"Unknown element: {el['data-bs-title']}")
+                raise ValueError(f"Unknown element: {el['data-bs-title']}")
 
         pal["Elements"] = [el["data-bs-title"] for el in elements]
 
@@ -224,39 +339,36 @@ def extract_pals():
 
 def extract_pal_details(internal_name, link, pal):
     pal_variants = {}
-    for lang in urls:
-        url = f"{urls[lang]}{link}"
-        response = requests.get(url)
-        while response.status_code != 200:
-            print(f"Failed to fetch {url}")
-            time.sleep(10)
-            response = requests.get(url)
+    with ThreadPoolExecutor(max_workers=len(urls)) as executor:
+        detail_soups = dict(
+            zip(urls, executor.map(lambda lang: get_detail_soup(lang, link), urls))
+        )
 
-        detail_soup = BeautifulSoup(response.text, "html.parser")
+    for lang, detail_soup in detail_soups.items():
 
         if internal_name == "GYM_ElecPanda_2":
             # debug
             pass
 
         # <a class="itemname" data-hover="?s=Pals/SheepBall" href="Lamball">Lamball</a>
-        anchor_node = detail_soup.find(
-            "a",
-            attrs={"class": "itemname", "data-hover": f"?s=Pals/{internal_name}"},
-            string=True,
+        anchor_node = next(
+            (
+                node
+                for node in detail_soup.find_all("a", class_="itemname", href=link)
+                if node.find_parent("div", class_="card itemPopup")
+            ),
+            None,
         )
-        potential_root = anchor_node.find_parent(
-            "div", attrs={"id": re.compile(r"Pals(?:-\d+)?")}
-        )
-        if potential_root:
-            detail_soup = potential_root
+        if anchor_node is None:
+            raise ValueError(f"PalDB detail page has no primary item for {link}")
         
         i18n_name = anchor_node.text.strip()
         if i18n_name in name_replace_map:
             i18n_name = name_replace_map[i18n_name]
         if internal_name == "PlantSlime_Flower":
-            i18n_name = f"{i18n_name} {"(Flower)" if lang in ["en", "fr"] else "(花)"}"
+            i18n_name = f"{i18n_name} {'(Flower)' if lang in ['en', 'fr'] else '(花)'}"
         if internal_name == "BOSS_PlantSlime_Flower":
-            i18n_name = f"{i18n_name} {"(Flower)" if lang in ["en", "fr"] else "(花)"}"
+            i18n_name = f"{i18n_name} {'(Flower)' if lang in ['en', 'fr'] else '(花)'}"
         print("\t", lang, i18n_name)
         pal["I18n"][lang] = (
             i18n_name if (i18n_name != "en_text" and i18n_name != "-") else link
@@ -264,25 +376,10 @@ def extract_pal_details(internal_name, link, pal):
 
         if lang == "en":
             basic_info_root = anchor_node.find_parent("div", class_="card itemPopup")
-            if basic_info_root:
-                # <div class="border-bottom d-flex justify-content-between py-1 px-3">
-                #     <div><a href="Lumbering"><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/UI/InGame/T_icon_palwork_06.webp" class="size24"> Lumbering</a></div><div><span style="font-size:x-small">Lv</span>3</div>
-                # </div>
-                # Extract all <div class="border-bottom d-flex justify-content-between py-1 px-3"> within the found card-body and locate the text value of the first <a> tag and the Lv of the div
-                suitability_divs = basic_info_root.find_all("div", class_="border-bottom d-flex justify-content-between py-1 px-3")
-                if suitability_divs:
-                    suitabilities = suitabilities_t()
-                    for div in suitability_divs:
-                        name = div.find("a").get_text(strip=True)
-                        level = div.find_all("div")[-1].get_text(strip=True).replace("Lv", "").strip()
-                        suitabilities[suitabilities_map[name]] = int(level)
-                    pal["Suitabilities"] = suitabilities
-                else:
-                    print(pal["I18n"]["en"], "Suitabilities not found")
-                    pal.pop("Suitabilities", None)
-            else:
-                print(pal["I18n"]["en"], "Suitabilities not found")
-                pal.pop("Suitabilities", None)
+            pal["Suitabilities"] = detail_suitabilities(
+                basic_info_root, pal.get("Suitabilities")
+            )
+            pal["BestWorkSuitability"] = detail_best_work_suitability(detail_soup)
 
 
 
@@ -291,69 +388,26 @@ def extract_pal_details(internal_name, link, pal):
             #   <div>105</div>
             # </div>
             # Get the health value, there is always an img with src="https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_00.webp" before the health value
-            health = int(
-                detail_soup.find(
-                    "img",
-                    {
-                        "src": "https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_00.webp"
-                    },
-                )
-                .find_next("div")
-                .text
+            stats_heading = detail_soup.find(
+                "h5", class_="card-title text-info", string="Stats"
             )
+            stats_root = stats_heading.find_parent("div", class_="card-body")
+            health = labeled_int(stats_root, "Health")
             print("\t", "Health: ", health)
-            food = int(
-                detail_soup.find_all(
-                    "img",
-                    {
-                        "src": "https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_Icon_foodamount_off.webp"
-                    },
-                )[-1]
-                .find_next("div")
-                .text
-            )
+            food = labeled_int(stats_root, "Food")
             print("\t", "Food: ", food)
             # <div class="d-flex justify-content-between p-2 align-items-center border-bottom">
             #                 <div>MeleeAttack</div>
             #                 <div>70</div>
             #             </div>
             # Get the MeleeAttack values
-            melee_attack = int(
-                detail_soup.find("div", string="MeleeAttack").find_next("div").text
-            )
+            melee_attack = labeled_int(stats_root, "MeleeAttack")
             print("\t", "Melee Attack: ", melee_attack)
-            attack = int(
-                detail_soup.find(
-                    "img",
-                    {
-                        "src": "https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_02.webp"
-                    },
-                )
-                .find_next("div")
-                .text
-            )
+            attack = labeled_int(stats_root, "Attack")
             print("\t", "Attack: ", attack)
-            defense = int(
-                detail_soup.find(
-                    "img",
-                    {
-                        "src": "https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_03.webp"
-                    },
-                )
-                .find_next("div")
-                .text
-            )
+            defense = labeled_int(stats_root, "Defense")
             print("\t", "Defense: ", defense)
-            work_speed = int(
-                detail_soup.find(
-                    "img",
-                    {
-                        "src": "https://cdn.paldb.cc/image/Pal/Texture/UI/Main_Menu/T_icon_status_05.webp"
-                    },
-                )
-                .find_next("div")
-                .text
-            )
+            work_speed = labeled_int(stats_root, "Work Speed")
             print("\t", "Work Speed: ", work_speed)
 
             pal["Stats"]["HP"] = health
@@ -371,15 +425,12 @@ def extract_pal_details(internal_name, link, pal):
                 pal["Attacks"] = {}
                 cols = skills_body.find_all("div", class_="col", recursive=True)
                 for col in cols:
-                    atk_node = col.find(
-                        "a", attrs={"data-hover": re.compile(r"\?s=Waza/.+")}
-                    )
+                    atk_node = col.find("a", attrs={"data-hover": True})
                     atk_internal_name = (
-                        atk_node["data-hover"]
-                        .split("/")[-1]
-                        .replace("%3A%3A", "::")
-                        .strip()
+                        hover_id(atk_node["data-hover"], "Waza") if atk_node else None
                     )
+                    if not atk_internal_name:
+                        continue
                     parent_text = atk_node.parent.get_text(
                         strip=True
                     )  # Get text, removing extra spaces
@@ -398,70 +449,123 @@ def extract_pal_details(internal_name, link, pal):
                 .find_all("tr")
             )
             # <tr><td><a class="itemname" data-hover="?s=Pals/BOSS_SheepBall" href="Big_Floof_Lamball"><div class="size32alpha"></div><img loading="lazy" src="https://cdn.paldb.cc/image/Pal/Texture/PalIcon/Normal/T_SheepBall_icon_normal.webp" class="size32 rounded-circle border border-danger">Big Floof Lamball</a></td><td>Tribe Boss</td></tr>
-            for tribe_row in tribes_row:
-                name_node = tribe_row.find(
-                    "a",
-                    attrs={
-                        "class": "itemname",
-                        "data-hover": re.compile(r"\?s=Pals/.+"),
-                    },
+            variant_refs = [
+                (name_node["href"], name_node.text.strip())
+                for tribe_row in tribes_row
+                if (name_node := tribe_row.find("a", class_="itemname")) is not None
+            ]
+            internal_names_by_link = {
+                known_link: key for key, known_link in pal_links.items()
+            }
+            unknown_links = list(
+                dict.fromkeys(
+                    link
+                    for link, _name in variant_refs
+                    if link not in internal_names_by_link
                 )
-                v_link = name_node["href"]
-                v_internal_name = name_node["data-hover"].split("/")[-1].strip()
-                if v_internal_name not in pal_links:
-                    pal_links[v_internal_name] = v_link
-                v_name = name_node.text.strip()
+            )
+            prefetch_detail_soups(("en", link) for link in unknown_links)
+            for v_link in unknown_links:
+                v_internal_name = detail_internal_name(
+                    get_detail_soup("en", v_link)
+                )
+                internal_names_by_link[v_link] = v_internal_name
+                pal_links.setdefault(v_internal_name, v_link)
+
+            for v_link, v_name in variant_refs:
+                v_internal_name = internal_names_by_link[v_link]
                 print("\tvariants - ", v_internal_name, v_name, v_link)
                 if v_internal_name == internal_name:
                     continue
                 pal_variants[v_internal_name] = v_name
+    detail_cache.pop(("en", link), None)
     print(json.dumps(pal, indent=4, ensure_ascii=False))
     return pal_variants
 
+
+def preserve_undiscovered_invalid(all_pals, existing_data):
+    candidates_by_paldeck = {}
+    for pal in all_pals.values():
+        paldeck = pal.get("SortingKey", {}).get("paldeck")
+        if paldeck:
+            candidates_by_paldeck.setdefault(paldeck, []).append(pal)
+
+    for internal_name, existing in existing_data.items():
+        if internal_name in all_pals or not existing.get("Invalid"):
+            continue
+
+        preserved = editor_row(internal_name, existing_data)
+        paldeck = preserved.get("SortingKey", {}).get("paldeck")
+        candidates = candidates_by_paldeck.get(paldeck, [])
+        matching = [
+            pal
+            for pal in candidates
+            if pal.get("Suitabilities") == preserved.get("Suitabilities")
+        ]
+        best_values = {
+            pal.get("BestWorkSuitability") for pal in (matching or candidates)
+        }
+        preserved["BestWorkSuitability"] = (
+            best_values.pop()
+            if len(best_values) == 1
+            else "EPalWorkSuitability::None"
+        )
+        all_pals[internal_name] = preserved
+
+def main():
+    global pal_links
+    pal_links = {}
+    existing_data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    all_pals_raw = extract_pals(existing_data)
+    all_pals = {}
+
+    pal_internal_names = list(all_pals_raw.keys())
+    while pal_internal_names:
+        prefetch_pal_details(pal_internal_names)
+        internal_name = pal_internal_names.pop(0)
+        pal = all_pals_raw[internal_name]
+        try:
+            pal_variants = extract_pal_details(internal_name, pal_links[internal_name], pal)
+        except Exception as err:
+            raise RuntimeError(
+                f"Failed to extract complete details for {internal_name}"
+            ) from err
+        for variant_internal_name in pal_variants:
+            if variant_internal_name not in all_pals_raw:
+                pal_internal_names.insert(0, variant_internal_name)
+                variant_pal = editor_row(variant_internal_name, existing_data)
+                variant_pal["SortingKey"]["paldeck"] = pal["SortingKey"]["paldeck"]
+                variant_pal["InternalName"] = variant_internal_name
+                variant_pal["I18n"]["en"] = pal_variants[variant_internal_name]
+                all_pals_raw[variant_internal_name] = variant_pal
+
+        if re.match(r"(GYM_[A-Za-z_]+?)(_2)$", internal_name):
+            for lang in pal["I18n"]:
+                pal["I18n"][lang] = pal["I18n"][lang] + " II"
+        if re.match(r"^SUMMON_.+", internal_name):
+            pal["Invalid"] = True
+        if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.+)", internal_name):
+            pal["Invalid"] = True
+        if re.match(r"^Quest_.+", internal_name):
+            pal["Invalid"] = True
+        if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.+)", internal_name):
+            pal["Invalid"] = True
+        if re.match(r"^PREDATOR_.+", internal_name):
+            pal["Invalid"] = True
+        if re.match(r"(.+)_Oilrig", internal_name):
+            pal["Invalid"] = True
+
+        all_pals[internal_name] = pal
+
+    preserve_undiscovered_invalid(all_pals, existing_data)
+    output_path = TOOLS_DIR / "tmp_pal_data.json"
+    output_path.write_text(
+        json.dumps(all_pals, indent=4, ensure_ascii=False), encoding="utf-8"
+    )
+
+
 pal_links = {}
-all_pals_raw = extract_pals()
-all_pals = {}
 
-pal_internal_names = list(all_pals_raw.keys())
-while len(pal_internal_names) > 0:
-    internal_name = pal_internal_names.pop(0)
-    pal = all_pals_raw[internal_name]
-    try:
-        pal_variants = extract_pal_details(internal_name, pal_links[internal_name], pal)
-    except:
-        print(f"Failed to extract details for {internal_name}")
-        continue
-    for variant_internal_name in pal_variants:
-        if (
-            variant_internal_name not in all_pals_raw
-            # and "BOSS" not in variant_internal_name
-            # and "Boss" not in variant_internal_name
-        ):
-            pal_internal_names.insert(0, variant_internal_name)
-            variant_pal = copy.deepcopy(pal)
-            variant_pal["InternalName"] = variant_internal_name
-            variant_pal["I18n"]["en"] = pal_variants[variant_internal_name]
-            variant_pal["Suitabilities"] = suitabilities_t()
-            all_pals_raw[variant_internal_name] = variant_pal
 
-    if re.match(r"(GYM_[A-Za-z_]+?)(_2)$", internal_name):
-        for lang in pal["I18n"]:
-            pal["I18n"][lang] = pal["I18n"][lang] + " II"
-    if re.match(r"^SUMMON_.+", internal_name):
-        pal["Invalid"] = True
-    if re.match(r"(GYM_[A-Za-z_]+?)(_\d+.+)", internal_name):
-        pal["Invalid"] = True
-    if re.match(r"^Quest_.+", internal_name):
-        pal["Invalid"] = True
-    if re.match(r"(RAID_[A-Za-z_]+?)(_\d+.+)", internal_name):
-        pal["Invalid"] = True
-    if re.match(r"^PREDATOR_.+", internal_name):
-        pal["Invalid"] = True
-    if re.match(r"(.+)_Oilrig", internal_name):
-        pal["Invalid"] = True
-
-    all_pals[internal_name] = pal
-
-pal_json = json.dumps(all_pals, indent=4, ensure_ascii=False)
-with open("tmp_pal_data.json", "w", encoding="utf-8") as file:
-    file.write(pal_json)
+if __name__ == "__main__":
+    main()

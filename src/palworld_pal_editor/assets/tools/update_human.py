@@ -1,11 +1,10 @@
 import copy
-import time
 from bs4 import BeautifulSoup
 import requests
 import json
-import re
-import os
-from urllib.parse import quote
+from pathlib import Path
+
+from palworld_pal_editor.assets.tools.paldb import hover_id
 
 urls = {
     "en": "https://paldb.cc/en/NPCs_Table",
@@ -13,6 +12,9 @@ urls = {
     "ja": "https://paldb.cc/ja/NPCs_Table",
     "fr": "https://paldb.cc/fr/NPCs_Table",
 }
+
+TOOLS_DIR = Path(__file__).resolve().parent
+DATA_PATH = TOOLS_DIR.parent / "data" / "human_data.json"
 
 
 def pal_t(internal_name):
@@ -27,8 +29,17 @@ def pal_t(internal_name):
             "ja": "",
             "fr": "",
         },
-        "SortingKey": {},
+        "SortingKey": {"paldeck": ""},
+        "Stats": {
+            "HP": 100,
+            "ATK": 100,
+            "DEF": 100,
+            "MELEE": 100,
+            "CRAFTSPEED": 100,
+            "FOOD": 100,
+        },
         "Suitabilities": suitabilities_t(),
+        "HasIcon": False,
     }
 
 
@@ -42,6 +53,7 @@ def suitabilities_t():
         "EPalWorkSuitability::Collection": 0,
         "EPalWorkSuitability::Deforest": 0,
         "EPalWorkSuitability::Mining": 0,
+        "EPalWorkSuitability::OilExtraction": 0,
         "EPalWorkSuitability::ProductMedicine": 0,
         "EPalWorkSuitability::Cool": 0,
         "EPalWorkSuitability::Transport": 0,
@@ -49,46 +61,79 @@ def suitabilities_t():
     }
 
 
-def extract_pals():
+def editor_row(internal_name, existing_data):
+    template = pal_t(internal_name)
+    row = copy.deepcopy(existing_data.get(internal_name, template))
+    row["InternalName"] = internal_name
+    for key, value in template.items():
+        row.setdefault(key, copy.deepcopy(value))
+    for lang in urls:
+        row["I18n"].setdefault(lang, "")
+    for key, value in template["Stats"].items():
+        row["Stats"].setdefault(key, value)
+    for key, value in template["Suitabilities"].items():
+        row["Suitabilities"].setdefault(key, value)
+    return row
+
+
+def apply_locale_name(row, lang, name):
+    current = row["I18n"].get(lang, "")
+    if name.strip().lower().replace("_", " ") in {"en text", "-"}:
+        row["I18n"][lang] = (
+            current
+            or row["I18n"].get("en")
+            or row["InternalName"]
+        )
+    elif current and name.casefold() in current.casefold() and len(name) < len(current):
+        # PalDB's NPC table sometimes drops a title/prefix that the editor already has.
+        return
+    else:
+        row["I18n"][lang] = name
+
+
+def extract_pals(existing_data=None):
     pal_data = {}
+    if existing_data is None:
+        existing_data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
 
     for lang in urls:
         url = urls[lang]
-        response = requests.get(url)
-        while response.status_code != 200:
-            print(f"Failed to fetch {url}")
-            time.sleep(5)
-            response = requests.get(url)
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
 
         soup = BeautifulSoup(response.text, "html.parser")
         cards = soup.find_all("div", class_="col")
 
         for card in cards:
             # <a class="itemname" data-hover="?s=Pals/SheepBall" href="Lamball">Lamball</a>
-            name_node = card.find(
-                "a", attrs={"data-hover": re.compile(r"\?s=Pals/.+")}
+            name_node = card.find("a", attrs={"data-hover": True})
+            internal_name = (
+                hover_id(name_node["data-hover"], "Pals") if name_node else None
             )
-            internal_name = name_node["data-hover"].split("/")[-1].strip()
+            if not internal_name:
+                continue
             name = name_node.text.strip()
             print("# ", internal_name, name)
             if internal_name in pal_data:
                 pal = pal_data[internal_name]
             else:
-                pal = pal_t(internal_name)
-            if name in ["en_text", "-", "en text"]:
-                if lang == "en":
-                    pal["I18n"][lang] = internal_name
-                else:
-                    pal["I18n"][lang] = pal["I18n"]["en"]
-            else:
-                pal["I18n"][lang] = name
+                pal = editor_row(internal_name, existing_data)
+            apply_locale_name(pal, lang, name)
 
             pal_data[internal_name] = pal
 
+    for pal in pal_data.values():
+        fallback = pal["I18n"]["en"] or pal["InternalName"]
+        for lang in urls:
+            pal["I18n"][lang] = pal["I18n"][lang] or fallback
     return pal_data
 
-all_pals_raw = extract_pals()
+def main():
+    output_path = TOOLS_DIR / "tmp_human_data.json"
+    output_path.write_text(
+        json.dumps(extract_pals(), indent=4, ensure_ascii=False), encoding="utf-8"
+    )
 
-pal_json = json.dumps(all_pals_raw, indent=4, ensure_ascii=False)
-with open("tmp_human_data.json", "w", encoding="utf-8") as file:
-    file.write(pal_json)
+
+if __name__ == "__main__":
+    main()
