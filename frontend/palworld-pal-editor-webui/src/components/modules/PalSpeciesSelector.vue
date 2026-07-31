@@ -235,22 +235,23 @@ const variantTabindex = (variant, index) => (
 <style scoped>
 .pal-species-selector {
   position: relative;
-  width: min(42rem, 100%);
+  width: 100%;
   min-width: 0;
   flex: 1 1 24rem;
 }
 
 button {
-  color: rgb(208, 212, 226);
-  border: 1px solid #686868;
-  background: #272727;
-  border-radius: .5rem;
+  color: var(--editor-color-text);
+  border: 1px solid var(--editor-color-border);
+  background: var(--editor-color-surface-raised);
+  border-radius: var(--editor-radius-sm);
   cursor: pointer;
 }
 
 button:disabled {
+  color: var(--editor-color-muted);
+  background: var(--editor-color-disabled);
   cursor: not-allowed;
-  filter: grayscale(1);
 }
 
 .selector-trigger {
@@ -259,10 +260,11 @@ button:disabled {
   align-items: center;
   gap: .5rem;
   width: 100%;
-  min-height: 2.8rem;
-  padding: .3rem .6rem;
+  min-height: var(--editor-control-height);
+  padding: var(--editor-space-1) var(--editor-space-3);
   text-align: left;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
+  background: var(--editor-color-control);
+  box-shadow: var(--editor-shadow-compact);
 }
 
 img {
@@ -280,7 +282,7 @@ img {
 
 small {
   overflow: hidden;
-  color: #aeb2c0;
+  color: var(--editor-color-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -308,13 +310,14 @@ small {
   max-height: calc(100vh - 2rem);
   box-sizing: border-box;
   flex-direction: column;
-  gap: .5rem;
+  gap: var(--editor-space-2);
   overflow-y: auto;
-  padding: .75rem;
-  border: 1px solid #777;
-  border-radius: .75rem;
-  background: #202020;
-  box-shadow: 0 .5rem 2rem #111;
+  padding: var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-md);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface);
+  box-shadow: var(--editor-shadow-compact);
   transform: translate(-50%, -50%);
 }
 
@@ -327,24 +330,25 @@ small {
 .search-label input {
   box-sizing: border-box;
   width: 100%;
-  padding: .55rem .7rem;
-  border: 1px solid #686868;
-  border-radius: .5rem;
+  min-height: var(--editor-control-height);
+  padding: 0 var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
   outline: none;
-  color: whitesmoke;
-  background: #303030;
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
 }
 
 .search-label input:focus,
 button:focus-visible {
-  outline: 2px solid #5b91ff;
-  outline-offset: 1px;
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
 }
 
 .selector-panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .5rem;
+  gap: var(--editor-space-2);
 }
 
 .selector-pane {
@@ -355,11 +359,12 @@ button:focus-visible {
   box-sizing: border-box;
   flex-direction: column;
   align-items: stretch;
-  gap: .25rem;
+  gap: var(--editor-space-1);
   overflow: hidden;
-  padding: .35rem;
-  border-radius: .5rem;
-  background: #181818;
+  padding: var(--editor-space-1);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-surface-subtle);
 }
 
 .selector-options {
@@ -368,7 +373,7 @@ button:focus-visible {
   flex: 1;
   flex-direction: column;
   align-items: stretch;
-  gap: .25rem;
+  gap: var(--editor-space-1);
   overflow-y: auto;
 }
 
@@ -388,23 +393,26 @@ button:focus-visible {
 
 .selector-pane button:hover,
 .selector-pane button.selected {
-  border-color: #5b91ff;
-  background: #304d82;
+  border-color: var(--editor-color-focus);
+  background: var(--editor-color-primary);
 }
 
 .selector-actions {
   display: flex;
   justify-content: flex-end;
-  gap: .5rem;
+  gap: var(--editor-space-2);
 }
 
 .selector-actions button {
-  padding: .45rem .9rem;
+  min-height: var(--editor-control-height);
+  padding: 0 var(--editor-space-4);
+  border-color: var(--editor-color-border);
+  background: var(--editor-color-surface-raised);
 }
 
 .selector-actions .apply {
-  border-color: #48a867;
-  background: #267541;
+  border-color: var(--editor-color-primary);
+  background: var(--editor-color-primary);
 }
 
 @media (max-width: 760px) {

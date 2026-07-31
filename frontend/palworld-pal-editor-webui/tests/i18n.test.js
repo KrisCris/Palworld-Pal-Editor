@@ -66,6 +66,19 @@ test("saved game-data locales remain selected with English chrome fallback", () 
 });
 
 test("bootstrap, authentication, and error controls are translated in every locale", () => {
+    const palBasicInfoKeys = [
+        "Editor_Identity_Appearance",
+        "Editor_Growth",
+        "Editor_Save_Details",
+        "Editor_Btn_Friendship_Decrease",
+        "Editor_Btn_Friendship_Increase",
+        "Editor_Btn_Friendship_Max",
+        "Editor_Btn_Level_Decrease",
+        "Editor_Btn_Level_Increase",
+        "Editor_Btn_Level_Max",
+        "Editor_Btn_Toggle_Boss",
+        "Editor_Btn_Toggle_Rare",
+    ];
     const keys = [
         "App_Connecting",
         "AuthView_Password_Label",
@@ -114,8 +127,12 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Operation_Add_Pal",
         "Operation_Duplicate_Pal",
         "Operation_Donation",
+        ...palBasicInfoKeys,
     ];
     for (const { default: locale } of locales) {
-        for (const key of keys) assert.equal(typeof locale[key], "string", key);
+        for (const key of keys) {
+            assert.equal(typeof locale[key], "string", key);
+            assert.notEqual(locale[key], "", key);
+        }
     }
 });

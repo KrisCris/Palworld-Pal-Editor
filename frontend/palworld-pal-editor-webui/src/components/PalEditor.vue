@@ -1,5 +1,6 @@
 <script setup>
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
+import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 
@@ -58,172 +59,208 @@ const suitabilityIconSrc = key => {
   return key ? `/image/suitabilities/${key.split("::").pop()}` : '';
 };
 
+const currentPaldeck = () => paldeckForRow(
+  palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG],
+);
+
 </script>
 
 <template>
   <div :class="['PalEditor', { 'unref': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]">
-    <div class="EditorItem item flex-v basicInfo">
-      <button id="dump_btn" @click="palStore.dumpPalData" :disabled="palStore.LOADING_FLAG">
-        {{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}
-      </button>
-      <button id="dupe_btn" @click="palStore.dupePal" :disabled="palStore.LOADING_FLAG"
-        v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
-        {{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}
-      </button>
-      <button id="del_btn" @click="palStore.delPal" :disabled="palStore.LOADING_FLAG">
-        🗑️ {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
-      </button>
-
-      <img :class="['palIcon']" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`" alt="">
-      <p v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">
-        {{ palStore.getTranslatedText("Editor_Note_Ghost_Pal") }}
-      </p>
-
-      <div class="item flex-v left">
-        <p class="cat">
-          {{ palStore.getTranslatedText("Editor_Basic_Info") }}
-        </p>
-        <div class="editField">
-          <p class="const" :title="palStore.SELECTED_PAL_DATA.InternalName">
-            {{ palStore.getTranslatedText("Editor_Species") }}
-            {{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKeyOG) }}
+    <section
+      data-testid="pal-basic-info"
+      :class="['pal-basic-info editor-surface', { 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]"
+    >
+      <header class="editor-summary">
+        <img class="pal-basic-avatar" :src="`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`"
+          :alt="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKeyOG">
+        <div class="editor-summary__identity">
+          <span class="editor-summary__eyebrow">
+            {{ currentPaldeck() ? `PAL ${currentPaldeck()}` : palStore.getTranslatedText("Editor_Basic_Info") }}
+          </span>
+          <h2 class="editor-summary__title" :title="palStore.SELECTED_PAL_DATA.InternalName">
             {{ palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n ||
               palStore.SELECTED_PAL_DATA.DataAccessKeyOG }}
-          </p>
-          <!-- <p class="const"> Specie: </p> -->
-          <PalSpeciesSelector
-            v-model="palStore.SELECTED_PAL_DATA.SelectionKey"
-            :rows="palStore.PAL_STATIC_DATA_LIST"
-            :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
-            :locale="palStore.I18n"
-            :disabled="palStore.LOADING_FLAG"
-            @apply="palStore.SELECTED_PAL_DATA.changeSpecie"
-          />
-
-        </div>
-        <div class="editField">
-          <p class="const">
-            {{ palStore.getTranslatedText("Editor_Nickname") }}
-          </p>
-          <input class="edit" type="text" name="NickName" v-model="palStore.SELECTED_PAL_DATA.NickName"
-            :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
-          <button class="edit" @click="palStore.updatePal" name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
-            :disabled="palStore.LOADING_FLAG">✅</button>
-        </div>
-        <div class="editField" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
-          <p class="const">{{ palStore.getTranslatedText("Editor_Skin") }}</p>
-          <select class="selector" name="SkinName" v-model="palStore.SELECTED_PAL_DATA.SkinName">
-            <option value="">{{ palStore.getTranslatedText("Editor_Skin_Default") }}</option>
-            <option v-for="skin in availableSkins()" :key="skin.SkinName" :value="skin.SkinName">
-              {{ skin.SkinName }}
-            </option>
-          </select>
-          <button class="edit" @click="palStore.updatePal" name="SkinName"
-            :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG">✅</button>
-        </div>
-        <div class="flex-h">
-          <div class="editField">
-            <p class="const">💙 {{ palStore.getTranslatedText("Editor_Friendship_Level") }} {{ palStore.SELECTED_PAL_DATA.FriendshipLevel }}</p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.friendshipLevelDown" name="FriendshipLevel"
-              :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()">🔽</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.friendshipLevelUp" name="FriendshipLevel"
-              :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔼</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxFriendshipLevel" name="FriendshipLevel"
-              :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔝</button>
-          </div>
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Level">
-            <p class="const"> Lv: {{ palStore.SELECTED_PAL_DATA.Level }}</p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelDown" name="Level"
-              :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.levelUp" name="Level"
-              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.maxLevel" name="Level"
-              :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
-          </div>
-        </div>
-        <div class="flex-h">
-          <div class="editField" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
-            <p class="const">
-              {{ palStore.getTranslatedText("Editor_Gender") }}
-              {{ palStore.SELECTED_PAL_DATA.displayGender() }}
-            </p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
-              :disabled="palStore.LOADING_FLAG">🔄</button>
-          </div>
-
-          <div class="editField" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
-            <p class="const">
-              {{ palStore.getTranslatedText("Editor_Variant") }}
+          </h2>
+          <code class="editor-summary__meta">{{ palStore.SELECTED_PAL_DATA.InternalName }}</code>
+          <div class="pal-basic-tags">
+            <span class="editor-tag">{{ palStore.displayPalElement(palStore.SELECTED_PAL_DATA.DataAccessKeyOG) }}</span>
+            <span class="editor-tag" v-if="palStore.SELECTED_PAL_DATA.Level">Lv. {{ palStore.SELECTED_PAL_DATA.Level }}</span>
+            <span class="editor-tag"
+              v-if="!palStore.SELECTED_PAL_DATA.IsHuman && palStore.SELECTED_PAL_DATA.displaySpecialType() !== 'N/A'">
               {{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}
-            </p>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
-              v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-              :disabled="palStore.LOADING_FLAG">👑</button>
-            <button class="edit" @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
-              v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-              :disabled="palStore.LOADING_FLAG">✨</button>
+            </span>
+          </div>
+          <p class="pal-basic-note" v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">
+            {{ palStore.getTranslatedText("Editor_Note_Ghost_Pal") }}
+          </p>
+        </div>
+        <div class="editor-summary__actions">
+          <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
+            :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
+            {{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}
+          </button>
+          <button id="dump_btn" class="editor-button editor-button--secondary" @click="palStore.dumpPalData"
+            :disabled="palStore.LOADING_FLAG">
+            {{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}
+          </button>
+          <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal"
+            :disabled="palStore.LOADING_FLAG">
+            🗑️ {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
+          </button>
+        </div>
+      </header>
+
+      <section class="editor-section">
+        <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Basic_Info") }}</h3>
+        <div class="editor-field">
+          <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Species") }}</span>
+          <div class="editor-field__control">
+            <PalSpeciesSelector
+              v-model="palStore.SELECTED_PAL_DATA.SelectionKey"
+              :rows="palStore.PAL_STATIC_DATA_LIST"
+              :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
+              :locale="palStore.I18n"
+              :disabled="palStore.LOADING_FLAG"
+              @apply="palStore.SELECTED_PAL_DATA.changeSpecie"
+            />
           </div>
         </div>
-        <p class="const">
-          🪪 {{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}
-          {{ palStore.SELECTED_PAL_DATA.CharacterID }}
-        </p>
-        <p class="const">
-          🆔 {{ palStore.getTranslatedText("Editor_Pal_ID") }}
-          {{ palStore.SELECTED_PAL_ID }}
-        </p>
-        <p class="const">
-          🏘️ {{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}
-          {{ palStore.SELECTED_PAL_DATA.group_id }}
-        </p>
-        <div class="editField">
-          <p :class="['const', { 'out_of_container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }]"
-            :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
-            📦 {{ palStore.getTranslatedText("Editor_Pal_Slot") }}
-            {{ palStore.SELECTED_PAL_DATA.ContainerId }} @
-            {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
-          </p>
-          <button class="edit edit_text" @click="palStore.updatePal" name="in_owner_palbox"
-            :disabled="palStore.LOADING_FLAG" v-if="!palStore.SELECTED_PAL_DATA.in_owner_palbox">
-            {{ palStore.getTranslatedText("Editor_Btn_Retrieve_Pal") }}
-          </button>
-        </div>
-        <p class="const">
-          🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}
-          {{ palStore.SELECTED_PAL_DATA.OwnerName ||
-            palStore.getTranslatedText("Editor_Pal_No_Owner") }}
-        </p>
-        <div class="palInfo">
-          <p class="const">
-            ❤️ {{ palStore.getTranslatedText("Editor_Estimated_HP") }}
-            {{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}
-          </p>
-          <p class="const">
-            ⚔️ {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}
-            {{ palStore.SELECTED_PAL_DATA.ComputedAttack }}
-          </p>
-          <p class="const">
-            🛡️ {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}
-            {{ palStore.SELECTED_PAL_DATA.ComputedDefense }}
-          </p>
-          <p class="const">
-            🔨 {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}
-            {{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}
-          </p>
-        </div>
+      </section>
 
-        <div class="editField" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick">
-          <button class="edit text" @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
-            💊 {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
-          </button>
-        </div>
-        <div class="editField" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal">
-          <button class="edit text" @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">
-            💉 {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
-          </button>
-        </div>
+      <div class="pal-basic-grid">
+        <section class="editor-section">
+          <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Identity_Appearance") }}</h3>
+          <div class="editor-field">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Nickname") }}</span>
+            <input class="editor-control" type="text" name="NickName" v-model="palStore.SELECTED_PAL_DATA.NickName"
+              :placeholder="palStore.SELECTED_PAL_DATA.I18nName">
+            <div class="editor-field__actions">
+              <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
+                name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
+                :aria-label="palStore.getTranslatedText('Editor_Nickname')"
+                :disabled="palStore.LOADING_FLAG">✅</button>
+            </div>
+          </div>
+          <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Skin") }}</span>
+            <select class="editor-control" name="SkinName" v-model="palStore.SELECTED_PAL_DATA.SkinName">
+              <option value="">{{ palStore.getTranslatedText("Editor_Skin_Default") }}</option>
+              <option v-for="skin in availableSkins()" :key="skin.SkinName" :value="skin.SkinName">
+                {{ skin.SkinName }}
+              </option>
+            </select>
+            <div class="editor-field__actions">
+              <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
+                name="SkinName" :aria-label="palStore.getTranslatedText('Editor_Skin')"
+                :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG">✅</button>
+            </div>
+          </div>
+          <div class="editor-field" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
+            <span class="editor-tag">{{ palStore.SELECTED_PAL_DATA.displayGender() }}</span>
+            <div class="editor-field__actions">
+              <button class="editor-button editor-button--primary editor-button--icon"
+                @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
+                :aria-label="palStore.getTranslatedText('Editor_Gender')"
+                :disabled="palStore.LOADING_FLAG">🔄</button>
+            </div>
+          </div>
+          <div class="editor-field" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
+            <span class="editor-tag">{{ palStore.SELECTED_PAL_DATA.displaySpecialType() }}</span>
+            <div class="editor-field__actions">
+              <button class="editor-button editor-button--secondary editor-button--icon"
+                @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
+                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
+                :disabled="palStore.LOADING_FLAG">👑</button>
+              <button class="editor-button editor-button--secondary editor-button--icon"
+                @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
+                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
+                :disabled="palStore.LOADING_FLAG">✨</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="editor-section">
+          <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Growth") }}</h3>
+          <div class="editor-stepper">
+            <div>
+              <span class="editor-field__label">💙 {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
+              <strong class="editor-stepper__value">{{ palStore.SELECTED_PAL_DATA.FriendshipLevel }}</strong>
+            </div>
+            <div class="editor-stepper__actions">
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelDown"
+                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Decrease')"
+                :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()">🔽</button>
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelUp"
+                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Increase')"
+                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔼</button>
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxFriendshipLevel"
+                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Max')"
+                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()">🔝</button>
+            </div>
+          </div>
+          <div class="editor-stepper" v-if="palStore.SELECTED_PAL_DATA.Level">
+            <div>
+              <span class="editor-field__label">Lv.</span>
+              <strong class="editor-stepper__value">{{ palStore.SELECTED_PAL_DATA.Level }}</strong>
+            </div>
+            <div class="editor-stepper__actions">
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelDown"
+                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"
+                :disabled="palStore.LOADING_FLAG || isMinLv()">🔽</button>
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelUp"
+                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"
+                :disabled="palStore.LOADING_FLAG || isMaxLv()">🔼</button>
+              <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxLevel"
+                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"
+                :disabled="palStore.LOADING_FLAG || isMaxLv()">🔝</button>
+            </div>
+          </div>
+          <div class="editor-stat-grid">
+            <div class="editor-stat"><span class="editor-stat__label">❤️ {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedMaxHP / 1000 }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label">⚔️ {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedAttack }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label">🛡️ {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedDefense }}</strong></div>
+            <div class="editor-stat"><span class="editor-stat__label">🔨 {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ palStore.SELECTED_PAL_DATA.ComputedCraftSpeed }}</strong></div>
+          </div>
+        </section>
       </div>
-    </div>
+
+      <details class="editor-disclosure">
+        <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
+        <div class="pal-technical-grid">
+          <div><span class="editor-disclosure__label">🪪 {{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
+          <div><span class="editor-disclosure__label">🆔 {{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_ID }}</code></div>
+          <div><span class="editor-disclosure__label">🏘️ {{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
+          <div class="pal-technical-slot">
+            <span class="editor-disclosure__label">📦 {{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
+            <code :class="{ 'is-out-of-container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }"
+              :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
+              {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
+            </code>
+            <button class="editor-button editor-button--primary" @click="palStore.updatePal" name="in_owner_palbox"
+              :disabled="palStore.LOADING_FLAG" v-if="!palStore.SELECTED_PAL_DATA.in_owner_palbox">
+              {{ palStore.getTranslatedText("Editor_Btn_Retrieve_Pal") }}
+            </button>
+          </div>
+          <div><span class="editor-disclosure__label">🗿 {{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
+        </div>
+      </details>
+
+      <div class="pal-health-actions" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick || palStore.SELECTED_PAL_DATA.IsFaintedPal">
+        <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick"
+          @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
+          💊 {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
+        </button>
+        <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal"
+          @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">
+          💉 {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
+        </button>
+      </div>
+    </section>
     <div class="EditorItem flex-v item left">
       <p class="cat">
         {{ palStore.getTranslatedText("Editor_IV") }}
@@ -523,25 +560,123 @@ const suitabilityIconSrc = key => {
   background-color: red;
 } */
 
-div.basicInfo {
-  position: relative;
-  width: min(750px, 100%);
+.pal-basic-info {
   max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  flex: 1 1 750px;
+  flex: 1 1 62rem;
+  container-name: pal-basic-info;
+  container-type: inline-size;
 }
 
-div.basicInfo > div.left,
-div.basicInfo div.editField {
-  width: 100%;
-  min-width: 0;
-  flex-wrap: wrap;
+.pal-basic-info.is-unreferenced {
+  filter: grayscale(100%);
 }
 
-div.palInfo {
+.pal-basic-avatar {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: contain;
+  border-radius: 50%;
+  background: var(--editor-color-surface-subtle);
+}
+
+.pal-basic-tags,
+.pal-health-actions {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--editor-space-2);
+}
+
+.pal-basic-note {
+  margin: 0;
+  color: var(--editor-color-muted);
+  font-size: .82rem;
+}
+
+.pal-basic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.pal-technical-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--editor-space-3) var(--editor-space-5);
+  min-width: 0;
+}
+
+.pal-technical-grid > div {
+  display: grid;
+  gap: var(--editor-space-1);
+  min-width: 0;
+}
+
+.pal-technical-grid code,
+.pal-technical-grid span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pal-technical-slot {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.pal-technical-slot > .editor-disclosure__label {
+  grid-column: 1 / -1;
+}
+
+.is-out-of-container {
+  color: #58c779;
+}
+
+@container pal-basic-info (max-width: 720px) {
+  .editor-summary {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .editor-summary__actions {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .editor-summary__actions .editor-button {
+    flex: 1;
+  }
+
+  .pal-basic-grid,
+  .pal-technical-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container pal-basic-info (max-width: 420px) {
+  .editor-summary,
+  .editor-stat-grid,
+  .editor-stepper {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-summary__actions {
+    width: 100%;
+  }
+
+  .editor-summary__actions .editor-button {
+    flex: 1;
+  }
+
+  .editor-field {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .editor-field__label {
+    grid-column: 1 / -1;
+  }
 }
 
 div.skillPanel {
@@ -571,7 +706,8 @@ p.cat {
   margin-left: -.5rem;
 }
 
-div {
+.PalEditor > div,
+.PalEditor > div div {
   display: flex;
   align-items: center;
 }
@@ -712,100 +848,6 @@ button.del:hover {
 }
 
 button.del:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button#dump_btn {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2rem;
-  padding: 1rem;
-  margin: 0rem;
-  background-color: #636363;
-  color: rgb(204, 204, 204);
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  transition: all 0.15s ease-in-out;
-}
-
-button#dump_btn:hover {
-  background-color: #3e3e3e;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-  color: rgb(204, 204, 204);
-}
-
-button#dump_btn:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button#del_btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2rem;
-  padding: 1rem;
-  margin: 0rem;
-  background-color: #bd1c3c;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  transition: all 0.15s ease-in-out;
-}
-
-button#del_btn:hover {
-  background-color: #830e25;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-}
-
-button#del_btn:disabled {
-  background-color: #8a8a8a;
-  box-shadow: 0 0 0;
-  filter: grayscale(100%);
-  cursor: not-allowed;
-}
-
-button#dupe_btn {
-  position: absolute;
-  top: 3.5rem;
-  left: 1rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2rem;
-  padding: 1rem;
-  margin: 0rem;
-  background-color: #1c8dbd;
-  color: whitesmoke;
-  border: none;
-  outline: none;
-  border-radius: 0.5rem;
-  transition: all 0.15s ease-in-out;
-}
-
-button#dupe_btn:hover {
-  background-color: #0e6b92;
-  box-shadow: 2px 2px 10px rgb(38, 38, 38);
-}
-
-button#dupe_btn:disabled {
   background-color: #8a8a8a;
   box-shadow: 0 0 0;
   filter: grayscale(100%);
