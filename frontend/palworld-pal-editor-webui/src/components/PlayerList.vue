@@ -3,6 +3,7 @@ import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
+const emit = defineEmits(['collapse'])
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 </script>
@@ -11,13 +12,19 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
     <header class="roster-header">
       <h2>{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
-      <button class="roster-icon-button"
-        v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)?.HasViewingCage"
-        :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
-        :aria-label="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
-        :disabled="palStore.LOADING_FLAG" @click="palStore.updatePlayer" name="unlock_viewing_cage">
-        <UiIcon name="unlock" />
-      </button>
+      <div class="roster-actions">
+        <button class="roster-icon-button" :title="palStore.getTranslatedText('PlayerList_Collapse')"
+          :aria-label="palStore.getTranslatedText('PlayerList_Collapse')" @click="emit('collapse')">
+          <UiIcon name="back" />
+        </button>
+        <button class="roster-icon-button"
+          v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)?.HasViewingCage"
+          :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
+          :aria-label="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
+          :disabled="palStore.LOADING_FLAG" @click="palStore.updatePlayer" name="unlock_viewing_cage">
+          <UiIcon name="unlock" />
+        </button>
+      </div>
     </header>
 
     <div class="roster-list">
@@ -63,6 +70,11 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   font-size: .8rem;
   letter-spacing: .04em;
   text-transform: uppercase;
+}
+
+.roster-actions {
+  display: flex;
+  gap: var(--editor-space-1);
 }
 
 .roster-list {

@@ -30,7 +30,7 @@ def main():
 
     try:
         webview.create_window(f"Palworld Pal Editor, developed by _connlost with ❤️. VERSION: {version_info()}", url=f"http://127.0.0.1:{Config.port}/", width=1600, height=1000, min_size=(960, 600))
-        webview.start()
+        webview.start(private_mode=False)
     except KeyboardInterrupt:
         pass
     except:

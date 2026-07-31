@@ -7,6 +7,7 @@ import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
+const emit = defineEmits(['collapse'])
 const palListContainer = ref(null)
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
@@ -77,11 +78,17 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   <nav class="pal-roster" :aria-label="palStore.getTranslatedText('PalList_Text')">
     <header class="roster-header">
       <h2>{{ palStore.getTranslatedText("PalList_Text") }}</h2>
-      <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
-        :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
-        :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">
-        <UiIcon name="plus" />
-      </button>
+      <div class="roster-actions">
+        <button class="roster-icon-button" :title="palStore.getTranslatedText('PalList_Collapse')"
+          :aria-label="palStore.getTranslatedText('PalList_Collapse')" @click="emit('collapse')">
+          <UiIcon name="back" />
+        </button>
+        <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+          :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
+          :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">
+          <UiIcon name="plus" />
+        </button>
+      </div>
       <label class="pal-search">
         <UiIcon name="search" />
         <input type="search" v-model="palStore.PAL_LIST_SEARCH_KEYWORD"
@@ -140,6 +147,11 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   font-size: .8rem;
   letter-spacing: .04em;
   text-transform: uppercase;
+}
+
+.roster-actions {
+  display: flex;
+  gap: var(--editor-space-1);
 }
 
 .pal-search {

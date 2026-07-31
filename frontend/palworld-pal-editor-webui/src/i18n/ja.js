@@ -151,6 +151,8 @@ export default {
     PalList_Text: "パルリスト",
     PalList_Search: "パルを検索",
     PalList_Add: "パルを追加",
+    PalList_Collapse: "パルリストを折りたたむ",
+    PalList_Restore: "パルリストを表示",
     PalList_Status_Ordinary: "状態：通常",
     PalList_Status_Alpha: "状態：ボス",
     PalList_Status_Lucky: "状態：希少",
@@ -158,6 +160,8 @@ export default {
 
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Unknown: "名前のないプレイヤー",
+    PlayerList_Collapse: "プレイヤーリストを折りたたむ",
+    PlayerList_Restore: "プレイヤーリストを表示",
     PlayerList_Viewing_Cage: "選択したプレイヤーの観賞用ケージを解除します。注: 解除後は直接建設できますが、技術解除メニューには表示されません。",
     PlayerEditor_Title: "プレイヤー",
 

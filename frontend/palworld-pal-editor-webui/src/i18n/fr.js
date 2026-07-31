@@ -150,6 +150,8 @@ export default {
     PalList_Text: "LISTE DES PALS",
     PalList_Search: "Rechercher des Pals",
     PalList_Add: "Ajouter un Pal",
+    PalList_Collapse: "Réduire la liste des Pals",
+    PalList_Restore: "Afficher la liste des Pals",
     PalList_Status_Ordinary: "Statut : Ordinaire",
     PalList_Status_Alpha: "Statut : Alpha",
     PalList_Status_Lucky: "Statut : Chanceux",
@@ -157,6 +159,8 @@ export default {
 
     PlayerList_Text: "LISTE DES JOUEURS",
     PlayerList_Unknown: "Joueur sans nom",
+    PlayerList_Collapse: "Réduire la liste des joueurs",
+    PlayerList_Restore: "Afficher la liste des joueurs",
     PlayerList_Viewing_Cage: "Déverrouiller la cage d'observation pour le joueur sélectionné. Remarque : Une fois déverrouillée, vous pouvez la construire directement, mais elle n'apparaîtra pas dans le menu de déverrouillage des technologies.",
     PlayerEditor_Title: "Joueur",
 

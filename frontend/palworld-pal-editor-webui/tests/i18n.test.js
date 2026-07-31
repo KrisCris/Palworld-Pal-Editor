@@ -159,3 +159,12 @@ test("bootstrap, authentication, and error controls are translated in every loca
         }
     }
 });
+
+test("roster collapse controls are translated in every locale", () => {
+    for (const { default: locale } of locales) {
+        for (const key of ["PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {
+            assert.equal(typeof locale[key], "string", key);
+            assert.ok(locale[key].trim(), key);
+        }
+    }
+});

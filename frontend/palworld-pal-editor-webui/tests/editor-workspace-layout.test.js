@@ -31,6 +31,24 @@ test("editor workspace uses bounded three-column rails and a scrolling canvas", 
     assert.doesNotMatch(view, /100vw|calc\(100vw/);
 });
 
+test("editor workspace owns independently persisted roster collapse state", async () => {
+    const [view, players, pals] = await Promise.all([
+        read("../src/views/EditorView.vue"),
+        read("../src/components/PlayerList.vue"),
+        read("../src/components/PalList.vue"),
+    ]);
+    assert.match(view, /editor\.playersCollapsed/);
+    assert.match(view, /editor\.palsCollapsed/);
+    assert.match(view, /@collapse="playersCollapsed = true"/);
+    assert.match(view, /@collapse="palsCollapsed = true"/);
+    assert.match(view, /editor-roster-launchers/);
+    assert.match(players, /defineEmits\(\['collapse'\]\)/);
+    assert.match(pals, /defineEmits\(\['collapse'\]\)/);
+    assert.match(players, /PlayerList_Collapse/);
+    assert.match(pals, /PalList_Collapse/);
+    assert.match(view, /\.editor-roster-launcher:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--editor-color-focus\)/s);
+});
+
 test("toolbar keeps all operations in global and contextual rows", async () => {
     const source = await read("../src/components/TopBar.vue");
     assert.match(source, /class="editor-app-bar"/);
@@ -71,7 +89,7 @@ test("player and Pal rows preserve selection contracts without grayscale selecti
 
 test("new workspace labels are translated", () => {
     for (const locale of [en, fr, ja, zhCN]) {
-        for (const key of ["TopBar_More", "PlayerList_Unknown", "PalList_Search", "PalList_Add", "Editor_Select_Prompt"]) {
+        for (const key of ["TopBar_More", "PlayerList_Unknown", "PalList_Search", "PalList_Add", "Editor_Select_Prompt", "PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {
             assert.equal(typeof locale[key], "string", key);
             assert.ok(locale[key].trim(), key);
         }

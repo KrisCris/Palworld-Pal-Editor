@@ -150,6 +150,8 @@ export default {
     PalList_Text: "PAL LIST",
     PalList_Search: "Search Pals",
     PalList_Add: "Add Pal",
+    PalList_Collapse: "Collapse Pal list",
+    PalList_Restore: "Show Pal list",
     PalList_Status_Ordinary: "Status: Ordinary",
     PalList_Status_Alpha: "Status: Alpha",
     PalList_Status_Lucky: "Status: Lucky",
@@ -157,6 +159,8 @@ export default {
 
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Unknown: "Unnamed player",
+    PlayerList_Collapse: "Collapse player list",
+    PlayerList_Restore: "Show player list",
     PlayerList_Viewing_Cage: "Unlock the viewing cage for the selected player. Note: After unlocking, you can build it directly, but it will not appear in the technology unlock menu.",
     PlayerEditor_Title: "Player",
 

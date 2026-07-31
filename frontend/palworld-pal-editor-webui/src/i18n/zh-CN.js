@@ -150,6 +150,8 @@ export default {
     PalList_Text: "帕鲁列表",
     PalList_Search: "搜索帕鲁",
     PalList_Add: "添加帕鲁",
+    PalList_Collapse: "收起帕鲁列表",
+    PalList_Restore: "显示帕鲁列表",
     PalList_Status_Ordinary: "状态：普通",
     PalList_Status_Alpha: "状态：头目",
     PalList_Status_Lucky: "状态：稀有",
@@ -157,6 +159,8 @@ export default {
 
     PlayerList_Text: "玩家列表",
     PlayerList_Unknown: "未命名玩家",
+    PlayerList_Collapse: "收起玩家列表",
+    PlayerList_Restore: "显示玩家列表",
     PlayerList_Viewing_Cage: "为选中的玩家解锁观赏笼。注：解锁后你可以直接建造它，但科技解锁菜单并不会显示。",
     PlayerEditor_Title: "玩家",
 
