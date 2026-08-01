@@ -9,8 +9,9 @@
   --editor-color-focus: #20b7ff;
   --editor-color-text: #f1f3ef;
   --editor-color-muted: #9ba7ad;
-  --editor-color-primary: #ff4563;
-  --editor-color-primary-hover: #ff637a;
+  --editor-color-primary: #20b7ff;
+  --editor-color-primary-hover: #55c8ff;
+  --editor-color-backdrop-warm: #ff4563;
   --editor-color-danger: #ee3453;
   --editor-color-danger-hover: #ff4b69;
   --editor-color-warning: #f3b83f;

@@ -51,7 +51,7 @@ const save = async () => {
           <UiIcon name="save" />
           <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
             :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
-          <button class="op save" @click="save" :disabled="palStore.LOADING_FLAG"
+          <button class="op op--primary" @click="save" :disabled="palStore.LOADING_FLAG"
             :title="palStore.getTranslatedText('TopBar_Btn_Save')"
             :aria-label="palStore.getTranslatedText('TopBar_Btn_Save')">
             <UiIcon name="save" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Save") }}</span>
@@ -96,7 +96,7 @@ const save = async () => {
     </div>
 
     <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
-      <button class="op" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
+      <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
         :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
         <img class="game-icon" :src="'/image/ui/heal'" alt="">
         {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
@@ -207,33 +207,35 @@ const save = async () => {
   cursor: pointer;
 }
 
-.editor-app-bar__primary .op,
-.editor-context-bar .op {
+.op--primary {
   border-color: var(--editor-color-primary);
   color: var(--editor-color-background);
   background: var(--editor-color-primary);
 }
 
 .op:hover {
+  border-color: var(--editor-color-primary);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+}
+
+.op:hover .ui-icon {
+  color: var(--editor-color-primary);
+}
+
+.op--primary:hover {
   color: var(--editor-color-background);
   background: var(--editor-color-primary-hover);
+}
+
+.op--primary:hover .ui-icon {
+  color: currentcolor;
 }
 
 .op.toggled {
   border-color: var(--editor-color-success);
   color: var(--editor-color-success);
   background: color-mix(in srgb, var(--editor-color-success) 18%, var(--editor-color-surface-raised));
-}
-
-.op.save {
-  border-color: var(--editor-color-danger);
-  color: var(--editor-color-text);
-  background: color-mix(in srgb, var(--editor-color-danger) 18%, var(--editor-color-surface-raised));
-}
-
-.op.save:hover {
-  color: var(--editor-color-text);
-  background: color-mix(in srgb, var(--editor-color-danger) 30%, var(--editor-color-surface-raised));
 }
 
 .op:disabled,

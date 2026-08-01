@@ -49,7 +49,7 @@ body {
   color: var(--color-text);
   background: var(--color-background);
   background:
-    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--editor-color-primary) 15%, transparent), transparent 30rem),
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--editor-color-backdrop-warm) 15%, transparent), transparent 30rem),
     radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--editor-color-focus) 16%, transparent), transparent 34rem),
     radial-gradient(circle at 58% 94%, color-mix(in srgb, var(--editor-color-ancient) 14%, transparent), transparent 32rem),
     var(--color-background);

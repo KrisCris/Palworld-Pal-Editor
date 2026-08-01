@@ -44,7 +44,9 @@ test("the loaded editor defines and consumes one semantic color system", () => {
     "--editor-color-surface": "#181c1f",
     "--editor-color-surface-raised": "#2c3135",
     "--editor-color-border": "#596873",
-    "--editor-color-primary": "#ff4563",
+    "--editor-color-primary": "#20b7ff",
+    "--editor-color-primary-hover": "#55c8ff",
+    "--editor-color-backdrop-warm": "#ff4563",
     "--editor-color-focus": "#20b7ff",
     "--editor-color-ancient": "#9a4dff",
     "--editor-color-lucky": "#54c7ff",
@@ -82,7 +84,7 @@ test("editor states share vivid semantic accents", () => {
 
 test("workspace uses the selected Palworld color lighting and glass surfaces", () => {
   assert.match(sources.base, /body\s*\{[^}]*background:\s*var\(--color-background\);[^}]*background:\s*radial-gradient/s);
-  assert.match(sources.base, /radial-gradient\([^}]*var\(--editor-color-primary\)[^}]*radial-gradient\([^}]*var\(--editor-color-focus\)[^}]*radial-gradient\([^}]*var\(--editor-color-ancient\)/s);
+  assert.match(sources.base, /radial-gradient\([^}]*var\(--editor-color-backdrop-warm\)[^}]*radial-gradient\([^}]*var\(--editor-color-focus\)[^}]*radial-gradient\([^}]*var\(--editor-color-ancient\)/s);
   assert.match(sources.editor, /--editor-glass-filter:\s*blur\(26px\) saturate\(125%\)/);
   assert.match(sources.editor, /\.editor-surface\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*\n\s*backdrop-filter:\s*var\(--editor-glass-filter\)[^}]*box-shadow:\s*var\(--editor-glass-shadow\)/s);
   assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
@@ -117,7 +119,7 @@ test("messages and markdown use shared status and dialog colors", () => {
 
 test("saturated controls keep readable semantic foregrounds", () => {
   assert.match(sources.editor, /\.editor-button--primary\s*\{[^}]*color:\s*var\(--editor-color-background\)/s);
-  assert.match(sources.topBar, /\.editor-app-bar__primary \.op,[\s\S]*?\.editor-context-bar \.op\s*\{[^}]*color:\s*var\(--editor-color-background\)/);
+  assert.match(sources.topBar, /\.op--primary\s*\{[^}]*color:\s*var\(--editor-color-background\)[^}]*background:\s*var\(--editor-color-primary\)/s);
   assert.match(sources.species, /\.selector-actions \.apply:disabled\s*\{[^}]*var\(--editor-color-surface-subtle\)/s);
   assert.match(sources.markdown, /\.markdown-content a\)[^}]*color:\s*color-mix\([^}]*var\(--editor-color-primary\)/s);
 });
@@ -125,8 +127,7 @@ test("saturated controls keep readable semantic foregrounds", () => {
 test("danger text controls meet normal-text contrast in normal and hover states", () => {
   assert.match(sources.editor, /\.editor-button--danger\s*\{[^}]*color:\s*var\(--editor-color-text\)[^}]*var\(--editor-color-danger\) 18%/s);
   assert.match(sources.editor, /\.editor-button--danger:hover\s*\{[^}]*color:\s*var\(--editor-color-text\)[^}]*var\(--editor-color-danger\) 30%/s);
-  assert.match(sources.topBar, /\.op\.save\s*\{[^}]*color:\s*var\(--editor-color-text\)[^}]*var\(--editor-color-danger\) 18%/s);
-  assert.match(sources.topBar, /\.op\.save:hover\s*\{[^}]*color:\s*var\(--editor-color-text\)[^}]*var\(--editor-color-danger\) 30%/s);
+  assert.doesNotMatch(sources.topBar, /\.op\.save|class="op save"/);
 
   const text = rgb(tokenHex("--editor-color-text"));
   const danger = tokenHex("--editor-color-danger");
@@ -150,8 +151,19 @@ test("selected selector descendants remain readable and warnings stay distinct",
 test("loading-disabled controls stay neutral across component-specific states", () => {
   assert.match(sources.pals, /\.roster-icon-button:disabled\s*\{[^}]*border-color:\s*var\(--editor-color-disabled\)[^}]*color:\s*var\(--editor-color-muted\)[^}]*background:\s*var\(--editor-color-surface-subtle\)/s);
   assert.match(sources.topBar, /\.op:disabled,\s*\.op:disabled:hover,[\s\S]*?\{[^}]*background:\s*var\(--editor-color-surface-subtle\)/s);
-  assert.ok(sources.topBar.indexOf(".op:disabled:hover") > sources.topBar.indexOf(".op.save:hover"));
+  assert.ok(sources.topBar.indexOf(".op:disabled:hover") > sources.topBar.indexOf(".op--primary:hover"));
   assert.match(sources.technology, /\.tech:disabled\s*\{[^}]*border-color:\s*var\(--editor-color-disabled\)[^}]*color:\s*var\(--editor-color-muted\)[^}]*background-color:\s*var\(--editor-color-surface-subtle\)[^}]*filter:\s*grayscale\(1\)/s);
+});
+
+test("toolbar distinguishes primary commands from off and on toggles", () => {
+  assert.match(sources.topBar, /class="op op--primary"[^>]*@click="save"/s);
+  assert.match(sources.topBar, /class="op op--primary"[^>]*@click="palStore\.updatePal"/s);
+  assert.doesNotMatch(sources.topBar, /\.editor-context-bar \.op\s*\{[^}]*var\(--editor-color-primary\)/s);
+  assert.match(sources.topBar, /\.op,\s*#languageSelect,\s*\.savePath\s*\{[^}]*background:\s*var\(--editor-color-control\)/s);
+  assert.match(sources.topBar, /\.op:hover\s*\{[^}]*border-color:\s*var\(--editor-color-primary\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
+  assert.match(sources.topBar, /\.op\.toggled\s*\{[^}]*border-color:\s*var\(--editor-color-success\)[^}]*color:\s*var\(--editor-color-success\)/s);
+  assert.match(sources.topBar, /:aria-pressed="palStore\.SHOW_OOB_PAL_FLAG"/);
+  assert.match(sources.topBar, /:aria-pressed="!palStore\.HIDE_INVALID_OPTIONS"/);
 });
 
 test("loaded-editor files contain no stale local palette values", () => {
