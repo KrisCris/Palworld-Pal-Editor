@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { filterSearchOptions } from "../src/components/modules/search-select.js";
+import {
+    closeDisclosureOnOutsidePointer,
+    filterSearchOptions,
+} from "../src/components/modules/search-select.js";
 import en from "../src/i18n/en.js";
 import fr from "../src/i18n/fr.js";
 import ja from "../src/i18n/ja.js";
@@ -21,6 +24,17 @@ test("searchable options match labels, descriptions, metadata, and internal valu
     assert.deepEqual(filterSearchOptions(options, "skill_b"), [options[1]]);
     assert.deepEqual(filterSearchOptions(options, ""), options);
     assert.deepEqual(filterSearchOptions(options, "missing"), []);
+});
+
+test("an outside pointer closes an open searchable selector", () => {
+    const inside = {};
+    const disclosure = { open: true, contains: target => target === inside };
+
+    closeDisclosureOnOutsidePointer(disclosure, inside);
+    assert.equal(disclosure.open, true);
+
+    closeDisclosureOnOutsidePointer(disclosure, {});
+    assert.equal(disclosure.open, false);
 });
 
 test("shared selector uses native disclosure, search, and option buttons", async () => {

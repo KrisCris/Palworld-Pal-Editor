@@ -6,3 +6,7 @@ export const filterSearchOptions = (options, query) => {
   return options.filter(option => [option.label, option.description, option.meta, option.value]
     .some(value => normalized(value).includes(needle)))
 }
+
+export const closeDisclosureOnOutsidePointer = (disclosure, target) => {
+  if (disclosure?.open && !disclosure.contains(target)) disclosure.open = false
+}

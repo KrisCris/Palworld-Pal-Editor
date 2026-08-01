@@ -1,8 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import UiIcon from './UiIcon.vue'
-import { filterSearchOptions } from './search-select'
+import { closeDisclosureOnOutsidePointer, filterSearchOptions } from './search-select'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -26,6 +26,10 @@ function choose(option) {
   query.value = ''
   disclosure.value.open = false
 }
+
+const closeOnOutsidePointer = event => closeDisclosureOnOutsidePointer(disclosure.value, event.target)
+onMounted(() => window.addEventListener('pointerdown', closeOnOutsidePointer))
+onBeforeUnmount(() => window.removeEventListener('pointerdown', closeOnOutsidePointer))
 </script>
 
 <template>
