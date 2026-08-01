@@ -20,6 +20,34 @@ onMounted(palStore.get_updates)
         <p>{{ palStore.getTranslatedText('Entry_Intro') }}</p>
       </header>
 
+      <section class="entry-load">
+        <div class="entry-load-heading">
+          <div>
+            <h2>{{ palStore.getTranslatedText('Entry_Load_Title') }}</h2>
+            <p>{{ palStore.getTranslatedText('Entry_Load_Subtitle') }}</p>
+          </div>
+        </div>
+
+        <label for="entry-save-path">{{ palStore.getTranslatedText('Entry_Path_Label') }}</label>
+        <div class="entry-path-row">
+          <input
+            id="entry-save-path"
+            v-model="palStore.PAL_GAME_SAVE_PATH"
+            type="text"
+            placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
+            :disabled="palStore.LOADING_FLAG"
+          >
+          <button class="entry-path-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.show_file_picker">
+            <UiIcon name="folder" />
+            {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
+          </button>
+          <button class="entry-load-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.loadSave">
+            <UiIcon name="play" />
+            {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
+          </button>
+        </div>
+      </section>
+
       <div class="entry-columns">
         <div class="entry-group entry-left">
           <section class="entry-support">
@@ -81,7 +109,7 @@ onMounted(palStore.get_updates)
                 <UiIcon name="download" />
                 <span><strong>Nexus Mods</strong><small>{{ palStore.getTranslatedText('Entry_Download_Nexus_Description') }}</small></span>
               </a>
-              <a target="_blank" href="https://space.bilibili.com/12184831">
+              <a v-if="['zh-CN', 'zh-TW'].includes(palStore.I18n)" target="_blank" href="https://space.bilibili.com/12184831">
                 <UiIcon name="video" />
                 <span><strong>_connlost Bilibili</strong><small>{{ palStore.getTranslatedText('Entry_Download_Bilibili_Description') }}</small></span>
               </a>
@@ -98,35 +126,6 @@ onMounted(palStore.get_updates)
         </div>
 
         <div class="entry-group entry-right">
-          <section class="entry-load">
-            <div class="entry-load-heading">
-              <div>
-                <h2>{{ palStore.getTranslatedText('Entry_Load_Title') }}</h2>
-                <p>{{ palStore.getTranslatedText('Entry_Load_Subtitle') }}</p>
-              </div>
-              <span>{{ palStore.getTranslatedText('Entry_Load_Local') }}</span>
-            </div>
-
-            <label for="entry-save-path">{{ palStore.getTranslatedText('Entry_Path_Label') }}</label>
-            <div class="entry-path-row">
-              <input
-                id="entry-save-path"
-                v-model="palStore.PAL_GAME_SAVE_PATH"
-                type="text"
-                placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
-                :disabled="palStore.LOADING_FLAG"
-              >
-              <button class="entry-path-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.show_file_picker">
-                <UiIcon name="folder" />
-                {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
-              </button>
-              <button class="entry-load-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.loadSave">
-                <UiIcon name="play" />
-                {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
-              </button>
-            </div>
-          </section>
-
           <section class="entry-instructions">
             <div class="entry-section-heading">
               <h2>{{ palStore.getTranslatedText('Entry_Instructions_Title') }}</h2>
@@ -154,19 +153,22 @@ onMounted(palStore.get_updates)
         </div>
       </div>
 
-      <footer class="entry-footer">
-        <span>VERSION: {{ palStore.VERSION }}</span>
-        <span v-if="!palStore.IS_OFFICIAL_BUILD" class="entry-warning">
-          <UiIcon name="warning" />
-          {{ palStore.getTranslatedText('EntryView_Version_Warning') }}
-        </span>
-      </footer>
     </section>
+
+    <footer class="entry-footer">
+      <span>VERSION: {{ palStore.VERSION }}</span>
+      <span v-if="!palStore.IS_OFFICIAL_BUILD" class="entry-warning">
+        <UiIcon name="warning" />
+        {{ palStore.getTranslatedText('EntryView_Version_Warning') }}
+      </span>
+    </footer>
   </main>
 </template>
 
 <style scoped>
 .entry-page {
+  display: grid;
+  grid-template-rows: 1fr auto;
   min-height: 0;
   overflow: auto;
   align-content: center;
@@ -174,12 +176,16 @@ onMounted(palStore.get_updates)
 }
 
 .entry-shell {
+  display: grid;
   width: 100%;
-  margin: auto;
+  max-width: min(92rem, 1920px);
+  align-self: center;
+  gap: var(--editor-space-4);
+  margin-inline: auto;
 }
 
 .entry-intro {
-  margin-bottom: var(--editor-space-4);
+  min-width: 0;
 }
 
 .entry-intro h1 {
@@ -217,6 +223,17 @@ onMounted(palStore.get_updates)
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
 }
 
+.entry-load {
+  grid-template-columns: minmax(15rem, .75fr) minmax(0, 1.75fr);
+  align-items: end;
+  padding: var(--editor-space-4);
+  border: 1px solid var(--editor-color-focus);
+  border-left: .3rem solid var(--editor-color-focus);
+  border-radius: var(--editor-radius-md);
+  background: color-mix(in srgb, var(--editor-color-glass-surface) 90%, var(--editor-color-focus) 10%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
+}
+
 .entry-support,
 .entry-downloads,
 .entry-load,
@@ -241,19 +258,15 @@ onMounted(palStore.get_updates)
   gap: var(--editor-space-3);
 }
 
+.entry-load-heading {
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
 .entry-section-heading h2,
 .entry-load-heading h2 {
   font-size: 1.15rem;
   font-weight: 650;
-}
-
-.entry-load-heading > span {
-  flex: 0 0 auto;
-  padding: .2rem .65rem;
-  border: 1px solid var(--editor-color-success);
-  border-radius: 999px;
-  color: var(--editor-color-success);
-  background: color-mix(in srgb, var(--editor-color-success) 12%, transparent);
 }
 
 .entry-action-grid,
@@ -335,11 +348,13 @@ onMounted(palStore.get_updates)
 }
 
 .entry-load label {
+  grid-column: 2;
   color: var(--editor-color-muted);
 }
 
 .entry-path-row {
   display: grid;
+  grid-column: 2;
   grid-template-columns: minmax(8rem, 1fr) auto auto;
   gap: var(--editor-space-2);
 }
@@ -423,6 +438,7 @@ onMounted(palStore.get_updates)
 }
 
 .entry-footer {
+  width: 100%;
   margin-top: var(--editor-space-4);
   color: var(--editor-color-muted);
   font-size: .82rem;
@@ -437,6 +453,7 @@ onMounted(palStore.get_updates)
 
 @media (max-width: 900px) {
   .entry-page {
+    grid-template-rows: auto auto;
     align-content: start;
   }
 
@@ -460,7 +477,19 @@ onMounted(palStore.get_updates)
     box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
   }
 
-  .entry-load { order: 1; }
+  .entry-load {
+    grid-template-columns: 1fr;
+    border-color: var(--editor-color-focus);
+    border-left-width: .3rem;
+  }
+
+  .entry-load-heading,
+  .entry-load label,
+  .entry-path-row {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
   .entry-instructions { order: 2; }
   .entry-support { order: 3; }
   .entry-downloads { order: 4; }

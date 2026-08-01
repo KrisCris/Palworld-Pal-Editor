@@ -27,7 +27,6 @@ ENTRY_KEYS = (
     "Entry_Download_Bilibili_Description",
     "Entry_Load_Title",
     "Entry_Load_Subtitle",
-    "Entry_Load_Local",
     "Entry_Path_Label",
     "Entry_Instructions_Title",
     "Entry_Instructions_Subtitle",
@@ -78,26 +77,51 @@ def test_entry_view_preserves_actions_links_and_responsive_order():
         assert url in source
 
     for class_name, order in (
-        ("entry-load", 1),
         ("entry-instructions", 2),
         ("entry-support", 3),
         ("entry-downloads", 4),
     ):
         assert f'.{class_name} {{ order: {order};' in source
 
+    assert ".entry-load { order:" not in source
+    assert "v-if=\"['zh-CN', 'zh-TW'].includes(palStore.I18n)\"" in source
 
-def test_entry_view_is_centered_with_outer_spacing_and_no_fixed_card_height():
+
+def test_entry_view_prioritizes_loading_and_only_constrains_middle_content():
     source = ENTRY.read_text(encoding="utf-8")
 
     assert "align-content: center" in source
     assert "padding: clamp(" in source
     shell_css = source.split(".entry-shell {", 1)[1].split("}", 1)[0]
     assert "width: 100%" in shell_css
+    assert "max-width: min(92rem, 1920px)" in shell_css
+    assert "margin-inline: auto" in shell_css
     assert "border:" not in shell_css
     assert "background:" not in shell_css
+    page_css = source.split(".entry-page {", 1)[1].split("}", 1)[0]
+    assert "max-width:" not in page_css
+    assert ".entry-footer {\n  width: 100%" in source
     assert "height: 100%" not in source
     assert "grid-template-rows: minmax(0, 1fr)" not in source
     assert ".entry-page,\n  .entry-shell" not in source
+    assert source.index('class="entry-load"') < source.index('class="entry-columns"')
+    assert '</section>\n\n    <footer class="entry-footer">' in source
+
+
+def test_entry_view_removes_local_badge_and_renames_community_action():
+    source = ENTRY.read_text(encoding="utf-8")
+
+    assert "Entry_Load_Local" not in source
+    expected_titles = {
+        "en.js": "Join the community",
+        "fr.js": "Rejoindre la communauté",
+        "ja.js": "コミュニティに参加",
+        "zh-CN.js": "加入社区",
+    }
+    for path in I18N_FILES:
+        text = path.read_text(encoding="utf-8")
+        assert "Entry_Load_Local:" not in text
+        assert f'Entry_Support_Community_Title: "{expected_titles[path.name]}"' in text
 
 
 def test_entry_brand_uses_the_application_icon():
