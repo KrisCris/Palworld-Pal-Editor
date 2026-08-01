@@ -62,6 +62,13 @@ const save = async () => {
             <UiIcon name="refresh" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Reload") }}</span>
           </button>
         </template>
+        <div v-else class="entry-brand">
+          <img src="@/assets/logo.ico" alt="">
+          <span>
+            <strong>Palworld Pal Editor</strong>
+            <small>Developed by _connlost</small>
+          </span>
+        </div>
       </div>
 
       <div class="editor-app-bar__utilities">
@@ -149,6 +156,27 @@ const save = async () => {
 
 .editor-app-bar__primary {
   flex: 1;
+}
+
+.entry-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-2);
+}
+
+.entry-brand img {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+}
+
+.entry-brand strong,
+.entry-brand small {
+  display: block;
+}
+
+.entry-brand small {
+  color: var(--editor-color-muted);
 }
 
 .editor-app-bar__utilities {

@@ -1,225 +1,504 @@
 <script setup>
+import { onMounted } from 'vue'
+
+import PathPicker from '@/components/PathPicker.vue'
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
-import PathPicker from '@/components/PathPicker.vue';
+
 const palStore = usePalEditorStore()
-import { onMounted } from 'vue';
-onMounted( () => {
-    palStore.get_updates();
-});
+
+onMounted(palStore.get_updates)
 </script>
 
 <template>
-    <div id="entryDiv">
-        <PathPicker />
-        <div class="left">
-            <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_1') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_2') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_3') }}</p>
-            <br>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_4') }}
-                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/releases">GitHub Releases</a>
-                {{ palStore.getTranslatedText('EntryView_Greet_4_1') }}
-                <a target="_blank" href="https://www.nexusmods.com/palworld/mods/995?tab=files">Nexus Mods</a>
-                {{ palStore.getTranslatedText('EntryView_Period') }}
-            </p>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_6') }}
-                <a target="_blank"
-                    href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
-                    @click="palStore.SHOW_DONATE_FLAG = true">Donate</a>
-                {{ palStore.getTranslatedText('EntryView_Greet_5') }}
-            </p>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_7') }}
-                <a target="_blank" href="https://discord.gg/FnuA95nMJ8">Discord</a>
-                {{ palStore.getTranslatedText('EntryView_Greet_7_1') }}
-                <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">GitHub Repo</a>
-                {{ palStore.getTranslatedText('EntryView_Period') }}
-            </p>
-            <p>{{ palStore.getTranslatedText('EntryView_Greet_8') }}
-                <a target="_blank" href="https://space.bilibili.com/12184831">_connlost</a>
-                {{ palStore.getTranslatedText('EntryView_Period') }}
-            </p>
-            <br>
-        </div>
-        <div class="right">
-            <p>{{ palStore.getTranslatedText('EntryView_Note_1') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_Note_2') }}</p>
-            <p>{{ palStore.getTranslatedText('EntryView_Note_3') }}</p>
-            <br>
-            <p class="small">{{ palStore.PAL_GAME_SAVE_PATH }}</p>
-            <input type="text" v-model="palStore.PAL_GAME_SAVE_PATH"
-                placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
-                :disabled="palStore.LOADING_FLAG">
+  <PathPicker />
 
-            <button class="pathSelect" @click="palStore.show_file_picker">
-                {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
-            </button>
-            <button @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG">
-                {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
-            </button>
-        </div>
-        <div class="version-container">
-            <p class="version-info">VERSION: {{ palStore.VERSION }}</p>
-            <p v-if="!palStore.IS_OFFICIAL_BUILD" class="version-warning">
-                {{ palStore.getTranslatedText("EntryView_Version_Warning") }}
-            </p>
-        </div>
+  <main id="entryDiv" class="entry-page">
+    <section class="entry-shell">
+      <header class="entry-intro">
+        <h1>{{ palStore.getTranslatedText('Entry_Title') }}</h1>
+        <p>{{ palStore.getTranslatedText('Entry_Intro') }}</p>
+      </header>
 
-        <div class="update_container" v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA.version">
-            <p class="version-new">
-                {{ palStore.getTranslatedText('EntryView_Update_Notice', [palStore.UPDATE_DATA.version]) }}
-            </p>
-            <p class="version-new">
-                <span
-                    class="version-new"
-                    v-html="palStore.getTranslatedText('EntryView_Update_Link1', [`<a style='color: aquamarine; font-weight: bold; font-size: 1.5rem; font-size:0.8rem;' target='_blank' href='${palStore.UPDATE_DATA.download_nexus}'>Nexus Mods</a>`])">
+      <div class="entry-columns">
+        <div class="entry-group entry-left">
+          <section class="entry-support">
+            <div class="entry-section-heading">
+              <div>
+                <h2>{{ palStore.getTranslatedText('Entry_Support_Title') }}</h2>
+                <p>{{ palStore.getTranslatedText('Entry_Support_Subtitle') }}</p>
+              </div>
+            </div>
+
+            <div class="entry-action-grid">
+              <a class="entry-action" target="_blank" href="https://discord.gg/FnuA95nMJ8">
+                <UiIcon name="message" />
+                <span>
+                  <strong>{{ palStore.getTranslatedText('Entry_Support_Community_Title') }}</strong>
+                  <small>{{ palStore.getTranslatedText('Entry_Support_Community_Description') }}</small>
                 </span>
-            </p>
-            <p class="version-new">
-                {{ palStore.getTranslatedText('EntryView_Update_Link2') }}
-                <a class="small" target="_blank" :href="palStore.UPDATE_DATA.download_gh">GitHub</a>
-                {{ palStore.getTranslatedText('EntryView_Period') }}
-            </p>
+              </a>
+              <a class="entry-action" target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">
+                <UiIcon name="pull-request" />
+                <span>
+                  <strong>{{ palStore.getTranslatedText('Entry_Support_Code_Title') }}</strong>
+                  <small>{{ palStore.getTranslatedText('Entry_Support_Code_Description') }}</small>
+                </span>
+              </a>
+              <a class="entry-action" target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/issues">
+                <UiIcon name="bug" />
+                <span>
+                  <strong>{{ palStore.getTranslatedText('Entry_Support_Issue_Title') }}</strong>
+                  <small>{{ palStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
+                </span>
+              </a>
+              <a
+                class="entry-action entry-action--support"
+                target="_blank"
+                href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
+                @click="palStore.SHOW_DONATE_FLAG = true"
+              >
+                <UiIcon name="heart" />
+                <span>
+                  <strong>{{ palStore.getTranslatedText('Entry_Support_Author_Title') }}</strong>
+                  <small>{{ palStore.getTranslatedText('Entry_Support_Author_Description') }}</small>
+                </span>
+              </a>
+            </div>
+          </section>
+
+          <section class="entry-downloads">
+            <div class="entry-section-heading">
+              <h2>{{ palStore.getTranslatedText('Entry_Downloads_Title') }}</h2>
+              <span>{{ palStore.getTranslatedText('Entry_Downloads_Subtitle') }}</span>
+            </div>
+            <div class="entry-download-grid">
+              <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/releases">
+                <UiIcon name="branch" />
+                <span><strong>GitHub Releases</strong><small>{{ palStore.getTranslatedText('Entry_Download_GitHub_Description') }}</small></span>
+              </a>
+              <a target="_blank" href="https://www.nexusmods.com/palworld/mods/995?tab=files">
+                <UiIcon name="download" />
+                <span><strong>Nexus Mods</strong><small>{{ palStore.getTranslatedText('Entry_Download_Nexus_Description') }}</small></span>
+              </a>
+              <a target="_blank" href="https://space.bilibili.com/12184831">
+                <UiIcon name="video" />
+                <span><strong>_connlost Bilibili</strong><small>{{ palStore.getTranslatedText('Entry_Download_Bilibili_Description') }}</small></span>
+              </a>
+            </div>
+
+            <aside v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA.version" class="entry-update" role="status">
+              <strong>{{ palStore.getTranslatedText('EntryView_Update_Notice', [palStore.UPDATE_DATA.version]) }}</strong>
+              <span>
+                <a target="_blank" :href="palStore.UPDATE_DATA.download_nexus">Nexus Mods</a>
+                <a target="_blank" :href="palStore.UPDATE_DATA.download_gh">GitHub</a>
+              </span>
+            </aside>
+          </section>
         </div>
-    </div>
+
+        <div class="entry-group entry-right">
+          <section class="entry-load">
+            <div class="entry-load-heading">
+              <div>
+                <h2>{{ palStore.getTranslatedText('Entry_Load_Title') }}</h2>
+                <p>{{ palStore.getTranslatedText('Entry_Load_Subtitle') }}</p>
+              </div>
+              <span>{{ palStore.getTranslatedText('Entry_Load_Local') }}</span>
+            </div>
+
+            <label for="entry-save-path">{{ palStore.getTranslatedText('Entry_Path_Label') }}</label>
+            <div class="entry-path-row">
+              <input
+                id="entry-save-path"
+                v-model="palStore.PAL_GAME_SAVE_PATH"
+                type="text"
+                placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
+                :disabled="palStore.LOADING_FLAG"
+              >
+              <button class="entry-path-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.show_file_picker">
+                <UiIcon name="folder" />
+                {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
+              </button>
+              <button class="entry-load-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.loadSave">
+                <UiIcon name="play" />
+                {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
+              </button>
+            </div>
+          </section>
+
+          <section class="entry-instructions">
+            <div class="entry-section-heading">
+              <h2>{{ palStore.getTranslatedText('Entry_Instructions_Title') }}</h2>
+              <span>{{ palStore.getTranslatedText('Entry_Instructions_Subtitle') }}</span>
+            </div>
+            <div class="entry-note-grid">
+              <article>
+                <UiIcon name="folder-check" />
+                <strong>{{ palStore.getTranslatedText('Entry_Instruction_First_Title') }}</strong>
+                <p>{{ palStore.getTranslatedText('Entry_Instruction_First_Description') }}</p>
+              </article>
+              <article>
+                <UiIcon name="shield" />
+                <strong>{{ palStore.getTranslatedText('Entry_Instruction_WebUI_Title') }}</strong>
+                <p>{{ palStore.getTranslatedText('Entry_Instruction_WebUI_Description') }}</p>
+              </article>
+              <article>
+                <UiIcon name="box" />
+                <strong>{{ palStore.getTranslatedText('Entry_Instruction_Docker_Title') }}</strong>
+                <p>{{ palStore.getTranslatedText('Entry_Instruction_Docker_Description') }}</p>
+              </article>
+            </div>
+            <p class="entry-help"><UiIcon name="help" /> {{ palStore.getTranslatedText('Entry_Help') }}</p>
+          </section>
+        </div>
+      </div>
+
+      <footer class="entry-footer">
+        <span>VERSION: {{ palStore.VERSION }}</span>
+        <span v-if="!palStore.IS_OFFICIAL_BUILD" class="entry-warning">
+          <UiIcon name="warning" />
+          {{ palStore.getTranslatedText('EntryView_Version_Warning') }}
+        </span>
+      </footer>
+    </section>
+  </main>
 </template>
 
 <style scoped>
-a {
-    color: aquamarine;
-    font-weight: bold;
-    font-size: 1.5rem;
+.entry-page {
+  min-height: 0;
+  overflow: auto;
+  align-content: center;
+  padding: clamp(1.25rem, 2.4vw, 2.25rem);
 }
 
-div#entryDiv {
-    display: flex;
-    flex-direction: row;
-    padding: 3rem;
-    gap: 0 3rem;
+.entry-shell {
+  width: 100%;
+  margin: auto;
 }
 
-div.col {
-    display: flex;
+.entry-intro {
+  margin-bottom: var(--editor-space-4);
+}
+
+.entry-intro h1 {
+  font-size: clamp(1.65rem, 3vw, 2.55rem);
+  font-weight: 650;
+  letter-spacing: -.035em;
+  line-height: 1.08;
+}
+
+.entry-intro p,
+.entry-section-heading p,
+.entry-load-heading p,
+.entry-section-heading > span,
+.entry-action small,
+.entry-download-grid small,
+.entry-note-grid p {
+  color: var(--editor-color-muted);
+}
+
+.entry-columns {
+  display: grid;
+  grid-template-columns: minmax(22rem, 42%) minmax(0, 58%);
+  gap: var(--editor-space-4);
+  align-items: stretch;
+}
+
+.entry-group {
+  display: grid;
+  align-content: start;
+  gap: var(--editor-space-4);
+  padding: var(--editor-space-4);
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: var(--editor-radius-md);
+  background: color-mix(in srgb, var(--editor-color-glass-surface) 86%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+}
+
+.entry-support,
+.entry-downloads,
+.entry-load,
+.entry-instructions {
+  display: grid;
+  align-content: start;
+  gap: var(--editor-space-3);
+}
+
+.entry-downloads,
+.entry-instructions {
+  padding-top: var(--editor-space-4);
+  border-top: 1px solid var(--editor-color-border);
+}
+
+.entry-section-heading,
+.entry-load-heading,
+.entry-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--editor-space-3);
+}
+
+.entry-section-heading h2,
+.entry-load-heading h2 {
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+
+.entry-load-heading > span {
+  flex: 0 0 auto;
+  padding: .2rem .65rem;
+  border: 1px solid var(--editor-color-success);
+  border-radius: 999px;
+  color: var(--editor-color-success);
+  background: color-mix(in srgb, var(--editor-color-success) 12%, transparent);
+}
+
+.entry-action-grid,
+.entry-download-grid,
+.entry-note-grid {
+  display: grid;
+  gap: var(--editor-space-2);
+}
+
+.entry-action-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.entry-download-grid,
+.entry-note-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.entry-action,
+.entry-download-grid a {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--editor-space-2);
+  align-items: center;
+  padding: var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
+  text-decoration: none;
+}
+
+.entry-action:hover,
+.entry-download-grid a:hover {
+  border-color: var(--editor-color-focus);
+  background: var(--editor-color-surface-raised);
+}
+
+.entry-action .ui-icon,
+.entry-download-grid .ui-icon {
+  color: var(--editor-color-focus);
+}
+
+.entry-action strong,
+.entry-action small,
+.entry-download-grid strong,
+.entry-download-grid small {
+  display: block;
+}
+
+.entry-action--support {
+  border-color: color-mix(in srgb, var(--editor-color-danger) 68%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--editor-color-danger) 16%, var(--editor-color-control));
+}
+
+.entry-action--support .ui-icon {
+  color: var(--editor-color-danger);
+}
+
+.entry-update {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--editor-space-3);
+  padding: var(--editor-space-3);
+  border: 1px solid var(--editor-color-focus);
+  border-radius: var(--editor-radius-sm);
+  background: color-mix(in srgb, var(--editor-color-focus) 12%, transparent);
+}
+
+.entry-update span {
+  display: flex;
+  gap: var(--editor-space-2);
+}
+
+.entry-update a {
+  color: var(--editor-color-focus);
+}
+
+.entry-load label {
+  color: var(--editor-color-muted);
+}
+
+.entry-path-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) auto auto;
+  gap: var(--editor-space-2);
+}
+
+.entry-path-row input,
+.entry-path-row button {
+  min-height: 2.65rem;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
+}
+
+.entry-path-row input {
+  min-width: 0;
+  padding: 0 var(--editor-space-3);
+}
+
+.entry-path-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: 0 var(--editor-space-3);
+  cursor: pointer;
+}
+
+.entry-path-row .entry-load-button {
+  border-color: var(--editor-color-focus);
+  color: var(--editor-color-background);
+  background: var(--editor-color-focus);
+}
+
+.entry-path-row button:hover {
+  background: var(--editor-color-surface-raised);
+}
+
+.entry-path-row .entry-load-button:hover {
+  background: color-mix(in srgb, var(--editor-color-focus) 82%, white);
+}
+
+.entry-path-row :disabled {
+  color: var(--editor-color-muted);
+  background: var(--editor-color-surface-subtle);
+  cursor: not-allowed;
+}
+
+.entry-path-row :focus-visible,
+.entry-action:focus-visible,
+.entry-download-grid a:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
+}
+
+.entry-note-grid article {
+  display: grid;
+  align-content: start;
+  gap: var(--editor-space-2);
+  min-width: 0;
+  padding: var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: color-mix(in srgb, var(--editor-color-background) 45%, transparent);
+}
+
+.entry-note-grid .ui-icon {
+  color: var(--editor-color-ancient);
+}
+
+.entry-help {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-2);
+  padding-top: var(--editor-space-3);
+  border-top: 1px solid var(--editor-color-border);
+  color: var(--editor-color-muted);
+}
+
+.entry-help .ui-icon {
+  color: var(--editor-color-focus);
+}
+
+.entry-footer {
+  margin-top: var(--editor-space-4);
+  color: var(--editor-color-muted);
+  font-size: .82rem;
+}
+
+.entry-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: var(--editor-color-danger);
+}
+
+@media (max-width: 900px) {
+  .entry-page {
+    align-content: start;
+  }
+
+  .entry-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-left,
+  .entry-right {
+    display: contents;
+  }
+
+  .entry-load,
+  .entry-instructions,
+  .entry-support,
+  .entry-downloads {
+    padding: var(--editor-space-4);
+    border: 1px solid var(--editor-color-glass-border);
+    border-radius: var(--editor-radius-md);
+    background: color-mix(in srgb, var(--editor-color-glass-surface) 86%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+  }
+
+  .entry-load { order: 1; }
+  .entry-instructions { order: 2; }
+  .entry-support { order: 3; }
+  .entry-downloads { order: 4; }
+}
+
+@media (max-width: 680px) {
+  .entry-page {
+    padding: 1rem;
+  }
+
+  .entry-action-grid,
+  .entry-download-grid,
+  .entry-note-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-path-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .entry-path-row input {
+    grid-column: 1 / -1;
+  }
+
+  .entry-section-heading,
+  .entry-footer {
+    align-items: flex-start;
     flex-direction: column;
+  }
 }
 
-div.left,
-div.right {
-    max-width: 50%;
-    display: flex;
-    flex-direction: column;
-}
+@media (max-width: 440px) {
+  .entry-path-row {
+    grid-template-columns: 1fr;
+  }
 
-p {
-    word-wrap: break-word;
-    font-size: 1.2rem;
-    margin: 0 1rem;
-}
-
-p.small {
-    font-size: 0.8rem;
-    margin: 0 0;
-    color: grey;
-}
-
-a.small {
-    font-size: 0.8rem;
-}
-
-input {
-    margin-bottom: 1rem;
-    height: 3rem;
-    background-color: #34353a;
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    padding-left: 0.7rem;
-    padding-right: 0.7rem;
-}
-
-input:focus {
-    background-color: #b4b7be;
-    color: rgb(0, 0, 0);
-}
-
-button {
-    margin-bottom: 1rem;
-    height: 3rem;
-    background-color: #3365da;
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    transition: all 0.3s ease-in-out;
-}
-
-button:hover {
-    background-color: #1b49b4;
-    transition: all 0.3s ease-in-out;
-    cursor: pointer;
-}
-
-button.pathSelect {
-    margin-bottom: 1rem;
-    height: 3rem;
-    background-color: #3f3f3f;
-    color: whitesmoke;
-    border: none;
-    outline: none;
-    border-radius: 0.5rem;
-    font-size: 1.2rem;
-    transition: all 0.3s ease-in-out;
-}
-
-button.pathSelect:hover {
-    background-color: rgb(125, 125, 125);
-    transition: all 0.3s ease-in-out;
-    cursor: pointer;
-}
-
-button:disabled {
-    background-color: #8a8a8a;
-}
-
-button:disabled:hover {
-    background-color: #8a8a8a;
-}
-
-/* Style for the version container */
-.version-container {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    text-align: right;
-}
-
-.update_container {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    text-align: left;
-}
-
-/* Style for the version text */
-.version-info {
-    font-size: 0.9rem;
-    color: #868686;
-    opacity: 0.7;
-}
-
-.version-new {
-    font-size: 0.9rem;
-    color: #6e9aff;
-    font-weight: bold;
-}
-
-/* Style for the version warning */
-.version-warning {
-    font-size: 0.8rem;
-    color: red;
-    font-weight: bold;
+  .entry-path-row input {
+    grid-column: auto;
+  }
 }
 </style>
