@@ -384,8 +384,9 @@ const portraitBorder = pal => pal.IsAwakening
               :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @change="palStore.updatePal">
           </label>
         </div>
+        <h3 class="pal-panel__subheading"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser") }}</h3>
         <label class="range-control range-control--wide">
-          <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
+          <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ palStore.SELECTED_PAL_DATA.Rank - 1 }}</strong>
           <input type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
             :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank" @change="palStore.updatePal">
@@ -684,6 +685,16 @@ const portraitBorder = pal => pal.IsAwakening
   padding-bottom: var(--editor-space-2);
   border-bottom: 1px solid var(--editor-color-border);
   font-size: 1rem;
+}
+
+.pal-panel__subheading {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-2);
+  margin: var(--editor-space-1) 0 0;
+  padding-top: var(--editor-space-3);
+  border-top: 1px solid var(--editor-color-border);
+  font-size: .9rem;
 }
 
 .pal-panel__header {

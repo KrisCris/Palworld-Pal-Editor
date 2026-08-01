@@ -19,7 +19,7 @@ function button(html, name) {
   return { attributes: match[1], content: match[2] };
 }
 
-test("variant controls expose Alpha and Lucky actions with their game markers", async () => {
+async function renderPalEditorFixture() {
   const [{ default: PalEditor }, { usePalEditorStore }] = await Promise.all([
     loadVueModule("/src/components/PalEditor.vue"),
     loadVueModule("/src/stores/paleditor.js"),
@@ -51,7 +51,11 @@ test("variant controls expose Alpha and Lucky actions with their game markers", 
     isMasteredSkill: () => false,
   };
 
-  const html = await renderVue(PalEditor, { pinia });
+  return renderVue(PalEditor, { pinia });
+}
+
+test("variant controls expose Alpha and Lucky actions with their game markers", async () => {
+  const html = await renderPalEditorFixture();
   const alpha = button(html, "IsBOSS");
   const lucky = button(html, "IsRarePal");
 
@@ -64,4 +68,11 @@ test("variant controls expose Alpha and Lucky actions with their game markers", 
   assert.match(lucky.attributes, /class="[^"]*editor-button--secondary[^"]*is-active/);
   assert.match(lucky.attributes, /aria-pressed="true"/);
   assert.match(lucky.content, /<img\b[^>]*src="\/image\/ui\/rare"[^>]*alt=""/);
+});
+
+test("Pal soul enhancement and condensation render as separate upgrade sections", async () => {
+  const html = await renderPalEditorFixture();
+
+  assert.match(html, /<h2[^>]*>.*Enhance Pals<\/h2>/s);
+  assert.match(html, /<h3[^>]*>.*Pal Condensation<\/h3>/s);
 });
