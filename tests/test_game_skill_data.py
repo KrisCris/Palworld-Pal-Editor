@@ -38,6 +38,7 @@ ACTIVE_FIELDS = {
     "Exclusive",
     "BossSkill",
     "Assignable",
+    "AssignableToHumans",
     "Invalid",
     "Category",
     "Strength",
@@ -239,6 +240,7 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         "Exclusive",
         "BossSkill",
         "Assignable",
+        "AssignableToHumans",
         "Power",
         "Element",
         "CT",
@@ -256,7 +258,14 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         assert row["Exclusive"] == source["Exclusive"]
         assert row["BossSkill"] == source["BossSkill"]
         assert row["Assignable"] == source["Assignable"]
+        assert row["AssignableToHumans"] == source["AssignableToHumans"]
 
     human_punch = payload["data"]["dict"]["EPalWazaID::Human_Punch"]
     assert human_punch["Invalid"] is False
     assert human_punch["Assignable"] is False
+    assert human_punch["AssignableToHumans"] is True
+
+    weapon_use = payload["data"]["dict"]["EPalWazaID::Weapon_Use"]
+    assert weapon_use["Invalid"] is False
+    assert weapon_use["Assignable"] is False
+    assert weapon_use["AssignableToHumans"] is True

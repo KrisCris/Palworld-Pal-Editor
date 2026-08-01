@@ -16,6 +16,12 @@ const activeSkillOptions = () => palStore.filterSkillOptions(
   palStore.ACTIVE_SKILLS_LIST,
   currentSkillIds(),
   palStore.HIDE_INVALID_OPTIONS,
+  palStore.SELECTED_PAL_DATA.IsHuman,
+);
+
+const canAssignActiveSkill = skill => palStore.isSkillAssignable(
+  skill,
+  palStore.SELECTED_PAL_DATA.IsHuman,
 );
 
 const isMaxSuit = key => {
@@ -77,13 +83,16 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     label: skill.I18n[0],
     description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
     meta: `${skill.InternalName} ${skill.Element}`,
-    disabled: skill.Assignable === false,
+    disabled: !canAssignActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
 
 const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
-const skillBadgeLabels = skill => palStore.skillBadges(skill)
+const skillBadgeLabels = skill => palStore.skillBadges(
+  skill,
+  palStore.SELECTED_PAL_DATA.IsHuman,
+)
   .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge)))
   .join(' · ');
 
@@ -449,7 +458,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="skill-card__identity">
               <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
               <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
             </div>
             <button class="editor-button editor-button--icon editor-button--danger"
               @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
@@ -469,15 +478,15 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="skill-card__identity">
               <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
               <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="palStore.ACTIVE_SKILLS[skill]?.Assignable === false">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
             </div>
             <div class="skill-card__actions">
               <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
                 && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
                 class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
-                :title="palStore.ACTIVE_SKILLS[skill]?.Assignable === false ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-                :disabled="palStore.LOADING_FLAG || palStore.ACTIVE_SKILLS[skill]?.Assignable === false"><UiIcon name="plus" /></button>
+                :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
+                :disabled="palStore.LOADING_FLAG || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon editor-button--danger"
                 @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
@@ -496,7 +505,7 @@ const portraitBorder = pal => pal.IsAwakening
             :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
             :disabled="palStore.LOADING_FLAG
               || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-              || palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM]?.Assignable === false"><UiIcon name="plus" /></button>
+              || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
         </div>
       </div>
     </section>

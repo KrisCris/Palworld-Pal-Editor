@@ -8,6 +8,7 @@ import { watch } from "vue";
 import {
     canToggleBossVariant,
     filterSkillOptions,
+    isSkillAssignable,
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
@@ -39,6 +40,10 @@ test("skill badges are derived only from endpoint metadata", () => {
     assert.deepEqual(skillBadges({ HasSkillFruit: true }), ["fruit"]);
     assert.deepEqual(skillBadges({ SkillFruit: true }), ["fruit"]);
     assert.deepEqual(skillBadges({ Assignable: false }), ["disabled"]);
+    assert.deepEqual(
+        skillBadges({ Assignable: false, AssignableToHumans: true }, true),
+        [],
+    );
     assert.deepEqual(skillBadges({ Disabled: true }), ["disabled"]);
     assert.deepEqual(
         skillBadges({
@@ -61,6 +66,7 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
             InternalName: "EPalWazaID::Human_Punch",
             Invalid: false,
             Assignable: false,
+            AssignableToHumans: true,
         },
     ];
     const snapshot = structuredClone(skills);
@@ -88,6 +94,10 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
         skills[0],
         skills[3],
     ]);
+    assert.deepEqual(filterSkillOptions(skills, [], true, true), [skills[3]]);
+    assert.equal(isSkillAssignable(skills[0], false), true);
+    assert.equal(isSkillAssignable(skills[0], true), false);
+    assert.equal(isSkillAssignable(skills[3], true), true);
 
     const retainedInvalid = filterSkillOptions(
         skills,
@@ -144,6 +154,7 @@ test("public updatePal blocks non-assignable skill additions before loading or P
             Assignable: false,
         },
     };
+    store.SELECTED_PAL_DATA = { IsHuman: false };
 
     const patchCalls = [];
     const originalPatch = axios.patch;
@@ -169,6 +180,36 @@ test("public updatePal blocks non-assignable skill additions before loading or P
     assert.deepEqual(patchCalls, []);
     assert.equal(store.LOADING_FLAG, false);
     assert.deepEqual(loadingChanges, []);
+});
+
+test("public updatePal allows human-only skills for a selected human", async t => {
+    setActivePinia(createPinia());
+    const store = usePalEditorStore();
+    const humanPunch = "EPalWazaID::Human_Punch";
+    store.ACTIVE_SKILLS = {
+        [humanPunch]: {
+            InternalName: humanPunch,
+            Invalid: false,
+            Assignable: false,
+            AssignableToHumans: true,
+        },
+    };
+    store.SELECTED_PAL_DATA = { IsHuman: true };
+
+    const patchCalls = [];
+    const originalPatch = axios.patch;
+    axios.patch = async (url, payload) => {
+        patchCalls.push([url, payload]);
+        return { data: { status: 0, data: null, msg: null } };
+    };
+    t.after(() => { axios.patch = originalPatch; });
+
+    await store.updatePal({
+        target: { name: "add_MasteredWaza", value: humanPunch },
+    });
+
+    assert.equal(patchCalls.length, 1);
+    assert.equal(patchCalls[0][1].value, humanPunch);
 });
 
 test("public updatePal still sends removals and unrelated updates", async t => {

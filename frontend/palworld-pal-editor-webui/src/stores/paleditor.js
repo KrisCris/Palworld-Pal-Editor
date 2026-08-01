@@ -35,24 +35,31 @@ export const backendErrorDetails = error => {
     return null;
 };
 
-export function skillBadges(skill = {}) {
+export function isSkillAssignable(skill = {}, isHuman = false) {
+    if (skill.Disabled) return false;
+    return isHuman
+        ? skill.AssignableToHumans === true
+        : skill.Assignable !== false;
+}
+
+export function skillBadges(skill = {}, isHuman = false) {
     return [
         skill.NonInheritable && "nonInheritable",
         skill.Exclusive && "exclusive",
         skill.BossSkill && "boss",
         (skill.HasSkillFruit || skill.SkillFruit) && "fruit",
-        (skill.Disabled || skill.Assignable === false) && "disabled",
+        !isSkillAssignable(skill, isHuman) && "disabled",
     ].filter(Boolean);
 }
 
-export function filterSkillOptions(skills, currentIds, hideInvalid) {
+export function filterSkillOptions(skills, currentIds, hideInvalid, isHuman = false) {
     const rows = Array.isArray(skills) ? skills : [];
     if (!hideInvalid) return rows.slice();
 
     const retainedIds = new Set(currentIds ?? []);
     return rows.filter(
         skill => (
-            (!skill?.Invalid && skill?.Assignable !== false)
+            (!skill?.Invalid && isSkillAssignable(skill, isHuman))
             || retainedIds.has(skill?.InternalName)
         ),
     );
@@ -1509,7 +1516,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let value = e.target.value;
         if (
             (key === "add_MasteredWaza" || key === "add_EquipWaza")
-            && ACTIVE_SKILLS.value[value]?.Assignable === false
+            && !isSkillAssignable(
+                ACTIVE_SKILLS.value[value],
+                SELECTED_PAL_DATA.value?.IsHuman,
+            )
         ) {
             showToast("Message_Skill_Not_Assignable");
             return;
@@ -1836,6 +1846,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         genderKey,
         specialTypeKeys,
         filterSkillOptions,
+        isSkillAssignable,
         skillBadges,
         skillBadgeTranslationKey,
 

@@ -36,7 +36,7 @@ test("all Pal edit contracts and validity rules remain available", () => {
   ]) assert.match(source, new RegExp(handler), handler);
 
   assert.match(source, /key != 'EPalWorkSuitability::OilExtraction'/);
-  assert.match(source, /Assignable === false/);
+  assert.match(source, /canAssignActiveSkill/);
   assert.match(source, /elementIconKey/);
   assert.match(source, /skillBadgeLabels/);
   assert.match(source, /canToggleBossVariant/);

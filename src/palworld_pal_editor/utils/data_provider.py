@@ -350,6 +350,10 @@ class DataProvider:
         return PAL_ATTACKS.get(key, {}).get("Assignable", False)
 
     @staticmethod
+    def is_assignable_human_attack(key: str) -> bool:
+        return PAL_ATTACKS.get(key, {}).get("AssignableToHumans", False)
+
+    @staticmethod
     def get_sorted_attacks() -> list[dict]:
         sorted_list = sorted(
             PAL_ATTACKS.values(),

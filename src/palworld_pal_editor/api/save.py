@@ -127,6 +127,9 @@ def get_active_skills():
             "Exclusive": DataProvider.is_exclusive_attack(attack["InternalName"]),
             "BossSkill": DataProvider.is_boss_attack(attack["InternalName"]),
             "Assignable": DataProvider.is_assignable_attack(attack["InternalName"]),
+            "AssignableToHumans": DataProvider.is_assignable_human_attack(
+                attack["InternalName"]
+            ),
             "Power": attack["Power"],
             "Element": attack["Element"],
             "CT": attack["CT"],

@@ -100,6 +100,7 @@ _ENTITY_SCHEMAS = {
             "Exclusive",
             "BossSkill",
             "Assignable",
+            "AssignableToHumans",
             "Invalid",
             "Category",
             "Strength",
@@ -3384,6 +3385,20 @@ def build_active_records(
             if evidence_graph[character_id].variant_tags & {"boss", "tower", "raid"}
         }
         action_user_ids = action_users.get(skill_id.casefold(), set())
+        human_learner_users = {
+            character_id
+            for character_id in learner_users
+            if "human" in evidence_graph[character_id].variant_tags
+        }
+        pal_learner_users = learner_users - human_learner_users
+        human_action_users = {
+            character_id
+            for character_id in action_user_ids
+            if "human" in evidence_graph[character_id].variant_tags
+        }
+        assignable_to_humans = not disabled and bool(
+            human_learner_users or human_action_users
+        )
         boss_action_users = {
             character_id
             for character_id in action_user_ids
@@ -3400,11 +3415,13 @@ def build_active_records(
             invalid = disabled or not complete_i18n or not bool(skill_learners)
             assignable = not invalid
         else:
-            invalid = disabled or not authoritative_name or not usage
+            invalid = disabled or not authoritative_name or not (
+                usage or assignable_to_humans
+            )
             assignable = (
                 not disabled
                 and usage
-                and (bool(skill_learners) or legal_fruit or not non_inheritable)
+                and (bool(pal_learner_users) or legal_fruit or not non_inheritable)
             )
         records[skill_id] = {
             "InternalName": skill_id,
@@ -3424,6 +3441,7 @@ def build_active_records(
             ),
             "BossSkill": boss_skill,
             "Assignable": assignable,
+            "AssignableToHumans": assignable_to_humans,
             "Invalid": invalid,
             "Category": _enum_tail(row.get("Category"), f"{skill_id}.Category"),
             "Strength": _enum_tail(row.get("Strength"), f"{skill_id}.Strength"),
@@ -5183,6 +5201,7 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
             "Exclusive",
             "BossSkill",
             "Assignable",
+            "AssignableToHumans",
             "Invalid",
         ):
             if type(row.get(field)) is not bool:
@@ -5325,6 +5344,7 @@ def _skill_output_semantic_errors(candidate: DomainSnapshot) -> list[str]:
         "SkillFruit",
         "Exclusive",
         "Assignable",
+        "AssignableToHumans",
         "Invalid",
     )
     for skill_id, row in rows.items():
@@ -5368,11 +5388,13 @@ def _skill_output_semantic_errors(candidate: DomainSnapshot) -> list[str]:
             errors.append(f"{prefix}: Disabled skills must be Invalid")
         if disabled and row["Assignable"]:
             errors.append(f"{prefix}: Disabled skills cannot be Assignable")
+        if disabled and row["AssignableToHumans"]:
+            errors.append(f"{prefix}: Disabled skills cannot be human-assignable")
         if legal_fruit and row["Assignable"] != (not disabled):
             errors.append(
                 f"{prefix}: legal-fruit Assignable state is inconsistent with Disabled"
             )
-        if not invalid:
+        if not invalid and not row["AssignableToHumans"]:
             expected_assignable = not disabled and (
                 has_learners or legal_fruit or not non_inheritable
             )
@@ -5518,11 +5540,12 @@ def _known_build_skill_errors(candidate: DomainSnapshot, policy: dict) -> list[s
     elif (
         human.get("Invalid") is not False
         or human.get("Assignable") is not False
+        or human.get("AssignableToHumans") is not True
         or human.get("Exclusive") is not False
     ):
         errors.append(
-            "skills: EPalWazaID::Human_Punch must be valid, nonassignable, "
-            "and nonexclusive"
+            "skills: EPalWazaID::Human_Punch must be valid, human-assignable, "
+            "Pal-nonassignable, and nonexclusive"
         )
     psychokinesis = active.get("EPalWazaID::Psychokinesis")
     if psychokinesis is None:

@@ -208,6 +208,7 @@ def fixture_outputs() -> dict[str, dict[str, bytes]]:
                         "Exclusive": False,
                         "BossSkill": False,
                         "Assignable": True,
+                        "AssignableToHumans": False,
                         "Invalid": False,
                         "Category": "Shot",
                         "Strength": "None",
@@ -7400,6 +7401,52 @@ class SkillDomainTests(unittest.TestCase):
         self.assertTrue(
             any("EPalWazaID::MissingName:en:Name" in item for item in missing)
         )
+
+    def test_human_skill_assignability_uses_actions_and_human_learners(self) -> None:
+        punch = "EPalWazaID::Human_Punch"
+        weapon = "EPalWazaID::Weapon_Use"
+        partner = "EPalWazaID::PartnerOnly"
+        ids = (punch, weapon, partner)
+        names, descriptions = self.active_texts(ids)
+        graph = game_data.CharacterEvidenceGraph(
+            {
+                "ReachableHuman": self.evidence(
+                    "ReachableHuman",
+                    {"human"},
+                    obtainable=True,
+                    actions={punch},
+                ),
+                "HumanTemplate": self.evidence(
+                    "HumanTemplate", {"human"}, obtainable=False
+                ),
+                "OrdinaryPal": self.evidence(
+                    "OrdinaryPal",
+                    {"base"},
+                    obtainable=True,
+                    actions={partner},
+                ),
+            },
+            (),
+        )
+
+        rows, _ = game_data.build_active_records(
+            {skill_id: self.waza(skill_id) for skill_id in ids},
+            {
+                "1": {"PalId": "HumanTemplate", "WazaID": weapon, "Level": 1}
+            },
+            {},
+            names,
+            descriptions,
+            graph,
+        )
+
+        self.assertTrue(rows[punch]["AssignableToHumans"])
+        self.assertTrue(rows[weapon]["AssignableToHumans"])
+        self.assertFalse(rows[partner]["AssignableToHumans"])
+        self.assertFalse(rows[punch]["Assignable"])
+        self.assertFalse(rows[weapon]["Assignable"])
+        self.assertFalse(rows[punch]["Invalid"])
+        self.assertFalse(rows[weapon]["Invalid"])
 
     def test_boss_skill_uses_exact_core_flags_not_scenario_or_predator(self) -> None:
         ids = (
