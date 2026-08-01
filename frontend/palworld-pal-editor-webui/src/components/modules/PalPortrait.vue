@@ -6,16 +6,18 @@ const props = defineProps({
   alt: { type: String, default: '' },
   size: { type: String, default: '2.5rem' },
   borderColor: { type: String, default: 'var(--editor-color-border)' },
+  glowColor: { type: String, default: '' },
 })
 
 const style = computed(() => ({
   '--pal-portrait-size': props.size,
   '--pal-portrait-border': props.borderColor,
+  ...(props.glowColor ? { '--pal-portrait-glow': props.glowColor } : {}),
 }))
 </script>
 
 <template>
-  <span class="pal-portrait" :style="style">
+  <span :class="['pal-portrait', { 'has-glow': glowColor }]" :style="style">
     <img class="pal-portrait__image" :src="src" :alt="alt">
     <span class="pal-portrait__marker pal-portrait__marker--top-left" aria-hidden="true"><slot name="top-left" /></span>
     <span class="pal-portrait__marker pal-portrait__marker--top-right" aria-hidden="true"><slot name="top-right" /></span>
@@ -43,10 +45,15 @@ const style = computed(() => ({
   background: var(--editor-color-surface-subtle);
 }
 
+.has-glow .pal-portrait__image {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--pal-portrait-glow) 45%, transparent),
+    0 0 .9rem color-mix(in srgb, var(--pal-portrait-glow) 70%, transparent);
+}
+
 .pal-portrait__marker {
   position: absolute;
-  width: .9rem;
-  height: .9rem;
+  width: clamp(.9rem, 36%, 2rem);
+  height: clamp(.9rem, 36%, 2rem);
   transform: translate(-25%, -25%);
 }
 

@@ -65,7 +65,9 @@ function palMetadata(pal) {
   return paldeck ? `PAL ${paldeck} · ${id}` : id
 }
 
-const portraitBorder = pal => pal.IsBOSS
+const portraitBorder = pal => pal.IsAwakening
+  ? 'var(--editor-color-awakened)'
+  : pal.IsBOSS
   ? 'var(--editor-color-danger)'
   : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
 
@@ -103,7 +105,8 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
         :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
         :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
-          :border-color="portraitBorder(pal)">
+          :border-color="portraitBorder(pal)"
+          :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
             <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">

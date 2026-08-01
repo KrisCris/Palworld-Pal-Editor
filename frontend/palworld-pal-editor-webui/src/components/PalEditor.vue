@@ -87,7 +87,9 @@ const skillBadgeLabels = skill => palStore.skillBadges(skill)
   .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge)))
   .join(' · ');
 
-const portraitBorder = pal => pal.IsBOSS
+const portraitBorder = pal => pal.IsAwakening
+  ? 'var(--editor-color-awakened)'
+  : pal.IsBOSS
   ? 'var(--editor-color-danger)'
   : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
 
@@ -102,7 +104,8 @@ const portraitBorder = pal => pal.IsBOSS
       <header class="editor-summary">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`)"
           :alt="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKeyOG"
-          size="5.5rem" :border-color="portraitBorder(palStore.SELECTED_PAL_DATA)">
+          size="5.5rem" :border-color="portraitBorder(palStore.SELECTED_PAL_DATA)"
+          :glow-color="palStore.SELECTED_PAL_DATA.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
             <img v-if="palStore.SELECTED_PAL_DATA.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-else-if="palStore.SELECTED_PAL_DATA.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
