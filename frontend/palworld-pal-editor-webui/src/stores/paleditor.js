@@ -512,6 +512,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
     const SKIN_DATA_LIST = ref([]);
+    const PAL_TEMPLATES = ref([]);
     const I18nList = ref(GAME_LANGUAGES);
 
     // flags
@@ -794,6 +795,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             ? rememberBackend(localStorage, origin)
             : readRecentBackends(localStorage);
         if (changed) {
+            PAL_TEMPLATES.value = [];
             auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
             PAL_GAME_SAVE_PATH.value = readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
             PAL_FILE_PICKER_PATH.value = PAL_GAME_SAVE_PATH.value;
@@ -1122,6 +1124,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PLAYER_MAP.value = new Map();
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
+        PAL_TEMPLATES.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
         SHOW_UNREF_PAL_FLAG.value = false;
@@ -1667,7 +1670,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function addPal() {
+    async function addPal(options = {}) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
@@ -1678,9 +1681,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         const response = await POST("/api/pal/add_pal", {
             PlayerUId: PlayerUId,
+            ...options,
         });
 
-        if (response === false) return;
+        if (response === false) {
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return false;
+        }
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
@@ -1694,6 +1701,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.InstanceId;
             SELECTED_PAL_DATA.value = pal_data;
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return true;
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
         } else {
@@ -1701,6 +1710,49 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return false;
+    }
+
+    async function fetchPalTemplates() {
+        const response = await GET("/api/pal/templates");
+        if (response === false) return false;
+        if (response.status == 0) {
+            PAL_TEMPLATES.value = response.data || [];
+            return true;
+        }
+        reportOperationError("Operation_Load_Pal_Templates", response);
+        return false;
+    }
+
+    async function savePalTemplate(name) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST("/api/pal/templates", {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            await fetchPalTemplates();
+            showToast("Message_Pal_Template_Saved", "success");
+            return true;
+        }
+        reportOperationError("Operation_Save_Pal_Template", response);
+        return false;
+    }
+
+    async function deletePalTemplate(templateId) {
+        const response = await DELETE(`/api/pal/templates/${templateId}`);
+        if (response === false) return false;
+        if (response.status == 0) {
+            PAL_TEMPLATES.value = PAL_TEMPLATES.value.filter(
+                template => template.Id != templateId
+            );
+            showToast("Message_Pal_Template_Deleted", "success");
+            return true;
+        }
+        reportOperationError("Operation_Delete_Pal_Template", response);
+        return false;
     }
 
     async function dupePal() {
@@ -1835,6 +1887,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         ACTIVE_SKILLS,
         ACTIVE_SKILLS_LIST,
         TECH_LV_DICT,
+        PAL_TEMPLATES,
 
         getTranslatedText,
         getMessageText,
@@ -1864,6 +1917,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         delPal,
         addPal,
         dupePal,
+        fetchPalTemplates,
+        savePalTemplate,
+        deletePalTemplate,
 
         bootstrap,
         connectBackend,

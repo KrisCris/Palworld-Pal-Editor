@@ -1,14 +1,57 @@
-import copy
-from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+import json
 import traceback
+import uuid
 
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required
+
+from palworld_pal_editor.config import Config
+from palworld_pal_editor.core import PalEntity, SaveManager
+from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
-from palworld_pal_editor.core import SaveManager, PalEntity
-from palworld_pal_editor.utils import DataProvider, LOGGER
-
 pal_blueprint = Blueprint("pal", __name__)
+
+MAX_PAL_TEMPLATE_COUNT = 50
+MAX_PAL_TEMPLATE_NAME_LENGTH = 64
+MAX_PAL_JSON_BYTES = 2 * 1024 * 1024
+
+
+def _pal_templates() -> list[dict]:
+    if not isinstance(Config.palTemplates, list):
+        Config.palTemplates = []
+    return Config.palTemplates
+
+
+def _parse_pal_json(raw: str) -> dict:
+    if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_PAL_JSON_BYTES:
+        raise ValueError("Pal JSON must be text smaller than 2 MiB.")
+    pal_obj = json.loads(raw)
+    if not isinstance(pal_obj, dict):
+        raise TypeError("Pal JSON must contain one Pal object.")
+    PalEntity(pal_obj)
+    return pal_obj
+
+
+def _template_summary(template: dict) -> dict:
+    pal = PalEntity(_parse_pal_json(template["PalData"]))
+    return {
+        "Id": template["Id"],
+        "Name": template["Name"],
+        "CharacterID": pal.CharacterID,
+        "DisplayName": pal.DisplayName,
+        "IconAccessKey": pal.IconAccessKey,
+        "Level": pal.Level or 1,
+        "Rank": pal.Rank or 1,
+        "IsAwakening": pal.IsAwakening,
+        "Talent_HP": pal.Talent_HP or 0,
+        "Talent_Shot": pal.Talent_Shot or 0,
+        "Talent_Defense": pal.Talent_Defense or 0,
+        "PassiveSkillList": pal.PassiveSkillList or [],
+        "EquipWaza": pal.EquipWaza or [],
+        "MasteredWaza": pal.MasteredWaza or [],
+        "Suitabilities": pal.WorkSuitabilities or {},
+    }
 
 
 # Update Pal Data
@@ -229,26 +272,108 @@ def delete_pal(pal_id):
 @pal_blueprint.route("/add_pal", methods=["POST"])
 @jwt_required()
 def add_pal():
-    PlayerUId = request.json.get("PlayerUId")
+    payload = request.json or {}
+    PlayerUId = payload.get("PlayerUId")
     if PlayerUId == "PAL_BASE_WORKER_BTN":
         LOGGER.warning("Directly add pal to basecamp is not yet supported.")
         return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
-    else:
-        try:
-            pal_entity = SaveManager().add_pal(PlayerUId)
-            if not pal_entity:
-                return reply(
-                    1,
-                    None,
-                    f"Failed adding pal, likely your pal containers are full, check logs for detail.",
-                )
-        except:
+    try:
+        mode = payload.get("Mode", "default")
+        pal_obj = None
+        if mode == "json":
+            pal_obj = _parse_pal_json(payload.get("PalJson"))
+        elif mode == "template":
+            template_id = payload.get("TemplateId")
+            template = next(
+                (item for item in _pal_templates() if item.get("Id") == template_id),
+                None,
+            )
+            if template is None:
+                return reply(1, None, "Pal template not found.")
+            pal_obj = _parse_pal_json(template.get("PalData"))
+        elif mode != "default":
+            return reply(1, None, "Unsupported Pal creation mode.")
+
+        pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
+        if not pal_entity:
             return reply(
                 1,
                 None,
-                f"Error happened during adding pal, check logs for detail. {traceback.format_exc()}",
+                "Failed adding Pal. Its containers may be full; check the logs for details.",
             )
+    except (TypeError, ValueError, json.JSONDecodeError, KeyError):
+        return reply(1, None, f"Invalid Pal data. {traceback.format_exc()}")
+    except Exception:
+        LOGGER.error(f"Error adding Pal: {traceback.format_exc()}")
+        return reply(1, None, "Error adding Pal. Check the logs for details.")
     return reply(0, _pal_data(pal_entity))
+
+
+@pal_blueprint.route("/templates", methods=["GET"])
+@jwt_required()
+def list_pal_templates():
+    templates = []
+    for template in _pal_templates():
+        try:
+            templates.append(_template_summary(template))
+        except (TypeError, ValueError, json.JSONDecodeError, KeyError):
+            template_id = template.get("Id") if isinstance(template, dict) else None
+            LOGGER.warning(f"Ignoring invalid Pal template {template_id}")
+    return reply(0, templates)
+
+
+@pal_blueprint.route("/templates", methods=["POST"])
+@jwt_required()
+def create_pal_template():
+    payload = request.json or {}
+    name = payload.get("Name")
+    if not isinstance(name, str) or not (name := name.strip()):
+        return reply(1, None, "Template name is required.")
+    if len(name) > MAX_PAL_TEMPLATE_NAME_LENGTH:
+        return reply(1, None, "Template name must be 64 characters or fewer.")
+    if len(_pal_templates()) >= MAX_PAL_TEMPLATE_COUNT:
+        return reply(1, None, "At most 50 Pal templates can be saved.")
+
+    player = SaveManager().get_player(payload.get("PlayerUId"))
+    pal = player.get_pal(payload.get("PalGuid")) if player else None
+    if pal is None:
+        return reply(1, None, "Selected Pal not found.")
+
+    template = {
+        "Id": uuid.uuid4().hex,
+        "Name": name,
+        "PalData": pal.dump_obj(),
+    }
+    try:
+        summary = _template_summary(template)
+    except (TypeError, ValueError, json.JSONDecodeError, KeyError):
+        return reply(1, None, "Selected Pal data cannot be saved as a template.")
+
+    templates = _pal_templates()
+    templates.append(template)
+    try:
+        Config.save_to_file()
+    except Exception:
+        templates.remove(template)
+        raise
+    return reply(0, summary)
+
+
+@pal_blueprint.route("/templates/<template_id>", methods=["DELETE"])
+@jwt_required()
+def delete_pal_template(template_id: str):
+    templates = _pal_templates()
+    template = next((item for item in templates if item.get("Id") == template_id), None)
+    if template is None:
+        return reply(1, None, "Pal template not found.")
+    index = templates.index(template)
+    templates.pop(index)
+    try:
+        Config.save_to_file()
+    except Exception:
+        templates.insert(index, template)
+        raise
+    return reply(0)
 
 
 @pal_blueprint.route("/dupe_pal", methods=["POST"])

@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, onMounted, ref, watch } from 'vue'
 
+import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
@@ -11,6 +12,7 @@ const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
 const palListContainer = ref(null)
+const showAddPalDialog = ref(false)
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
   await nextTick()
@@ -89,7 +91,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
       <div class="roster-actions">
         <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
           :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
-          :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">
+          :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
           <UiIcon name="plus" />
         </button>
       </div>
@@ -130,6 +132,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
         </span>
       </button>
     </div>
+    <AddPalDialog v-if="showAddPalDialog" @close="showAddPalDialog = false" />
   </nav>
 </template>
 

@@ -16,7 +16,9 @@ export const loadVueModule = path => server.ssrLoadModule(path);
 export async function renderVue(component, { pinia, props = {}, slots = {} } = {}) {
   const app = createSSRApp({ render: () => h(component, props, slots) });
   if (pinia) app.use(pinia);
-  return renderToString(app);
+  const context = {};
+  const html = await renderToString(app, context);
+  return html + Object.values(context.teleports ?? {}).join("");
 }
 
 export const closeVueServer = () => server.close();
