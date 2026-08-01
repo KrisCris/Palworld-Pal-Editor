@@ -55,10 +55,13 @@ test("variant controls expose Alpha and Lucky actions with their game markers", 
   const alpha = button(html, "IsBOSS");
   const lucky = button(html, "IsRarePal");
 
-  assert.match(alpha.attributes, /class="[^"]*editor-button--danger/);
+  assert.match(alpha.attributes, /class="[^"]*editor-button--secondary[^"]*is-active/);
+  assert.match(alpha.attributes, /aria-pressed="true"/);
   assert.match(alpha.attributes, /aria-label="Toggle Alpha status"/);
   assert.match(alpha.content, /<img\b[^>]*src="\/image\/ui\/boss"[^>]*alt=""/);
   assert.doesNotMatch(alpha.content, /#crown/);
   assert.match(lucky.attributes, /aria-label="Toggle Lucky status"/);
+  assert.match(lucky.attributes, /class="[^"]*editor-button--secondary[^"]*is-active/);
+  assert.match(lucky.attributes, /aria-pressed="true"/);
   assert.match(lucky.content, /<img\b[^>]*src="\/image\/ui\/rare"[^>]*alt=""/);
 });

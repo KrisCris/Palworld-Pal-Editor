@@ -213,14 +213,16 @@ const portraitBorder = pal => pal.IsBOSS
               {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') || '-' }}
             </span>
             <div class="editor-field__actions">
-              <button class="editor-button editor-button--danger editor-button--icon"
+              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsBOSS }]"
                 @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.IsBOSS"
                 v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
                 :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
-              <button class="editor-button editor-button--secondary editor-button--icon"
+              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsRarePal }]"
                 @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.IsRarePal"
                 v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
                 :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
             </div>
@@ -621,6 +623,11 @@ const portraitBorder = pal => pal.IsBOSS
   height: 1.25rem;
   flex: 0 0 auto;
   object-fit: contain;
+}
+
+.editor-button--variant.is-active {
+  border-color: var(--editor-color-primary);
+  background: color-mix(in srgb, var(--editor-color-primary) 24%, var(--editor-color-surface-raised));
 }
 
 .passive-tier {
