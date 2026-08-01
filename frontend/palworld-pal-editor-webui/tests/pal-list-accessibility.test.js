@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test, { after } from "node:test";
 
 import { createPinia, setActivePinia } from "pinia";
@@ -72,4 +73,10 @@ test("Pal row status phrases are translated in all UI locales", () => {
   for (const [locale, values] of expected) {
     keys.forEach((key, index) => assert.equal(locale[`PalList_Status_${key}`], values[index]));
   }
+});
+
+test("Pal reselection scrolls only as far as needed inside the roster", async () => {
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /scrollIntoView\(\{ behavior: 'smooth', block: 'nearest' \}\)/);
+  assert.doesNotMatch(source, /isElementInViewport/);
 });

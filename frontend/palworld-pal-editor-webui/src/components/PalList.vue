@@ -25,7 +25,7 @@ watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
   await nextTick()
   try {
     const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
-    if (button && !palStore.isElementInViewport(button)) button.scrollIntoView({ behavior: 'smooth' })
+    button?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } catch (error) {
     return
   }
@@ -40,7 +40,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
       if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
         palStore.selectPal(palStore.SELECTED_PAL_ID, true)
       }
-      if (!palStore.isElementInViewport(button)) button.scrollIntoView({ behavior: 'smooth' })
+      button.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   } catch (error) {
     return

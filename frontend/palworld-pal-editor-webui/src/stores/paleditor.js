@@ -1488,18 +1488,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    function isElementInViewport(el) {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <=
-                (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <=
-                (window.innerWidth || document.documentElement.clientWidth)
-        );
-    }
-
     async function updatePal(e) {
         // sometimes we manually construct a "e" target in a very hacked way
         let key = e.target.name;
@@ -1825,7 +1813,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         getTranslatedText,
         getMessageText,
 
-        isElementInViewport,
         isFilteredPal,
 
         elementIconKey,
