@@ -116,6 +116,9 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
           <template #top-right>
             <img v-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
+          <template #bottom-right>
+            <span v-if="pal.IsNewPal" class="new-pal-marker"><UiIcon name="plus" /></span>
+          </template>
         </PalPortrait>
         <span class="pal-copy">
           <strong class="pal-name">
@@ -123,6 +126,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
           </strong>
           <small>{{ palMetadata(pal) }}</small>
           <span class="sr-only">{{ palStatus(pal) }}</span>
+          <span v-if="pal.IsNewPal" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
         </span>
       </button>
     </div>
@@ -228,6 +232,18 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 .pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
 .pal-row[aria-current="true"] small { color: var(--editor-color-muted); }
+
+.new-pal-marker {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 1px solid var(--editor-color-background);
+  border-radius: 50%;
+  color: var(--editor-color-background);
+  background: var(--editor-color-primary);
+  font-size: .7rem;
+}
 
 .pal-copy {
   display: grid;

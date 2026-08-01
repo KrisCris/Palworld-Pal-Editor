@@ -151,6 +151,14 @@ class PalIdentityTests(unittest.TestCase):
         self.assertEqual(str(owner_id), payload["OwnerName"])
         json.dumps(payload)
 
+    def test_api_marks_new_pals_until_the_save_is_written(self):
+        pal = self.make_pal("SheepBall")
+        pal.is_new_pal = True
+
+        payload = _pal_data(pal)
+
+        self.assertTrue(payload["IsNewPal"])
+
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
             with self.subTest(character_id=character_id):

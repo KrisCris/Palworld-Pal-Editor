@@ -242,6 +242,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.HasWorkerSick = obj.HasWorkerSick;
             this.IsFaintedPal = obj.IsFaintedPal;
             this.Is_Unref_Pal = obj.Is_Unref_Pal;
+            this.IsNewPal = obj.IsNewPal;
             this.in_owner_palbox = obj.in_owner_palbox;
 
             this.IsHuman = obj.IsHuman;

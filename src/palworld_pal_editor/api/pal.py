@@ -160,6 +160,7 @@ def _pal_data(pal: PalEntity):
         "HasWorkerSick": pal.HasWorkerSick,
         "IsFaintedPal": pal.IsFaintedPal,
         "Is_Unref_Pal": pal.is_unreferenced_pal,
+        "IsNewPal": pal.is_new_pal,
         "in_owner_palbox": pal.in_owner_palbox,
         "IsHuman": pal.IsHuman,
         "IsBOSS": pal.IsBOSS or False,

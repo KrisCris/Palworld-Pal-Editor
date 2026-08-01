@@ -203,6 +203,7 @@ export default {
     PalList_Status_Alpha: "状态：头目",
     PalList_Status_Lucky: "状态：稀有",
     PalList_Status_AlphaLucky: "状态：头目且稀有",
+    PalList_Status_Unsaved: "未保存的新帕鲁",
 
     PlayerList_Text: "玩家列表",
     PlayerList_Unknown: "未命名玩家",

@@ -19,7 +19,7 @@ globalThis.localStorage = {
 after(closeVueServer);
 
 const pals = [
-  { InstanceId: "ordinary", DisplayName: "Ordinary Pal" },
+  { InstanceId: "ordinary", DisplayName: "Ordinary Pal", IsNewPal: true },
   { InstanceId: "alpha", DisplayName: "Alpha Pal", IsBOSS: true },
   { InstanceId: "lucky", DisplayName: "Lucky Pal", IsRarePal: true },
   { InstanceId: "both", DisplayName: "Alpha Lucky Pal", IsBOSS: true, IsRarePal: true },
@@ -60,6 +60,9 @@ test("Pal rows render translated accessible status text for every Alpha and Luck
     assert.match(content, new RegExp(`<span class="sr-only"[^>]*>${status}<\\/span>`));
     assert.doesNotMatch(content, /<(?:img|span class="pal-portrait__marker")[^>]*(?:alt="[^"]+"|aria-hidden="false")/);
   }
+  assert.match(row(html, "ordinary"), /class="new-pal-marker"/);
+  assert.match(row(html, "ordinary"), /New, unsaved Pal/);
+  assert.doesNotMatch(row(html, "alpha"), /class="new-pal-marker"|New, unsaved Pal/);
 });
 
 test("Pal row status phrases are translated in all UI locales", () => {
@@ -73,6 +76,11 @@ test("Pal row status phrases are translated in all UI locales", () => {
   for (const [locale, values] of expected) {
     keys.forEach((key, index) => assert.equal(locale[`PalList_Status_${key}`], values[index]));
   }
+
+  assert.equal(en.PalList_Status_Unsaved, "New, unsaved Pal");
+  assert.equal(fr.PalList_Status_Unsaved, "Nouveau Pal non enregistré");
+  assert.equal(ja.PalList_Status_Unsaved, "未保存の新しいパル");
+  assert.equal(zhCN.PalList_Status_Unsaved, "未保存的新帕鲁");
 });
 
 test("Pal reselection scrolls only as far as needed inside the roster", async () => {

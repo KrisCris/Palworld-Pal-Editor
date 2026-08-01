@@ -204,6 +204,7 @@ export default {
     PalList_Status_Alpha: "状態：ボス",
     PalList_Status_Lucky: "状態：希少",
     PalList_Status_AlphaLucky: "状態：ボス・希少",
+    PalList_Status_Unsaved: "未保存の新しいパル",
 
     PlayerList_Text: "プレイヤーリスト",
     PlayerList_Unknown: "名前のないプレイヤー",

@@ -203,6 +203,7 @@ export default {
     PalList_Status_Alpha: "Status: Alpha",
     PalList_Status_Lucky: "Status: Lucky",
     PalList_Status_AlphaLucky: "Status: Alpha and Lucky",
+    PalList_Status_Unsaved: "New, unsaved Pal",
 
     PlayerList_Text: "PLAYER LIST",
     PlayerList_Unknown: "Unnamed player",

@@ -203,6 +203,7 @@ export default {
     PalList_Status_Alpha: "Statut : Alpha",
     PalList_Status_Lucky: "Statut : Chanceux",
     PalList_Status_AlphaLucky: "Statut : Alpha et Chanceux",
+    PalList_Status_Unsaved: "Nouveau Pal non enregistré",
 
     PlayerList_Text: "LISTE DES JOUEURS",
     PlayerList_Unknown: "Joueur sans nom",
