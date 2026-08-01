@@ -186,6 +186,7 @@ export default {
     Editor_Tech_Invalid: "無効",
 
     Editor_Suitabilities: "作業適性",
+    Editor_Suitabilities_Max: "すべて最大",
 
     Editor_Btn_Export_Data: "データをダンプ",
     Editor_Btn_Dupe_Pal: "パルを複製",

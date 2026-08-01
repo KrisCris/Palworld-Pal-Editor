@@ -386,7 +386,14 @@ const portraitBorder = pal => pal.IsAwakening
 
     <section class="pal-panel editor-surface"
       v-if="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKey]?.Suitabilities">
-      <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
+      <div class="pal-panel__header">
+        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
+        <button class="editor-button editor-button--primary" type="button"
+          @click="palStore.SELECTED_PAL_DATA.maxSuitabilities"
+          :disabled="palStore.LOADING_FLAG">
+          <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Suitabilities_Max") }}
+        </button>
+      </div>
       <div class="suitability-grid">
         <div class="suitability-control" v-for="(value, key) in palStore.SELECTED_PAL_DATA.Suitabilities" :key="key"
           v-show="palStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
@@ -668,6 +675,20 @@ const portraitBorder = pal => pal.IsAwakening
   padding-bottom: var(--editor-space-2);
   border-bottom: 1px solid var(--editor-color-border);
   font-size: 1rem;
+}
+
+.pal-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--editor-space-3);
+  padding-bottom: var(--editor-space-2);
+  border-bottom: 1px solid var(--editor-color-border);
+}
+
+.pal-panel__header .pal-panel__heading {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 .range-grid,

@@ -185,6 +185,7 @@ export default {
     Editor_Tech_Invalid: "Invalid",
 
     Editor_Suitabilities: "Work Suitability",
+    Editor_Suitabilities_Max: "Max all",
 
     Editor_Btn_Export_Data: "Dump Data",
     Editor_Btn_Dupe_Pal: "Dupe Pal",

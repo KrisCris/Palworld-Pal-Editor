@@ -185,6 +185,7 @@ export default {
     Editor_Tech_Invalid: "无效",
 
     Editor_Suitabilities: "工作适应性",
+    Editor_Suitabilities_Max: "全部最大",
 
     Editor_Btn_Export_Data: "导出数据",
     Editor_Btn_Dupe_Pal: "复制帕鲁",

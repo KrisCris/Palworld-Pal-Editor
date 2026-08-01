@@ -120,6 +120,7 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Editor_Btn_Level_Max",
         "Editor_Btn_Toggle_Boss",
         "Editor_Btn_Toggle_Rare",
+        "Editor_Suitabilities_Max",
     ];
     const keys = [
         "App_Connecting",

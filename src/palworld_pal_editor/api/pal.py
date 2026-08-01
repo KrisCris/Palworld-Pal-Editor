@@ -34,6 +34,16 @@ def patch_paldata():
                 pal_entity.heal_pal()
             case "set_Suitability":
                 pal_entity.set_WorkSuitability(value.get("name"), value.get("level"))
+            case "set_Suitabilities":
+                if not isinstance(value, dict) or any(
+                    not isinstance(name, str)
+                    or not isinstance(level, int)
+                    or isinstance(level, bool)
+                    for name, level in value.items()
+                ):
+                    return reply(1, None, "Invalid work suitability values.")
+                for name, level in value.items():
+                    pal_entity.set_WorkSuitability(name, level)
             case "pop_PassiveSkillList":
                 pal_entity.pop_PassiveSkillList(item=value)
             case "pop_MasteredWaza":

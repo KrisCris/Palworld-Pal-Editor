@@ -62,6 +62,12 @@ export const canToggleBossVariant = pal => Boolean(
     pal?.HasBaseVariant && pal?.HasBossVariant,
 );
 
+export const maximumSuitabilities = (minimums, max) => Object.fromEntries(
+    Object.entries(minimums ?? {})
+        .filter(([, level]) => level > 0)
+        .map(([name]) => [name, max]),
+);
+
 export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
     const target = selectedPal?.FamilyID
         || selectedPal?.DataAccessKeyOG
@@ -467,6 +473,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     value: { name: name, level: value },
                 },
             });
+        }
+
+        maxSuitabilities() {
+            const values = maximumSuitabilities(
+                this.SuitabilityMinimums,
+                MAX_SUITABILITY_LEVEL,
+            );
+            if (!Object.keys(values).length) return;
+            updatePal({ target: { name: "set_Suitabilities", value: values } });
         }
 
         changeSpecie(characterId = this.SelectionKey) {

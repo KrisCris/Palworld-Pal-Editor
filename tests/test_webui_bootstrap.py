@@ -75,6 +75,37 @@ def test_heal_all_pals_does_not_require_a_selected_player(monkeypatch):
     assert healed == [True]
 
 
+def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch):
+    configure_app(monkeypatch)
+    updates = []
+
+    class Pal:
+        def set_WorkSuitability(self, name, level):
+            updates.append((name, level))
+
+    class Player:
+        def get_pal(self, _pal_id):
+            return Pal()
+
+    monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: Player())
+
+    with app.test_client() as client:
+        token = login(client)
+        response = client.patch(
+            "/api/pal/paldata",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "PlayerUId": "player",
+                "PalGuid": "pal",
+                "key": "set_Suitabilities",
+                "value": {"Handcraft": 5, "Mining": 5},
+            },
+        )
+
+    assert response.get_json()["status"] == 0
+    assert updates == [("Handcraft", 5), ("Mining", 5)]
+
+
 def test_uncaught_api_error_returns_exception_details(monkeypatch):
     configure_app(monkeypatch)
     monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: None)

@@ -185,6 +185,7 @@ export default {
     Editor_Tech_Invalid: "Invalide",
 
     Editor_Suitabilities: "Capacités de travail",
+    Editor_Suitabilities_Max: "Tout maximiser",
 
     Editor_Btn_Export_Data: "Exporter les données",
     Editor_Btn_Dupe_Pal: "Dupliquer Pal",
