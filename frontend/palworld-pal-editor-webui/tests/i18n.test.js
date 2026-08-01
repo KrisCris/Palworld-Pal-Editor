@@ -43,6 +43,25 @@ test("variant action labels use the same Alpha and Lucky semantics", () => {
     assert.equal(zhCN.Editor_Btn_Toggle_Rare, "切换稀有状态");
 });
 
+test("Pal upgrade section titles match the game UI terminology", () => {
+    assert.deepEqual(
+        [en.Editor_IV, en.Editor_Souls_Upgrade, en.Editor_Condenser],
+        ["Potential", "Enhance Pals", "Pal Condensation"],
+    );
+    assert.deepEqual(
+        [fr.Editor_IV, fr.Editor_Souls_Upgrade, fr.Editor_Condenser],
+        ["Potentiel", "Améliorer un Pal", "Enrichissement de Pal"],
+    );
+    assert.deepEqual(
+        [ja.Editor_IV, ja.Editor_Souls_Upgrade, ja.Editor_Condenser],
+        ["ポテンシャル", "パル強化", "パル濃縮"],
+    );
+    assert.deepEqual(
+        [zhCN.Editor_IV, zhCN.Editor_Souls_Upgrade, zhCN.Editor_Condenser],
+        ["潜力", "强化帕鲁", "帕鲁浓缩"],
+    );
+});
+
 test("startup translations are available synchronously without the backend", () => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
