@@ -9,6 +9,7 @@ import AuthView from '@/views/AuthView.vue'
 import BackendErrorView from '@/views/BackendErrorView.vue'
 import EditorView from '@/views/EditorView.vue'
 import EntryView from '@/views/EntryView.vue'
+import uiIconSprite from '@/assets/ui-icons.svg?raw'
 
 const palStore = usePalEditorStore()
 const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
@@ -31,6 +32,7 @@ onMounted(palStore.bootstrap)
 </script>
 
 <template>
+  <div class="ui-icon-sprite" aria-hidden="true" v-html="uiIconSprite"></div>
   <div
     :class="['app-content', { obscured: blockingOverlay }]"
     :inert="blockingOverlay || undefined"
@@ -75,6 +77,13 @@ onMounted(palStore.bootstrap)
 </template>
 
 <style scoped>
+.ui-icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .app-content {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
