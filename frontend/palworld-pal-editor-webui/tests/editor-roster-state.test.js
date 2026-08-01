@@ -16,7 +16,7 @@ function setStorage(value) {
 }
 
 test("roster collapse state reads and persists each key independently", async () => {
-  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/views/EditorView.vue");
+  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/App.vue");
   assert.equal(typeof readRosterCollapsed, "function");
   assert.equal(typeof persistRosterCollapsed, "function");
 
@@ -38,7 +38,7 @@ test("roster collapse state reads and persists each key independently", async ()
 });
 
 test("missing global storage falls back through the production call boundary", async () => {
-  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/views/EditorView.vue");
+  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/App.vue");
   assert.equal(typeof readRosterCollapsed, "function");
   assert.equal(typeof persistRosterCollapsed, "function");
   delete globalThis.localStorage;
@@ -48,7 +48,7 @@ test("missing global storage falls back through the production call boundary", a
 });
 
 test("a throwing global storage getter is resolved inside the helper guard", async () => {
-  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/views/EditorView.vue");
+  const { readRosterCollapsed, persistRosterCollapsed } = await loadVueModule("/src/App.vue");
   let accesses = 0;
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,

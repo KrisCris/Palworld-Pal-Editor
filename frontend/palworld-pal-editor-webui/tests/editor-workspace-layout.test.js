@@ -32,21 +32,46 @@ test("editor workspace uses bounded three-column rails and a scrolling canvas", 
 });
 
 test("editor workspace owns independently persisted roster collapse state", async () => {
-    const [view, players, pals] = await Promise.all([
+    const [app, view, topbar, players, pals] = await Promise.all([
+        read("../src/App.vue"),
         read("../src/views/EditorView.vue"),
+        read("../src/components/TopBar.vue"),
         read("../src/components/PlayerList.vue"),
         read("../src/components/PalList.vue"),
     ]);
-    assert.match(view, /editor\.playersCollapsed/);
-    assert.match(view, /editor\.palsCollapsed/);
-    assert.match(view, /@collapse="playersCollapsed = true"/);
-    assert.match(view, /@collapse="palsCollapsed = true"/);
-    assert.match(view, /editor-roster-launchers/);
-    assert.match(players, /defineEmits\(\['collapse'\]\)/);
-    assert.match(pals, /defineEmits\(\['collapse'\]\)/);
+    assert.match(app, /editor\.playersCollapsed/);
+    assert.match(app, /editor\.palsCollapsed/);
+    assert.match(app, /<TopBar[^>]*:players-collapsed="playersCollapsed"[^>]*:pals-collapsed="palsCollapsed"/s);
+    assert.match(app, /<EditorView[^>]*:players-collapsed="playersCollapsed"[^>]*:pals-collapsed="palsCollapsed"/s);
+    assert.match(view, /defineProps\(\{[\s\S]*playersCollapsed:[\s\S]*palsCollapsed:/);
+    assert.match(view, /@toggle="emit\('collapsePlayers'\)"/);
+    assert.match(view, /@toggle="emit\('collapsePals'\)"/);
+    assert.match(topbar, /class="editor-roster-dock"/);
+    assert.match(topbar, /class="editor-roster-preview/);
+    assert.match(topbar, /@click="emit\('restorePlayers'\)"/);
+    assert.match(topbar, /@click="emit\('restorePals'\)"/);
+    assert.match(topbar, /\.editor-roster-dock:hover\s+\.editor-roster-preview/);
+    assert.match(topbar, /\.editor-roster-preview:hover/);
+    assert.match(topbar, /@keyframes roster-dock-in/);
+    assert.match(topbar, /\.editor-roster-pill\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)/s);
+    assert.match(topbar, /\.editor-roster-pill:hover\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)/s);
+    assert.match(topbar, /\.editor-roster-dock::after\s*\{[^}]*top:\s*100%[^}]*height:\s*var\(--editor-space-2\)/s);
+    assert.match(topbar, /class="editor-context-actions"/);
+    assert.match(topbar, /\.editor-context-actions\s*\{[^}]*margin-left:\s*auto/s);
+    assert.match(topbar, /\.editor-roster-preview\s*\{[^}]*visibility:\s*hidden[^}]*opacity:\s*0[^}]*border:\s*1px solid var\(--editor-color-glass-border\)/s);
+    assert.doesNotMatch(topbar, /\.editor-roster-preview\s*\{[^}]*display:\s*none/s);
+    assert.doesNotMatch(view, /editor-roster-launchers|editor-roster-launcher/);
+    assert.match(players, /defineEmits\(\['toggle'\]\)/);
+    assert.match(pals, /defineEmits\(\['toggle'\]\)/);
+    assert.match(players, /class="roster-title-button"[\s\S]*@click="emit\('toggle'\)"/);
+    assert.match(pals, /class="roster-title-button"[\s\S]*@click="emit\('toggle'\)"/);
     assert.match(players, /PlayerList_Collapse/);
     assert.match(pals, /PalList_Collapse/);
-    assert.match(view, /\.editor-roster-launcher:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--editor-color-focus\)/s);
+    assert.match(players, /preview \? 'PlayerList_Restore' : 'PlayerList_Collapse'/);
+    assert.match(pals, /preview \? 'PalList_Restore' : 'PalList_Collapse'/);
+    assert.match(topbar, /<PlayerList preview/);
+    assert.doesNotMatch(players, /unlock_viewing_cage|PlayerList_Viewing_Cage/);
+    assert.match(view, /\.editor-workspace--pals-only\s*\{\s*grid-template-columns:\s*minmax\(15rem, 17rem\) minmax\(0, 1fr\)/);
 });
 
 test("toolbar keeps all operations in global and contextual rows", async () => {

@@ -1,11 +1,15 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import BackendServerSelector from './BackendServerSelector.vue'
+import PalList from './PalList.vue'
+import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
+defineProps({ playersCollapsed: Boolean, palsCollapsed: Boolean })
+const emit = defineEmits(['restorePlayers', 'restorePals'])
 const loadingWidth = ref(0)
 const showLoading = ref(false)
 const interval = ref(null)
@@ -41,6 +45,10 @@ const show_cheats = async () => {
 const save = async () => {
   if (await palStore.writeSave()) await donate()
 }
+
+const playerCount = computed(() => palStore.PLAYER_MAP.size + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
+const palCount = computed(() => palStore.PAL_MAP.size)
+const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG)
 </script>
 
 <template>
@@ -106,16 +114,38 @@ const save = async () => {
     </div>
 
     <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
-      <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
-        <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
-        {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
-      </button>
-      <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
-        :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
-        <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
-      </button>
+      <div v-if="playersCollapsed" class="editor-roster-dock">
+        <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
+          :aria-label="palStore.getTranslatedText('PlayerList_Restore')" @click="emit('restorePlayers')">
+          <UiIcon name="users" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
+          <small>{{ playerCount }}</small>
+        </button>
+        <aside class="editor-roster-preview editor-roster-preview--players">
+          <PlayerList preview @toggle="emit('restorePlayers')" />
+        </aside>
+      </div>
+      <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
+        <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
+          :aria-label="palStore.getTranslatedText('PalList_Restore')" @click="emit('restorePals')">
+          <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
+          <small>{{ palCount }}</small>
+        </button>
+        <aside class="editor-roster-preview editor-roster-preview--pals">
+          <PalList preview @toggle="emit('restorePals')" />
+        </aside>
+      </div>
+      <div class="editor-context-actions">
+        <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
+          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
+          {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+        </button>
+        <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
+          :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
+          <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
+        </button>
+      </div>
     </div>
   </header>
 </template>
@@ -188,8 +218,103 @@ const save = async () => {
 }
 
 .editor-context-bar {
+  position: relative;
   flex-wrap: wrap;
   padding: 0 var(--editor-space-3) var(--editor-space-2);
+}
+
+.editor-context-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-2);
+  margin-left: auto;
+}
+
+.editor-roster-dock {
+  position: relative;
+  flex: 0 0 auto;
+  animation: roster-dock-in .2s ease-out;
+}
+
+.editor-roster-dock::after {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: var(--editor-space-2);
+  content: '';
+}
+
+.editor-roster-pill {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: .35rem;
+  padding: 0 var(--editor-space-3);
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: 999px;
+  color: var(--editor-color-text);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-shadow-compact);
+  cursor: pointer;
+}
+
+.editor-roster-pill:hover {
+  border-color: var(--editor-color-glass-border);
+  background: var(--editor-color-glass-surface);
+  box-shadow: var(--editor-glass-shadow);
+}
+
+.editor-roster-pill small {
+  color: var(--editor-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.editor-roster-preview {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + var(--editor-space-2));
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  height: min(34rem, calc(100dvh - 9rem));
+  overflow: hidden;
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: var(--editor-radius-md);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
+  transition: opacity .12s ease .14s, visibility 0s linear .26s;
+}
+
+.editor-roster-preview--players { width: 11rem; }
+.editor-roster-preview--pals { width: 17rem; }
+
+.editor-roster-dock:hover .editor-roster-preview,
+.editor-roster-dock:focus-within .editor-roster-preview,
+.editor-roster-preview:hover {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+  animation: roster-preview-enter .16s ease-out;
+}
+
+.editor-roster-pill:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
+}
+
+@keyframes roster-dock-in {
+  from { opacity: .5; transform: translate(-1rem, 1rem) scale(.82); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes roster-preview-enter {
+  from { opacity: 0; transform: translateY(-.5rem); }
+  to { opacity: 1; transform: none; }
 }
 
 .op,
@@ -347,5 +472,12 @@ const save = async () => {
   .op span {
     display: none;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-roster-dock,
+  .editor-roster-dock:hover .editor-roster-preview,
+  .editor-roster-dock:focus-within .editor-roster-preview,
+  .editor-roster-preview:hover { animation: none; }
 }
 </style>

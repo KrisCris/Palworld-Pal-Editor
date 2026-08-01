@@ -7,7 +7,9 @@ import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
-const emit = defineEmits(['collapse'])
+const props = defineProps({ preview: Boolean })
+const emit = defineEmits(['toggle'])
+const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
 const palListContainer = ref(null)
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
@@ -48,6 +50,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
 })
 
 onMounted(async () => {
+  if (props.preview || palStore.SELECTED_PAL_ID) return
   await nextTick()
   await nextTick()
   await nextTick()
@@ -79,12 +82,11 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 <template>
   <nav class="pal-roster" :aria-label="palStore.getTranslatedText('PalList_Text')">
     <header class="roster-header">
-      <h2>{{ palStore.getTranslatedText("PalList_Text") }}</h2>
+      <button class="roster-title-button" :title="toggleLabel()"
+        :aria-label="toggleLabel()" @click="emit('toggle')">
+        {{ palStore.getTranslatedText("PalList_Text") }}
+      </button>
       <div class="roster-actions">
-        <button class="roster-icon-button" :title="palStore.getTranslatedText('PalList_Collapse')"
-          :aria-label="palStore.getTranslatedText('PalList_Collapse')" @click="emit('collapse')">
-          <UiIcon name="back" />
-        </button>
         <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
           :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
           :disabled="palStore.LOADING_FLAG" @click="palStore.addPal" name="add_pal">
@@ -144,12 +146,16 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   border-bottom: 1px solid var(--editor-color-border);
 }
 
-.roster-header h2 {
+.roster-title-button {
   margin: 0;
+  padding: 0;
+  border: 0;
   color: var(--editor-color-muted);
+  background: transparent;
   font-size: .8rem;
   letter-spacing: .04em;
   text-transform: uppercase;
+  cursor: pointer;
 }
 
 .roster-actions {
@@ -281,6 +287,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 
 .pal-search:focus-within,
 .pal-row:focus-visible,
+.roster-title-button:focus-visible,
 .roster-icon-button:focus-visible {
   outline: 2px solid var(--editor-color-focus);
   outline-offset: 2px;

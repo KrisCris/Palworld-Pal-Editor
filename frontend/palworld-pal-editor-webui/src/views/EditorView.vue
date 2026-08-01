@@ -1,30 +1,13 @@
-<script>
-export function readRosterCollapsed(key) {
-  try { return globalThis.localStorage.getItem(key) === 'true' }
-  catch { return false }
-}
-
-export function persistRosterCollapsed(key, value) {
-  try { globalThis.localStorage.setItem(key, String(value)) }
-  catch { /* restricted storage keeps the in-memory state */ }
-}
-</script>
-
 <script setup>
-import { ref, watch } from 'vue'
-
 import PalEditor from '@/components/PalEditor.vue'
 import PalList from '@/components/PalList.vue'
 import PlayerEditor from '@/components/PlayerEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
-import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
-const playersCollapsed = ref(readRosterCollapsed('editor.playersCollapsed'))
-const palsCollapsed = ref(readRosterCollapsed('editor.palsCollapsed'))
-watch(playersCollapsed, value => persistRosterCollapsed('editor.playersCollapsed', value))
-watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', value))
+defineProps({ playersCollapsed: Boolean, palsCollapsed: Boolean })
+const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 </script>
 
 <template>
@@ -33,25 +16,13 @@ watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', val
     'editor-workspace--pals-only': playersCollapsed && !palsCollapsed,
     'editor-workspace--canvas-only': playersCollapsed && palsCollapsed,
   }">
-    <aside v-show="!playersCollapsed" class="editor-roster editor-roster--players">
-      <PlayerList @collapse="playersCollapsed = true" />
+    <aside v-if="!playersCollapsed" class="editor-roster editor-roster--players">
+      <PlayerList @toggle="emit('collapsePlayers')" />
     </aside>
-    <aside v-show="!palsCollapsed" class="editor-roster editor-roster--pals">
-      <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG" @collapse="palsCollapsed = true" />
+    <aside v-if="!palsCollapsed" class="editor-roster editor-roster--pals">
+      <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG" @toggle="emit('collapsePals')" />
     </aside>
     <main class="editor-canvas">
-      <div class="editor-roster-launchers">
-        <button v-if="playersCollapsed" class="editor-roster-launcher"
-          :title="palStore.getTranslatedText('PlayerList_Restore')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Restore')" @click="playersCollapsed = false">
-          <UiIcon name="back" />
-        </button>
-        <button v-if="palsCollapsed && (palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG)" class="editor-roster-launcher"
-          :title="palStore.getTranslatedText('PalList_Restore')"
-          :aria-label="palStore.getTranslatedText('PalList_Restore')" @click="palsCollapsed = false">
-          <UiIcon name="back" />
-        </button>
-      </div>
       <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG" />
       <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA" />
       <p v-else class="editor-empty">{{ palStore.getTranslatedText('Editor_Select_Prompt') }}</p>
@@ -97,6 +68,7 @@ watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', val
   -webkit-backdrop-filter: var(--editor-glass-filter);
   backdrop-filter: var(--editor-glass-filter);
   box-shadow: var(--editor-glass-shadow);
+  animation: roster-rail-enter .2s ease-out;
 }
 
 .editor-canvas {
@@ -104,29 +76,9 @@ watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', val
   overflow: auto;
 }
 
-.editor-roster-launchers {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  display: flex;
-  gap: var(--editor-space-2);
-}
-
-.editor-roster-launcher {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid var(--editor-color-border);
-  border-radius: var(--editor-radius-sm);
-  color: var(--editor-color-text);
-  background: var(--editor-color-control);
-  cursor: pointer;
-}
-
-.editor-roster-launcher:focus-visible {
-  outline: 2px solid var(--editor-color-focus);
-  outline-offset: 2px;
+@keyframes roster-rail-enter {
+  from { opacity: .5; transform: translate(-1rem, -1rem) scale(.96); }
+  to { opacity: 1; transform: none; }
 }
 
 .editor-empty {
@@ -152,5 +104,9 @@ watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', val
     flex: 0 0 auto;
     overflow: visible;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-roster { animation: none; }
 }
 </style>

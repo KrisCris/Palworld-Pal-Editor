@@ -1,5 +1,17 @@
+<script>
+export function readRosterCollapsed(key) {
+  try { return globalThis.localStorage.getItem(key) === 'true' }
+  catch { return false }
+}
+
+export function persistRosterCollapsed(key, value) {
+  try { globalThis.localStorage.setItem(key, String(value)) }
+  catch { /* restricted storage keeps the in-memory state */ }
+}
+</script>
+
 <script setup>
-import { computed, nextTick, onMounted, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 import MarkdownModal from '@/components/MarkdownModal.vue'
 import MessageCenter from '@/components/MessageCenter.vue'
@@ -15,6 +27,8 @@ const palStore = usePalEditorStore()
 const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
 const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
 const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
+const playersCollapsed = ref(readRosterCollapsed('editor.playersCollapsed'))
+const palsCollapsed = ref(readRosterCollapsed('editor.palsCollapsed'))
 const refreshPage = () => window.location.reload()
 let previousFocus
 const rememberFocus = event => {
@@ -28,6 +42,8 @@ watch(blockingOverlay, async (visible, wasVisible) => {
     previousFocus = undefined
   }
 }, { flush: 'sync' })
+watch(playersCollapsed, value => persistRosterCollapsed('editor.playersCollapsed', value))
+watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', value))
 onMounted(palStore.bootstrap)
 </script>
 
@@ -38,7 +54,8 @@ onMounted(palStore.bootstrap)
     :inert="blockingOverlay || undefined"
     @focusin="rememberFocus"
   >
-    <TopBar />
+    <TopBar :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
+      @restore-players="playersCollapsed = false" @restore-pals="palsCollapsed = false" />
 
     <p v-if="palStore.APP_STATE === 'connecting'" role="status">
       {{ palStore.getTranslatedText('App_Connecting') }}
@@ -55,7 +72,9 @@ onMounted(palStore.bootstrap)
     />
     <AuthView v-else-if="palStore.APP_STATE === 'auth-required'" />
     <EntryView v-else-if="palStore.APP_STATE === 'entry'" />
-    <EditorView v-else-if="palStore.APP_STATE === 'editor'" />
+    <EditorView v-else-if="palStore.APP_STATE === 'editor'"
+      :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
+      @collapse-players="playersCollapsed = true" @collapse-pals="palsCollapsed = true" />
 
     <MarkdownModal
       v-if="palStore.APP_STATE === 'entry' || palStore.APP_STATE === 'editor'"

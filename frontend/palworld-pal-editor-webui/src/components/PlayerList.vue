@@ -1,9 +1,10 @@
 <script setup>
-import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
-const emit = defineEmits(['collapse'])
+const props = defineProps({ preview: Boolean })
+const emit = defineEmits(['toggle'])
+const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 </script>
@@ -11,20 +12,10 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 <template>
   <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
     <header class="roster-header">
-      <h2>{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
-      <div class="roster-actions">
-        <button class="roster-icon-button" :title="palStore.getTranslatedText('PlayerList_Collapse')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Collapse')" @click="emit('collapse')">
-          <UiIcon name="back" />
-        </button>
-        <button class="roster-icon-button"
-          v-if="palStore.SELECTED_PLAYER_ID != null && !palStore.PLAYER_MAP.get(palStore.SELECTED_PLAYER_ID)?.HasViewingCage"
-          :title="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Viewing_Cage')"
-          :disabled="palStore.LOADING_FLAG" @click="palStore.updatePlayer" name="unlock_viewing_cage">
-          <UiIcon name="unlock" />
-        </button>
-      </div>
+      <button class="roster-title-button" :title="toggleLabel()"
+        :aria-label="toggleLabel()" @click="emit('toggle')">
+        {{ palStore.getTranslatedText("PlayerList_Text") }}
+      </button>
     </header>
 
     <div class="roster-list">
@@ -64,17 +55,16 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   border-bottom: 1px solid var(--editor-color-border);
 }
 
-.roster-header h2 {
+.roster-title-button {
   margin: 0;
+  padding: 0;
+  border: 0;
   color: var(--editor-color-muted);
+  background: transparent;
   font-size: .8rem;
   letter-spacing: .04em;
   text-transform: uppercase;
-}
-
-.roster-actions {
-  display: flex;
-  gap: var(--editor-space-1);
+  cursor: pointer;
 }
 
 .roster-list {
@@ -139,20 +129,8 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   font-size: .55rem;
 }
 
-.roster-icon-button {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid var(--editor-color-border);
-  border-radius: var(--editor-radius-sm);
-  color: var(--editor-color-text);
-  background: var(--editor-color-control);
-  cursor: pointer;
-}
-
 .roster-row:focus-visible,
-.roster-icon-button:focus-visible {
+.roster-title-button:focus-visible {
   outline: 2px solid var(--editor-color-focus);
   outline-offset: 2px;
 }
