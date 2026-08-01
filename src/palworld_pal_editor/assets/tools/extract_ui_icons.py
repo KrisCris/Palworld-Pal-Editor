@@ -44,6 +44,7 @@ UI_ICON_SOURCES = (
     ("rare", "Pal/Content/Pal/Texture/UI/InGame/T_icon_pal_rare"),
     ("boss", "Pal/Content/Pal/Texture/UI/InGame/T_icon_enemy_strong"),
     ("condense", "Pal/Content/Pal/Texture/UI/IngameMenu/T_icon_condense"),
+    ("soul", "Pal/Content/Pal/Texture/UI/IngameMenu/T_icon_buildup"),
     (
         "heal",
         "Pal/Content/Pal/Texture/UI/InGame/SkillIcon/T_icon_skill_pal_HPRecovery",
@@ -65,6 +66,7 @@ UI_ICON_DIMENSIONS = {
     "rare": (36, 36),
     "boss": (64, 64),
     "condense": (28, 32),
+    "soul": (36, 36),
     "heal": (128, 128),
     "revive": (128, 128),
 }

@@ -343,7 +343,7 @@ const portraitBorder = pal => pal.IsBOSS
       </section>
 
       <section class="pal-panel editor-surface">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
+        <h2 class="pal-panel__heading"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/soul')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
         <div class="range-grid">
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
@@ -651,6 +651,9 @@ const portraitBorder = pal => pal.IsBOSS
 }
 
 .pal-panel__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-2);
   margin: 0;
   padding-bottom: var(--editor-space-2);
   border-bottom: 1px solid var(--editor-color-border);

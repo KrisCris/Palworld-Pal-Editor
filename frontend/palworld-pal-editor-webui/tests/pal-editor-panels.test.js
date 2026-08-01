@@ -13,6 +13,7 @@ test("Pal progression and skill editors use the compact shared layout", () => {
   assert.match(source, /grid-template-columns:\s*repeat\(auto-fit,\s*minmax\(14rem,\s*1fr\)\)/);
   assert.match(source, /@container\s+pal-editor\s*\(max-width:\s*42rem\)/);
   assert.doesNotMatch(source, /EditorItem|editField|skillPanel|flex-v|@mouseup|@touchend|--sub-height|--editor-panel-width/);
+  assert.match(source, /\/image\/ui\/soul/);
 });
 
 test("range controls preserve limits and update from keyboard-friendly change events", () => {
