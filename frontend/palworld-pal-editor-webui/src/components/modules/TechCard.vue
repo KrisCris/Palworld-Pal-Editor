@@ -14,7 +14,7 @@ const isLocked = computed(() => !palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTec
 const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
 const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
 const bgStyle = computed(() => ({
-  backgroundImage: `url('/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}')`
+  backgroundImage: `url('${palStore.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
 }))
 const toggleLock = () => toggleTechnology(palStore.SELECTED_PLAYER_DATA, props.item, isLocked.value)
 </script>

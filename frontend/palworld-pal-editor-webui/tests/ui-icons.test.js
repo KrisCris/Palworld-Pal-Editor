@@ -119,3 +119,29 @@ test("game UI image routes omit extensions and icon-only controls are named", as
     assert.match(pathPicker, /PathPicker_Back/);
     assert.match(pathPicker, /PathPicker_Open/);
 });
+
+test("runtime game image URLs use the selected backend", async () => {
+    const components = [
+        "TopBar.vue",
+        "PalList.vue",
+        "PalEditor.vue",
+        "modules/TechCard.vue",
+        "modules/PalSpeciesSelector.vue",
+    ];
+    const componentRoot = new URL("../src/components/", import.meta.url);
+
+    for (const name of components) {
+        const source = await readFile(new URL(name, componentRoot), "utf8");
+        assert.match(source, /palStore\.backendAssetUrl\(/, name);
+        assert.doesNotMatch(source, /(?:src|backgroundImage):\s*["'`]\/image\//, name);
+        assert.doesNotMatch(source, /url\(["'`]\/image\//, name);
+    }
+
+    const [topBar, app] = await Promise.all([
+        readFile(new URL("../src/components/TopBar.vue", import.meta.url), "utf8"),
+        readFile(new URL("../src/App.vue", import.meta.url), "utf8"),
+    ]);
+    assert.match(topBar, /src="@\/assets\/logo\.ico"/);
+    assert.match(app, /url="\/docs\/keep_this_project_alive\.md"/);
+    assert.match(app, /ui-icons\.svg\?raw/);
+});

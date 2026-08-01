@@ -82,6 +82,7 @@ onMounted(() => refreshButton.value?.focus())
 }
 .error-layer.startup {
   top: 3rem;
+  z-index: 10;
   background: #181818;
 }
 .startup .backend-error {

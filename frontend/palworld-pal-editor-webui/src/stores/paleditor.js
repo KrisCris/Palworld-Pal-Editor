@@ -2,6 +2,16 @@ import { ref, computed, reactive, nextTick } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import {
+    backendStorageKey,
+    backendUrl,
+    normalizeBackendOrigin,
+    readRecentBackends,
+    readStorage,
+    rememberBackend,
+    removeStorage,
+    writeStorage,
+} from "../services/backend-connection.js";
+import {
     DEFAULT_UI_TRANSLATION,
     GAME_LANGUAGES,
     UI_TRANSLATIONS,
@@ -523,7 +533,24 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const IS_OFFICIAL_BUILD = ref(false);
     const savedI18n = localStorage.getItem("PAL_I18n");
     const I18n = ref(GAME_LANGUAGES[savedI18n] ? savedI18n : "en");
-    const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
+    const BACKEND_ORIGIN_KEY = "PAL_BACKEND_ORIGIN";
+    const normalizeStoredBackendOrigin = origin => {
+        try { return normalizeBackendOrigin(origin || "", window.location.origin); }
+        catch { return ""; }
+    };
+    const savedBackendOrigin = readStorage(localStorage, BACKEND_ORIGIN_KEY) || "";
+    const initialBackendOrigin = normalizeStoredBackendOrigin(savedBackendOrigin);
+    if (savedBackendOrigin !== initialBackendOrigin) {
+        writeStorage(localStorage, BACKEND_ORIGIN_KEY, initialBackendOrigin);
+    }
+    const BACKEND_ORIGIN = ref(initialBackendOrigin);
+    const BACKEND_CANDIDATE = ref(BACKEND_ORIGIN.value);
+    const BACKEND_REQUEST_ORIGIN = ref(BACKEND_ORIGIN.value);
+    const BACKEND_RECENT = ref(readRecentBackends(localStorage));
+    const BACKEND_CONNECTED = ref(false);
+    const backendAssetUrl = path => backendUrl(BACKEND_ORIGIN.value, path);
+    const storageKey = name => backendStorageKey(name, BACKEND_ORIGIN.value);
+    const PAL_GAME_SAVE_PATH = ref(readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH")));
     const HAS_PASSWORD = ref(false);
     const PAL_WRITE_BACK_PATH = ref("");
     const PATH_CONTEXT = ref(new Map());
@@ -534,7 +561,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const CN_WARNING_ON_LOAD = ref(true);
 
     // auth
-    let auth_token = localStorage.getItem("PAL_AUTH_TOKEN") || "";
+    let auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
     let configuredSavePath = "";
     const APP_STATE = ref("connecting");
     const IS_LOCKED = ref(true);
@@ -613,6 +640,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     function handleRequestError(error, method) {
         const backendError = backendErrorDetails(error);
         if (backendError) {
+            if (backendError.kind === "connection") BACKEND_CONNECTED.value = false;
             setBackendError(backendError);
             console.error(`${method}(): ${backendError.message}`);
             return false;
@@ -631,7 +659,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function GET(api) {
         try {
-            const response = await axios.get(api, {
+            const response = await axios.get(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
                 headers: {
                     Authorization: "Bearer " + auth_token,
                 },
@@ -645,7 +673,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function POST(api, data) {
         try {
-            const response = await axios.post(api, data, {
+            const response = await axios.post(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
@@ -657,7 +685,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function PATCH(api, data) {
         try {
-            const response = await axios.patch(api, data, {
+            const response = await axios.patch(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
@@ -669,7 +697,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function DELETE(api) {
         try {
-            const response = await axios.delete(api, {
+            const response = await axios.delete(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
@@ -697,7 +725,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function requireAuth(messageKey = "") {
         auth_token = "";
-        localStorage.removeItem("PAL_AUTH_TOKEN");
+        removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
         AUTH_MESSAGE_KEY.value = messageKey;
         IS_LOCKED.value = true;
         APP_STATE.value = "auth-required";
@@ -718,9 +746,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             IS_LOCKED.value = false;
             auth_token = response.data.access_token;
             if (remember) {
-                localStorage.setItem("PAL_AUTH_TOKEN", auth_token);
+                writeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"), auth_token);
             } else {
-                localStorage.removeItem("PAL_AUTH_TOKEN");
+                removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
             }
             APP_STATE.value = "connecting";
             return await resumeBackendSave();
@@ -733,7 +761,23 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return false;
     }
 
-    async function fetch_config() {
+    function promoteBackend(origin) {
+        origin = normalizeStoredBackendOrigin(origin);
+        const changed = origin !== BACKEND_ORIGIN.value;
+        BACKEND_ORIGIN.value = origin;
+        BACKEND_REQUEST_ORIGIN.value = origin;
+        writeStorage(localStorage, BACKEND_ORIGIN_KEY, origin);
+        BACKEND_RECENT.value = origin
+            ? rememberBackend(localStorage, origin)
+            : readRecentBackends(localStorage);
+        if (changed) {
+            auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
+            PAL_GAME_SAVE_PATH.value = readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
+            PAL_FILE_PICKER_PATH.value = PAL_GAME_SAVE_PATH.value;
+        }
+    }
+
+    async function fetch_config(origin = BACKEND_REQUEST_ORIGIN.value) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
@@ -741,6 +785,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return false;
 
         if (response.status == 0) {
+            promoteBackend(origin);
+            BACKEND_CONNECTED.value = true;
             if (response.data.I18nList) {
                 I18nList.value = response.data.I18nList;
             }
@@ -755,7 +801,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             VERSION.value = response.data.VERSION;
             IS_OFFICIAL_BUILD.value = response.data.IsOfficialBuild;
         } else if (response.status == 2) {
-            requireAuth();
+            if (origin === BACKEND_ORIGIN.value) requireAuth();
+            else setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         } else {
             setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
@@ -789,14 +836,22 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return true;
     }
 
-    async function bootstrap() {
+    async function bootstrap(candidate = readStorage(localStorage, BACKEND_ORIGIN_KEY) || "") {
+        candidate = normalizeStoredBackendOrigin(candidate);
         APP_STATE.value = "connecting";
         IS_LOCKED.value = true;
+        BACKEND_CONNECTED.value = false;
         clearBackendError();
         LOADING_FLAG.value = true;
-        auth_token = auth_token || localStorage.getItem("PAL_AUTH_TOKEN") || "";
+        BACKEND_CANDIDATE.value = candidate;
+        BACKEND_REQUEST_ORIGIN.value = candidate;
+        if (candidate !== BACKEND_ORIGIN.value) auth_token = "";
+        else auth_token = auth_token || readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
 
-        if (!await fetch_config()) return false;
+        if (!await fetch_config(BACKEND_CANDIDATE.value)) {
+            BACKEND_REQUEST_ORIGIN.value = BACKEND_ORIGIN.value;
+            return false;
+        }
         if (HAS_PASSWORD.value) {
             if (!auth_token) {
                 APP_STATE.value = "auth-required";
@@ -810,6 +865,36 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return await resumeBackendSave();
         }
         return await unlock("", false);
+    }
+
+    async function connectBackend(candidate) {
+        if (APP_STATE.value === "editor") return false;
+        const previousOrigin = BACKEND_ORIGIN.value;
+        const previousToken = auth_token;
+        const wasConnected = BACKEND_CONNECTED.value;
+        candidate = normalizeBackendOrigin(candidate, window.location.origin);
+        LOADING_FLAG.value = true;
+        try {
+            const probe = await axios.get(backendUrl(candidate, "/api/save/fetch_config"), { timeout: 5000 });
+            if (probe.data?.status !== 0) {
+                LOADING_FLAG.value = false;
+                return false;
+            }
+        } catch {
+            LOADING_FLAG.value = false;
+            return false;
+        }
+        BACKEND_CANDIDATE.value = candidate;
+        clearBackendError();
+        APP_STATE.value = "connecting";
+        await bootstrap(BACKEND_CANDIDATE.value);
+        if (BACKEND_ORIGIN.value === previousOrigin && BACKEND_ORIGIN.value !== candidate) {
+            auth_token = previousToken;
+            BACKEND_CANDIDATE.value = previousOrigin;
+            BACKEND_REQUEST_ORIGIN.value = previousOrigin;
+            BACKEND_CONNECTED.value = wasConnected;
+        }
+        return BACKEND_ORIGIN.value === candidate;
     }
 
     async function get_updates() {
@@ -840,7 +925,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             if (response === false) return;
             if (response.status != 0) {
                 PAL_GAME_SAVE_PATH.value = undefined;
-                localStorage.removeItem("PAL_GAME_SAVE_PATH");
+                removeStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
                 response = await GET("/api/save/path");
             }
         } else {
@@ -1177,7 +1262,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             PAL_WRITE_BACK_PATH.value = PAL_GAME_SAVE_PATH.value;
             if (await hydrateLoadedSave()) {
-                localStorage.setItem("PAL_GAME_SAVE_PATH", PAL_GAME_SAVE_PATH.value);
+                writeStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"), PAL_GAME_SAVE_PATH.value);
             }
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
@@ -1705,6 +1790,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         HAS_PASSWORD,
         APP_STATE,
         BACKEND_ERROR,
+        BACKEND_ORIGIN,
+        BACKEND_CANDIDATE,
+        BACKEND_RECENT,
+        BACKEND_CONNECTED,
         AUTH_MESSAGE_KEY,
         MESSAGE_QUEUE,
         CURRENT_MESSAGE,
@@ -1763,6 +1852,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         dupePal,
 
         bootstrap,
+        connectBackend,
+        backendAssetUrl,
         unlock,
         auth,
         requireAuth,

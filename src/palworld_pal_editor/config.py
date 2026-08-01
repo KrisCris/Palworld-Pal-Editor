@@ -96,6 +96,7 @@ class Config:
     i18n: str = "en"
     mode: str = "gui"
     port: int = 58080
+    _runtime_port: Optional[int] = None
     debug: bool = False
     path: str = None
     password: str = None
@@ -114,6 +115,10 @@ class Config:
                 for key, value in data.items():
                     if hasattr(cls, key):
                         setattr(cls, key, value)
+
+    @classmethod
+    def get_runtime_port(cls) -> int:
+        return cls.port if cls._runtime_port is None else cls._runtime_port
 
     @classmethod
     def set_configs(cls, attrs: dict):

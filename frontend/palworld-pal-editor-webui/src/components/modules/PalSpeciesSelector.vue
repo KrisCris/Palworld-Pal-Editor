@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue";
 import UiIcon from "./UiIcon.vue";
+import { usePalEditorStore } from "@/stores/paleditor";
 
 import en from "../../i18n/en.js";
 import fr from "../../i18n/fr.js";
@@ -21,6 +22,7 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue", "apply"]);
+const palStore = usePalEditorStore();
 
 const translations = { en, fr, ja, "zh-CN": zhCN };
 const t = key => translations[props.locale]?.[key] ?? en[key] ?? key;
@@ -123,7 +125,7 @@ const variantTabindex = (variant, index) => (
       aria-haspopup="dialog"
       @click="open ? close() : show()"
     >
-      <img :src="`/image/pals/${displayRow?.IconKey || displayRow?.IconAccessKey || 'unknown'}`" alt="">
+      <img :src="palStore.backendAssetUrl(`/image/pals/${displayRow?.IconKey || displayRow?.IconAccessKey || 'unknown'}`)" alt="">
       <span class="trigger-copy">
         <span>
           <UiIcon v-if="displayRow?.Invalid" class="warning" name="warning" />
@@ -170,7 +172,7 @@ const variantTabindex = (variant, index) => (
               :class="{ selected: family.FamilyID === activeFamily?.FamilyID }"
               @click="selectedFamilyId = family.FamilyID"
             >
-              <img :src="`/image/pals/${family.IconKey}`" alt="" loading="lazy">
+              <img :src="palStore.backendAssetUrl(`/image/pals/${family.IconKey}`)" alt="" loading="lazy">
               <span>
                 <span>
                   <UiIcon v-if="family.invalidOnly" class="warning" name="warning" />
@@ -204,7 +206,7 @@ const variantTabindex = (variant, index) => (
               :class="{ selected: variant.InternalName === pendingId }"
               @click="selectVariant(variant.InternalName)"
             >
-              <img :src="`/image/pals/${variant.IconKey || variant.IconAccessKey || 'unknown'}`" alt="" loading="lazy">
+              <img :src="palStore.backendAssetUrl(`/image/pals/${variant.IconKey || variant.IconAccessKey || 'unknown'}`)" alt="" loading="lazy">
               <span>
                 <span>
                   <UiIcon v-if="variant.warning" class="warning" name="warning" />

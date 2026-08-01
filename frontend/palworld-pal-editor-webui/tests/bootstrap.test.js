@@ -3,6 +3,7 @@ import test from "node:test";
 
 import axios from "axios";
 import { createPinia, setActivePinia } from "pinia";
+import { backendStorageKey } from "../src/services/backend-connection.js";
 
 const values = new Map();
 globalThis.localStorage = {
@@ -10,14 +11,15 @@ globalThis.localStorage = {
     setItem: (key, value) => values.set(key, value),
     removeItem: key => values.delete(key),
 };
+globalThis.window = { location: { origin: "http://frontend.test" } };
 globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
 
 const reply = data => ({ data: { status: 0, data } });
 
-function newStore() {
-    values.clear();
+function newStore({ preserveStorage = false } = {}) {
+    if (!preserveStorage) values.clear();
     setActivePinia(createPinia());
     return usePalEditorStore();
 }
@@ -75,6 +77,203 @@ function mockBackend({
     };
     return calls;
 }
+
+test("connectBackend promotes a reachable candidate and routes its asset URLs", async () => {
+    const store = newStore();
+    const calls = mockBackend({ password: true });
+
+    assert.equal(await store.connectBackend("10.0.0.2:58081"), true);
+    assert.equal(calls[0][1], "http://10.0.0.2:58081/api/save/fetch_config");
+    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
+    assert.equal(store.BACKEND_CONNECTED, true);
+    assert.deepEqual(store.BACKEND_RECENT, ["http://10.0.0.2:58081"]);
+    assert.equal(store.backendAssetUrl("/image/ui/heal"), "http://10.0.0.2:58081/image/ui/heal");
+});
+
+test("connectBackend keeps the persisted origin when the candidate cannot fetch config", async () => {
+    const store = newStore();
+    mockBackend({ password: true });
+    await store.connectBackend("10.0.0.1:58081");
+    const previousState = store.APP_STATE;
+    axios.get = async () => {
+        const error = new Error("Network Error");
+        error.request = {};
+        throw error;
+    };
+
+    assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
+    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.1:58081");
+    assert.equal(store.BACKEND_CANDIDATE, "http://10.0.0.1:58081");
+    assert.equal(store.BACKEND_CONNECTED, true);
+    assert.equal(store.APP_STATE, previousState);
+    assert.equal(store.BACKEND_ERROR, null);
+    assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.1:58081");
+});
+
+test("a persisted backend is disconnected until its initial probe succeeds", async () => {
+    values.clear();
+    localStorage.setItem("PAL_BACKEND_ORIGIN", "http://10.0.0.1:58081");
+    const store = newStore({ preserveStorage: true });
+    axios.get = async () => {
+        const error = new Error("Network Error");
+        error.request = {};
+        throw error;
+    };
+
+    await store.bootstrap();
+
+    assert.equal(store.BACKEND_CONNECTED, false);
+});
+
+test("a failed probe preserves the active backend's ephemeral token", async () => {
+    const store = newStore();
+    mockBackend({ password: true });
+    await store.bootstrap();
+    await store.unlock("secret", false);
+    assert.equal(localStorage.getItem("PAL_AUTH_TOKEN"), null);
+
+    axios.get = async () => {
+        const error = new Error("Network Error");
+        error.request = {};
+        throw error;
+    };
+    assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
+
+    axios.get = async (url, config) => {
+        if (url.endsWith("fetch_config")) return reply({
+            I18n: "en", I18nList: { en: "English" }, Path: "C:/save", HasPassword: true,
+        });
+        if (url.endsWith("/auth")) {
+            assert.equal(config.headers.Authorization, "Bearer token");
+            return reply(null);
+        }
+        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+
+    assert.equal(await store.connectBackend(""), true);
+    assert.equal(store.APP_STATE, "entry");
+});
+
+test("candidate auth failures preserve the active backend token", async () => {
+    const originA = "http://10.0.0.1:58081";
+    const originB = "http://10.0.0.2:58081";
+    values.clear();
+    localStorage.setItem("PAL_BACKEND_ORIGIN", originA);
+    localStorage.setItem(backendStorageKey("PAL_AUTH_TOKEN", originA), "token-a");
+    const store = newStore({ preserveStorage: true });
+    axios.get = async (url, config) => {
+        if (url === `${originB}/api/save/fetch_config`) {
+            assert.equal(config.headers.Authorization, "Bearer ");
+            return { data: { status: 2, msg: "auth required" } };
+        }
+        if (url === `${originA}/api/save/fetch_config`) return reply({
+            I18n: "en", I18nList: { en: "English" }, Path: "C:/save-a", HasPassword: true,
+        });
+        if (url === `${originA}/api/auth/auth`) {
+            assert.equal(config.headers.Authorization, "Bearer token-a");
+            return reply(null);
+        }
+        if (url === `${originA}/api/save/status`) return reply({ SaveLoaded: false });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async () => reply(null);
+
+    assert.equal(await store.connectBackend(originB), false);
+    assert.equal(localStorage.getItem(backendStorageKey("PAL_AUTH_TOKEN", originA)), "token-a");
+    await store.bootstrap(originA);
+});
+
+test("normalizes persisted origins and bootstrap candidates", async () => {
+    values.clear();
+    localStorage.setItem("PAL_BACKEND_ORIGIN", "http://10.0.0.2:58081/");
+    const store = newStore({ preserveStorage: true });
+    const calls = mockBackend({ password: true });
+
+    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
+    assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.2:58081");
+    await store.bootstrap("http://frontend.test/");
+    assert.equal(calls[0][1], "/api/save/fetch_config");
+    assert.equal(store.BACKEND_ORIGIN, "");
+    assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "");
+});
+
+test("backend credentials and paths are scoped to the selected origin", async () => {
+    const originA = "http://10.0.0.1:58081";
+    const originB = "http://10.0.0.2:58081";
+    values.clear();
+    localStorage.setItem("PAL_BACKEND_ORIGIN", originA);
+    localStorage.setItem(backendStorageKey("PAL_AUTH_TOKEN", originA), "token-a");
+    localStorage.setItem(backendStorageKey("PAL_GAME_SAVE_PATH", originA), "C:/save-a");
+    localStorage.setItem(backendStorageKey("PAL_AUTH_TOKEN", originB), "token-b");
+    localStorage.setItem(backendStorageKey("PAL_GAME_SAVE_PATH", originB), "C:/save-b");
+
+    let expectedToken = "token-a";
+    axios.get = async (url, config) => {
+        if (url.endsWith("fetch_config")) return reply({
+            I18n: "en", I18nList: { en: "English" }, Path: "C:/configured", HasPassword: true,
+        });
+        if (url.endsWith("/auth")) {
+            assert.equal(config.headers.Authorization, `Bearer ${expectedToken}`);
+            return reply(null);
+        }
+        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async () => reply(null);
+
+    let store = newStore({ preserveStorage: true });
+    await store.bootstrap();
+    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save-a");
+
+    expectedToken = "token-b";
+    localStorage.setItem("PAL_BACKEND_ORIGIN", originB);
+    store = newStore({ preserveStorage: true });
+    await store.bootstrap();
+    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save-b");
+});
+
+test("legacy credentials and paths stay in same-origin mode", async () => {
+    values.clear();
+    localStorage.setItem("PAL_AUTH_TOKEN", "legacy-token");
+    localStorage.setItem("PAL_GAME_SAVE_PATH", "C:/legacy-save");
+    axios.get = async (url, config) => {
+        if (url.endsWith("fetch_config")) {
+            if (url.startsWith("http://10.0.0.2:58081")) {
+                assert.equal(config.headers.Authorization, "Bearer ");
+            }
+            return reply({
+            I18n: "en", I18nList: { en: "English" }, Path: "C:/configured", HasPassword: true,
+            });
+        }
+        if (url.endsWith("/auth")) {
+            assert.equal(config.headers.Authorization, "Bearer legacy-token");
+            return reply(null);
+        }
+        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async () => reply(null);
+
+    const store = newStore({ preserveStorage: true });
+    await store.bootstrap();
+    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/legacy-save");
+
+    localStorage.setItem("PAL_BACKEND_ORIGIN", "http://10.0.0.2:58081");
+    const remoteStore = newStore({ preserveStorage: true });
+    await remoteStore.bootstrap();
+    assert.equal(remoteStore.PAL_GAME_SAVE_PATH, "C:/configured");
+});
+
+test("connectBackend is unavailable while editing", async () => {
+    const store = newStore();
+    const calls = mockBackend({ password: false, loaded: true });
+    await store.bootstrap();
+
+    assert.equal(store.APP_STATE, "editor");
+    assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
+    assert.equal(calls.at(-1)[1], "/api/save/skin_data");
+});
 
 test("bootstrap asks for a password when no remembered token exists", async () => {
     const store = newStore();

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+import BackendServerSelector from './BackendServerSelector.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
@@ -84,6 +85,7 @@ const save = async () => {
             </button>
           </div>
         </details>
+        <BackendServerSelector v-if="palStore.APP_STATE !== 'editor'" />
         <label class="language-control">
           <UiIcon name="language" />
           <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n"
@@ -98,7 +100,7 @@ const save = async () => {
     <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
       <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
         :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
-        <img class="game-icon" :src="'/image/ui/heal'" alt="">
+        <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
         {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
       </button>
       <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"

@@ -79,11 +79,11 @@ test("player and Pal rows preserve selection contracts without grayscale selecti
     assert.match(pals, /import \{ paldeckForRow \}/);
     assert.match(pals, /const paldeck = paldeckForRow\(row\)/);
     assert.match(pals, /import PalPortrait from/);
-    assert.match(pals, /<PalPortrait[^>]*:src="`\/image\/pals\/\$\{pal\.IconAccessKey\}`"[^>]*size="2\.5rem"/s);
+    assert.match(pals, /<PalPortrait[^>]*:src="palStore\.backendAssetUrl\(`\/image\/pals\/\$\{pal\.IconAccessKey\}`\)"[^>]*size="2\.5rem"/s);
     assert.match(pals, /<PalPortrait[^>]*alt=""/s);
-    assert.match(pals, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="'\/image\/ui\/boss'"/);
-    assert.match(pals, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="'\/image\/ui\/rare'"/);
-    assert.match(pals, /<template #top-right>[\s\S]*?v-if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="'\/image\/ui\/rare'"/);
+    assert.match(pals, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
+    assert.match(pals, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+    assert.match(pals, /<template #top-right>[\s\S]*?v-if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
     assert.doesNotMatch(players + pals, /\[selected|filter:\s*grayscale[^}]*selected/s);
 });
 

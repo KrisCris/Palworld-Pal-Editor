@@ -1,16 +1,20 @@
-from pathlib import Path
+import ipaddress
+import mimetypes
+import os
 import threading
 import traceback
 import webbrowser
-from flask import Flask, send_from_directory
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from flask import Flask, request, send_from_directory
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash
 
-from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.api import *
+from palworld_pal_editor.config import ASSETS_PATH, Config
 from palworld_pal_editor.utils import LOGGER, reply
-import mimetypes
 
 # attempt to fix MIME TYPE error for some user
 mimetypes.add_type('application/javascript', '.js')
@@ -26,6 +30,63 @@ app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)
+
+
+def _allowed_cors_origin():
+    origin = request.headers.get("Origin")
+    if not origin or origin == request.host_url.rstrip("/"):
+        return None
+    try:
+        parsed = urlsplit(origin)
+        parsed.port
+    except (TypeError, ValueError):
+        return None
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.path
+        or parsed.query
+        or parsed.fragment
+        or origin != f"{parsed.scheme}://{parsed.netloc}"
+    ):
+        return None
+    if Config.password:
+        return origin
+    try:
+        remote_is_loopback = ipaddress.ip_address(request.remote_addr).is_loopback
+    except (TypeError, ValueError):
+        remote_is_loopback = False
+    if remote_is_loopback and parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+        return origin
+    return None
+
+
+@app.before_request
+def cors_preflight():
+    if (
+        request.method == "OPTIONS"
+        and request.headers.get("Access-Control-Request-Method")
+        and request.headers.get("Origin") != request.host_url.rstrip("/")
+    ):
+        return "", 204
+
+
+@app.after_request
+def cors_response(response):
+    origin = _allowed_cors_origin()
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        vary = response.headers.get("Vary")
+        if not vary:
+            response.headers["Vary"] = "Origin"
+        elif "origin" not in {value.strip().lower() for value in vary.split(",")}:
+            response.headers["Vary"] = f"{vary}, Origin"
+        if request.method == "OPTIONS" and request.headers.get("Access-Control-Request-Method"):
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+    return response
 
 
 @app.route('/image/<icon_type>/<filename>')
@@ -57,7 +118,7 @@ def serve(path):
 
 @app.route('/api/ready')
 def ready():
-    return reply(status=0), 200
+    return reply(status=0, data={"pid": os.getpid()}), 200
 
 @jwt.invalid_token_loader
 def invalid_token_callback(error_string):
@@ -93,16 +154,17 @@ def unexpected_error(error):
 
 
 def main():
+    port = Config.get_runtime_port()
     Config._password_hash = generate_password_hash(Config.password or "")
     if Config.mode == "web" and not Config.debug:
         try:
-            threading.Timer(1, lambda: webbrowser.open(f"http://127.0.0.1:{Config.port}") ).start()
+            threading.Timer(1, lambda: webbrowser.open(f"http://127.0.0.1:{port}") ).start()
         except:
             LOGGER.info("Failed to launch browser.")
     host = '0.0.0.0' if Config.mode == "web" else "127.0.0.1"
     if Config.debug:
-        app.run(use_reloader=True, port=Config.port, threaded=True)
+        app.run(use_reloader=True, port=port, threaded=True)
     else:
         from waitress import serve
-        LOGGER.info(f"LISTENING ON {host}:{Config.port}.")
-        serve(app, host=host, port=Config.port, threads=12)
+        LOGGER.info(f"LISTENING ON {host}:{port}.")
+        serve(app, host=host, port=port, threads=12)

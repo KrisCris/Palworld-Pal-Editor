@@ -48,10 +48,12 @@ def setup_config_from_args():
             Config.set_config("mode", "gui")
             LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
 
+        Config._runtime_port = Config.port
         if not Config.debug:
-            if (port := check_or_generate_port(Config.port)) != Config.port:
+            bind_host = "0.0.0.0" if Config.mode == "web" else "127.0.0.1"
+            if (port := check_or_generate_port(Config.port, bind_host)) != Config.port:
                 LOGGER.warning(f"Port {Config.port} not available, use {port} instead.")
-                Config.set_config("port", port)
+            Config._runtime_port = port
 
         LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
     except:

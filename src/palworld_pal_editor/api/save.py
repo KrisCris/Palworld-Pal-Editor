@@ -29,7 +29,7 @@ def fetch_config():
             "I18n": Config.i18n,
             "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
-            "HasPassword": Config.password != None,
+            "HasPassword": bool(Config.password),
             "VERSION": version_info(),
             "IsOfficialBuild": is_gh_build(),
         },

@@ -102,14 +102,14 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
         :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
         :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
         :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
-        <PalPortrait :src="`/image/pals/${pal.IconAccessKey}`" alt="" size="2.5rem"
+        <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)">
           <template #top-left>
-            <img v-if="pal.IsBOSS" :src="'/image/ui/boss'" alt="" @error="$event.currentTarget.hidden = true">
-            <img v-else-if="pal.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
-            <img v-if="pal.IsBOSS && pal.IsRarePal" :src="'/image/ui/rare'" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
         </PalPortrait>
         <span class="pal-copy">
