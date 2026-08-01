@@ -50,8 +50,8 @@ const save = async () => {
       <div class="editor-app-bar__primary">
         <template v-if="palStore.SAVE_LOADED_FLAG">
           <UiIcon name="save" />
-          <input class="savePath" type="text" v-model="palStore.PAL_WRITE_BACK_PATH"
-            :placeholder="palStore.PAL_GAME_SAVE_PATH" :disabled="palStore.LOADING_FLAG">
+          <input class="savePath" type="text" :value="palStore.PAL_WRITE_BACK_PATH || palStore.PAL_GAME_SAVE_PATH"
+            :title="palStore.PAL_WRITE_BACK_PATH || palStore.PAL_GAME_SAVE_PATH" readonly>
           <button class="op op--primary" @click="save" :disabled="palStore.LOADING_FLAG"
             :title="palStore.getTranslatedText('TopBar_Btn_Save')"
             :aria-label="palStore.getTranslatedText('TopBar_Btn_Save')">
@@ -61,6 +61,11 @@ const save = async () => {
             :title="palStore.getTranslatedText('TopBar_Btn_Reload')"
             :aria-label="palStore.getTranslatedText('TopBar_Btn_Reload')">
             <UiIcon name="refresh" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Reload") }}</span>
+          </button>
+          <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG"
+            :title="palStore.getTranslatedText('TopBar_Btn_Main_Page')"
+            :aria-label="palStore.getTranslatedText('TopBar_Btn_Main_Page')">
+            <UiIcon name="home" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}</span>
           </button>
         </template>
         <div v-else class="entry-brand">
@@ -76,15 +81,18 @@ const save = async () => {
         <details v-if="palStore.SAVE_LOADED_FLAG" class="editor-more">
           <summary class="op"><UiIcon name="more" /> {{ palStore.getTranslatedText("TopBar_More") }}</summary>
           <div class="editor-more__menu">
-            <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG">
-              <UiIcon name="home" /> {{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}
-            </button>
-            <button class="op" @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG"
-              :disabled="palStore.LOADING_FLAG">
-              <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
+            <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
+              @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
+              :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
+              :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
+              <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
             </button>
           </div>
         </details>
+        <button v-if="palStore.SAVE_LOADED_FLAG" class="op support-button"
+          @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
+          <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
+        </button>
         <BackendServerSelector v-if="palStore.APP_STATE !== 'editor'" />
         <label class="language-control">
           <UiIcon name="language" />
@@ -102,12 +110,6 @@ const save = async () => {
         :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
         <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
         {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
-      </button>
-      <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
-        @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
-        :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
-        :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
-        <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
       </button>
       <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
         :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
@@ -261,6 +263,14 @@ const save = async () => {
   width: min(26rem, 38vw);
   min-width: 8rem;
   padding: 0 var(--editor-space-3);
+  text-align: right;
+  cursor: text;
+}
+
+.support-button {
+  border-color: var(--editor-color-primary);
+  color: var(--editor-color-primary);
+  background: color-mix(in srgb, var(--editor-color-primary) 12%, var(--editor-color-control));
 }
 
 #languageSelect {

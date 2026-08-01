@@ -220,14 +220,14 @@ export default {
     TopBar_Btn_HealAllPals: "Heal All Pals",
     TopBar_Btn_Pal_OOB: "Show Out of Box Pal",
     TopBar_Btn_Pal_Ghost: "Toggle Ghost Pal",
-    TopBar_Btn_Invalid_Options: "Hide Cheat Options",
+    TopBar_Btn_Invalid_Options: "Show Cheat Options",
     TopBar_Btn_Invalid_Options_ADs: "[This message will only appear once. If you want to view the content again, you can access it from the entry page.] I don't want to lock any features behind the paywall, but if you like this tool, consider supporting me to help me continue developing and maintaining it. More information will be shown in the GitHub readme's sponsor section.",
     TopBar_Btn_Donation: "Donation",
 
     TopBar_Btn_HealAllPals_Tooltips: "Removes all negative statuses of Pal and restores health and satiety.",
     TopBar_Pal_OOB_Tooltips: "Display pals that are not in owner player pal containers, i.e. viewing cage, or taken by someone.",
     TopBar_Pal_Ghost_Tooltips: "Show ghost pals, those no longer can be found in game, i.e. sold, dropped, butchered.",
-    TopBar_Invalid_Options_Tooltips: "Hide some options and dropdowns that are not normally available in game, be careful when using it.",
+    TopBar_Invalid_Options_Tooltips: "Show options and dropdown entries that are not normally available in game. Use them with care.",
 
     Message_Title_Success: "Success",
     Message_Title_Warning: "Notice",

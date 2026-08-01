@@ -220,7 +220,7 @@ export default {
     TopBar_Btn_HealAllPals: "Guérir tous les Pals",
     TopBar_Btn_Pal_OOB: "Afficher Pal hors boîte",
     TopBar_Btn_Pal_Ghost: "Basculer Pal fantôme",
-    TopBar_Btn_Invalid_Options: "Masquer triche",
+    TopBar_Btn_Invalid_Options: "Afficher les options de triche",
     TopBar_Btn_Invalid_Options_ADs: "[Ce message n’apparaîtra qu’une seule fois. Si vous souhaitez consulter le contenu à nouveau, vous pouvez y accéder depuis la page d’entrée.] Je ne souhaite pas restreindre des fonctionnalités derrière un mur de paiement, mais si cet outil vous plaît, envisagez de me soutenir pour m’aider à continuer à le développer et à l’entretenir. Plus d’informations sont disponibles dans la section sponsor du README sur GitHub.",
     TopBar_Btn_Donation: "Donation",
 
@@ -228,7 +228,7 @@ export default {
     TopBar_Btn_HealAllPals_Tooltips: "Supprime tous les états négatifs de Pal et rétablit la santé et la satiété.",
     TopBar_Pal_OOB_Tooltips: "Afficher les pals qui ne sont pas dans les conteneurs de pals du joueur propriétaire, c'est-à-dire la cage d'observation, ou pris par quelqu'un.",
     TopBar_Pal_Ghost_Tooltips: "Afficher les pals fantômes, ceux qui ne peuvent plus être trouvés dans le jeu, c'est-à-dire vendus, lâchés, abattus.",
-    TopBar_Invalid_Options_Tooltips: "Masquez certaines options et menus déroulants qui ne sont normalement pas disponibles dans le jeu. Faites attention lors de leur utilisation.",
+    TopBar_Invalid_Options_Tooltips: "Affiche les options et entrées de menu qui ne sont normalement pas disponibles dans le jeu. Utilisez-les avec prudence.",
 
     Message_Title_Success: "Succès",
     Message_Title_Warning: "Attention",
