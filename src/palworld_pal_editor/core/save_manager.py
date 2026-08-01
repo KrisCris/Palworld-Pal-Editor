@@ -518,21 +518,25 @@ class SaveManager:
             LOGGER.info("No Empty Pal Slot")
             return None
         
-        pal_instanceId = toUUID(str(uuid.uuid4()))
         group_id = player.group_id
         group = self.group_data.get_group(group_id)
+        if group is None:
+            LOGGER.warning(f"Group {group_id} not found")
+            return None
+
+        pal_instanceId = toUUID(str(uuid.uuid4()))
 
         while pal_container.has_pal(pal_instanceId) or group.has_pal(pal_instanceId):
             pal_instanceId = toUUID(str(uuid.uuid4()))
 
+        container_id = pal_container.ID
+        slot_idx = pal_container.get_empty_slot()
+        container_added = group_added = player_added = False
         try:
-            if (slot_idx := pal_container.add_pal(pal_instanceId)) == -1:
-                return None
-            container_id = pal_container.ID
-            group.add_pal(pal_instanceId)
-            
             if not pal_obj:
-                pal_obj = PalObjects.PalSaveParameter(pal_instanceId, player_uid, container_id, slot_idx, group_id)
+                pal_obj = PalObjects.PalSaveParameter(
+                    pal_instanceId, player_uid, container_id, slot_idx, group_id
+                )
                 pal_entity = PalEntity(pal_obj)
             else:
                 pal_obj = copy.deepcopy(pal_obj)
@@ -542,20 +546,49 @@ class SaveManager:
                 # I don't know why some captured pals have PlayerUId, 
                 # But having non-empty ID will cause the game to hide the duped pal
                 pal_entity.PlayerUId = PalObjects.EMPTY_UUID
+                pal_entity._pal_param["OwnerPlayerUId"] = PalObjects.Guid(player_uid)
+                pal_entity._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+                    "StructProperty",
+                    {
+                        "prop_name": "OldOwnerPlayerUIds",
+                        "prop_type": "StructProperty",
+                        "values": [toUUID(player_uid)],
+                        "type_name": "Guid",
+                        "id": PalObjects.EMPTY_UUID,
+                    },
+                )
+                pal_entity._pal_param["LastNickNameModifierPlayerUid"] = (
+                    PalObjects.Guid(player_uid)
+                )
+                pal_entity.group_id = group_id
                 # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
                 # so just assign a randomly for now.
-                pal_entity._pal_param["EquipItemContainerId"] = PalObjects.PalContainerId(str(uuid.uuid4()))
+                pal_entity._pal_param["EquipItemContainerId"] = (
+                    PalObjects.PalContainerId(str(uuid.uuid4()))
+                )
                 # pal_entity._pal_param.pop("EquipItemContainerId", None)
                 # remove expedition status
                 pal_entity._pal_param.pop("MapObjectConcreteInstanceIdAssignedToExpedition", None)
-                pal_entity.NickName = "!!!DUPED PAL!!!"
 
             pal_entity.is_new_pal = True
 
+            if pal_container.add_pal(pal_instanceId) == -1:
+                return None
+            container_added = True
+            if not group.add_pal(pal_instanceId):
+                raise ValueError("Duplicated Pal ID in group")
+            group_added = True
             if not player.add_pal(pal_entity):
-                raise Exception("Duplicated Pal ID, Try Again!")
+                raise ValueError("Duplicated Pal ID, Try Again!")
+            player_added = True
             self._entities_list.append(pal_obj)
-        except:
+        except Exception:
+            if player_added:
+                player.pop_pal(str(pal_instanceId))
+            if group_added:
+                group.del_pal(pal_instanceId)
+            if container_added:
+                pal_container.del_pal(pal_instanceId)
             LOGGER.error(f"Failed adding pal: {traceback.format_exc()}")
             return None
         LOGGER.info(f"Added Pal {pal_entity} to Player {player}")

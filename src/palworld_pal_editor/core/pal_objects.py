@@ -610,7 +610,7 @@ class PalObjects:
                                     "Gender": PalObjects.EnumProperty(
                                         "EPalGenderType", "EPalGenderType::Female"
                                     ),
-                                    "NickName": PalObjects.StrProperty("!!!NEW PAL!!!"),
+                                    "NickName": PalObjects.StrProperty(""),
                                     "EquipWaza": PalObjects.ArrayProperty(
                                         "EnumProperty",
                                         {
