@@ -136,7 +136,8 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -166,6 +167,18 @@
             {
                 "Kind": "placement",
                 "ID": "7421"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_4_1_7"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_7_2"
+            },
+            {
+                "Kind": "wild",
+                "ID": "desert_orange_Oasis_Hunters_010"
             },
             {
                 "Kind": "dungeon",
@@ -356,12 +369,29 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
                 "Kind": "placement",
                 "ID": "2049"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_3_5"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_6_1"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_7_1"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_7_3"
             },
             {
                 "Kind": "dungeon",
@@ -1209,9 +1239,26 @@
         "RegularlyObtainable": true,
         "ObtainMethods": [
             "dungeon",
-            "invader"
+            "invader",
+            "wild"
         ],
         "AvailabilitySources": [
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_1_5"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_6_1"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_7_2"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_7_3"
+            },
             {
                 "Kind": "dungeon",
                 "ID": "1"
@@ -1392,7 +1439,8 @@
         "ObtainMethods": [
             "dungeon",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -1418,6 +1466,14 @@
             {
                 "Kind": "placement",
                 "ID": "7421"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_4_1_7"
+            },
+            {
+                "Kind": "wild",
+                "ID": "desert_orange_Oasis_Hunters_010"
             },
             {
                 "Kind": "dungeon",
@@ -1729,7 +1785,8 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -1755,6 +1812,14 @@
             {
                 "Kind": "placement",
                 "ID": "7421"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_4_1_7"
+            },
+            {
+                "Kind": "wild",
+                "ID": "desert_orange_Oasis_Hunters_010"
             },
             {
                 "Kind": "dungeon",
@@ -4685,7 +4750,8 @@
         "ObtainMethods": [
             "dungeon",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -4771,6 +4837,14 @@
             {
                 "Kind": "placement",
                 "ID": "6968"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_3_1_5"
+            },
+            {
+                "Kind": "wild",
+                "ID": "volcano_orange_C_Firecult_010"
             },
             {
                 "Kind": "dungeon",
@@ -4944,12 +5018,29 @@
         "ObtainMethods": [
             "dungeon",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
                 "Kind": "placement",
                 "ID": "4523"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_2_1_6"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_2_1_8"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_8_1"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yellow_A_Belivers_010"
             },
             {
                 "Kind": "dungeon",
@@ -5140,7 +5231,8 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -5222,6 +5314,22 @@
             {
                 "Kind": "placement",
                 "ID": "7167"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_2_1_6"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_1_8_1"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yellow_A_Belivers_010"
+            },
+            {
+                "Kind": "wild",
+                "ID": "orange_B_010"
             },
             {
                 "Kind": "dungeon",
@@ -7523,7 +7631,8 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -7541,6 +7650,10 @@
             {
                 "Kind": "placement",
                 "ID": "3635"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_5_1_6"
             },
             {
                 "Kind": "dungeon",
@@ -9890,9 +10003,14 @@
         "Invalid": false,
         "RegularlyObtainable": true,
         "ObtainMethods": [
-            "dungeon"
+            "dungeon",
+            "wild"
         ],
         "AvailabilitySources": [
+            {
+                "Kind": "wild",
+                "ID": "dungeon_2_1_8"
+            },
             {
                 "Kind": "dungeon",
                 "ID": "37"
@@ -12656,7 +12774,8 @@
             "dungeon",
             "incident",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -12706,6 +12825,18 @@
             {
                 "Kind": "placement",
                 "ID": "7476"
+            },
+            {
+                "Kind": "wild",
+                "ID": "dungeon_6_1_6"
+            },
+            {
+                "Kind": "wild",
+                "ID": "sakura_red_A_100"
+            },
+            {
+                "Kind": "wild",
+                "ID": "sakura_purple_A_170"
             },
             {
                 "Kind": "dungeon",
@@ -12890,7 +13021,8 @@
         "RegularlyObtainable": true,
         "ObtainMethods": [
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -12940,6 +13072,14 @@
             {
                 "Kind": "placement",
                 "ID": "7476"
+            },
+            {
+                "Kind": "wild",
+                "ID": "sakura_red_A_100"
+            },
+            {
+                "Kind": "wild",
+                "ID": "sakura_purple_A_170"
             },
             {
                 "Kind": "invader",
@@ -20939,7 +21079,8 @@
         "ObtainMethods": [
             "dungeon",
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -21123,6 +21264,18 @@
                 "ID": "7282"
             },
             {
+                "Kind": "wild",
+                "ID": "dungeon_7_1_6"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yamijima_purple_A_010"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yamijima_pink_A_010"
+            },
+            {
                 "Kind": "dungeon",
                 "ID": "28"
             },
@@ -21285,7 +21438,8 @@
         "RegularlyObtainable": true,
         "ObtainMethods": [
             "invader",
-            "placement"
+            "placement",
+            "wild"
         ],
         "AvailabilitySources": [
             {
@@ -21459,6 +21613,14 @@
             {
                 "Kind": "placement",
                 "ID": "7282"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yamijima_purple_A_010"
+            },
+            {
+                "Kind": "wild",
+                "ID": "yamijima_pink_A_010"
             },
             {
                 "Kind": "invader",
@@ -51682,9 +51844,14 @@
         "RegularlyObtainable": true,
         "ObtainMethods": [
             "dungeon",
-            "invader"
+            "invader",
+            "wild"
         ],
         "AvailabilitySources": [
+            {
+                "Kind": "wild",
+                "ID": "dungeon_13_2_1"
+            },
             {
                 "Kind": "dungeon",
                 "ID": "59"

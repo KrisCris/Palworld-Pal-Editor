@@ -194,12 +194,18 @@ def test_unique_breeding_requires_reachable_parents_and_alpha_follows_valid_base
         "GrassDragon",
         "Mothman",
         "PinkKangaroo",
-        "PoseidonOrca",
         "WaterLizard",
     ):
         assert pals[character_id]["Invalid"] is True, character_id
         assert pals[character_id]["RegularlyObtainable"] is False, character_id
         assert pals[character_id]["AvailabilitySources"] == [], character_id
+
+    assert pals["PoseidonOrca"]["AvailabilitySources"] == [
+        {"Kind": "unique-breeding", "ID": "193"}
+    ]
+    assert pals["BOSS_PoseidonOrca"]["AvailabilitySources"] == [
+        {"Kind": "wild", "ID": "island_iceblock_FBOSS_1"}
+    ]
 
     assert pals["GhostRabbit_Grass"]["Invalid"] is False
     assert "unique-breeding" in pals["GhostRabbit_Grass"]["ObtainMethods"]
@@ -357,8 +363,8 @@ def test_exact_scenario_publication_rows_use_approved_sources():
         row = pals[character_id]
         assert row["Invalid"] is False, character_id
         assert row["RegularlyObtainable"] is True, character_id
-        assert row["ObtainMethods"] == [source["Kind"]], character_id
-        assert row["AvailabilitySources"] == [source], character_id
+        assert source["Kind"] in row["ObtainMethods"], character_id
+        assert source in row["AvailabilitySources"], character_id
 
 
 def test_game_derived_skin_contract_and_missing_icon_policy():

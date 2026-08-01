@@ -5064,7 +5064,8 @@ class CharacterEvidenceTests(unittest.TestCase):
     def test_reached_wild_and_positive_dungeon_routes_are_exactly_gated(self) -> None:
         def wild_row(spawner: str, weight: int, target: str) -> dict:
             return {
-                "SpawnerType": f"EPalWildSpawnerType::{spawner}",
+                "SpawnerName": spawner,
+                "SpawnerType": "EPalWildSpawnerType::FieldBoss",
                 "Weight": weight,
                 "Pal_1": target,
                 "Pal_2": "None",
@@ -5355,7 +5356,8 @@ class CharacterEvidenceTests(unittest.TestCase):
             game_data.CHARACTER_ROUTE_SOURCES["wild"],
             {
                 "Reached": {
-                    "SpawnerType": "EPalWildSpawnerType::ordinary",
+                    "SpawnerName": "ordinary",
+                    "SpawnerType": "EPalWildSpawnerType::FieldBoss",
                     "Weight": 1,
                     "Pal_1": "None",
                     "Pal_2": "None",

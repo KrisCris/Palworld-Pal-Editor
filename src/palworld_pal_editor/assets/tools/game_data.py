@@ -1892,7 +1892,7 @@ def build_character_evidence(
         else ()
     )
     for row_id, row in wild_rows:
-        spawner_name = _enum_tail(row.get("SpawnerType"), f"{row_id}.SpawnerType")
+        spawner_name = _plain_name(row.get("SpawnerName"), f"{row_id}.SpawnerName")
         if spawner_name.casefold() not in reached_wild_names or not _positive_number(
             row.get("Weight"), f"{row_id}.Weight"
         ):

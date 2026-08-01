@@ -2213,8 +2213,8 @@
         "icons/pals/skin/WeaselDragon_Skin004.png": 1
       },
       "output_hashes": {
-        "data/human_data.json": "1529b5c10ce3576cbb3aa2580d0519c6dcbe49d5b10c7a2ef45f9f8d13dfa78d",
-        "data/pal_data.json": "92b520fbef39aa687b7778cce6d94d396c2abe6a007f0fd1b94deda941dca605",
+        "data/human_data.json": "4efc1a26384881fa57e6a01615e5b3d850e8893a2b326273e8582d5f4dc5bc26",
+        "data/pal_data.json": "d0739da6089c313fc57e78f2f83877553685f70ae87d3b3537e50c626a4c7b45",
         "data/skin_data.json": "7dde2c0a1a316c9d0b5eaa160d28b8fc6b544bbe072d767b6dfb791e2be4ca1d",
         "icons/pals/Alpaca.png": "a948a426079f0755e7418ac42c2428b36273612914a5033a7703ea8aaac39f30",
         "icons/pals/AmaterasuWolf.png": "4a204dbac47d085130d23fda166e47d023e59257780e980257fb670adb26a6c7",
@@ -2697,7 +2697,7 @@
         "icons/pals/skin/WeaselDragon_Skin004.png": "977be916710b6071093182dde5c97c05fdd05ca7201e31568a48c323bd4a7eab"
       },
       "parser_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d",
-      "policy_sha256": "f93a75b700d0464c60a81f546b34567010b9019293148ca5cd2c9ee3e3203983",
+      "policy_sha256": "ecbddecc57bd23def2c331bf545b4a5ef4a573ebe468e7a62991548f1eec7bf9",
       "source_counts": {
         "Pal/Content/L10N/de/Pal/DataTable/Text/DT_HumanNameText_Common": 132,
         "Pal/Content/L10N/de/Pal/DataTable/Text/DT_NamePrefixText_Common": 369,
