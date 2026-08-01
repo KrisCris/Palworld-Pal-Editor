@@ -5,6 +5,7 @@ import test from "node:test";
 const paths = {
   base: "../src/assets/base.css",
   editor: "../src/assets/editor-ui.css",
+  workspace: "../src/views/EditorView.vue",
   topBar: "../src/components/TopBar.vue",
   players: "../src/components/PlayerList.vue",
   pals: "../src/components/PalList.vue",
@@ -39,14 +40,14 @@ const contrast = (left, right) => {
 
 test("the loaded editor defines and consumes one semantic color system", () => {
   for (const [token, value] of Object.entries({
-    "--editor-color-background": "#17191e",
-    "--editor-color-surface": "#22252b",
-    "--editor-color-surface-raised": "#2b2f37",
-    "--editor-color-border": "#515866",
-    "--editor-color-primary": "#2788f5",
-    "--editor-color-focus": "#18d4f2",
-    "--editor-color-ancient": "#8e45d6",
-    "--editor-color-lucky": "#7bdcff",
+    "--editor-color-background": "#0a0c0d",
+    "--editor-color-surface": "#181c1f",
+    "--editor-color-surface-raised": "#2c3135",
+    "--editor-color-border": "#596873",
+    "--editor-color-primary": "#ff4563",
+    "--editor-color-focus": "#20b7ff",
+    "--editor-color-ancient": "#9a4dff",
+    "--editor-color-lucky": "#54c7ff",
   })) assert.match(sources.editor, new RegExp(`${token}:\\s*${value}`, "i"));
 
   for (const [name, source] of Object.entries(sources)) {
@@ -59,7 +60,8 @@ test("the loaded editor defines and consumes one semantic color system", () => {
 
 test("editor states share vivid semantic accents", () => {
   for (const source of [sources.players, sources.pals]) {
-    assert.match(source, /\[aria-current=["']true["']\]\s*\{[^}]*border-color:\s*var\(--editor-color-focus\)[^}]*linear-gradient\([^)]*var\(--editor-color-primary\)[^)]*var\(--editor-color-focus\)/s);
+    assert.match(source, /\[aria-current=["']true["']\]\s*\{[^}]*border-color:\s*var\(--editor-color-focus\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
+    assert.doesNotMatch(source, /\[aria-current=["']true["']\]\s*\{[^}]*linear-gradient/s);
   }
 
   assert.match(sources.topBar, /\.op\.toggled\s*\{[^}]*var\(--editor-color-success\)/s);
@@ -76,6 +78,21 @@ test("editor states share vivid semantic accents", () => {
     for (const tier of ["top", "high", "positive", "negative"])
       assert.match(source, new RegExp(`var\\(--editor-color-passive-${tier}\\)`));
   }
+});
+
+test("workspace uses the selected Palworld color lighting and glass surfaces", () => {
+  assert.match(sources.base, /body\s*\{[^}]*background:\s*var\(--color-background\);[^}]*background:\s*radial-gradient/s);
+  assert.match(sources.base, /radial-gradient\([^}]*var\(--editor-color-primary\)[^}]*radial-gradient\([^}]*var\(--editor-color-focus\)[^}]*radial-gradient\([^}]*var\(--editor-color-ancient\)/s);
+  assert.match(sources.editor, /--editor-glass-filter:\s*blur\(26px\) saturate\(125%\)/);
+  assert.match(sources.editor, /\.editor-surface\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*\n\s*backdrop-filter:\s*var\(--editor-glass-filter\)[^}]*box-shadow:\s*var\(--editor-glass-shadow\)/s);
+  assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.match(sources.topBar, /\.editor-toolbar\s*\{[^}]*background:\s*var\(--editor-color-glass-toolbar\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.match(sources.playerEditor, /\.player-summary,[\s\S]*?\.player-panel\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+
+  assert.ok(contrast(
+    rgb(tokenHex("--editor-color-border")),
+    rgb(tokenHex("--editor-color-control")),
+  ) >= 3, "control boundary");
 });
 
 test("rendered technology cards consume the shared palette", () => {

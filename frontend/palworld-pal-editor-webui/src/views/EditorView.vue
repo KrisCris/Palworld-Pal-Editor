@@ -91,9 +91,12 @@ watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', val
 
 .editor-roster {
   overflow: hidden;
-  border: 1px solid var(--editor-color-border);
+  border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-surface-subtle);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
 }
 
 .editor-canvas {

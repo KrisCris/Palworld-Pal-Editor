@@ -205,9 +205,9 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 
 .pal-row[aria-current="true"] {
   border-color: var(--editor-color-focus);
-  color: var(--editor-color-background);
-  background: linear-gradient(135deg, var(--editor-color-primary), var(--editor-color-focus));
-  box-shadow: 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 35%, transparent);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  box-shadow: inset .2rem 0 var(--editor-color-focus), 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 25%, transparent);
 }
 
 .pal-row:disabled {
@@ -218,7 +218,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 .pal-row.female { border-left-color: var(--editor-color-female); }
 .pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
-.pal-row[aria-current="true"] small { color: var(--editor-color-background); }
+.pal-row[aria-current="true"] small { color: var(--editor-color-muted); }
 
 .pal-copy {
   display: grid;

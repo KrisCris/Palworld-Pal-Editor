@@ -107,9 +107,9 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 
 .roster-row[aria-current="true"] {
   border-color: var(--editor-color-focus);
-  color: var(--editor-color-background);
-  background: linear-gradient(135deg, var(--editor-color-primary), var(--editor-color-focus));
-  box-shadow: 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 35%, transparent);
+  color: var(--editor-color-text);
+  background: var(--editor-color-surface-raised);
+  box-shadow: inset .2rem 0 var(--editor-color-focus), 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 25%, transparent);
 }
 
 .roster-row:disabled {

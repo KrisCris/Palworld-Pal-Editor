@@ -114,8 +114,11 @@ const save = async () => {
   position: relative;
   z-index: 20;
   display: grid;
-  border-bottom: 1px solid var(--editor-color-border);
-  background: var(--editor-color-surface-subtle);
+  border-bottom: 1px solid var(--editor-color-glass-border);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
 }
 
 .loading-bar {

@@ -1,29 +1,34 @@
 :root {
-  --editor-color-background: #17191e;
-  --editor-color-surface: #22252b;
-  --editor-color-surface-raised: #2b2f37;
-  --editor-color-surface-subtle: #1c1f25;
-  --editor-color-control: #323741;
-  --editor-color-control-hover: #3c4350;
-  --editor-color-border: #515866;
-  --editor-color-focus: #18d4f2;
-  --editor-color-text: #f2f6ff;
-  --editor-color-muted: #aeb8c9;
-  --editor-color-primary: #2788f5;
-  --editor-color-primary-hover: #42a0ff;
-  --editor-color-danger: #ed3856;
+  --editor-color-background: #0a0c0d;
+  --editor-color-surface: #181c1f;
+  --editor-color-surface-raised: #2c3135;
+  --editor-color-surface-subtle: #0e1214;
+  --editor-color-control: #0e1214;
+  --editor-color-control-hover: #343a3f;
+  --editor-color-border: #596873;
+  --editor-color-focus: #20b7ff;
+  --editor-color-text: #f1f3ef;
+  --editor-color-muted: #9ba7ad;
+  --editor-color-primary: #ff4563;
+  --editor-color-primary-hover: #ff637a;
+  --editor-color-danger: #ee3453;
   --editor-color-danger-hover: #ff4b69;
   --editor-color-warning: #f3b83f;
   --editor-color-success: #36d47d;
-  --editor-color-ancient: #8e45d6;
-  --editor-color-lucky: #7bdcff;
+  --editor-color-ancient: #9a4dff;
+  --editor-color-lucky: #54c7ff;
   --editor-color-male: #43a5ff;
   --editor-color-female: #f06aab;
-  --editor-color-passive-top: #aa70ff;
+  --editor-color-passive-top: #a64dff;
   --editor-color-passive-high: #45dc8a;
   --editor-color-passive-positive: #f0c34b;
   --editor-color-passive-negative: #ef6471;
-  --editor-color-disabled: #626978;
+  --editor-color-disabled: #56616a;
+  --editor-color-glass-surface: rgb(24 28 31 / 66%);
+  --editor-color-glass-toolbar: rgb(14 18 20 / 76%);
+  --editor-color-glass-border: rgb(255 255 255 / 22%);
+  --editor-glass-filter: blur(26px) saturate(125%);
+  --editor-glass-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 1rem 2.1rem rgb(0 0 0 / 34%);
   --editor-space-1: .25rem;
   --editor-space-2: .5rem;
   --editor-space-3: .75rem;
@@ -43,10 +48,13 @@
   box-sizing: border-box;
   gap: var(--editor-space-5);
   padding: var(--editor-space-5);
-  border: 1px solid var(--editor-color-border);
+  border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
   color: var(--editor-color-text);
-  background: var(--editor-color-surface);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
 }
 
 .editor-summary {

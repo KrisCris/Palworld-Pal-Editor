@@ -154,9 +154,12 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 
 .player-summary,
 .player-panel {
-  border: 1px solid var(--editor-color-border);
+  border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-surface-subtle);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
 }
 
 .player-summary {
