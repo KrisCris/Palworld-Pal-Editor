@@ -66,8 +66,18 @@ const currentPaldeck = () => paldeckForRow(
 );
 
 const skinOptions = () => [
-  { value: '', label: palStore.getTranslatedText('Editor_Skin_Default') },
-  ...availableSkins().map(skin => ({ value: skin.SkinName, label: skin.SkinName })),
+  {
+    value: '',
+    label: palStore.getTranslatedText('Editor_Skin_Default'),
+    icon: palStore.backendAssetUrl(`/image/pals/${palStore.SELECTED_PAL_DATA.IconKey || 'unknown'}`),
+  },
+  ...availableSkins().map(skin => ({
+    value: skin.SkinName,
+    label: skin.SkinName,
+    icon: palStore.backendAssetUrl(skin.Invalid
+      ? '/image/pals/unknown'
+      : `/image/pals/skin-${skin.SkinName}`),
+  })),
 ]
 
 const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
