@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { parse } from "@vue/compiler-sfc";
 
 const readSource = async relativePath => {
   try {
@@ -25,6 +26,18 @@ const basicPanel = () => {
   assert.notEqual(start, -1, "Pal basic info boundary");
   assert.notEqual(end, -1, "Pal basic info end");
   return source.slice(start, end);
+};
+
+const findElementByClass = (node, className, parent = null) => {
+  if (node.type === 1) {
+    const classAttribute = node.props.find(prop => prop.type === 6 && prop.name === "class");
+    if (classAttribute?.value?.content.split(/\s+/).includes(className)) return { node, parent };
+  }
+  for (const child of node.children || []) {
+    const match = findElementByClass(child, className, node);
+    if (match) return match;
+  }
+  return null;
 };
 
 test("the shared editor design foundation is globally loaded", () => {
@@ -119,6 +132,16 @@ test("Pal basic info keeps specific translated icon action names", () => {
   ]) {
     assert.match(panel, new RegExp(`:aria-label="palStore\\.getTranslatedText\\('${key}'\\)"`));
   }
+});
+
+test("estimated Pal stats span the full basic-info card width", () => {
+  const { descriptor } = parse(source);
+  const grid = findElementByClass(descriptor.template.ast, "pal-basic-grid");
+  const stats = findElementByClass(descriptor.template.ast, "editor-stat-grid");
+
+  assert.ok(grid);
+  assert.ok(stats);
+  assert.equal(stats.parent, grid.parent);
 });
 
 test("save details expansion survives Pal editor remounts", () => {
