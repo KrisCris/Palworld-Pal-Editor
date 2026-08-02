@@ -93,9 +93,6 @@ cat > "$APPDIR/AppRun" << EOF
 #!/bin/bash
 HERE="\$(dirname "\$(readlink -f "\$0")")"
 export PYWEBVIEW_GUI="qt"
-export QT_OPENGL="software"
-export QT_QUICK_BACKEND="software"
-export QTWEBENGINE_CHROMIUM_FLAGS="\${QTWEBENGINE_CHROMIUM_FLAGS:-} --disable-gpu"
 exec "\$HERE/usr/bin/$APPNAME" "\$@"
 EOF
 chmod +x "$APPDIR/AppRun"

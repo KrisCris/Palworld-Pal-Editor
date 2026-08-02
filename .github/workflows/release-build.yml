@@ -142,7 +142,7 @@ jobs:
         shell: bash
         run: |
           chmod +x "$ASSET_PATH"
-          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run --auto-servernum bash -s -- "$ASSET_PATH" <<'BASH'
+          APPIMAGE_EXTRACT_AND_RUN=1 QT_OPENGL=software QT_QUICK_BACKEND=software QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu" xvfb-run --auto-servernum bash -s -- "$ASSET_PATH" <<'BASH'
           set -euo pipefail
           APPIMAGE=$1
           PORT=58081

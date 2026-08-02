@@ -191,16 +191,22 @@ def test_release_build_collects_only_runtime_assets_and_webui():
         assert source.index(build) < source.index(publish) < pyinstaller.start()
 
 
-def test_appimage_builder_packages_pywebview_qt_without_host_library_copying():
+def test_appimage_uses_gpu_by_default_and_ci_smoke_tests_use_software_rendering():
     source = (ROOT / "build_appimage.sh").read_text("utf-8")
 
     assert 'pywebview[pyside6]==4.4.1' in source
     assert '--hidden-import="webview.platforms.qt"' in source
     assert 'export PYWEBVIEW_GUI="qt"' in source
-    assert 'export QT_OPENGL="software"' in source
+    assert 'QT_OPENGL="software"' not in source
+    assert 'QT_QUICK_BACKEND="software"' not in source
+    assert "--disable-gpu" not in source
     assert "ldd " not in source
     assert "LD_LIBRARY_PATH" not in source
     assert "--appimage-extract-and-run" in source
+
+    for workflow in ("dev-build.yml", "release-build.yml"):
+        workflow_source = (ROOT / ".github" / "workflows" / workflow).read_text("utf-8")
+        assert 'QT_OPENGL=software QT_QUICK_BACKEND=software QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu"' in workflow_source
 
 
 def test_built_archives_include_runtime_assets_and_exclude_maintainer_files():
