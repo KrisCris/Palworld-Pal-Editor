@@ -50,11 +50,14 @@ test("shared selector uses native disclosure, search, and option buttons", async
 
 test("Pal editor routes every ordinary dropdown through the searchable selector", async () => {
     const source = await read("../src/components/PalEditor.vue");
+    const editorCss = await read("../src/assets/editor-ui.css");
     assert.match(source, /import SearchSelect/);
     assert.match(source, /:options="skinOptions\(\)"/);
+    assert.doesNotMatch(source, /<SearchSelect\s+class="editor-control"/);
     assert.match(source, /:options="passiveSkillOptions\(\)"/);
     assert.match(source, /:options="activeSkillSelectOptions\(\)"/);
     assert.doesNotMatch(source, /<select\b/);
+    assert.match(editorCss, /\.editor-surface:has\(\.search-select\[open\]\)/);
     for (const handler of ["add_PassiveSkillList", "add_MasteredWaza"]) assert.match(source, new RegExp(handler));
     for (const locale of [en, fr, ja, zhCN]) {
         for (const key of ["Editor_Select_Search", "Editor_Select_No_Results"]) {

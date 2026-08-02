@@ -196,7 +196,7 @@ const portraitBorder = pal => pal.IsAwakening
           </div>
           <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Skin") }}</span>
-            <SearchSelect class="editor-control" v-model="palStore.SELECTED_PAL_DATA.SkinName"
+            <SearchSelect v-model="palStore.SELECTED_PAL_DATA.SkinName"
               :options="skinOptions()" :placeholder="palStore.getTranslatedText('Editor_Skin_Default')"
               :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
               :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"

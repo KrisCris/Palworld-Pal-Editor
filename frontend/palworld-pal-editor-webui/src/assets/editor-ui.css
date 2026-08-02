@@ -59,6 +59,11 @@
   box-shadow: var(--editor-glass-shadow);
 }
 
+.editor-surface:has(.search-select[open]) {
+  position: relative;
+  z-index: 50;
+}
+
 .editor-summary {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
