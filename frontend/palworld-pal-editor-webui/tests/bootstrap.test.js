@@ -125,6 +125,25 @@ test("a persisted backend is disconnected until its initial probe succeeds", asy
     assert.equal(store.BACKEND_CONNECTED, false);
 });
 
+test("loading Pal details preserves list-only location and priority metadata", async () => {
+    const store = newStore();
+    const id = "party-pal";
+    const summary = {
+        InstanceId: id,
+        ContainerKind: "party",
+        SlotIndex: 0,
+        FavoriteIndex: 3,
+    };
+    mockBackend({ pals: [{ InstanceId: id, SlotIndex: 0 }] });
+    store.PLAYER_MAP = new Map([["player", { pals: new Map([[id, summary]]) }]]);
+
+    await store.selectPlayer("player", true);
+    await store.selectPal(id);
+
+    assert.equal(store.PAL_MAP.get(id).ContainerKind, "party");
+    assert.equal(store.PAL_MAP.get(id).FavoriteIndex, 3);
+});
+
 test("a failed probe preserves the active backend's ephemeral token", async () => {
     const store = newStore();
     mockBackend({ password: true });

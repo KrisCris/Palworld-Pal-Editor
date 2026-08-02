@@ -1480,7 +1480,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             // construct new pal
-            let pal_data = new PalData(response.data);
+            let pal_data = new PalData({
+                ...PAL_MAP.value.get(response.data.InstanceId),
+                ...response.data,
+            });
             // update the pal from the correct pal container
             if (player == PAL_BASE_WORKER_BTN.value) {
                 BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
