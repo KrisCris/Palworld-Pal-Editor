@@ -61,8 +61,15 @@ test("technology lanes render a stable non-mutating partition", async () => {
         TechnologyPoint: 0,
         bossTechnologyPoint: 0,
         UnusedStatusPoint: 0,
-        StatusPoints: {},
-        StatusPointMaximums: {},
+        StatusPoints: { "最大HP": 14 },
+        StatusPointTotals: { "最大HP": 26 },
+        StatusPointMinimums: { "最大HP": 14 },
+        StatusPointMaximums: { "最大HP": 38 },
+        StatusPointTotalMaximums: { "最大HP": 50 },
+        StatusPointMetadata: {
+            "最大HP": { category: "stat", icon: "stat-health", unit: "flat", values: Array.from({ length: 51 }, (_, rank) => rank * 100) },
+        },
+        setStatusPoint: () => {},
         UnlockedRecipeTechnologyNames: [],
         toggleTech: () => {},
     };
@@ -82,6 +89,9 @@ test("technology lanes render a stable non-mutating partition", async () => {
     assert.doesNotMatch(normal, /Ancient One/);
     assert.match(ancient, /Ancient One/);
     assert.doesNotMatch(ancient, /Normal (?:One|Two)/);
+    assert.match(html, /image\/ui\/stat-health/);
+    assert.match(html, /26 \/ 50/);
+    assert.match(html, /\+2600/);
     assert.deepEqual(items.map(item => item.InternalName), originalOrder);
 });
 
@@ -94,8 +104,18 @@ test("player controls preserve every update contract", async () => {
         "palStore.updatePlayer", "levelDown", "levelUp", "maxLevel",
         "setStatusPoint(name)", "unlock_all_techs",
     ]) assert.match(source, new RegExp(handler.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), handler);
-    assert.match(source, /:max="palStore\.SELECTED_PLAYER_DATA\.StatusPointMaximums\[name\]"/);
+    assert.match(source, /type="range"/);
+    assert.match(source, /StatusPointMinimums\[name\]/);
+    assert.match(source, /StatusPointTotalMaximums\[name\]/);
+    assert.match(source, /StatusPointTotals\[name\]/);
+    assert.match(source, /@change="palStore\.SELECTED_PLAYER_DATA\.setStatusPoint\(name\)"/);
     assert.match(source, /:aria-label="fieldActionLabel/);
+});
+
+test("status sliders dispatch stat totals separately from effigy ranks", async () => {
+    const source = await read("../src/stores/paleditor.js");
+    assert.match(source, /category === "stat"[\s\S]*\? "set_TotalStatusPoint"[\s\S]*: "set_StatusPoint"/);
+    assert.match(source, /Math\.min\(Math\.max\(Math\.trunc\(points\), minimum\), maximum\)/);
 });
 
 test("technology cards preserve toggle behavior in a compact square control", async () => {

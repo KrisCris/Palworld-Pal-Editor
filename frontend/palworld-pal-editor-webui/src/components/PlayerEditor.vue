@@ -13,6 +13,15 @@ const isMaxLv = () => palStore.SELECTED_PLAYER_DATA.Level >= (
 )
 const isMinLv = () => palStore.SELECTED_PLAYER_DATA.Level <= 1
 const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(key)}`
+const statusEntries = category => Object.entries(palStore.SELECTED_PLAYER_DATA.StatusPointMetadata || {})
+  .filter(([, metadata]) => metadata.category === category)
+const playerStats = computed(() => statusEntries('stat'))
+const effigyAbilities = computed(() => statusEntries('effigy'))
+const statusEffect = (name, metadata) => {
+  const rank = palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] || 0
+  const value = metadata.values?.[rank] ?? rank
+  return `+${Number.isInteger(value) ? value : Number(value).toFixed(1)}${metadata.unit === 'percent' ? '%' : ''}`
+}
 const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(([level, items]) => ({
   level,
   normal: items.filter(item => !item.BossTechnology),
@@ -98,22 +107,37 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
         </div>
       </section>
 
-      <section class="player-panel" v-if="palStore.SELECTED_PLAYER_DATA.StatusPoints">
+      <section class="player-panel status-panel" v-if="palStore.SELECTED_PLAYER_DATA.StatusPointMetadata">
         <h2>{{ palStore.getTranslatedText('Editor_StatusUpgrades') }}</h2>
-        <div class="status-grid">
-          <div class="status-control" v-for="(points, name) in palStore.SELECTED_PLAYER_DATA.StatusPoints" :key="name">
-            <label :for="`status-${name}`">{{ palStore.getTranslatedText(`StatusPoint_${name}`) }}</label>
-            <div class="player-control">
-              <input :id="`status-${name}`" type="number" min="0"
-                :max="palStore.SELECTED_PLAYER_DATA.StatusPointMaximums[name]"
-                v-model.number="palStore.SELECTED_PLAYER_DATA.StatusPoints[name]">
-              <button type="button" @click="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)"
-                :disabled="palStore.LOADING_FLAG"
-                :aria-label="`${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(`StatusPoint_${name}`)}`">
-                <UiIcon name="check" />
-              </button>
+        <div class="status-groups">
+          <section class="status-group" v-for="group in [
+            { key: 'stats', title: 'Editor_PlayerStats', entries: playerStats },
+            { key: 'effigy', title: 'Editor_EffigyAbilities', entries: effigyAbilities },
+          ]" :key="group.key">
+            <h3>{{ palStore.getTranslatedText(group.title) }}</h3>
+            <div class="status-grid">
+              <article class="status-control" v-for="([name, metadata]) in group.entries" :key="name">
+                <header>
+                  <span class="status-name">
+                    <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
+                    {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
+                  </span>
+                  <strong>{{ palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}</strong>
+                </header>
+                <input :id="`status-${name}`" type="range"
+                  :min="palStore.SELECTED_PLAYER_DATA.StatusPointMinimums[name]"
+                  :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
+                  v-model.number="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
+                  :disabled="palStore.LOADING_FLAG"
+                  :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
+                  @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)">
+                <footer>
+                  <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
+                  <strong>{{ statusEffect(name, metadata) }}</strong>
+                </footer>
+              </article>
             </div>
-          </div>
+          </section>
         </div>
       </section>
     </div>
@@ -225,8 +249,33 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 }
 
 .player-fields,
+.status-groups,
 .status-grid { display: grid; gap: var(--editor-space-2); }
 .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.status-group h3 {
+  margin: 0;
+  color: var(--editor-color-muted);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.status-control {
+  padding: var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  background: var(--editor-color-control);
+}
+.status-control header,
+.status-control footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--editor-space-2);
+}
+.status-control footer { color: var(--editor-color-muted); font-size: .7rem; }
+.status-name { display: flex; min-width: 0; align-items: center; gap: var(--editor-space-1); }
+.status-name img { width: 1.35rem; height: 1.35rem; object-fit: contain; }
+.status-control input[type='range'] { width: 100%; margin: var(--editor-space-2) 0; accent-color: var(--editor-color-primary); }
 .player-field,
 .status-control { min-width: 0; }
 .player-field > label,

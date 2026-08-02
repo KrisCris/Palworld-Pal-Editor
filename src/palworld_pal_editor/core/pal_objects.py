@@ -6,6 +6,7 @@ from palworld_save_tools.archive import UUID
 from palworld_save_tools.json_tools import CustomEncoder
 
 from palworld_pal_editor.utils import LOGGER, clamp
+from palworld_pal_editor.utils.data_provider import PLAYER_STATUS_DATA
 
 
 def dumps(data: dict) -> str:
@@ -516,37 +517,16 @@ class PalObjects:
     def get_MapProperty(container: dict) -> Optional[list[dict]]:
         return get_nested_attr(container, ["value"])
 
-    # Stored values are upgrade ranks, not percentages. The relic-backed limits
-    # come from Palworld 1.0's DT_PlayerStatusRankMasterDataTable. The five
-    # ordinary player stats share a combined normal + elixir limit of 50.
     StatusPointMaximums = {
-        "最大HP": 50,
-        "最大SP": 50,
-        "攻撃力": 50,
-        "所持重量": 50,
-        "捕獲率": 15,
-        "作業速度": 50,
-        "空腹率低減": 20,
-        "泳ぎ速度": 20,
-        "食料腐敗低減": 20,
-        "ジャンプ力": 20,
-        "崖登り速度": 20,
-        "状態異常耐性": 20,
-        "スタミナ消費軽減": 20,
-        "パルスフィアホーミング": 4,
-        "移動速度アップ": 92,
-        "滑空速度": 20,
-        "経験値ボーナス": 4,
-        "虹パッシブ率": 4,
+        name: metadata["maximum"]
+        for name, metadata in PLAYER_STATUS_DATA.items()
     }
     StatusNames = list(StatusPointMaximums)
 
     ExStatusNames = [
-        "最大HP",
-        "最大SP",
-        "攻撃力",
-        "所持重量",
-        "作業速度",
+        name
+        for name, metadata in PLAYER_STATUS_DATA.items()
+        if metadata["category"] == "stat"
     ]
 
     @staticmethod

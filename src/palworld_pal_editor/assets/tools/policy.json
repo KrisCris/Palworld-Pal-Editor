@@ -240,10 +240,12 @@
     "progression": {
       "required_sources": [
         "Pal/Content/Pal/DataTable/Exp/DT_PalExpTable",
-        "Pal/Content/Pal/DataTable/Friendship/DT_FriendshipRankTable"
+        "Pal/Content/Pal/DataTable/Friendship/DT_FriendshipRankTable",
+        "Pal/Content/Pal/DataTable/Player/DT_PlayerStatusRankMasterDataTable",
+        "Pal/Content/Pal/Blueprint/System/BP_PalGameSetting"
       ],
       "known_build_invariants": {
-        "24181527": {
+        "24467282": {
           "json_outputs": {
             "data/pal_exp_table.json": {
               "count": 100,
@@ -252,6 +254,10 @@
             "data/pal_friendship.json": {
               "count": 14,
               "sha256": "41c33a23021911e6dd68ea9881ec899f32b4f839e571f73aab5272f43cc83123"
+            },
+            "data/player_status_data.json": {
+              "count": 18,
+              "sha256": "de31d05d648fb4e330198c69b6a9ede59455a94e84394f3a4f203255e8f35e9b"
             }
           }
         }

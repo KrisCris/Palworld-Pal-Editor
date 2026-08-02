@@ -21,8 +21,10 @@ def png_bytes(width: int, height: int) -> bytes:
 
 EXPECTED_SOURCES = {
     "stat-health": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_status_00",
+    "stat-stamina": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_status_01",
     "stat-attack": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_status_02",
     "stat-defense": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_status_03",
+    "stat-weight": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_weight",
     "stat-work-speed": (
         "Pal/Content/Pal/Texture/StatusParameterIcon/T_icon_status_work_speed"
     ),
@@ -40,12 +42,37 @@ EXPECTED_SOURCES = {
     "revive": (
         "Pal/Content/Pal/Texture/UI/InGame/SkillIcon/T_icon_skill_pal_Revive"
     ),
+    **{
+        name: (
+            "Pal/Content/Pal/Texture/UI/IngameMenu/Buildup/"
+            f"T_icon_Buildup_Player_{index:02d}"
+        )
+        for index, name in enumerate(
+            (
+                "ability-capture",
+                "ability-hunger",
+                "ability-swim",
+                "ability-food-decay",
+                "ability-jump",
+                "ability-glider-speed",
+                "ability-climb",
+                "ability-status-resist",
+                "ability-stamina-cost",
+                "ability-sphere-homing",
+                "ability-exp",
+                "ability-rainbow",
+                "ability-move-speed",
+            )
+        )
+    },
 }
 
 EXPECTED_DIMENSIONS = {
     "stat-health": (24, 24),
+    "stat-stamina": (24, 24),
     "stat-attack": (24, 24),
     "stat-defense": (24, 24),
+    "stat-weight": (28, 28),
     "stat-work-speed": (256, 256),
     "friendship": (64, 64),
     "gender-male": (34, 34),
@@ -56,6 +83,24 @@ EXPECTED_DIMENSIONS = {
     "soul": (36, 36),
     "heal": (128, 128),
     "revive": (128, 128),
+    **{
+        name: (48, 48)
+        for name in (
+            "ability-capture",
+            "ability-hunger",
+            "ability-swim",
+            "ability-food-decay",
+            "ability-jump",
+            "ability-glider-speed",
+            "ability-climb",
+            "ability-status-resist",
+            "ability-stamina-cost",
+            "ability-sphere-homing",
+            "ability-exp",
+            "ability-rainbow",
+            "ability-move-speed",
+        )
+    },
 }
 
 

@@ -154,6 +154,9 @@ _PAL_EXP_FIELDS = (
 _PROGRESSION_SCHEMAS = {
     "data/pal_exp_table.json": frozenset(_PAL_EXP_FIELDS),
     "data/pal_friendship.json": frozenset({"required_point"}),
+    "data/player_status_data.json": frozenset(
+        {"category", "icon", "maximum", "source", "unit", "values"}
+    ),
 }
 _OUTPUT_KINDS = {
     "data/pal_data.json": "characters",
@@ -168,7 +171,13 @@ _REQUIRED_OUTPUTS = {
     "characters": frozenset(
         {"data/pal_data.json", "data/human_data.json", "data/skin_data.json"}
     ),
-    "progression": frozenset({"data/pal_exp_table.json", "data/pal_friendship.json"}),
+    "progression": frozenset(
+        {
+            "data/pal_exp_table.json",
+            "data/pal_friendship.json",
+            "data/player_status_data.json",
+        }
+    ),
     "technology": frozenset({"data/tech_data.json"}),
 }
 _STATIC_PAL_ICONS = frozenset({"icons/pals/Human.png", "icons/pals/unknown.png"})
@@ -278,6 +287,10 @@ PROGRESSION_SOURCES = {
     "friendship": (
         "Pal/Content/Pal/DataTable/Friendship/DT_FriendshipRankTable"
     ),
+    "player_status": (
+        "Pal/Content/Pal/DataTable/Player/DT_PlayerStatusRankMasterDataTable"
+    ),
+    "game_setting": "Pal/Content/Pal/Blueprint/System/BP_PalGameSetting",
 }
 TECHNOLOGY_SOURCES = {
     "technology": (
@@ -3667,8 +3680,111 @@ def _progression_integer(row: dict, field: str, row_id: str) -> int:
     return value
 
 
+_PLAYER_STAT_DEFINITIONS = {
+    "最大HP": ("AddMaxHPPerStatusPoint", "stat-health", "flat"),
+    "最大SP": ("AddMaxSPPerStatusPoint", "stat-stamina", "flat"),
+    "攻撃力": ("AddPowerPerStatusPoint", "stat-attack", "percent"),
+    "所持重量": ("AddMaxInventoryWeightPerStatusPoint", "stat-weight", "flat"),
+    "作業速度": ("AddWorkSpeedPerStatusPoint", "stat-work-speed", "flat"),
+}
+_PLAYER_RELIC_DEFINITIONS = {
+    "CapturePower": ("捕獲率", "ability-capture", "rank"),
+    "HungerReduction": ("空腹率低減", "ability-hunger", "percent"),
+    "SwimSpeed": ("泳ぎ速度", "ability-swim", "percent"),
+    "FoodDecayReduction": ("食料腐敗低減", "ability-food-decay", "percent"),
+    "JumpPower": ("ジャンプ力", "ability-jump", "percent"),
+    "ClimbSpeed": ("崖登り速度", "ability-climb", "percent"),
+    "StatusAilmentResist": ("状態異常耐性", "ability-status-resist", "percent"),
+    "StaminaReduction": ("スタミナ消費軽減", "ability-stamina-cost", "percent"),
+    "SphereHoming": ("パルスフィアホーミング", "ability-sphere-homing", "percent"),
+    "MoveSpeed": ("移動速度アップ", "ability-move-speed", "percent"),
+    "GliderSpeed": ("滑空速度", "ability-glider-speed", "percent"),
+    "ExpBonus": ("経験値ボーナス", "ability-exp", "percent"),
+    "RainbowPassiveRate": ("虹パッシブ率", "ability-rainbow", "percent"),
+}
+_PLAYER_STATUS_ORDER = (
+    "最大HP",
+    "最大SP",
+    "攻撃力",
+    "所持重量",
+    "捕獲率",
+    "作業速度",
+    "空腹率低減",
+    "泳ぎ速度",
+    "食料腐敗低減",
+    "ジャンプ力",
+    "崖登り速度",
+    "状態異常耐性",
+    "スタミナ消費軽減",
+    "パルスフィアホーミング",
+    "移動速度アップ",
+    "滑空速度",
+    "経験値ボーナス",
+    "虹パッシブ率",
+)
+
+
+def _game_setting_properties(exports: list[dict]) -> dict:
+    matches = [
+        item.get("Properties")
+        for item in exports
+        if item.get("Name") == "Default__BP_PalGameSetting_C"
+        and isinstance(item.get("Properties"), dict)
+    ]
+    if len(matches) != 1:
+        raise ValueError("BP_PalGameSetting must contain exactly one default object")
+    return matches[0]
+
+
+def _player_status_projection(export_root: Path) -> dict[str, dict]:
+    settings = _game_setting_properties(
+        load_asset(export_root, PROGRESSION_SOURCES["game_setting"])
+    )
+    projected = {}
+    for name, (field, icon, unit) in _PLAYER_STAT_DEFINITIONS.items():
+        increment = settings.get(field)
+        if not _is_number(increment) or increment <= 0:
+            raise ValueError(f"BP_PalGameSetting.{field} must be positive numeric")
+        projected[name] = {
+            "category": "stat",
+            "icon": icon,
+            "maximum": 50,
+            "source": field,
+            "unit": unit,
+            "values": [rank * increment for rank in range(51)],
+        }
+
+    grouped: dict[str, list[dict]] = {}
+    for row_id, row in load_table(
+        export_root, PROGRESSION_SOURCES["player_status"]
+    ).items():
+        relic_type = row.get("RelicType")
+        if not isinstance(relic_type, str) or "::" not in relic_type:
+            raise ValueError(f"{row_id}.RelicType must be an EPalRelicType value")
+        grouped.setdefault(relic_type.rsplit("::", 1)[1], []).append(row)
+    if set(grouped) != set(_PLAYER_RELIC_DEFINITIONS):
+        raise ValueError("player status table relic types do not match the supported set")
+    for relic_type, (name, icon, unit) in _PLAYER_RELIC_DEFINITIONS.items():
+        rows = sorted(grouped[relic_type], key=lambda row: row.get("Rank", -1))
+        ranks = [row.get("Rank") for row in rows]
+        if ranks != list(range(1, len(rows) + 1)):
+            raise ValueError(f"{relic_type} ranks must be contiguous from 1")
+        rates = [row.get("EffectRate") for row in rows]
+        if any(not _is_number(rate) for rate in rates):
+            raise ValueError(f"{relic_type}.EffectRate must be numeric")
+        projected[name] = {
+            "category": "effigy",
+            "icon": icon,
+            "maximum": len(rows),
+            "source": f"EPalRelicType::{relic_type}",
+            "unit": unit,
+            "values": [0, *ranks] if unit == "rank" else [0, *rates],
+        }
+    return {name: projected[name] for name in _PLAYER_STATUS_ORDER}
+
+
 def build_progression_domain(export_root: Path, policy: dict) -> DomainSnapshot:
-    """Project the exact experience and friendship rows used by saves."""
+    """Project the exact progression rows and player upgrade limits used by saves."""
     experience_source = load_table(export_root, PROGRESSION_SOURCES["experience"])
     friendship_source = load_table(export_root, PROGRESSION_SOURCES["friendship"])
     experience = {}
@@ -3691,6 +3807,9 @@ def build_progression_domain(export_root: Path, policy: dict) -> DomainSnapshot:
     outputs = {
         "data/pal_exp_table.json": _json_document_bytes(experience),
         "data/pal_friendship.json": _json_document_bytes(friendship),
+        "data/player_status_data.json": _json_document_bytes(
+            _player_status_projection(export_root)
+        ),
     }
     return snapshot_from_outputs(
         "progression",
@@ -3700,6 +3819,12 @@ def build_progression_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         {
             PROGRESSION_SOURCES["experience"]: len(experience_source),
             PROGRESSION_SOURCES["friendship"]: len(friendship_source),
+            PROGRESSION_SOURCES["player_status"]: len(
+                load_table(export_root, PROGRESSION_SOURCES["player_status"])
+            ),
+            PROGRESSION_SOURCES["game_setting"]: len(
+                load_asset(export_root, PROGRESSION_SOURCES["game_setting"])
+            ),
         },
     )
 
@@ -5272,6 +5397,27 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
             )
         ):
             errors.append(f"{prefix}: DescriptionSource metadata is invalid")
+    elif path == "data/player_status_data.json":
+        if row.get("category") not in {"stat", "effigy"}:
+            errors.append(f"{prefix}: category is invalid")
+        if row.get("unit") not in {"flat", "percent", "rank"}:
+            errors.append(f"{prefix}: unit is invalid")
+        for field in ("icon", "source"):
+            if not isinstance(row.get(field), str) or not row[field]:
+                errors.append(f"{prefix}: {field} must be a nonempty string")
+        maximum = row.get("maximum")
+        values = row.get("values")
+        if type(maximum) is not int or maximum < 1:
+            errors.append(f"{prefix}: maximum must be a positive integer")
+        if (
+            not isinstance(values, list)
+            or any(not _is_number(value) for value in values)
+            or type(maximum) is not int
+            or len(values) != maximum + 1
+            or not values
+            or values[0] != 0
+        ):
+            errors.append(f"{prefix}: values must cover every rank from zero")
     elif path in _PROGRESSION_SCHEMAS:
         for field in _PROGRESSION_SCHEMAS[path]:
             if field in row and not _is_number(row[field]):

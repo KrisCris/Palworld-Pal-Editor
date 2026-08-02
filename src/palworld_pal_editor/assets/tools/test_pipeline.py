@@ -305,6 +305,18 @@ def fixture_outputs() -> dict[str, dict[str, bytes]]:
                 }
             ),
             "data/pal_friendship.json": json_bytes({"0": {"required_point": 0}}),
+            "data/player_status_data.json": json_bytes(
+                {
+                    "最大HP": {
+                        "category": "stat",
+                        "icon": "stat-health",
+                        "maximum": 1,
+                        "source": "AddMaxHPPerStatusPoint",
+                        "unit": "flat",
+                        "values": [0, 100],
+                    }
+                }
+            ),
         },
         "technology": {
             "data/tech_data.json": json_bytes(
@@ -424,6 +436,35 @@ def write_asset(root: Path, virtual_path: str, exports: list[dict]) -> None:
     path = root / f"{virtual_path}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(exports), encoding="utf-8")
+
+
+def write_player_status_sources(root: Path) -> None:
+    rows = {
+        str(index): {
+            "RelicType": f"EPalRelicType::{relic_type}",
+            "Rank": 1,
+            "EffectRate": 0 if relic_type == "CapturePower" else index,
+        }
+        for index, relic_type in enumerate(
+            game_data._PLAYER_RELIC_DEFINITIONS, start=1
+        )
+    }
+    write_table(root, game_data.PROGRESSION_SOURCES["player_status"], rows)
+    write_asset(
+        root,
+        game_data.PROGRESSION_SOURCES["game_setting"],
+        [
+            {
+                "Name": "Default__BP_PalGameSetting_C",
+                "Properties": {
+                    field: index
+                    for index, (field, _, _) in enumerate(
+                        game_data._PLAYER_STAT_DEFINITIONS.values(), start=1
+                    )
+                },
+            }
+        ],
+    )
 
 
 def snapshot(root: Path) -> dict[str, str]:
@@ -8133,12 +8174,15 @@ class ProgressionDomainTests(unittest.TestCase):
         policy["domains"]["progression"]["required_sources"] = [
             exp_source,
             friendship_source,
+            game_data.PROGRESSION_SOURCES["player_status"],
+            game_data.PROGRESSION_SOURCES["game_setting"],
         ]
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_table(root, exp_source, exp_rows)
             write_table(root, friendship_source, friendship_rows)
+            write_player_status_sources(root)
             candidate = game_data.build_domain("progression", root, policy)
 
         self.assertEqual(
@@ -8152,9 +8196,22 @@ class ProgressionDomainTests(unittest.TestCase):
                 "1": {"required_point": 29},
             },
         )
+        player_status = json.loads(
+            candidate.outputs["data/player_status_data.json"]
+        )
+        self.assertEqual(18, len(player_status))
+        self.assertEqual(51, len(player_status["最大HP"]["values"]))
+        self.assertEqual(50, player_status["最大HP"]["values"][-1])
+        self.assertEqual("rank", player_status["捕獲率"]["unit"])
+        self.assertEqual([0, 1], player_status["捕獲率"]["values"])
         self.assertEqual(
             candidate.source_counts,
-            {exp_source: 2, friendship_source: 3},
+            {
+                exp_source: 2,
+                friendship_source: 3,
+                game_data.PROGRESSION_SOURCES["player_status"]: 13,
+                game_data.PROGRESSION_SOURCES["game_setting"]: 1,
+            },
         )
 
     def test_progression_domain_rejects_non_integer_source_values(self) -> None:
@@ -8181,6 +8238,8 @@ class ProgressionDomainTests(unittest.TestCase):
         policy["domains"]["progression"]["required_sources"] = [
             exp_source,
             friendship_source,
+            game_data.PROGRESSION_SOURCES["player_status"],
+            game_data.PROGRESSION_SOURCES["game_setting"],
         ]
 
         with tempfile.TemporaryDirectory() as directory:
@@ -8191,6 +8250,7 @@ class ProgressionDomainTests(unittest.TestCase):
                 friendship_source,
                 {"Zero": {"FriendshipRank": 0, "RequiredPoint": 0}},
             )
+            write_player_status_sources(root)
             with self.assertRaisesRegex(ValueError, "NextEXP must be an integer"):
                 game_data.build_domain("progression", root, policy)
 
@@ -8217,6 +8277,8 @@ class ProgressionDomainTests(unittest.TestCase):
         policy["domains"]["progression"]["required_sources"] = [
             exp_source,
             friendship_source,
+            game_data.PROGRESSION_SOURCES["player_status"],
+            game_data.PROGRESSION_SOURCES["game_setting"],
         ]
 
         with tempfile.TemporaryDirectory() as directory:
@@ -8230,6 +8292,7 @@ class ProgressionDomainTests(unittest.TestCase):
                     "Second": {"FriendshipRank": 0, "RequiredPoint": 1},
                 },
             )
+            write_player_status_sources(root)
             with self.assertRaisesRegex(ValueError, "duplicate FriendshipRank 0"):
                 game_data.build_domain("progression", root, policy)
 

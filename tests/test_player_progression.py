@@ -48,6 +48,44 @@ class PlayerProgressionTests(unittest.TestCase):
         finally:
             self.player._player_param = original
 
+    def test_shared_stat_total_changes_only_item_points(self):
+        original = copy.deepcopy(self.player._player_param)
+        try:
+            normal_hp = self.player.StatusPoints["最大HP"]
+            unused = self.player.UnusedStatusPoint
+            self.assertEqual(50, self.player.StatusPointTotals["最大HP"])
+            self.assertEqual(normal_hp, self.player.StatusPointMinimums["最大HP"])
+
+            self.player.set_TotalStatusPoint("最大HP", normal_hp + 4)
+            self.assertEqual(normal_hp, self.player.StatusPoints["最大HP"])
+            self.assertEqual(4, self.player.ExStatusPoints["最大HP"])
+            self.assertEqual(normal_hp + 4, self.player.StatusPointTotals["最大HP"])
+            self.assertEqual(unused, self.player.UnusedStatusPoint)
+
+            self.player.set_TotalStatusPoint("最大HP", -1)
+            self.assertEqual(normal_hp, self.player.StatusPointTotals["最大HP"])
+            self.player.set_TotalStatusPoint("最大HP", 999)
+            self.assertEqual(50, self.player.StatusPointTotals["最大HP"])
+            with self.assertRaisesRegex(ValueError, "does not support item points"):
+                self.player.set_TotalStatusPoint("捕獲率", 1)
+        finally:
+            self.player._player_param = original
+
+    def test_player_payload_exposes_total_and_game_derived_metadata(self):
+        payload = player_to_dict(self.player)
+        self.assertEqual(50, payload["StatusPointTotals"]["最大HP"])
+        self.assertEqual(38, payload["StatusPointMinimums"]["最大HP"])
+        self.assertEqual(50, payload["StatusPointTotalMaximums"]["最大HP"])
+        self.assertEqual("stat-health", payload["StatusPointMetadata"]["最大HP"]["icon"])
+        self.assertEqual(
+            45,
+            payload["StatusPointMetadata"]["移動速度アップ"]["values"][90],
+        )
+        self.assertEqual(
+            50,
+            payload["StatusPointMetadata"]["移動速度アップ"]["values"][92],
+        )
+
     def test_status_limits_match_1_0_game_data(self):
         expected = {
             "最大HP": 50,

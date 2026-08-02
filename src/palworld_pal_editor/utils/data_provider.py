@@ -76,6 +76,7 @@ PAL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
+PLAYER_STATUS_DATA: dict[str, dict] = load_json("player_status_data.json")
 TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 SKIN_DATA: dict[str, dict] = load_json("skin_data.json")
 
@@ -121,6 +122,10 @@ class DataProvider:
     @staticmethod
     def default_i18n() -> str:
         return "en"
+
+    @staticmethod
+    def get_player_status_data() -> dict[str, dict]:
+        return PLAYER_STATUS_DATA
 
     def get_i18n_map() -> dict[str, str]:
         return I18N_LIST

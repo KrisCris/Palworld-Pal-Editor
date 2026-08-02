@@ -150,6 +150,40 @@ class PlayerEntity:
             maximums[name] = max(0, maximums[name] - max(0, ex_points.get(name, 0)))
         return maximums
 
+    @property
+    def StatusPointTotals(self) -> dict[str, int]:
+        normal = self.StatusPoints
+        extra = self.ExStatusPoints
+        return {
+            name: normal.get(name, 0) + extra.get(name, 0)
+            for name in PalObjects.StatusNames
+        }
+
+    @property
+    def StatusPointMinimums(self) -> dict[str, int]:
+        normal = self.StatusPoints
+        return {
+            name: normal.get(name, 0) if name in PalObjects.ExStatusNames else 0
+            for name in PalObjects.StatusNames
+        }
+
+    @LOGGER.change_logger("StatusPointTotals")
+    @type_guard
+    def set_TotalStatusPoint(self, name: str, points: int) -> None:
+        if name not in PalObjects.ExStatusNames:
+            raise ValueError(f"Player status does not support item points: {name}")
+        normal = max(0, self.StatusPoints.get(name, 0))
+        total = clamp(normal, PalObjects.StatusPointMaximums[name], points)
+        if not self.GotExStatusPointList:
+            self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
+        for entry in self.GotExStatusPointList or []:
+            if PalObjects.get_BaseType(entry.get("StatusName")) == name:
+                PalObjects.set_BaseType(entry["StatusPoint"], total - normal)
+                return
+        self.GotExStatusPointList.append(
+            PalObjects.StatusPointStruct(name, total - normal)
+        )
+
     @LOGGER.change_logger("StatusPoints")
     @type_guard
     def set_StatusPoint(self, name: str, points: int) -> None:

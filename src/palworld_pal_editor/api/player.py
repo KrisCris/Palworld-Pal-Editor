@@ -4,8 +4,9 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.core import SaveManager
+from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.core.player_entity import PlayerEntity
-from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
@@ -131,7 +132,11 @@ def player_to_dict(player: PlayerEntity):
         "Exp": player.Exp or 0,
         "UnusedStatusPoint": player.UnusedStatusPoint or 0,
         "StatusPoints": player.StatusPoints,
+        "StatusPointTotals": player.StatusPointTotals,
+        "StatusPointMinimums": player.StatusPointMinimums,
         "StatusPointMaximums": player.StatusPointMaximums,
+        "StatusPointTotalMaximums": PalObjects.StatusPointMaximums,
+        "StatusPointMetadata": DataProvider.get_player_status_data(),
         "HasViewingCage": player.has_viewing_cage(),
         "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
         "PalStorageContainerId": str(player.PalStorageContainerId),
@@ -167,6 +172,8 @@ def patch_player_data():
                 player_entity.unlock_viewing_cage()
             case "set_StatusPoint":
                 player_entity.set_StatusPoint(value["name"], value["points"])
+            case "set_TotalStatusPoint":
+                player_entity.set_TotalStatusPoint(value["name"], value["points"])
             case _:
                 field = getattr(type(player_entity), key, None)
                 if not isinstance(field, property) or field.fset is None:

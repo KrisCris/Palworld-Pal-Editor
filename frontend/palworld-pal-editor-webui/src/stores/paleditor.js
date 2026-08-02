@@ -151,7 +151,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Exp = obj.Exp;
             this.UnusedStatusPoint = obj.UnusedStatusPoint;
             this.StatusPoints = obj.StatusPoints || {};
+            this.StatusPointTotals = obj.StatusPointTotals || this.StatusPoints;
+            this.StatusPointMinimums = obj.StatusPointMinimums || {};
             this.StatusPointMaximums = obj.StatusPointMaximums || {};
+            this.StatusPointTotalMaximums = obj.StatusPointTotalMaximums || this.StatusPointMaximums;
+            this.StatusPointMetadata = obj.StatusPointMetadata || {};
             this.HasViewingCage = obj.HasViewingCage;
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
@@ -162,14 +166,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         setStatusPoint(name) {
-            let points = Number(this.StatusPoints[name]);
+            let points = Number(this.StatusPointTotals[name]);
             if (!Number.isFinite(points)) points = 0;
-            const maximum = this.StatusPointMaximums[name] ?? 0;
-            points = Math.min(Math.max(Math.trunc(points), 0), maximum);
-            this.StatusPoints[name] = points;
+            const minimum = this.StatusPointMinimums[name] ?? 0;
+            const maximum = this.StatusPointTotalMaximums[name] ?? 0;
+            points = Math.min(Math.max(Math.trunc(points), minimum), maximum);
+            this.StatusPointTotals[name] = points;
             updatePlayer({
                 target: {
-                    name: "set_StatusPoint",
+                    name: this.StatusPointMetadata[name]?.category === "stat"
+                        ? "set_TotalStatusPoint"
+                        : "set_StatusPoint",
                     value: { name: name, points: points },
                 },
             });
