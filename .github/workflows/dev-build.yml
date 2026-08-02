@@ -110,7 +110,8 @@ jobs:
           sudo apt-get install --yes \
             curl libasound2 libgl1 libglib2.0-0 libnss3 libxcomposite1 \
             libxdamage1 libxkbcommon-x11-0 libxrandr2 libxcb-cursor0 \
-            libxcb-xinerama0 xdotool xvfb
+            libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xinerama0 \
+            xdotool xvfb
 
       - name: Windows build
         if: runner.os == 'Windows'
@@ -180,9 +181,13 @@ jobs:
             cat "$LOG"
             exit 1
           fi
-          timeout 30 xdotool search --sync --onlyvisible --name "Palworld Pal Editor" >/dev/null
           if grep --quiet "Failed Launching pywebview" "$LOG"; then
             cat "$LOG"
+            exit 1
+          fi
+          if ! timeout 30 xdotool search --sync --onlyvisible --name "Palworld Pal Editor" >/dev/null; then
+            cat "$LOG"
+            xdotool search --name '.*' getwindowname %@ || true
             exit 1
           fi
           BASH

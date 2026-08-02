@@ -43,3 +43,20 @@ def test_linux_build_must_start_the_backend_and_qt_window():
         assert "/api/ready" in source
         assert "xdotool search" in source
         assert "Failed Launching pywebview" in source
+
+
+def test_linux_build_installs_qt_xcb_runtime_dependencies():
+    for name in ("dev-build.yml", "release-build.yml"):
+        source = workflow(name)
+
+        assert "libxcb-icccm4" in source
+        assert "libxcb-keysyms1" in source
+        assert "libxcb-shape0" in source
+
+
+def test_linux_window_failure_prints_application_diagnostics():
+    for name in ("dev-build.yml", "release-build.yml"):
+        source = workflow(name)
+
+        assert "if ! timeout 30 xdotool search" in source
+        assert "xdotool search --name '.*' getwindowname" in source
