@@ -151,6 +151,15 @@ def test_game_derived_active_skill_contract():
         )
 
 
+def test_case_mismatched_active_skill_localization_is_resolved():
+    railbolt = load("pal_attacks.json")["EPalWazaID::Railbolt"]
+
+    assert railbolt["I18n"]["en"]["Name"] == "Thunder Rail"
+    assert railbolt["I18n"]["zh-CN"]["Name"] == "并联雷光"
+    assert railbolt["Invalid"] is False
+    assert railbolt["Assignable"] is True
+
+
 def test_supported_kingwhale_runtime_skills_are_valid_and_assignable():
     attacks = load("pal_attacks.json")
 

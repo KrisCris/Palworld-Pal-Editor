@@ -3239,6 +3239,20 @@ def build_active_records(
         descriptions_by_locale
     ) != set(LOCALE_DIRECTORIES):
         raise ValueError("Active localization must contain exactly 17 locales")
+    names_by_locale = {
+        locale: {
+            folded: rows[actual]
+            for folded, actual in casefold_index(rows).items()
+        }
+        for locale, rows in names_by_locale.items()
+    }
+    descriptions_by_locale = {
+        locale: {
+            folded: rows[actual]
+            for folded, actual in casefold_index(rows).items()
+        }
+        for locale, rows in descriptions_by_locale.items()
+    }
     by_id = {}
     for source_id, row in waza_rows.items():
         skill_id = row.get("WazaType")
@@ -3324,24 +3338,28 @@ def build_active_records(
         action_usage = skill_id.casefold() in reachable_action_skills
         usage = bool(reachable) or legal_fruit or action_usage
         key = f"ACTION_SKILL_{skill_id.partition('::')[2]}"
+        lookup_key = key.casefold()
         complete_i18n = all(
-            _text_value(names_by_locale[locale], key) is not None
-            and _text_value(descriptions_by_locale[locale], key) is not None
+            _text_value(names_by_locale[locale], lookup_key) is not None
+            and _text_value(descriptions_by_locale[locale], lookup_key) is not None
             for locale in LOCALE_DIRECTORIES
         )
         authoritative_name = any(
-            _text_value(names_by_locale[locale], key) for locale in LOCALE_DIRECTORIES
+            _text_value(names_by_locale[locale], lookup_key)
+            for locale in LOCALE_DIRECTORIES
         )
         i18n = {}
         for locale in LOCALE_DIRECTORIES:
-            name = _text_value(names_by_locale[locale], key)
+            name = _text_value(names_by_locale[locale], lookup_key)
             if name is None:
                 missing.append(f"active:{skill_id}:{locale}:Name:{key}")
-                name = _locale_fallback(names_by_locale, key, skill_id)
-            description = _text_value(descriptions_by_locale[locale], key)
+                name = _locale_fallback(names_by_locale, lookup_key, skill_id)
+            description = _text_value(descriptions_by_locale[locale], lookup_key)
             if description is None:
                 missing.append(f"active:{skill_id}:{locale}:Description:{key}")
-                description = _locale_fallback(descriptions_by_locale, key, skill_id)
+                description = _locale_fallback(
+                    descriptions_by_locale, lookup_key, skill_id
+                )
             i18n[locale] = {
                 "Name": _clean_game_text(
                     name, (), {}, missing, f"active:{skill_id}:{locale}:Name"

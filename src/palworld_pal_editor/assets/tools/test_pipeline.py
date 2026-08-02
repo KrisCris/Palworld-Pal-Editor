@@ -7445,6 +7445,35 @@ class SkillDomainTests(unittest.TestCase):
             any("EPalWazaID::MissingName:en:Name" in item for item in missing)
         )
 
+    def test_active_localization_keys_are_case_insensitive(self) -> None:
+        skill_id = "EPalWazaID::Railbolt"
+        names, descriptions = self.active_texts((skill_id,))
+        for locale in LOCALES:
+            names[locale]["ACTION_SKILL_RailBolt"] = names[locale].pop(
+                "ACTION_SKILL_Railbolt"
+            )
+        graph = game_data.CharacterEvidenceGraph(
+            {
+                "OrdinaryPal": self.evidence(
+                    "OrdinaryPal", {"base"}, obtainable=True
+                )
+            },
+            (),
+        )
+
+        rows, missing = game_data.build_active_records(
+            {skill_id: self.waza(skill_id)},
+            {"1": {"PalId": "OrdinaryPal", "WazaID": skill_id, "Level": 1}},
+            {},
+            names,
+            descriptions,
+            graph,
+        )
+
+        self.assertEqual(rows[skill_id]["I18n"]["en"]["Name"], "en name Railbolt")
+        self.assertFalse(rows[skill_id]["Invalid"])
+        self.assertFalse(any(f"active:{skill_id}" in item for item in missing))
+
     def test_human_skill_assignability_uses_actions_and_human_learners(self) -> None:
         punch = "EPalWazaID::Human_Punch"
         weapon = "EPalWazaID::Weapon_Use"

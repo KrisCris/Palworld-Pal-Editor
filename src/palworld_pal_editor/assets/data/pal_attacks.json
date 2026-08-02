@@ -9066,72 +9066,72 @@
         "Power": 1,
         "I18n": {
             "ja": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "凍える力を周囲に集めて 近くの者を攻撃したあとで 敵めがけて吹雪を放出する。"
             },
             "de": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "de_Text",
+                "Description": "Sammelt um sich herum Kälteenergie und greift damit alle in der Nähe an. Lässt daraufhin einen Schneesturm auf den Gegner los."
             },
             "en": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "en Text",
+                "Description": "The user gathers frozen winds, damaging enemies around it before blasting them with a blizzard."
             },
             "es": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "es_Text",
+                "Description": "Ataca con un poder helador todo lo que lo rodea y después libera una ventisca contra el rival."
             },
             "es-MX": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "Reúne el poder del frío a su alrededor y ataca a los que están cerca, luego libera una ventisca hacia el enemigo."
             },
             "fr": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "fr_Text",
+                "Description": "Accumule de l'énergie glacée autour de lui et attaque les individus à proximité avant de libérer un blizzard sur l'ennemi."
             },
             "id": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "Mengumpulkan kekuatan beku di sekitar untuk menyerang musuh terdekat lalu melepaskan badai salju ke arah musuh."
             },
             "it": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "it_Text",
+                "Description": "Richiama il potere del gelo intorno a sé. Dopo aver attaccato i bersagli più vicini, scaglia una tempesta di neve sui nemici."
             },
             "ko": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "ko_Text",
+                "Description": "얼어붙는 힘을 주위에 모아 가까운 적을 공격한 뒤 적을 향해 눈보라를 내보낸다."
             },
             "pl": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "Zbiera mroźne wiatry, zadając obrażenia pobliskim wrogom, po czym miota w nich zamieć."
             },
             "pt-BR": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "pt-BR_Text",
+                "Description": "Concentra uma força congelante nos arredores e, depois de atacar quem estiver ao redor, lança uma nevasca contra o inimigo."
             },
             "ru": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "ru_Text",
+                "Description": "Концентрирует вокруг себя леденящую силу, наносящую урон врагам вокруг, а затем обрушивает на них снежную бурю."
             },
             "th": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "รวมพลังไอเย็นมาไว้รอบตัว โจมตีใส่ศัตรูใกล้เคียง ก่อนปล่อยพายุหิมะใส่ศัตรู"
             },
             "tr": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "Kullanıcı donmuş rüzgârları toplar, çevresindeki düşmanlara hasar verip onlara bir tipiyle saldırır."
             },
             "vi": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "-",
+                "Description": "Tập hợp sức mạnh đóng băng xung quanh và tấn công những kẻ ở gần, sau đó phóng một trận bão tuyết vào kẻ địch."
             },
             "zh-CN": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "zh-Hans Text",
+                "Description": "将冰冻之力聚集四周 攻击附近的敌人后 瞄准敌人释放暴风雪。"
             },
             "zh-TW": {
-                "Name": "EPalWazaID::SnowStorm",
-                "Description": "EPalWazaID::SnowStorm"
+                "Name": "zh-Hant Text",
+                "Description": "將寒冰之力聚集於身邊， 藉此攻擊附近敵人後， 再瞄準敵人釋放出暴風雪。"
             }
         },
         "UniqueSkill": true,
@@ -32948,72 +32948,72 @@
         "Power": 350,
         "I18n": {
             "ja": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "アッパースマッシュ",
+                "Description": "ブッサソリの専用スキル。 敵との距離を高速で詰め、 思い切りハサミを振り上げる。"
             },
             "de": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Dosenöffner",
+                "Description": "Einzigartige Fähigkeit der Prixter-Spezies. Flitzt auf den Gegner zu und verpasst ihm einen Hieb mit der Schere."
             },
             "en": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Upper Smash",
+                "Description": "Prixter's exclusive skill. Closes the distance to the enemy at high speed, then swings its pincers upward with full force."
             },
             "es": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Destrucción abisal",
+                "Description": "Técnica exclusiva de Prixter. Acorta distancias con su rival a gran velocidad y levanta sus pinzas para atacar."
             },
             "es-MX": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Destrucción abisal",
+                "Description": "Habilidad exclusiva de Prixter. Cierra la distancia con el enemigo a gran velocidad y levanta sus pinzas para un ataque poderoso."
             },
             "fr": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Fracas Vertical",
+                "Description": "Compétence exclusive à Prixter. Se rapproche de l'ennemi à toute vitesse et lève violemment ses pinces pour frapper."
             },
             "id": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Pukulan Atas",
+                "Description": "Skill khusus Prixter. Mendekati musuh dengan kecepatan tinggi, lalu mengayunkan capitnya dengan sekuat tenaga."
             },
             "it": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Schianto ascendente",
+                "Description": "Abilità del Pal Prixter. Percorre in un lampo la distanza tra sé e il nemico a chele levate."
             },
             "ko": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "어퍼 스매시",
+                "Description": "스콜피어스 전용 스킬. 순식간에 적과의 거리를 좁혀 집게발로 시원하게 어퍼컷을 먹인다."
             },
             "pl": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Cios z góry",
+                "Description": "Umiejętność wyłączna dla Prixtera. Błyskawicznie skraca dystans do wroga, po czym z całej siły zamachuje się szczypcami."
             },
             "pt-BR": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Colisão de Gancho",
+                "Description": "Habilidade exclusiva de Prixter. Encurta rapidamente a distância até o inimigo e desfere um golpe sem piedade com suas pinças."
             },
             "ru": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Апперкот",
+                "Description": "Уникальное умение вида Скорпио. Молниеносно сближается с врагом и с силой наносит удар клешнями."
             },
             "th": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "อัปเปอร์สแมช",
+                "Description": "สกิลเฉพาะตัวของ Prixter เข้าประชิดศัตรูด้วยความเร็วสูง แล้วเหวี่ยงก้ามขึ้นฟาดอย่างแรง"
             },
             "tr": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Aparkat Darbesi",
+                "Description": "Prixter özel yeteneği. Düşmanla arasındaki mesafeyi hızla kapatır ve kıskaçlarını tüm gücüyle yukarı savurur."
             },
             "vi": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "Tấn Công Áp Sát",
+                "Description": "Kỹ năng độc quyền của Prixter. Thu hẹp khoảng cách với kẻ địch với tốc độ cực cao và vung mạnh chiếc càng uy lực."
             },
             "zh-CN": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "升虫拳",
+                "Description": "蛊刺妖的专用技能。 快速缩短和敌人的距离， 狠狠的用钳子使出上勾拳。"
             },
             "zh-TW": {
-                "Name": "EPalWazaID::Unique_ScorpionMan_Uppercut",
-                "Description": "EPalWazaID::Unique_ScorpionMan_Uppercut"
+                "Name": "升蟲拳",
+                "Description": "蠱刺妖的專屬技能。 快速縮短和敵人的距離， 狠狠的用鉗子使出上勾拳。"
             }
         },
         "UniqueSkill": true,
@@ -33024,7 +33024,7 @@
         "BossSkill": false,
         "Assignable": true,
         "AssignableToHumans": false,
-        "Invalid": true,
+        "Invalid": false,
         "Category": "Melee",
         "Strength": "None",
         "Effects": [
@@ -33656,71 +33656,71 @@
         "Power": 600,
         "I18n": {
             "ja": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "サンダーレール",
                 "Description": "限界まで雷の力をチャージして 敵めがけて強力な電撃を複数同時発射する。"
             },
             "de": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Donnerbahn",
                 "Description": "Tankt Gewitterenergie und feuert mehrere mächtige Elektroschocks auf den Gegner ab."
             },
             "en": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Thunder Rail",
                 "Description": "Charge the power of lightning to the limit and fires multiple simultaneous electric shocks at the enemy."
             },
             "es": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Riel eléctrico",
                 "Description": "Se carga de energía eléctrica hasta el límite y lanza montones de potentes rayos contra el rival."
             },
             "es-MX": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Riel eléctrico",
                 "Description": "Carga el poder del rayo al máximo y dispara múltiples descargas eléctricas poderosas hacia el enemigo."
             },
             "fr": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Canon Fulgurant",
                 "Description": "Accumule l'énergie orageuse au maximum pour frapper l'ennemi de plusieurs chocs électriques simultanés."
             },
             "id": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Jalur Petir",
                 "Description": "Mengumpulkan kekuatan petir hingga penuh sambil menembakkan beberapa sengatan listrik yang kuat ke arah musuh."
             },
             "it": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Cannone elettrico",
                 "Description": "Si carica al massimo di elettricità per poi scagliare contemporaneamente numerose scariche elettriche contro il nemico."
             },
             "ko": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "썬더 레일",
                 "Description": "번개의 힘을 한계까지 끌어모아 적을 향해 강력한 다수의 전기 공격을 동시 발사한다."
             },
             "pl": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Szyny błyskawic",
                 "Description": "Ładuje moc błyskawic do granic możliwości i jednocześnie wystrzeliwuje w stronę wroga liczne impulsy elektryczne."
             },
             "pt-BR": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Trilho de Trovão",
                 "Description": "Carrega energia elétrica até o limite para disparar simultaneamente vários ataques de eletricidade poderosos contra o inimigo."
             },
             "ru": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Цепь молний",
                 "Description": "Накапливает электрическую энергию до предела и одновременно выпускает во врага несколько мощных разрядов."
             },
             "th": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "ธันเดอร์เรล",
                 "Description": "ชาร์จพลังงานสายฟ้าจนถึงขีดจำกัด แล้วยิงลำแสงทรงพลังจำนวนมากออกไปหาศัตรูพร้อมกัน"
             },
             "tr": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Yıldırım Rayı",
                 "Description": "Şimşeğin gücünü sınırlarına kadar biriktirir ve düşmana aynı anda çok sayıda elektrik şoku ateşler."
             },
             "vi": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "Đường Dẫn Sấm Sét",
                 "Description": "Nạp sức mạnh của sấm sét đến mức tối đa và đồng thời bắn ra nhiều cú sốc điện cực mạnh vào kẻ địch."
             },
             "zh-CN": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "并联雷光",
                 "Description": "积蓄雷电的力量到极限， 朝敌人同时发射多道强力雷击。"
             },
             "zh-TW": {
-                "Name": "EPalWazaID::Railbolt",
+                "Name": "並聯雷光",
                 "Description": "積蓄雷電的力量到極限， 朝敵人同時發射多道強力雷擊。"
             }
         },
@@ -33732,7 +33732,7 @@
         "BossSkill": false,
         "Assignable": true,
         "AssignableToHumans": false,
-        "Invalid": true,
+        "Invalid": false,
         "Category": "Shot",
         "Strength": "Strong",
         "Effects": [
@@ -42377,72 +42377,72 @@
         "Power": 120,
         "I18n": {
             "ja": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "ジェットスモーク",
+                "Description": "種の専用スキル。 前方にスモークを発生させて自身の姿を隠し、 見えない状態から頭突きで強襲をかける。"
             },
             "de": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Rauchmantel",
+                "Description": "Einzigartige Fähigkeit von . Hüllt sich in eine Rauchwolke und greift den Gegner daraufhin mit einem Überraschungs-Kopfstoß an."
             },
             "en": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Smoke Jet",
+                "Description": "'s exclusive skill. Releases smoke to conceal itself, then launches a surprise headbutt from the shadows."
             },
             "es": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Tintación",
+                "Description": "Técnica exclusiva de . Genera una cortina de humo para ocultar su presencia y embiste al enemigo con un cabezazo desde la ocultación."
             },
             "es-MX": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Humo de jet",
+                "Description": "Habilidad exclusiva de la especie . Genera una cortina de humo para ocultar su presencia, y luego se lanza de cabeza contra el enemigo desde su punto ciego."
             },
             "fr": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Fumée de Jais",
+                "Description": "Compétence exclusive à . Projette un écran de fumée devant elle pour masquer sa présence, puis lance une attaque surprise avec un violent coup de tête depuis sa cachette."
             },
             "id": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Asap Jet",
+                "Description": "Skill khusus . Mengeluarkan asap untuk menyembunyikan dirinya, lalu melakukan serangan mendadak dengan sundulan dari posisi yang tidak terlihat."
             },
             "it": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Cortina d'inchiostro",
+                "Description": "Abilità del Pal . Genera davanti a sé una cortina d'inchiostro per mimetizzarsi e ne approfitta per assestare una potente testata."
             },
             "ko": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "제트 스모크",
+                "Description": "종의 전용 스킬. 전방에 연막을 깔아 모습을 감춘 후 은신 중에 박치기로 기습한다."
             },
             "pl": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Atramentowy strzał",
+                "Description": "Umiejętność wyłączna dla gatunku . Wypuszcza przed siebie chmurę atramentu, by ukryć swoją sylwetkę. Następnie uderza z zaskoczenia, wykonując silne pchnięcie głową."
             },
             "pt-BR": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Fumaça a Jato",
+                "Description": "Habilidade exclusiva de espécies de . Cria uma cortina de fumaça à sua frente para se ocultar e então realiza uma cabeçada poderosa enquanto está escondida."
             },
             "ru": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Дымовой рывок",
+                "Description": "Уникальное умение вида . Выпускает перед собой дым, маскируясь, и таранит противника головой, пока тот его не видит."
             },
             "th": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "เจ็ตสโมก",
+                "Description": "สกิลเฉพาะตัวของสายพันธุ์ สร้างควันที่ด้านหน้า เพื่อซ่อนตัว ก่อนจะโจมตีอย่างแรงเข้าที่หัวศัตรูโดยที่อีกฝ่ายมองไม่เห็น"
             },
             "tr": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Jet dumanı",
+                "Description": "türüne ait özel yetenek. Önünde duman oluşturarak kendini gizler ve görünmez haldeyken kafa atarak ani bir saldırı gerçekleştirir."
             },
             "vi": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "Khói Đột Kích",
+                "Description": "Kỹ năng độc quyền của loài . Tạo màn khói dày đặc về phía trước để ẩn mình, sau đó bất ngờ lao ra, tung cú húc đầu đột kích chớp nhoáng."
             },
             "zh-CN": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "墨沫头槌",
+                "Description": "及亚种的专用技能。 向前方释放烟雾遮蔽自身， 从隐蔽状态中突然发动头槌，猛击敌人。"
             },
             "zh-TW": {
-                "Name": "EPalWazaID::Unique_OctopursGirl_InkJet",
-                "Description": "EPalWazaID::Unique_OctopursGirl_InkJet"
+                "Name": "墨沫頭槌",
+                "Description": "及亞種的專屬技能。 前方釋放煙霧遮蔽自身， 從隱蔽狀態突然發動頭槌，猛擊敵人。"
             }
         },
         "UniqueSkill": true,
@@ -42453,7 +42453,7 @@
         "BossSkill": false,
         "Assignable": true,
         "AssignableToHumans": false,
-        "Invalid": true,
+        "Invalid": false,
         "Category": "Shot",
         "Strength": "None",
         "Effects": [
