@@ -151,6 +151,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.Exp = obj.Exp;
             this.UnusedStatusPoint = obj.UnusedStatusPoint;
             this.StatusPoints = obj.StatusPoints || {};
+            this.ExStatusPoints = obj.ExStatusPoints || {};
             this.StatusPointTotals = obj.StatusPointTotals || this.StatusPoints;
             this.StatusPointMinimums = obj.StatusPointMinimums || {};
             this.StatusPointMaximums = obj.StatusPointMaximums || {};

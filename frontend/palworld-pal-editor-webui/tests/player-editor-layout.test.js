@@ -24,12 +24,48 @@ test("player editor uses the shared compact dashboard layout", async () => {
     const source = await read("../src/components/PlayerEditor.vue");
     for (const className of [
         "player-editor", "player-summary", "player-dashboard", "player-panel",
-        "player-fields", "status-grid", "technology-panel", "technology-level",
+        "player-fields", "player-stats", "effigy-panel", "effigy-grid",
+        "technology-panel", "technology-level",
     ]) assert.match(source, new RegExp(`class="[^"]*${className}`), className);
-    assert.match(source, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+    assert.match(source, /\.player-dashboard\s*\{[^}]*grid-template-columns:\s*minmax\(18rem,\s*\.75fr\)\s+minmax\(28rem,\s*1\.25fr\)/s);
+    assert.match(source, /\.effigy-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/s);
+    assert.match(source, /\.status-control header \.status-name\s*\{\s*flex:\s*1;/);
     assert.match(source, /@container\s*\(max-width:\s*48rem\)/);
-    assert.match(source, /@container\s*\(max-width:\s*32rem\)[\s\S]*\.status-grid\s*\{\s*grid-template-columns:\s*1fr/);
+    assert.match(source, /@container\s*\(max-width:\s*32rem\)[\s\S]*\.effigy-grid\s*\{\s*grid-template-columns:\s*1fr/);
     assert.doesNotMatch(source, /--sub-height|--editor-panel-width|class="PalEditor"|class="EditorItem/);
+});
+
+test("stat allocation preview refunds blue levels and spends unused points first", async () => {
+    const { previewStatAllocation } = await loadVueModule("/src/components/PlayerEditor.vue");
+    const player = {
+        StatusPoints: { "最大HP": 20 },
+        ExStatusPoints: { "最大HP": 30 },
+        UnusedStatusPoint: 7,
+        StatusPointTotalMaximums: { "最大HP": 50 },
+    };
+
+    assert.deepEqual(previewStatAllocation(player, "最大HP", 45), {
+        stat: 15, item: 30, unused: 12, total: 45,
+    });
+    assert.deepEqual(previewStatAllocation(player, "最大HP", 10), {
+        stat: 0, item: 10, unused: 27, total: 10,
+    });
+
+    const lowerPlayer = {
+        StatusPoints: { "最大HP": 20 },
+        ExStatusPoints: { "最大HP": 20 },
+        UnusedStatusPoint: 5,
+        StatusPointTotalMaximums: { "最大HP": 50 },
+    };
+    assert.deepEqual(previewStatAllocation(lowerPlayer, "最大HP", 50), {
+        stat: 25, item: 25, unused: 0, total: 50,
+    });
+    assert.deepEqual(player, {
+        StatusPoints: { "最大HP": 20 },
+        ExStatusPoints: { "最大HP": 30 },
+        UnusedStatusPoint: 7,
+        StatusPointTotalMaximums: { "最大HP": 50 },
+    });
 });
 
 test("technology levels partition normal and ancient lanes without mutating store data", async () => {
@@ -62,8 +98,9 @@ test("technology lanes render a stable non-mutating partition", async () => {
         bossTechnologyPoint: 0,
         UnusedStatusPoint: 0,
         StatusPoints: { "最大HP": 14 },
+        ExStatusPoints: { "最大HP": 12 },
         StatusPointTotals: { "最大HP": 26 },
-        StatusPointMinimums: { "最大HP": 14 },
+        StatusPointMinimums: { "最大HP": 0 },
         StatusPointMaximums: { "最大HP": 38 },
         StatusPointTotalMaximums: { "最大HP": 50 },
         StatusPointMetadata: {
@@ -104,8 +141,8 @@ test("player controls preserve every update contract", async () => {
         "palStore.updatePlayer", "levelDown", "levelUp", "maxLevel",
         "setStatusPoint(name)", "unlock_all_techs",
     ]) assert.match(source, new RegExp(handler.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), handler);
-    assert.match(source, /type="range"/);
-    assert.match(source, /StatusPointMinimums\[name\]/);
+    assert.match(source, /<SegmentedRange/);
+    assert.doesNotMatch(source, /<input[^>]+type="range"/);
     assert.match(source, /StatusPointTotalMaximums\[name\]/);
     assert.match(source, /StatusPointTotals\[name\]/);
     assert.match(source, /@change="palStore\.SELECTED_PLAYER_DATA\.setStatusPoint\(name\)"/);
@@ -114,8 +151,19 @@ test("player controls preserve every update contract", async () => {
 
 test("status sliders dispatch stat totals separately from effigy ranks", async () => {
     const source = await read("../src/stores/paleditor.js");
+    assert.match(source, /this\.ExStatusPoints = obj\.ExStatusPoints \|\| \{\}/);
     assert.match(source, /category === "stat"[\s\S]*\? "set_TotalStatusPoint"[\s\S]*: "set_StatusPoint"/);
     assert.match(source, /Math\.min\(Math\.max\(Math\.trunc\(points\), minimum\), maximum\)/);
+});
+
+test("stat source labels are translated in every UI locale", () => {
+    for (const locale of [en, fr, ja, zhCN]) {
+        for (const key of ["Editor_StatPoints", "Editor_ItemLevel"]) {
+            assert.equal(typeof locale[key], "string", key);
+            assert.ok(locale[key].trim(), key);
+        }
+    }
+    assert.equal(en.Editor_UnusedStatusPoints, "Unused Stat Points");
 });
 
 test("technology cards preserve toggle behavior in a compact square control", async () => {

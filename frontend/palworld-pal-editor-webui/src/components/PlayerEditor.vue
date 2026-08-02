@@ -1,6 +1,33 @@
+<script>
+const clamp = (minimum, maximum, value) => Math.min(maximum, Math.max(minimum, value))
+
+export function previewStatAllocation(player, name, target) {
+  const stat = Math.max(0, Number(player.StatusPoints?.[name]) || 0)
+  const item = Math.max(0, Number(player.ExStatusPoints?.[name]) || 0)
+  const maximum = Math.max(0, Number(player.StatusPointTotalMaximums?.[name]) || 0)
+  const total = clamp(0, maximum, Number(target) || 0)
+  const change = total - stat - item
+
+  if (change < 0) {
+    const refunded = Math.min(stat, -change)
+    return {
+      stat: stat - refunded,
+      item: item - (-change - refunded),
+      unused: Math.max(0, Number(player.UnusedStatusPoint) || 0) + refunded,
+      total,
+    }
+  }
+
+  const unused = Math.max(0, Number(player.UnusedStatusPoint) || 0)
+  const spent = Math.min(unused, change)
+  return { stat: stat + spent, item: item + change - spent, unused: unused - spent, total }
+}
+</script>
+
 <script setup>
 import { computed } from 'vue'
 
+import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
@@ -17,6 +44,11 @@ const statusEntries = category => Object.entries(palStore.SELECTED_PLAYER_DATA.S
   .filter(([, metadata]) => metadata.category === category)
 const playerStats = computed(() => statusEntries('stat'))
 const effigyAbilities = computed(() => statusEntries('effigy'))
+const statAllocation = name => previewStatAllocation(
+  palStore.SELECTED_PLAYER_DATA,
+  name,
+  palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name],
+)
 const statusEffect = (name, metadata) => {
   const rank = palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] || 0
   const value = metadata.values?.[rank] ?? rank
@@ -107,40 +139,70 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
         </div>
       </section>
 
-      <section class="player-panel status-panel" v-if="palStore.SELECTED_PLAYER_DATA.StatusPointMetadata">
-        <h2>{{ palStore.getTranslatedText('Editor_StatusUpgrades') }}</h2>
-        <div class="status-groups">
-          <section class="status-group" v-for="group in [
-            { key: 'stats', title: 'Editor_PlayerStats', entries: playerStats },
-            { key: 'effigy', title: 'Editor_EffigyAbilities', entries: effigyAbilities },
-          ]" :key="group.key">
-            <h3>{{ palStore.getTranslatedText(group.title) }}</h3>
-            <div class="status-grid">
-              <article class="status-control" v-for="([name, metadata]) in group.entries" :key="name">
-                <header>
-                  <span class="status-name">
-                    <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
-                    {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
-                  </span>
-                  <strong>{{ palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}</strong>
-                </header>
-                <input :id="`status-${name}`" type="range"
-                  :min="palStore.SELECTED_PLAYER_DATA.StatusPointMinimums[name]"
-                  :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
-                  v-model.number="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
-                  :disabled="palStore.LOADING_FLAG"
-                  :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
-                  @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)">
-                <footer>
-                  <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
-                  <strong>{{ statusEffect(name, metadata) }}</strong>
-                </footer>
-              </article>
-            </div>
-          </section>
+      <section class="player-panel player-stats" v-if="palStore.SELECTED_PLAYER_DATA.StatusPointMetadata">
+        <header class="status-panel__header">
+          <h2>{{ palStore.getTranslatedText('Editor_PlayerStats') }}</h2>
+          <div class="status-legend">
+            <span class="status-legend__stat">{{ palStore.getTranslatedText('Editor_StatPoints') }}</span>
+            <span class="status-legend__item">{{ palStore.getTranslatedText('Editor_ItemLevel') }}</span>
+          </div>
+        </header>
+        <div class="status-grid">
+          <article class="status-control" v-for="([name, metadata]) in playerStats" :key="name">
+            <header>
+              <span class="status-name">
+                <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
+                {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
+              </span>
+              <strong class="status-allocation">
+                {{ statAllocation(name).total }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}
+                (<span class="status-allocation__stat">{{ statAllocation(name).stat }}</span>+<span class="status-allocation__item">{{ statAllocation(name).item }}</span>)
+              </strong>
+            </header>
+            <SegmentedRange :name="`status-${name}`" :min="0"
+              :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
+              :segments="[
+                { role: 'item', value: statAllocation(name).item },
+                { role: 'primary', value: statAllocation(name).stat },
+              ]"
+              :thumb-role="statAllocation(name).stat ? 'primary' : 'item'"
+              v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
+              :disabled="palStore.LOADING_FLAG"
+              :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
+              @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
+            <footer>
+              <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
+              <strong>{{ statusEffect(name, metadata) }}</strong>
+            </footer>
+          </article>
         </div>
       </section>
     </div>
+
+    <section class="player-panel effigy-panel" v-if="effigyAbilities.length">
+      <h2>{{ palStore.getTranslatedText('Editor_EffigyAbilities') }}</h2>
+      <div class="effigy-grid">
+        <article class="status-control" v-for="([name, metadata]) in effigyAbilities" :key="name">
+          <header>
+            <span class="status-name">
+              <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
+              {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
+            </span>
+            <strong>{{ palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}</strong>
+          </header>
+          <SegmentedRange :name="`status-${name}`" :min="0"
+            :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
+            v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
+            :disabled="palStore.LOADING_FLAG"
+            :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
+            @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
+          <footer>
+            <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
+            <strong>{{ statusEffect(name, metadata) }}</strong>
+          </footer>
+        </article>
+      </div>
+    </section>
 
     <section class="player-panel technology-panel">
       <header class="technology-panel__header">
@@ -233,8 +295,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 
 .player-dashboard {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
+  grid-template-columns: minmax(18rem, .75fr) minmax(28rem, 1.25fr);
   gap: var(--editor-space-3);
 }
 
@@ -249,16 +310,19 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 }
 
 .player-fields,
-.status-groups,
-.status-grid { display: grid; gap: var(--editor-space-2); }
+.status-grid,
+.effigy-grid { display: grid; gap: var(--editor-space-2); }
 .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.status-group h3 {
-  margin: 0;
-  color: var(--editor-color-muted);
-  font-size: .75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
+.effigy-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.status-panel__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--editor-space-2); }
+.status-panel__header h2 { flex: 1; }
+.status-legend { display: flex; flex-wrap: wrap; gap: var(--editor-space-2); color: var(--editor-color-muted); font-size: .7rem; }
+.status-legend span::before { display: inline-block; width: .65rem; height: .65rem; margin-right: .3rem; border-radius: 50%; content: ''; }
+.status-legend__stat::before { background: var(--editor-slider-primary); }
+.status-legend__item::before { background: var(--editor-slider-item); }
+.status-allocation { white-space: nowrap; }
+.status-allocation__stat { color: var(--editor-slider-primary); }
+.status-allocation__item { color: var(--editor-slider-item); }
 .status-control {
   padding: var(--editor-space-2);
   border: 1px solid var(--editor-color-border);
@@ -272,10 +336,11 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
   justify-content: space-between;
   gap: var(--editor-space-2);
 }
+.status-control header .status-name { flex: 1; overflow: hidden; }
 .status-control footer { color: var(--editor-color-muted); font-size: .7rem; }
 .status-name { display: flex; min-width: 0; align-items: center; gap: var(--editor-space-1); }
 .status-name img { width: 1.35rem; height: 1.35rem; object-fit: contain; }
-.status-control input[type='range'] { width: 100%; margin: var(--editor-space-2) 0; accent-color: var(--editor-color-primary); }
+.status-control .segmented-range { margin: var(--editor-space-2) 0; }
 .player-field,
 .status-control { min-width: 0; }
 .player-field > label,
@@ -413,10 +478,12 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 
 @container (max-width: 48rem) {
   .player-dashboard { grid-template-columns: 1fr; }
+  .effigy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @container (max-width: 32rem) {
-  .status-grid { grid-template-columns: 1fr; }
+  .status-grid,
+  .effigy-grid { grid-template-columns: 1fr; }
   .player-summary,
   .technology-panel__header { align-items: flex-start; }
   .technology-panel__header { flex-direction: column; }
