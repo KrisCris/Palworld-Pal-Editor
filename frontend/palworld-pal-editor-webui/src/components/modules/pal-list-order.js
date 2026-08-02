@@ -27,7 +27,11 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
         - (right.SlotIndex ?? Number.MAX_SAFE_INTEGER);
       if (slot) return slot;
     } else {
-      const paldeck = textOrder(paldeckFor(left), paldeckFor(right));
+      const leftPaldeck = paldeckFor(left);
+      const rightPaldeck = paldeckFor(right);
+      const missing = Number(!leftPaldeck) - Number(!rightPaldeck);
+      if (missing) return missing;
+      const paldeck = textOrder(leftPaldeck, rightPaldeck);
       if (paldeck) return paldeck;
     }
 

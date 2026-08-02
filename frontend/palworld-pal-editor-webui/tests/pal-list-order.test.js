@@ -29,6 +29,15 @@ test("Pal list sorting follows the explicitly selected mode", () => {
   );
 });
 
+test("Paldeck sorting places Pals without a Paldeck number last", () => {
+  const withoutPaldeck = { InstanceId: "human", Paldeck: "" };
+
+  assert.deepEqual(
+    sortPalList([withoutPaldeck, ...pals], "paldeck").map(pal => pal.InstanceId),
+    ["storage-0", "storage-2", "party-0", "party-4", "human"],
+  );
+});
+
 test("Pal priority filtering recognizes unprioritized and I to III", () => {
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "all")), pals);
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "0")).map(pal => pal.InstanceId), ["storage-0"]);
