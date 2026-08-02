@@ -42,6 +42,7 @@ test("technology levels partition normal and ancient lanes without mutating stor
     ]) assert.match(source, new RegExp(`class="[^"]*${className}`), className);
     assert.match(source, /class="technology-level__track"\s*>\s*<h3>/);
     assert.doesNotMatch(source, /items\.(?:sort|splice)\s*\(/);
+    assert.match(source, /grid-template-columns:\s*4rem\s+minmax\(7\.5rem,\s*1fr\)\s+max-content/);
     assert.match(source, /@container\s*\(max-width:[^)]+\)[\s\S]*\.technology-lane--ancient\s*\{[\s\S]*grid-column:\s*2/);
 });
 

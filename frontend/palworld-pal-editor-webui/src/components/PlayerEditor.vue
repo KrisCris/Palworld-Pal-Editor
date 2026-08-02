@@ -307,7 +307,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 .technology-levels { display: grid; gap: var(--editor-space-3); }
 .technology-level {
   display: grid;
-  grid-template-columns: 4rem minmax(7.5rem, 1fr) minmax(7.5rem, 18rem);
+  grid-template-columns: 4rem minmax(7.5rem, 1fr) max-content;
   align-items: stretch;
   gap: var(--editor-space-2);
   min-height: 7.5rem;
