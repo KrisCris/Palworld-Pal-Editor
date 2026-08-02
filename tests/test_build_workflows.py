@@ -20,6 +20,7 @@ def test_nightly_workflow_updates_only_the_existing_automatic_release():
 
     assert "auto-nightly-buiilds" in source
     assert "gh release edit" in source
+    assert "GH_REPO: ${{ github.repository }}" in source
     assert "github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}" in source
     assert "cancel-in-progress: true" in source
     assert "gh release create" not in source

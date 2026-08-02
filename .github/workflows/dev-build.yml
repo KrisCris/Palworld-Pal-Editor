@@ -218,6 +218,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           VERSION_TAG: ${{ needs.metadata.outputs.version }}
           BUILT_AT: ${{ needs.metadata.outputs.built-at }}
         run: |
