@@ -180,9 +180,10 @@ def test_unsupported_kingwhale_runtime_skills_remain_unassignable():
 def test_game_derived_pal_passive_contract():
     passives = load("pal_passives.json")
 
-    assert len(passives) == 114
-    assert "MiniNushi" not in passives
-    assert "Nushi" in passives
+    assert len(passives) == 115
+    assert {"MiniNushi", "Nushi"} <= passives.keys()
+    assert passives["MiniNushi"]["Rating"] == 3
+    assert passives["MiniNushi"]["I18n"]["zh-CN"]["Name"] == "大猎物"
     for passive_id, row in passives.items():
         assert set(row) == PASSIVE_FIELDS, passive_id
         assert row["InternalName"] == passive_id

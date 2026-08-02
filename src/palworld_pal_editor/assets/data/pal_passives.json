@@ -11829,6 +11829,134 @@
             "zh-TW": "explicit"
         }
     },
+    "MiniNushi": {
+        "InternalName": "MiniNushi",
+        "Rating": 3,
+        "I18n": {
+            "ja": {
+                "Name": "大物",
+                "Description": "水属性攻撃ダメージ増加5% 氷属性攻撃ダメージ増加5% 防御+5%"
+            },
+            "de": {
+                "Name": "Prachtfang",
+                "Description": "Wasserangriffsschaden +5 % Eisangriffsschaden +5 % Verteidigung +5 %"
+            },
+            "en": {
+                "Name": "Whopper",
+                "Description": "5% increase to Water attack damage 5% increase to Ice attack damage 5% increase to defense."
+            },
+            "es": {
+                "Name": "Peso pesado",
+                "Description": "Aumenta el daño de los ataques de agua en un 5 % Aumenta el daño de los ataques de hielo en un 5 % Aumenta la defensa en un 5 %"
+            },
+            "es-MX": {
+                "Name": "Gran captura",
+                "Description": "Aumenta el daño de los ataques de tipo agua en un 5% Aumenta el daño de los ataques de tipo hielo en un 5% Aumenta la defensa en un 5%"
+            },
+            "fr": {
+                "Name": "Caïd",
+                "Description": "Les dégâts de type Eau augmentent de 5 %. Les dégâts de type Glace augmentent de 5 %. Défense +5 %"
+            },
+            "id": {
+                "Name": "Mangsa Besar",
+                "Description": "Peningkatkan damage serangan elemen air 5% Peningkatan damage serangan elemen es 5% Pertahanan +5%"
+            },
+            "it": {
+                "Name": "Pezzo grosso",
+                "Description": "Incremento del danno di attributo acqua: 5% Incremento del danno di attributo ghiaccio: 5% Difesa: +5%"
+            },
+            "ko": {
+                "Name": "월척",
+                "Description": "물 속성 공격 피해 증가 5% 얼음 속성 공격 피해 증가 5% 방어 +5%"
+            },
+            "pl": {
+                "Name": "Wielki okaz",
+                "Description": "5% wzrost obrażeń od ataku wodnego 5% wzrost obrażeń od ataku lodowego Obrona +5%"
+            },
+            "pt-BR": {
+                "Name": "Imponência",
+                "Description": "Aumenta o dano de ataques de água em 5%. Aumenta o dano de ataques de gelo em 5%. Aumenta a defesa em 5%."
+            },
+            "ru": {
+                "Name": "Крупная рыбка",
+                "Description": "Увеличение водного урона на 5% Увеличение ледяного урона на 5% Защита +5%"
+            },
+            "th": {
+                "Name": "ตัวตึง",
+                "Description": "เพิ่มความเสียหายการโจมตีธาตุน้ำ5% เพิ่มความเสียหายการโจมตีธาตุน้ำแข็ง5% พลังป้องกัน+5%"
+            },
+            "tr": {
+                "Name": "Büyük obje",
+                "Description": "Su saldırı hasarı %5 artar. Buz saldırı hasarı %5 artar. Savunma+%5"
+            },
+            "vi": {
+                "Name": "Cá Lớn",
+                "Description": "Tăng sát thương tấn công hệ Nước 5% Tăng sát thương tấn công hệ Băng 5% Phòng thủ+5%"
+            },
+            "zh-CN": {
+                "Name": "大猎物",
+                "Description": "水属性攻击伤害增加5% 冰属性攻击伤害增加5% 防御+5%"
+            },
+            "zh-TW": {
+                "Name": "大獵物",
+                "Description": "提升水屬性攻擊傷害5% 提升冰屬性攻擊傷害5% 防禦+5%"
+            }
+        },
+        "Buff": {
+            "b_Attack": 0.0,
+            "b_Defense": 0.05,
+            "b_CraftSpeed": 0.0,
+            "b_MoveSpeed": 0.0
+        },
+        "Category": "SortDisplayable",
+        "TargetElementType": "None",
+        "Effects": [
+            {
+                "EffectType": "ElementBoost_Water",
+                "EffectValue": 5.0,
+                "TargetType": "ToSelf"
+            },
+            {
+                "EffectType": "ElementBoost_Ice",
+                "EffectValue": 5.0,
+                "TargetType": "ToSelf"
+            },
+            {
+                "EffectType": "Defense",
+                "EffectValue": 5.0,
+                "TargetType": "ToSelf"
+            }
+        ],
+        "Invocation": {
+            "ActiveOtomo": false,
+            "Worker": false,
+            "Riding": false,
+            "Reserve": false,
+            "InOtomo": false,
+            "Always": true,
+            "InBaseCamp": false
+        },
+        "AddInvokeTriggerTypes": [],
+        "DescriptionSource": {
+            "ja": "explicit",
+            "de": "explicit",
+            "en": "explicit",
+            "es": "explicit",
+            "es-MX": "explicit",
+            "fr": "explicit",
+            "id": "explicit",
+            "it": "explicit",
+            "ko": "explicit",
+            "pl": "explicit",
+            "pt-BR": "explicit",
+            "ru": "explicit",
+            "th": "explicit",
+            "tr": "explicit",
+            "vi": "explicit",
+            "zh-CN": "explicit",
+            "zh-TW": "explicit"
+        }
+    },
     "Deffence_up2_2": {
         "InternalName": "Deffence_up2_2",
         "Rating": 2,

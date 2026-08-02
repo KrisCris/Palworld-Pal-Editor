@@ -3068,7 +3068,6 @@ def _locale_fallback(
 
 def build_passive_records(
     passive_rows: dict[str, dict],
-    monster_rows: dict[str, dict],
     names_by_locale: dict[str, dict[str, dict]],
     descriptions_by_locale: dict[str, dict[str, dict]],
     ui_by_locale: dict[str, dict[str, dict]],
@@ -3080,25 +3079,8 @@ def build_passive_records(
         or set(ui_by_locale) != set(LOCALE_DIRECTORIES)
     ):
         raise ValueError("Passive localization must contain exactly 17 locales")
-    passive_index = casefold_index(passive_rows)
-    monster_defaults = set()
-    for character_id, row in monster_rows.items():
-        for index in range(1, 5):
-            value = row.get(f"PassiveSkill{index}")
-            if not isinstance(value, str) or not value:
-                raise TypeError(f"{character_id}.PassiveSkill{index} must be a string")
-            if value.casefold() == "none":
-                continue
-            try:
-                monster_defaults.add(passive_index[value.casefold()])
-            except KeyError as error:
-                raise ValueError(
-                    f"{character_id}.PassiveSkill{index} references unknown passive {value}"
-                ) from error
-
     missing = []
     records = {}
-    add_fields = ("AddPal", "AddRarePal", "AddWorldTreePal", "AddMutationPal")
     invocation_fields = {
         "ActiveOtomo": "InvokeActiveOtomo",
         "Worker": "InvokeWorker",
@@ -3115,13 +3097,11 @@ def build_passive_records(
         "MoveSpeed": "b_MoveSpeed",
     }
     for passive_id, row in passive_rows.items():
-        for field in (*add_fields, *invocation_fields.values()):
+        for field in invocation_fields.values():
             if type(row.get(field)) is not bool:
                 raise TypeError(f"{passive_id}.{field} must be a bool")
         category = _enum_tail(row.get("Category"), f"{passive_id}.Category")
-        if category != "SortDisplayable" or not (
-            any(row[field] for field in add_fields) or passive_id in monster_defaults
-        ):
+        if category != "SortDisplayable":
             continue
         effects = []
         effect_values = []
@@ -3523,7 +3503,7 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         evidence,
     )
     passive, missing_passive = build_passive_records(
-        loaded["passives"], monster_rows, names, descriptions, ui
+        loaded["passives"], names, descriptions, ui
     )
     source_counts = {SKILL_SOURCES[name]: len(rows) for name, rows in loaded.items()}
     source_counts[CHARACTER_EVIDENCE_SOURCES["monsters"]] = len(monster_rows)

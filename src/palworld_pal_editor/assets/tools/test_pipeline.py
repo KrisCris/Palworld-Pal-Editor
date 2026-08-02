@@ -7220,16 +7220,17 @@ class SkillDomainTests(unittest.TestCase):
             "ByRare",
             "ByWorldTree",
             "ByMutation",
-            "ByMonsterDefault",
+            "DisplayableWithoutLottery",
             "Explicit",
             "Composed",
+            "MiniNushi",
         )
         passives = {
             "ByAddPal": self.passive_row(AddPal=True),
             "ByRare": self.passive_row(AddRarePal=True),
             "ByWorldTree": self.passive_row(AddWorldTreePal=True),
             "ByMutation": self.passive_row(AddMutationPal=True),
-            "ByMonsterDefault": self.passive_row(),
+            "DisplayableWithoutLottery": self.passive_row(),
             "Explicit": self.passive_row(
                 AddPal=True,
                 OverrideDescMsgID="EXPLICIT_DESC",
@@ -7255,21 +7256,22 @@ class SkillDomainTests(unittest.TestCase):
             ),
             "Composed": self.passive_row(AddPal=True),
             "MiniNushi": self.passive_row(),
-            "HumanOnly": self.passive_row(),
-            "EquipmentOnly": self.passive_row(AddArmor=True),
-            "PartnerOnly": self.passive_row(IsStackablePartnerSkillBySameTribe=True),
+            "HumanOnly": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable"
+            ),
+            "EquipmentOnly": self.passive_row(
+                AddArmor=True, Category="EPalPassiveCategory::SortNotDisplayable"
+            ),
+            "PartnerOnly": self.passive_row(
+                IsStackablePartnerSkillBySameTribe=True,
+                Category="EPalPassiveCategory::SortNotDisplayable",
+            ),
             "Hidden": self.passive_row(
                 AddPal=True, Category="EPalPassiveCategory::SortNotDisplayable"
             ),
-            "TestOnly": self.passive_row(),
-        }
-        monsters = {
-            "FixturePal": {
-                "PassiveSkill1": "ByMonsterDefault",
-                "PassiveSkill2": "None",
-                "PassiveSkill3": "None",
-                "PassiveSkill4": "None",
-            }
+            "TestOnly": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable"
+            ),
         }
         names, descriptions, ui = self.passive_texts(included)
         for locale in LOCALES:
@@ -7278,7 +7280,7 @@ class SkillDomainTests(unittest.TestCase):
             )
 
         rows, missing = game_data.build_passive_records(
-            passives, monsters, names, descriptions, ui
+            passives, names, descriptions, ui
         )
 
         self.assertEqual(set(rows), set(included))

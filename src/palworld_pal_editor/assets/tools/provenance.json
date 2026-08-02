@@ -4748,14 +4748,14 @@
       "missing_references": [],
       "output_counts": {
         "data/pal_attacks.json": 384,
-        "data/pal_passives.json": 114
+        "data/pal_passives.json": 115
       },
       "output_hashes": {
         "data/pal_attacks.json": "4cf0879d5bdb99a6a450f869d00eec3e5b9556ae3cf9103e78aef1ffa49e8b40",
-        "data/pal_passives.json": "d0e85c93819d3ea9b4dbdfc9e4fe63733e282dcc9e3c6cb647d5ce16a7ea4e52"
+        "data/pal_passives.json": "dc9ea2b66d3eb6cb7cc44ecf3e690806bed02e6183e9f891b06d21390c838aa2"
       },
       "parser_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d",
-      "policy_sha256": "5a581e4f17c724eb401aa63a9e03138c4dcb592b929286318a9d40cbfc8fcb48",
+      "policy_sha256": "06c3d784006c9439bff5f6918dbaba42f5908143f3d98b0a47951f90e77b3386",
       "source_counts": {
         "Pal/Content/L10N/de/Pal/DataTable/Text/DT_SkillDescText_Common": 439,
         "Pal/Content/L10N/de/Pal/DataTable/Text/DT_SkillNameText_Common": 1157,

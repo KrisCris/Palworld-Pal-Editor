@@ -127,8 +127,8 @@
             "sha256": "b26f344ce537b4b18726cae39518b0735c31cb29f59bea3ae08450af26e48fbb"
           },
           "passive_ids": {
-            "count": 114,
-            "sha256": "3dc13bcb9b8ae038f1e12deeb99982cab8a64c91ecdafdc559a0cb3758953e67"
+            "count": 115,
+            "sha256": "db768440786c1d86578b3c4500f38b286c1b54b48bbdbd0ad64966b218446ef9"
           },
           "legal_fruit_ids": {
             "count": 92,
@@ -143,11 +143,10 @@
             "sha256": "0aa6d7ad71db44d5c50d155c5761dcbf7d804e18d96db80d8a5fd971001273fd"
           },
           "required_passive_ids": [
+            "MiniNushi",
             "Nushi"
           ],
-          "forbidden_passive_ids": [
-            "MiniNushi"
-          ]
+          "forbidden_passive_ids": []
         }
       },
       "unverified_routes": [
