@@ -2618,7 +2618,10 @@ def _localized_character_names(
             (
                 value
                 for name in names
-                if (value := _text_value(texts[name][locale], text_id)) is not None
+                if (
+                    value := _text_value(texts[name][locale], text_id.casefold())
+                )
+                is not None
             ),
             None,
         )
@@ -2709,6 +2712,13 @@ def build_character_records(
         raise ValueError(
             "Character text tables must contain five tables and 17 locales"
         )
+    texts = {
+        table: {
+            locale: casefold_rows(rows)
+            for locale, rows in localized.items()
+        }
+        for table, localized in texts.items()
+    }
     monsters = tables["monsters"]
     humans = tables["humans"]
     overlap = monsters.keys() & humans.keys()
@@ -2950,14 +2960,18 @@ def build_character_records(
         key = f"SKIN_NAME_{skin_id}"
         i18n = {}
         for locale in LOCALE_DIRECTORIES:
-            name = _text_value(texts["ui"][locale], key)
+            name = _text_value(texts["ui"][locale], key.casefold())
             if name is None:
                 missing_localizations.append(f"skin:{skin_id}:{locale}:Name")
                 name = next(
                     (
                         value
                         for fallback_locale in ("en", "ja")
-                        if (value := _text_value(texts["ui"][fallback_locale], key))
+                        if (
+                            value := _text_value(
+                                texts["ui"][fallback_locale], key.casefold()
+                            )
+                        )
                     ),
                     skin_id,
                 )
@@ -3240,17 +3254,10 @@ def build_active_records(
     ) != set(LOCALE_DIRECTORIES):
         raise ValueError("Active localization must contain exactly 17 locales")
     names_by_locale = {
-        locale: {
-            folded: rows[actual]
-            for folded, actual in casefold_index(rows).items()
-        }
-        for locale, rows in names_by_locale.items()
+        locale: casefold_rows(rows) for locale, rows in names_by_locale.items()
     }
     descriptions_by_locale = {
-        locale: {
-            folded: rows[actual]
-            for folded, actual in casefold_index(rows).items()
-        }
+        locale: casefold_rows(rows)
         for locale, rows in descriptions_by_locale.items()
     }
     by_id = {}
@@ -4212,6 +4219,13 @@ def casefold_index(rows: dict[str, dict]) -> dict[str, str]:
             raise ValueError(f"Case-insensitive ID collision: {index[folded]} / {key}")
         index[folded] = key
     return index
+
+
+def casefold_rows(rows: dict[str, dict]) -> dict[str, dict]:
+    return {
+        folded: rows[actual]
+        for folded, actual in casefold_index(rows).items()
+    }
 
 
 def domain_policy_hash(policy: dict, domain: str) -> str:

@@ -297,6 +297,18 @@ def test_authoritative_family_variant_and_source_values():
     assert king_whale["PaldeckSuffix"] == ""
 
 
+def test_character_names_resolve_case_mismatched_game_text_keys():
+    pals = load("pal_data.json")
+    humans = load("human_data.json")
+
+    assert pals["BluePlatypus"]["I18n"]["en"] == "Fuack"
+    assert pals["BluePlatypus"]["I18n"]["zh-CN"] == "冲浪鸭"
+    assert pals["WindChimes"]["I18n"]["en"] == "Hangyu"
+    assert pals["WindChimes"]["I18n"]["zh-CN"] == "吊缚灵"
+    assert pals["BOSS_PinkCat"]["I18n"]["en"] == "The Cat's Pajamas Cattiva"
+    assert humans["Police_Chief"]["I18n"]["en"] == "Slacker Chief"
+
+
 def test_kingwhale_runtime_publication_uses_exact_character_evidence():
     pals = load("pal_data.json")
 

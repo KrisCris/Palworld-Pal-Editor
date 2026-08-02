@@ -6957,6 +6957,27 @@ class CharacterRecordTests(unittest.TestCase):
             },
         )
 
+    def test_character_name_localization_join_is_case_insensitive(self) -> None:
+        for locale in game_data.LOCALE_DIRECTORIES:
+            localized = self.texts["pal"][locale].pop("PAL_NAME_BaseFamily")
+            self.texts["pal"][locale]["PAL_NAME_basefamily"] = localized
+
+        built = self.build()
+
+        self.assertEqual(
+            built["pals"]["BaseFamily"]["I18n"],
+            {
+                locale: f"Base {locale}"
+                for locale in game_data.LOCALE_DIRECTORIES
+            },
+        )
+        self.assertFalse(
+            any(
+                item.startswith("character:BaseFamily:")
+                for item in built["missing_localizations"]
+            )
+        )
+
     def test_missing_skin_icon_is_invalid_and_japanese_text_falls_back(self) -> None:
         built = self.build()
         skin = built["skins"]["MissingSkin"]
