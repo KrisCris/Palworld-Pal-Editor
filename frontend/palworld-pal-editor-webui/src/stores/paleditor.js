@@ -537,6 +537,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SHOW_UNREF_PAL_FLAG = ref(false);
     const SHOW_OOB_PAL_FLAG = ref(true);
     const HIDE_INVALID_OPTIONS = ref(true);
+    const PAL_SAVE_DETAILS_OPEN = ref(false);
 
     const PAL_LIST_SEARCH_KEYWORD = ref("");
     const PAL_LIST_SORT = ref("paldeck");
@@ -1869,6 +1870,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SHOW_UNREF_PAL_FLAG,
         SHOW_OOB_PAL_FLAG,
         HIDE_INVALID_OPTIONS,
+        PAL_SAVE_DETAILS_OPEN,
 
         PAL_LIST_SEARCH_KEYWORD,
         PAL_LIST_SORT,

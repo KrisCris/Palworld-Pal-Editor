@@ -11,11 +11,12 @@ const readSource = async relativePath => {
   }
 };
 
-const [source, mainCss, editorCss, selectorSource] = await Promise.all([
+const [source, mainCss, editorCss, selectorSource, storeSource] = await Promise.all([
   readSource("../src/components/PalEditor.vue"),
   readSource("../src/assets/main.css"),
   readSource("../src/assets/editor-ui.css"),
   readSource("../src/components/modules/PalSpeciesSelector.vue"),
+  readSource("../src/stores/paleditor.js"),
 ]);
 
 const basicPanel = () => {
@@ -118,6 +119,12 @@ test("Pal basic info keeps specific translated icon action names", () => {
   ]) {
     assert.match(panel, new RegExp(`:aria-label="palStore\\.getTranslatedText\\('${key}'\\)"`));
   }
+});
+
+test("save details expansion survives Pal editor remounts", () => {
+  assert.match(storeSource, /const PAL_SAVE_DETAILS_OPEN = ref\(false\)/);
+  assert.match(storeSource, /PAL_SAVE_DETAILS_OPEN,/);
+  assert.match(source, /<details class="editor-disclosure"\s+:open="palStore\.PAL_SAVE_DETAILS_OPEN"\s+@toggle="palStore\.PAL_SAVE_DETAILS_OPEN = \$event\.currentTarget\.open">/);
 });
 
 test("the Pal species selector consumes shared editor tokens", () => {

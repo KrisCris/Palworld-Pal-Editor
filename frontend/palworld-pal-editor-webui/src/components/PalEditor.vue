@@ -286,7 +286,9 @@ const portraitBorder = pal => pal.IsAwakening
         </section>
       </div>
 
-      <details class="editor-disclosure">
+      <details class="editor-disclosure"
+        :open="palStore.PAL_SAVE_DETAILS_OPEN"
+        @toggle="palStore.PAL_SAVE_DETAILS_OPEN = $event.currentTarget.open">
         <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
         <div class="pal-technical-grid">
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
