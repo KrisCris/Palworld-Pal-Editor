@@ -1586,28 +1586,28 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function dumpPalData() {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/dump_data", {
+                PlayerUId: GET_PAL_OWNER_API_ID(),
+                PalGuid: SELECTED_PAL_ID.value,
+            });
 
-        const response = await POST("/api/pal/dump_data", {
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
-        });
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            const data = response.data;
-            await navigator.clipboard.writeText(data);
-            showToast("Message_Pal_Copied", "success");
-            window.open("https://jsonformatter.curiousconcept.com/");
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Copy_Pal", response);
+            if (response === false) return;
+            if (response.status == 0) {
+                await navigator.clipboard.writeText(response.data);
+                showToast("Message_Pal_Copied", "success");
+            } else if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Copy_Pal", response);
+            }
+        } catch (error) {
+            reportFrontendError(error, getTranslatedText("Operation_Copy_Pal"));
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
         }
-
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
     function isFilteredPal(pal) {
