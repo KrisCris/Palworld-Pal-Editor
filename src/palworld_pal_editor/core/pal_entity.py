@@ -684,6 +684,8 @@ class PalEntity:
             self._pal_param["bIsAwakening"] = PalObjects.BoolProperty(True)
         else:
             self._pal_param.pop("bIsAwakening", None)
+        if maxHP := self.ComputedMaxHP:
+            self.Hp = maxHP
 
     @property
     def Rank_HP(self) -> Optional[int]:
@@ -729,87 +731,81 @@ class PalEntity:
 
     @property
     def ComputedMaxHP(self) -> Optional[int]:
-        """
-        Credit to https://www.reddit.com/r/Palworld/comments/1afyau4/pal_stat_mechanics_hidden_ivs_levelup_stats_and/
-        """
-        Level = self.Level or 1
-        HP_Stat = DataProvider.get_pal_stats(self.DataAccessKey, "HP")
-        if HP_Stat is None:
+        level = self.Level or 1
+        hp_stat = self._base_stat_with_friendship("HP", "Friendship_HP")
+        if hp_stat is None:
             return None
-        HP_IV = (self.Talent_HP or 0) * 0.3 / 100  # 30% of Talent
-        HP_Bonus = self._get_passive_buff("b_HP")  # 0
-        HP_SoulBonus = (self.Rank_HP or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
-
-        # Add 1.2x scaling to large scale pals (Need to verify whether Tower & Raid pals are also taken into account...)
-        Alpha_Scaling = 1.2 if self._IsBOSS else 1
-
-        # slightly off but not a big deal i suppose
-        return (
-            math.floor(
-                math.floor(500 + 5 * Level + HP_Stat * 0.5 * Level * (1 + HP_IV))
-                * (1 + HP_Bonus)
-                * (1 + HP_SoulBonus)
-                * (1 + CondenserBonus)
-                * Alpha_Scaling
-            )
-            * 1000
+        raw_hp = math.trunc(
+            (hp_stat * (1 + (self.Talent_HP or 0) * 0.003) + 10)
+            * 0.5
+            * level
+            + 500
         )
+        raw_hp = self._apply_rank_upgrades(raw_hp, self.Rank_HP)
+        return math.trunc(raw_hp * (1 + self._get_passive_buff("b_HP"))) * 1000
 
     @property
     def ComputedAttack(self) -> Optional[int]:
-        Level = self.Level or 1
-        Attack_Stat = DataProvider.get_pal_stats(self.DataAccessKey, "ATK")
-        if Attack_Stat is None:
-            return None
-        Attack_IV = (self.Talent_Shot or 0) * 0.3 / 100  # 30% of Talent
-        Attack_Bonus = self._get_passive_buff("b_Attack")
-        Attack_SoulBonus = (self.Rank_Attack or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
-
-        # slightly off when soul / condenser bonus presents...
-        base_attack = math.floor(
-            math.floor(100 + Attack_Stat * 0.075 * Level * (1 + Attack_IV))
-            * (1 + Attack_SoulBonus)
-            * (1 + CondenserBonus)
+        level = self.Level or 1
+        attack_stat = self._base_stat_with_friendship(
+            "ATK", "Friendship_ShotAttack"
         )
-        return math.floor(base_attack * (1 + Attack_Bonus))
-        # return math.floor(math.floor(100 + Attack_Stat * .075 * Level * (1 + Attack_IV)) \
-        #     * (1 + Attack_Bonus) * (1 + Attack_SoulBonus) * (1 + CondenserBonus))
+        if attack_stat is None:
+            return None
+        raw_attack = math.trunc(
+            attack_stat * (1 + (self.Talent_Shot or 0) * 0.003) * level * 0.075
+            + 100
+        )
+        raw_attack = self._apply_rank_upgrades(raw_attack, self.Rank_Attack)
+        return math.trunc(raw_attack * (1 + self._get_passive_buff("b_Attack")))
 
     @property
     def ComputedDefense(self) -> Optional[int]:
-        Level = self.Level or 1
-        Defense_Stat = DataProvider.get_pal_stats(self.DataAccessKey, "DEF")
-        if Defense_Stat is None:
-            return None
-        Defense_IV = (self.Talent_Defense or 0) * 0.3 / 100  # 30% of Talent
-        Defense_Bonus = self._get_passive_buff("b_Defense")
-        Defense_SoulBonus = (self.Rank_Defence or 0) * 0.03  # 3% per incr Rank_HP
-        CondenserBonus = ((self.Rank or 1) - 1) * 0.05  # 5% per incr Rank
-
-        # TODO it works fine without the condenser and soul bonus, need to figure out what was wrong
-        base_defense = math.floor(
-            math.floor(50 + math.ceil(Defense_Stat * 0.075 * Level) * (1 + Defense_IV))
-            * (1 + Defense_SoulBonus)
-            * (1 + CondenserBonus)
+        level = self.Level or 1
+        defense_stat = self._base_stat_with_friendship(
+            "DEF", "Friendship_Defense"
         )
-        return math.floor(base_defense * (1 + Defense_Bonus))
-        # return math.floor(math.floor(50 + Defense_Stat * 0.075 * Level * (1 + Defense_IV))
-        #     * (1 + Defense_Bonus)  * (1 + Defense_SoulBonus) * (1 + CondenserBonus))
+        if defense_stat is None:
+            return None
+        raw_defense = math.trunc(
+            defense_stat
+            * (1 + (self.Talent_Defense or 0) * 0.003)
+            * level
+            * 0.075
+            + 50
+        )
+        raw_defense = self._apply_rank_upgrades(raw_defense, self.Rank_Defence)
+        return math.trunc(raw_defense * (1 + self._get_passive_buff("b_Defense")))
 
     @property
     def ComputedCraftSpeed(self) -> Optional[int]:
-        # Base_CraftSpeed = self.CraftSpeed
-        CraftSpeed_Stat = DataProvider.get_pal_stats(self.DataAccessKey, "CRAFTSPEED")
-        if CraftSpeed_Stat is None:
+        craft_speed = DataProvider.get_pal_stats(self.DataAccessKey, "CRAFTSPEED")
+        if craft_speed is None:
             return None
-        CraftSpeed_SoulBonus = (self.Rank_CraftSpeed or 0) * 0.03  # 3% per incr Rank_HP
-        Defense_Bonus = self._get_passive_buff("b_CraftSpeed")
-        return math.floor(
-            math.floor(CraftSpeed_Stat * (1 + CraftSpeed_SoulBonus))
-            * (1 + Defense_Bonus)
+        raw_craft_speed = math.trunc(
+            craft_speed * (1 + (self.Rank_CraftSpeed or 0) * 0.03)
         )
+        return math.trunc(
+            raw_craft_speed * (1 + self._get_passive_buff("b_CraftSpeed"))
+        )
+
+    def _base_stat_with_friendship(
+        self, stat_key: str, friendship_key: str
+    ) -> Optional[float]:
+        stat = DataProvider.get_pal_stats(self.DataAccessKey, stat_key)
+        if stat is None:
+            return None
+        if self.IsAwakening:
+            stat *= 1.1
+        if (friendship_level := self.FriendshipLevel or 0) > 0:
+            stat += friendship_level * (
+                DataProvider.get_pal_parameter(self.DataAccessKey, friendship_key) or 0
+            )
+        return stat
+
+    def _apply_rank_upgrades(self, stat: int, soul_rank: Optional[int]) -> int:
+        stat = math.trunc(stat * (1 + ((self.Rank or 1) - 1) * 0.05))
+        return math.trunc(stat * (1 + (soul_rank or 0) * 0.03))
 
     @property
     def Hp(self) -> Optional[int]:
@@ -854,9 +850,8 @@ class PalEntity:
         LOGGER.info(
             f"Added {DataProvider.get_passive_i18n(skill)[0]} to PassiveSkillList"
         )
-        # Update HP, but no such skill atm.
-        # if maxHP := self.ComputedMaxHP:
-        #     self.HP = maxHP
+        if maxHP := self.ComputedMaxHP:
+            self.Hp = maxHP
         return True
 
     @LOGGER.change_logger("PassiveSkillList")
@@ -868,9 +863,8 @@ class PalEntity:
             LOGGER.info(
                 f"Removed {DataProvider.get_passive_i18n(skill)[0]} from PassiveSkillList"
             )
-            # Update HP, but no such skill atm.
-            # if maxHP := self.ComputedMaxHP:
-            #     self.HP = maxHP
+            if maxHP := self.ComputedMaxHP:
+                self.Hp = maxHP
             return skill
         except Exception as e:
             LOGGER.warning(f"{e}")
