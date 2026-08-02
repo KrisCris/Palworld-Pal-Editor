@@ -49,6 +49,7 @@ def test_linux_build_installs_qt_xcb_runtime_dependencies():
     for name in ("dev-build.yml", "release-build.yml"):
         source = workflow(name)
 
+        assert "libegl1" in source
         assert "libxcb-icccm4" in source
         assert "libxcb-keysyms1" in source
         assert "libxcb-shape0" in source
