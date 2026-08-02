@@ -461,15 +461,18 @@ test("loaded-save hydration selects base camp again after reloading", async () =
         loaded: true,
         hasWorkingPal: true,
         players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
     });
 
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
+    assert.equal(store.SELECTED_PAL_ID, "pal-1");
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
+    assert.equal(store.SELECTED_PAL_ID, "pal-1");
 });
 
 test("loaded-save hydration selects the first player when there is no base camp", async () => {
@@ -478,15 +481,18 @@ test("loaded-save hydration selects the first player when there is no base camp"
         password: false,
         loaded: true,
         players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
     });
 
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
+    assert.equal(store.SELECTED_PAL_ID, "pal-1");
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
+    assert.equal(store.SELECTED_PAL_ID, "pal-1");
 });
 
 test("selected Pal data retains its game-derived family", async () => {

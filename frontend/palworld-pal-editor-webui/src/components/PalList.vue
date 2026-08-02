@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
@@ -50,15 +50,6 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
   } catch (error) {
     return
   }
-})
-
-onMounted(async () => {
-  if (props.preview || palStore.SELECTED_PAL_ID) return
-  await nextTick()
-  await nextTick()
-  await nextTick()
-  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
-  palListContainer.value.querySelector('button:not(:disabled)')?.click()
 })
 
 const visiblePals = computed(() => sortPalList(

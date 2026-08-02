@@ -1327,6 +1327,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 ? PAL_BASE_WORKER_BTN.value
                 : PLAYER_MAP.value.keys().next().value;
             if (defaultPlayer !== undefined) await selectPlayer(defaultPlayer);
+            const defaultPal = PAL_MAP.value.keys().next().value;
+            if (defaultPal !== undefined) await selectPal(defaultPal);
             SAVE_LOADED_FLAG.value = true;
             IS_LOCKED.value = false;
             APP_STATE.value = "editor";
