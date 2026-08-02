@@ -7,11 +7,37 @@ import tarfile
 import tempfile
 import zipfile
 from pathlib import Path, PurePosixPath
+from types import SimpleNamespace
 
 ROOT = Path(__file__).parents[1]
 
 
+def _appimage_spec(binaries=()):
+    captured = {}
+
+    def analysis(*args, **kwargs):
+        captured["analysis"] = kwargs
+        return SimpleNamespace(
+            scripts=[], binaries=list(binaries), datas=kwargs["datas"], pure=[]
+        )
+
+    def exe(*args, **kwargs):
+        captured["binaries"] = args[2]
+
+    namespace = {
+        "Analysis": analysis,
+        "PYZ": lambda *args, **kwargs: None,
+        "EXE": exe,
+    }
+    spec = ROOT / "palworld-pal-editor.spec"
+    exec(compile(spec.read_bytes(), spec, "exec"), namespace)  # noqa: S102
+    return captured
+
+
 def _pyinstaller_add_data(script: str, separator: str) -> set[tuple[str, str]]:
+    if script == "build_appimage.sh":
+        return {tuple(data) for data in _appimage_spec()["analysis"]["datas"]}
+
     lines = (ROOT / script).read_text("utf-8").splitlines()
     start = next(i for i, line in enumerate(lines) if line.strip().startswith("pyinstaller "))
     command_lines = [lines[start].strip()]
@@ -186,16 +212,17 @@ def test_release_build_collects_only_runtime_assets_and_webui():
     }
     for script, (build, publish) in release_commands.items():
         source = (ROOT / script).read_text("utf-8")
-        pyinstaller = re.search(r"(?m)^pyinstaller --onefile(?:\s|$)", source)
+        pyinstaller = re.search(r"(?m)^pyinstaller (?:--onefile|--clean)(?:\s|$)", source)
         assert pyinstaller is not None
         assert source.index(build) < source.index(publish) < pyinstaller.start()
 
 
 def test_appimage_uses_gpu_by_default_and_ci_smoke_tests_use_software_rendering():
     source = (ROOT / "build_appimage.sh").read_text("utf-8")
+    spec = _appimage_spec()["analysis"]
 
     assert 'pywebview[pyside6]==4.4.1' in source
-    assert '--hidden-import="webview.platforms.qt"' in source
+    assert "webview.platforms.qt" in spec["hiddenimports"]
     assert 'export PYWEBVIEW_GUI="qt"' in source
     assert 'QT_OPENGL="software"' not in source
     assert 'QT_QUICK_BACKEND="software"' not in source
@@ -207,6 +234,17 @@ def test_appimage_uses_gpu_by_default_and_ci_smoke_tests_use_software_rendering(
     for workflow in ("dev-build.yml", "release-build.yml"):
         workflow_source = (ROOT / ".github" / "workflows" / workflow).read_text("utf-8")
         assert 'QT_OPENGL=software QT_QUICK_BACKEND=software QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu"' in workflow_source
+
+
+def test_appimage_uses_host_gbm_library():
+    captured = _appimage_spec(
+        [
+            ("libgbm.so.1", "/build/libgbm.so.1", "BINARY"),
+            ("libstdc++.so.6", "/build/libstdc++.so.6", "BINARY"),
+        ]
+    )
+
+    assert [binary[0] for binary in captured["binaries"]] == ["libstdc++.so.6"]
 
 
 def test_built_archives_include_runtime_assets_and_exclude_maintainer_files():

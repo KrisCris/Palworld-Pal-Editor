@@ -60,15 +60,7 @@ mkdir -p "$DISTDIR"
 
 # Build with PyInstaller
 echo "📦 Building with PyInstaller..."
-pyinstaller --onefile \
-  -i "./icon.ico" \
-  --add-data="src/palworld_pal_editor/assets/data:assets/data" \
-  --add-data="src/palworld_pal_editor/assets/icons:assets/icons" \
-  --add-data="src/palworld_pal_editor/webui:webui" \
-  ./src/palworld_pal_editor/__main__.py \
-  --name "$APPNAME" \
-  --hidden-import="webview.platforms.qt" \
-  --hidden-import="pkg_resources.extern"
+pyinstaller --clean --noconfirm palworld-pal-editor.spec
 
 PYINSTALLER_BINARY="$DISTDIR/$APPNAME"
 
