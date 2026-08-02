@@ -138,7 +138,8 @@ const variantTabindex = (variant, index) => (
     </button>
 
     <Teleport to="body">
-    <div v-if="open" class="selector-popover" role="dialog" :aria-label="t('Editor_Pal_Selector_Title')"
+    <div v-if="open" class="selector-overlay" @pointerdown.self="close">
+    <div class="selector-popover" role="dialog" aria-modal="true" :aria-label="t('Editor_Pal_Selector_Title')"
       @keydown.esc.stop="close">
       <label class="search-label">
         <span>{{ t("Editor_Pal_Selector_Search") }}</span>
@@ -231,6 +232,7 @@ const variantTabindex = (variant, index) => (
         >{{ t("Editor_Pal_Selector_Apply") }}</button>
       </div>
     </div>
+    </div>
     </Teleport>
   </div>
 </template>
@@ -304,14 +306,23 @@ small {
   white-space: nowrap;
 }
 
-.selector-popover {
+.selector-overlay {
   position: fixed;
-  z-index: 30;
-  top: 50%;
-  left: 50%;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: var(--editor-space-4);
+  background: color-mix(in srgb, var(--editor-color-background) 60%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.selector-popover {
+  position: relative;
   display: flex;
   width: min(52rem, calc(100vw - 2rem));
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   box-sizing: border-box;
   flex-direction: column;
   gap: var(--editor-space-2);
@@ -322,7 +333,6 @@ small {
   color: var(--editor-color-text);
   background: var(--editor-color-surface);
   box-shadow: var(--editor-shadow-compact);
-  transform: translate(-50%, -50%);
 }
 
 .search-label {

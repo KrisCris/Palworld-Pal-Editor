@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -226,4 +227,16 @@ test("selector UI labels exist in every supported UI locale", () => {
     for (const { default: locale } of locales) {
         for (const key of keys) assert.equal(typeof locale[key], "string", key);
     }
+});
+
+test("species selector is centered in a dismissible viewport overlay", async () => {
+    const source = await readFile(
+        new URL("../src/components/modules/PalSpeciesSelector.vue", import.meta.url),
+        "utf8",
+    );
+
+    assert.match(source, /class="selector-overlay"[^>]*@pointerdown\.self="close"/);
+    assert.match(source, /\.selector-overlay\s*\{[^}]*position:\s*fixed;[^}]*inset:\s*0;[^}]*place-items:\s*center;/s);
+    assert.match(source, /\.selector-popover\s*\{[^}]*position:\s*relative;/s);
+    assert.doesNotMatch(source, /\.selector-popover\s*\{[^}]*transform:\s*translate/s);
 });
