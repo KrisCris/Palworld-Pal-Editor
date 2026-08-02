@@ -219,6 +219,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.group_id = obj.group_id;
             this.ContainerId = obj.ContainerId;
             this.SlotIndex = obj.SlotIndex;
+            this.ContainerKind = obj.ContainerKind;
+            this.FavoriteIndex = obj.FavoriteIndex ?? 0;
             this.OwnerName = obj.OwnerName;
             this.CharacterID = obj.CharacterID;
             this.FamilyID = obj.FamilyID;
@@ -530,6 +532,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const HIDE_INVALID_OPTIONS = ref(true);
 
     const PAL_LIST_SEARCH_KEYWORD = ref("");
+    const PAL_LIST_SORT = ref("paldeck");
+    const PAL_LIST_PRIORITY_FILTER = ref("all");
+    const PAL_LIST_CREATED_ONLY = ref(false);
+    const CREATED_PAL_IDS = ref(new Set());
 
     const IS_PAL_SAVE_PATH = ref(false);
 
@@ -1127,6 +1133,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_TEMPLATES.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
+        PAL_LIST_SORT.value = "paldeck";
+        PAL_LIST_PRIORITY_FILTER.value = "all";
+        PAL_LIST_CREATED_ONLY.value = false;
+        CREATED_PAL_IDS.value.clear();
         SHOW_UNREF_PAL_FLAG.value = false;
         SHOW_OOB_PAL_FLAG.value = true;
         SHOW_PLAYER_EDIT_FLAG.value = false;
@@ -1358,6 +1368,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // insert new data
             for (let pal of response.data) {
                 let pal_data = new PalData(pal);
+                if (pal_data.IsNewPal) CREATED_PAL_IDS.value.add(pal_data.InstanceId);
                 map.set(pal_data.InstanceId, pal_data);
                 // console.log(
                 //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
@@ -1691,6 +1702,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
+            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
             const temp_map = new Map();
             PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
             PAL_MAP.value.clear();
@@ -1773,6 +1785,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
+            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
             const temp_map = new Map();
             PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
             PAL_MAP.value.clear();
@@ -1851,6 +1864,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         HIDE_INVALID_OPTIONS,
 
         PAL_LIST_SEARCH_KEYWORD,
+        PAL_LIST_SORT,
+        PAL_LIST_PRIORITY_FILTER,
+        PAL_LIST_CREATED_ONLY,
+        CREATED_PAL_IDS,
 
         IS_LOCKED,
         HAS_PASSWORD,

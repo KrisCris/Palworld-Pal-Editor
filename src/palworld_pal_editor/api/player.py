@@ -15,6 +15,7 @@ player_blueprint = Blueprint("player", __name__)
 @jwt_required()
 def get_player_pals():
     id = request.json.get("PlayerUId")
+    player_entity = None
     if id == "PAL_BASE_WORKER_BTN":
         pals = SaveManager().get_working_pals()
     else:
@@ -22,6 +23,13 @@ def get_player_pals():
         if not player_entity:
             return reply(1, None, f"Player {id} Not Found")
         pals = player_entity.get_sorted_pals()
+
+    party_container_id = (
+        player_entity.OtomoCharacterContainerId if player_entity else None
+    )
+    storage_container_id = (
+        player_entity.PalStorageContainerId if player_entity else None
+    )
 
     # I hate this piece of shit
     return reply(
@@ -41,6 +49,16 @@ def get_player_pals():
                 "IsRarePal": pal.IsRarePal or False,
                 "IsAwakening": pal.IsAwakening,
                 "IsNewPal": pal.is_new_pal,
+                "ContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+                "SlotIndex": pal.SlotIndex,
+                "ContainerKind": (
+                    "party"
+                    if pal.ContainerId == party_container_id
+                    else "storage"
+                    if pal.ContainerId == storage_container_id
+                    else "other"
+                ),
+                "FavoriteIndex": pal.FavoriteIndex,
                 # "NickName": pal.NickName or "",
                 # "Level": pal.Level or 1,
                 # "Rank": pal.Rank.value if pal.Rank else 1,

@@ -186,6 +186,51 @@ class PalIdentityTests(unittest.TestCase):
         self.assertTrue(pal_summary["IsAwakening"])
         self.assertTrue(pal_summary["IsNewPal"])
 
+    def test_pal_list_includes_verified_location_and_priority_fields(self):
+        party_id = UUID("11111111-1111-1111-1111-111111111111")
+        storage_id = UUID("22222222-2222-2222-2222-222222222222")
+        pal = self.make_pal("SheepBall")
+        pal.InstanceId = "33333333-3333-3333-3333-333333333333"
+        pal.SlotId = (str(party_id), 4)
+        pal._pal_param["FavoriteIndex"] = PalObjects.IntProperty(3)
+
+        class Player:
+            OtomoCharacterContainerId = party_id
+            PalStorageContainerId = storage_id
+
+            @staticmethod
+            def get_sorted_pals():
+                return [pal]
+
+        pal.set_owner_player_entity(Player())
+
+        class Manager:
+            @staticmethod
+            def get_player(_player_id):
+                return Player()
+
+        app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
+        with app.app_context():
+            token = create_access_token(identity="test", expires_delta=False)
+        with (
+            patch("palworld_pal_editor.api.player.SaveManager", return_value=Manager()),
+            app.test_client() as client,
+        ):
+            response = client.post(
+                "/api/player/player_pals",
+                json={"PlayerUId": "player"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        pal_summary = response.get_json()["data"][0]
+        self.assertEqual(str(party_id), pal_summary["ContainerId"])
+        self.assertEqual(4, pal_summary["SlotIndex"])
+        self.assertEqual("party", pal_summary["ContainerKind"])
+        self.assertEqual(3, pal_summary["FavoriteIndex"])
+
+        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
+        self.assertEqual(2, pal.FavoriteIndex)
+
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
             with self.subTest(character_id=character_id):

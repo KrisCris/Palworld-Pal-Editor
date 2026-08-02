@@ -1,9 +1,10 @@
 <script setup>
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { filterPalPriority, isCreatedPal, sortPalList } from '@/components/modules/pal-list-order'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { usePalEditorStore } from '@/stores/paleditor'
 
@@ -60,8 +61,28 @@ onMounted(async () => {
   palListContainer.value.querySelector('button:not(:disabled)')?.click()
 })
 
-const filteredPals = () => Array.from(palStore.PAL_MAP.values())
-  .filter(pal => !palStore.isFilteredPal(pal))
+const visiblePals = computed(() => sortPalList(
+  Array.from(palStore.PAL_MAP.values())
+    .filter(pal => !palStore.isFilteredPal(pal))
+    .filter(pal => filterPalPriority(pal, palStore.PAL_LIST_PRIORITY_FILTER))
+    .filter(pal => !palStore.PAL_LIST_CREATED_ONLY || isCreatedPal(pal, palStore.CREATED_PAL_IDS)),
+  palStore.PAL_LIST_SORT,
+  pal => paldeckForRow(palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]),
+))
+
+watch(
+  [
+    () => palStore.PAL_LIST_SORT,
+    () => palStore.PAL_LIST_PRIORITY_FILTER,
+    () => palStore.PAL_LIST_CREATED_ONLY,
+  ],
+  async () => {
+    await nextTick()
+    palListContainer.value
+      ?.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  },
+)
 
 function palMetadata(pal) {
   const row = palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]
@@ -89,6 +110,37 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
         {{ palStore.getTranslatedText("PalList_Text") }}
       </button>
       <div class="roster-actions">
+        <details v-if="!props.preview" class="pal-list-menu">
+          <summary class="roster-icon-button"
+            :title="palStore.getTranslatedText('PalList_SortFilter')"
+            :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
+            <UiIcon name="filter" />
+          </summary>
+          <div class="pal-list-menu__popover">
+            <label>
+              <span>{{ palStore.getTranslatedText('PalList_Sort') }}</span>
+              <select v-model="palStore.PAL_LIST_SORT">
+                <option value="paldeck">{{ palStore.getTranslatedText('PalList_Sort_Paldeck') }}</option>
+                <option value="location">{{ palStore.getTranslatedText('PalList_Sort_Location') }}</option>
+                <option value="priority">{{ palStore.getTranslatedText('PalList_Sort_Priority') }}</option>
+              </select>
+            </label>
+            <label>
+              <span>{{ palStore.getTranslatedText('PalList_Filter_Priority') }}</span>
+              <select v-model="palStore.PAL_LIST_PRIORITY_FILTER">
+                <option value="all">{{ palStore.getTranslatedText('PalList_Filter_All') }}</option>
+                <option value="3">III</option>
+                <option value="2">II</option>
+                <option value="1">I</option>
+                <option value="0">{{ palStore.getTranslatedText('PalList_Filter_Unprioritized') }}</option>
+              </select>
+            </label>
+            <label class="pal-list-menu__checkbox">
+              <input v-model="palStore.PAL_LIST_CREATED_ONLY" type="checkbox">
+              <span>{{ palStore.getTranslatedText('PalList_Filter_Created') }}</span>
+            </label>
+          </div>
+        </details>
         <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
           :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
           :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
@@ -103,7 +155,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
     </header>
 
     <div class="roster-list" ref="palListContainer">
-      <button v-for="pal in filteredPals()" :key="pal.InstanceId"
+      <button v-for="pal in visiblePals" :key="pal.InstanceId"
         :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': !pal.in_owner_palbox }]"
         :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
         :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
@@ -168,6 +220,55 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 .roster-actions {
   display: flex;
   gap: var(--editor-space-1);
+}
+
+.pal-list-menu {
+  position: relative;
+}
+
+.pal-list-menu summary {
+  list-style: none;
+}
+
+.pal-list-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.pal-list-menu__popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + var(--editor-space-2));
+  right: 0;
+  display: grid;
+  width: min(15rem, calc(100vw - 2rem));
+  gap: var(--editor-space-3);
+  padding: var(--editor-space-3);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-md);
+  background: var(--editor-color-surface-raised);
+  box-shadow: var(--editor-shadow-compact);
+}
+
+.pal-list-menu__popover label {
+  display: grid;
+  gap: var(--editor-space-1);
+  color: var(--editor-color-muted);
+  font-size: .75rem;
+}
+
+.pal-list-menu__popover .pal-list-menu__checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.pal-list-menu__popover select {
+  min-width: 0;
+  min-height: 2.25rem;
+  padding: 0 var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
 }
 
 .pal-search {

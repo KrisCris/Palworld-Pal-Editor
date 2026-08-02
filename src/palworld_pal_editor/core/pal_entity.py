@@ -367,6 +367,14 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["IsFavoritePal"], value)
 
     @property
+    def FavoriteIndex(self) -> int:
+        favorite = self._pal_param.get("FavoriteIndex")
+        value = PalObjects.get_ByteProperty(favorite)
+        if value is None:
+            value = PalObjects.get_BaseType(favorite)
+        return value if isinstance(value, int) else 0
+
+    @property
     def IsInvalid(self) -> bool:
         return DataProvider.is_pal_invalid(self.DataAccessKey)
 
