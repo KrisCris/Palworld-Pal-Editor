@@ -21,8 +21,9 @@ test("range controls preserve limits and update from keyboard-friendly change ev
     "Talent_HP", "Talent_Defense", "Talent_Shot", "Talent_Melee",
     "Rank_HP", "Rank_Attack", "Rank_Defence", "Rank_CraftSpeed", "Rank",
   ]) {
-    assert.match(source, new RegExp(`name="${field}"[\\s\\S]*?@change="palStore\\.updatePal"`), field);
+    assert.match(source, new RegExp(`name="${field}"[\\s\\S]*?@change="updateRange\\('${field}', \\$event\\)"`), field);
   }
+  assert.doesNotMatch(source, /<input type="range"/);
   assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? 100 : 255/);
   assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? palStore\.MAX_SOULS_LEVEL : 255/);
   assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? 5 : 255/);

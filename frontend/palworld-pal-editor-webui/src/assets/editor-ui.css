@@ -26,6 +26,9 @@
   --editor-color-passive-positive: #f0c34b;
   --editor-color-passive-negative: #ef6471;
   --editor-color-disabled: #56616a;
+  --editor-slider-primary: var(--editor-color-primary);
+  --editor-slider-item: #f1bd45;
+  --editor-slider-empty: var(--editor-color-control-hover);
   --editor-color-glass-surface: rgb(24 28 31 / 66%);
   --editor-color-glass-toolbar: rgb(14 18 20 / 76%);
   --editor-color-glass-border: rgb(255 255 255 / 22%);

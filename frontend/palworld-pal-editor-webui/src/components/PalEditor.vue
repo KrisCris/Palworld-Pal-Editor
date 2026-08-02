@@ -2,10 +2,12 @@
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
+import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
+const updateRange = (name, value) => palStore.updatePal({ target: { name, value } })
 
 const currentSkillIds = () => [
   ...(palStore.SELECTED_PAL_DATA.EquipWaza || []),
@@ -327,26 +329,30 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_HP }}</strong>
-            <input type="range" name="Talent_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP" @change="palStore.updatePal">
+            <SegmentedRange name="Talent_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP"
+              @change="updateRange('Talent_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</strong>
-            <input type="range" name="Talent_Defense" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Defense" @change="palStore.updatePal">
+            <SegmentedRange name="Talent_Defense" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Defense"
+              @change="updateRange('Talent_Defense', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</strong>
-            <input type="range" name="Talent_Shot" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot" @change="palStore.updatePal">
+            <SegmentedRange name="Talent_Shot" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
+              @change="updateRange('Talent_Shot', $event)" />
           </label>
           <label class="range-control" v-if="!palStore.HIDE_INVALID_OPTIONS">
             <span>{{ palStore.getTranslatedText("Editor_IV_MELEE") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Melee }}</strong>
-            <input type="range" name="Talent_Melee" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee" @change="palStore.updatePal">
+            <SegmentedRange name="Talent_Melee" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
+              @change="updateRange('Talent_Melee', $event)" />
           </label>
         </div>
         <div class="pal-inline-action" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
@@ -364,34 +370,39 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_HP }}</strong>
-            <input type="range" name="Rank_HP" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP" @change="palStore.updatePal">
+            <SegmentedRange name="Rank_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
+              @change="updateRange('Rank_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</strong>
-            <input type="range" name="Rank_Attack" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack" @change="palStore.updatePal">
+            <SegmentedRange name="Rank_Attack" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack"
+              @change="updateRange('Rank_Attack', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</strong>
-            <input type="range" name="Rank_Defence" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence" @change="palStore.updatePal">
+            <SegmentedRange name="Rank_Defence" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence"
+              @change="updateRange('Rank_Defence', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</strong>
-            <input type="range" name="Rank_CraftSpeed" min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed" @change="palStore.updatePal">
+            <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
+              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed"
+              @change="updateRange('Rank_CraftSpeed', $event)" />
           </label>
         </div>
         <h3 class="pal-panel__subheading"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser") }}</h3>
         <label class="range-control range-control--wide">
           <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ palStore.SELECTED_PAL_DATA.Rank - 1 }}</strong>
-          <input type="range" name="Rank" min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
-            :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank" @change="palStore.updatePal">
+          <SegmentedRange name="Rank" :min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
+            :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank"
+            @change="updateRange('Rank', $event)" />
         </label>
       </section>
     </div>
@@ -742,7 +753,7 @@ const portraitBorder = pal => pal.IsAwakening
   color: var(--editor-color-muted);
 }
 
-.range-control input {
+.range-control .segmented-range {
   grid-column: 1 / -1;
   width: 100%;
   accent-color: var(--editor-color-focus);
