@@ -48,22 +48,45 @@ class PlayerProgressionTests(unittest.TestCase):
         finally:
             self.player._player_param = original
 
-    def test_shared_stat_total_changes_only_item_points(self):
+    def test_shared_stat_total_decreases_stat_points_before_item_points(self):
         original = copy.deepcopy(self.player._player_param)
         try:
-            normal_hp = self.player.StatusPoints["最大HP"]
             unused = self.player.UnusedStatusPoint
+            self.assertEqual(38, self.player.StatusPoints["最大HP"])
+            self.assertEqual(12, self.player.ExStatusPoints["最大HP"])
             self.assertEqual(50, self.player.StatusPointTotals["最大HP"])
-            self.assertEqual(normal_hp, self.player.StatusPointMinimums["最大HP"])
 
-            self.player.set_TotalStatusPoint("最大HP", normal_hp + 4)
-            self.assertEqual(normal_hp, self.player.StatusPoints["最大HP"])
-            self.assertEqual(4, self.player.ExStatusPoints["最大HP"])
-            self.assertEqual(normal_hp + 4, self.player.StatusPointTotals["最大HP"])
-            self.assertEqual(unused, self.player.UnusedStatusPoint)
+            self.player.set_TotalStatusPoint("最大HP", 45)
+            self.assertEqual(33, self.player.StatusPoints["最大HP"])
+            self.assertEqual(12, self.player.ExStatusPoints["最大HP"])
+            self.assertEqual(unused + 5, self.player.UnusedStatusPoint)
 
+            self.player.set_TotalStatusPoint("最大HP", 10)
+            self.assertEqual(0, self.player.StatusPoints["最大HP"])
+            self.assertEqual(10, self.player.ExStatusPoints["最大HP"])
+            self.assertEqual(unused + 38, self.player.UnusedStatusPoint)
+        finally:
+            self.player._player_param = original
+
+    def test_shared_stat_total_spends_unused_points_before_item_points(self):
+        original = copy.deepcopy(self.player._player_param)
+        try:
+            self.player.set_TotalStatusPoint("最大HP", 10)
+            self.player.UnusedStatusPoint = 3
+
+            self.player.set_TotalStatusPoint("最大HP", 20)
+            self.assertEqual(3, self.player.StatusPoints["最大HP"])
+            self.assertEqual(17, self.player.ExStatusPoints["最大HP"])
+            self.assertEqual(0, self.player.UnusedStatusPoint)
+        finally:
+            self.player._player_param = original
+
+    def test_shared_stat_total_clamps_and_rejects_unsupported_stats(self):
+        original = copy.deepcopy(self.player._player_param)
+        try:
             self.player.set_TotalStatusPoint("最大HP", -1)
-            self.assertEqual(normal_hp, self.player.StatusPointTotals["最大HP"])
+            self.assertEqual(0, self.player.StatusPointTotals["最大HP"])
+
             self.player.set_TotalStatusPoint("最大HP", 999)
             self.assertEqual(50, self.player.StatusPointTotals["最大HP"])
             with self.assertRaisesRegex(ValueError, "does not support item points"):
@@ -71,10 +94,35 @@ class PlayerProgressionTests(unittest.TestCase):
         finally:
             self.player._player_param = original
 
+    def test_shared_stat_refund_overflow_is_atomic(self):
+        original = copy.deepcopy(self.player._player_param)
+        try:
+            self.player.UnusedStatusPoint = PalObjects.UInt16Max
+            before = (
+                self.player.StatusPoints["最大HP"],
+                self.player.ExStatusPoints["最大HP"],
+                self.player.UnusedStatusPoint,
+            )
+
+            with self.assertRaisesRegex(ValueError, "Unused Stat Points"):
+                self.player.set_TotalStatusPoint("最大HP", 49)
+
+            self.assertEqual(
+                before,
+                (
+                    self.player.StatusPoints["最大HP"],
+                    self.player.ExStatusPoints["最大HP"],
+                    self.player.UnusedStatusPoint,
+                ),
+            )
+        finally:
+            self.player._player_param = original
+
     def test_player_payload_exposes_total_and_game_derived_metadata(self):
         payload = player_to_dict(self.player)
         self.assertEqual(50, payload["StatusPointTotals"]["最大HP"])
-        self.assertEqual(38, payload["StatusPointMinimums"]["最大HP"])
+        self.assertEqual(12, payload["ExStatusPoints"]["最大HP"])
+        self.assertEqual(0, payload["StatusPointMinimums"]["最大HP"])
         self.assertEqual(50, payload["StatusPointTotalMaximums"]["最大HP"])
         self.assertEqual("stat-health", payload["StatusPointMetadata"]["最大HP"]["icon"])
         self.assertEqual(

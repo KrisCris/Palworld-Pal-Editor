@@ -161,28 +161,45 @@ class PlayerEntity:
 
     @property
     def StatusPointMinimums(self) -> dict[str, int]:
-        normal = self.StatusPoints
-        return {
-            name: normal.get(name, 0) if name in PalObjects.ExStatusNames else 0
-            for name in PalObjects.StatusNames
-        }
+        return {name: 0 for name in PalObjects.StatusNames}
 
     @LOGGER.change_logger("StatusPointTotals")
     @type_guard
     def set_TotalStatusPoint(self, name: str, points: int) -> None:
         if name not in PalObjects.ExStatusNames:
             raise ValueError(f"Player status does not support item points: {name}")
+
         normal = max(0, self.StatusPoints.get(name, 0))
-        total = clamp(normal, PalObjects.StatusPointMaximums[name], points)
+        extra = max(0, self.ExStatusPoints.get(name, 0))
+        unused = max(0, self.UnusedStatusPoint or 0)
+        total = clamp(0, PalObjects.StatusPointMaximums[name], points)
+        change = total - normal - extra
+
+        if change < 0:
+            refunded = min(normal, -change)
+            next_normal = normal - refunded
+            next_extra = extra - (-change - refunded)
+            next_unused = unused + refunded
+            if next_unused > PalObjects.UInt16Max:
+                raise ValueError("Unused Stat Points would exceed the save limit")
+        else:
+            spent = min(unused, change)
+            next_normal = normal + spent
+            next_extra = extra + change - spent
+            next_unused = unused - spent
+
+        self.set_StatusPoint(name, next_normal)
         if not self.GotExStatusPointList:
             self._player_param["GotExStatusPointList"] = PalObjects.GotExStatusPointList()
         for entry in self.GotExStatusPointList or []:
             if PalObjects.get_BaseType(entry.get("StatusName")) == name:
-                PalObjects.set_BaseType(entry["StatusPoint"], total - normal)
-                return
-        self.GotExStatusPointList.append(
-            PalObjects.StatusPointStruct(name, total - normal)
-        )
+                PalObjects.set_BaseType(entry["StatusPoint"], next_extra)
+                break
+        else:
+            self.GotExStatusPointList.append(
+                PalObjects.StatusPointStruct(name, next_extra)
+            )
+        self.UnusedStatusPoint = next_unused
 
     @LOGGER.change_logger("StatusPoints")
     @type_guard

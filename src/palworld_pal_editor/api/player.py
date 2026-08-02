@@ -132,6 +132,7 @@ def player_to_dict(player: PlayerEntity):
         "Exp": player.Exp or 0,
         "UnusedStatusPoint": player.UnusedStatusPoint or 0,
         "StatusPoints": player.StatusPoints,
+        "ExStatusPoints": player.ExStatusPoints,
         "StatusPointTotals": player.StatusPointTotals,
         "StatusPointMinimums": player.StatusPointMinimums,
         "StatusPointMaximums": player.StatusPointMaximums,
