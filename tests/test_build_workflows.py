@@ -17,10 +17,12 @@ def test_release_workflow_only_accepts_three_part_v_tags():
 
 def test_nightly_workflow_updates_only_the_existing_automatic_release():
     source = workflow("dev-build.yml")
+    publisher = source.split("      - name: Update Auto Nightly Builds\n", 1)[1]
 
     assert "auto-nightly-buiilds" in source
     assert "gh release edit" in source
     assert "GH_REPO: ${{ github.repository }}" in source
+    assert "GIT_HASH: ${{ needs.metadata.outputs.short-sha }}" in publisher
     assert "github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}" in source
     assert "cancel-in-progress: true" in source
     assert "gh release create" not in source
