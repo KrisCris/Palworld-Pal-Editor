@@ -41,17 +41,19 @@ def setup_config_from_args():
 
         if not DataProvider.is_valid_i18n(Config.i18n):
             LOGGER.warning(f"Invalid --i18n {Config.i18n}, default to en.")
-            Config.set_config("i18n", DataProvider.default_i18n)
+            Config.set_config("i18n", DataProvider.default_i18n())
 
         modes = ["cli", "gui", "web"]
         if Config.mode not in modes:
             Config.set_config("mode", "gui")
             LOGGER.warning(f"Invalid --mode {Config.mode}, default to GUI.")
 
+        Config._runtime_port = Config.port
         if not Config.debug:
-            if (port := check_or_generate_port(Config.port)) != Config.port:
+            bind_host = "0.0.0.0" if Config.mode == "web" else "127.0.0.1"
+            if (port := check_or_generate_port(Config.port, bind_host)) != Config.port:
                 LOGGER.warning(f"Port {Config.port} not available, use {port} instead.")
-                Config.set_config("port", port)
+            Config._runtime_port = port
 
         LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
     except:

@@ -1,14 +1,20 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import UiIcon from './UiIcon.vue'
 const palStore = usePalEditorStore()
 
-defineProps(['icon', 'name', 'value'])
+defineProps({
+    icon: { type: String, required: true },
+    label: { type: String, required: true },
+    name: { type: String, default: undefined },
+    value: { type: String, default: undefined },
+})
 defineEmits([])
 </script>
 
 <template>
-    <button :name="name" :value="value" :disabled="palStore.LOADING_FLAG">
-        {{ icon }}
+    <button :name="name" :value="value" :aria-label="label" :disabled="palStore.LOADING_FLAG">
+        <UiIcon :name="icon" />
     </button>
 </template>
 

@@ -1,10 +1,12 @@
 import json
 import os
-from pathlib import Path
-import sys
-from typing import Optional
-import aiohttp
 import platform
+import sys
+from pathlib import Path
+from typing import ClassVar, Optional
+
+import aiohttp
+
 
 def get_program_path():
     # If running in AppImage, use the real file path
@@ -96,6 +98,7 @@ class Config:
     i18n: str = "en"
     mode: str = "gui"
     port: int = 58080
+    _runtime_port: Optional[int] = None
     debug: bool = False
     path: str = None
     password: str = None
@@ -103,6 +106,7 @@ class Config:
     _password_hash: str = None
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
     shownDonateInfo: dict[str, bool] = {}
+    palTemplates: ClassVar[list[dict]] = []
 
     @classmethod
     def load_from_file(cls, file_path: str=CONFIG_PATH):
@@ -114,6 +118,10 @@ class Config:
                 for key, value in data.items():
                     if hasattr(cls, key):
                         setattr(cls, key, value)
+
+    @classmethod
+    def get_runtime_port(cls) -> int:
+        return cls.port if cls._runtime_port is None else cls._runtime_port
 
     @classmethod
     def set_configs(cls, attrs: dict):
@@ -138,8 +146,13 @@ class Config:
         """Save current configuration values to a JSON file using the to_dict method and pathlib."""
         config_data = cls.to_dict()
         path = Path(file_path)
-        with path.open("w") as file:
-            json.dump(config_data, file, indent=4)
+        temporary_path = path.with_suffix(f"{path.suffix}.tmp")
+        try:
+            with temporary_path.open("w") as file:
+                json.dump(config_data, file, indent=4)
+            temporary_path.replace(path)
+        finally:
+            temporary_path.unlink(missing_ok=True)
 
     @classmethod
     def __str__(cls):
@@ -156,6 +169,7 @@ class Config:
             'path': Config.path,
             'password': Config.password,
             'JWT_SECRET_KEY': Config.JWT_SECRET_KEY,
-            'shownDonateInfo': Config.shownDonateInfo
+            'shownDonateInfo': Config.shownDonateInfo,
+            'palTemplates': Config.palTemplates,
         }
 

@@ -78,8 +78,7 @@ watch(markdownHtml, async () => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(22, 27, 34, 0.8);
-    /* GitHub dark background with transparency */
+    background: color-mix(in srgb, var(--editor-color-background) 82%, transparent);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -87,31 +86,28 @@ watch(markdownHtml, async () => {
 }
 
 .modal-content {
-    background: #12151a;
-    /* GitHub dark theme background */
-    color: #c9d1d9;
-    /* GitHub light gray text */
+    background: var(--editor-color-surface-raised);
+    color: var(--editor-color-text);
     position: relative;
     padding: 20px;
     border-radius: 8px;
     max-width: 80%;
     max-height: 80%;
     overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    border: 1px solid #30363d;
-    /* Subtle border for contrast */
+    box-shadow: var(--editor-shadow-compact);
+    border: 1px solid var(--editor-color-border);
 }
 
 ::v-deep(.markdown-content a) {
     all: unset;
-    color: #42b883; /* Vue.js green */
+    color: color-mix(in srgb, var(--editor-color-primary) 70%, var(--editor-color-text));
     font-weight: bold;
     cursor: pointer;
 }
 
 ::v-deep(.markdown-content a:hover) {
     text-decoration: underline;
-    color: #36a572;
+    color: var(--editor-color-focus);
 }
 
 .modal-loading,
@@ -119,7 +115,7 @@ watch(markdownHtml, async () => {
     text-align: center;
     margin-top: 20px;
     font-family: inherit;
-    color: #f85149;
+    color: color-mix(in srgb, var(--editor-color-danger) 70%, var(--editor-color-text));
 }
 
 .close-btn {
@@ -128,12 +124,18 @@ watch(markdownHtml, async () => {
     right: 10px;
     background: none;
     border: none;
-    color: #c9d1d9;
+    color: var(--editor-color-text);
     font-size: 1.5rem;
     cursor: pointer;
 }
 
 .close-btn:hover {
-    color: #f85149;
+    color: color-mix(in srgb, var(--editor-color-danger) 70%, var(--editor-color-text));
+}
+
+::v-deep(.markdown-content a:focus-visible),
+.close-btn:focus-visible {
+    outline: 2px solid var(--editor-color-focus);
+    outline-offset: 2px;
 }
 </style>

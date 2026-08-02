@@ -1,7 +1,4 @@
-import copy
 import math
-import re
-import traceback
 from typing import Optional
 from palworld_save_tools.archive import UUID
 from palworld_pal_editor.config import Config
@@ -16,9 +13,61 @@ from palworld_pal_editor.core.pal_objects import (
 )
 from palworld_pal_editor.utils.util import type_guard
 
+MAX_WORK_SUITABILITY = 10
+
+
+def condensation_work_suitability_bonus(
+    base_suitabilities: dict[str, int], rank: int, best_work_suitability: Optional[str]
+) -> dict[str, int]:
+    """Return the derived 1.0 condensation bonus for each existing work type."""
+    base = {key: value for key, value in base_suitabilities.items() if value > 0}
+    bonus = {key: 0 for key in base}
+    if best_work_suitability == "EPalWorkSuitability::None":
+        best_work_suitability = None
+    if not base:
+        return bonus
+
+    current = base.copy()
+    order = tuple(
+        suit.value
+        for suit in PalSuitability
+        if suit is not PalSuitability.OilExtraction
+    )
+
+    def nth_highest(n: int) -> Optional[str]:
+        values = sorted(set(current.values()), reverse=True)
+        if n >= len(values):
+            return None
+        return next((key for key in order if current.get(key) == values[n]), None)
+
+    for step in range(1, min(rank - 1, 4) + 1):
+        if step == 4:
+            for key in base:
+                bonus[key] += 1
+                current[key] += 1
+            continue
+
+        if len(current) == 1:
+            target = next(iter(current))
+        elif step == 1:
+            target = best_work_suitability
+        elif step == 2:
+            target = nth_highest(1) or best_work_suitability
+        elif len(current) == 2:
+            target = best_work_suitability
+        else:
+            target = nth_highest(2) or nth_highest(1) or best_work_suitability
+
+        if target is not None:
+            if target in bonus:
+                bonus[target] += 1
+            current[target] = current.get(target, 0) + 1
+
+    return bonus
+
 
 class PalEntity:
-    MAX_LEVEL = 60
+    MAX_LEVEL = 80
     MAX_INVALID_LEVEL = 100
 
     def __init__(self, pal_obj: dict) -> None:
@@ -41,11 +90,9 @@ class PalEntity:
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
-        
+
         if self.CharacterID is None:
-            raise Exception(
-                f"No CharacterID, skipping {dumps(pal_obj)}"
-            )
+            raise Exception(f"No CharacterID, skipping {dumps(pal_obj)}")
 
         if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
             raise TypeError(
@@ -118,13 +165,13 @@ class PalEntity:
             return self.OldOwnerPlayerUIds[-1]
 
     @property
-    def OwnerName(self) -> str:
+    def OwnerName(self) -> Optional[str]:
         from .save_manager import SaveManager
 
         player = SaveManager().get_player(self.OwnerPlayerUId)
         if player and player.NickName:
             return player.NickName
-        return self.OwnerPlayerUId
+        return str(self.OwnerPlayerUId) if self.OwnerPlayerUId else None
 
     @property
     def OldOwnerPlayerUIds(self) -> Optional[list[UUID]]:
@@ -169,8 +216,11 @@ class PalEntity:
             PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
 
         self.update_UniqueNPCID()
-        if not self._IsBOSS:
-            self.IsRarePal = False
+        if DataProvider.get_pal_variant_kind(self.CharacterID) not in (
+            "alpha",
+            "boss",
+        ):
+            self._set_rare_flag(False)
 
         # Remove / Add Gender
         if self.IsTower:
@@ -192,7 +242,7 @@ class PalEntity:
 
         if self.Gender and (self.IsHuman or self.IsOtomoTower):
             self.del_Gender()
-        
+
         if not self.Gender and not (self.IsHuman or self.IsOtomoTower):
             # well, just randomly picked lol
             self.Gender = PalGender.FEMALE
@@ -205,11 +255,19 @@ class PalEntity:
             # Unset invalid work suitabilities
             if self.AddedWorkSuitabilities:
                 new_suits = DataProvider.get_pal_suitabilities(self.DataAccessKey)
+                new_bonus = condensation_work_suitability_bonus(
+                    new_suits or {},
+                    self.Rank or 1,
+                    DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+                )
                 for suit, rank in self.AddedWorkSuitabilities.items():
                     if new_suits is None or new_suits[suit.value] == 0:
                         self.set_WorkSuitability(suit, 0)
-                    elif rank + new_suits[suit.value] > 5:
-                        self.set_WorkSuitability(suit, 5)
+                    elif (
+                        rank + new_suits[suit.value] + new_bonus.get(suit.value, 0)
+                        > MAX_WORK_SUITABILITY
+                    ):
+                        self.set_WorkSuitability(suit, MAX_WORK_SUITABILITY)
 
         self.learn_attacks()
         if self.IsTower or self.IsRAID or self.IsPREDATOR:
@@ -222,55 +280,15 @@ class PalEntity:
 
     @property
     def RawSpecieKey(self) -> Optional[str]:
-        key = self.CharacterID
-        if self.IsHuman:
-            return key
-        
-        if self._IsBOSS:
-            if "Boss_" in key:
-                key = key.split("Boss_")[1]
-            else:
-                key = key.split("BOSS_")[1]
-        if self.IsOilrig:
-            key = key.split("_Oilrig")[0]
-        if self.IsSUMMON:
-            pattern = r"SUMMON_([A-Za-z_]+?)(?:_MAX)?(?:_\d+.*)?$"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                key = match.group(1)
-        if self.IsOtomoTower:
-            pattern = r"GYM_([A-Za-z_]+?)(?:_Otomo)?(?:_\d+.*)?$"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                key = match.group(1)
-        elif self.IsTower:
-            pattern = r"GYM_([A-Za-z_]+?)(?:_\d+.*)?$"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                key = match.group(1)
-        if self.IsRAID:
-            pattern = r"RAID_([A-Za-z\d_]+?)(?:_\d+.*)?$"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                key = match.group(1)
-        if self.IsPREDATOR:
-            pattern = r"PREDATOR_([A-Za-z_]+?)(?:_\d+.*)?$"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                key = match.group(1)
-        return key
+        return DataProvider.get_pal_family_id(self.CharacterID)
 
     @property
     def IsSUMMON(self) -> bool:
-        if re.match(r"SUMMON_(.+)", self.CharacterID):
-            return True
-        return False
+        return "summon" in DataProvider.get_pal_variant_tags(self.CharacterID)
 
     @property
     def IsOilrig(self) -> bool:
-        if re.match(r"(.+)_Oilrig", self.CharacterID):
-            return True
-        return False
+        return "oilrig" in DataProvider.get_pal_variant_tags(self.CharacterID)
 
     @property
     def IsExpeditionPal(self) -> bool:
@@ -280,19 +298,11 @@ class PalEntity:
 
     @property
     def IsRAID(self) -> bool:
-        pattern = r"^RAID_([A-Za-z_\d]+?)(?:_\d+)?$"
-        match = re.search(pattern, self.CharacterID)
-        if match:
-            return True
-        return False
+        return "raid" in DataProvider.get_pal_variant_tags(self.CharacterID)
 
     @property
     def IsPREDATOR(self) -> bool:
-        pattern = r"PREDATOR_([A-Za-z_]+?)(?:_\d+)?$"
-        match = re.search(pattern, self.CharacterID)
-        if match:
-            return True
-        return False
+        return "predator" in DataProvider.get_pal_variant_tags(self.CharacterID)
 
     @property
     def IsHuman(self) -> bool:
@@ -300,74 +310,48 @@ class PalEntity:
 
     @property
     def HasBaseVariant(self) -> bool:
-        return DataProvider.in_pal_data(self.RawSpecieKey)
+        return any(
+            "base" in DataProvider.get_pal_variant_tags(variant)
+            for variant in DataProvider.get_family_variants(self.CharacterID)
+        )
 
     @property
     def HasBossVariant(self) -> bool:
-        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "BOSS")
+        return any(
+            "boss" in DataProvider.get_pal_variant_tags(variant)
+            for variant in DataProvider.get_family_variants(self.CharacterID)
+        )
 
     @property
     def HasTowerVariant(self) -> bool:
-        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "GYM")
+        return any(
+            "tower" in DataProvider.get_pal_variant_tags(variant)
+            for variant in DataProvider.get_family_variants(self.CharacterID)
+        )
 
     @property
     def HasRaidVariant(self) -> bool:
-        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "RAID")
+        return any(
+            "raid" in DataProvider.get_pal_variant_tags(variant)
+            for variant in DataProvider.get_family_variants(self.CharacterID)
+        )
 
     @property
     def HasPredatorVariant(self) -> bool:
-        return DataProvider.has_x_variant_pal(self.RawSpecieKey, "PREDATOR")
+        return any(
+            "predator" in DataProvider.get_pal_variant_tags(variant)
+            for variant in DataProvider.get_family_variants(self.CharacterID)
+        )
 
     @property
     def IconAccessKey(self) -> Optional[str]:
         if self.SkinName:
             return f"skin-{self.SkinName}"
-        if self.IsHuman:
-            if DataProvider.has_human_icon(self.CharacterID):
-                return self.CharacterID
-            return "Human"
-        if self.IsOtomoTower:
-            return self.DataAccessKey
-        if self.IsTower:
-            pattern = r"^(GYM_[^_]+)"
-            match = re.search(pattern, self.CharacterID)
-            if match:
-                return match.group(1)
-        if self.IsRAID or self.IsPREDATOR or self.IsOilrig or self.IsSUMMON:
-            return self.RawSpecieKey
-        return self.DataAccessKey
+        return DataProvider.get_pal_icon_key(self.CharacterID)
 
     @property
     def DataAccessKey(self) -> Optional[str]:
-        if (
-            self.IsHuman
-            or self.IsTower
-            or self.IsRAID
-            or self.IsPREDATOR
-            or self.IsOilrig
-            or self.IsSUMMON
-        ):
-            return self.CharacterID
-
-        key = self.RawSpecieKey
-        match key:
-            case "Sheepball":
-                key = "SheepBall"
-            case "LazyCatFish":
-                key = "LazyCatfish"
-            case "Police_HandGun":
-                key = "Police_Handgun"
-            case "Blueplatypus":
-                key = "BluePlatypus"
-            case "GhostAnglerFish":
-                key = "GhostAnglerfish"
-            case "GhostAnglerFish_Fire":
-                key = "GhostAnglerfish_Fire"
-            case "Icenarwhal_Fire":
-                key = "IceNarwhal_Fire"
-            case "Icenarwhal":
-                key = "IceNarwhal"
-        return key
+        return DataProvider.resolve_pal_key(self.CharacterID)
 
     @property
     def IsFavoritePal(self) -> Optional[bool]:
@@ -381,6 +365,14 @@ class PalEntity:
             self._pal_param["IsFavoritePal"] = PalObjects.BoolProperty(value)
         else:
             PalObjects.set_BaseType(self._pal_param["IsFavoritePal"], value)
+
+    @property
+    def FavoriteIndex(self) -> int:
+        favorite = self._pal_param.get("FavoriteIndex")
+        value = PalObjects.get_ByteProperty(favorite)
+        if value is None:
+            value = PalObjects.get_BaseType(favorite)
+        return value if isinstance(value, int) else 0
 
     @property
     def IsInvalid(self) -> bool:
@@ -436,44 +428,40 @@ class PalEntity:
 
     @property
     def IsTower(self) -> bool:
-        if "GYM_" in self.CharacterID:
-            return True
-        return False
-    
+        return "tower" in DataProvider.get_pal_variant_tags(self.CharacterID)
+
     @property
     def IsOtomoTower(self) -> bool:
-        if not self.IsTower:
-            return False
-        otomo_re = re.compile(r"^.+_Otomo$")
-        return otomo_re.match(self.CharacterID) is not None
+        tags = DataProvider.get_pal_variant_tags(self.CharacterID)
+        return "tower" in tags and "otomo" in tags
 
     @IsTower.setter
     @type_guard
     def IsTower(self, value: bool) -> None:
-        if not value:
-            self.CharacterID = self.RawSpecieKey
-        else:
-            self.CharacterID = f"GYM_{self.RawSpecieKey}"
+        variant = DataProvider.get_pal_variant(
+            self.CharacterID, "tower" if value else "base"
+        )
+        if variant is not None:
+            self.CharacterID = variant
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
 
     @property
     def _IsBOSS(self) -> bool:
-        """
-        Check if CharacterID has BOSS_ or Boss_ prefix.
-        """
-        if "BOSS_" in self.CharacterID or "Boss_" in self.CharacterID:
-            return True
-        return False
+        return "boss" in DataProvider.get_pal_variant_tags(self.CharacterID)
 
     @_IsBOSS.setter
     @LOGGER.change_logger("_IsBOSS")
     @type_guard
     def _IsBOSS(self, value: bool) -> None:
-        if not value:
-            self.CharacterID = self.RawSpecieKey
-        elif not self._IsBOSS and value:
-            self.CharacterID = f"BOSS_{self.RawSpecieKey}"
+        if value:
+            variant = DataProvider.get_pal_variant(
+                self.CharacterID, "alpha"
+            ) or DataProvider.get_pal_variant(self.CharacterID, "boss")
+        else:
+            variant = DataProvider.get_pal_variant(self.CharacterID, "base")
+        if variant is not None:
+            self.CharacterID = variant
 
     @property
     def IsBOSS(self) -> bool:
@@ -502,6 +490,12 @@ class PalEntity:
     def IsRarePal(self) -> Optional[bool]:
         return PalObjects.get_BaseType(self._pal_param.get("IsRarePal"))
 
+    def _set_rare_flag(self, value: bool) -> None:
+        if self.IsRarePal is None:
+            self._pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["IsRarePal"], value)
+
     @IsRarePal.setter
     @LOGGER.change_logger("IsRarePal")
     @type_guard
@@ -510,20 +504,23 @@ class PalEntity:
         if self.IsBOSS and not value:
             return
 
-        if self.IsRarePal is None:
-            self._pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
-        else:
-            PalObjects.set_BaseType(self._pal_param["IsRarePal"], value)
+        kind = DataProvider.get_pal_variant_kind(self.CharacterID)
+        if value and kind not in ("alpha", "boss"):
+            variant = DataProvider.get_pal_variant(
+                self.CharacterID, "alpha"
+            ) or DataProvider.get_pal_variant(self.CharacterID, "boss")
+            if variant is None:
+                return
+            self.CharacterID = variant
 
-        if value and not self._IsBOSS:
-            self._IsBOSS = True
-        if not value and self._IsBOSS:
+        self._set_rare_flag(value)
+        if not value and kind in ("alpha", "boss"):
             self._IsBOSS = False
 
     @property
     def FilteredNickName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
-    
+
     @FilteredNickName.setter
     @LOGGER.change_logger("FilteredNickName")
     @type_guard
@@ -539,7 +536,7 @@ class PalEntity:
     @property
     def NickName(self) -> Optional[str]:
         return self._NickName or self.FilteredNickName
-    
+
     @NickName.setter
     @type_guard
     def NickName(self, value: str) -> None:
@@ -571,6 +568,8 @@ class PalEntity:
     @type_guard
     def Level(self, value: int) -> None:
         value = clamp(1, PalEntity.MAX_INVALID_LEVEL, value)
+        if self.Level == value:
+            return
         if self.Level is None:
             self._pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
@@ -629,6 +628,7 @@ class PalEntity:
     @type_guard
     def Rank(self, rank: int) -> None:
         # 1 = no star, 2 = 1 star, 3 = 2 star, 4 = 3 star, 5 = 4 star
+        previous_rank = self.Rank or 1
         rank = clamp(1, 255, rank)
         if self.Rank is None:
             self._pal_param["Rank"] = PalObjects.ByteProperty(rank)
@@ -640,6 +640,36 @@ class PalEntity:
 
         if self.Rank == 1:
             self._pal_param.pop("Rank", None)
+
+        if rank != previous_rank:
+            self.RankUpExp = 0
+
+    @property
+    def RankUpExp(self) -> int:
+        return PalObjects.get_BaseType(self._pal_param.get("RankUpExp")) or 0
+
+    @RankUpExp.setter
+    @type_guard
+    def RankUpExp(self, value: int) -> None:
+        value = clamp(PalObjects.UInt16Min, PalObjects.UInt16Max, value)
+        if value == 0:
+            self._pal_param.pop("RankUpExp", None)
+        elif self.RankUpExp == 0:
+            self._pal_param["RankUpExp"] = PalObjects.UInt16Property(value)
+        else:
+            PalObjects.set_BaseType(self._pal_param["RankUpExp"], value)
+
+    @property
+    def IsAwakening(self) -> bool:
+        return bool(PalObjects.get_BaseType(self._pal_param.get("bIsAwakening")))
+
+    @IsAwakening.setter
+    @type_guard
+    def IsAwakening(self, value: bool) -> None:
+        if value:
+            self._pal_param["bIsAwakening"] = PalObjects.BoolProperty(True)
+        else:
+            self._pal_param.pop("bIsAwakening", None)
 
     @property
     def Rank_HP(self) -> Optional[int]:
@@ -945,21 +975,33 @@ class PalEntity:
 
     @property
     def WorkSuitabilities(self) -> Optional[dict[str, int]]:
+        suits = self.MinimumWorkSuitabilities
+        if suits is None:
+            return None
+
+        if self.AddedWorkSuitabilities:
+            for suit, rank in self.AddedWorkSuitabilities.items():
+                suit = suit.value
+                if suit in suits:
+                    suits[suit] = min(MAX_WORK_SUITABILITY, suits[suit] + rank)
+
+        return suits
+
+    @property
+    def MinimumWorkSuitabilities(self) -> Optional[dict[str, int]]:
         suits_data = DataProvider.get_pal_suitabilities(self.DataAccessKey)
         if not suits_data:
             return None
 
         suits = {key: value for key, value in suits_data.items() if value > 0}
 
-        if self.AddedWorkSuitabilities:
-            for suit, rank in self.AddedWorkSuitabilities.items():
-                suit = suit.value
-                if suit in suits:
-                    suits[suit] += rank
-
-        if (self.Rank or 0) >= 5:
-            for suit in suits:
-                suits[suit] += 1 if suits[suit] < 5 else 0
+        condensation_bonus = condensation_work_suitability_bonus(
+            suits,
+            self.Rank or 1,
+            DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+        )
+        for suit, rank in condensation_bonus.items():
+            suits[suit] = min(MAX_WORK_SUITABILITY, suits[suit] + rank)
 
         return suits
 
@@ -987,8 +1029,13 @@ class PalEntity:
             if not suits:
                 return
 
+            condensation_bonus = condensation_work_suitability_bonus(
+                suits,
+                self.Rank or 1,
+                DataProvider.get_pal_best_work_suitability(self.DataAccessKey),
+            )
             added_rank = rank - (
-                suits[suit.value] + (1 if (self.Rank or 0) >= 5 else 0)
+                suits[suit.value] + condensation_bonus.get(suit.value, 0)
             )
             if added_rank <= 0:
                 PalObjects.pop_WorkSuitability(
@@ -1095,12 +1142,11 @@ class PalEntity:
     @property
     def HungerType(self) -> Optional[str]:
         return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
-    
-    
+
     @property
     def UniqueNPCID(self) -> str:
         return PalObjects.get_BaseType(self._pal_param.get("UniqueNPCID"))
-    
+
     @LOGGER.change_logger("UniqueNPCID")
     def update_UniqueNPCID(self) -> None:
         if self.CharacterID not in [
@@ -1110,14 +1156,14 @@ class PalEntity:
             "ElectricBoss",
             "SnowBoss",
             "SakurajimaBoss",
-            "VikingBoss"
+            "VikingBoss",
         ]:
             LOGGER.info(
                 f"Pal {self.CharacterID} is not a Tower Human, UniqueNPCID will be unset."
             )
             self._pal_param.pop("UniqueNPCID", None)
             return
-        
+
         if self.UniqueNPCID is None:
             self._pal_param["UniqueNPCID"] = PalObjects.NameProperty(self.CharacterID)
         else:
@@ -1228,18 +1274,38 @@ class PalEntity:
     @property
     def SkinName(self) -> Optional[str]:
         return PalObjects.get_BaseType(self._pal_param.get("SkinName"))
-    
+
+    @property
+    def SkinAppliedCharacterId(self) -> Optional[UUID]:
+        return PalObjects.get_BaseType(
+            self._pal_param.get("SkinAppliedCharacterId")
+        )
+
     @SkinName.setter
     @LOGGER.change_logger("SkinName")
     @type_guard
-    def SkinName(self, value: str) -> None:
+    def SkinName(self, value: str | None) -> None:
         if not value or value == "None":
             self._pal_param.pop("SkinName", None)
+            self._pal_param.pop("SkinAppliedCharacterId", None)
             return
+        skin = DataProvider.get_skin(value)
+        if skin is None or DataProvider.get_pal_family_id(
+            skin.get("TargetPalName")
+        ) != DataProvider.get_pal_family_id(self.CharacterID):
+            raise ValueError(f"Skin {value} is not valid for {self.DataAccessKey}")
+        skin_applier = self.OwnerPlayerUId or self.LastOwnerPlayerUId
+        if skin_applier is None:
+            raise ValueError(
+                "A Pal must have an owner or previous owner before a skin can be applied"
+            )
         if self.SkinName is None:
             self._pal_param["SkinName"] = PalObjects.NameProperty(value)
         else:
             PalObjects.set_BaseType(self._pal_param["SkinName"], value)
+        self._pal_param["SkinAppliedCharacterId"] = PalObjects.Guid(
+            skin_applier
+        )
 
     def learn_attacks(self):
         # if self.IsHuman:
@@ -1302,18 +1368,13 @@ class PalEntity:
             Config.i18n,
             self.DataAccessKey,
             self.NickName,
-            self.IsRarePal,
-            self.IsBOSS,
-            self.IsTower,
             # self.Gender,
         )
         try:
             return self._display_name_cache[cache_key]
         except KeyError:
-            species_name = self.I18nName or self.DataAccessKey
-            rare_prefix = "✨" if self.IsRarePal else ""
-            boss_prefix = '👑'if self.IsBOSS else ""
-            tower_prefix = "🗼" if self.IsTower else ""
+            species_key = self.DataAccessKey
+            species_name = DataProvider.get_pal_i18n(species_key) or species_key
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 
             # gender_suffix = ""
@@ -1323,7 +1384,7 @@ class PalEntity:
             #     gender_suffix = "♂"
 
             # name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}{gender_suffix}"
-            name = f"{rare_prefix}{boss_prefix}{tower_prefix}{species_name}{nickname_suffix}"
+            name = f"{species_name}{nickname_suffix}"
             self._display_name_cache[cache_key] = name
             return name
 

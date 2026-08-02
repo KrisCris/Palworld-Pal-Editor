@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "kind": "legacy_deletion_approval",
+  "reviewer": "/root/task3_approval_schema_review",
+  "review_date": "2026-07-26",
+  "approved_plan_sha256": "02305a96305f91bd1cf900873547e2329f097fe0c6facfe9a07abf03f2fe8154"
+}

@@ -6,6 +6,7 @@ logs/
 gamesave*/
 test_outputs/
 unused_data/
+/docs/
 src/palworld_pal_editor/webui/
 
 #Byte-compiled / optimized / DLL files
@@ -77,9 +78,6 @@ instance/
 
 # Scrapy stuff:
 .scrapy
-
-# Sphinx documentation
-docs/_build/
 
 # PyBuilder
 .pybuilder/
@@ -171,3 +169,4 @@ cython_debug/
 frontend/palworld-pal-editor-webui/dev-dist/
 
 config.json
+.worktrees/

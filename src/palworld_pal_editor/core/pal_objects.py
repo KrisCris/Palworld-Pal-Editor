@@ -6,6 +6,7 @@ from palworld_save_tools.archive import UUID
 from palworld_save_tools.json_tools import CustomEncoder
 
 from palworld_pal_editor.utils import LOGGER, clamp
+from palworld_pal_editor.utils.data_provider import PLAYER_STATUS_DATA
 
 
 def dumps(data: dict) -> str:
@@ -115,6 +116,10 @@ class PalObjects:
     @staticmethod
     def IntProperty(value: int):
         return {"id": None, "type": "IntProperty", "value": value}
+
+    @staticmethod
+    def UInt16Property(value: int):
+        return {"id": None, "type": "UInt16Property", "value": value}
 
     @staticmethod
     def Int64Property(value: int):
@@ -512,21 +517,16 @@ class PalObjects:
     def get_MapProperty(container: dict) -> Optional[list[dict]]:
         return get_nested_attr(container, ["value"])
 
-    StatusNames = [
-        "最大HP",
-        "最大SP",
-        "攻撃力",
-        "所持重量",
-        "捕獲率",
-        "作業速度",
-    ]
+    StatusPointMaximums = {
+        name: metadata["maximum"]
+        for name, metadata in PLAYER_STATUS_DATA.items()
+    }
+    StatusNames = list(StatusPointMaximums)
 
     ExStatusNames = [
-        "最大HP",
-        "最大SP",
-        "攻撃力",
-        "所持重量",
-        "作業速度",
+        name
+        for name, metadata in PLAYER_STATUS_DATA.items()
+        if metadata["category"] == "stat"
     ]
 
     @staticmethod
@@ -590,7 +590,7 @@ class PalObjects:
                                     "Gender": PalObjects.EnumProperty(
                                         "EPalGenderType", "EPalGenderType::Female"
                                     ),
-                                    "NickName": PalObjects.StrProperty("!!!NEW PAL!!!"),
+                                    "NickName": PalObjects.StrProperty(""),
                                     "EquipWaza": PalObjects.ArrayProperty(
                                         "EnumProperty",
                                         {

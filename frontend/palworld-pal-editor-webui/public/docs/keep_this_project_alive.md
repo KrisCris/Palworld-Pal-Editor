@@ -11,7 +11,7 @@
 
 **If you like this tool, consider supporting me to help me continue developing and maintaining it.**
 
-- [ko-fi ❤️](https://ko-fi.com/connlost)
+- [ko-fi](https://ko-fi.com/connlost)
 
 - [PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)
 

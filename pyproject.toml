@@ -12,11 +12,10 @@ keywords = ["palworld", "editor", "pal"]
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 readme = "README.md"
-version = "0.13.0"
+version = "1.0.0"
 dependencies = [
     "setuptools==80.9.0",
-    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git@480f1f631295e32bd9c9fa5be689eb335bf912a7",
-    "pyooz==0.0.8",
+    "palworld-save-tools @ git+https://github.com/KrisCris/palworld-save-tools.git@2bcaea5b388dda955df2177e2dd88c05ba64f50f",
     "wheel==0.46.1",
     "Flask==3.1.2",
     "pyinstaller==6.17.0",
@@ -39,3 +38,7 @@ Documentation = "https://github.com/KrisCris/Palworld-Pal-Editor"
 Repository = "https://github.com/KrisCris/Palworld-Pal-Editor.git"
 Issues = "https://github.com/KrisCris/Palworld-Pal-Editor/issues"
 Changelog = "https://github.com/KrisCris/Palworld-Pal-Editor"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["palworld_pal_editor.assets.tools*"]

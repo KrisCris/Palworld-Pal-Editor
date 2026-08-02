@@ -1,18 +1,162 @@
 import { ref, computed, reactive, nextTick } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
+import {
+    backendStorageKey,
+    backendUrl,
+    normalizeBackendOrigin,
+    readRecentBackends,
+    readStorage,
+    rememberBackend,
+    removeStorage,
+    writeStorage,
+} from "../services/backend-connection.js";
+import {
+    DEFAULT_UI_TRANSLATION,
+    GAME_LANGUAGES,
+    UI_TRANSLATIONS,
+} from "../i18n/index.js";
+
+export const backendErrorDetails = error => {
+    const status = error?.response?.status;
+    if (status >= 500) {
+        const payload = error.response.data;
+        const details = payload?.data?.error;
+        return {
+            kind: "application",
+            message: payload?.msg || `${error.response.statusText || "HTTP"}: ${status}`,
+            code: details?.code || `HTTP ${status}`,
+            log: details?.log,
+        };
+    }
+    if (!error?.response && error?.request) {
+        return { kind: "connection", message: error.message || "Network Error" };
+    }
+    return null;
+};
+
+export function isSkillAssignable(skill = {}, isHuman = false) {
+    if (skill.Disabled) return false;
+    return isHuman
+        ? skill.AssignableToHumans === true
+        : skill.Assignable !== false;
+}
+
+export function skillBadges(skill = {}, isHuman = false) {
+    return [
+        skill.NonInheritable && "nonInheritable",
+        skill.Exclusive && "exclusive",
+        skill.BossSkill && "boss",
+        (skill.HasSkillFruit || skill.SkillFruit) && "fruit",
+        !isSkillAssignable(skill, isHuman) && "disabled",
+    ].filter(Boolean);
+}
+
+export function filterSkillOptions(skills, currentIds, hideInvalid, isHuman = false) {
+    const rows = Array.isArray(skills) ? skills : [];
+    if (!hideInvalid) return rows.slice();
+
+    const retainedIds = new Set(currentIds ?? []);
+    return rows.filter(
+        skill => (
+            (!skill?.Invalid && isSkillAssignable(skill, isHuman))
+            || retainedIds.has(skill?.InternalName)
+        ),
+    );
+}
+
+export const canToggleBossVariant = pal => Boolean(
+    pal?.HasBaseVariant && pal?.HasBossVariant,
+);
+
+export const maximumSuitabilities = (minimums, max) => Object.fromEntries(
+    Object.entries(minimums ?? {})
+        .filter(([, level]) => level > 0)
+        .map(([name]) => [name, max]),
+);
+
+export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
+    const target = selectedPal?.FamilyID
+        || selectedPal?.DataAccessKeyOG
+        || selectedPal?.CharacterID;
+    return (skins ?? []).filter(skin =>
+        skin?.TargetPalName === target
+        && (!hideInvalid
+            || !skin.Invalid
+            || skin.SkinName === selectedPal?.SkinName)
+    );
+}
+
+const SKILL_BADGE_TRANSLATION_KEYS = Object.freeze({
+    nonInheritable: "Editor_Skill_Badge_NonInheritable",
+    exclusive: "Editor_Skill_Badge_Exclusive",
+    boss: "Editor_Skill_Badge_Boss",
+    fruit: "Editor_Skill_Badge_Fruit",
+    disabled: "Editor_Skill_Badge_Disabled",
+});
+
+const ELEMENT_ALIASES = Object.freeze({
+    Leaf: "Grass",
+    Earth: "Ground",
+    Electricity: "Electric",
+    Normal: "Neutral",
+});
+const ELEMENT_ICON_KEYS = new Set([
+    "Water", "Fire", "Dragon", "Grass", "Ground", "Ice", "Electric", "Neutral", "Dark",
+]);
+
+export function elementIconKey(element) {
+    const key = ELEMENT_ALIASES[element] ?? element;
+    return ELEMENT_ICON_KEYS.has(key) ? key : null;
+}
+
+export function passiveTier(rating) {
+    if (rating >= 5) return "top";
+    if (rating >= 4) return "high";
+    if (rating >= 2) return "positive";
+    if (rating < 0) return "negative";
+    return "neutral";
+}
+
+export const skillBadgeTranslationKey = badge => SKILL_BADGE_TRANSLATION_KEYS[badge];
+
+export function genderKey(gender) {
+    if (gender === "EPalGenderType::Female") return "female";
+    if (gender === "EPalGenderType::Male") return "male";
+    return null;
+}
+
+export function specialTypeKeys(pal = {}) {
+    return [
+        pal.IsTower && "tower",
+        pal.IsBOSS && "boss",
+        pal.IsRarePal && "rare",
+        pal.IsRAID && "raid",
+        pal.IsPREDATOR && "predator",
+        pal.IsOilrig && "oilrig",
+    ].filter(Boolean);
+}
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    const MAX_LEVEL = 65;
+    const MAX_LEVEL = 80;
     const MAX_FRIENDSHIP_LEVEL = 10;
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
-    const MAX_SUITABILITY_LEVEL = 5;
+    const MAX_SUITABILITY_LEVEL = 10;
     class Player {
         constructor(obj) {
             this.InstanceId = obj.InstanceId;
             this.NickName = obj.NickName;
             this.Level = obj.Level;
+            this.Exp = obj.Exp;
+            this.UnusedStatusPoint = obj.UnusedStatusPoint;
+            this.StatusPoints = obj.StatusPoints || {};
+            this.ExStatusPoints = obj.ExStatusPoints || {};
+            this.StatusPointTotals = obj.StatusPointTotals || this.StatusPoints;
+            this.StatusPointMinimums = obj.StatusPointMinimums || {};
+            this.StatusPointMaximums = obj.StatusPointMaximums || {};
+            this.StatusPointTotalMaximums = obj.StatusPointTotalMaximums || this.StatusPointMaximums;
+            this.StatusPointMetadata = obj.StatusPointMetadata || {};
             this.HasViewingCage = obj.HasViewingCage;
             this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
             this.PalStorageContainerId = obj.PalStorageContainerId;
@@ -20,6 +164,23 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
             this.TechnologyPoint = obj.TechnologyPoint;
             this.bossTechnologyPoint = obj.bossTechnologyPoint;
+        }
+
+        setStatusPoint(name) {
+            let points = Number(this.StatusPointTotals[name]);
+            if (!Number.isFinite(points)) points = 0;
+            const minimum = this.StatusPointMinimums[name] ?? 0;
+            const maximum = this.StatusPointTotalMaximums[name] ?? 0;
+            points = Math.min(Math.max(Math.trunc(points), minimum), maximum);
+            this.StatusPointTotals[name] = points;
+            updatePlayer({
+                target: {
+                    name: this.StatusPointMetadata[name]?.category === "stat"
+                        ? "set_TotalStatusPoint"
+                        : "set_StatusPoint",
+                    value: { name: name, points: points },
+                },
+            });
         }
 
         levelDown() {
@@ -66,14 +227,21 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.group_id = obj.group_id;
             this.ContainerId = obj.ContainerId;
             this.SlotIndex = obj.SlotIndex;
+            this.ContainerKind = obj.ContainerKind;
+            this.FavoriteIndex = obj.FavoriteIndex ?? 0;
             this.OwnerName = obj.OwnerName;
             this.CharacterID = obj.CharacterID;
+            this.FamilyID = obj.FamilyID;
             this.IconAccessKey = obj.IconAccessKey;
             this.DataAccessKey = obj.DataAccessKey;
             this.DataAccessKeyOG = obj.DataAccessKey;
+            this.SelectionKey = PAL_STATIC_DATA.value[obj.CharacterID]
+                ? obj.CharacterID
+                : obj.DataAccessKey;
             this.I18nName = obj.I18nName;
             this.DisplayName = obj.DisplayName;
             this.NickName = obj.NickName;
+            this.SkinName = obj.SkinName;
             this.Gender = obj.Gender;
             this.Level = obj.Level;
             this.FriendshipLevel = obj.FriendshipLevel;
@@ -84,6 +252,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.HasWorkerSick = obj.HasWorkerSick;
             this.IsFaintedPal = obj.IsFaintedPal;
             this.Is_Unref_Pal = obj.Is_Unref_Pal;
+            this.IsNewPal = obj.IsNewPal;
             this.in_owner_palbox = obj.in_owner_palbox;
 
             this.IsHuman = obj.IsHuman;
@@ -101,6 +270,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.ComputedCraftSpeed = obj.ComputedCraftSpeed;
 
             this.Rank = obj.Rank;
+            this.IsAwakening = obj.IsAwakening;
             this.Rank_HP = obj.Rank_HP;
             this.Rank_Attack = obj.Rank_Attack;
             this.Rank_Defence = obj.Rank_Defence;
@@ -115,25 +285,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.EquipWaza = obj.EquipWaza;
             this.MasteredWaza = obj.MasteredWaza;
             this.Suitabilities = obj.Suitabilities;
-        }
-
-        displaySpecialType() {
-            if (this.IsTower) return "🗼";
-            if (this.IsBOSS) return "👑";
-            if (this.IsRarePal) return "✨";
-            if (this.IsRAID) return "RAID";
-            if (this.IsPREDATOR) return "Rampaging";
-            if (this.IsOilrig) return "Oilrig";
-            return "N/A";
+            this.SuitabilityMinimums = obj.SuitabilityMinimums;
         }
 
         getRank() {
             return this.Rank - 1;
         }
 
-        swapTower() {
-            this.IsTower = !this.IsTower;
-            updatePal({ target: { name: "IsTower", value: this.IsTower } });
+        swapRare() {
+            this.IsRarePal = !this.IsRarePal;
+            updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
         }
 
         swapBoss() {
@@ -141,9 +302,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             updatePal({ target: { name: "IsBOSS", value: this.IsBOSS } });
         }
 
-        swapRare() {
-            this.IsRarePal = !this.IsRarePal;
-            updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
+        toggleAwakening() {
+            this.IsAwakening = !this.IsAwakening;
+            updatePal({ target: { name: "IsAwakening", value: this.IsAwakening } });
         }
 
         levelDown() {
@@ -189,16 +350,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
         }
 
-        displayGender() {
-            if (this.Gender == "EPalGenderType::Female") {
-                return "♀️";
-            } else if (this.Gender == "EPalGenderType::Male") {
-                return "♂️";
-            } else {
-                return "";
-            }
-        }
-
         swapGender() {
             let gender = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
             if (this.Gender == "EPalGenderType::Female") {
@@ -223,14 +374,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         add_PassiveSkillList() {
             const skill = PAL_PASSIVE_SELECTED_ITEM.value;
             if (!PASSIVE_SKILLS.value[skill]) {
-                alert("Select a skill first!");
+                showToast("Message_Select_Skill");
                 return;
             }
             if (
                 HIDE_INVALID_OPTIONS.value &&
                 this.PassiveSkillList.length >= 4
             ) {
-                alert("you can't add more than 4 passive skills");
+                showToast("Message_Passive_Limit");
                 return;
             }
             updatePal({
@@ -290,7 +441,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         add_MasteredWaza() {
             const skill = PAL_ACTIVE_SELECTED_ITEM.value;
             if (!ACTIVE_SKILLS.value[skill]) {
-                alert("Select a skill first!");
+                showToast("Message_Select_Skill");
                 return;
             }
             updatePal({
@@ -324,14 +475,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         set_Suitability(name, value) {
-            const min =
-                PAL_STATIC_DATA.value[SELECTED_PAL_DATA.value.DataAccessKey]
-                    ?.Suitabilities[name];
+            const min = this.SuitabilityMinimums[name] || 0;
             const max = MAX_SUITABILITY_LEVEL;
-            if (HIDE_INVALID_OPTIONS.value && min == 0 && e.target.value != 0) {
-                alert(
-                    "Invalid suitability level, You can only modify suitabilities that the Pal is capable of."
-                );
+            if (HIDE_INVALID_OPTIONS.value && min == 0 && value != 0) {
+                showToast("Message_Invalid_Suitability");
                 return;
             }
             value = Math.min(Math.max(value, min), max);
@@ -346,11 +493,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             });
         }
 
-        changeSpecie() {
+        maxSuitabilities() {
+            const values = maximumSuitabilities(
+                this.SuitabilityMinimums,
+                MAX_SUITABILITY_LEVEL,
+            );
+            if (!Object.keys(values).length) return;
+            updatePal({ target: { name: "set_Suitabilities", value: values } });
+        }
+
+        changeSpecie(characterId = this.SelectionKey) {
             updatePal({
                 target: {
                     name: "CharacterID",
-                    value: this.DataAccessKey,
+                    value: characterId,
                 },
             });
         }
@@ -365,10 +521,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const ACTIVE_SKILLS_LIST = ref([]);
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
-    const I18nList = ref({});
-
-    const TranslationKeyMap = ref({});
-    const I18nLoadingPromises = {};
+    const SKIN_DATA_LIST = ref([]);
+    const PAL_TEMPLATES = ref([]);
+    const I18nList = ref(GAME_LANGUAGES);
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
@@ -383,8 +538,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SHOW_UNREF_PAL_FLAG = ref(false);
     const SHOW_OOB_PAL_FLAG = ref(true);
     const HIDE_INVALID_OPTIONS = ref(true);
+    const PAL_SAVE_DETAILS_OPEN = ref(false);
 
     const PAL_LIST_SEARCH_KEYWORD = ref("");
+    const PAL_LIST_SORT = ref("paldeck");
+    const PAL_LIST_PRIORITY_FILTER = ref("all");
+    const PAL_LIST_CREATED_ONLY = ref(false);
+    const CREATED_PAL_IDS = ref(new Set());
 
     const IS_PAL_SAVE_PATH = ref(false);
 
@@ -410,8 +570,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const VERSION = ref("0.0.0");
     const UPDATE_DATA = ref({});
     const IS_OFFICIAL_BUILD = ref(false);
-    const I18n = ref(localStorage.getItem("PAL_I18n"));
-    const PAL_GAME_SAVE_PATH = ref(localStorage.getItem("PAL_GAME_SAVE_PATH"));
+    const savedI18n = localStorage.getItem("PAL_I18n");
+    const I18n = ref(GAME_LANGUAGES[savedI18n] ? savedI18n : "en");
+    const BACKEND_ORIGIN_KEY = "PAL_BACKEND_ORIGIN";
+    const normalizeStoredBackendOrigin = origin => {
+        try { return normalizeBackendOrigin(origin || "", window.location.origin); }
+        catch { return ""; }
+    };
+    const savedBackendOrigin = readStorage(localStorage, BACKEND_ORIGIN_KEY) || "";
+    const initialBackendOrigin = normalizeStoredBackendOrigin(savedBackendOrigin);
+    if (savedBackendOrigin !== initialBackendOrigin) {
+        writeStorage(localStorage, BACKEND_ORIGIN_KEY, initialBackendOrigin);
+    }
+    const BACKEND_ORIGIN = ref(initialBackendOrigin);
+    const BACKEND_CANDIDATE = ref(BACKEND_ORIGIN.value);
+    const BACKEND_REQUEST_ORIGIN = ref(BACKEND_ORIGIN.value);
+    const BACKEND_RECENT = ref(readRecentBackends(localStorage));
+    const BACKEND_CONNECTED = ref(false);
+    const backendAssetUrl = path => backendUrl(BACKEND_ORIGIN.value, path);
+    const storageKey = name => backendStorageKey(name, BACKEND_ORIGIN.value);
+    const PAL_GAME_SAVE_PATH = ref(readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH")));
     const HAS_PASSWORD = ref(false);
     const PAL_WRITE_BACK_PATH = ref("");
     const PATH_CONTEXT = ref(new Map());
@@ -422,12 +600,105 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const CN_WARNING_ON_LOAD = ref(true);
 
     // auth
-    let auth_token = "";
+    let auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
+    let configuredSavePath = "";
+    const APP_STATE = ref("connecting");
     const IS_LOCKED = ref(true);
+    const BACKEND_ERROR = ref(null);
+    const AUTH_MESSAGE_KEY = ref("");
+    const MESSAGE_QUEUE = ref([]);
+    const CURRENT_MESSAGE = computed(() => MESSAGE_QUEUE.value[0] ?? null);
+    let nextMessageId = 1;
+
+    function showMessage(message) {
+        const entry = { id: nextMessageId++, args: [], ...message };
+        if (entry.presentation == "dialog") {
+            const firstToast = MESSAGE_QUEUE.value.findIndex(
+                item => item.presentation == "toast"
+            );
+            MESSAGE_QUEUE.value.splice(
+                firstToast < 0 ? MESSAGE_QUEUE.value.length : firstToast,
+                0,
+                entry
+            );
+        } else {
+            MESSAGE_QUEUE.value.push(entry);
+        }
+        return entry.id;
+    }
+
+    function showToast(messageKey, severity = "warning", args = []) {
+        return showMessage({ severity, presentation: "toast", messageKey, args });
+    }
+
+    function dismissMessage(id) {
+        const index = MESSAGE_QUEUE.value.findIndex(message => message.id == id);
+        if (index >= 0) MESSAGE_QUEUE.value.splice(index, 1);
+    }
+
+    function getMessageText(message) {
+        if (message?.message) return message.message;
+        const args = (message?.args || []).map(arg =>
+            arg?.translationKey ? getTranslatedText(arg.translationKey) : arg
+        );
+        return getTranslatedText(message?.messageKey, args);
+    }
+
+    function reportOperationError(operationKey, response) {
+        return showMessage({
+            severity: "error",
+            presentation: "dialog",
+            messageKey: "Message_Operation_Failed",
+            args: [{ translationKey: operationKey }],
+            code: response?.data?.error?.code || operationKey,
+            log: response?.data?.error?.log || response?.msg,
+        });
+    }
+
+    function reportFrontendError(error, context = "Frontend") {
+        const exception = error instanceof Error ? error : new Error(String(error));
+        console.error(context, exception);
+        return showMessage({
+            severity: "error",
+            presentation: "dialog",
+            messageKey: "Message_Unexpected_Frontend_Error",
+            args: [context],
+            code: exception.name,
+            log: exception.stack || exception.message,
+        });
+    }
+
+    function setBackendError(error) {
+        BACKEND_ERROR.value = typeof error === "string"
+            ? { kind: "application", message: error }
+            : error;
+        if (APP_STATE.value === "connecting") APP_STATE.value = "backend-error";
+        LOADING_FLAG.value = false;
+    }
+
+    function handleRequestError(error, method) {
+        const backendError = backendErrorDetails(error);
+        if (backendError) {
+            if (backendError.kind === "connection") BACKEND_CONNECTED.value = false;
+            setBackendError(backendError);
+            console.error(`${method}(): ${backendError.message}`);
+            return false;
+        }
+        if (error.response) {
+            const message = `${error.response.statusText}: ${error.response.status}`;
+            console.log(message);
+            return typeof error.response.data === "object"
+                ? error.response.data
+                : { msg: message };
+        }
+        LOADING_FLAG.value = false;
+        reportFrontendError(error, method);
+        return false;
+    }
 
     async function GET(api) {
         try {
-            const response = await axios.get(api, {
+            const response = await axios.get(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
                 headers: {
                     Authorization: "Bearer " + auth_token,
                 },
@@ -435,166 +706,235 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
             return response.data;
         } catch (error) {
-            if (error.response) {
-                const errmsg =
-                    error.response.statusText + ": " + error.response.status;
-                console.log(errmsg);
-                return { msg: errmsg };
-            } else if (error.request) {
-                alert(
-                    `no response from the backend, make sure it is running, error: ${error.request}`
-                );
-                return false;
-            } else {
-                alert(`get(): ${error.message}`);
-                return false;
-            }
+            return handleRequestError(error, "get");
         }
     }
 
     async function POST(api, data) {
         try {
-            const response = await axios.post(api, data, {
+            const response = await axios.post(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
             return response.data;
         } catch (error) {
-            if (error.response) {
-                const errmsg =
-                    error.response.statusText + ": " + error.response.status;
-                console.log(errmsg);
-                return { msg: errmsg };
-            } else if (error.request) {
-                alert(
-                    `no response from the backend, make sure it is running, error: ${error.request}`
-                );
-                return false;
-            } else {
-                alert(`post(): ${error.message}`);
-                return false;
-            }
+            return handleRequestError(error, "post");
         }
     }
 
     async function PATCH(api, data) {
         try {
-            const response = await axios.patch(api, data, {
+            const response = await axios.patch(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
             return response.data;
         } catch (error) {
-            if (error.response) {
-                const errmsg =
-                    error.response.statusText + ": " + error.response.status;
-                console.log(errmsg);
-                return { msg: errmsg };
-            } else if (error.request) {
-                alert(
-                    `no response from the backend, make sure it is running, error: ${error.request}`
-                );
-                return false;
-            } else {
-                alert(`patch(): ${error.message}`);
-                return false;
-            }
+            return handleRequestError(error, "patch");
         }
     }
 
     async function DELETE(api) {
         try {
-            const response = await axios.delete(api, {
+            const response = await axios.delete(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
                 headers: { Authorization: "Bearer " + auth_token },
             });
 
             return response.data;
         } catch (error) {
-            if (error.response) {
-                const errmsg =
-                    error.response.statusText + ": " + error.response.status;
-                console.log(errmsg);
-                return { msg: errmsg };
-            } else if (error.request) {
-                alert(
-                    `no response from the backend, make sure it is running, error: ${error.request}`
-                );
-                return false;
-            } else {
-                alert(`patch(): ${error.message}`);
-                return false;
-            }
+            return handleRequestError(error, "delete");
         }
     }
 
     async function auth() {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
-
         const response = await GET("/api/auth/auth");
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
             IS_LOCKED.value = false;
-        } else {
-            IS_LOCKED.value = true;
-            reset();
+            return true;
         }
-
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        requireAuth("AuthView_Session_Expired");
+        return false;
     }
 
-    async function login(e) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+    function clearBackendError() {
+        BACKEND_ERROR.value = null;
+    }
 
+    function requireAuth(messageKey = "") {
+        auth_token = "";
+        removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
+        AUTH_MESSAGE_KEY.value = messageKey;
+        IS_LOCKED.value = true;
+        APP_STATE.value = "auth-required";
+        LOADING_FLAG.value = false;
+    }
+
+    async function unlock(password, remember = false) {
+        AUTH_MESSAGE_KEY.value = "";
+        APP_STATE.value = "connecting";
+        LOADING_FLAG.value = true;
         const response = await POST("/api/auth/login", {
-            password: e.target.value,
+            password,
+            remember,
         });
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
             IS_LOCKED.value = false;
             auth_token = response.data.access_token;
+            if (remember) {
+                writeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"), auth_token);
+            } else {
+                removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
+            }
+            APP_STATE.value = "connecting";
+            return await resumeBackendSave();
         } else if (response.status == 2) {
-            alert("Wrong Password, Try Again.");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Wrong_Password");
         } else {
-            alert(`- login - Error occured: ${response.msg}`);
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
-
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        LOADING_FLAG.value = false;
+        return false;
     }
 
-    async function fetch_config() {
+    function promoteBackend(origin) {
+        origin = normalizeStoredBackendOrigin(origin);
+        const changed = origin !== BACKEND_ORIGIN.value;
+        BACKEND_ORIGIN.value = origin;
+        BACKEND_REQUEST_ORIGIN.value = origin;
+        writeStorage(localStorage, BACKEND_ORIGIN_KEY, origin);
+        BACKEND_RECENT.value = origin
+            ? rememberBackend(localStorage, origin)
+            : readRecentBackends(localStorage);
+        if (changed) {
+            PAL_TEMPLATES.value = [];
+            auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
+            PAL_GAME_SAVE_PATH.value = readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
+            PAL_FILE_PICKER_PATH.value = PAL_GAME_SAVE_PATH.value;
+        }
+    }
+
+    async function fetch_config(origin = BACKEND_REQUEST_ORIGIN.value) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         const response = await GET("/api/save/fetch_config");
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
-            I18nList.value = response.data.I18nList;
-            if (!I18n.value || !I18nList.value[I18n.value]) {
+            promoteBackend(origin);
+            BACKEND_CONNECTED.value = true;
+            if (response.data.I18nList) {
+                I18nList.value = response.data.I18nList;
+            }
+            if (!localStorage.getItem("PAL_I18n") && I18nList.value[response.data.I18n]) {
                 I18n.value = response.data.I18n;
             }
-            // TranslationKeyMap[I18n.value] = await import(`../i18n/${I18n.value}.js`)
             if (!PAL_GAME_SAVE_PATH.value) {
                 PAL_GAME_SAVE_PATH.value = response.data.Path;
             }
+            configuredSavePath = response.data.Path;
             HAS_PASSWORD.value = response.data.HasPassword;
             VERSION.value = response.data.VERSION;
             IS_OFFICIAL_BUILD.value = response.data.IsOfficialBuild;
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            if (origin === BACKEND_ORIGIN.value) requireAuth();
+            else setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         } else {
-            alert(`- fetch_config - Error occured: ${response.msg}`);
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return response.status == 0;
+    }
+
+    async function resumeBackendSave() {
+        const response = await GET("/api/save/status");
+        if (response === false) return false;
+        if (response.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+            LOADING_FLAG.value = false;
+            return false;
+        }
+        if (response.status != 0) {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
+            return false;
+        }
+        if (response.data.SaveLoaded) {
+            if (configuredSavePath) {
+                PAL_GAME_SAVE_PATH.value = configuredSavePath;
+                PAL_WRITE_BACK_PATH.value = configuredSavePath;
+            }
+            return await hydrateLoadedSave();
+        }
+        reset();
+        APP_STATE.value = "entry";
+        LOADING_FLAG.value = false;
+        return true;
+    }
+
+    async function bootstrap(candidate = readStorage(localStorage, BACKEND_ORIGIN_KEY) || "") {
+        candidate = normalizeStoredBackendOrigin(candidate);
+        APP_STATE.value = "connecting";
+        IS_LOCKED.value = true;
+        BACKEND_CONNECTED.value = false;
+        clearBackendError();
+        LOADING_FLAG.value = true;
+        BACKEND_CANDIDATE.value = candidate;
+        BACKEND_REQUEST_ORIGIN.value = candidate;
+        if (candidate !== BACKEND_ORIGIN.value) auth_token = "";
+        else auth_token = auth_token || readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
+
+        if (!await fetch_config(BACKEND_CANDIDATE.value)) {
+            BACKEND_REQUEST_ORIGIN.value = BACKEND_ORIGIN.value;
+            return false;
+        }
+        if (HAS_PASSWORD.value) {
+            if (!auth_token) {
+                APP_STATE.value = "auth-required";
+                LOADING_FLAG.value = false;
+                return true;
+            }
+            if (!await auth()) {
+                LOADING_FLAG.value = false;
+                return false;
+            }
+            return await resumeBackendSave();
+        }
+        return await unlock("", false);
+    }
+
+    async function connectBackend(candidate) {
+        if (APP_STATE.value === "editor") return false;
+        const previousOrigin = BACKEND_ORIGIN.value;
+        const previousToken = auth_token;
+        const wasConnected = BACKEND_CONNECTED.value;
+        candidate = normalizeBackendOrigin(candidate, window.location.origin);
+        LOADING_FLAG.value = true;
+        try {
+            const probe = await axios.get(backendUrl(candidate, "/api/save/fetch_config"), { timeout: 5000 });
+            if (probe.data?.status !== 0) {
+                LOADING_FLAG.value = false;
+                return false;
+            }
+        } catch {
+            LOADING_FLAG.value = false;
+            return false;
+        }
+        BACKEND_CANDIDATE.value = candidate;
+        clearBackendError();
+        APP_STATE.value = "connecting";
+        await bootstrap(BACKEND_CANDIDATE.value);
+        if (BACKEND_ORIGIN.value === previousOrigin && BACKEND_ORIGIN.value !== candidate) {
+            auth_token = previousToken;
+            BACKEND_CANDIDATE.value = previousOrigin;
+            BACKEND_REQUEST_ORIGIN.value = previousOrigin;
+            BACKEND_CONNECTED.value = wasConnected;
+        }
+        return BACKEND_ORIGIN.value === candidate;
     }
 
     async function get_updates() {
@@ -622,25 +962,24 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             response = await POST("/api/save/path", {
                 path: PAL_GAME_SAVE_PATH.value,
             });
+            if (response === false) return;
             if (response.status != 0) {
                 PAL_GAME_SAVE_PATH.value = undefined;
-                localStorage.removeItem("PAL_GAME_SAVE_PATH");
+                removeStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
                 response = await GET("/api/save/path");
             }
         } else {
             response = await GET("/api/save/path");
         }
 
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
             update_path_picker_result(response.data);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- show_file_picker - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Select_Path", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -657,11 +996,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             update_path_picker_result(response.data);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- show_file_picker - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Select_Path", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -680,109 +1017,117 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             update_path_picker_result(response.data);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- show_file_picker - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Select_Path", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
     async function updateI18n() {
+        localStorage.setItem("PAL_I18n", I18n.value);
+        if (IS_LOCKED.value || BACKEND_ERROR.value) return true;
+
         sorryandfuckyou();
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         const response = await PATCH("/api/save/i18n", { I18n: I18n.value });
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
-            localStorage.setItem("PAL_I18n", I18n.value);
             // if on pal editor panel, refresh all translated texts (except for hardcoded ui)
             if (SAVE_LOADED_FLAG.value) {
                 PLAYER_MAP.value.forEach((player, playerUId) => {
                     fetchPlayerPal(playerUId);
                 });
                 fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
+                await fetchStaticData();
             }
-            if (!IS_LOCKED.value) fetchStaticData();
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- updateI18n - Error occured: ${response.msg}`);
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return response.status == 0;
     }
 
     async function fetchStaticData() {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const passive_skills_raw = await GET("/api/save/passive_skills");
-        if (passive_skills_raw === false) return;
+        if (passive_skills_raw === false) return false;
 
         if (passive_skills_raw.status == 0) {
             PASSIVE_SKILLS.value = passive_skills_raw.data.dict;
             PASSIVE_SKILLS_LIST.value = passive_skills_raw.data.arr;
         } else if (passive_skills_raw.status == 2) {
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
+            return false;
         } else {
-            alert(
-                `- fetchStaticData:passive_skill - Error occured: ${passive_skills_raw.msg}`
-            );
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [passive_skills_raw.msg]));
+            return false;
         }
 
         const active_skills_raw = await GET("/api/save/active_skills");
-        if (active_skills_raw === false) return;
+        if (active_skills_raw === false) return false;
 
         if (active_skills_raw.status == 0) {
             ACTIVE_SKILLS.value = active_skills_raw.data.dict;
             ACTIVE_SKILLS_LIST.value = active_skills_raw.data.arr;
         } else if (active_skills_raw.status == 2) {
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
+            return false;
         } else {
-            alert(
-                `- fetchStaticData:active_skill - Error occured: ${active_skills_raw.msg}`
-            );
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [active_skills_raw.msg]));
+            return false;
         }
 
         const pal_data_raw = await GET("/api/save/pal_data");
-        if (pal_data_raw === false) return;
+        if (pal_data_raw === false) return false;
 
         if (pal_data_raw.status == 0) {
             PAL_STATIC_DATA.value = pal_data_raw.data.dict;
             PAL_STATIC_DATA_LIST.value = pal_data_raw.data.arr;
         } else if (pal_data_raw.status == 2) {
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
+            return false;
         } else {
-            alert(
-                `- fetchStaticData:pal_data - Error occured: ${pal_data_raw.msg}`
-            );
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [pal_data_raw.msg]));
+            return false;
         }
 
         const tech_data_raw = await GET("/api/save/tech_data");
-        if (tech_data_raw === false) return;
+        if (tech_data_raw === false) return false;
 
         if (tech_data_raw.status == 0) {
             TECH_LV_DICT.value = tech_data_raw.data.techLvDict;
         } else if (tech_data_raw.status == 2) {
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
+            return false;
         } else {
-            alert(
-                `- fetchStaticData:tech_data - Error occured: ${tech_data_raw.msg}`
-            );
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [tech_data_raw.msg]));
+            return false;
+        }
+
+        const skin_data_raw = await GET("/api/save/skin_data");
+        if (skin_data_raw === false) return false;
+        if (skin_data_raw.status == 0) {
+            SKIN_DATA_LIST.value = skin_data_raw.data.arr;
+        } else if (skin_data_raw.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+            return false;
+        } else {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [skin_data_raw.msg]));
+            return false;
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return true;
     }
 
-    function reset() {
+    function reset(updateAppState = true) {
         LOADING_FLAG.value = false;
         HAS_WORKING_PAL_FLAG.value = false;
         SAVE_LOADED_FLAG.value = false;
@@ -794,8 +1139,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PLAYER_MAP.value = new Map();
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
+        PAL_TEMPLATES.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
+        PAL_LIST_SORT.value = "paldeck";
+        PAL_LIST_PRIORITY_FILTER.value = "all";
+        PAL_LIST_CREATED_ONLY.value = false;
+        CREATED_PAL_IDS.value.clear();
         SHOW_UNREF_PAL_FLAG.value = false;
         SHOW_OOB_PAL_FLAG.value = true;
         SHOW_PLAYER_EDIT_FLAG.value = false;
@@ -805,58 +1155,22 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_MAP.value = new Map();
 
         PLAYER_MAP.value.clear();
+        if (updateAppState) {
+            APP_STATE.value = IS_LOCKED.value ? "auth-required" : "entry";
+        }
     }
 
     function getTranslatedText(translationKey, args = []) {
-        const getTranslation = (i18n, translationKey, args) => {
-            const i18nData = TranslationKeyMap.value[i18n];
-            let translation = i18nData[translationKey]
-            if (!translation) {
-                console.warn(
-                    `Translation key "${translationKey}" not found in "${i18n}" translations.`
-                );
-                return "I18N_MISSING";
-            }
-            for (let i = 0; i < args.length; i++) {
-                translation = translation.replace(`{{${i}}}`, args[i]);
-                console.log(`Replacing {{${i}}} with ${args[i]} in translation: ${translation}`);
-            }
-            return translation;
+        let translation = UI_TRANSLATIONS[I18n.value]?.[translationKey]
+            ?? DEFAULT_UI_TRANSLATION[translationKey];
+        if (!translation) {
+            console.warn(`Translation key "${translationKey}" not found.`);
+            return "I18N_MISSING";
         }
-
-        const I18nKey = I18n.value || "en";
-
-        if (TranslationKeyMap.value[I18nKey]) {
-            return getTranslation(I18nKey, translationKey, args);
-        }
-
-        if (!I18nLoadingPromises[I18nKey]) {
-            I18nLoadingPromises[I18nKey] = import(`../i18n/${I18nKey}.js`)
-                .then((module) => {
-                    TranslationKeyMap.value[I18nKey] = module.default;
-                    delete I18nLoadingPromises[I18nKey];
-                })
-                .catch((error) => {
-                    console.error(
-                        `Failed to load UI language file for ${I18nKey}, fallback to "en":`,
-                        error
-                    );
-                    if (TranslationKeyMap.value["en"]) {
-                        TranslationKeyMap.value[I18nKey] =
-                            TranslationKeyMap.value["en"];
-                        delete I18nLoadingPromises[I18nKey];
-                    } else {
-                        import(`../i18n/en.js`).then((module) => {
-                            TranslationKeyMap.value[I18nKey] = module.default;
-                            delete I18nLoadingPromises[I18nKey];
-                        });
-                    }
-                });
-        }
-
-        return I18nLoadingPromises[I18nKey].then(() => {
-            return getTranslation(I18nKey, translationKey, args);
+        args.forEach((arg, index) => {
+            translation = translation.replace(`{{${index}}}`, arg);
         });
+        return translation;
     }
 
     async function updatePlayer(e) {
@@ -868,7 +1182,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let value = e.target.value;
 
         if (SELECTED_PLAYER_ID.value == null) {
-            alert("Select a player first!");
+            showToast("Message_Select_Player");
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
 
@@ -888,11 +1203,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             await loadPlayer(SELECTED_PLAYER_ID.value);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- updatePlayer - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Update_Player", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
@@ -902,7 +1215,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         if (SELECTED_PLAYER_ID.value == null) {
-            alert("Select a player first!");
+            showToast("Message_Select_Player");
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
 
@@ -927,11 +1241,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
             if (!updatePal && pal_id_bk) await selectPal(pal_id_bk, true);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- loadPlayer - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Load_Player", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -944,7 +1256,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const response = await GET("/api/player/players_data", {
             ReadPath: PAL_GAME_SAVE_PATH.value,
         });
-        if (response === false) return;
+        if (response === false) return false;
 
         if (response.status == 0) {
             if (response.data.hasWorkingPal) {
@@ -957,35 +1269,35 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 // console.log(`Found player: ${p.NickName} - ${p.InstanceId}`);
             }
 
-            if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG) {
-                alert("No Player Found in the Gamesave");
+            if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG.value) {
+                showToast("Message_No_Player");
             }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
+            return false;
         } else {
-            alert(`- loadPlayers - Error occured: ${response.msg}`);
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
+            return false;
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return true;
     }
 
     async function sorryandfuckyou() {
-        if ((I18n.value == "zh-CN") & CN_WARNING_ON_LOAD.value) {
-            alert(
-                "警告：本软件开源免费，如果你从任何平台付费购买此工具，请立即退款。你可以选择支持作者，具体方式会在首次保存修改时显示（或者GitHub上查看）。"
-            );
+        if (I18n.value == "zh-CN" && CN_WARNING_ON_LOAD.value) {
+            showMessage({
+                severity: "warning",
+                presentation: "dialog",
+                messageKey: "Message_CN_AntiScam",
+            });
             CN_WARNING_ON_LOAD.value = false;
         }
     }
 
     async function loadSave() {
-        reset();
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
-
-        await updateI18n();
 
         const response = await POST("/api/save/load", {
             ReadPath: PAL_GAME_SAVE_PATH.value,
@@ -993,23 +1305,38 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
-            await loadPlayers();
-            await fetchStaticData();
-
-            SAVE_LOADED_FLAG.value = true;
-            localStorage.setItem(
-                "PAL_GAME_SAVE_PATH",
-                PAL_GAME_SAVE_PATH.value
-            );
             PAL_WRITE_BACK_PATH.value = PAL_GAME_SAVE_PATH.value;
+            if (await hydrateLoadedSave()) {
+                writeStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"), PAL_GAME_SAVE_PATH.value);
+            }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- loadSave - Error occured: ${response.msg}`);
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+    }
+
+    async function hydrateLoadedSave() {
+        reset(false);
+        LOADING_FLAG.value = true;
+        try {
+            if (!await updateI18n()) return false;
+            if (!await loadPlayers()) return false;
+            if (!await fetchStaticData()) return false;
+            const defaultPlayer = HAS_WORKING_PAL_FLAG.value
+                ? PAL_BASE_WORKER_BTN.value
+                : PLAYER_MAP.value.keys().next().value;
+            if (defaultPlayer !== undefined) await selectPlayer(defaultPlayer);
+            const defaultPal = PAL_MAP.value.keys().next().value;
+            if (defaultPal !== undefined) await selectPal(defaultPal);
+            SAVE_LOADED_FLAG.value = true;
+            IS_LOCKED.value = false;
+            APP_STATE.value = "editor";
+            return true;
+        } finally {
+            LOADING_FLAG.value = false;
+        }
     }
 
     async function writeSave() {
@@ -1022,17 +1349,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
-            const Alert_Successful_Save = getTranslatedText(
-                "Alert_Successful_Save"
-            ).replace("{{path}}", PAL_WRITE_BACK_PATH.value);
-            alert(Alert_Successful_Save);
+            showToast("Message_Save_Success", "success", [PAL_WRITE_BACK_PATH.value]);
             retval = true;
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- writeSave - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Save", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
         return retval;
@@ -1057,17 +1379,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // insert new data
             for (let pal of response.data) {
                 let pal_data = new PalData(pal);
+                if (pal_data.IsNewPal) CREATED_PAL_IDS.value.add(pal_data.InstanceId);
                 map.set(pal_data.InstanceId, pal_data);
                 // console.log(
                 //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
                 // );
             }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- fetchPlayerPal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Load_Pals", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
@@ -1077,7 +1398,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         if (SELECTED_PLAYER_ID.value == null) {
-            alert("Select a player first!");
+            showToast("Message_Select_Player");
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
 
@@ -1093,11 +1415,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             }
             PLAYER_MAP.value.set(playerUId, player_obj);
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- fetchPlayerData - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Load_Player_Data", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -1161,7 +1481,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             // construct new pal
-            let pal_data = new PalData(response.data);
+            let pal_data = new PalData({
+                ...PAL_MAP.value.get(response.data.InstanceId),
+                ...response.data,
+            });
             // update the pal from the correct pal container
             if (player == PAL_BASE_WORKER_BTN.value) {
                 BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
@@ -1171,11 +1494,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     .pals.set(pal_data.InstanceId, pal_data);
             }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- fetchPlayerPal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Load_Pal", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -1194,7 +1515,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // set selected pal, and print out debug info
         let palData = PAL_MAP.value.get(palId);
         if (palData == null) {
-            alert("Failed selecting pal, try again or reload");
+            showToast("Message_Select_Pal_Failed");
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
@@ -1218,25 +1539,23 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    function isElementInViewport(el) {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <=
-                (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <=
-                (window.innerWidth || document.documentElement.clientWidth)
-        );
-    }
-
     async function updatePal(e) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
-
         // sometimes we manually construct a "e" target in a very hacked way
         let key = e.target.name;
         let value = e.target.value;
+        if (
+            (key === "add_MasteredWaza" || key === "add_EquipWaza")
+            && !isSkillAssignable(
+                ACTIVE_SKILLS.value[value],
+                SELECTED_PAL_DATA.value?.IsHuman,
+            )
+        ) {
+            showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+
+        let no_set_loading_flag = LOADING_FLAG.value;
+        if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         // console.log(
         //   `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
@@ -1255,14 +1574,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             // A hack way to trigger vue re-rendering.
             // The object is simply too nested that I can't figure out how to have vue properly refresh.
-            await selectPal(SELECTED_PAL_ID.value, true);
-            UPDATE_PAL_RESELECT_CTR.value++;
+            if (SELECTED_PAL_ID.value) {
+                await selectPal(SELECTED_PAL_ID.value, true);
+                UPDATE_PAL_RESELECT_CTR.value++;
+            }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- updatePal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Update_Pal", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
@@ -1274,30 +1593,28 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function dumpPalData() {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/dump_data", {
+                PlayerUId: GET_PAL_OWNER_API_ID(),
+                PalGuid: SELECTED_PAL_ID.value,
+            });
 
-        const response = await POST("/api/pal/dump_data", {
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
-        });
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            const data = response.data;
-            await navigator.clipboard.writeText(data);
-            alert("Pal Data Copied to Clipboard!");
-            window.open("https://jsonformatter.curiousconcept.com/");
-        } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
-        } else {
-            alert(`- updatePal - Error occured: ${response.msg}`);
+            if (response === false) return;
+            if (response.status == 0) {
+                await navigator.clipboard.writeText(response.data);
+                showToast("Message_Pal_Copied", "success");
+            } else if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Copy_Pal", response);
+            }
+        } catch (error) {
+            reportFrontendError(error, getTranslatedText("Operation_Copy_Pal"));
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
         }
-
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
     function isFilteredPal(pal) {
@@ -1370,32 +1687,36 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 SELECTED_PAL_ID.value = nextNode.key;
             }
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- delPal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Delete_Pal", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function addPal() {
+    async function addPal(options = {}) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
         if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-            alert("Adding pals to basecamp is unsupported!");
+            showToast("Message_Basecamp_Add_Unsupported");
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
         const response = await POST("/api/pal/add_pal", {
             PlayerUId: PlayerUId,
+            ...options,
         });
 
-        if (response === false) return;
+        if (response === false) {
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return false;
+        }
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
+            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
             const temp_map = new Map();
             PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
             PAL_MAP.value.clear();
@@ -1406,15 +1727,58 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.InstanceId;
             SELECTED_PAL_DATA.value = pal_data;
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return true;
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- delPal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Add_Pal", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return false;
+    }
+
+    async function fetchPalTemplates() {
+        const response = await GET("/api/pal/templates");
+        if (response === false) return false;
+        if (response.status == 0) {
+            PAL_TEMPLATES.value = response.data || [];
+            return true;
+        }
+        reportOperationError("Operation_Load_Pal_Templates", response);
+        return false;
+    }
+
+    async function savePalTemplate(name) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST("/api/pal/templates", {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            await fetchPalTemplates();
+            showToast("Message_Pal_Template_Saved", "success");
+            return true;
+        }
+        reportOperationError("Operation_Save_Pal_Template", response);
+        return false;
+    }
+
+    async function deletePalTemplate(templateId) {
+        const response = await DELETE(`/api/pal/templates/${templateId}`);
+        if (response === false) return false;
+        if (response.status == 0) {
+            PAL_TEMPLATES.value = PAL_TEMPLATES.value.filter(
+                template => template.Id != templateId
+            );
+            showToast("Message_Pal_Template_Deleted", "success");
+            return true;
+        }
+        reportOperationError("Operation_Delete_Pal_Template", response);
+        return false;
     }
 
     async function dupePal() {
@@ -1422,7 +1786,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
         if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-            alert("Adding pals to basecamp is unsupported!");
+            showToast("Message_Basecamp_Add_Unsupported");
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return;
         }
         const response = await POST("/api/pal/dupe_pal", {
@@ -1434,6 +1799,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
+            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
             const temp_map = new Map();
             PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
             PAL_MAP.value.clear();
@@ -1447,54 +1813,18 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             SELECTED_PAL_ID.value = pal_data.InstanceId;
             SELECTED_PAL_DATA.value = pal_data;
         } else if (response.status == 2) {
-            alert("Unauthorized Access, Please Login. ");
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`- delPal - Error occured: ${response.msg}`);
+            reportOperationError("Operation_Duplicate_Pal", response);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    function displayPalElement(DataAccessKey) {
-        const els = PAL_STATIC_DATA.value[DataAccessKey]?.Elements;
-        if (!els) return;
-
-        let str = "";
-        for (let e of els) {
-            str += displayElement(e);
-        }
-        return str;
-    }
-
-    function displayElement(element) {
-        const elementEmojis = {
-            Water: "💧",
-            Fire: "🔥",
-            Dragon: "🐉",
-            Grass: "☘️",
-            Ground: "🪨",
-            Ice: "❄️",
-            Electric: "⚡",
-            Neutral: "🔵",
-            Dark: "🌑",
-        };
-        return elementEmojis[element] || "";
-    }
-
-    function skillIcon(atk) {
-        if (ACTIVE_SKILLS.value[atk]?.IsUniqueSkill) return "✨";
-        if (ACTIVE_SKILLS.value[atk]?.HasSkillFruit) return "🍐";
-        return "";
-    }
-
-    function displayRating(rating) {
-        if (!rating) return "";
-        if (rating == 4) return "🟢";
-        if (rating >= 2) return "🟡";
-        if (rating < 0) return "🔴";
-        return "⚪";
+    function palElementKeys(DataAccessKey) {
+        return (PAL_STATIC_DATA.value[DataAccessKey]?.Elements ?? [])
+            .map(elementIconKey)
+            .filter(Boolean);
     }
 
     async function shownDonate() {
@@ -1509,15 +1839,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const response = await GET("/api/save/donate");
         if (response === false) return;
-        let res = true;
+        let res = false;
         if (response.status == 0) {
             res = response.data?.shouldShowDonate == true;
             IS_LOCKED.value = false;
         } else if (response.status == 2) {
-            IS_LOCKED.value = true;
-            reset();
+            requireAuth("AuthView_Session_Expired");
         } else {
-            alert(`Error occured: ${response.msg}`);
+            reportOperationError("Operation_Donation", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
         return res;
@@ -1547,11 +1876,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SHOW_UNREF_PAL_FLAG,
         SHOW_OOB_PAL_FLAG,
         HIDE_INVALID_OPTIONS,
+        PAL_SAVE_DETAILS_OPEN,
 
         PAL_LIST_SEARCH_KEYWORD,
+        PAL_LIST_SORT,
+        PAL_LIST_PRIORITY_FILTER,
+        PAL_LIST_CREATED_ONLY,
+        CREATED_PAL_IDS,
 
         IS_LOCKED,
         HAS_PASSWORD,
+        APP_STATE,
+        BACKEND_ERROR,
+        BACKEND_ORIGIN,
+        BACKEND_CANDIDATE,
+        BACKEND_RECENT,
+        BACKEND_CONNECTED,
+        AUTH_MESSAGE_KEY,
+        MESSAGE_QUEUE,
+        CURRENT_MESSAGE,
 
         PATH_CONTEXT,
         SHOW_FILE_PICKER,
@@ -1570,21 +1913,28 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         I18nList,
         PAL_STATIC_DATA,
         PAL_STATIC_DATA_LIST,
+        SKIN_DATA_LIST,
         PASSIVE_SKILLS,
         PASSIVE_SKILLS_LIST,
         ACTIVE_SKILLS,
         ACTIVE_SKILLS_LIST,
         TECH_LV_DICT,
+        PAL_TEMPLATES,
 
         getTranslatedText,
+        getMessageText,
 
-        isElementInViewport,
         isFilteredPal,
 
-        displayPalElement,
-        displayElement,
-        skillIcon,
-        displayRating,
+        elementIconKey,
+        palElementKeys,
+        passiveTier,
+        genderKey,
+        specialTypeKeys,
+        filterSkillOptions,
+        isSkillAssignable,
+        skillBadges,
+        skillBadgeTranslationKey,
 
         reset,
         updateI18n,
@@ -1599,9 +1949,21 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         delPal,
         addPal,
         dupePal,
+        fetchPalTemplates,
+        savePalTemplate,
+        deletePalTemplate,
 
-        login,
+        bootstrap,
+        connectBackend,
+        backendAssetUrl,
+        unlock,
         auth,
+        requireAuth,
+        clearBackendError,
+        showMessage,
+        dismissMessage,
+        reportOperationError,
+        reportFrontendError,
         show_file_picker,
         update_picker_result,
         path_back,

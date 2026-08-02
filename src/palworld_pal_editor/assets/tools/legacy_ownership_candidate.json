@@ -1,0 +1,3390 @@
+{
+  "accepted": [
+    {
+      "path": "icons/pals/Alpaca.png",
+      "sha256": "6ac143585336f6bb512e40f392feda8ac311bd935bb4ddcd8dd13695ff197a16"
+    },
+    {
+      "path": "icons/pals/AmaterasuWolf.png",
+      "sha256": "d4c5aa000c0a49792f10773c4ad51cf0733bfdd0d1725fc4019dd8ff62eb385b"
+    },
+    {
+      "path": "icons/pals/AmaterasuWolf_Dark.png",
+      "sha256": "11aacdfc1d3815ffe16034a2197695252f711d49797c6f4a202e40a9bb231f8e"
+    },
+    {
+      "path": "icons/pals/Anubis.png",
+      "sha256": "5877092580035d686a66c7f2668c8029c313966521fc1026f8f1351d40442767"
+    },
+    {
+      "path": "icons/pals/BOSS_Believer_CrossBow.png",
+      "sha256": "c78d215bb940b1a0205286701d8ca0850d46f0f3ec6289f985ef3ddfdff062c9"
+    },
+    {
+      "path": "icons/pals/BOSS_Believer_Fat_GiantClub.png",
+      "sha256": "b59ffeaddf60b03af6c6452d9b09bc59aad38a555b7e415b1e3aaa10f5e82023"
+    },
+    {
+      "path": "icons/pals/BOSS_DarkTrader.png",
+      "sha256": "8814dec7770843133c5b4e14e863164a37094177127e91a91ae779fb163b443f"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_DesertPeople.png",
+      "sha256": "4c886675f43293f470f8493258b319795d10aa558258cf8444508f4c49db86df"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_People.png",
+      "sha256": "a367293b3f7b90692fc249933f51ae7f53bb0dbb5067ceee79189324273a210d"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_People02.png",
+      "sha256": "32e7fe1a1c7e8ff2835de96cb03fc2381c57e1eb26a2c7d8807fe136e30ef2e6"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_People03.png",
+      "sha256": "cf89f5a8653d2b48065dc0df2a0d4cd3351bf91d47f00294780a538186b8f65c"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_Soldier.png",
+      "sha256": "d9c15b9b804998c236b9680cf08442cbaa09432c382bed0c966644cd8949b98c"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_Soldier02.png",
+      "sha256": "741b37ef14c5359c2be016fcb77bcd5df1dc4be67c6beff7afca4d6b05caff64"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_Soldier03.png",
+      "sha256": "76b68ab2c096e1b7b26b1e59ba2a27a8beb500f3f1bac139f9a2d30825b1f489"
+    },
+    {
+      "path": "icons/pals/BOSS_Female_Soldier04.png",
+      "sha256": "b44c617a854784c4b47a02b3237e8fe60ffa2a33cab7fcf968e36a3c36134a23"
+    },
+    {
+      "path": "icons/pals/BOSS_FireCult_FlameThrower.png",
+      "sha256": "35658e705fe896145a1b0cdd4c85b5d5caa6e66886b3c089828a007ac38efe8f"
+    },
+    {
+      "path": "icons/pals/BOSS_Hunter_Fat_GatlingGun.png",
+      "sha256": "bea5ac1a4540572ad546e526ff88880671bfbd7ff1436d6f7fc044e6c79a107a"
+    },
+    {
+      "path": "icons/pals/BOSS_Hunter_Rifle.png",
+      "sha256": "2dd72d4220738a56069c2ed1b76767132f9b1ed9497868381c5097f59ea02c54"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_DesertPeople.png",
+      "sha256": "543b4276acbbb0e0f13badc972c5b144fac387df019655bfce0c0d60443e7293"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_NinjaElite.png",
+      "sha256": "9b37d1d4af2a7109320c5dea04d67607105204dc6402a55c67b67aad6db681d1"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_People.png",
+      "sha256": "e69b11242756a0c67b1ada9a42c64b8c9334f86da3596a3d569dabb6c7788ee3"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_People02.png",
+      "sha256": "055de7d78f6401a33c187b97d6c0dfc62920f2520c411c264451e36f4b8e17d6"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_People03.png",
+      "sha256": "a9af26f210f3da25da6dfce88c085130b2501f66f45035a539b67cfd62adc639"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_People2.png",
+      "sha256": "e69b11242756a0c67b1ada9a42c64b8c9334f86da3596a3d569dabb6c7788ee3"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Soldier.png",
+      "sha256": "f841c15243d95ab2eaf59bce5e86347c52829cc51b0807217e68accdc56aa61e"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Soldier02.png",
+      "sha256": "b77845fc8370d1a8fdc0914be4cc4404400bd535ac66fd5f0db69297c57202fd"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Soldier03.png",
+      "sha256": "6d7f53ffc11a905ed9f42c73bf0dd8f00176fc353e93fe435694d6aa247a5cbf"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Soldier04.png",
+      "sha256": "2329abcf0238548ce761f8c04b3e5d7189cc40baf07f2425fef821e86f7a1216"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Trader01.png",
+      "sha256": "ceb3a0b639214f19bae41bc15921d316da06122b066617388721d3994150a71b"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Trader02.png",
+      "sha256": "466f3ed2ae0fedadfe5ab9cbf22af93753cb5c75979e71e26b1fccbc8921c0f5"
+    },
+    {
+      "path": "icons/pals/BOSS_Male_Trader03.png",
+      "sha256": "5921e447f432bed0d4ee8d592e9b349432bbd1dc5e8da8359eca53c0a7d68420"
+    },
+    {
+      "path": "icons/pals/BOSS_Ninja.png",
+      "sha256": "e33992e1f064a3bad3224d23c12ae6d557d16e9981000a096b40e0f031023a5a"
+    },
+    {
+      "path": "icons/pals/BOSS_Police_Rifle.png",
+      "sha256": "227d91ce0730a24cdb7aaf82c9b09cdd29405c2329939d78df103644c7334695"
+    },
+    {
+      "path": "icons/pals/BOSS_Police_old.png",
+      "sha256": "838b615bb72f05eb2bae40ef07af1219fcd89d010d8b6c296d2d0c6a1bfc3bfd"
+    },
+    {
+      "path": "icons/pals/BOSS_Scientist_LaserRifle.png",
+      "sha256": "081881a7c435fb4466e9091e2a54d594b822c1ffb0298d1f6671aca90716f0e7"
+    },
+    {
+      "path": "icons/pals/BOSS_Viking.png",
+      "sha256": "185f43698265675d7eafcbb8b25c8f6010ba8cd99bb21e6e6eed06d55f4e8b73"
+    },
+    {
+      "path": "icons/pals/BOSS_VikingElite.png",
+      "sha256": "66f93babbb5dae01c64e74c0f5cc717c18cc3b1260d5b74f6ac5143b5e92382f"
+    },
+    {
+      "path": "icons/pals/BadCatgirl.png",
+      "sha256": "85890d1af9a1d06acf4776f822abd62dbdd769801602b6a95ff499ac315010d4"
+    },
+    {
+      "path": "icons/pals/Baphomet.png",
+      "sha256": "e205e6842d10bc53bb7aa265b2a51fa8244d75330b4ae8165c9dce8ca3b48810"
+    },
+    {
+      "path": "icons/pals/Baphomet_Dark.png",
+      "sha256": "4abc720cb99d0bfdf6cbbbd54c60efab0c046a7ce32da395b86fac443f683086"
+    },
+    {
+      "path": "icons/pals/Bastet.png",
+      "sha256": "77d98b91a6fc26b4c142e0bed7f7007a14885219029854f74d3214ab7965fcdb"
+    },
+    {
+      "path": "icons/pals/Bastet_Ice.png",
+      "sha256": "b349342fd8ae876d7a65d95211219ae5656f764139f7790a361041771aebec90"
+    },
+    {
+      "path": "icons/pals/BeardedDragon.png",
+      "sha256": "0d6abbbb3b2b2792c4e94612958edd55e377e4b719ba15350cac70f3581975a1"
+    },
+    {
+      "path": "icons/pals/BerryGoat.png",
+      "sha256": "5778ef00006fd09c19031ac42926567ee3fd1d2ad453f07c910301027b1c7478"
+    },
+    {
+      "path": "icons/pals/BerryGoat_Dark.png",
+      "sha256": "bec606dd6c2b5399fe638b4cbfd1118d8dcbdb7ef8bbb4522ca30555a6999993"
+    },
+    {
+      "path": "icons/pals/BirdDragon.png",
+      "sha256": "d5c6ef0f0820a8d12641355f6f4942a935c450e1a29153adaff5d68a7cd85ef0"
+    },
+    {
+      "path": "icons/pals/BirdDragon_Ice.png",
+      "sha256": "1c0d2e2f4c726b6819505414089198371b722988fdb6a0fa66c001ea68bba204"
+    },
+    {
+      "path": "icons/pals/BlackCentaur.png",
+      "sha256": "e82c7207a8d00cd16d273af2af1a3d68c5297768c55bd619bb9e70632420061f"
+    },
+    {
+      "path": "icons/pals/BlackFurDragon.png",
+      "sha256": "501a6e899fed3889edd97c1db132f6603c1bda60d27d6669b99f6df0be4504f4"
+    },
+    {
+      "path": "icons/pals/BlackGriffon.png",
+      "sha256": "6d012edabbeb920382dd91d4b91bcb7de1b22de318a6d36722b5743b67d91098"
+    },
+    {
+      "path": "icons/pals/BlackMetalDragon.png",
+      "sha256": "0a7e54904140c641a106e3dfac49f607a108f28fe340586b7a02f929d9640e94"
+    },
+    {
+      "path": "icons/pals/BlackPuppy.png",
+      "sha256": "a3adf2784bebe0591bd38920e71ecde34fb71af6f22f208c64a3d5036f3feebf"
+    },
+    {
+      "path": "icons/pals/BlackPuppy_Ice.png",
+      "sha256": "ff15b14e450cfaea0358765820143a300b5f578b301cebc62282c0be58107618"
+    },
+    {
+      "path": "icons/pals/BlueDragon.png",
+      "sha256": "3bba4e48cb9201be20ad47e476d875ddb54528c915b14279a368bbfe187e5ab8"
+    },
+    {
+      "path": "icons/pals/BlueDragon_Ice.png",
+      "sha256": "b9f85d2999cfda86196edc26e504e371fc9c637af880e982bfd8e97ab4be3d9e"
+    },
+    {
+      "path": "icons/pals/BluePlatypus.png",
+      "sha256": "ad692b6859fad7445691a89ae8106a496010eb94e1b7ee3c2262b93e0380dec7"
+    },
+    {
+      "path": "icons/pals/BluePlatypus_Fire.png",
+      "sha256": "a96ad67e0e516a9891730b19113a34cdb206bc197a25b0ce9f7017a34161cbe8"
+    },
+    {
+      "path": "icons/pals/BlueSkyDragon.png",
+      "sha256": "937bf6ba96151b391769135480a9e99f7cfeabb7391247ed9a9aa8859511e784"
+    },
+    {
+      "path": "icons/pals/BlueThunderHorse.png",
+      "sha256": "a83a3cf04a714ac7b073594b8f186c1fbbd1a6173979bca2f9121f98a65bec06"
+    },
+    {
+      "path": "icons/pals/BlueberryFairy.png",
+      "sha256": "eb26c66116d1ecb449e73647e01b4f9cae1ef3724edf35f3994e8f6d1dacebe4"
+    },
+    {
+      "path": "icons/pals/Boar.png",
+      "sha256": "1eaa3754537209f7f50bedf2a2621f38682676f0ef167fa3ab82a8ab0dad1e9a"
+    },
+    {
+      "path": "icons/pals/BrownRabbit.png",
+      "sha256": "3f916e3e8104fd1ad6198e0db6da347ab6b131c02feb4e8c0789dd35edb8317f"
+    },
+    {
+      "path": "icons/pals/CactusDoll.png",
+      "sha256": "095b7db6ce4813760efc63545ce305385aed4e1e8a48d6dd5fae23b357742673"
+    },
+    {
+      "path": "icons/pals/CactusDoll_Dark.png",
+      "sha256": "3ccda1b5041b6ebc4a5a44ff0bf4ee8e8823d584e625c432124031dac070bc12"
+    },
+    {
+      "path": "icons/pals/CandleGhost.png",
+      "sha256": "212545bf11c034f790899e3779af5112322962310c35c785da8ae78c49ba6ef4"
+    },
+    {
+      "path": "icons/pals/CaptainPenguin.png",
+      "sha256": "042b053ba57c9edfdb371d7676a04341002c48583a60f5dbb9cbe792a54a85f1"
+    },
+    {
+      "path": "icons/pals/CaptainPenguin_Black.png",
+      "sha256": "235b8810df0804c7f06880b2a7e1db390421ed6b646ab24f33fdad2de4cefbb1"
+    },
+    {
+      "path": "icons/pals/Carbunclo.png",
+      "sha256": "fb31e4bc06c72141c9d95977e969ab68c4612684a3d5c71ed228ea7f1aa0c675"
+    },
+    {
+      "path": "icons/pals/CatBat.png",
+      "sha256": "174c7f29c248fdcc8fc83a371382cbede719fab08a58f06cd1d5a09dd730feea"
+    },
+    {
+      "path": "icons/pals/CatMage.png",
+      "sha256": "5dc9fa0f582274af0c17a093854a4fce16704777f808f84139227e6502b52578"
+    },
+    {
+      "path": "icons/pals/CatMage_Fire.png",
+      "sha256": "a9fa1450e0d4d46013eed771a839b3ac7f9c5df2e93fe9a303b8af798251fb8e"
+    },
+    {
+      "path": "icons/pals/CatVampire.png",
+      "sha256": "14b086b1731cc2f9e6a8e3c1a0c01e8acf80bed0048397592f889c5d6fe476bf"
+    },
+    {
+      "path": "icons/pals/ChickenPal.png",
+      "sha256": "830ec2c8d1e8c9ac65338eef65b79da1f4bbe08d9b72c8fe7c59cd6f6ef76c12"
+    },
+    {
+      "path": "icons/pals/ClioneTwins.png",
+      "sha256": "c83c2b6eee60edcb7c49d3f6f4712b36754d2b3b95f1b4c2f4e6a150f4a31320"
+    },
+    {
+      "path": "icons/pals/CloverFairy.png",
+      "sha256": "918726c1f4105801af7c6477f678ba5ca8c79890a52814c7e26f5f105d791f67"
+    },
+    {
+      "path": "icons/pals/ClownRabbit.png",
+      "sha256": "425b647dbabf196790f3bb79bf5a91d5be8ffb0f5b62afbb30b54be8772a1321"
+    },
+    {
+      "path": "icons/pals/ColorfulBird.png",
+      "sha256": "1ce97ec236c639e7b0d027e4882d892eca48b348402e6f78f648b9a6ddff911a"
+    },
+    {
+      "path": "icons/pals/CowPal.png",
+      "sha256": "2163ece15a37f331206c30c6a2a866e25f3517b63fde00452731c80477411152"
+    },
+    {
+      "path": "icons/pals/CubeTurtle.png",
+      "sha256": "78f376723485daf0d80c23f190b67ab2806e933655efc76d7b7bd6821242c062"
+    },
+    {
+      "path": "icons/pals/CubeTurtle_Neutral.png",
+      "sha256": "29452e379f2b1f52ebe3f5067a703ce96bad1f6f6cb771437893c0c082a7ae6c"
+    },
+    {
+      "path": "icons/pals/CuteButterfly.png",
+      "sha256": "c8fa83cad5a1909886dbae37f6de922b0e774877a7e10c701f6a85b8ab842410"
+    },
+    {
+      "path": "icons/pals/CuteFox.png",
+      "sha256": "578e34a9cbeb96ce5ab2aa681b7791d9a7977de68dbb3678fcbb1f06918aca59"
+    },
+    {
+      "path": "icons/pals/CuteMole.png",
+      "sha256": "7aefd7a5fe16f2071f80de8cbfdc054b6a5f33368ca841621d9020abef2e3e12"
+    },
+    {
+      "path": "icons/pals/DandelionGirl.png",
+      "sha256": "f046aac8ed0b2396aec747b843edb066e7a0e29b72d200fc4daa3fc290bb0350"
+    },
+    {
+      "path": "icons/pals/DarkAlien.png",
+      "sha256": "030c85cc2e11261aa92ca22efb63ff448c315968db9ca718173673af5bcc1d26"
+    },
+    {
+      "path": "icons/pals/DarkCrow.png",
+      "sha256": "7f4562c47a8f7ef92bb8aca1fb89a05e2bffc7340bb947f2fff8fd39ac31bfa8"
+    },
+    {
+      "path": "icons/pals/DarkFlameFox.png",
+      "sha256": "ce5ce8f18f486e5d84cf9f52e4f2f4aeff247cb4092de82925179de98e09f6de"
+    },
+    {
+      "path": "icons/pals/DarkMechaDragon.png",
+      "sha256": "8e5b38b4f818837498d55487e3b207c7635faf612bd37658ff940b1b6ac262fa"
+    },
+    {
+      "path": "icons/pals/DarkMutant.png",
+      "sha256": "e6813a6bedfed8ac46c9ab59ff6f63af3544b98a16d2fd60dfca84684ffd16f1"
+    },
+    {
+      "path": "icons/pals/DarkScorpion.png",
+      "sha256": "088f9c74a586353a17f90c6330b38f6140a969b84122b8a944242fce9b6572ba"
+    },
+    {
+      "path": "icons/pals/DarkScorpion_Ground.png",
+      "sha256": "eeb0e85e62004dff56d8a8a6c25bde76c9decc294fd56986a7299f14e0bb3bb5"
+    },
+    {
+      "path": "icons/pals/Deer.png",
+      "sha256": "937f146e633dd6e2d46be179cd41ae1043df05218d867b151b1906fc1a67a0e0"
+    },
+    {
+      "path": "icons/pals/Deer_Ground.png",
+      "sha256": "25cfb3ed52e574c3ba1e5f20d65f1339ab632d1e952d4a541b552d6d072ba079"
+    },
+    {
+      "path": "icons/pals/DomeArmorDragon.png",
+      "sha256": "6383df4754fa19569946e809ab97c8cf90b34c4c8f2fd8435ba52c1a475b27f8"
+    },
+    {
+      "path": "icons/pals/DreamDemon.png",
+      "sha256": "2b0523adef0df9baad788ffd1085d645a73854b8d7897e3666e2939d248042e8"
+    },
+    {
+      "path": "icons/pals/DrillGame.png",
+      "sha256": "0d41f3874e0cfdfdefe8a4b93981033fb29b6ca1afd4664b0152e8e3035c6847"
+    },
+    {
+      "path": "icons/pals/Eagle.png",
+      "sha256": "ec2667d80cf2ac401f2f4d47622ae79e167567494ed7458daadbf4f60444f4ad"
+    },
+    {
+      "path": "icons/pals/ElecCat.png",
+      "sha256": "043adef96390b5dca3ff09c71d524d83fef2ffe11422e5a4a50a85cebcb55eed"
+    },
+    {
+      "path": "icons/pals/ElecLion.png",
+      "sha256": "63f661cc8d08c0d87309483ed1d075842b05f055b27ce8eba4e45003a58f20c1"
+    },
+    {
+      "path": "icons/pals/ElecLizard.png",
+      "sha256": "2e9a99f9f4e5ed02fd556e966c289b4bd1bbb7372506cb8286613d11a64bfe64"
+    },
+    {
+      "path": "icons/pals/ElecPanda.png",
+      "sha256": "3cb8eb38a863a60915b337930c586c68281c27031c29f61e277f64925287484e"
+    },
+    {
+      "path": "icons/pals/ElecPomeranian.png",
+      "sha256": "012e8e892f4283bb9a87202efa2a5eed48d81b3666eb43932a74dc7d47c75a30"
+    },
+    {
+      "path": "icons/pals/ElecSnail.png",
+      "sha256": "52492b092148808b0dca50e92dd9cfb53e15ebdfa1ba7b6a3a90752cbcb7188a"
+    },
+    {
+      "path": "icons/pals/ElecSnail_Ground.png",
+      "sha256": "a56395c455b5d6c33bcd8cc37111484471aa38d448e5ff75ef8744faba2faf59"
+    },
+    {
+      "path": "icons/pals/FairyDragon.png",
+      "sha256": "e4f9065b43084dd66794b272c6bee3e1e8b579d669422e9920ad3b39329f9631"
+    },
+    {
+      "path": "icons/pals/FairyDragon_Water.png",
+      "sha256": "7b88cd4077e8dbd3e5ecf8c8790015ff2100d17c19dbba5ccb60de430268922d"
+    },
+    {
+      "path": "icons/pals/FeatherOstrich.png",
+      "sha256": "4ca775d5abacda7dedc6db02dacd3df352b45364cc23c377e037593b04b0fa2b"
+    },
+    {
+      "path": "icons/pals/FengyunDeeper.png",
+      "sha256": "57767b76266fd4ef42b3dc5985e638cc853a42d11b3aeb98d87ce1380212b81b"
+    },
+    {
+      "path": "icons/pals/FengyunDeeper_Electric.png",
+      "sha256": "936eed7697d5ee02847c2965696bccb0e251186f8378412bacf5c23284e3864e"
+    },
+    {
+      "path": "icons/pals/FireKirin.png",
+      "sha256": "2267389711e5378bb2ba1e4b06723354640ac714d02584e46e97397afef5c574"
+    },
+    {
+      "path": "icons/pals/FireKirin_Dark.png",
+      "sha256": "a820f314baa9dd970a972673c347b76da6936df8c94b03df31f34f029214c977"
+    },
+    {
+      "path": "icons/pals/FlameBambi.png",
+      "sha256": "6d69e6435a331ace61679719e7c16d08ed8360d19eb625befbd848a3cf1b690d"
+    },
+    {
+      "path": "icons/pals/FlameBuffalo.png",
+      "sha256": "f7f23dec37c12c54c486d48bce818e7e9e241ac6eb5ccdf19b7e74522dfd6d3f"
+    },
+    {
+      "path": "icons/pals/FlowerDinosaur.png",
+      "sha256": "5cb0ffa730a07796122331ee44323bf5d6ef590035c53976a2c05d9afc255dfd"
+    },
+    {
+      "path": "icons/pals/FlowerDinosaur_Electric.png",
+      "sha256": "56e5310055fcd96696de065f30ee46bc34a60c0f81caafe077e014e43cb0964e"
+    },
+    {
+      "path": "icons/pals/FlowerDoll.png",
+      "sha256": "ad3e0fbb17f1bba40276950e1dd15f97dbc426643d461d59dda156a1ad1f95ef"
+    },
+    {
+      "path": "icons/pals/FlowerDoll_Fire.png",
+      "sha256": "0f37ad22542c8fd27d232ac1a39eb42a9cf05649ecf7633bf28f4b5afa7988df"
+    },
+    {
+      "path": "icons/pals/FlowerPrince.png",
+      "sha256": "c567a1c75c5e9372ad705db6f56f14984b354a4f5e20167c9bd690e140feb917"
+    },
+    {
+      "path": "icons/pals/FlowerRabbit.png",
+      "sha256": "a0ad77726b49d59add00257ab0c99ca143a6553a49a2c5367ae9dc2ea1be081a"
+    },
+    {
+      "path": "icons/pals/FluffyBird.png",
+      "sha256": "b492277fb5fa777c7f28e1d177a6b58d951cce733064c7592fa99916f753f1a7"
+    },
+    {
+      "path": "icons/pals/FlyingManta.png",
+      "sha256": "0b070744dfba0440e8f36ba4be62a13080f9b57d2141aeb4065553244a7171f6"
+    },
+    {
+      "path": "icons/pals/FlyingManta_Thunder.png",
+      "sha256": "55940b5e86e76f3aafaf17a8b3e56ba7c18df7a7610035cc151d5ae74869dad8"
+    },
+    {
+      "path": "icons/pals/FoxExorcist.png",
+      "sha256": "c6be7910f9aee4628981adff91833f06b376e0e8ace2bc1af50cef38729387c5"
+    },
+    {
+      "path": "icons/pals/FoxMage.png",
+      "sha256": "bf1cde11d54a6877e3c0e5784fe4816c5dc3254000450e77621969550b3efae5"
+    },
+    {
+      "path": "icons/pals/FoxMage_Dark.png",
+      "sha256": "63086d094868df2954942302b2c9b3e5338cf21eceb3c0cafbc20eadcdc33d52"
+    },
+    {
+      "path": "icons/pals/GYM_BlackGriffon.png",
+      "sha256": "9cfe0637f93c916aa99b619adc58dbbc2010b400a882947aeb376f454e46cec3"
+    },
+    {
+      "path": "icons/pals/GYM_BlueSkyDragon.png",
+      "sha256": "5e02f19d688d36b99bd9d0e4054a0a8a14bfa9d8aacb06573e2baff8758f8c0a"
+    },
+    {
+      "path": "icons/pals/GYM_ElecPanda.png",
+      "sha256": "1517d5b0eac342fe700e4c291f82a26314b5d6a5a550b26a5ad6f74b47e4562b"
+    },
+    {
+      "path": "icons/pals/GYM_ElecPanda_Otomo.png",
+      "sha256": "b73d1e6637d14b21cf9c3bdb8b8ecf6736b8b8d2fd8820957ba03897400f4c87"
+    },
+    {
+      "path": "icons/pals/GYM_Horus.png",
+      "sha256": "a959dd8a1d20d1f6e23e9855551916d26bb3a0513139397bf5ceee4458b63ea4"
+    },
+    {
+      "path": "icons/pals/GYM_LilyQueen.png",
+      "sha256": "bf840a5169c2d2236b3d4e54ecf94b84f08561d2d41b14074f49c93b664367f3"
+    },
+    {
+      "path": "icons/pals/GYM_MoonQueen.png",
+      "sha256": "81ba8de41c0f703387c8f02ea0727c86b09236f7f47ec4c6d9c2a34bdcd11be5"
+    },
+    {
+      "path": "icons/pals/GYM_SnowTigerBeastman.png",
+      "sha256": "647636b541c34621657d94be7882b34e3200f98f7837427c4c1e58816e63bd3e"
+    },
+    {
+      "path": "icons/pals/GYM_ThunderDragonMan.png",
+      "sha256": "bdfe8d0462908181b46e5963c51bb17a8172b7444f8772bda9fe1337130ffb71"
+    },
+    {
+      "path": "icons/pals/GYM_WorldTreeDragon.png",
+      "sha256": "f231cb6a0833da4b4ae2d105ffc02b66ebfacc726780e150795ef84d18a96942"
+    },
+    {
+      "path": "icons/pals/Ganesha.png",
+      "sha256": "5b26530edf962b72c68365c962b9847236ecc32a1285e2fee585ed4910c0313f"
+    },
+    {
+      "path": "icons/pals/Garm.png",
+      "sha256": "42c7beef50c967cdafbed54153ed4cccb46e71ae2b08ee844402af4971208af2"
+    },
+    {
+      "path": "icons/pals/GhostAnglerfish.png",
+      "sha256": "a91e621e74e57ec2e676c44d96e24f796a60ba71bc40c35ff781950d5a17ac26"
+    },
+    {
+      "path": "icons/pals/GhostAnglerfish_Fire.png",
+      "sha256": "6e3ca8bbeadae016dff70001a67c72f19cdc779730c5895c0775690db9bdd411"
+    },
+    {
+      "path": "icons/pals/GhostBeast.png",
+      "sha256": "cd5e2cea20434b084646c5ea7d66d0abe95e440c38de96d4dcce1f55c7e84bba"
+    },
+    {
+      "path": "icons/pals/GhostBlackCat.png",
+      "sha256": "81304726638f7af4a8c9d02293804b7ee30d099bd3aa2ebeb3bcc07741a9bd0e"
+    },
+    {
+      "path": "icons/pals/GhostDragon.png",
+      "sha256": "e69d0cbe5122cc678d69beed69674cd933b603b0d194cdfafc09d9fb09c69e9b"
+    },
+    {
+      "path": "icons/pals/GhostDragon_Fire.png",
+      "sha256": "38b7cb21f3539c34c63fbe1255c04fed84d04be9fa1710171ee7007ea9c178d6"
+    },
+    {
+      "path": "icons/pals/GhostRabbit.png",
+      "sha256": "6207580b564751d0f801605f8fdd7e2da6b94852e60b2d481617349741136840"
+    },
+    {
+      "path": "icons/pals/GhostRabbit_Grass.png",
+      "sha256": "84d0db609faf1885b8812a2f500ae74cbcb1a5239e699be20cd69c6ce315904e"
+    },
+    {
+      "path": "icons/pals/GoldenHorse.png",
+      "sha256": "176360b58deb2eee0b9ce96bc558cb8d66cf100a5906de938c0ba8b732b4bc99"
+    },
+    {
+      "path": "icons/pals/Gorilla.png",
+      "sha256": "a75ab548c2c3892d7ccbf6568cbc4ff60594bc2474f8ff074d5cedc5544c4142"
+    },
+    {
+      "path": "icons/pals/Gorilla_Ground.png",
+      "sha256": "146c4696fc2dd5ea783af7f04caabd2c410ab118941cbf4e3c20275247a69c64"
+    },
+    {
+      "path": "icons/pals/GrassBoss.png",
+      "sha256": "d25d4f4881ef5aa5609f4c04fb6a35b063f4666e9708b69c1f07f2261f9ed238"
+    },
+    {
+      "path": "icons/pals/GrassGolem.png",
+      "sha256": "d8ad753a3e7c217c0d06639db1bc8e03daf305f350342fc7aa166e917d7ac474"
+    },
+    {
+      "path": "icons/pals/GrassGolem_Dark.png",
+      "sha256": "86d3740533d36c6f740c9c53f34ea05bdcca6b7f90a98818aafcee38d8a8d1ae"
+    },
+    {
+      "path": "icons/pals/GrassMammoth.png",
+      "sha256": "7c903ce937d01682c1244feda646a74ce631d5ddd357e87093461cca89ad4c33"
+    },
+    {
+      "path": "icons/pals/GrassMammoth_Ice.png",
+      "sha256": "70e561b0f8395d64455f9fa8cce386249b0fdafc30ac8bb8a99a57b53cdd4ce4"
+    },
+    {
+      "path": "icons/pals/GrassMinotaur.png",
+      "sha256": "6914f2e35502dfd05a064ed21984958a8c939187849efac9c17f23ab1df22763"
+    },
+    {
+      "path": "icons/pals/GrassMinotaur_Ice.png",
+      "sha256": "14a3dfee374eeec5aae9813382cb593302c7d44c557731a02ab09a147c83f4e5"
+    },
+    {
+      "path": "icons/pals/GrassPanda.png",
+      "sha256": "637efbed837f29108585c2bad752fc0e1354676f222d678d70d973f4172f34c6"
+    },
+    {
+      "path": "icons/pals/GrassPanda_Electric.png",
+      "sha256": "fd796b4a1df93f74b5347a70cf6fafa19f4ebeab2500f94650cc96d6d33102dc"
+    },
+    {
+      "path": "icons/pals/GrassRabbitMan.png",
+      "sha256": "aa17b87f45b10070dd981d0e590c42e2cd009d6f2982653470f96eed416d5026"
+    },
+    {
+      "path": "icons/pals/GrimGirl.png",
+      "sha256": "3863edb8891abe3632cf71a1a28173651a58b8a5a053196df7495bc1662ad53d"
+    },
+    {
+      "path": "icons/pals/GuardianDog.png",
+      "sha256": "801b3d330d502a337aed7b05ce1509f78c33cd45c2498cbe944a6614c61ee8cc"
+    },
+    {
+      "path": "icons/pals/HadesBird.png",
+      "sha256": "54955062a3f92a5124d680141441d30778272960d7d75f5e4ea25ca2945abf02"
+    },
+    {
+      "path": "icons/pals/HadesBird_Electric.png",
+      "sha256": "e6260397cc94a5b6b1746edc2201ad41fc0fffe4023b01e0bbb21e6bda958936"
+    },
+    {
+      "path": "icons/pals/HawkBird.png",
+      "sha256": "08344ef7460afb186c6532720e5b33d3667f443a32b6f5181d388ead4dfd2857"
+    },
+    {
+      "path": "icons/pals/Hedgehog.png",
+      "sha256": "91bf92ca7e85dda227ead726a8b022c9b43356290c9c4f91ffa60bd2da5412c8"
+    },
+    {
+      "path": "icons/pals/Hedgehog_Ice.png",
+      "sha256": "06941911201abe39ae0d1e9b7cda741b7e4bd65d49f8d9db6f6b242dded71b76"
+    },
+    {
+      "path": "icons/pals/HerculesBeetle.png",
+      "sha256": "a61481b7a8997bb28e5e5190974b3fea2c05af6608a6ad37661d55c0abc8b446"
+    },
+    {
+      "path": "icons/pals/HerculesBeetle_Ground.png",
+      "sha256": "9648b4699474cefd5ef340e7e2ca06ee81e1b262e34ff9729e93e3c305f1f942"
+    },
+    {
+      "path": "icons/pals/HoodGhost.png",
+      "sha256": "db62910111be3d1a2d57e74d88da68e45ff8f30fca2261f40dc8a7d7f65996bc"
+    },
+    {
+      "path": "icons/pals/Horus.png",
+      "sha256": "fbab9acab6380195471a823a3e5446e6c0d8c62aef8bcd97d7fc6fbbd0e50576"
+    },
+    {
+      "path": "icons/pals/Horus_Water.png",
+      "sha256": "26355c689f4d463c41d6af579363df5b5662709cf2bde1eeb93a4101d91dd50f"
+    },
+    {
+      "path": "icons/pals/Human.png",
+      "sha256": "bc8a8b777b448e38e84682b090d39ba48f4bec0143991cdfdf86ee4bb8c9103e"
+    },
+    {
+      "path": "icons/pals/IceCrocodile.png",
+      "sha256": "62f3b2c4ddb5f993a8d725cbe485905c4159b3402f19bfad45f6f0be6f743d83"
+    },
+    {
+      "path": "icons/pals/IceDeer.png",
+      "sha256": "f44791168ad9c5e8002bda0f0e79246b85476da54ddb9c5dc275f1e7f2dd747e"
+    },
+    {
+      "path": "icons/pals/IceFox.png",
+      "sha256": "cca964f5f6018787557461f858159a1c14e96243719ea7085b88ca47f8626134"
+    },
+    {
+      "path": "icons/pals/IceHorse.png",
+      "sha256": "d8221ca1da45b300d7f9262ba909cba3a54e9fe9c2180e094aee6a34135c6bc8"
+    },
+    {
+      "path": "icons/pals/IceHorse_Dark.png",
+      "sha256": "478cdd9645d1a0bb680c72515851dbeb0754e529dcd66de7aca891d8c7718823"
+    },
+    {
+      "path": "icons/pals/IceNarwhal.png",
+      "sha256": "6e2310792ab729655673735f8a520afb68e24c6fa75e8675eb3936285203cd18"
+    },
+    {
+      "path": "icons/pals/IceNarwhal_Fire.png",
+      "sha256": "5b3ad97f504fdda7e45af49bdcf2b036ebe396a03f322f09a44213602aee974a"
+    },
+    {
+      "path": "icons/pals/IceSeal.png",
+      "sha256": "64aecd809a70cee53fb08696d0ffdbe1536f1cf59f591ecb781710cbed485012"
+    },
+    {
+      "path": "icons/pals/IceSeal_Ground.png",
+      "sha256": "22bd2f0de6efe70cd0a85121771ab7e1045ac860b5ffeffe406431231a99ddeb"
+    },
+    {
+      "path": "icons/pals/IceWitch.png",
+      "sha256": "0d02619f3ac9cc55cd405eca596c148f37ee1605a1776e450c42dff2e7ab0d36"
+    },
+    {
+      "path": "icons/pals/JellyfishFairy.png",
+      "sha256": "c8f10ea67c4f25811561dccba233292cf0d3817e6c0772f611816e052e7af3d5"
+    },
+    {
+      "path": "icons/pals/JellyfishGhost.png",
+      "sha256": "ddcda885001f0a8b9b305ab3b409567b140ce0bea4ba9ad87ab77bdafe394554"
+    },
+    {
+      "path": "icons/pals/JetDragon.png",
+      "sha256": "398841c71b059c591877145a2dea36146f63e5ef270333ec952004d66fd1c2a4"
+    },
+    {
+      "path": "icons/pals/KabukiMan.png",
+      "sha256": "ae24122114c4e55517dcad586e45858d60a7686fad8ab0bcc2d79aea46484422"
+    },
+    {
+      "path": "icons/pals/Kelpie.png",
+      "sha256": "51065e3c14e53b97b40a52a21af6d5d5e0d2bf4fa98c2b60ecb474daf897a059"
+    },
+    {
+      "path": "icons/pals/Kelpie_Fire.png",
+      "sha256": "88873a832c3a39bf2105a37e4a8b29cd3a275c60e94f062a6fe3932b5a10568e"
+    },
+    {
+      "path": "icons/pals/KendoFrog.png",
+      "sha256": "5ee4b08a80f2cd0d17affdbbb0ff9719001a50ac2657df2c9e2a9d645bb99b06"
+    },
+    {
+      "path": "icons/pals/KendoFrog_Dark.png",
+      "sha256": "54ec8e62a7525861929e836f39b0fbfb396994c007274e9325d3984d825857af"
+    },
+    {
+      "path": "icons/pals/KingAlpaca.png",
+      "sha256": "753e7190aac8a87f31888b7e07c8bc2bdc7f4de610960ef70dcd28bcf5f4a29f"
+    },
+    {
+      "path": "icons/pals/KingAlpaca_Ice.png",
+      "sha256": "3b43f669716bf5c499b335573c0f0e55abd04aa24e3f94dfd56b2920c198ce2d"
+    },
+    {
+      "path": "icons/pals/KingBahamut.png",
+      "sha256": "dbf7de20d3d2db88dd1d99491b91561916a0afccd101dbc175f56b838a5c1a6c"
+    },
+    {
+      "path": "icons/pals/KingBahamut_Dragon.png",
+      "sha256": "e31a1b3de85dce9cfe5f8c270f22049754a83c1e5f21cfad06bc8544b268faf2"
+    },
+    {
+      "path": "icons/pals/KingSunfish.png",
+      "sha256": "8c05026cf0931644b16e842c34befdd9947cfc869622a99ad60b92b07b87b8a3"
+    },
+    {
+      "path": "icons/pals/KingSunfish_Thunder.png",
+      "sha256": "0139ce13bb1592892f843f60449695288c6c2b9d3c9d8d57498e60a198dfaf4b"
+    },
+    {
+      "path": "icons/pals/KingWhale.png",
+      "sha256": "08458eeacfe051e5d50b5538882f1a2614e62f07d498fde7b5a8ce48e9f2afb2"
+    },
+    {
+      "path": "icons/pals/Kirin.png",
+      "sha256": "e4af973691c9c6c0bd58a02530f3b9c2c55153264d3f8a914a18738eef9052ec"
+    },
+    {
+      "path": "icons/pals/Kirin_Ice.png",
+      "sha256": "28dca555e10f945383df1bc7931d6bca22fd9be615fcddb1ff6276f6ff269b34"
+    },
+    {
+      "path": "icons/pals/Kitsunebi.png",
+      "sha256": "a821ef9c03650a69cbf0f2feabdc49238fe08d47e0271f2fb2fff881376e4f94"
+    },
+    {
+      "path": "icons/pals/Kitsunebi_Ice.png",
+      "sha256": "10301e06443746f40c40a5b4ddaaef92c37923f907df81ba1a2318d698f47a62"
+    },
+    {
+      "path": "icons/pals/LanternButler.png",
+      "sha256": "6ec8286d0f1405e110dfe3fc63c638a1d3e1e1c4383114e7bc178f6a5c439a11"
+    },
+    {
+      "path": "icons/pals/LavaGirl.png",
+      "sha256": "f5efa7982336acd01a9afbfcf0573739b679254419320347dd2d8ed306d6ee11"
+    },
+    {
+      "path": "icons/pals/LazyCatfish.png",
+      "sha256": "e12ab7d3a90349eb344342d8c526b12c3d20087a6ceba0034a104401a715063f"
+    },
+    {
+      "path": "icons/pals/LazyCatfish_Gold.png",
+      "sha256": "1278e6c4afedf3f0cf8b79c4b27efe54f847d60c558e6a536543b01cb1e5294c"
+    },
+    {
+      "path": "icons/pals/LazyDragon.png",
+      "sha256": "4e37c624e9ce7c60e06af247bddf9e382234fa29f3355865a563453e02a084a1"
+    },
+    {
+      "path": "icons/pals/LazyDragon_Electric.png",
+      "sha256": "7a1e64e441eb17484b7155b9bca4b3ddd267aead151acb7bf34e8a1ed6d8e2dd"
+    },
+    {
+      "path": "icons/pals/LeafMomonga.png",
+      "sha256": "d46d66394b91e4987a82966668091cc9bfd016c37cbae2e2549fdf14082209fb"
+    },
+    {
+      "path": "icons/pals/LeafPrincess.png",
+      "sha256": "be4b77f5d13ab99deb0a77af776ba995df52811067241cc9e5d34a94ba40bb66"
+    },
+    {
+      "path": "icons/pals/LegendDeer.png",
+      "sha256": "d15c9079b6837ec73a46d63019a58fdfb65f45ae3a9a53f189a579336ce467c0"
+    },
+    {
+      "path": "icons/pals/LilyQueen.png",
+      "sha256": "51c40851efc5967cdae9d81d523b1a3497cfeb2729a02d7f07315b24dd8efbef"
+    },
+    {
+      "path": "icons/pals/LilyQueen_Dark.png",
+      "sha256": "3b7e309d636ecc84270cfc9922bfd9120c8828ad336f39f663d70655c0df9b87"
+    },
+    {
+      "path": "icons/pals/LittleBriarRose.png",
+      "sha256": "06ea73aae14901d0202b4c65da9a97be717b42512fa0c9006a78dd9f4684714a"
+    },
+    {
+      "path": "icons/pals/LizardMan.png",
+      "sha256": "e37fc3616a6154389f8f506723be755e763aceedd52c4dee353ffe294bd7b912"
+    },
+    {
+      "path": "icons/pals/LizardMan_Fire.png",
+      "sha256": "bae8ea4ef2155bba02d9df6f6951e7722b5e3ed33cbacdaf58e61f5ea14244f4"
+    },
+    {
+      "path": "icons/pals/LongCat.png",
+      "sha256": "ae3bb178fba764c06d62604fafca63f6a13983cd68302cc0a4a3ae42a20c2ae8"
+    },
+    {
+      "path": "icons/pals/LotusDragon.png",
+      "sha256": "e1bde5e5dd3baae78e8db4d714ccbca55434bdcaf30231bd10faac123ab22ad7"
+    },
+    {
+      "path": "icons/pals/Manticore.png",
+      "sha256": "38243012959fd2104332b50a51c85cc46002c0caac6a8c6968d5d2d05431bd75"
+    },
+    {
+      "path": "icons/pals/Manticore_Dark.png",
+      "sha256": "4d919bdaf5547ecbbf7cf67ba4e9b62aaeaa2e3f7ae80938414d56c0c7da1da5"
+    },
+    {
+      "path": "icons/pals/MimicDog.png",
+      "sha256": "99fa92c3e25677cabb4337e3b8a09da98b1708441aec27c88a16e813b9f879e6"
+    },
+    {
+      "path": "icons/pals/Monkey.png",
+      "sha256": "c0743c0cf649c47006ea320e05f2c6dc6d6a0048a822f05ecfc3701b58da0dc2"
+    },
+    {
+      "path": "icons/pals/Monkey_Fire.png",
+      "sha256": "140ac252f918f68ba68025911f588889e44e565e7f1864c299f6eac2780a9dae"
+    },
+    {
+      "path": "icons/pals/MonochromeQueen.png",
+      "sha256": "2e8007e3d1943ad61c30b100ae491e4a42325abbf333ca6e016f16fbf3641634"
+    },
+    {
+      "path": "icons/pals/MoonChild.png",
+      "sha256": "4392bd68f3be738c87ee7fa007e39c6be16f72b797a1b0985118db89f8e23bb5"
+    },
+    {
+      "path": "icons/pals/MoonQueen.png",
+      "sha256": "852607630a651f3b147eed923d8cdb4a67ed18d87e63313f991c497c0e85ec3b"
+    },
+    {
+      "path": "icons/pals/MopBaby.png",
+      "sha256": "e67f2521b46049085b366bb5b2225d5cd8ed9f5ca039a487cdf537f942e3836b"
+    },
+    {
+      "path": "icons/pals/MopKing.png",
+      "sha256": "d9571dc2ac90c85f0e5d8ac5c67efd7485608a257af6107bfbf93ad99c0a9a00"
+    },
+    {
+      "path": "icons/pals/Mothman.png",
+      "sha256": "053ffe30f749875d425013cafa6ea797ec8fe83067d73902caea77a089db2af7"
+    },
+    {
+      "path": "icons/pals/MummyPal.png",
+      "sha256": "2be23aa0b77607ee13a33414be96ec70f7bde1a408f29d07f0b7fe9cc5e9d3cf"
+    },
+    {
+      "path": "icons/pals/MushroomDragon.png",
+      "sha256": "8ea880692c6adfff297f0c3d85cd8c53e1e2533e4fa3ad0a5f5bad638526b953"
+    },
+    {
+      "path": "icons/pals/MushroomDragon_Dark.png",
+      "sha256": "70d4eceb795eb402d6a734d6979732def057e749120273b22592d04c85bde7a6"
+    },
+    {
+      "path": "icons/pals/MushroomLady.png",
+      "sha256": "415ed8810f82a73f982f7777f4a0f84e12ef0653c846bc92c3a3a9f6d309535c"
+    },
+    {
+      "path": "icons/pals/Mutant.png",
+      "sha256": "f8c788118d2c1482090aeb886dd4fa7849d4fa1bbf37005abf9f6c14db94786d"
+    },
+    {
+      "path": "icons/pals/MysteryMask.png",
+      "sha256": "4e9c5e9b526e081d2a061a0a9656623ad8a2023fa289f7e07d15e287e8db2f22"
+    },
+    {
+      "path": "icons/pals/NaughtyCat.png",
+      "sha256": "ed042808b254d008adbfc46ecad1a50352051ed21bbf6bca64af8f4119a50bd5"
+    },
+    {
+      "path": "icons/pals/NegativeKoala.png",
+      "sha256": "e03740faea63d385f9cbd04a35bd2862ad187643192c464395685cf7db520cf6"
+    },
+    {
+      "path": "icons/pals/NegativeOctopus.png",
+      "sha256": "2a7c364a021e504ad5614d067568ee619e4199238781a31562369a18216acce9"
+    },
+    {
+      "path": "icons/pals/NegativeOctopus_Neutral.png",
+      "sha256": "17fed40132b9cafb6b30d126eb65d995d789467fd8e8c293e9bf369ee723a979"
+    },
+    {
+      "path": "icons/pals/NightBlueHorse.png",
+      "sha256": "740c147ece5a24bd7d9408f876763dffc6ba6796c562e4cb702610db39f0c191"
+    },
+    {
+      "path": "icons/pals/NightBlueHorse_Neutral.png",
+      "sha256": "0154997e4322f26bb43e085fa5010c29f9b6860a354a253051b69f1693b813a9"
+    },
+    {
+      "path": "icons/pals/NightFox.png",
+      "sha256": "0e36803fba14ef7f299446cc195a8caff2f24dc57923d3a133b70103634d44ce"
+    },
+    {
+      "path": "icons/pals/NightLady.png",
+      "sha256": "3b833cb0629a23d322d3ab603eff5ef77714feb4a5624a37a657ace5f3373126"
+    },
+    {
+      "path": "icons/pals/NightLady_Dark.png",
+      "sha256": "c93deb9beef85d25b21fdec133ecb661de4bb24012f65286b6f5a197f66b52e4"
+    },
+    {
+      "path": "icons/pals/OctopusGirl.png",
+      "sha256": "f1499439bee997f1e440e57d58719b4191df5fd0b017fc8f1354d470a92220b1"
+    },
+    {
+      "path": "icons/pals/OctopusGirl_Neutral.png",
+      "sha256": "cab07fa66463e79b26843d76280ba05cccab98dd5a77932b2f9d6527754f8ee4"
+    },
+    {
+      "path": "icons/pals/OniGhostGirl.png",
+      "sha256": "30503703dc7ebb976e0371851291f9212ffb0a370777a7adf6eafdabc3ec049e"
+    },
+    {
+      "path": "icons/pals/PandaGirl.png",
+      "sha256": "2e44659b717f4c6689e4df44647a771060939a1b12b673f7f3698377894e36d3"
+    },
+    {
+      "path": "icons/pals/Penguin.png",
+      "sha256": "af60d358bce1e4c62f4873281eb64b9eb4cc1462c968d4f0a023d834cd6871e7"
+    },
+    {
+      "path": "icons/pals/Penguin_Electric.png",
+      "sha256": "e0865f90d36fefde2e2fa49ac09c00bd81bfeb34d449e8779d730259e2913791"
+    },
+    {
+      "path": "icons/pals/PinkCat.png",
+      "sha256": "37099fcd43d96527eb0cbff9e03142ab25cf1e533c21a6842caaef59a600e8a7"
+    },
+    {
+      "path": "icons/pals/PinkLizard.png",
+      "sha256": "b53b358667c021d649b0e97081a4b0b9c626217d576eea963384674c0d2d20d1"
+    },
+    {
+      "path": "icons/pals/PinkRabbit.png",
+      "sha256": "31d0fce02ad7a385790218329b875fb4b86fb0f32de84a5811b9f2f279884534"
+    },
+    {
+      "path": "icons/pals/PinkRabbit_Grass.png",
+      "sha256": "ecce0a97fb74203e2701f7e6515799b04a65c3a568d505a9263952a6a82c0ac8"
+    },
+    {
+      "path": "icons/pals/PlantSlime.png",
+      "sha256": "7d34ad38c98a9a9a7b66aa1a6c79c74bc95f094618e8d3ef84f02e8cb4dee00a"
+    },
+    {
+      "path": "icons/pals/PlantSlime_Flower.png",
+      "sha256": "3a1edee325c89e2c06dfe79dbf103d12bf88d17961733ec545ac4a8aca6d7a31"
+    },
+    {
+      "path": "icons/pals/Plesiosaur.png",
+      "sha256": "090cedba07447f52f668ff9f87705fb465ad948dd827730ce3caaebb23bbec18"
+    },
+    {
+      "path": "icons/pals/PoseidonOrca.png",
+      "sha256": "2d3281c13dd310ae4c36bed19f097475c0c6fd357bd8eac264a717bcff8d4800"
+    },
+    {
+      "path": "icons/pals/PurpleSpider.png",
+      "sha256": "b196d9e66ceaed902f93296f5a26630ade2bd4683462e3ee978f219cf1911e3e"
+    },
+    {
+      "path": "icons/pals/QueenBee.png",
+      "sha256": "c53aaf3f8974e0876c8901c43a97942abbabdf46d0e4936b698c8f51a12020f4"
+    },
+    {
+      "path": "icons/pals/RaijinDaughter.png",
+      "sha256": "819a71477b3548ecda10cf3b8674e6335e2faf0cc5dd0a001285256892fa6670"
+    },
+    {
+      "path": "icons/pals/RaijinDaughter_Water.png",
+      "sha256": "d15c5f24b0015fcb26f78c184b369d9cf03045e05c9b61a5d17b19c8d4320995"
+    },
+    {
+      "path": "icons/pals/RedArmorBird.png",
+      "sha256": "4e15f6f01b2a9d6a44da2a9256287f473a0b89552fdb44f7981bedf22c8a7256"
+    },
+    {
+      "path": "icons/pals/RedFlowerBird.png",
+      "sha256": "56aafaa8019ef694fea595bdc895f8e922304e4bef0b1690c2beb1ee2e32e19d"
+    },
+    {
+      "path": "icons/pals/RobinHood.png",
+      "sha256": "e71d0846d529b5f8df277668600f12a9924506a0ce6b34b51ec2926fbea8c754"
+    },
+    {
+      "path": "icons/pals/RobinHood_Ground.png",
+      "sha256": "14f173e6ee67de996efb7f267f7a1ce3c91d49d97dbf43403935480c74b33803"
+    },
+    {
+      "path": "icons/pals/RockBeast.png",
+      "sha256": "5736908f5155d921c08ad734c614cb07f253f2b5de08e59af2169f963c952754"
+    },
+    {
+      "path": "icons/pals/RockBeast_Ice.png",
+      "sha256": "86c4280dec8c94e11ae0b51ccfec45140a34456e92e66aac196b0c6f004cf2fb"
+    },
+    {
+      "path": "icons/pals/Ronin.png",
+      "sha256": "40584d1e9930e98eccae77eb020e2d43d38375371b97042b222ff1a09dfd5a45"
+    },
+    {
+      "path": "icons/pals/Ronin_Dark.png",
+      "sha256": "0f5924f45a74ea66361870d8f95fb651637d17c23b92c09f912de792b36b95dd"
+    },
+    {
+      "path": "icons/pals/SaintCentaur.png",
+      "sha256": "e37e9665bbe73e0e9ba49f0b14a1666d5d6353d599e155eee97b15dfc4c6de05"
+    },
+    {
+      "path": "icons/pals/SakuraSaurus.png",
+      "sha256": "e66382434e79dd4028c96b877ed8553855885ab5f6440a41f20e9203d4212d43"
+    },
+    {
+      "path": "icons/pals/SakuraSaurus_Water.png",
+      "sha256": "e11655f3789d0c1c4344a4cb0571b374d5e88c53db79e9aead64c1cd0ff16e22"
+    },
+    {
+      "path": "icons/pals/SamuraiDog.png",
+      "sha256": "71891f15537132c5790e46128d611e0d6b7501222dc23ec4ec9bb327a16d95e7"
+    },
+    {
+      "path": "icons/pals/ScorpionMan.png",
+      "sha256": "4d6f4dcd92f7b16c644d312ef680be576aee8ce38d79893c26a824fc9ea2a9b6"
+    },
+    {
+      "path": "icons/pals/ScorpionMan_Electric.png",
+      "sha256": "aad347b3fe626a18f807b7a0f781d0d8d1e3d365f4827061b894b6ebcb9fa764"
+    },
+    {
+      "path": "icons/pals/Sekhmet.png",
+      "sha256": "a043965f1080da5411a6013a9d1ce1aedd4d85190fcdd37d6185875d716fd9d3"
+    },
+    {
+      "path": "icons/pals/Serpent.png",
+      "sha256": "7148ba49e29915138582c8cf9b75affa433a48e13b4d6f2c96f909ea5d7808e2"
+    },
+    {
+      "path": "icons/pals/Serpent_Ground.png",
+      "sha256": "95a598c4530145f9d4e0e285a4efb9e84b7f356aef092a23e38a51665727e3c2"
+    },
+    {
+      "path": "icons/pals/SharkKid.png",
+      "sha256": "893f8462acf562bb4f3c9be9c5bf74e7cc06b91005de3055ec392d974ed892a5"
+    },
+    {
+      "path": "icons/pals/SharkKid_Fire.png",
+      "sha256": "b251065002c78e642ef97989d9a5f0084a64d6287289e5c98ca4fb14b485b6ba"
+    },
+    {
+      "path": "icons/pals/SheepBall.png",
+      "sha256": "50f0d564559545d80f1d71e84c25a2d07bd317c9fb6853dc3b633def85635e05"
+    },
+    {
+      "path": "icons/pals/SifuDog.png",
+      "sha256": "c8aebbcb4fd5b2a234d47f7b2803ecfb83c8ccd55795a7b015d2c8010a2ac7c2"
+    },
+    {
+      "path": "icons/pals/SkyDragon.png",
+      "sha256": "b887a9ea36fa676a0fb9d2435b2ac8848ee7da06488bc19eccae5017585aa893"
+    },
+    {
+      "path": "icons/pals/SkyDragon_Grass.png",
+      "sha256": "1a91028fbd795798cc4acfaa680a58378839acdce3645a7dbbfc02fd77a06643"
+    },
+    {
+      "path": "icons/pals/SleeveRabbit.png",
+      "sha256": "a3461d3625ef358ec3d8d956b2f6aff96e120b3b1f784ae184762e025fa6429b"
+    },
+    {
+      "path": "icons/pals/SmallArmadillo.png",
+      "sha256": "476af93e33eef5a6b5fa71c4a0c74fa8388f349746968ac0c35ac8242aa5fd05"
+    },
+    {
+      "path": "icons/pals/SmallYeti.png",
+      "sha256": "f2cac3db226a296cc751f3af30eb477fce6b8cd2c45fa011c120a7e160629a5c"
+    },
+    {
+      "path": "icons/pals/SnakeGirl.png",
+      "sha256": "143048133991c17114284bb7d3e1253ef2d50d9a27b3fcd11e4412350f00dc4e"
+    },
+    {
+      "path": "icons/pals/SnowPeafowl.png",
+      "sha256": "367b94fbfce36a08c33a95bb2983440661a0a4c333da73f3dddf49f2a6444682"
+    },
+    {
+      "path": "icons/pals/SnowTigerBeastman.png",
+      "sha256": "0fedef25a0e2a317fdb9d8f380a18e6d9002825d355184c8e1d54323b795e148"
+    },
+    {
+      "path": "icons/pals/SoldierBee.png",
+      "sha256": "4db22b0edc854a87a48591851e96a9e4a3a6084ea2ba24201433e9164b18b538"
+    },
+    {
+      "path": "icons/pals/StuffedShark.png",
+      "sha256": "df89cb8c291d0b6cd61eb64e7a8e5a570e653d467b229ee37cd9421fe36b5546"
+    },
+    {
+      "path": "icons/pals/StuffedShark_Fire.png",
+      "sha256": "841ce83da621b591b8f43516a23d8e22ce70fdcd420664444c3351b497aca4ec"
+    },
+    {
+      "path": "icons/pals/SumoDog.png",
+      "sha256": "7a60abc476bca5da55d48b25e26467c41ac7b63f6568824a8bbbda507155dae2"
+    },
+    {
+      "path": "icons/pals/Suzaku.png",
+      "sha256": "0040e64ece0b0963b07cc2a735a561d42f196e4196d0bae1630b46655286db66"
+    },
+    {
+      "path": "icons/pals/Suzaku_Water.png",
+      "sha256": "b2adca6da78a2c5a5238e5fb113b935b0cf3de297a5a9ee994c930b561d910c8"
+    },
+    {
+      "path": "icons/pals/SweetsSheep.png",
+      "sha256": "a16de46215e0cf3680da7de16eab22586dee3a0876eaa0fb3eae899e800aca4f"
+    },
+    {
+      "path": "icons/pals/SweetsSheep_Ground.png",
+      "sha256": "f6f8be36bfb37202fe956d5c905c07345a080f1ba3cfd4d9937a486eb1632951"
+    },
+    {
+      "path": "icons/pals/SwordCutlassfish.png",
+      "sha256": "5879041b19772a5d3d6fad50d8269c14603ddd39f67e0b4a0c596cd69b058dff"
+    },
+    {
+      "path": "icons/pals/SwordCutlassfish_Fire.png",
+      "sha256": "396a048715f491513db7935fad54617339263998a2f5838730fefbcb99efdb18"
+    },
+    {
+      "path": "icons/pals/TentacleTurtle.png",
+      "sha256": "e09b54d6d4a0103a1337490e247c202396e29284521fe2c5e469109bdd5737b0"
+    },
+    {
+      "path": "icons/pals/TentacleTurtle_Ground.png",
+      "sha256": "42b87e6c439803697377de0323b32bd8fd60701c97c9ea000a8737a980f7c279"
+    },
+    {
+      "path": "icons/pals/ThiefBird.png",
+      "sha256": "182d3bed19f98111f3aac65af963f6015f0ffc61d050af05183f686906b4b7f7"
+    },
+    {
+      "path": "icons/pals/ThunderBird.png",
+      "sha256": "2c5cf16a5f972b0d2f3a8a1acf2065a21364c29a4a25c40eaa84536d8584e832"
+    },
+    {
+      "path": "icons/pals/ThunderBird_Ice.png",
+      "sha256": "cd2b6b7e81350bb260ee4c5fee4bfa835abebfee3135849b07807b672d9074de"
+    },
+    {
+      "path": "icons/pals/ThunderDog.png",
+      "sha256": "bed21b2a499607d0a0e0a9905583e6a4108fd818e66a49caa12ccf15d6ee3146"
+    },
+    {
+      "path": "icons/pals/ThunderDog_Ice.png",
+      "sha256": "74835f469838cd01c1959a2a66f9ad5aa1d29fe4e930f2fd1bdbc7e7c7c87c76"
+    },
+    {
+      "path": "icons/pals/ThunderDragonMan.png",
+      "sha256": "46207bff2c03ebfb3604fe19ab01dcc520a6b20eda2a7cd1713c297b259176c1"
+    },
+    {
+      "path": "icons/pals/ThunderFluffyBird.png",
+      "sha256": "56a5b6bbb50844256688b14bef16447615b5534d283a71a329a72eeedbf71969"
+    },
+    {
+      "path": "icons/pals/TropicalOstrich.png",
+      "sha256": "7b8316e3cc9bd62e96c99a472a32475414b8f617a824dee9f5ead1d17a283094"
+    },
+    {
+      "path": "icons/pals/Umihebi.png",
+      "sha256": "967a054c0976941a5f93ccd3c1979b26a697588945134f79205fc9dd7b4f3b95"
+    },
+    {
+      "path": "icons/pals/Umihebi_Fire.png",
+      "sha256": "7fb08e97878fc87fae3cba1823f7875dbe1d9943fd2f2043ae38f0bf8fb86c96"
+    },
+    {
+      "path": "icons/pals/VenusFlytrap.png",
+      "sha256": "9cf22a7ed186b1c26feca9e25d355cf77574f8eab743cfa479d45a355b6ea258"
+    },
+    {
+      "path": "icons/pals/VioletFairy.png",
+      "sha256": "9eb239e2f3e2760de6bc2f3ade085e86cd8c50277e3577bbc5c624817cfcc6de"
+    },
+    {
+      "path": "icons/pals/VolcanicMonster.png",
+      "sha256": "2f1d537a6f322a04fed488bac3e1217f112c593fba4580c79cd51fcab71bd70e"
+    },
+    {
+      "path": "icons/pals/VolcanicMonster_Ice.png",
+      "sha256": "3f7392b3f5f1bc009cf92079b692d37d1dfc2343d6ce0792c07ce5de47dff5f9"
+    },
+    {
+      "path": "icons/pals/VolcanoDragon.png",
+      "sha256": "5b15eae45557f7e2b0fe4384dc8c9ea11a04220d310ea02bc2790e49f0dba078"
+    },
+    {
+      "path": "icons/pals/VolcanoDragon_Ice.png",
+      "sha256": "a695cbeb24c462fb4d7ff080077814ff6d26028d94ac859e7d41e5a7bef8b525"
+    },
+    {
+      "path": "icons/pals/WeaselDragon.png",
+      "sha256": "e42cf78bf949bc63792175bf8a1a2692022cab9e78e656f4b759e32bd9d45f2f"
+    },
+    {
+      "path": "icons/pals/WeaselDragon_Fire.png",
+      "sha256": "c0ede72b224bc9e0d5dcc4d27b0cd922036911e68ba5cc83e50be81c7af4f4e4"
+    },
+    {
+      "path": "icons/pals/Werewolf.png",
+      "sha256": "c89aaeff54ac18a3b031454f5bd94cc2eda26aca3c66b63a0f4354670cd87cdb"
+    },
+    {
+      "path": "icons/pals/Werewolf_Ice.png",
+      "sha256": "3cf4b1ce8ca27795204070be9e369ba1b5bf2450e0d6a8355ec24df7c0dfe304"
+    },
+    {
+      "path": "icons/pals/WhiteAlienDragon.png",
+      "sha256": "50d8af8ec3319e6f5e0e467f3f936b12e0b2128b7da74882d1cc6041cd782807"
+    },
+    {
+      "path": "icons/pals/WhiteDeer.png",
+      "sha256": "47dd28727a827132960739f888245ac01d7db7834529abcfbcea1821d8a1b30b"
+    },
+    {
+      "path": "icons/pals/WhiteDeer_Dark.png",
+      "sha256": "d567cbaba0355624b6e4a23f8205a0b9ae1212256e7507d6ee7823d3b6273797"
+    },
+    {
+      "path": "icons/pals/WhiteMoth.png",
+      "sha256": "ff474a3ae334c7facd6aaea595f54f3d295b13a31bef951fef5216a24c63ad8b"
+    },
+    {
+      "path": "icons/pals/WhiteMoth_Neutral.png",
+      "sha256": "42687e0b6339d2bd7c4acca47f62fdabb45dc5f2d106e2915f8055f5756f4d30"
+    },
+    {
+      "path": "icons/pals/WhiteShieldDragon.png",
+      "sha256": "c8aaf68a12c305f455a9430f5f4228a3c5c6565c47d0ee431a26be61a7f70069"
+    },
+    {
+      "path": "icons/pals/WhiteTiger.png",
+      "sha256": "63d94a13caa88f904fb64d80cd6272ea750db7627ab63bd37fcbeb148e906f24"
+    },
+    {
+      "path": "icons/pals/WhiteTiger_Ground.png",
+      "sha256": "a8a16e2e4fedf912ba0d9b7961f924fbcb91b4bebb8c7dc697a06819d42fc558"
+    },
+    {
+      "path": "icons/pals/WindChimes.png",
+      "sha256": "0fb731ae621bd80ee392b2d4a36622fd3d4aab76c61469409b30e79951ccfcf8"
+    },
+    {
+      "path": "icons/pals/WindChimes_Ice.png",
+      "sha256": "ed9f2b35f870dd5183231df00974a07ebf06c9aa9fe3d91b1521293e3cae948e"
+    },
+    {
+      "path": "icons/pals/WingGolem.png",
+      "sha256": "660792639b88d5d0288f849b9310880a82e7d8400cce212d15b0dadf4abda386"
+    },
+    {
+      "path": "icons/pals/WingGolem_Fire.png",
+      "sha256": "b92cf5d387c413f8957c146f1769d719942b09d34dabb0983e263a23917b9c6e"
+    },
+    {
+      "path": "icons/pals/WizardOwl.png",
+      "sha256": "d34a7cc5bcb3a55aaa0f4ef2b93dd86864bd9dfcfab288fa75d3a8bc71e7c3f5"
+    },
+    {
+      "path": "icons/pals/WoolFox.png",
+      "sha256": "3c5c4db22c442be933b28bcd75366bfabba3ace3f6e8507033433a615ab1f3fc"
+    },
+    {
+      "path": "icons/pals/WorldTreeDragon.png",
+      "sha256": "4c0b056c7f74d153e69d182fb3f636f38c3d99108143dc5653a2cd9ed3fb4ce7"
+    },
+    {
+      "path": "icons/pals/YakushimaBoss001.png",
+      "sha256": "ca8ec6166ec56b17a2650fd61bd185ab080a4261f253be34644bc2088826904c"
+    },
+    {
+      "path": "icons/pals/YakushimaBoss001_Small.png",
+      "sha256": "fa0125e054710de81fb4877266b440fd467180f0a37d46b2e4cbb467b97339d9"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001.png",
+      "sha256": "4957f136c6d8bbc43c8814aad660a1460678ec302b63423f1a935ad089b4880a"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001_Blue.png",
+      "sha256": "8cd2c7938977ff99f71d185d1c6d129651b92289f2dd75f4d61bd61d7ac9eb7e"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001_Pink.png",
+      "sha256": "b2f63a08636ad2811cab85989fee14020901651bf69192eff8f98dc055b9f7c1"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001_Purple.png",
+      "sha256": "e6eea4d9dfe7760e6482bda4ee54c863608cf9f64d8c49889f2935a64bc54628"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001_Rainbow.png",
+      "sha256": "38d9bf2c3c4a78b4a7e5f081719e33d622e8715d034d158f0b5d1920ad9171b4"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster001_Red.png",
+      "sha256": "b6e9d9b641d7016a5001c66f380f1633ff8106ac68791116b82b9b1fc7347cdc"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster002.png",
+      "sha256": "0ba2842162be5afd825f043fbb7c40b8e3b908802b63ea61be868aa234490544"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster003.png",
+      "sha256": "187911e2909324625181cbe91484f9134de07738e810ed2966d04b76ee7b5957"
+    },
+    {
+      "path": "icons/pals/YakushimaMonster003_Purple.png",
+      "sha256": "61a6443d9ce17c3b729c6359ad1d576f4c120bda51731464c2d9d242204aeedc"
+    },
+    {
+      "path": "icons/pals/Yeti.png",
+      "sha256": "56835a383d8a4038ffc838d2f9e4c74e05eac13717eb3a8b369fd27a3b253228"
+    },
+    {
+      "path": "icons/pals/Yeti_Grass.png",
+      "sha256": "91d5447a65a0d2386c11eaa035e714857239cdfefe54fefa3795b90c861bf2dc"
+    },
+    {
+      "path": "icons/pals/skin/Anubis_Skin001.png",
+      "sha256": "232bdd99898ae71007bf45b2c93b68997b7629a0971e99b6d6411cb436fce837"
+    },
+    {
+      "path": "icons/pals/skin/BlackGriffon_Skin001.png",
+      "sha256": "c428ff6da75f07bb302bd59c3983b162f774318a013705471d972ad7e4726785"
+    },
+    {
+      "path": "icons/pals/skin/CatMage_Skin001.png",
+      "sha256": "33bdc1cce00684149a824cb71fb6236f7297ad1570d870bb3e88cdd3a23d68d1"
+    },
+    {
+      "path": "icons/pals/skin/GYM_ElecPanda_Otomo_Skin001.png",
+      "sha256": "93c5fb55e8b89f0e6a7f9af33ff9ed17a932bdb61603549b10e1314af9b253b8"
+    },
+    {
+      "path": "icons/pals/skin/GrassBoss_Skin001.png",
+      "sha256": "585bb0374b4727ff4757041d915f78f5ce354230d21e40df5a57d06f1746265a"
+    },
+    {
+      "path": "icons/pals/skin/IceHorse_Skin001.png",
+      "sha256": "5b4cccc75cedcd6e63b704773ca54dba5223793f6b62f556dda2fa806ba40c72"
+    },
+    {
+      "path": "icons/pals/skin/IceHorse_Skin002.png",
+      "sha256": "f66de10facd6b9eb7f71e05e2bb45805c423749adb62bb8b8145b894a49dd398"
+    },
+    {
+      "path": "icons/pals/skin/JetDragon_Skin001.png",
+      "sha256": "f1b81322a6222ce428f001bbdd77b5bee59f15c36e817e44387eddaf8bdfb3f9"
+    },
+    {
+      "path": "icons/pals/skin/KendoFrog_Skin001.png",
+      "sha256": "35d8b1c091566e906be038d7a3f770fc601dc5b48697ba8133764c59409119e1"
+    },
+    {
+      "path": "icons/pals/skin/LazyDragon_Skin001.png",
+      "sha256": "c23016db9265a06f1794358716fb39c45be6a40d8dd9f484ccee6daa0fab51b0"
+    },
+    {
+      "path": "icons/pals/skin/LilyQueen_Dark_Skin002.png",
+      "sha256": "f35f6bb67790cd834186bb5c1a68804400e178afb78b4e3decc69ba63dd47b41"
+    },
+    {
+      "path": "icons/pals/skin/LilyQueen_Skin002.png",
+      "sha256": "d507d47646fb56669acf40551e974c1feb4fe8d02fe73b6b4fb3a02316a0ad12"
+    },
+    {
+      "path": "icons/pals/skin/NegativeKoala_Skin001.png",
+      "sha256": "79ad284d7920732c4dd50d1e4972d034425f4c936df441178cd40a0ad624d7ca"
+    },
+    {
+      "path": "icons/pals/skin/Penguin_Skin001.png",
+      "sha256": "fc1d34b788ba7e71b4e272837a575d373a0a2e6ec65333a9617459091edde2a3"
+    },
+    {
+      "path": "icons/pals/skin/PinkCat_Skin001.png",
+      "sha256": "75ed23b6369fb20f46662890477ec8cbcfc6207edf952ce88b56b262a777c75e"
+    },
+    {
+      "path": "icons/pals/skin/PinkCat_Skin003.png",
+      "sha256": "062efc8a3a7cfc75a0a7cbb210c8e696a3a549cce70d7b953ab8894c82441900"
+    },
+    {
+      "path": "icons/pals/skin/PinkCat_Skin004.png",
+      "sha256": "ecc093f481632118297abcc9451f9d15419287eca8466ec845dbe1da45e5cbd6"
+    },
+    {
+      "path": "icons/pals/skin/PlantSlime_Skin001.png",
+      "sha256": "585ae111ef4a4d1039de155ae87e23f8998dcfd158a69475d299aa2f82bdd89d"
+    },
+    {
+      "path": "icons/pals/skin/SkyDragon_Skin001.png",
+      "sha256": "9f1913bf11e0408c7bbcaf82a778dc2a5ba7512933dda1f490513c4f35d638b6"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Fire_Skin002.png",
+      "sha256": "bd21cc55ac336adfde394f431d271476226c491ef019ac1fc26b11db6ca78e04"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Fire_Skin003.png",
+      "sha256": "ee597bcca50ca519a2996f3d4d779633347570cde8637f33fbae0335ba2399ec"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Skin001.png",
+      "sha256": "d5acaad4caaf1a25ed358f9cf2bd9f87364699ed3abdc09f35b6c7c2a17dcf22"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Skin002.png",
+      "sha256": "219d61c419f21e9bfec1c5d19df493913b235474096ca5d4c5ca1418dbd020d7"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Skin003.png",
+      "sha256": "ddf646ee6113921fbdcb96b5af2063b0af2bfb5e5ac94abbc743bfac50ad66d0"
+    },
+    {
+      "path": "icons/pals/skin/WeaselDragon_Skin004.png",
+      "sha256": "6385fc0ae9036564349d72ebbea1ba759b2ee437979d9c6a445804b0ac0807e4"
+    },
+    {
+      "path": "icons/pals/unknown.png",
+      "sha256": "af71c10dd378718efb4a5086da203f5fa932141d4339e6bf6aed944aded68916"
+    },
+    {
+      "path": "icons/tech/AIcore.png",
+      "sha256": "8cafd4a52d23634f550786acff9aac539ac69b33b10f8faea3607939bf886276"
+    },
+    {
+      "path": "icons/tech/Accessory_AirDash1.png",
+      "sha256": "16a94db986b986078949e8af91b638276e8ea803ddcbc46940c008dd14914fbf"
+    },
+    {
+      "path": "icons/tech/Accessory_AirDash2.png",
+      "sha256": "16a94db986b986078949e8af91b638276e8ea803ddcbc46940c008dd14914fbf"
+    },
+    {
+      "path": "icons/tech/Accessory_AirDash3.png",
+      "sha256": "16a94db986b986078949e8af91b638276e8ea803ddcbc46940c008dd14914fbf"
+    },
+    {
+      "path": "icons/tech/Accessory_ExplosionResist.png",
+      "sha256": "8554f2fd1e9e4c9b8a0600ef510d1386eb0fbc1c3806bca67591caa5f2af2ba3"
+    },
+    {
+      "path": "icons/tech/Accessory_JumpCount_Increase1.png",
+      "sha256": "a561e1e0c6ac57c2160d8c891f479936fe5071991dea7c01567821eafc6271dc"
+    },
+    {
+      "path": "icons/tech/Accessory_JumpCount_Increase2.png",
+      "sha256": "a561e1e0c6ac57c2160d8c891f479936fe5071991dea7c01567821eafc6271dc"
+    },
+    {
+      "path": "icons/tech/Accessory_JumpPower_Increase.png",
+      "sha256": "497e6d2c6aa5b765611f97611fb3b04196db991fb04ded16c93f7dc2a08b616d"
+    },
+    {
+      "path": "icons/tech/Accessory_Nonkilling.png",
+      "sha256": "dbe8b928a5df6535c145ffdae7e917b4554ebf9cd714d71804227f29adf9fd1b"
+    },
+    {
+      "path": "icons/tech/Accessory_TalentChecker.png",
+      "sha256": "3abc7ed7004bdf055a8b2327ba69d6c62789a0ede8da0e1934e794f623bcc93b"
+    },
+    {
+      "path": "icons/tech/AdditionalInventory_001.png",
+      "sha256": "d702ea5a322f2ad4158b994020b439044fec713f2a58ed61c9b40d720042580b"
+    },
+    {
+      "path": "icons/tech/AdditionalInventory_002.png",
+      "sha256": "d1363c7d8e95f007127f5d38a4182a068c732549a7528618b2f7f4bda55098e3"
+    },
+    {
+      "path": "icons/tech/AdditionalInventory_003.png",
+      "sha256": "cb36b3b1845df577c9800c3bc42d7ef9f55d0f3af51eb9ffe9a4caee3927a52c"
+    },
+    {
+      "path": "icons/tech/AdditionalInventory_004.png",
+      "sha256": "430508b037fe7c3a195ec2e6f27af2eeb9e958b13e40b9d70eb519704c9fa71d"
+    },
+    {
+      "path": "icons/tech/Altar.png",
+      "sha256": "ef09f2eceb0db6f4a12f9c2551e5eaeb159918b3feef43719fdedcce4d863596"
+    },
+    {
+      "path": "icons/tech/AncientArmor.png",
+      "sha256": "39dff2f2d55ebff411fd9b40a41f395b878bc1a1dd97c13b805f89d8e11ac12f"
+    },
+    {
+      "path": "icons/tech/AncientArmorCold.png",
+      "sha256": "f45359b261849d97ea7f7afa1cb501cedf2221e19170765a85335718827bedc3"
+    },
+    {
+      "path": "icons/tech/AncientArmorHeat.png",
+      "sha256": "bc3c6980fc41376156583917ce056c87d84593479aec9074b33d04040424fdca"
+    },
+    {
+      "path": "icons/tech/AncientArmorWeight.png",
+      "sha256": "503b728ec54376691b95251db3882f093d9ac5ac95ed9de6412195ae9df4260e"
+    },
+    {
+      "path": "icons/tech/AncientBlastFurnace.png",
+      "sha256": "12e43cc78916e6bc621b827ab508945edc549ef66620e134b5058d44055e0c8d"
+    },
+    {
+      "path": "icons/tech/AncientCookingStove.png",
+      "sha256": "99ae3df918b061651dc4dcae0c01022fd299a550b8e68748a591cdb6f4762e24"
+    },
+    {
+      "path": "icons/tech/AncientElectricGenerator.png",
+      "sha256": "95cfcbd0ba274b7b21aeb81f28ac516eaaac76ee654779b4833b0924449dfcea"
+    },
+    {
+      "path": "icons/tech/AncientFarmBlock.png",
+      "sha256": "16e3af7a4a9987ff872ca2735898de8657550db4ef03f3034ff537b06c9731f5"
+    },
+    {
+      "path": "icons/tech/AncientHelmet.png",
+      "sha256": "6b2a01d13f7c81bafb9dd1a765471c55fbb384d546bff2e912788905691e3547"
+    },
+    {
+      "path": "icons/tech/AncientMultiProduct.png",
+      "sha256": "b9fdd8bf5f7710700e803b60bd98c573ee1a11c82865a38b9a396f42b06743c6"
+    },
+    {
+      "path": "icons/tech/AncientRelicRecycler.png",
+      "sha256": "32cb8682220e21f3606b8884b43862ddd8db76d30e5584d361d2f21f192799b3"
+    },
+    {
+      "path": "icons/tech/AncientWorkBench.png",
+      "sha256": "07b9723005ea44e38b9e2c0eece9ba93b0e20d868e6ef21ce43162215efc2bf1"
+    },
+    {
+      "path": "icons/tech/Ancient_Clinic.png",
+      "sha256": "9d4ac3de69c6c1fc67da1f3e043a00aeaa3e8062eb9573a6cd90ebd40723ea25"
+    },
+    {
+      "path": "icons/tech/Ancient_Houseset.png",
+      "sha256": "6941def97327b26eb461f101be0a8efab681c4b9e68d54b8f5270ca3e45b4141"
+    },
+    {
+      "path": "icons/tech/Ancient_MedicalPalBed.png",
+      "sha256": "159afe93b5ec5789353dd6312759f20a8ba25f300ec5f4ab4dca4d4fb3db23f1"
+    },
+    {
+      "path": "icons/tech/Ancient_Spa.png",
+      "sha256": "553d0f58dbeef0e79a48205964f5357e73d9544a4bf544e4c195edf51389a657"
+    },
+    {
+      "path": "icons/tech/Arrow.png",
+      "sha256": "b63cf1ea8db0ed4d258e3c636ea627d1a65407e8a6c773c469f6820d0f171c46"
+    },
+    {
+      "path": "icons/tech/Arrow_Fire.png",
+      "sha256": "4fca3eb115de2d049f18e78f9a24cee9fa7e96a1ea84f43cce20a8e03248e327"
+    },
+    {
+      "path": "icons/tech/Arrow_Poison.png",
+      "sha256": "8961172ed8bc22faaf9416acb283379a434713fc4afd67e65713bd7d2ac8dc41"
+    },
+    {
+      "path": "icons/tech/AssaultRifleBullet.png",
+      "sha256": "399464fef2f9ca73f5ade061a19a82a479c0420c9e8c3ec2c36bd9963af71b1d"
+    },
+    {
+      "path": "icons/tech/AutoMealPouch_Tier1.png",
+      "sha256": "513dfcbd53e7665a1f56a1690e295cafc77e52fae2f02c45518f316b5b4659b0"
+    },
+    {
+      "path": "icons/tech/AutoMealPouch_Tier2.png",
+      "sha256": "fe28627491465bc635a7d4a34a0f66ce4d8d3e5f801f5835fabb440860fd078d"
+    },
+    {
+      "path": "icons/tech/AutoMealPouch_Tier3.png",
+      "sha256": "79d4c83f6b4abe25be7122940791c5f10dd378bcc86fc90df82d2020e69ea1fa"
+    },
+    {
+      "path": "icons/tech/AutoMealPouch_Tier4.png",
+      "sha256": "edf65c0b2c187fb33c00bafb1ce7e7fe89eb517dac35def804a58352618288f8"
+    },
+    {
+      "path": "icons/tech/AutoMealPouch_Tier5.png",
+      "sha256": "2bd28e590c359d40f702579415561e190d3de8a068b184ca24300d62bc0a6064"
+    },
+    {
+      "path": "icons/tech/BaseCampBattleDirector.png",
+      "sha256": "aa087bb9e4311ae0245bce86656940bb0ff9a6aa4397627692768e77baa4d54d"
+    },
+    {
+      "path": "icons/tech/BaseCampItemDispenser.png",
+      "sha256": "0316ad87834bdd54981e33c910deb472bcf149312e3202e253c7fc1b5a5a16ef"
+    },
+    {
+      "path": "icons/tech/BaseCampWorkHard.png",
+      "sha256": "986e2a64084cf200573f273fa3c4a75e70cf3711bb6adaec57a7f3868f57ced6"
+    },
+    {
+      "path": "icons/tech/BaseCampWorkHard02.png",
+      "sha256": "308f3be63db688efb1dd96aad559dcd2d7f421a0b58808c0013c20313b168237"
+    },
+    {
+      "path": "icons/tech/BaseCampWorkHard03.png",
+      "sha256": "fbda9c6a48fc81063d3d23120789a323ad8fc3be7012c56e49201c206876ebad"
+    },
+    {
+      "path": "icons/tech/BaseCampWorkerExtraStation.png",
+      "sha256": "94754bbd9fc39ad0dc92cf8e08df93bbd36c2c0809c4e5031400efb47338325b"
+    },
+    {
+      "path": "icons/tech/Bat3.png",
+      "sha256": "d6a0c714c687800951ce3d1c2a80674ac700f7e44944f39081d8a0739d2a5c27"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_01_Cloth.png",
+      "sha256": "4722ef93f072d6246777986d62e8fc4b1efa8c5f0739d3a520e37bcada43caa0"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_01_Cloth_Cold.png",
+      "sha256": "c1e4600894f5c315ccecbf555a9bc2a8410f46c40357700b1702405747041b3c"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_01_Cloth_Heat.png",
+      "sha256": "017456dcad4de8e76756a1cb5e124a3211b8234be8221217d74d357f0a9d5a57"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_02_Fur.png",
+      "sha256": "c0df64405102bf7f1f2f0b8909b38ff6d9d430c8b795a856a1eb5497fab8404a"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_02_Fur_Cold.png",
+      "sha256": "033691555408504cdfb04b0becc9e2e68bb27fa73a556e19bfe7b0a20b7845ef"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_02_Fur_Heat.png",
+      "sha256": "6531182cea086085cbfd150169fe0e476b864d4fb503c7875de56c2dce29e71b"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Copper.png",
+      "sha256": "39fc013ae5c4de011de9163e5a467f0357aab919afda6cb529715ddfb4fc0f96"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Copper_Cold.png",
+      "sha256": "b7b73fd4398821b3f9c8d450866ebb3397cae820bb16fff4eb0860de201276d4"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Copper_Heat.png",
+      "sha256": "1b66cb013583e1497472dbe96f95827b9b023133d7863739ed74e937f57f1cdb"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Iron.png",
+      "sha256": "8e902a0f83ed48bf9b08c21edfc7b7b5d7efbe1e9b3940b3fd28a158d5ce1b3c"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Iron_Cold.png",
+      "sha256": "1f3c02db12330c12e03292f293fa02bfe34b7b1486c58ff160903a1a3f4c06db"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_03_Iron_Heat.png",
+      "sha256": "b1102d8fb87e38d162c80b0c6c72bfa0a7e0652cb24ecc1d71136f0bf4a62465"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_04_Steal.png",
+      "sha256": "e86b2e3d307e081c0a74326016a6b00ec620ea2931e3a7c233ea247a851a6457"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_04_Steal_Cold.png",
+      "sha256": "e5ea4604be790dc3e0650f434fec0cbf360323489bd0d59040a6cc30ea78f5f3"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_04_Steal_Heat.png",
+      "sha256": "7204965748ecef211219a639492c01dde05f2fb0b0c40ecfe711ece0652019ad"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_05_Plastic.png",
+      "sha256": "3cf294bb228b1960385ac3ef2970f97816f97eb937014a453e97790d6705c85a"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_05_Plastic_Cold.png",
+      "sha256": "a7e76a890cae0a275ac61b8b5d01ef345259432de13d8e95719c8807ed429db2"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_05_Plastic_Heat.png",
+      "sha256": "008a1c82d452add834c422b36f8fc4dd74799c9b5b1893687f4b36a59bf591b7"
+    },
+    {
+      "path": "icons/tech/Battle_Armor_Grade_05_Plastic_Weight.png",
+      "sha256": "701b9b8300461b3170a05ce131d32787f24baca9b1da49476d72a6e7ad0d9046"
+    },
+    {
+      "path": "icons/tech/Battle_Cloth.png",
+      "sha256": "92b7307523ebffe0b5a6a193d783337b4b87a4dba7f85e3d0f64b6cc092f5d66"
+    },
+    {
+      "path": "icons/tech/Battle_Defense_BowGun.png",
+      "sha256": "ed67b3cb2b6ee7f8cc5fb0db60e5b596a527bfd61de80b64331ab2d5a2f5ab1b"
+    },
+    {
+      "path": "icons/tech/Battle_Defense_MachineGun.png",
+      "sha256": "18bb64a378ff1f0aade89e4ebe5985b7e81bd81ff3936720e1d3846bffec0169"
+    },
+    {
+      "path": "icons/tech/Battle_Defense_Missile.png",
+      "sha256": "914aca278cce8d00978d35f242c544a98be1d3db9a527975ede3e03bf3861d19"
+    },
+    {
+      "path": "icons/tech/Battle_Glider_Grade_01.png",
+      "sha256": "097f42b7e8b875e8daa70bfc64f8b72b5504b1f9e25543e105faeebf9fa623fe"
+    },
+    {
+      "path": "icons/tech/Battle_Glider_Grade_02.png",
+      "sha256": "7adb1c123def0105429892df89fb6b5a4040dc4a334a3aa520a656026c84d175"
+    },
+    {
+      "path": "icons/tech/Battle_Glider_Grade_03.png",
+      "sha256": "2bbb982210eb56e67b01c8c69fddd922b387bb68a0ca24c6ae5e2bbab07fdf2d"
+    },
+    {
+      "path": "icons/tech/Battle_Glider_Grade_04.png",
+      "sha256": "eb1d29d7b8e536a0c4851ec2268dda509484e68aed69377d563f93192a239ac6"
+    },
+    {
+      "path": "icons/tech/Battle_GunPowder_Grade_02.png",
+      "sha256": "89984cac7986559123abbc592878276a65a8e7684bfacba72c8fd2e35b6d4229"
+    },
+    {
+      "path": "icons/tech/Battle_Helm_Grade_02_Fur.png",
+      "sha256": "3d09ef1d8fc1ae76c3d97f76d30fb7f5843ba6e4781d345785aed42c13d29fdd"
+    },
+    {
+      "path": "icons/tech/Battle_Helm_Grade_03_Copper.png",
+      "sha256": "cf8e6900772b5282a965749bb5942a6648aceaf10004b15fda893e92fe7b54ec"
+    },
+    {
+      "path": "icons/tech/Battle_Helm_Grade_04_Iron.png",
+      "sha256": "83a8456c8994c03c966bcc7f939714dcf1b5035b6a480711449ee12b2f4d9d3a"
+    },
+    {
+      "path": "icons/tech/Battle_Helm_Grade_05_Steal.png",
+      "sha256": "a9a9579977c79cd52166ef9c403dbd30c69b3cdeb0d80cef378732a6cf2c626c"
+    },
+    {
+      "path": "icons/tech/Battle_Helm_Grade_06_Plastic.png",
+      "sha256": "51ea43167b174f1649d4ea8d06fbe53b762647faa39e9c758a23a847f42e168a"
+    },
+    {
+      "path": "icons/tech/Battle_MeleeWeapon_Axe_Steal.png",
+      "sha256": "41c7507d561b04a972148caaa0c4c1572ec3e8e0289594468154c713def44a10"
+    },
+    {
+      "path": "icons/tech/Battle_MeleeWeapon_Bat.png",
+      "sha256": "da9d66c5c7c9d806cd38b2be93d3f8af8ffcbcb10281b9c1add2f05a6c522e80"
+    },
+    {
+      "path": "icons/tech/Battle_MeleeWeapon_Bat2.png",
+      "sha256": "220e0e7428319c5448a91630803ddf4b5801c20d60820b6da26cc136a3727a07"
+    },
+    {
+      "path": "icons/tech/Battle_MeleeWeapon_Pickaxe_Steal.png",
+      "sha256": "35eafaa915f166a2c81b0fd3ede25261df6aa1c9f768b658dc53f69c97a2d145"
+    },
+    {
+      "path": "icons/tech/Battle_MeleeWeapon_Sword.png",
+      "sha256": "8dc7fffe0a1a986711eb158fd9b1967b393e75eb06e758bdc3c3ea0389081f7a"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_AssaultRifle.png",
+      "sha256": "3f73849a55e4aae7b2989aa08e7a5ce314558912ad021dbe472315da3cca32b3"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_Bow1.png",
+      "sha256": "ce9080d355bd6ead399e491e8df28c04c976252d2e7659166d399428be285dc5"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_Bow3.png",
+      "sha256": "3500181afce3e1695fc16da32a4dd54139d9ec7c98f39439136b5331292dfa89"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_BowGun.png",
+      "sha256": "56b2f7ab8f2b719070fccbd7ac4ff1cdfdedfa3a13f4bf805fa03bb00c50ad54"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_BowGun_Fire.png",
+      "sha256": "2860fef4d25b01bd95f3f56572e2103806cbc56a25616d9b21c469bed74bfd29"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_BowGun_Poison.png",
+      "sha256": "0cc8e1df8d237bac53ce7c18f20b242bbad9c4c26738ff2e7f6b2e8b1415d0bb"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_Bow_Fire.png",
+      "sha256": "d05a9f8b094c9b82c43abb7d2df578a5ecb931cdd1cb56e96e470652cc0a2000"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_Bow_Poison.png",
+      "sha256": "ac1cad4d75d971e412f03d641254f604e507dbabf4015e543a4a19fe558403bc"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_CompoundBow.png",
+      "sha256": "4e342d22e5b0eaeb784f778c0a0cadddbc3f9d39864aa16e678ed3884367d41d"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_FlameThrower.png",
+      "sha256": "b5ff562ab6b3c92d6cf7f0dd7bd65095a8243a4ab238ac3cddcd14815eb7f052"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_GatlingGun.png",
+      "sha256": "b25497b717c0b132801d68bfb0b763931f6cc96e407493962d28383f352c771b"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_GrenadeLauncher.png",
+      "sha256": "5228a211b39f4b24a84580660d5e0265506385041dce560805cb65bc3ed9ea2a"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_GuidedMissileLauncher.png",
+      "sha256": "a0131652067bdc9aef3bc6232c4a015d354e9c5fcd52da95050ae5b9dea1be2f"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_HandGun.png",
+      "sha256": "4c289a9fae98e266f58a8b90f6a556ffdf598a022a7b15d7c5dc8ab3f8f75275"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_HomingSphereLauncher.png",
+      "sha256": "c73b69a4aca4d9a3f65dc86f0142130a63fae2368ef6eaac3f3e14bcc74a863f"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_LaserRifle.png",
+      "sha256": "1bc30fc90e5d393abb666e7a4fcf3a53691c785fbd128233f8d0d59dd4f976ca"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_OldRevolver.png",
+      "sha256": "9b983c5fca4ec02cbb5fa9ff141eaf9d9b7d2e6b8b3a4f4fd22a4a1998e242f5"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_Rifle.png",
+      "sha256": "e35ddb84c2c2680b416510d59df73e6e8b7b6f5128dc08d62d46502267ee8661"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_RocketLauncher.png",
+      "sha256": "83a54b5da43d2132c0687e4ea49332c94f8b6f20748f056b2c616a184455f99d"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_SemiAutoRifle.png",
+      "sha256": "d07eacfbb388647e0dfdd18f0dd3d304f87c74bb227c3ab84bd7f99fc45454d9"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_SemiAutoShotgun.png",
+      "sha256": "6c3304814f61bfc83b0ee9c2229ecd91b2b16f35af8c62c79bc40a0b1938a49b"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_ShotGun.png",
+      "sha256": "1602b6739a75c569a3cb79c7aca9d54e4415cd91f2171724d0d58be93a954d50"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_ShotGun_Multi.png",
+      "sha256": "ebe5fa7289afe297937444f736f2a941e9e6c9360e5896d53c317e75d091299c"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_SphereLauncher.png",
+      "sha256": "c73b69a4aca4d9a3f65dc86f0142130a63fae2368ef6eaac3f3e14bcc74a863f"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_SphereLauncher_Once.png",
+      "sha256": "c73b69a4aca4d9a3f65dc86f0142130a63fae2368ef6eaac3f3e14bcc74a863f"
+    },
+    {
+      "path": "icons/tech/Battle_RangeWeapon_SubmachineGun.png",
+      "sha256": "4e24ee776f1d7afb91bebd6b41cf619a292b7815ed2d16ef882b9d2135742ce8"
+    },
+    {
+      "path": "icons/tech/BeamLauncher.png",
+      "sha256": "b6c9754327796335409026d4ffa59842422e5dcff3c7fa693d4d7393dd2551d3"
+    },
+    {
+      "path": "icons/tech/BeamLauncherBullet.png",
+      "sha256": "e76fd76ee464f71c1448891890da055137f6a16cc6859a57b2994649913f6ac5"
+    },
+    {
+      "path": "icons/tech/BeamSword.png",
+      "sha256": "907f9b49ff857f9aa38817a2272c22f73e2b7ec3db89dcabd4fb365c275fa553"
+    },
+    {
+      "path": "icons/tech/BelieverFlagSet.png",
+      "sha256": "4aa9c8f558f0b545cafefdeacda3f2e115a80bed225536af38ab018b18c49c51"
+    },
+    {
+      "path": "icons/tech/Bio_Battery.png",
+      "sha256": "29e9aea5ed68d117bca10173ff6b01822c465d0b08afe514bf137caee722aa7e"
+    },
+    {
+      "path": "icons/tech/Bio_Coolant.png",
+      "sha256": "6d5cf828380be9aa3ce709df90487f9910b40272f0209005b202b6b2b909dded"
+    },
+    {
+      "path": "icons/tech/BlastFurnace4.png",
+      "sha256": "8350316afa1c09f6acd98eb2302fbb2568bd6dacab3f4214d36f2c485a2bff30"
+    },
+    {
+      "path": "icons/tech/BreedFarm.png",
+      "sha256": "ad704c520ca4fba1459b1b5dbeb32cf757dac935420585f2461083ae86e4ce8b"
+    },
+    {
+      "path": "icons/tech/BronzeSword.png",
+      "sha256": "92483fe3ed409ed97d58b2ccec98f95139061be922a3fbb678d0cb039cf4d707"
+    },
+    {
+      "path": "icons/tech/BuildableGoddessStatue.png",
+      "sha256": "d1f1a39025a5f9e186333e4736290cbba874a2d8126b2cc938870cf076f54225"
+    },
+    {
+      "path": "icons/tech/Cake02.png",
+      "sha256": "e09b7e4d492c40f3b0dc20756bc28fb05770d1d737da86c8d7f3db58f6edfa2a"
+    },
+    {
+      "path": "icons/tech/Cake03.png",
+      "sha256": "7e971297f5b6fe5f85aa1e55474290f1bcdfe7a0d3a1667f9f9705c5c36186f7"
+    },
+    {
+      "path": "icons/tech/Cake04.png",
+      "sha256": "a80cc14e04662f27d0bcbabf1104955e929f996499de76ea26a2bdd87f07f7f9"
+    },
+    {
+      "path": "icons/tech/Cake05.png",
+      "sha256": "98ef15bcc53643aa360a0cdc57a0a963205a9b5a1cf18e7f28e41c551a0faee3"
+    },
+    {
+      "path": "icons/tech/CarbonFiber.png",
+      "sha256": "1be93384b79f44b5da7cff97bdeefce1ccc3cee83671f85b6d4f9f4ce55332f7"
+    },
+    {
+      "path": "icons/tech/Cauldron.png",
+      "sha256": "244bf4beee1741b36ef950dc02a778fd2c7771f8c1f478f79bc499388034de26"
+    },
+    {
+      "path": "icons/tech/CeilingLamp.png",
+      "sha256": "51fe0518ecf3d184fac6d9b40c033e118ff82d333996556ef8ff262d3c8cb0e5"
+    },
+    {
+      "path": "icons/tech/Cement.png",
+      "sha256": "6afe9633366e43d26b36d3b22f7bfab895faa9752968b66cd62ca71835bd8c29"
+    },
+    {
+      "path": "icons/tech/ChargeLaserRifle.png",
+      "sha256": "4da45613792813bc1197853c48c413f0927a473a165e4c191b9b10c885748e0f"
+    },
+    {
+      "path": "icons/tech/ChargeLaserRifleBullet.png",
+      "sha256": "ba65b7f0570db51ab8c0bc5b9a1b6cb374936b55f458d6958e55aa073d99bdab"
+    },
+    {
+      "path": "icons/tech/Clinic.png",
+      "sha256": "6b1a6aec976fc1a834c28e30fafb40e3204404684bc9294489baa98f19bf2dc7"
+    },
+    {
+      "path": "icons/tech/Cloth2.png",
+      "sha256": "92b7307523ebffe0b5a6a193d783337b4b87a4dba7f85e3d0f64b6cc092f5d66"
+    },
+    {
+      "path": "icons/tech/CompositeDesk.png",
+      "sha256": "195790d09a9c7d29442309e442c63fcc69963ecf08b7e38d1006fe99a83a0d9c"
+    },
+    {
+      "path": "icons/tech/Computer.png",
+      "sha256": "093998e42286d988fdec096d1f20662d1a78fc8c0bac662a46058d8357aa8fcf"
+    },
+    {
+      "path": "icons/tech/Cooler.png",
+      "sha256": "f90ccbb3070584a0f07f2705e57e5cd71beb0d1cb201bbb5f88f2d1efee47da6"
+    },
+    {
+      "path": "icons/tech/CoolerBox.png",
+      "sha256": "51da3afbff14a35ee5cbb3318b50dab6d9f8b342f0021c68bb54dc82a4368f25"
+    },
+    {
+      "path": "icons/tech/CoolerPalFoodBox.png",
+      "sha256": "be2b43a6ac15af82816888d594983b6641a9e2b6aac220012117793cc24bd314"
+    },
+    {
+      "path": "icons/tech/Corrosive_Solvent.png",
+      "sha256": "dac51ac7b0d92ee9c400ad405ca6cb88520bfa30e972756fb9690bd0284fac03"
+    },
+    {
+      "path": "icons/tech/Crusher.png",
+      "sha256": "4c309a3f9e523995ef389bd79d2e16fe306d34cdc64e565e3500b9f888f56de4"
+    },
+    {
+      "path": "icons/tech/CrystalPit.png",
+      "sha256": "fc7521d1b7063bd39da04361e39948011229f6bd424292ed78b5845d966952ad"
+    },
+    {
+      "path": "icons/tech/DamagedScarecrow.png",
+      "sha256": "d25728b0ecd7c2192af9777002b245979aa4860f2b41c3914873da2678364f91"
+    },
+    {
+      "path": "icons/tech/DarkIslandFlagSet.png",
+      "sha256": "17f9570416085d36f83e1f23d3ca8818f2cc512f8ae618d69641164ed07e0f8c"
+    },
+    {
+      "path": "icons/tech/DecalGunSet.png",
+      "sha256": "cefe20e9bac45530546b6d00f794d04ce5981aa5b668fb359886911fefa94d99"
+    },
+    {
+      "path": "icons/tech/DefenseWait.png",
+      "sha256": "dec56a4bcdeee431ce7b99b35d111cb2bfc1b62d5386493302c8e5491d87c968"
+    },
+    {
+      "path": "icons/tech/DefenseWall.png",
+      "sha256": "030b74b4afab0a4d04f1c179e945db8944c804a8ba26b8e7c717e726c2bdc60e"
+    },
+    {
+      "path": "icons/tech/DefenseWall_Metal.png",
+      "sha256": "b29d883bb3691ee5eaeb2cdf0502b02061fbc0259b2c13cd91d4a546e4eda9d2"
+    },
+    {
+      "path": "icons/tech/DefenseWall_Wood.png",
+      "sha256": "64844416acd3a4f4dfb3f137bc7d8361e323f1bc746a00f431db6d66802d239a"
+    },
+    {
+      "path": "icons/tech/DimensionPalStorage.png",
+      "sha256": "4cb3606243e9a32841eee75290a9e86e24e17213142a728a0d3c16adec346c59"
+    },
+    {
+      "path": "icons/tech/DismantlingConveyor.png",
+      "sha256": "3e3fdc696250f1f9ec7097be65c892b246a4aa50a9ed83adf9e949bf72bdcb1a"
+    },
+    {
+      "path": "icons/tech/DisplayCharacter.png",
+      "sha256": "34af3f36f3e2121dfb1ac74624d31084dff9be5dfa2847d4a96b3b92d8f43925"
+    },
+    {
+      "path": "icons/tech/DroneLauncher.png",
+      "sha256": "e8e586f34ccfd10245efaa06b9bb28d35875b8bfb6b7fd6dae373d88459d57d6"
+    },
+    {
+      "path": "icons/tech/ElecBaton.png",
+      "sha256": "d775782185eddc243963b224beaf5d574ceabb5d2190f4c5bdfd17de7b4b7abb"
+    },
+    {
+      "path": "icons/tech/ElectricArcAssaultRifle.png",
+      "sha256": "e5315fd4ed88dffb37b2ae321fbcd50e0d7f74305a5f94c0a4e853ed47bcadb6"
+    },
+    {
+      "path": "icons/tech/ElectricArcAssaultRifleBullet.png",
+      "sha256": "79c6830b58b5ec5174f0be3fd56e748bba9ea189e100f4440a4379f6a38ff57a"
+    },
+    {
+      "path": "icons/tech/ElectricCooler.png",
+      "sha256": "721f3e9d7ea77eac885a0ad3087461971a2583d5e14c3f41b7216737190a3300"
+    },
+    {
+      "path": "icons/tech/ElectricGenerator_Large.png",
+      "sha256": "ea11f2acb24c88f413708683fcd1040945c43588e6096223ac553327cdb232c1"
+    },
+    {
+      "path": "icons/tech/ElectricHeater.png",
+      "sha256": "096c22ad601d848887431fcc07a4fab10723486f5101cd3a2918968695170d2f"
+    },
+    {
+      "path": "icons/tech/EnergyLauncherBullet.png",
+      "sha256": "159104850ea95211823ace5671a2d60484e4d834aa3c8418c6ab1ec5222bca03"
+    },
+    {
+      "path": "icons/tech/EnergyRocketLauncher.png",
+      "sha256": "641a44fb9f98025c4fa9c035eb747b9ba6c9ec9efa29aec89a2bdfde6afd137c"
+    },
+    {
+      "path": "icons/tech/EnergyShotgun.png",
+      "sha256": "c27ad18ea335fcd4cd4a4b380da281bdeceb7aa459b72370bda07e787d302efe"
+    },
+    {
+      "path": "icons/tech/EnergyShotgunBullet.png",
+      "sha256": "980aea535ade841fd010645b8ffeccc3a155604cd3f7008e1ab168d5d76562c2"
+    },
+    {
+      "path": "icons/tech/EnergyStorage_Electric.png",
+      "sha256": "a1e735e185e16d94c843c7e6cd9e5c8a2bf249ad4a7dc9c8cede644ebef2a009"
+    },
+    {
+      "path": "icons/tech/Expedition.png",
+      "sha256": "8ff5ae5b76ac8d2b4f30989a6c7c973c841c14f8ea033b51d64742109e50531c"
+    },
+    {
+      "path": "icons/tech/Factory_Hard_04.png",
+      "sha256": "b9350515366f48fcba1e4b76b97afbc31754fb79c725de0f02565955a8c80c58"
+    },
+    {
+      "path": "icons/tech/Factory_Money.png",
+      "sha256": "703cec55ddcdf3c9224f69d747d6e07ff9ba54914f2738959e1f9388770a9a3a"
+    },
+    {
+      "path": "icons/tech/Farm_SkillFruits.png",
+      "sha256": "321076ac3e38b235ad671cfd900c4160dcfa18ea06d04aa97ef39152c2cc3b42"
+    },
+    {
+      "path": "icons/tech/FireCultFlagSet.png",
+      "sha256": "c9f7890b64aa6a2b347107485de04f6e87298b404ec2de923488296225b3036a"
+    },
+    {
+      "path": "icons/tech/FishingBait_2.png",
+      "sha256": "d4a5fa273c493bcbc937c04c072b8f2338c12a29cffb3775c1bc18cfe5c860a0"
+    },
+    {
+      "path": "icons/tech/FishingBait_3.png",
+      "sha256": "3e3cd34d8c860ded442a6e7c2a63b01ece6b2b1b741cde6459338c276aa0be9c"
+    },
+    {
+      "path": "icons/tech/FishingBait_3_A.png",
+      "sha256": "a94506683968f525d77fca7200b7638ea7320f3e966ea6d46d9ae92fe516e049"
+    },
+    {
+      "path": "icons/tech/FishingPond1.png",
+      "sha256": "e5610f73ba021775d65899ab8365b401310c86c0a0cdeb93c9a9fb40a5f86a05"
+    },
+    {
+      "path": "icons/tech/FishingPond2.png",
+      "sha256": "c457f64f1cd7442a5244075d85d9656303ad0650db7a4c482f8f2b279434e0ba"
+    },
+    {
+      "path": "icons/tech/FishingRod_02_1.png",
+      "sha256": "2c8dc844340240306912396e4b6ff613cf85b3f4fa220b5f50bc50af528cdeb1"
+    },
+    {
+      "path": "icons/tech/FishingRod_03_1.png",
+      "sha256": "1fd92bfab8a3dbee32cb28eb0c7f83ccc0584c5893f82a9929fc6c8daf1f4d2b"
+    },
+    {
+      "path": "icons/tech/FishingSet1.png",
+      "sha256": "733f2722babedc8943b0bc98e730491070677f7ee2643a6dc0085211c221e08b"
+    },
+    {
+      "path": "icons/tech/FlamethrowerBullet.png",
+      "sha256": "32478557c743864ebeaecf0307ce53ef8b454220445fa565074a0f8e4f7f5252"
+    },
+    {
+      "path": "icons/tech/FlourMill.png",
+      "sha256": "7516d82daf1c3b28df5f6c2987ac2ec9f8c34059688825945b4579b9a378b46e"
+    },
+    {
+      "path": "icons/tech/FlowerBed.png",
+      "sha256": "5d1f1f392fdb5cd490762a06c4a1d27114625aaf8b7343acabe515eebe74326c"
+    },
+    {
+      "path": "icons/tech/Fountain.png",
+      "sha256": "78abf4a485bba0712588225c0801a268874fe6bd7695aeb7562c433fbb5117fa"
+    },
+    {
+      "path": "icons/tech/FragGrenade.png",
+      "sha256": "725f32088b845d6a0cc9e2804d9cdd3bac0395388cd051b27ddf006606d21e70"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Dark.png",
+      "sha256": "f895bdfd217daec613d7a9bc9181c9a600bce9db02a775d6015a243aeb308443"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Dragon.png",
+      "sha256": "dc3784136a8354c5c738f4592fd79fbbe6debd362877d702dd2dc24c601449b2"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Elec.png",
+      "sha256": "955189001b3cf055cd42296a5b19e51f1769c5e603f8b458a653844d0290829e"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Fire.png",
+      "sha256": "d34e7ca0d6ca9e08d309ab1aea65c2213c5c891b87bffb730723846fd0816341"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Ground.png",
+      "sha256": "be8cb93713e3f5e7730eb26d94c347b5d3b538b8c1a5ef04980b3fd85732e2da"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Ice.png",
+      "sha256": "7f26a3012dbaabc7f8de2e95de5dd4753264911206db5c792340641f24c26300"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Leaf.png",
+      "sha256": "22d4abd6a5eed119bec145ab2cc40bf19c5e69178dcf3a76fc1bba761e166f80"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Super.png",
+      "sha256": "62864872d50c6d907ef6fa9b9b8a293c3bdeaf898535341593adbd6203658811"
+    },
+    {
+      "path": "icons/tech/FragGrenade_Water.png",
+      "sha256": "e97dafd087b41d4bedc92b37867a1d06cee9ed2e64d666172bde8388ee194377"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_1.png",
+      "sha256": "28bdab3642c250aab4ac37ae03bbeef559ef6eb3b7ad095ee1a303966b4513f5"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_10.png",
+      "sha256": "0a41d98d77380c4e3ad3552453adf39d1184ce7785c9ad2a19e40c98b6df20a0"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_11.png",
+      "sha256": "d02119dbc8bb5672f289882f3a1c2699462a8fb00915f1f59b44889c50a79e85"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_12.png",
+      "sha256": "7c0e88610e1cc40b0a7273228957139de4e5495f30e2c3d0780c2dbbe22ff510"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_13.png",
+      "sha256": "9cb29520e0a23f8d49200fd934c73f4f8d6ce880ea253d6cc29e26a141a46d32"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_14.png",
+      "sha256": "f3a8cd417737a7c8d4e2cd5465878120884686b9c8751bfc1c898f850f6cf549"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_15.png",
+      "sha256": "e55a39cf4298b09b9fa0d4d47837e0fe9a961df6ea82fde883d7e511bea6c104"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_16.png",
+      "sha256": "8f61812f001aa88a9a8586b961be3c61d444751944efcf10e4e1c0baf81d0b10"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_17.png",
+      "sha256": "02b6a4d9332d4c15ed0b5ce19f47e7b047081ad0c49a88ade0e55197266ff51f"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_18.png",
+      "sha256": "1da5c88c3d9c183899eef7317d27e99a30c4359241451d4fa4dc16e6834dae07"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_19.png",
+      "sha256": "34863996296c239c55d12c9965d2938c99f268eae5251fa13318597d2c91f40c"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_2.png",
+      "sha256": "8814792f404b35c5dffa183dd7fa99e3f80b5e9f087bbfe22754bc69af5c78e8"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_20.png",
+      "sha256": "e81e1463a95a4981fec68587dc899c35f58ec9285bf2ef5be802dda3c2ba647e"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_21.png",
+      "sha256": "fdd6d75b9fadbc229e8b1c8209c46723e8c3d022edd24bf814baa2574cb19137"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_22.png",
+      "sha256": "d9f40dc9da062627361286273ce88f15bb8d2626a1b8739a70a7320fd1606d3b"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_23.png",
+      "sha256": "5060fc49e3f25fbc775580d4f2894e1b3af6d6b59d5aac8c0fa351dca405da26"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_24.png",
+      "sha256": "37f6372199dd8e08ca57dce059c242547f092ecf0226a66b498612692bc74176"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_25.png",
+      "sha256": "6fe264967d8b43b9c1a6af18cacd5c9fe43bbc16baa9f762f1199ca00db582fb"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_26.png",
+      "sha256": "d7ed1d39d58f5f5f586e9277ae1e82ac02898be9286a547ba681d0a4616bff52"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_27.png",
+      "sha256": "d09657baa721345a5eb1bac648d3241eb467a6f511b0313e89c496a630a78c81"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_28.png",
+      "sha256": "23ca125147d2c098dd04d1834b15e7d2c23bf088a5726240eedb5426b1170687"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_29.png",
+      "sha256": "c0003e0be32cadc6976fc8b9a5acef8c9f5fb0aa1ae415ee5a0535c6084e2a99"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_3.png",
+      "sha256": "9f5fa53c04beaa563adf75064cdb3240b0746b3430f9f0d575d7cb7b50f8bc0d"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_30.png",
+      "sha256": "bdf321e3cff0aec546514654eb0d2ac04ef952e4f062988fe2fdcfe093905826"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_31.png",
+      "sha256": "de3142f5b1b03d08c9e5289b69ee8cb613457453c608c7b8d5d18a9343deac26"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_32.png",
+      "sha256": "4f057f925fe92f31883d2605b0aa3b0894fe4ffc48970c2af728eb9efa75e9c2"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_4.png",
+      "sha256": "bc9f1d51df7f0ecd3e443aa1d0399fde5aa783d01b2fd878d06effcd41a7086b"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_5.png",
+      "sha256": "48c747b4d7cddf3d6ae2202da8a22aa75d5a9ae8609c2091b6b0d36873ff442f"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_6.png",
+      "sha256": "df0bcf8c4012d6ccdb05f6befce4030ce4dc0cb37de26f7ecd4aeee79695582c"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_7.png",
+      "sha256": "ef733659cb0ebf98ef296ba8e9323f1c00962cb3945edc8acfac8058940d1128"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_8.png",
+      "sha256": "fb238144b30fb9c6256b32efdde26aebc0155e28eeb832532684d6aa01f9fabb"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_9.png",
+      "sha256": "dd31d2fd4a8dc4911a3379b6a586d50f8dd378065d025a5cc64f4e65b00c96f9"
+    },
+    {
+      "path": "icons/tech/FurnitureSet_Japanese.png",
+      "sha256": "44a6855912a769015e27be0b1584b7c7976eb9d07a3bc01c79b39076fbe8dd97"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Bamboo.png",
+      "sha256": "9c094abf86ada0fa761fd667e5605cd374d1c39d04624ec404953a8855e423c8"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Cherry.png",
+      "sha256": "998164d3c375082cadfd464aaaeabda380b3f30fb566f123dd8fe1319cb1b9e1"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Desert.png",
+      "sha256": "3e974822db34bb2d3bed8d5512b934a3b72c9339bc5cb434f93cc29b46e9bb39"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Green.png",
+      "sha256": "82165b7476f643aeb8880ec6e7e514589c46b05f3eab9be54dda060fcdeb933c"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Red.png",
+      "sha256": "9bfb177a12f316d1c4011ec8e3db3105935f035da2edacbd302d60d678fac44f"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Snow.png",
+      "sha256": "46725974e6dd30564b9eaf59912b4d206fb59fca7f001c981fccd992aed6e2ee"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Tropical.png",
+      "sha256": "bfdfc623ba76aaa4cdf24921eae5763b9bda45bd5aab1ccd6b962648aac7223c"
+    },
+    {
+      "path": "icons/tech/FurnitureTree_Yellow.png",
+      "sha256": "a07e3ad75a3a53418ab6fb708c3eaf33c06615b6d24f91a53df35d179d8988fc"
+    },
+    {
+      "path": "icons/tech/GasMask.png",
+      "sha256": "32b660d1cee2e3227ededa9441feffb0465208b95b399df7d0b3fdf88f74a3e2"
+    },
+    {
+      "path": "icons/tech/GatlingBullet.png",
+      "sha256": "4461239f1ceefa497244974e53d5941ed32c63dc812cafa98dd7b4c2995bd098"
+    },
+    {
+      "path": "icons/tech/Glass_houseset.png",
+      "sha256": "39cc347e552cacba95ad73aaa016e57cfc193dafb6370c0eaf885c8e84201f06"
+    },
+    {
+      "path": "icons/tech/GlobalPalStorage.png",
+      "sha256": "bc7b15d41075fdd63c66f610497299a81c0a3d09d646ca93d02f75db88704d24"
+    },
+    {
+      "path": "icons/tech/GrapplingGun.png",
+      "sha256": "ddbbba373de3af5810547438d5d1c3aa506517814a5855e2081be49407fbfa71"
+    },
+    {
+      "path": "icons/tech/GrapplingGun2.png",
+      "sha256": "ddbbba373de3af5810547438d5d1c3aa506517814a5855e2081be49407fbfa71"
+    },
+    {
+      "path": "icons/tech/GrapplingGun3.png",
+      "sha256": "ddbbba373de3af5810547438d5d1c3aa506517814a5855e2081be49407fbfa71"
+    },
+    {
+      "path": "icons/tech/GrapplingGun4.png",
+      "sha256": "ddbbba373de3af5810547438d5d1c3aa506517814a5855e2081be49407fbfa71"
+    },
+    {
+      "path": "icons/tech/GrapplingGun5.png",
+      "sha256": "ddbbba373de3af5810547438d5d1c3aa506517814a5855e2081be49407fbfa71"
+    },
+    {
+      "path": "icons/tech/GrenadeBullet.png",
+      "sha256": "f525c2ef7fbb8d68638e498f6cf6c56b580e04d1530e209025211ed502b73e88"
+    },
+    {
+      "path": "icons/tech/GuildChest.png",
+      "sha256": "6848fe42f2671bbe7608ae33330eef47bbf4f84a21dfacc965033046d8db9e5e"
+    },
+    {
+      "path": "icons/tech/HandTorch.png",
+      "sha256": "a27d410a507af1eda422035f4dd0346261d74388390332dd332b4f16fa8ab056"
+    },
+    {
+      "path": "icons/tech/HandgunBullet.png",
+      "sha256": "4ae82a9d5f740485f8ec47503dfa45bfe86f7317efe62d6884a728f38a5c107a"
+    },
+    {
+      "path": "icons/tech/Headstone.png",
+      "sha256": "0d6aa221805e20b45d1f049317042bd670edc063d2247b6e0a35b7c7d913c02b"
+    },
+    {
+      "path": "icons/tech/Heater.png",
+      "sha256": "935d12bed7a82813c598f17e28484452f2b5c154301a56c1a57327752a0895a2"
+    },
+    {
+      "path": "icons/tech/HighGrade_Processed_Wood.png",
+      "sha256": "d7f533476925291e76aee73339c84a7b6016a99980b96f667a2edfb7a69d1a2c"
+    },
+    {
+      "path": "icons/tech/Homeward.png",
+      "sha256": "15b3f770011154a855bcda13324e454ad5327efc5418f79528e9d61c38832910"
+    },
+    {
+      "path": "icons/tech/HugeKitchen.png",
+      "sha256": "07512d68a4f7718fa47135b9804695528235fc9693ec7775850c69e95022433e"
+    },
+    {
+      "path": "icons/tech/HunterFlagSet.png",
+      "sha256": "735240573c8cfc3a92ce4dfe3fde0c63f2e89d0b4232f492ae222f8402aabe08"
+    },
+    {
+      "path": "icons/tech/IceCrusher.png",
+      "sha256": "e4719a1dbd9667f041399875d3bf1daaa61f2eeb0bc2252905ca8f92c7dd59e1"
+    },
+    {
+      "path": "icons/tech/IceHorseStatue.png",
+      "sha256": "6631b297e36ba75bd96f8e343fa8db1d2194af6bd8a8ee74b9030a49359e2808"
+    },
+    {
+      "path": "icons/tech/Infra_ElectricGenerator_Grade_01.png",
+      "sha256": "431fed1afc02838c861efb0ecb15389a584b2ec8565d0ee040e9d3115e1a5399"
+    },
+    {
+      "path": "icons/tech/Infra_ElectronicCircuit.png",
+      "sha256": "216fc0c930530e78a6879ae56aeb410fa4a6b6d5ace097defb42852a63d7c0bc"
+    },
+    {
+      "path": "icons/tech/Infra_ItemChest_Grade_01.png",
+      "sha256": "e8ac1a53e099ba4e83bcae82ec4f8913fcb7562c3df1195f56f109b118b13cf5"
+    },
+    {
+      "path": "icons/tech/Infra_ItemChest_Grade_02.png",
+      "sha256": "e33b3c10affaff1d3d1a555b80759f95e2e4910a251ba46e69ff4c5549383fd6"
+    },
+    {
+      "path": "icons/tech/Infra_ItemChest_Grade_03.png",
+      "sha256": "7a201763a65f8eb528f81a41f920b3da723fcef93ffd39d5defaf83a87548b73"
+    },
+    {
+      "path": "icons/tech/Infra_MachineParts.png",
+      "sha256": "c3c826e5bc44c6da1d6ec7ebf2967cc3a6b25c456f434c07cfb6877004ec1fb3"
+    },
+    {
+      "path": "icons/tech/Infra_PalBed_Grade_01.png",
+      "sha256": "df728e59522ca3b718f5405c234a0a0e08db5bbb0cf2f685eb5396cb96e340aa"
+    },
+    {
+      "path": "icons/tech/Infra_PalBed_Grade_02.png",
+      "sha256": "7f6b990d69d72d65859d0c38915d18fad1f8e96ae18a75680c02c5d57c29ccbb"
+    },
+    {
+      "path": "icons/tech/Infra_PlayerBed_Grade_01.png",
+      "sha256": "ac38c087353c3b8e512437b87de6ade2804c4c743479ed7f0908b6c8d20400ac"
+    },
+    {
+      "path": "icons/tech/Infra_PlayerBed_Grade_02.png",
+      "sha256": "557670fb873f9cd21e73315c8518d34dc35470e34a91163019f076a600441775"
+    },
+    {
+      "path": "icons/tech/ItemBooth.png",
+      "sha256": "641f2d6957e4c676fced0c56d5f67331b7dc762eb7f0415b0b548579e378c121"
+    },
+    {
+      "path": "icons/tech/ItemChest_04.png",
+      "sha256": "ec23359a7fad50583104d5265c8fb2dff3a23f2463eaa4d4b0cf4ad1050aa968"
+    },
+    {
+      "path": "icons/tech/JapaneseStyle_houseset.png",
+      "sha256": "bf191b7f1deb651b813a7030df63d6912ded7f67466e33c300603b7cdd9d529d"
+    },
+    {
+      "path": "icons/tech/JetDragonStatue.png",
+      "sha256": "e67ed42f9164f641e540e329fb4c25ae3893b6b369a5775a0caebd960972308d"
+    },
+    {
+      "path": "icons/tech/Katana.png",
+      "sha256": "84522f5cf0c8b51db22cc8eea4e5e792b601fa380b42c4c8cb4438bdc642a521"
+    },
+    {
+      "path": "icons/tech/Lab.png",
+      "sha256": "ee1c90c24c7fe8df147bd1316f59fded621d3ab77d4eeb2826680c7979a780e6"
+    },
+    {
+      "path": "icons/tech/Lamp.png",
+      "sha256": "9aed79e1477a432da35cb5681a88298e443d93a0bdf0355383add420e760adbd"
+    },
+    {
+      "path": "icons/tech/Lantern.png",
+      "sha256": "d64f1e405f8b8840067f2c46ce1b017f2bf8f60571f9e8c0087fe3631c64ede7"
+    },
+    {
+      "path": "icons/tech/Lantern_High.png",
+      "sha256": "d64f1e405f8b8840067f2c46ce1b017f2bf8f60571f9e8c0087fe3631c64ede7"
+    },
+    {
+      "path": "icons/tech/LargeCeilingLamp.png",
+      "sha256": "73e7c49ff44c314434374abf05bcc1008656adf812a4b592cebe5cc558930070"
+    },
+    {
+      "path": "icons/tech/LargeLamp.png",
+      "sha256": "90d73a919e0898f336926b6a5a07281b0accb526cc8b0119869e49c89c9bf164"
+    },
+    {
+      "path": "icons/tech/LaserBullet.png",
+      "sha256": "0d0a07e7b360af53240d5a4c89ea55bf342452be630310b15c8655a539d41be5"
+    },
+    {
+      "path": "icons/tech/LaserGatlingBullet.png",
+      "sha256": "2167c7f3c2ddb8d5f36f75985d330f0cb6cdc948ab3f2f79405665563495a6b0"
+    },
+    {
+      "path": "icons/tech/LaserGatlingGun.png",
+      "sha256": "deb64c9b25cf356260a9d43fc357b48d56a46029fd6a21c8857912f54398f15f"
+    },
+    {
+      "path": "icons/tech/LaserMiningTool.png",
+      "sha256": "89040f75792e1ef97b539070c9a11bf2dfa33e75e49384456fa7617942275a3f"
+    },
+    {
+      "path": "icons/tech/LauncherBullet.png",
+      "sha256": "700e4dbaf9a881cbcac3ab890f3811057a0feeeae9d7a8d4a764468dbe92993c"
+    },
+    {
+      "path": "icons/tech/Launcher_Meteor.png",
+      "sha256": "f0d74142c28d9a27541f400e66b1616107981c89c164f67d58a1d4f19df53965"
+    },
+    {
+      "path": "icons/tech/MakeshiftAssaultRifle.png",
+      "sha256": "02493042e75ca14e0ce2470bff66d0bc32cddf9707113b427a64d54e04f67539"
+    },
+    {
+      "path": "icons/tech/MakeshiftHandgun.png",
+      "sha256": "4898674a6f8b90005b8ced9037658610f0ac0a2d972bc2d1e622c5fa077c1859"
+    },
+    {
+      "path": "icons/tech/MakeshiftShotgun.png",
+      "sha256": "0badced6d855a25536466800d0ab2cb24e6212310cd83bda46a1bc759547fd09"
+    },
+    {
+      "path": "icons/tech/MakeshiftSubmachineGun.png",
+      "sha256": "24788482b002b0e46b853904486a424e5c229577e75c6754e638ebedfdca39f1"
+    },
+    {
+      "path": "icons/tech/ManganeseIngot.png",
+      "sha256": "b297d4906e55fb8d8db9b64575b294541296bfdb82232f75811ccdd07b2a337c"
+    },
+    {
+      "path": "icons/tech/ManualElectricGenerator.png",
+      "sha256": "a654884148804761a1153ae93bc4b29da335e398621fc8ebc95d05edaf11c0fe"
+    },
+    {
+      "path": "icons/tech/MeatCutterKnife.png",
+      "sha256": "b6bf98b4b25e364d85df7506a146d55bf02d75e2870ca8e39ea386247daaa449"
+    },
+    {
+      "path": "icons/tech/MedicalPalBed_04.png",
+      "sha256": "c40d1a4c1e58ac30925c6dc973aa809ae96c9432a1ce00d648d8637e8786ac0f"
+    },
+    {
+      "path": "icons/tech/MedicalPalBed_05.png",
+      "sha256": "22b84bd69f00660768a351f102afa4c872039d659dcc7ae140112d7cf7d5a8b3"
+    },
+    {
+      "path": "icons/tech/MedicineFacility_03.png",
+      "sha256": "3cd2b953dee224a837af22343e4b420b0a406d7b1442ac15cf06344cd3992057"
+    },
+    {
+      "path": "icons/tech/MetalDetector.png",
+      "sha256": "5f6808b5196063c5488cbb760bfd4c8542c65e6bb9c0a304f4aa61beb276435d"
+    },
+    {
+      "path": "icons/tech/Metal_Gate.png",
+      "sha256": "4f520b2a2cbf6c5bb92abf996b9e4b0615a46e199d4985af96a2c3c6a4446792"
+    },
+    {
+      "path": "icons/tech/Metal_houseset.png",
+      "sha256": "e9044a8985c0acd0fbe5b195b3d34a8ce475f32a0a6a65c5e4a99acddf495ef6"
+    },
+    {
+      "path": "icons/tech/MiningTool.png",
+      "sha256": "40eae99dad87f5685345953cb5a875b938f071c5ff308a3502b444280e1206ed"
+    },
+    {
+      "path": "icons/tech/MissileBullet.png",
+      "sha256": "5cb01b85418ba46e469345c6c353debf2a52fdb190b2e5f4c612ff25d8ce8fc6"
+    },
+    {
+      "path": "icons/tech/MonsterFarm.png",
+      "sha256": "fca1ae916f6c25fda137c503b2118ba2c7250da09f2568f39fb8972444de1bea"
+    },
+    {
+      "path": "icons/tech/MultiElectricHatchingPalEgg.png",
+      "sha256": "0be7ce7b4b4711e67494ed9a9c6ac009ac3160dda7d5387db4e3a27f560cbf54"
+    },
+    {
+      "path": "icons/tech/MultiElectricHatchingPalEggWithBreed.png",
+      "sha256": "3c713bfb0b52409a224ec6a72d3d0a35217427e070312b5a7f3ced68353f6908"
+    },
+    {
+      "path": "icons/tech/MultiHatchingPalEgg.png",
+      "sha256": "00d3e1f35441dfb81235b318717931fa37d4e11cb3a32226ed31f7e8b0907721"
+    },
+    {
+      "path": "icons/tech/Musket.png",
+      "sha256": "e59e51a84fc99d79580f3fe193870a18631d6dbd5c20e70de954c1773526b630"
+    },
+    {
+      "path": "icons/tech/NinjaFlagSet.png",
+      "sha256": "fa153e4e78252b59904e4bf030c770611139e8e21d73359fe8ddd7cfc43aa110"
+    },
+    {
+      "path": "icons/tech/OctaviaSet01.png",
+      "sha256": "1017b1ee0d90eaca8c61854b4f0364dfc1d91fbe28154b13db30245e9ce3f93d"
+    },
+    {
+      "path": "icons/tech/OctaviaSet02.png",
+      "sha256": "e67484ef8a31376ab21331577e6ba2b7b4f4fd4b87c80ac92da81cf0d1be7915"
+    },
+    {
+      "path": "icons/tech/OilPump.png",
+      "sha256": "63742a59ec7f1aa4d104300de521b45db0f943a21b33fed821f222d9dfe61dae"
+    },
+    {
+      "path": "icons/tech/OilPump02.png",
+      "sha256": "c354ac8a1e2f8b093b6e668c5432565703f1fbe2ef0fca698781ef998f488bff"
+    },
+    {
+      "path": "icons/tech/OlympicCauldron.png",
+      "sha256": "20023da3b77264e68c34d3bda673607e03d8aa51b42272d4bc3e30da642281ab"
+    },
+    {
+      "path": "icons/tech/OperatingTable.png",
+      "sha256": "c511174494aef719b0708d96c486c987ff7d98a37c04a5026c44146bffd14b90"
+    },
+    {
+      "path": "icons/tech/OverheatRifle.png",
+      "sha256": "8d79e9ecdb5df85c542a96523bdf3b78d266d024c302149172904c33dc17fb98"
+    },
+    {
+      "path": "icons/tech/OverheatRifleBullet.png",
+      "sha256": "fc391670b1c901584495d3525fc5bf3cb4330de15b7e8cfc90f4a456b1b5caa8"
+    },
+    {
+      "path": "icons/tech/PALBOX.png",
+      "sha256": "b31c524bb71522ab69cca1b0457844860b7be3c0e713b73be47b1a4f16a77562"
+    },
+    {
+      "path": "icons/tech/PalBooth.png",
+      "sha256": "53c32d341b99afc26af9074434f23b8f4b657451e3faca4ab89910dd8f7c2c36"
+    },
+    {
+      "path": "icons/tech/PalDopingShot.png",
+      "sha256": "f1730f0ca22dcdf6ce86c9347f5bbdb7a9bdd96a2fa03b8e29189e230aa8ec01"
+    },
+    {
+      "path": "icons/tech/PalDopingShotBullet.png",
+      "sha256": "ee6341d3c7441239933e86d7fcb6592294027257b4a3fc26d7a6e50dd41a2ad1"
+    },
+    {
+      "path": "icons/tech/PalDopingShot_2.png",
+      "sha256": "faacb4dfba2a3ffa38f9e5786dc90e53216f37590aa2f26b1e89a133d8cb5e17"
+    },
+    {
+      "path": "icons/tech/PalFoodBox.png",
+      "sha256": "5573f7afbee00cbcb7099145848ee423983532782eccacf040be8d9371a337de"
+    },
+    {
+      "path": "icons/tech/PalHealingGrenade.png",
+      "sha256": "8b54ca60e4fb6ec6aee5d274eaa5eee6705d1a4b63e4c3190a7a4a25775d2642"
+    },
+    {
+      "path": "icons/tech/PalMedicineBox.png",
+      "sha256": "f3caa7f8dd682e5e1e6c8f01348725569fd81614819423658d954ff9ca3125ee"
+    },
+    {
+      "path": "icons/tech/PalRevive.png",
+      "sha256": "de0b077e4a9478168b98a63932aeeb527847e5acc2e6959abb5c247136024d62"
+    },
+    {
+      "path": "icons/tech/PalSphere_Ancient_1.png",
+      "sha256": "eeee7ca43b3749412b66fae49b3ea7ccac437bf64cec7e565cbc641b0f7c0169"
+    },
+    {
+      "path": "icons/tech/PalSphere_Ancient_2.png",
+      "sha256": "29bf7e81757558204cbcddd4c52ffd6618a24b7a050a402f2e82d10c47915807"
+    },
+    {
+      "path": "icons/tech/PalSphere_Exotic.png",
+      "sha256": "79c7931407a56721475c8b646a36931d36f3a8c164d39e75efc6ceee99b21b82"
+    },
+    {
+      "path": "icons/tech/Plastic.png",
+      "sha256": "12bd15ffb629ee44d316f4c74e5d1578c718d7fdfa85055863f74f728d98080e"
+    },
+    {
+      "path": "icons/tech/PoliceFlagSet.png",
+      "sha256": "6bc37c5c96163acb3d411fbbee5e946970e8c02a5260704eb85b475b726c1bd3"
+    },
+    {
+      "path": "icons/tech/Polymer.png",
+      "sha256": "cc31182e023589c9986e8ce24bd6a897e8309861c1a480f519170cc72407109c"
+    },
+    {
+      "path": "icons/tech/Potion_Extreme.png",
+      "sha256": "4503fdcf80966b6d963f5b23550cb37cbe47fac2b8a89c87aa079f8ab453ad4a"
+    },
+    {
+      "path": "icons/tech/Processed_Wood.png",
+      "sha256": "a468721d061e7ff51f4ed4c337cc8eeacd6bad39bfd2bb7bae884a5e68ea0e94"
+    },
+    {
+      "path": "icons/tech/Product_Axe_Grade_01.png",
+      "sha256": "8187a40d22c12dc2b3d1219a9c22eb5f1525be1a25aec48666362cafe27ae34a"
+    },
+    {
+      "path": "icons/tech/Product_Axe_Grade_02.png",
+      "sha256": "8187a40d22c12dc2b3d1219a9c22eb5f1525be1a25aec48666362cafe27ae34a"
+    },
+    {
+      "path": "icons/tech/Product_Axe_Grade_03.png",
+      "sha256": "8187a40d22c12dc2b3d1219a9c22eb5f1525be1a25aec48666362cafe27ae34a"
+    },
+    {
+      "path": "icons/tech/Product_CoalPit.png",
+      "sha256": "f395c83fef55d84279d5c0df1b7ef34a26100ef71ad7fbe2ed6b81cba6499abc"
+    },
+    {
+      "path": "icons/tech/Product_Cooking_Grade_01.png",
+      "sha256": "1c63351cd3208ec49b3880aea44cab9bc194eaee28c78562a17b5b8c636f9f85"
+    },
+    {
+      "path": "icons/tech/Product_Cooking_Grade_02.png",
+      "sha256": "5639b2eb29e5265145ac97cecd95d9f641200269a3e37556fac9af900bea7bb6"
+    },
+    {
+      "path": "icons/tech/Product_Cooking_Grade_03.png",
+      "sha256": "6983468ce8b6e6660166048e12078f692f68d43be9315cd8fc62034f03e00569"
+    },
+    {
+      "path": "icons/tech/Product_CopperPit.png",
+      "sha256": "fe9fe3da69603988a0cd0d4360263b41eaf431de0e02b71ad4ba5b827adc43cd"
+    },
+    {
+      "path": "icons/tech/Product_CopperPit_2.png",
+      "sha256": "82135dfff3d6182d320dc4475cd271fdd6045e6f993b79cbcc8313b4bda01315"
+    },
+    {
+      "path": "icons/tech/Product_Factory_Hard_Grade_01.png",
+      "sha256": "c8440235a415c26f8949e62ea413bbc4b3bdf4af2b4b552bba7259231b8c94bd"
+    },
+    {
+      "path": "icons/tech/Product_Factory_Hard_Grade_02.png",
+      "sha256": "96c13c4a158f6bccbc1e9f6f683bd8565939cc0d1b2d4635143af59089399f7e"
+    },
+    {
+      "path": "icons/tech/Product_Factory_Hard_Grade_03.png",
+      "sha256": "a37cb738cfc8a0cb2ca42b85ce4f304b1e6d75f095e5513004375ab2a60994f8"
+    },
+    {
+      "path": "icons/tech/Product_Farm_Berries.png",
+      "sha256": "b58d0d8ecdb4cf90da2e141b4e1c9b5136a54363c1fb843dad96fac3ebfac486"
+    },
+    {
+      "path": "icons/tech/Product_Farm_Carrot.png",
+      "sha256": "b8873f457b2385d2086d2485f44bb5a7aeccc1cfdee2db06eec2750169abae59"
+    },
+    {
+      "path": "icons/tech/Product_Farm_Lettuce.png",
+      "sha256": "ecffb60d4cf2f9e8d0a42e7b97b2eff32b72a94999c0f7a2c2a1f4fda7a2f5c5"
+    },
+    {
+      "path": "icons/tech/Product_Farm_Onion.png",
+      "sha256": "98a44dbe9d88084ac5256c033ae3911702748cca46c5acf73536862aff09ba53"
+    },
+    {
+      "path": "icons/tech/Product_Farm_Potato.png",
+      "sha256": "7a84211a9731a1aebcec82038e5f56818445ef28bf17a37d72ccf3152830d5d9"
+    },
+    {
+      "path": "icons/tech/Product_Farm_tomato.png",
+      "sha256": "36abd11444349faa3328fff1c7b5fc94eb5f491d62393f13643593bdf2b76eda"
+    },
+    {
+      "path": "icons/tech/Product_Farm_wheat.png",
+      "sha256": "d71ba36282dc22105c552bf407f1f5b8903f5bf2d3016524a25281c1eec5bdfc"
+    },
+    {
+      "path": "icons/tech/Product_Ingot_Grade_01_Copper.png",
+      "sha256": "429560016780ad4aa14e8ec8d3d4f6a8c07244f37710b8e01e3d0328713af323"
+    },
+    {
+      "path": "icons/tech/Product_Ingot_Grade_02_Iron.png",
+      "sha256": "6054f75230a2d63cd75d4053e4e57ab15e612a7512e4c18f63ddac899fc44812"
+    },
+    {
+      "path": "icons/tech/Product_Ingot_Grade_03_Steal.png",
+      "sha256": "15d42cbb6abe2b6a85937f0a995ffa0bce7082f998a9927cc7f1a35ceaaac474"
+    },
+    {
+      "path": "icons/tech/Product_Medicine_Grade_01.png",
+      "sha256": "a3f5ef91b0aaa73adcf039fdfa48f1d3e841db6c2e1bc49932b8e076a2f35a5b"
+    },
+    {
+      "path": "icons/tech/Product_Medicine_Grade_02.png",
+      "sha256": "64760372ab9e77a465bd407d42e5de37681db090199b0e9d25588651f9d5cb09"
+    },
+    {
+      "path": "icons/tech/Product_Pickaxe_Grade_01.png",
+      "sha256": "2da726e44b6a0ac7094051786ff9d5805d9d8c9c3a6c8754f232682a96eedb55"
+    },
+    {
+      "path": "icons/tech/Product_Pickaxe_Grade_02.png",
+      "sha256": "2da726e44b6a0ac7094051786ff9d5805d9d8c9c3a6c8754f232682a96eedb55"
+    },
+    {
+      "path": "icons/tech/Product_Pickaxe_Grade_03.png",
+      "sha256": "2da726e44b6a0ac7094051786ff9d5805d9d8c9c3a6c8754f232682a96eedb55"
+    },
+    {
+      "path": "icons/tech/Product_QuartzPit.png",
+      "sha256": "f34f377dc95bdc4fb35e394b0d51af3b643d9f3db4bb0cd74df19a7a2ced2d98"
+    },
+    {
+      "path": "icons/tech/Product_StationDeforest.png",
+      "sha256": "d5f1e1ad29a6b4e3e0422de245117dc754379c52e73e9ff7b47b6e02b70e5285"
+    },
+    {
+      "path": "icons/tech/Product_StationDeforest2.png",
+      "sha256": "ca5c69943879cfa8967d496edd9d78d908eb64be87e1271856d4acf2d9294885"
+    },
+    {
+      "path": "icons/tech/Product_StonePit.png",
+      "sha256": "bc8687053a0b36b88e673ab2ee5f1882a23053c1cdf93a9743cd77294461fe27"
+    },
+    {
+      "path": "icons/tech/Product_SulfurPit.png",
+      "sha256": "838a7212711d361d379a5d826420840c47478054e5fbdf2904548ea302a3103d"
+    },
+    {
+      "path": "icons/tech/Product_WeaponFactory_Dirty_Grade_01.png",
+      "sha256": "7d70124f751d40ab43e9e7c9ff700841f14b6e3a1b49140b5d4eb34a6a77300b"
+    },
+    {
+      "path": "icons/tech/Product_WeaponFactory_Dirty_Grade_02.png",
+      "sha256": "fad8fdd92a4bf78ebf30d580fe5b656df1258cfb3574737eb6d949f7100be428"
+    },
+    {
+      "path": "icons/tech/Product_WeaponFactory_Dirty_Grade_03.png",
+      "sha256": "c6e4f150d9e3746e31aa09c22147f776a733ea3e5e67b8eb144604fd7ab5ece5"
+    },
+    {
+      "path": "icons/tech/Product_WorkBench_SkillUnlock.png",
+      "sha256": "55c54c2ec86577de6a4e63a19f948753731882cbcb5e786b2f5df0e152573d5c"
+    },
+    {
+      "path": "icons/tech/Refrigerator.png",
+      "sha256": "45937c5e6cce54f8f423d2f975a1bb63f52d7e369ae47ebe362de832663e47d4"
+    },
+    {
+      "path": "icons/tech/ReinforcedArrow.png",
+      "sha256": "5309ab5af426d9e9076c67f96a6bf3b92d466cb88ae971f97a7e64ebdb58c930"
+    },
+    {
+      "path": "icons/tech/RepairBench.png",
+      "sha256": "79a7a1ab3d067bde553cc6c1097730b00362a6d800c62ad1a643a7fbc05b19b1"
+    },
+    {
+      "path": "icons/tech/RepairKit.png",
+      "sha256": "ed11aba71c903c8039520acecfb8fdd36d1d1b7cc6e29a55f7e5941f000aabb1"
+    },
+    {
+      "path": "icons/tech/RifleBullet.png",
+      "sha256": "9d2a52ebe6daae0a098275a3f83bde94c8b0dcd93ea6257ff7136967472cdd68"
+    },
+    {
+      "path": "icons/tech/RoughBullet.png",
+      "sha256": "7c0bff941613f7e39992c5bf208fd88f9ee0d9bf566b9f273470243e4922dd28"
+    },
+    {
+      "path": "icons/tech/SFArmor.png",
+      "sha256": "9c2a8e23343ae2b0fa164185714e6b21718adf3f63a4d2543e1bf9952e655dfd"
+    },
+    {
+      "path": "icons/tech/SFArmorCold.png",
+      "sha256": "2fdebf09a7017608dbdf4c3ee26269f6fafe4718079044dc9ec1225ccf3f9f45"
+    },
+    {
+      "path": "icons/tech/SFArmorHeat.png",
+      "sha256": "4d3046bf3af61b7f56008a7663a238ea23735ce49405c0483dadefdd1adf80a7"
+    },
+    {
+      "path": "icons/tech/SFArmorWeight.png",
+      "sha256": "22387184b3d67791a87cc8e5982479c548c4651f33db13bc275f4b8c2ae93357"
+    },
+    {
+      "path": "icons/tech/SFArrow.png",
+      "sha256": "b6fd181d1fb118e37131977389f46bc46bedda2fa49c87d3733635dee49354c3"
+    },
+    {
+      "path": "icons/tech/SFBow.png",
+      "sha256": "e5e442d81e3674574e4ba5dc029a16ed13a394834ac5cbef59ac583d7ffb73fc"
+    },
+    {
+      "path": "icons/tech/SFHelmet.png",
+      "sha256": "601f5c2986a081bf87087a1b369600a08f8ba8b304f3612a5279c0932947a084"
+    },
+    {
+      "path": "icons/tech/SF_houseset.png",
+      "sha256": "73243ed4ef48df55b38e3c293060c054b176a453bf4b64e2b22812d5b32abc14"
+    },
+    {
+      "path": "icons/tech/Salvage_TreasureBoxKey02.png",
+      "sha256": "082ad1e5817a45773af1c9d44711462eb0b947bada6a54b64613fc9fdf0a53cf"
+    },
+    {
+      "path": "icons/tech/SanityDecrease1.png",
+      "sha256": "3c656859cfcc0ff55977a57470f84d8e340bdf7f1ff2745258e6756548b2a616"
+    },
+    {
+      "path": "icons/tech/ScientistFlagSet.png",
+      "sha256": "fbc1324bca2ecd7f8d4cc474169bd41ca1f9965dc341b8edf33e5c5df8ea30b1"
+    },
+    {
+      "path": "icons/tech/Shield_01.png",
+      "sha256": "f3ac6a16c901837af516d86ba989c65ee862f4c4ee6e96f69e0e6d9814c42157"
+    },
+    {
+      "path": "icons/tech/Shield_02.png",
+      "sha256": "a9cac5d6a58132aa49142d85e2bdf40366caa4c6cf8ff0129302b3d58b98b894"
+    },
+    {
+      "path": "icons/tech/Shield_03.png",
+      "sha256": "5c4963f88b3a82f1574b1042f05490b82c4bf54bc2714ee126dfe6438edb09e3"
+    },
+    {
+      "path": "icons/tech/Shield_04.png",
+      "sha256": "4eb3d8039bff6dda6f428de7e5a7ce368687793eca1118be05212ed64ef0748a"
+    },
+    {
+      "path": "icons/tech/Shield_05.png",
+      "sha256": "b280dcc0e663b1f8b2bdb287c14a9adaa528959a4d98a303830c3abe7dfd25f4"
+    },
+    {
+      "path": "icons/tech/Shield_07.png",
+      "sha256": "1331ec55caabbdafe983e3f34666b425ed134fe5611dbda26fe6f16f081cfc76"
+    },
+    {
+      "path": "icons/tech/Shield_SF.png",
+      "sha256": "fa673a0718bac7676481d1475143a7397a9f0d2191dfb093f83dcc60caef8584"
+    },
+    {
+      "path": "icons/tech/ShotGunBullet.png",
+      "sha256": "cddc15baa68339bb4cbfbc1a12709a5000a4afdb76deecc7075f39515a1aca23"
+    },
+    {
+      "path": "icons/tech/Signboard.png",
+      "sha256": "a44928afb5499521ef61b3aeaf4246b413c1cc43682461058460f74be0bfdd3b"
+    },
+    {
+      "path": "icons/tech/Silo.png",
+      "sha256": "00e0b90d290e3a0f80b5a76c8344d3a1b731acf47a36c267dcaac685c1b67c74"
+    },
+    {
+      "path": "icons/tech/SkinChange.png",
+      "sha256": "cb2ebcc4163ac30dfb9c97d9287d8dd6819eaf29a0bf4dba7a9e15916db9baa1"
+    },
+    {
+      "path": "icons/tech/SkyAssaultRifle.png",
+      "sha256": "74b2f0dc329a7f3821a8db1f705ce0bcb0a22d4d03eb4465f26ab96baed69c82"
+    },
+    {
+      "path": "icons/tech/SkyAssaultRifleBullet.png",
+      "sha256": "ba7880f44fc995594d07dc49817b99c5c9c7c286e710c95ef0563b4e54cfc3f1"
+    },
+    {
+      "path": "icons/tech/SkyBeamSword.png",
+      "sha256": "ec805bff3915a5286fe59fc9e4dd406d6b0254c9622de143525b37b97135dbdc"
+    },
+    {
+      "path": "icons/tech/SkyBow.png",
+      "sha256": "fc26c3d768dd0bf9ed6b108ec7f43a0b1bcf6fd083a570dd0b8e80ec6eac3be5"
+    },
+    {
+      "path": "icons/tech/SkyBowArrow.png",
+      "sha256": "e378df2023f4dc9fe760a12dda5290da1305d8ac7f76adcd0dc3e76635a9fe48"
+    },
+    {
+      "path": "icons/tech/SkyGrenadeLauncher.png",
+      "sha256": "88840c9daac132cddf8ae0ac7b1507dedbb25a7c2d393888c65948d5ab2a8d01"
+    },
+    {
+      "path": "icons/tech/SkyGrenadeLauncherBullet.png",
+      "sha256": "ef8c14767238fbccaf3d83a28b776d7f4b74df44f937e92f331b5c2ef954ce4c"
+    },
+    {
+      "path": "icons/tech/SkyIslandFlagSet.png",
+      "sha256": "873040eef33e70eb899e37719cd3192705e932a99d54381f7a425ba2a90231d2"
+    },
+    {
+      "path": "icons/tech/SkyIslandOrePit.png",
+      "sha256": "81bbb05489a2d3aa575056c8c1fb7ee60fc6d39ca8c188e8ea420c22995d9fca"
+    },
+    {
+      "path": "icons/tech/SkyShotgun.png",
+      "sha256": "d2d5aab7e2fe73b70172007b086df9bd504e57ec9b0b541b61734d2063610293"
+    },
+    {
+      "path": "icons/tech/SkyShotgunBullet.png",
+      "sha256": "84e9f127bf24afe66bbc54866f888da51dc6faaf211325886cf1967963ffe778"
+    },
+    {
+      "path": "icons/tech/SkySubmachineGun.png",
+      "sha256": "21fd0e0cd6797d480d911daafc4796bfc063b9c0613219adfd6f8b1ad5a9d106"
+    },
+    {
+      "path": "icons/tech/SkySubmachineGunBullet.png",
+      "sha256": "7cfa605c0029948bc580a557776ec1699957b0507339c2fecbcc097676241529"
+    },
+    {
+      "path": "icons/tech/SkyislandIngot.png",
+      "sha256": "0510a507a669f1c3e652b0a03114cc08457e24e4909ebcbca2b79d6ab01bfa69"
+    },
+    {
+      "path": "icons/tech/Snowman.png",
+      "sha256": "afab5311c86947cd74cc22a94323c592909564e982fa1fa51c1c26a0bab74c92"
+    },
+    {
+      "path": "icons/tech/Spa.png",
+      "sha256": "262814c3980e5ec0239bd4a162a3e40db9b44460ced2948a35460dc18e4e309f"
+    },
+    {
+      "path": "icons/tech/Spa2.png",
+      "sha256": "55350b1b95dd32ef9a2dec5c382cb5a4be785148d430c2ea8b2d9edf3fd7333f"
+    },
+    {
+      "path": "icons/tech/Spa3.png",
+      "sha256": "1907611f062bba30b009670e7601882b4f8ed8db449f6c230d7ee1c71e7e36a2"
+    },
+    {
+      "path": "icons/tech/Spear.png",
+      "sha256": "edf8712e9ef846cae06ab21c1e3b3616e086a5ffc4aad9c6685ae993a2a2b7d8"
+    },
+    {
+      "path": "icons/tech/Spear_2.png",
+      "sha256": "edf8712e9ef846cae06ab21c1e3b3616e086a5ffc4aad9c6685ae993a2a2b7d8"
+    },
+    {
+      "path": "icons/tech/Spear_3.png",
+      "sha256": "edf8712e9ef846cae06ab21c1e3b3616e086a5ffc4aad9c6685ae993a2a2b7d8"
+    },
+    {
+      "path": "icons/tech/Spear_ForestBoss.png",
+      "sha256": "56a126290619e3276bf206939b380cda68d14e023462f2fc71204391f5c00057"
+    },
+    {
+      "path": "icons/tech/Spear_ForestBoss2.png",
+      "sha256": "ac6b95048b222499c442aaacc1971965b2b1b2e4a9a08bc42bc4d6da9a5de286"
+    },
+    {
+      "path": "icons/tech/Special_ElectricHatchingPalEgg.png",
+      "sha256": "23b4abd6128285191022fd3adc73ecc31daa4752f01dd364f7ce98bebbd26a0b"
+    },
+    {
+      "path": "icons/tech/Special_HatchingPalEgg.png",
+      "sha256": "aa1f20d8918ffbcaaa80af9a8e4946d302bfee32b26f91087b396db01935ccf5"
+    },
+    {
+      "path": "icons/tech/Special_PalRankUp.png",
+      "sha256": "f617b56eafe422ac4e86620a3806cf56ca95b3baebea2f671e6092ccb1f996d3"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_01.png",
+      "sha256": "680a0c68c5bf035cf3c9660110d40be50540860e9918c7f023af07de2b6eb7d3"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_02.png",
+      "sha256": "a017d837445a181c8077ea29b92282b056829c0b50beb501203f43b38962aff3"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_03.png",
+      "sha256": "b91c4775d4338eaab1912eec2deb8da03f2f5559468fd08964334255e24e68ae"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_04.png",
+      "sha256": "78d6caa0f67dc12dd05bb31eb12fd4e56d1fa0892941d0da348d1e0f73fbafc8"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_05.png",
+      "sha256": "ac0be3ea36022e41233757dd278858cdd1ff9fadb2af11ba3b5b20952a243719"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_06.png",
+      "sha256": "39de4ada2fc791229d3f24e46485659cc288a82d04c24ff7de93eedab6d3f43f"
+    },
+    {
+      "path": "icons/tech/Special_PalSphere_Grade_07.png",
+      "sha256": "9be786f82de1408978ca44fb3b6eea4f6209fd06249ef89a3fd9851c9f3e5e85"
+    },
+    {
+      "path": "icons/tech/Special_SphereFactory_Black_Grade_01.png",
+      "sha256": "452a0a001362c86e620f5b8d794b9dcc11e799372199ae33b892e7d6020a3f53"
+    },
+    {
+      "path": "icons/tech/Special_SphereFactory_Black_Grade_02.png",
+      "sha256": "0c345dbbfc0f5fafb617c1174d66c2253d27e6e274cc01c6c5563f42224fe70f"
+    },
+    {
+      "path": "icons/tech/Special_SphereFactory_Black_Grade_03.png",
+      "sha256": "65d3f52a25d60d396acc56b215c67c22e27fa7dd2d621dc842b379cf833f06fa"
+    },
+    {
+      "path": "icons/tech/SphereFactory_Black_04.png",
+      "sha256": "b4087129fb44fcc0af1725f2b1cc152d64f6dd499b8abb63089306382a60f3e3"
+    },
+    {
+      "path": "icons/tech/SphereModule_Curve.png",
+      "sha256": "1d4c3e6cab746b00e91d03898275f1d47164d69262d3d4f6e91da60e9ab225a8"
+    },
+    {
+      "path": "icons/tech/SphereModule_Curve2.png",
+      "sha256": "c5499229f5bad5b6badafefd8b32970bf19842fed9c1009f05198f3f14397a2e"
+    },
+    {
+      "path": "icons/tech/SphereModule_Heavy.png",
+      "sha256": "83c4f35f204eb1fe6fc7676149097c051d6c4889082871525295d87c2a4b174f"
+    },
+    {
+      "path": "icons/tech/SphereModule_Homing.png",
+      "sha256": "c33a43240c089c07ddd2c42fe1a096b1330e1dcb84411c9cd56c537429e046a7"
+    },
+    {
+      "path": "icons/tech/SphereModule_Sniper.png",
+      "sha256": "c85509d90a09b313d76a3ea72f517ca2822bb861d393922480a1c0c22ef7fcd7"
+    },
+    {
+      "path": "icons/tech/SphereModule_Sniper2.png",
+      "sha256": "742bb40a54d4af2d65e1861b11605079a878e43535cbdb04ff9b640d56453559"
+    },
+    {
+      "path": "icons/tech/StainlessSteel.png",
+      "sha256": "5cf7201d2f11aaad9c84b39419c4e73b0fecb1f7d096f6d859a84187ba63107a"
+    },
+    {
+      "path": "icons/tech/Stone_Gate.png",
+      "sha256": "3fd2eaf5740d12f817baf1a00a8a73363e01c74bd520347ded309c300c662d07"
+    },
+    {
+      "path": "icons/tech/Stone_houseset.png",
+      "sha256": "7097059d6a04c5e814a6c139ef0ff02f2b78780e884a51efdbf887520bff1bd1"
+    },
+    {
+      "path": "icons/tech/Stump.png",
+      "sha256": "94e13ea3121a2f2838c3c6717a37102df6bc04bc2c026665b1f456e386d46048"
+    },
+    {
+      "path": "icons/tech/Supplement.png",
+      "sha256": "3c2936b588b5382ad862880b3dd165b39d90576762a7c03350656a7c4f5ba511"
+    },
+    {
+      "path": "icons/tech/TableCircular.png",
+      "sha256": "b109b48869f0447b8513e091fefbe0b41e36e2730d933afac0fdd86114068aee"
+    },
+    {
+      "path": "icons/tech/TableDresser01_Stone.png",
+      "sha256": "aa182184cbf776da50f62c56e852f244e6e7d1e72c0e6186d9f5031fb6fa4987"
+    },
+    {
+      "path": "icons/tech/Thermal_Core.png",
+      "sha256": "edd8128b07a322df03ead94661b8660430872abe6d634295ccac8370f6f72fb6"
+    },
+    {
+      "path": "icons/tech/ToolBoxV1.png",
+      "sha256": "f6f57040ba58c2c210e8db95c0c790c0d28e85a8dbc5789d6abab78846614063"
+    },
+    {
+      "path": "icons/tech/Torch.png",
+      "sha256": "5f273c344e62d17436e012c35abde0243a5d3c7a06a74055e8aec167a6d42a5c"
+    },
+    {
+      "path": "icons/tech/TransmissionTower.png",
+      "sha256": "109dc644dda5e605ec131bf8356d120de294027b582a211609f26f6aca0758b4"
+    },
+    {
+      "path": "icons/tech/Trap_LegHold.png",
+      "sha256": "59b3f00d48b32ea184c47bbd57a46dc94cf2a8e82b66d3b427f8b8d944372b31"
+    },
+    {
+      "path": "icons/tech/Trap_LegHold_Big.png",
+      "sha256": "59b3f00d48b32ea184c47bbd57a46dc94cf2a8e82b66d3b427f8b8d944372b31"
+    },
+    {
+      "path": "icons/tech/Trap_MineAttack.png",
+      "sha256": "ef6e67a1b75e4be3696400fa1d0042268dca878d486029195b2a29045a5486bb"
+    },
+    {
+      "path": "icons/tech/Trap_MineElecShock.png",
+      "sha256": "331d8577f9bca373686efbdeecbdd2977838c297f5fc0d09eca5cc96b0c18c1a"
+    },
+    {
+      "path": "icons/tech/Trap_MineFreeze.png",
+      "sha256": "9a11244515e1687e0e1017bbb076349b04c7d26efcfb257cb0c0c40f6e00ed52"
+    },
+    {
+      "path": "icons/tech/Trap_Noose.png",
+      "sha256": "d9229d39fe457f78914bb8cf77c153d5f53bfea222b286d834b68ed176dce16c"
+    },
+    {
+      "path": "icons/tech/UnlockEquipmentSlot_Weapon_01.png",
+      "sha256": "e62d6b51042523b4f88b0397280bb7d43e527b1881bd154f1102346a7f0a17dc"
+    },
+    {
+      "path": "icons/tech/UnlockEquipmentSlot_Weapon_02.png",
+      "sha256": "56a8a1e0277ec712343e808e5eeeec1b2cc6b5305aa3e18f66d3ac4dfc2e7e75"
+    },
+    {
+      "path": "icons/tech/Unlock_Picking_Tier1.png",
+      "sha256": "8977da90a4761d90751e8afcc031a732e7f950e29e69fc09b7561fb691392aec"
+    },
+    {
+      "path": "icons/tech/Unlock_Picking_Tier2.png",
+      "sha256": "d3015219b6bdf7e00ff794b9b529ff99c9befc0af68bbc5f05fbf969a5c49583"
+    },
+    {
+      "path": "icons/tech/Unlock_Picking_Tier3.png",
+      "sha256": "e2155e006e7edf4a77d5a0f3075914a7e6a9383ab465f014b508ac5656654224"
+    },
+    {
+      "path": "icons/tech/WallSignboard.png",
+      "sha256": "f3f4429556049620dd58f20e0283751bb9d153d553986005655a577cad9705a2"
+    },
+    {
+      "path": "icons/tech/WallTorch.png",
+      "sha256": "d3fd29742aa7a478aeb32acc100fa27a78e38cb47f9ce2fe26e1886598c3a019"
+    },
+    {
+      "path": "icons/tech/WaterBuildKit.png",
+      "sha256": "ee9d25d8339fdedd1fe7e18af815a13bb08aa4785fb70fe517ae4f7d4c886369"
+    },
+    {
+      "path": "icons/tech/WeaponFactory_Dirty_04.png",
+      "sha256": "6c7be42fe36a65a713cfb2e3d8002d66e868e3eada6e133791d702671b98ba9b"
+    },
+    {
+      "path": "icons/tech/WidePenetrateShotgun.png",
+      "sha256": "29cc235cc324280a2ba0a7d53f3066f09d5522cd16f5d39fd10e3d0657f10b18"
+    },
+    {
+      "path": "icons/tech/WidePenetrateShotgunBullet.png",
+      "sha256": "2b7e44ebade9b62c49441594f77250a16d4538fbf4f463bd614458c0209c94a6"
+    },
+    {
+      "path": "icons/tech/WingGlider.png",
+      "sha256": "8c12c0a1294993de789d8af7182fee6dbdfb91974edf71d70bc7fcf6e935fa31"
+    },
+    {
+      "path": "icons/tech/WingGlider_Fuel.png",
+      "sha256": "562c57c8bbf89a946d5e06d0fca8bcefa57c84454d8e6ac41599d85f6609211f"
+    },
+    {
+      "path": "icons/tech/Wood_Gate.png",
+      "sha256": "dcb1b8799a514543c249019e767efe20e42f2c964cf6c7384e5e0e9d7d0fce9d"
+    },
+    {
+      "path": "icons/tech/Wooden_houseset.png",
+      "sha256": "982ac37d68cd52aa5de3794a97d0894aa8be8bbf286e9f7e4c8bf33045a5c639"
+    },
+    {
+      "path": "icons/tech/Wooden_ladder.png",
+      "sha256": "70dcf131c60e8e452a0cd258e473fbbdad7f0162069b4cc361de685108d7456c"
+    },
+    {
+      "path": "icons/tech/WorkSpeedIncrease1.png",
+      "sha256": "fb2a6d42b3b5c320c1b0682211ac2c4cc1475ee51f6c0ea517a78be12ca92580"
+    },
+    {
+      "path": "icons/tech/Workbench.png",
+      "sha256": "16e84fefb468acbdd590b00499d302199aaef0d46f9c4b59774c349f7e6ae6a0"
+    },
+    {
+      "path": "icons/tech/WorldTreeIngot.png",
+      "sha256": "b7dacdc00cedddc15b3b51749c1de2e62febf1e5247b75b2ad68c526e818b034"
+    },
+    {
+      "path": "icons/tech/YakushimaBlade.png",
+      "sha256": "17f1e2eb5c0945bdc3ebb054efcb1529b91fab9c306b838f6102091b129a24ba"
+    }
+  ],
+  "accepted_count": 844,
+  "backup_file_count": 893,
+  "backup_inventory_sha256": "6cb87d0a7c5960aba964335771fc6ff0c8e5fc7d7fe8e0af3438483e33806fa6",
+  "backup_root": "C:\\Users\\connlost\\AppData\\Local\\Temp\\Palworld-Pal-Editor-backups\\game-data-20260726-001355",
+  "baseline_commit": "ffe29c70c436829675a017cde178620c6c7c713e",
+  "plan_sha256": "eb99bf29804fd5b5cc72a72788599280caf10c0e85497f492da6c0cace427ddb",
+  "rejected": [],
+  "rejected_count": 0,
+  "review_approval": null,
+  "schema_version": 1
+}

@@ -1,17 +1,18 @@
+import asyncio
 import os
-from pathlib import Path
 import traceback
+from pathlib import Path
+
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
-import asyncio
 
 from palworld_pal_editor.config import (
-    PROGRAM_PATH,
     NEXUS_URL,
+    PROGRAM_PATH,
     Config,
-    version_info,
-    is_gh_build,
     get_new_version,
+    is_gh_build,
+    version_info,
 )
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
@@ -28,11 +29,17 @@ def fetch_config():
             "I18n": Config.i18n,
             "I18nList": DataProvider.get_i18n_map(),
             "Path": Config.path,
-            "HasPassword": Config.password != None,
+            "HasPassword": bool(Config.password),
             "VERSION": version_info(),
             "IsOfficialBuild": is_gh_build(),
         },
     )
+
+
+@save_blueprint.route("/status", methods=["GET"])
+@jwt_required()
+def status():
+    return reply(0, {"SaveLoaded": getattr(SaveManager(), "gvas_file", None) is not None})
 
 
 @save_blueprint.route("/load", methods=["POST"])
@@ -114,6 +121,15 @@ def get_active_skills():
             ),
             "HasSkillFruit": DataProvider.has_skill_fruit(attack["InternalName"]),
             "IsUniqueSkill": DataProvider.is_unique_attacks(attack["InternalName"]),
+            "NonInheritable": DataProvider.is_non_inheritable_attack(
+                attack["InternalName"]
+            ),
+            "Exclusive": DataProvider.is_exclusive_attack(attack["InternalName"]),
+            "BossSkill": DataProvider.is_boss_attack(attack["InternalName"]),
+            "Assignable": DataProvider.is_assignable_attack(attack["InternalName"]),
+            "AssignableToHumans": DataProvider.is_assignable_human_attack(
+                attack["InternalName"]
+            ),
             "Power": attack["Power"],
             "Element": attack["Element"],
             "CT": attack["CT"],
@@ -147,13 +163,7 @@ def get_pal_data():
     pal_arr = []
     for pal in pals_raw:
         iname = pal["InternalName"]
-        if (
-            "BOSS_" in iname
-            and DataProvider.boss_has_base_variant(iname)
-            or "Boss_" in iname
-            and DataProvider.boss_has_base_variant(iname)
-        ):
-            continue
+        tags = pal["VariantTags"]
         data = {
             "InternalName": iname,
             "Elements": pal["Elements"],
@@ -162,10 +172,43 @@ def get_pal_data():
             "I18n": DataProvider.get_pal_i18n(iname) or iname,
             "SortingKey": DataProvider.get_pal_sorting_key(iname),
             "IsHuman": DataProvider.is_pal_human(iname) or False,
+            "FamilyID": pal["FamilyID"],
+            "VariantKind": pal["VariantKind"],
+            "VariantTags": tags,
+            "IconKey": pal["IconKey"],
+            "IconAccessKey": pal["IconKey"],
+            "PaldeckRecordID": DataProvider.get_pal_paldeck_record_id(iname),
+            "PaldeckIndex": pal.get("PaldeckIndex"),
+            "PaldeckSuffix": pal.get("PaldeckSuffix", ""),
+            "RegularlyObtainable": pal["RegularlyObtainable"],
+            "AvailabilitySources": pal["AvailabilitySources"],
+            "ObtainMethods": pal["ObtainMethods"],
+            "IsBOSS": "boss" in tags,
+            "IsTower": "tower" in tags,
+            "IsRAID": "raid" in tags,
+            "IsPREDATOR": "predator" in tags,
+            "IsSUMMON": "summon" in tags,
+            "IsOilrig": "oilrig" in tags,
+            "IsOtomoTower": "tower" in tags and "otomo" in tags,
         }
         pal_dict[iname] = data
         pal_arr.append(data)
     return reply(0, {"dict": pal_dict, "arr": pal_arr})
+
+
+@save_blueprint.route("/skin_data", methods=["GET"])
+@jwt_required()
+def get_skin_data():
+    skins = [
+        {
+            "SkinName": skin["SkinName"],
+            "TargetPalName": skin["TargetPalName"],
+            "Invalid": skin.get("Invalid", False),
+        }
+        for skin in DataProvider.get_skin_data().values()
+        if skin.get("SkinType") == "EPalSkinType::Pal"
+    ]
+    return reply(0, {"arr": skins})
 
 
 @save_blueprint.route("/tech_data", methods=["GET"])
@@ -176,8 +219,12 @@ def get_tech_data():
     for tech in tech_data:
         lv = DataProvider.get_tech_lv(tech)
         lv_arr = tech_lv_dict.get(lv, [])
+        icon_key = tech.removeprefix("SkillUnlock_")
+        if tech.startswith("SkillUnlock_"):
+            icon_key = DataProvider.resolve_pal_key(icon_key)
         data = {
             "InternalName": tech,
+            "IconAccessKey": icon_key,
             "I18n": DataProvider.get_tech_i18n(tech),
             "BossTechnology": DataProvider.is_boss_tech(tech),
         }

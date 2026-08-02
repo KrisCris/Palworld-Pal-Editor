@@ -1,0 +1,3 @@
+/src/palworld_pal_editor/assets/data/*.json text eol=lf
+/src/palworld_pal_editor/assets/tools/*.json text eol=lf
+/src/palworld_pal_editor/assets/tools/*.py text eol=lf

@@ -50,7 +50,7 @@ class PalGroup:
         if not self.has_pal(instanceId):
             LOGGER.warning(f"Pal {instanceId} not exist in group {self.guild_name}")
             return
-        handle = self.instance_map.pop(instanceId)
+        handle = self.instance_map.pop(str(instanceId))
         match self.individual_character_handle_ids:
             case None:
                 pass
@@ -58,7 +58,7 @@ class PalGroup:
                 self.individual_character_handle_ids.remove(handle)
 
     def has_pal(self, instanceId: UUID | str) -> bool:
-        return instanceId in self.instance_map
+        return str(instanceId) in self.instance_map
 
     def has_player(self, playerUId: UUID | str) -> bool:
         return playerUId in self.player_map

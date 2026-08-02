@@ -1,11 +1,13 @@
 import traceback
-from flask import Blueprint, jsonify, request
+
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
-from palworld_pal_editor.core.player_entity import PlayerEntity
-from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.core import SaveManager
+from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.utils import LOGGER, DataProvider
+from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
 
@@ -14,6 +16,7 @@ player_blueprint = Blueprint("player", __name__)
 @jwt_required()
 def get_player_pals():
     id = request.json.get("PlayerUId")
+    player_entity = None
     if id == "PAL_BASE_WORKER_BTN":
         pals = SaveManager().get_working_pals()
     else:
@@ -21,6 +24,13 @@ def get_player_pals():
         if not player_entity:
             return reply(1, None, f"Player {id} Not Found")
         pals = player_entity.get_sorted_pals()
+
+    party_container_id = (
+        player_entity.OtomoCharacterContainerId if player_entity else None
+    )
+    storage_container_id = (
+        player_entity.PalStorageContainerId if player_entity else None
+    )
 
     # I hate this piece of shit
     return reply(
@@ -35,9 +45,21 @@ def get_player_pals():
                 "I18nName": pal.I18nName or None,
                 "DisplayName": pal.DisplayName or None,
                 "Gender": pal.Gender.value if pal.Gender else None,
-                # "IsTower": pal.IsTower or False,
-                # "IsBOSS": pal.IsBOSS or False,
-                # "IsRarePal": pal.IsRarePal or False,
+                "IsTower": pal.IsTower or False,
+                "IsBOSS": pal.IsBOSS or False,
+                "IsRarePal": pal.IsRarePal or False,
+                "IsAwakening": pal.IsAwakening,
+                "IsNewPal": pal.is_new_pal,
+                "ContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+                "SlotIndex": pal.SlotIndex,
+                "ContainerKind": (
+                    "party"
+                    if pal.ContainerId == party_container_id
+                    else "storage"
+                    if pal.ContainerId == storage_container_id
+                    else "other"
+                ),
+                "FavoriteIndex": pal.FavoriteIndex,
                 # "NickName": pal.NickName or "",
                 # "Level": pal.Level or 1,
                 # "Rank": pal.Rank.value if pal.Rank else 1,
@@ -107,6 +129,15 @@ def player_to_dict(player: PlayerEntity):
         "InstanceId": str(player.PlayerUId),
         "NickName": player.NickName or "",
         "Level": player.Level or 1,
+        "Exp": player.Exp or 0,
+        "UnusedStatusPoint": player.UnusedStatusPoint or 0,
+        "StatusPoints": player.StatusPoints,
+        "ExStatusPoints": player.ExStatusPoints,
+        "StatusPointTotals": player.StatusPointTotals,
+        "StatusPointMinimums": player.StatusPointMinimums,
+        "StatusPointMaximums": player.StatusPointMaximums,
+        "StatusPointTotalMaximums": PalObjects.StatusPointMaximums,
+        "StatusPointMetadata": DataProvider.get_player_status_data(),
         "HasViewingCage": player.has_viewing_cage(),
         "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
         "PalStorageContainerId": str(player.PalStorageContainerId),
@@ -140,9 +171,15 @@ def patch_player_data():
                 player_entity.unlock_all_techs()
             case "unlock_viewing_cage":
                 player_entity.unlock_viewing_cage()
+            case "set_StatusPoint":
+                player_entity.set_StatusPoint(value["name"], value["points"])
+            case "set_TotalStatusPoint":
+                player_entity.set_TotalStatusPoint(value["name"], value["points"])
             case _:
-                if isinstance(err := setattr(player_entity, key, value), TypeError):
-                    return reply(1, None, f"Error in patch_player_data {err}")
+                field = getattr(type(player_entity), key, None)
+                if not isinstance(field, property) or field.fset is None:
+                    return reply(1, None, f"Unsupported player field: {key}")
+                setattr(player_entity, key, value)
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patching player data {stack_trace}, key: {key}, value: {value}")
