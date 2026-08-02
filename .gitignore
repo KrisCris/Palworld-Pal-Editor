@@ -169,3 +169,4 @@ cython_debug/
 frontend/palworld-pal-editor-webui/dev-dist/
 
 config.json
+.worktrees/
