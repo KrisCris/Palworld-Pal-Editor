@@ -65,6 +65,28 @@ test("Pal rows render translated accessible status text for every Alpha and Luck
   assert.doesNotMatch(row(html, "alpha"), /class="new-pal-marker"|New, unsaved Pal/);
 });
 
+test("session filters use pressed buttons and edited-only Pals get a distinct marker", async () => {
+  const [{ default: PalList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PalList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  store.PAL_MAP = new Map(pals.map(pal => [pal.InstanceId, pal]));
+  store.PAL_STATIC_DATA = { TestPal: { Paldeck: 1 } };
+  store.EDITED_PAL_IDS.add("alpha");
+
+  const html = await renderVue(PalList, { pinia });
+
+  assert.match(html, /<button[^>]*class="pal-list-menu__session-button"[^>]*aria-pressed="false"[^>]*>[^]*Edited this session/);
+  assert.match(html, /<button[^>]*class="pal-list-menu__session-button"[^>]*aria-pressed="false"[^>]*>[^]*Created this session/);
+  assert.match(row(html, "alpha"), /class="edited-pal-marker"/);
+  assert.match(row(html, "alpha"), /Edited this session/);
+  assert.doesNotMatch(row(html, "ordinary"), /class="edited-pal-marker"/);
+  assert.match(row(html, "ordinary"), /class="new-pal-marker"/);
+});
+
 test("Pal row status phrases are translated in all UI locales", () => {
   const expected = [
     [en, ["Status: Ordinary", "Status: Alpha", "Status: Lucky", "Status: Alpha and Lucky"]],

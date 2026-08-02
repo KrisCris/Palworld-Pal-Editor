@@ -12,6 +12,20 @@ export const isCreatedPal = (pal, createdIds) => Boolean(
   pal?.IsNewPal || createdIds.has(pal?.InstanceId),
 );
 
+export const isEditedPal = (pal, editedIds, createdIds) => Boolean(
+  editedIds.has(pal?.InstanceId) || isCreatedPal(pal, createdIds),
+);
+
+export const matchesPalSessionFilter = (
+  pal,
+  editedOnly,
+  createdOnly,
+  editedIds,
+  createdIds,
+) => createdOnly
+  ? isCreatedPal(pal, createdIds)
+  : !editedOnly || isEditedPal(pal, editedIds, createdIds);
+
 export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Paldeck) {
   return [...pals].sort((left, right) => {
     if (mode === "priority") {

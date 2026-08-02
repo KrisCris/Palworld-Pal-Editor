@@ -4,6 +4,8 @@ import test from "node:test";
 import {
   filterPalPriority,
   isCreatedPal,
+  isEditedPal,
+  matchesPalSessionFilter,
   sortPalList,
 } from "../src/components/modules/pal-list-order.js";
 
@@ -50,4 +52,24 @@ test("Editor-created Pals can be filtered explicitly without changing sort order
   const created = new Set(["storage-2"]);
   assert.deepEqual(pals.filter(pal => isCreatedPal(pal, created)).map(pal => pal.InstanceId), ["storage-2"]);
   assert.equal(isCreatedPal({ InstanceId: "new", IsNewPal: true }, new Set()), true);
+});
+
+test("Edited session filtering includes created Pals but created filtering stays specific", () => {
+  const edited = new Set(["edited"]);
+  const created = new Set(["created"]);
+  const unchangedPal = { InstanceId: "unchanged" };
+  const editedPal = { InstanceId: "edited" };
+  const createdPal = { InstanceId: "created" };
+
+  assert.equal(isEditedPal(editedPal, edited, created), true);
+  assert.equal(isEditedPal(createdPal, edited, created), true);
+  assert.equal(isEditedPal(unchangedPal, edited, created), false);
+
+  assert.equal(matchesPalSessionFilter(unchangedPal, false, false, edited, created), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, false, edited, created), true);
+  assert.equal(matchesPalSessionFilter(createdPal, true, false, edited, created), true);
+  assert.equal(matchesPalSessionFilter(editedPal, false, true, edited, created), false);
+  assert.equal(matchesPalSessionFilter(createdPal, false, true, edited, created), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, true, edited, created), false);
+  assert.equal(matchesPalSessionFilter(createdPal, true, true, edited, created), true);
 });
