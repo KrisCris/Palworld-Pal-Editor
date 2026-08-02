@@ -188,6 +188,8 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 }
 
 .roster-header {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -284,6 +286,8 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 }
 
 .roster-list {
+  position: relative;
+  z-index: 0;
   display: grid;
   min-height: 0;
   align-content: start;
