@@ -1,11 +1,12 @@
 <script setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { filterPalPriority, isCreatedPal, sortPalList } from '@/components/modules/pal-list-order'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
+import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
@@ -13,7 +14,12 @@ const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
 const palListContainer = ref(null)
+const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
+
+const closeSortMenuOnOutsidePointer = event => closeDisclosureOnOutsidePointer(sortMenu.value, event.target)
+onMounted(() => window.addEventListener('pointerdown', closeSortMenuOnOutsidePointer))
+onBeforeUnmount(() => window.removeEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 
 watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
   await nextTick()
@@ -101,7 +107,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
         {{ palStore.getTranslatedText("PalList_Text") }}
       </button>
       <div class="roster-actions">
-        <details v-if="!props.preview" class="pal-list-menu">
+        <details v-if="!props.preview" ref="sortMenu" class="pal-list-menu">
           <summary class="roster-icon-button"
             :title="palStore.getTranslatedText('PalList_SortFilter')"
             :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
@@ -231,7 +237,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   position: absolute;
   z-index: 30;
   top: calc(100% + var(--editor-space-2));
-  right: 0;
+  left: 0;
   display: grid;
   width: min(15rem, calc(100vw - 2rem));
   gap: var(--editor-space-3);
@@ -409,6 +415,11 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 }
 
 @media (max-width: 760px) {
+  .pal-list-menu__popover {
+    right: 0;
+    left: auto;
+  }
+
   .roster-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

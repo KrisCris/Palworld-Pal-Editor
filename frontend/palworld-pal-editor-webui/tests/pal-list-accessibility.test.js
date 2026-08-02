@@ -89,8 +89,16 @@ test("Pal reselection scrolls only as far as needed inside the roster", async ()
   assert.doesNotMatch(source, /isElementInViewport/);
 });
 
-test("Pal sort and filter controls stay above the scrolling roster", async () => {
-  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
-  assert.match(source, /\.roster-header\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s);
-  assert.match(source, /\.roster-list\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*0;/s);
+test("Pal sort and filter controls dismiss outside and escape adjacent rails", async () => {
+  const [source, workspace] = await Promise.all([
+    readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/EditorView.vue", import.meta.url), "utf8"),
+  ]);
+  assert.match(source, /import \{ closeDisclosureOnOutsidePointer \} from/);
+  assert.match(source, /ref="sortMenu"/);
+  assert.match(source, /window\.addEventListener\('pointerdown', closeSortMenuOnOutsidePointer\)/);
+  assert.match(source, /window\.removeEventListener\('pointerdown', closeSortMenuOnOutsidePointer\)/);
+  assert.match(source, /\.pal-list-menu__popover\s*\{[^}]*left:\s*0;/s);
+  assert.match(workspace, /\.editor-roster--players\s*\{[^}]*z-index:\s*1;/s);
+  assert.match(workspace, /\.editor-roster--pals\s*\{[^}]*z-index:\s*2;[^}]*overflow:\s*visible;/s);
 });

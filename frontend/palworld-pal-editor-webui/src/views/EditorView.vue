@@ -71,6 +71,17 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
   animation: roster-rail-enter .2s ease-out;
 }
 
+.editor-roster--players {
+  position: relative;
+  z-index: 1;
+}
+
+.editor-roster--pals {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
 .editor-canvas {
   position: relative;
   overflow: auto;
