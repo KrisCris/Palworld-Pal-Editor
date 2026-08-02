@@ -191,6 +191,18 @@ def test_release_build_collects_only_runtime_assets_and_webui():
         assert source.index(build) < source.index(publish) < pyinstaller.start()
 
 
+def test_appimage_builder_packages_pywebview_qt_without_host_library_copying():
+    source = (ROOT / "build_appimage.sh").read_text("utf-8")
+
+    assert 'pywebview[pyside6]==4.4.1' in source
+    assert '--hidden-import="webview.platforms.qt"' in source
+    assert 'export PYWEBVIEW_GUI="qt"' in source
+    assert 'export QT_OPENGL="software"' in source
+    assert "ldd " not in source
+    assert "LD_LIBRARY_PATH" not in source
+    assert "--appimage-extract-and-run" in source
+
+
 def test_built_archives_include_runtime_assets_and_exclude_maintainer_files():
     wheel, sdist, wheel_required, sdist_required = _archive_members()
     _assert_archive_policy(wheel, wheel_required, "palworld_pal_editor")
