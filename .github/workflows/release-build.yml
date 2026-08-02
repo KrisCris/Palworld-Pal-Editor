@@ -3,173 +3,220 @@ name: Release Build
 on:
   push:
     tags:
-      - "*"
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
 
 jobs:
-  release-build:
+  metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.outputs.version }}
+      short-sha: ${{ steps.build.outputs.short-sha }}
+      built-at: ${{ steps.build.outputs.built-at }}
+    steps:
+      - name: Set release metadata
+        id: build
+        shell: bash
+        run: |
+          echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          echo "short-sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "built-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: metadata
     strategy:
+      fail-fast: false
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [macos-latest, windows-latest]
+        include:
+          - os: windows-latest
+            platform: Windows
+            source: palworld-pal-editor.exe
+            extension: .exe
+          - os: macos-15-intel
+            platform: macOS
+            source: palworld-pal-editor
+            extension: ''
+          - os: ubuntu-22.04
+            platform: Linux
+            source: palworld-pal-editor-x86_64.AppImage
+            extension: -x86_64.AppImage
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        persist-credentials: false
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.12.2
-        architecture: x64
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.12.2
+          architecture: x64
 
-    - name: Set up Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          package-manager-cache: false
 
-    - name: Extract Project Name
-      shell: bash
-      id: extract_project_name
-      run: |
-        PROJECT_NAME=$(cat pyproject.toml | grep "^name" | awk -F'"' '{print $2}')
-        if [[ -z "$PROJECT_NAME" ]]; then
-          echo "Error: Could not extract project name from pyproject.toml"
-          exit 1
-        fi
-        echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+      - name: Set build metadata
+        shell: bash
+        env:
+          VERSION_TAG: ${{ needs.metadata.outputs.version }}
+          GIT_HASH: ${{ needs.metadata.outputs.short-sha }}
+          BUILD_TIME: ${{ needs.metadata.outputs.built-at }}
+          REPO: ${{ github.repository }}@${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
 
-    - name: Set Build Metadata
-      shell: bash
-      run: |
-        CONFIG_FILE="src/palworld_pal_editor/config.py"
-        PYPROJECT_FILE="./pyproject.toml"
+          path = Path("src/palworld_pal_editor/config.py")
+          source = path.read_text("utf-8")
+          values = {
+              "VERSION": os.environ["VERSION_TAG"],
+              "RELEASE_TYPE": "RELEASE",
+              "BUILD_TIME": os.environ["BUILD_TIME"],
+              "GIT_HASH": os.environ["GIT_HASH"],
+              "REPO": os.environ["REPO"],
+          }
+          for name, value in values.items():
+              source, count = re.subn(
+                  rf"^{name} = .*?$", f"{name} = {value!r}", source, flags=re.MULTILINE
+              )
+              if count != 1:
+                  raise RuntimeError(f"Expected one {name} assignment, found {count}")
+          path.write_text(source, "utf-8")
+          PY
+          echo "VERSION_TAG=${VERSION_TAG}" >> "$GITHUB_ENV"
+          echo "GIT_HASH=${GIT_HASH}" >> "$GITHUB_ENV"
 
-        VERSION_TAG=$(git describe --tags --abbrev=0)
-        RELEASE_TYPE="RELEASE"
-        GIT_HASH=$(git rev-parse --short HEAD)
-        BUILD_TIME=$(date +%s)
+      - name: Install Linux runtime test dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            curl libasound2 libgl1 libglib2.0-0 libnss3 libxcomposite1 \
+            libxdamage1 libxkbcommon-x11-0 libxrandr2 libxcb-cursor0 \
+            libxcb-xinerama0 xdotool xvfb
 
-        REPO_OWNER="${{ github.repository_owner }}"
-        REPO_NAME="${{ github.event.repository.name }}"
-        BRANCH_NAME="${{ github.ref_name }}"
-        REPO="${REPO_OWNER}/${REPO_NAME}@${BRANCH_NAME}"
+      - name: Windows build
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./build_executable.ps1
 
-        echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
-        echo "GIT_HASH=$GIT_HASH" >> $GITHUB_ENV
+      - name: macOS build
+        if: runner.os == 'macOS'
+        shell: bash
+        run: ./build_executable.sh
 
-        if [[ "$RUNNER_OS" == "macOS" ]]; then
-          sed -i '' "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
-          sed -i '' "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
-          sed -i '' "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
-          sed -i '' "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
-          sed -i '' "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
-          sed -i '' "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
-        else
-          sed -i "s|^VERSION = .*|VERSION = \"${VERSION_TAG}\"|" $CONFIG_FILE
-          sed -i "s|^RELEASE_TYPE = .*|RELEASE_TYPE = \"${RELEASE_TYPE}\"|" $CONFIG_FILE
-          sed -i "s|^BUILD_TIME = .*|BUILD_TIME = \"${BUILD_TIME}\"|" $CONFIG_FILE
-          sed -i "s|^GIT_HASH = .*|GIT_HASH = \"${GIT_HASH}\"|" $CONFIG_FILE
-          sed -i "s|^REPO = .*|REPO = \"${REPO}\"|" $CONFIG_FILE
-          sed -i "s|^version = .*|version = \"${VERSION_TAG}\"|" $PYPROJECT_FILE
-        fi
+      - name: Linux AppImage build
+        if: runner.os == 'Linux'
+        shell: bash
+        run: ./build_appimage.sh
 
-        cat $CONFIG_FILE
-        cat $PYPROJECT_FILE
+      - name: Rename built file
+        shell: bash
+        env:
+          SOURCE_NAME: ${{ matrix.source }}
+          PLATFORM: ${{ matrix.platform }}
+          EXTENSION: ${{ matrix.extension }}
+        run: |
+          SOURCE_PATH="dist/${SOURCE_NAME}"
+          if [[ ! -f "$SOURCE_PATH" ]]; then
+            echo "Built file not found: $SOURCE_PATH" >&2
+            exit 1
+          fi
+          ASSET_NAME="Palworld-Pal-Editor_${PLATFORM}_${VERSION_TAG}_${GIT_HASH}${EXTENSION}"
+          mv "$SOURCE_PATH" "dist/$ASSET_NAME"
+          echo "ASSET_PATH=dist/$ASSET_NAME" >> "$GITHUB_ENV"
 
-        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
-        COMPARE_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}/compare/${LAST_TAG}...${VERSION_TAG}"
-        echo "COMPARE_URL=$COMPARE_URL" >> $GITHUB_ENV
+      - name: Smoke-test Linux AppImage GUI
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          chmod +x "$ASSET_PATH"
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run --auto-servernum bash -s -- "$ASSET_PATH" <<'BASH'
+          set -euo pipefail
+          APPIMAGE=$1
+          PORT=58081
+          LOG=appimage-smoke.log
+          READY_PID=''
 
-    - name: Windows Build
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        ./build_executable.ps1
+          "$APPIMAGE" --mode gui --nocli --port "$PORT" >"$LOG" 2>&1 &
+          APP_PID=$!
+          cleanup() {
+            kill "$APP_PID" 2>/dev/null || true
+            wait "$APP_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
 
-    - name: macOS Build
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        ./build_executable.sh
+          for _ in $(seq 1 60); do
+            if ! kill -0 "$APP_PID" 2>/dev/null; then
+              cat "$LOG"
+              exit 1
+            fi
+            RESPONSE=$(curl --fail --silent "http://127.0.0.1:${PORT}/api/ready" || true)
+            if [[ -n "$RESPONSE" ]]; then
+              READY_PID=$(python -c 'import json,sys; print(json.load(sys.stdin)["data"]["pid"])' <<<"$RESPONSE")
+              break
+            fi
+            sleep 1
+          done
 
-    # - name: Linux AppImage Build
-    #   if: runner.os == 'Linux'
-    #   shell: bash
-    #   run: |
-    #     docker run --rm --privileged \
-    #       -v ${{ github.workspace }}:/app \
-    #       -w /app \
-    #       ubuntu:20.04 bash -c '
-    #         set -e
+          if [[ -z "$READY_PID" ]] || ! kill -0 "$READY_PID" 2>/dev/null; then
+            cat "$LOG"
+            exit 1
+          fi
+          timeout 30 xdotool search --sync --onlyvisible --name "Palworld Pal Editor" >/dev/null
+          if grep --quiet "Failed Launching pywebview" "$LOG"; then
+            cat "$LOG"
+            exit 1
+          fi
+          BASH
 
-    #         apt update
-    #         apt install -y software-properties-common curl gnupg2 ca-certificates
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.platform }}
+          path: ${{ env.ASSET_PATH }}
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
 
-    #         # Python 3.11
-    #         add-apt-repository -y ppa:deadsnakes/ppa
-    #         apt update
-    #         DEBIAN_FRONTEND=noninteractive apt install -y \
-    #           python3.11 python3.11-venv python3.11-dev \
-    #           build-essential git libgl1 libglib2.0-0 libfuse2 fuse \
-    #           libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev
+  publish:
+    needs: [metadata, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download platform artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
 
-    #         ln -sf /usr/bin/python3.11 /usr/bin/python3
+      - name: Verify release assets
+        shell: bash
+        run: |
+          mapfile -t FILES < <(find release-assets -maxdepth 1 -type f -name 'Palworld-Pal-Editor_*' -print)
+          if [[ ${#FILES[@]} -ne 3 ]]; then
+            printf 'Expected 3 release assets, found %s\n' "${#FILES[@]}" >&2
+            exit 1
+          fi
 
-    #         # Node.js 20
-    #         curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-    #         apt install -y nodejs
-
-    #         # Required by AppImageKit
-    #         mkdir -p /dev
-    #         mknod -m 666 /dev/fuse c 10 229 || true
-    #         chmod 666 /dev/fuse || true
-
-    #         bash ./build_appimage.sh
-    #       '
-
-    - name: Fix dist file permissions after Docker build
-      if: runner.os == 'Linux'
-      run: |
-        sudo chmod -R a+rw ./dist
-
-    - name: Rename Built File
-      shell: bash
-      run: |
-        FILE_EXT=""
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          FILE_EXT=".exe"
-        elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-          FILE_EXT="-x86_64.AppImage"
-        fi
-
-        FILE_PATH="./dist/${{ env.PROJECT_NAME }}${FILE_EXT}"
-        if [[ ! -f "$FILE_PATH" ]]; then
-          echo "Error: Built file not found: $FILE_PATH"
-          exit 1
-        fi
-
-        NEW_NAME="Palworld-Pal-Editor_${{ runner.os }}_${{ env.VERSION_TAG }}_${{ env.GIT_HASH }}${FILE_EXT}"
-        mv "$FILE_PATH" "./dist/$NEW_NAME"
-
-        echo "Renamed file to: $NEW_NAME"
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: "Palworld-Pal-Editor_${{ runner.os }}_${{ env.VERSION_TAG }}"
-        path: ./dist/
-
-    - name: Create and Upload Release
-      uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: dist/*
-        body: |
-          ## Changes
-          View the changes between versions [here](${{ env.COMPARE_URL }}).
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release-assets/Palworld-Pal-Editor_*
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          make_latest: true
+          body: |
+            Built from commit [`${{ github.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }}).
