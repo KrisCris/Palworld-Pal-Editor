@@ -4480,7 +4480,7 @@
       },
       "output_hashes": {
         "data/pal_attacks.json": "18b4f1a28df4f4690ae5c6af1df5f08f87a4f3aa2935c70d0b88b08af825ec7e",
-        "data/pal_passives.json": "dc9ea2b66d3eb6cb7cc44ecf3e690806bed02e6183e9f891b06d21390c838aa2"
+        "data/pal_passives.json": "852700b02af6859e722a9f058fc430097499e5400a28352066be71275c70cc0e"
       },
       "parser_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d",
       "policy_sha256": "06c3d784006c9439bff5f6918dbaba42f5908143f3d98b0a47951f90e77b3386",

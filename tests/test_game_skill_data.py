@@ -193,6 +193,8 @@ def test_game_derived_pal_passive_contract():
     assert {"MiniNushi", "Nushi"} <= passives.keys()
     assert passives["MiniNushi"]["Rating"] == 3
     assert passives["MiniNushi"]["I18n"]["zh-CN"]["Name"] == "大猎物"
+    assert passives["CraftSpeed_up3"]["I18n"]["en"]["Description"] == "Work Speed +75%"
+    assert passives["CraftSpeed_up3"]["I18n"]["zh-CN"]["Description"] == "工作速度 +75%"
     for passive_id, row in passives.items():
         assert set(row) == PASSIVE_FIELDS, passive_id
         assert row["InternalName"] == passive_id

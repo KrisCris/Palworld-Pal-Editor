@@ -3110,6 +3110,11 @@ def build_passive_records(
         "CraftSpeed": "b_CraftSpeed",
         "MoveSpeed": "b_MoveSpeed",
     }
+    effect_label_keys = {
+        "ShotAttack": "COMMON_STATUS_RANGE_ATTACK",
+        "Defense": "COMMON_STATUS_DEFENCE",
+        "CraftSpeed": "COMMON_STATUS_SPEED",
+    }
     for passive_id, row in passive_rows.items():
         for field in invocation_fields.values():
             if type(row.get(field)) is not bool:
@@ -3199,12 +3204,16 @@ def build_passive_records(
                 parts = []
                 for effect in effects:
                     effect_type = effect["EffectType"]
-                    label = (
-                        _text_value(ui_by_locale[locale], effect_type) or effect_type
-                    )
+                    label_key = effect_label_keys.get(effect_type, effect_type)
+                    label = _text_value(ui_by_locale[locale], label_key)
+                    if label is None:
+                        missing.append(
+                            f"passive:{passive_id}:{locale}:Description:UI:{label_key}"
+                        )
+                        label = effect_type
                     parts.append(
-                        f"{effect['TargetType']}: {label} "
-                        f"{_number_text(effect['EffectValue'], signed=True)}"
+                        f"{label} "
+                        f"{_number_text(effect['EffectValue'], signed=True)}%"
                     )
                 description = "; ".join(parts) or passive_id
                 source = "composed"

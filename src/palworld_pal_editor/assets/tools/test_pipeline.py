@@ -7168,7 +7168,13 @@ class SkillDomainTests(unittest.TestCase):
         }
         descriptions = {locale: {} for locale in LOCALES}
         ui = {
-            locale: {"ShotAttack": self.text(f"{locale} attack")} for locale in LOCALES
+            locale: {
+                "ShotAttack": self.text(f"{locale} attack"),
+                "COMMON_STATUS_RANGE_ATTACK": self.text(f"{locale} attack"),
+                "COMMON_STATUS_DEFENCE": self.text(f"{locale} defense"),
+                "COMMON_STATUS_SPEED": self.text(f"{locale} work speed"),
+            }
+            for locale in LOCALES
         }
         return names, descriptions, ui
 
@@ -7363,7 +7369,11 @@ class SkillDomainTests(unittest.TestCase):
         self.assertEqual(explicit["DescriptionSource"]["en"], "explicit")
         self.assertEqual(
             rows["Composed"]["I18n"]["en"]["Description"],
-            "ToSelf: en attack +20",
+            "en attack +20%",
+        )
+        self.assertEqual(
+            rows["Composed"]["I18n"]["zh-CN"]["Description"],
+            "zh-CN attack +20%",
         )
         self.assertEqual(rows["Composed"]["DescriptionSource"]["en"], "composed")
 
