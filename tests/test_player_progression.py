@@ -124,6 +124,37 @@ class PlayerProgressionTests(unittest.TestCase):
                 with self.subTest(locale=locale, status=name):
                     self.assertIn(f'"StatusPoint_{name}"', translations)
 
+    def test_technology_keys_match_existing_save_values_case_insensitively(self):
+        original = copy.deepcopy(self.player._player_save_data)
+        try:
+            unlocked = self.player.UnlockedRecipeTechnologyNames
+            for saved, generated in (
+                ("OverHeatRifle", "OverheatRifle"),
+                ("PalBox", "PALBOX"),
+                ("ShotgunBullet", "ShotGunBullet"),
+            ):
+                with self.subTest(saved=saved, generated=generated):
+                    self.assertIn(saved, unlocked)
+                    self.assertNotIn(generated, unlocked)
+            self.assertNotIn("Snowman", unlocked)
+            original_count = len(unlocked)
+
+            self.player.toggle_UnlockedRecipeTechnologyNames("PALBOX", True)
+            self.assertEqual(original_count, len(unlocked))
+            self.assertIn("PalBox", unlocked)
+
+            self.player.toggle_UnlockedRecipeTechnologyNames("PALBOX", False)
+            self.assertFalse(any(item.casefold() == "palbox" for item in unlocked))
+
+            self.player.toggle_UnlockedRecipeTechnologyNames("PALBOX", True)
+            self.assertIn("PALBOX", unlocked)
+
+            self.player.unlock_all_techs()
+            self.assertIn("Snowman", unlocked)
+            self.assertEqual(len(unlocked), len({item.casefold() for item in unlocked}))
+        finally:
+            self.player._player_save_data = original
+
 
 if __name__ == "__main__":
     unittest.main()

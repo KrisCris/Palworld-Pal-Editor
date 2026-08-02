@@ -1,5 +1,8 @@
 <script>
 export const toggleTechnology = (player, item, isLocked) => player.toggleTech(item.InternalName, isLocked)
+export const hasUnlockedTechnology = (names, internalName) => names.some(
+  name => name.toLowerCase() === internalName.toLowerCase(),
+)
 </script>
 
 <script setup>
@@ -10,7 +13,10 @@ import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
 const props = defineProps({ item: { type: Object, required: true } })
-const isLocked = computed(() => !palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames.includes(props.item.InternalName))
+const isLocked = computed(() => !hasUnlockedTechnology(
+  palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames,
+  props.item.InternalName,
+))
 const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
 const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
 const bgStyle = computed(() => ({

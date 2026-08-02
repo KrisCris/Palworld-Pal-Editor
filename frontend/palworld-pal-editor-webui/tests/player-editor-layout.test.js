@@ -155,3 +155,12 @@ test("technology toggle dispatch preserves the item name and target lock state",
         ["Technology_Test", false],
     ]);
 });
+
+test("technology cards match save keys without case sensitivity", async () => {
+    const { hasUnlockedTechnology } = await loadVueModule("/src/components/modules/TechCard.vue");
+
+    assert.equal(hasUnlockedTechnology(["PalBox"], "PALBOX"), true);
+    assert.equal(hasUnlockedTechnology(["OverHeatRifle"], "OverheatRifle"), true);
+    assert.equal(hasUnlockedTechnology(["ShotgunBullet"], "ShotGunBullet"), true);
+    assert.equal(hasUnlockedTechnology(["PalBox"], "Snowman"), false);
+});

@@ -373,22 +373,33 @@ class PlayerEntity:
             self._player_save_data.get("UnlockedRecipeTechnologyNames")
         )
 
+    def _unlocked_technology_name(self, tech: str) -> Optional[str]:
+        return next(
+            (
+                unlocked
+                for unlocked in self.UnlockedRecipeTechnologyNames or []
+                if unlocked.casefold() == tech.casefold()
+            ),
+            None,
+        )
+
     @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
     def toggle_UnlockedRecipeTechnologyNames(self, tech: str, status: bool):
         if self.UnlockedRecipeTechnologyNames is None:
             self._player_save_data["UnlockedRecipeTechnologyNames"] = (
                 PalObjects.ArrayProperty("NameProperty", {"values": []})
             )
+        unlocked = self._unlocked_technology_name(tech)
         if status:
-            if tech in self.UnlockedRecipeTechnologyNames:
+            if unlocked is not None:
                 LOGGER.warning(f"Attempt to unlock {tech}, but it has already been unlocked, skipping")
                 return
             self.UnlockedRecipeTechnologyNames.append(tech)
         else:
-            if tech not in self.UnlockedRecipeTechnologyNames:
+            if unlocked is None:
                 LOGGER.warning(f"Attempt to lock {tech}, but it has not been unlocked, skipping")
                 return
-            self.UnlockedRecipeTechnologyNames.remove(tech)
+            self.UnlockedRecipeTechnologyNames.remove(unlocked)
 
     @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
     def unlock_all_techs(self):
@@ -396,15 +407,17 @@ class PlayerEntity:
             self._player_save_data["UnlockedRecipeTechnologyNames"] = (
                 PalObjects.ArrayProperty("NameProperty", {"values": []})
             )
+        unlocked = {
+            tech.casefold() for tech in self.UnlockedRecipeTechnologyNames
+        }
         for tech in DataProvider.get_tech_data():
-            if tech not in self.UnlockedRecipeTechnologyNames:
+            if tech.casefold() not in unlocked:
                 self.UnlockedRecipeTechnologyNames.append(tech)
+                unlocked.add(tech.casefold())
         LOGGER.info(f"Unlocked all techs for {self}")
 
     def has_viewing_cage(self) -> bool:
-        if not self.UnlockedRecipeTechnologyNames:
-            return False
-        return "DisplayCharacter" in self.UnlockedRecipeTechnologyNames
+        return self._unlocked_technology_name("DisplayCharacter") is not None
 
     def unlock_viewing_cage(self):
         self.toggle_UnlockedRecipeTechnologyNames("DisplayCharacter", True)
