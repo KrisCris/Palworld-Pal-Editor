@@ -102,3 +102,11 @@ test("Pal sort and filter controls dismiss outside and escape adjacent rails", a
   assert.match(workspace, /\.editor-roster--players\s*\{[^}]*z-index:\s*1;/s);
   assert.match(workspace, /\.editor-roster--pals\s*\{[^}]*z-index:\s*2;[^}]*overflow:\s*visible;/s);
 });
+
+test("selected Pal rows use one gender-aware accent for the full selection treatment", async () => {
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /\.pal-row\s*\{[^}]*--pal-row-accent:\s*var\(--editor-color-focus\)/s);
+  assert.match(source, /\.pal-row\.male\s*\{[^}]*--pal-row-accent:\s*var\(--editor-color-male\)/s);
+  assert.match(source, /\.pal-row\.female\s*\{[^}]*--pal-row-accent:\s*var\(--editor-color-female\)/s);
+  assert.match(source, /\.pal-row\[aria-current="true"\]\s*\{[^}]*border-color:\s*var\(--pal-row-accent\)[^}]*box-shadow:[^}]*var\(--pal-row-accent\)/s);
+});

@@ -61,8 +61,9 @@ test("the loaded editor defines and consumes one semantic color system", () => {
 });
 
 test("editor states share vivid semantic accents", () => {
+  assert.match(sources.players, /\[aria-current=["']true["']\]\s*\{[^}]*border-color:\s*var\(--editor-color-focus\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
+  assert.match(sources.pals, /\[aria-current=["']true["']\]\s*\{[^}]*border-color:\s*var\(--pal-row-accent\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
   for (const source of [sources.players, sources.pals]) {
-    assert.match(source, /\[aria-current=["']true["']\]\s*\{[^}]*border-color:\s*var\(--editor-color-focus\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
     assert.doesNotMatch(source, /\[aria-current=["']true["']\]\s*\{[^}]*linear-gradient/s);
   }
 
