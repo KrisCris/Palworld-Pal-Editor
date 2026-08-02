@@ -165,7 +165,14 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
             <img v-else-if="pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
-            <img v-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
+              :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
+              @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+          <template #bottom-left>
+            <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-right>
             <span v-if="pal.IsNewPal" class="new-pal-marker"><UiIcon name="plus" /></span>

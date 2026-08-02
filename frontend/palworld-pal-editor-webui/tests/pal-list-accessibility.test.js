@@ -110,3 +110,9 @@ test("selected Pal rows use one gender-aware accent for the full selection treat
   assert.match(source, /\.pal-row\.female\s*\{[^}]*--pal-row-accent:\s*var\(--editor-color-female\)/s);
   assert.match(source, /\.pal-row\[aria-current="true"\]\s*\{[^}]*border-color:\s*var\(--pal-row-accent\)[^}]*box-shadow:[^}]*var\(--pal-row-accent\)/s);
 });
+
+test("Pal portraits expose the in-game priority icon", async () => {
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /image\/ui\/priority-/);
+  assert.match(source, /pal\.FavoriteIndex > 0/);
+});

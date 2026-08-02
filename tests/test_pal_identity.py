@@ -244,6 +244,34 @@ class PalIdentityTests(unittest.TestCase):
         pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
         self.assertEqual(2, pal.FavoriteIndex)
 
+    def test_priority_setter_preserves_save_property_shape(self):
+        pal = self.make_pal("SheepBall")
+
+        pal.FavoriteIndex = 1
+        self.assertEqual("ByteProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual(1, pal.FavoriteIndex)
+
+        pal._pal_param["FavoriteIndex"] = PalObjects.IntProperty(2)
+        pal.FavoriteIndex = 3
+        self.assertEqual("IntProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual(3, pal.FavoriteIndex)
+
+        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(3)
+        pal.FavoriteIndex = 0
+        self.assertEqual("ByteProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual(0, pal.FavoriteIndex)
+
+    def test_priority_setter_rejects_invalid_values(self):
+        pal = self.make_pal("SheepBall")
+        for value in (-1, 4, True):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                pal.FavoriteIndex = value
+
+    def test_pal_detail_includes_priority(self):
+        pal = self.make_pal("SheepBall")
+        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
+        self.assertEqual(2, _pal_data(pal)["FavoriteIndex"])
+
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
             with self.subTest(character_id=character_id):

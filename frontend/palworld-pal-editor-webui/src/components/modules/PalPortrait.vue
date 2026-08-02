@@ -59,6 +59,7 @@ const style = computed(() => ({
 
 .pal-portrait__marker:empty { display: none; }
 .pal-portrait__marker :deep(img) { display: block; width: 100%; height: 100%; object-fit: contain; }
+.pal-portrait__marker :deep(.game-priority-icon) { filter: sepia(1) saturate(9) hue-rotate(355deg) brightness(1.12); }
 .pal-portrait__marker--top-left { top: 0; left: 0; }
 .pal-portrait__marker--top-right { top: 0; right: 0; transform: translate(25%, -25%); }
 .pal-portrait__marker--bottom-left { bottom: 0; left: 0; transform: translate(-25%, 25%); }
