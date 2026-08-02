@@ -1286,7 +1286,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function sorryandfuckyou() {
-        if (I18n.value == "zh-CN" && CN_WARNING_ON_LOAD.value) {
+        if (CN_WARNING_ON_LOAD.value) {
             showMessage({
                 severity: "warning",
                 presentation: "dialog",
