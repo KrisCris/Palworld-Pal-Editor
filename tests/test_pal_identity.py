@@ -159,6 +159,33 @@ class PalIdentityTests(unittest.TestCase):
 
         self.assertTrue(payload["IsNewPal"])
 
+    def test_pal_list_includes_awakened_and_new_state_before_selection(self):
+        pal = self.make_pal("SheepBall")
+        pal.IsAwakening = True
+        pal.is_new_pal = True
+
+        class Manager:
+            @staticmethod
+            def get_working_pals():
+                return [pal]
+
+        app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
+        with app.app_context():
+            token = create_access_token(identity="test", expires_delta=False)
+        with (
+            patch("palworld_pal_editor.api.player.SaveManager", return_value=Manager()),
+            app.test_client() as client,
+        ):
+            response = client.post(
+                "/api/player/player_pals",
+                json={"PlayerUId": "PAL_BASE_WORKER_BTN"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        pal_summary = response.get_json()["data"][0]
+        self.assertTrue(pal_summary["IsAwakening"])
+        self.assertTrue(pal_summary["IsNewPal"])
+
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
             with self.subTest(character_id=character_id):

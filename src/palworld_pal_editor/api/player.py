@@ -1,11 +1,12 @@
 import traceback
-from flask import Blueprint, jsonify, request
+
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
-from palworld_pal_editor.core.player_entity import PlayerEntity
-from palworld_pal_editor.utils.util import reply
 
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.utils import LOGGER, DataProvider
+from palworld_pal_editor.core.player_entity import PlayerEntity
+from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
 
@@ -38,6 +39,8 @@ def get_player_pals():
                 "IsTower": pal.IsTower or False,
                 "IsBOSS": pal.IsBOSS or False,
                 "IsRarePal": pal.IsRarePal or False,
+                "IsAwakening": pal.IsAwakening,
+                "IsNewPal": pal.is_new_pal,
                 # "NickName": pal.NickName or "",
                 # "Level": pal.Level or 1,
                 # "Rank": pal.Rank.value if pal.Rank else 1,
