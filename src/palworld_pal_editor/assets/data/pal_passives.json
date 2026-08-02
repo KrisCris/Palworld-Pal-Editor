@@ -11406,6 +11406,7 @@
             }
         },
         "Buff": {
+            "b_HP": -0.2,
             "b_Attack": 0.0,
             "b_Defense": 0.0,
             "b_CraftSpeed": 0.0,
@@ -11775,6 +11776,7 @@
             }
         },
         "Buff": {
+            "b_HP": -0.5,
             "b_Attack": 0.4,
             "b_Defense": 0.2,
             "b_CraftSpeed": 0.0,

@@ -7377,6 +7377,22 @@ class SkillDomainTests(unittest.TestCase):
         )
         self.assertEqual(rows["Composed"]["DescriptionSource"]["en"], "composed")
 
+    def test_passive_projection_includes_self_max_hp_buff(self) -> None:
+        passives = {
+            "HealthPenalty": self.passive_row(
+                AddPal=True,
+                EffectType1="EPalPassiveSkillEffectType::MaxHP",
+                EffectValue1=-50.0,
+            )
+        }
+        names, descriptions, ui = self.passive_texts(("HealthPenalty",))
+
+        rows, _missing = game_data.build_passive_records(
+            passives, names, descriptions, ui
+        )
+
+        self.assertEqual(rows["HealthPenalty"]["Buff"]["b_HP"], -0.5)
+
     def test_active_classification_uses_evidence_not_names(self) -> None:
         ids = (
             "EPalWazaID::Ordinary",
