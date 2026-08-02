@@ -136,6 +136,10 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertEqual("KingWhale", row["PaldeckRecordID"])
         self.assertTrue(row["RegularlyObtainable"])
         self.assertEqual(["capture-replace"], row["ObtainMethods"])
+        self.assertEqual(
+            payload["dict"]["PinkCat"]["I18n"],
+            payload["dict"]["BOSS_PinkCat"]["I18n"],
+        )
 
     def test_selected_pal_payload_contains_exact_metadata(self):
         payload = _pal_data(make_pal("BOSS_KingWhale_otomo"))

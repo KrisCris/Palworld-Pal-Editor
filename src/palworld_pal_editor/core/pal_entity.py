@@ -1374,9 +1374,6 @@ class PalEntity:
             return self._display_name_cache[cache_key]
         except KeyError:
             species_key = self.DataAccessKey
-            tags = set(DataProvider.get_pal_variant_tags(species_key))
-            if tags and tags.issubset({"alpha", "boss"}):
-                species_key = DataProvider.get_pal_variant(species_key, "base") or species_key
             species_name = DataProvider.get_pal_i18n(species_key) or species_key
             nickname_suffix = f" ({self.NickName})" if self.NickName else ""
 

@@ -124,6 +124,19 @@ class PalIdentityTests(unittest.TestCase):
             scenario.DisplayName,
         )
 
+    def test_regular_alpha_localization_uses_base_species_name_everywhere(self):
+        base_name = data_provider.DataProvider.get_pal_i18n("PinkCat")
+        self.assertEqual(
+            base_name,
+            data_provider.DataProvider.get_pal_i18n("BOSS_PinkCat"),
+        )
+
+        pal = self.make_pal("BOSS_PinkCat")
+        pal.NickName = ""
+        self.assertEqual(base_name, pal.I18nName)
+        self.assertEqual(base_name, pal.DisplayName)
+        self.assertEqual(base_name, _pal_data(pal)["I18nName"])
+
     def test_owner_name_uuid_fallback_is_json_serializable(self):
         owner_id = UUID("23d87046-27f9-4399-9269-c7e9b4bac864")
         pal_obj = PalObjects.PalSaveParameter(

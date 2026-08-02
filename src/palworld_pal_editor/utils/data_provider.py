@@ -200,6 +200,9 @@ class DataProvider:
     @none_guard(data_source=PAL_DATA, subkey="I18n")
     @staticmethod
     def get_pal_i18n(key: str) -> Optional[str]:
+        tags = set(PAL_DATA[key].get("VariantTags", ()))
+        if tags and tags.issubset({"alpha", "boss"}):
+            key = DataProvider.get_pal_variant(key, "base") or key
         i18n_list: dict = PAL_DATA[key]["I18n"]
         return i18n_list.get(Config.i18n, i18n_list.get("en"))
 
