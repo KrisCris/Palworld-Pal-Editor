@@ -153,7 +153,7 @@ export default {
     Editor_Skill_Badge_Boss: "首领",
     Editor_Skill_Badge_Fruit: "技能果实",
     Editor_Skill_Badge_Disabled: "禁用 / 内部",
-    Editor_Mastered_Skills: "学会的主动技能 (升级帕鲁时对应的技能会被自动添加)",
+    Editor_Mastered_Skills: "已掌握的主动技能",
     Editor_TechPoint: "科技点: ",
     Editor_BossTechPoint: "古代科技点: ",
     Editor_Exp: "经验值: ",

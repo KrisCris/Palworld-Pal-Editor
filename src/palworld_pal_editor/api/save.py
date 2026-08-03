@@ -134,6 +134,9 @@ def get_active_skills():
             "Element": attack["Element"],
             "CT": attack["CT"],
             "Invalid": attack.get("Invalid", False),
+            "LearnerNames": DataProvider.get_attack_learner_names(
+                attack["InternalName"]
+            ),
         }
         if data["Invalid"]:
             data["I18n"][0] = "⚠️ " + data["I18n"][0]

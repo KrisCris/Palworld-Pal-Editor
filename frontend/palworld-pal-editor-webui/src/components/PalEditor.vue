@@ -98,6 +98,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     value: skill.InternalName,
     label: skill.I18n[0],
     description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
+    tooltip: skill.I18n[1],
     meta: `${skill.InternalName} ${skill.Element}`,
     disabled: !canSelectActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
@@ -109,7 +110,12 @@ const skillBadgeLabels = skill => palStore.skillBadges(
   skill,
   palStore.SELECTED_PAL_DATA.IsHuman,
 )
-  .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge)))
+  .map(badge => {
+    const label = palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))
+    return badge === 'exclusive' && skill.LearnerNames?.length
+      ? `${skill.LearnerNames.join(' / ')} · ${label}`
+      : label
+  })
   .join(' · ');
 
 const portraitBorder = pal => pal.IsAwakening

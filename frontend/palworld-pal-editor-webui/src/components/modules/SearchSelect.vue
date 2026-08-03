@@ -17,19 +17,36 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const disclosure = ref(null)
 const query = ref('')
+const tooltip = ref('')
+let tooltipTimer
 const selected = computed(() => props.options.find(option => option.value === props.modelValue))
 const visibleOptions = computed(() => filterSearchOptions(props.options, query.value))
 
 function choose(option) {
   if (option.disabled) return
+  clearTooltip()
   emit('update:modelValue', option.value)
   query.value = ''
   disclosure.value.open = false
 }
 
+function queueTooltip(option) {
+  clearTooltip()
+  if (!option.tooltip) return
+  tooltipTimer = setTimeout(() => { tooltip.value = option.tooltip }, 1200)
+}
+
+function clearTooltip() {
+  clearTimeout(tooltipTimer)
+  tooltip.value = ''
+}
+
 const closeOnOutsidePointer = event => closeDisclosureOnOutsidePointer(disclosure.value, event.target)
 onMounted(() => window.addEventListener('pointerdown', closeOnOutsidePointer))
-onBeforeUnmount(() => window.removeEventListener('pointerdown', closeOnOutsidePointer))
+onBeforeUnmount(() => {
+  clearTooltip()
+  window.removeEventListener('pointerdown', closeOnOutsidePointer)
+})
 </script>
 
 <template>
@@ -49,7 +66,9 @@ onBeforeUnmount(() => window.removeEventListener('pointerdown', closeOnOutsidePo
       </label>
       <div class="search-select__options" role="listbox" :aria-label="ariaLabel">
         <button v-for="option in visibleOptions" :key="option.value" type="button" role="option"
-          :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)">
+          :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
+          @pointerenter="queueTooltip(option)" @pointerleave="clearTooltip"
+          @focus="queueTooltip(option)" @blur="clearTooltip">
           <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
           <img v-if="option.icon" :src="option.icon" alt="">
           <span class="search-select__copy">
@@ -59,6 +78,9 @@ onBeforeUnmount(() => window.removeEventListener('pointerdown', closeOnOutsidePo
         </button>
         <p v-if="!visibleOptions.length" class="search-select__empty">{{ noResults }}</p>
       </div>
+      <p class="search-select__tooltip" :aria-hidden="!tooltip">
+        <span v-if="tooltip" role="tooltip">{{ tooltip }}</span>
+      </p>
     </div>
   </details>
 </template>
@@ -169,6 +191,17 @@ onBeforeUnmount(() => window.removeEventListener('pointerdown', closeOnOutsidePo
 .search-select__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search-select__copy small { color: var(--editor-color-muted); font-size: .7rem; }
 .search-select__empty { margin: 0; padding: var(--editor-space-3); color: var(--editor-color-muted); text-align: center; }
+.search-select__tooltip {
+  min-height: calc(1.45em + 2 * var(--editor-space-2) + 1px);
+  max-height: 6rem;
+  margin: 0;
+  padding: var(--editor-space-2);
+  overflow-y: auto;
+  border-top: 1px solid var(--editor-color-border);
+  color: var(--editor-color-text);
+  font-size: .8rem;
+  line-height: 1.45;
+}
 
 .search-select summary:focus-visible,
 .search-select__search:focus-within,

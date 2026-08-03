@@ -46,6 +46,10 @@ test("shared selector uses native disclosure, search, and option buttons", async
     assert.match(source, /aria-selected/);
     assert.match(source, /filterSearchOptions/);
     assert.match(source, /emit\('update:modelValue'/);
+    assert.match(source, /option\.tooltip/);
+    assert.match(source, /class="search-select__tooltip" :aria-hidden="!tooltip"/);
+    assert.match(source, /<span v-if="tooltip" role="tooltip">/);
+    assert.match(source, /1200/);
 });
 
 test("Pal editor routes every ordinary dropdown through the searchable selector", async () => {
@@ -56,6 +60,8 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.doesNotMatch(source, /<SearchSelect\s+class="editor-control"/);
     assert.match(source, /:options="passiveSkillOptions\(\)"/);
     assert.match(source, /:options="activeSkillSelectOptions\(\)"/);
+    assert.match(source, /tooltip:\s*skill\.I18n\[1\]/);
+    assert.match(source, /skill\.LearnerNames/);
     assert.doesNotMatch(source, /<select\b/);
     assert.match(editorCss, /\.editor-surface:has\(\.search-select\[open\]\)/);
     for (const handler of ["add_PassiveSkillList", "add_MasteredWaza"]) assert.match(source, new RegExp(handler));

@@ -323,6 +323,18 @@ class DataProvider:
         )
 
     @staticmethod
+    def get_attack_learner_names(key: str) -> list[str]:
+        names = []
+        seen = set()
+        for learner in PAL_ATTACKS.get(key, {}).get("Learners", ()):
+            family = DataProvider.get_pal_family_id(learner.get("CharacterID", ""))
+            if not family or family.casefold() in seen:
+                continue
+            seen.add(family.casefold())
+            names.append(DataProvider.get_pal_i18n(family) or family)
+        return names
+
+    @staticmethod
     def has_attack(key: str) -> bool:
         return key in PAL_ATTACKS
 

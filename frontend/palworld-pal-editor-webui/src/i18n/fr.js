@@ -153,7 +153,7 @@ export default {
     Editor_Skill_Badge_Boss: "Boss",
     Editor_Skill_Badge_Fruit: "Fruit de compétence",
     Editor_Skill_Badge_Disabled: "Désactivée / interne",
-    Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES (LES COMPÉTENCES SONT AJOUTÉES AUTOMATIQUEMENT LORS DE LA MONTÉE EN NIVEAU DES PALS)",
+    Editor_Mastered_Skills: "COMPÉTENCES ACTIVES MAÎTRISÉES",
     Editor_TechPoint: "Points technologiques : ",
     Editor_BossTechPoint: "Points technologiques antiques : ",
     Editor_Exp: "EXP : ",

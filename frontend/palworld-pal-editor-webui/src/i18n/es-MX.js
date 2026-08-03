@@ -146,7 +146,7 @@ export default {
     Editor_Skill_Badge_Boss: "Jefe",
     Editor_Skill_Badge_Fruit: "Fruta de habilidad",
     Editor_Skill_Badge_Disabled: "Desactivada / interna",
-    Editor_Mastered_Skills: "HABILIDADES ACTIVAS DOMINADAS (SE AÑADEN AUTOMÁTICAMENTE AL SUBIR DE NIVEL A LOS PALS)",
+    Editor_Mastered_Skills: "HABILIDADES ACTIVAS DOMINADAS",
     Editor_TechPoint: "Puntos de tecnología: ",
     Editor_BossTechPoint: "Puntos de tecnología antigua: ",
     Editor_Exp: "EXP: ",

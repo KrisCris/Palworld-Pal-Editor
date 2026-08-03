@@ -160,6 +160,19 @@ def test_case_mismatched_active_skill_localization_is_resolved():
     assert railbolt["Assignable"] is True
 
 
+def test_active_skill_character_name_placeholders_are_localized():
+    chicken_rush = load("pal_attacks.json")[
+        "EPalWazaID::Unique_ChickenPal_ChickenPeck"
+    ]
+
+    assert chicken_rush["I18n"]["en"]["Description"].startswith(
+        "Chikipi's exclusive skill."
+    )
+    assert chicken_rush["I18n"]["zh-CN"]["Description"].startswith(
+        "皮皮鸡的专用技能。"
+    )
+
+
 def test_supported_kingwhale_runtime_skills_are_valid_and_assignable():
     attacks = load("pal_attacks.json")
 
@@ -261,6 +274,7 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         "Element",
         "CT",
         "Invalid",
+        "LearnerNames",
     }
     attacks = load("pal_attacks.json")
     for row in payload["data"]["arr"]:
@@ -275,6 +289,15 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         assert row["BossSkill"] == source["BossSkill"]
         assert row["Assignable"] == source["Assignable"]
         assert row["AssignableToHumans"] == source["AssignableToHumans"]
+
+    comet_barrage = payload["data"]["dict"]["EPalWazaID::ThreeCommet"]
+    assert comet_barrage["LearnerNames"] == [
+        "Eidrolon",
+        "Wistella",
+        "Selyne",
+        "Xenolord",
+        "Blazamut Ryu",
+    ]
 
     human_punch = payload["data"]["dict"]["EPalWazaID::Human_Punch"]
     assert human_punch["Invalid"] is False

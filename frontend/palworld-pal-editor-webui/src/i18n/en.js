@@ -153,7 +153,7 @@ export default {
     Editor_Skill_Badge_Boss: "Boss",
     Editor_Skill_Badge_Fruit: "Skill Fruit",
     Editor_Skill_Badge_Disabled: "Disabled / internal",
-    Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS (SKILLS ARE AUTOMATICALLY ADDED WHEN LEVELING UP PALS)",
+    Editor_Mastered_Skills: "MASTERED ACTIVE SKILLS",
     Editor_TechPoint: "Technology Points: ",
     Editor_BossTechPoint: "Ancient Technology Points: ",
     Editor_Exp: "EXP: ",

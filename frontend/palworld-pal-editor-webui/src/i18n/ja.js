@@ -154,7 +154,7 @@ export default {
     Editor_Skill_Badge_Boss: "ボス",
     Editor_Skill_Badge_Fruit: "技の実",
     Editor_Skill_Badge_Disabled: "無効 / 内部",
-    Editor_Mastered_Skills: "習得したアクティブスキル（パルをレベルアップすると自動的に追加されるスキル）",
+    Editor_Mastered_Skills: "習得したアクティブスキル",
     Editor_TechPoint: "テクノロジーポイント: ",
     Editor_BossTechPoint: "古代テクノロジーポイント: ",
     Editor_Exp: "経験値: ",

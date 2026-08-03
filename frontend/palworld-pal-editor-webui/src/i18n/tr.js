@@ -146,7 +146,7 @@ export default {
     Editor_Skill_Badge_Boss: "Patron",
     Editor_Skill_Badge_Fruit: "Beceri meyvesi",
     Editor_Skill_Badge_Disabled: "Devre dışı / dahili",
-    Editor_Mastered_Skills: "ÖĞRENİLMİŞ AKTİF BECERİLER (PALLAR SEVİYE ATLADIĞINDA BECERİLER OTOMATİK OLARAK EKLENİR)",
+    Editor_Mastered_Skills: "ÖĞRENİLMİŞ AKTİF BECERİLER",
     Editor_TechPoint: "Teknoloji puanları: ",
     Editor_BossTechPoint: "Antik teknoloji puanları: ",
     Editor_Exp: "DP: ",

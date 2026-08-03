@@ -8069,6 +8069,11 @@ class SkillDomainTests(unittest.TestCase):
                     game_data.text_table_path("DT_UI_Common_Text_Common", locale),
                     ui[locale],
                 )
+                write_table(
+                    root,
+                    game_data.text_table_path("DT_PalNameText_Common", locale),
+                    {"PAL_NAME_FixturePal": {"TextData": f"{locale} Fixture Pal"}},
+                )
             scenario_prefix_counts = {
                 "Pal/Content/Pal/Blueprint/Spawner/Quest": 8,
                 (

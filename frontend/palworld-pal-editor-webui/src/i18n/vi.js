@@ -146,7 +146,7 @@ export default {
     Editor_Skill_Badge_Boss: "Trùm",
     Editor_Skill_Badge_Fruit: "Trái kỹ năng",
     Editor_Skill_Badge_Disabled: "Vô hiệu / nội bộ",
-    Editor_Mastered_Skills: "KỸ NĂNG CHỦ ĐỘNG ĐÃ THUẦN THỤC (KỸ NĂNG TỰ ĐỘNG ĐƯỢC THÊM KHI PAL LÊN CẤP)",
+    Editor_Mastered_Skills: "KỸ NĂNG CHỦ ĐỘNG ĐÃ THUẦN THỤC",
     Editor_TechPoint: "Điểm công nghệ: ",
     Editor_BossTechPoint: "Điểm công nghệ cổ đại: ",
     Editor_Exp: "EXP: ",

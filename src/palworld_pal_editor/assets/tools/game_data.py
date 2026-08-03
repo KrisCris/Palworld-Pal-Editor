@@ -3072,6 +3072,37 @@ def _clean_game_text(
     return " ".join(text.split())
 
 
+_CHARACTER_NAME_PLACEHOLDER = re.compile(
+    r"<characterName id=\|([^|]+)\|\s*/>", re.IGNORECASE
+)
+
+
+def _expand_character_names(
+    text: str,
+    locale: str,
+    names_by_locale: dict[str, dict[str, dict]],
+    missing: list[str],
+    label: str,
+) -> str:
+    def replace(match: re.Match) -> str:
+        source_id = match.group(1)
+        key = f"PAL_NAME_{source_id}".casefold()
+        value = _text_value(names_by_locale[locale], key)
+        if value is None:
+            missing.append(f"{label}:character:{source_id}")
+            value = next(
+                (
+                    value
+                    for fallback in ("en", "ja")
+                    if (value := _text_value(names_by_locale[fallback], key))
+                ),
+                source_id,
+            )
+        return value
+
+    return _CHARACTER_NAME_PLACEHOLDER.sub(replace, text)
+
+
 def _locale_fallback(
     tables: dict[str, dict[str, dict]], key: str, internal_id: str
 ) -> str:
@@ -3249,6 +3280,7 @@ def build_active_records(
     names_by_locale: dict[str, dict[str, dict]],
     descriptions_by_locale: dict[str, dict[str, dict]],
     evidence_graph: CharacterEvidenceGraph,
+    character_names_by_locale: dict[str, dict[str, dict]] | None = None,
 ) -> tuple[dict[str, dict], tuple[str, ...]]:
     """Build active-skill records from Waza data and the shared evidence graph."""
     blockers = tuple(
@@ -3272,6 +3304,13 @@ def build_active_records(
         locale: casefold_rows(rows)
         for locale, rows in descriptions_by_locale.items()
     }
+    if character_names_by_locale is not None:
+        if set(character_names_by_locale) != set(LOCALE_DIRECTORIES):
+            raise ValueError("Character localization must contain exactly 17 locales")
+        character_names_by_locale = {
+            locale: casefold_rows(rows)
+            for locale, rows in character_names_by_locale.items()
+        }
     by_id = {}
     for source_id, row in waza_rows.items():
         skill_id = row.get("WazaType")
@@ -3384,7 +3423,15 @@ def build_active_records(
                     name, (), {}, missing, f"active:{skill_id}:{locale}:Name"
                 ),
                 "Description": _clean_game_text(
-                    description,
+                    _expand_character_names(
+                        description,
+                        locale,
+                        character_names_by_locale,
+                        missing,
+                        f"active:{skill_id}:{locale}:Description",
+                    )
+                    if character_names_by_locale is not None
+                    else description,
                     (),
                     {},
                     missing,
@@ -3526,6 +3573,10 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         locale: load_text_table(export_root, "DT_SkillDescText_Common", locale)
         for locale in LOCALE_DIRECTORIES
     }
+    character_names = {
+        locale: load_text_table(export_root, "DT_PalNameText_Common", locale)
+        for locale in LOCALE_DIRECTORIES
+    }
     ui = {
         locale: load_text_table(export_root, "DT_UI_Common_Text_Common", locale)
         for locale in LOCALE_DIRECTORIES
@@ -3538,6 +3589,7 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         names,
         descriptions,
         evidence,
+        character_names,
     )
     passive, missing_passive = build_passive_records(
         loaded["passives"], names, descriptions, ui
@@ -3569,6 +3621,7 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         ("DT_SkillNameText_Common", names),
         ("DT_SkillDescText_Common", descriptions),
         ("DT_UI_Common_Text_Common", ui),
+        ("DT_PalNameText_Common", character_names),
     ):
         for locale, rows in localized.items():
             source_counts[text_table_path(table_name, locale)] = len(rows)
