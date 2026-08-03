@@ -195,7 +195,7 @@ export default {
     PalList_SortFilter: "Ordenar y filtrar Pals",
     PalList_Sort: "Ordenar por",
     PalList_Sort_Paldeck: "Paldeck",
-    PalList_Sort_Location: "Grupo y ranura",
+    PalList_Sort_Location: "Contenedor y ranura",
     PalList_Sort_Priority: "Prioridad",
     PalList_Filter_Priority: "Filtro de prioridad",
     PalList_Filter_All: "Todas las prioridades",

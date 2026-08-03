@@ -31,6 +31,19 @@ test("Pal list sorting follows the explicitly selected mode", () => {
   );
 });
 
+test("location sorting groups base-camp Pals by container before slot", () => {
+  const baseCampPals = [
+    { InstanceId: "container-b-slot-0", ContainerKind: "other", ContainerId: "bbbb", SlotIndex: 0 },
+    { InstanceId: "container-a-slot-5", ContainerKind: "other", ContainerId: "aaaa", SlotIndex: 5 },
+    { InstanceId: "container-a-slot-1", ContainerKind: "other", ContainerId: "aaaa", SlotIndex: 1 },
+  ];
+
+  assert.deepEqual(
+    sortPalList(baseCampPals, "location").map(pal => pal.InstanceId),
+    ["container-a-slot-1", "container-a-slot-5", "container-b-slot-0"],
+  );
+});
+
 test("Paldeck sorting places Pals without a Paldeck number last", () => {
   const withoutPaldeck = { InstanceId: "human", Paldeck: "" };
 

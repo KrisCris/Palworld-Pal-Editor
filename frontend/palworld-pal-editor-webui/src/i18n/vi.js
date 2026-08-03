@@ -195,7 +195,7 @@ export default {
     PalList_SortFilter: "Sắp xếp và lọc Pal",
     PalList_Sort: "Sắp xếp theo",
     PalList_Sort_Paldeck: "Paldeck",
-    PalList_Sort_Location: "Đội và ô",
+    PalList_Sort_Location: "Thùng chứa và ô",
     PalList_Sort_Priority: "Ưu tiên",
     PalList_Filter_Priority: "Bộ lọc ưu tiên",
     PalList_Filter_All: "Mọi mức ưu tiên",

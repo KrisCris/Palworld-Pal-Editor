@@ -206,7 +206,7 @@ export default {
     PalList_SortFilter: "パルを並べ替え・絞り込み",
     PalList_Sort: "並べ替え",
     PalList_Sort_Paldeck: "パル図鑑",
-    PalList_Sort_Location: "手持ち・スロット",
+    PalList_Sort_Location: "コンテナ・スロット",
     PalList_Sort_Priority: "優先度",
     PalList_Filter_Priority: "優先度フィルター",
     PalList_Filter_All: "すべての優先度",

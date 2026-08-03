@@ -195,7 +195,7 @@ export default {
     PalList_SortFilter: "Palları sırala ve filtrele",
     PalList_Sort: "Sıralama ölçütü",
     PalList_Sort_Paldeck: "Paldeck",
-    PalList_Sort_Location: "Takım ve yuva",
+    PalList_Sort_Location: "Konteyner ve yuva",
     PalList_Sort_Priority: "Öncelik",
     PalList_Filter_Priority: "Öncelik filtresi",
     PalList_Filter_All: "Tüm öncelikler",

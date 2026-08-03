@@ -205,7 +205,7 @@ export default {
     PalList_SortFilter: "Trier et filtrer les Pals",
     PalList_Sort: "Trier par",
     PalList_Sort_Paldeck: "Paldex",
-    PalList_Sort_Location: "Équipe et emplacement",
+    PalList_Sort_Location: "Conteneur et emplacement",
     PalList_Sort_Priority: "Priorité",
     PalList_Filter_Priority: "Filtrer par priorité",
     PalList_Filter_All: "Toutes les priorités",

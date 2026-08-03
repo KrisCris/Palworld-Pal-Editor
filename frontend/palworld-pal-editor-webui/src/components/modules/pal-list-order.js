@@ -37,6 +37,10 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
       const location = (locationOrder[left.ContainerKind] ?? 2)
         - (locationOrder[right.ContainerKind] ?? 2);
       if (location) return location;
+      const missingContainer = Number(!left.ContainerId) - Number(!right.ContainerId);
+      if (missingContainer) return missingContainer;
+      const container = textOrder(left.ContainerId, right.ContainerId);
+      if (container) return container;
       const slot = (left.SlotIndex ?? Number.MAX_SAFE_INTEGER)
         - (right.SlotIndex ?? Number.MAX_SAFE_INTEGER);
       if (slot) return slot;

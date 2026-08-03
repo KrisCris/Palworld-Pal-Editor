@@ -195,7 +195,7 @@ export default {
     PalList_SortFilter: "เรียงและกรอง Pal",
     PalList_Sort: "เรียงตาม",
     PalList_Sort_Paldeck: "Paldeck",
-    PalList_Sort_Location: "ปาร์ตี้และช่อง",
+    PalList_Sort_Location: "คอนเทนเนอร์และช่อง",
     PalList_Sort_Priority: "ลำดับความสำคัญ",
     PalList_Filter_Priority: "ตัวกรองลำดับความสำคัญ",
     PalList_Filter_All: "ทุกลำดับความสำคัญ",

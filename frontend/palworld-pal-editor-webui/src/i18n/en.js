@@ -205,7 +205,7 @@ export default {
     PalList_SortFilter: "Sort and filter Pals",
     PalList_Sort: "Sort by",
     PalList_Sort_Paldeck: "Paldeck",
-    PalList_Sort_Location: "Party and slot",
+    PalList_Sort_Location: "Container and slot",
     PalList_Sort_Priority: "Priority",
     PalList_Filter_Priority: "Priority filter",
     PalList_Filter_All: "All priorities",

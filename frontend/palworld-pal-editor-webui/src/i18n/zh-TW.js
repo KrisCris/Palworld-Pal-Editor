@@ -195,7 +195,7 @@ export default {
     PalList_SortFilter: "排序和筛選帕鲁",
     PalList_Sort: "排序方式",
     PalList_Sort_Paldeck: "帕鲁圖鑑",
-    PalList_Sort_Location: "隊伍和槽位",
+    PalList_Sort_Location: "容器與槽位",
     PalList_Sort_Priority: "優先級",
     PalList_Filter_Priority: "優先級筛選",
     PalList_Filter_All: "全部優先級",
