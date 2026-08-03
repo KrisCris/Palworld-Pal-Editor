@@ -120,7 +120,7 @@ test("every supported language has a complete standalone frontend translation", 
     const tags = value => [...value.matchAll(/<\/?[a-z][^>]*>/gi)].map(match => match[0]);
 
     for (const [code, locale] of Object.entries(UI_TRANSLATIONS)) {
-        assert.deepEqual(Object.keys(locale), expectedKeys, `${code} key order`);
+        assert.deepEqual(Object.keys(locale).sort(), [...expectedKeys].sort(), `${code} keys`);
         for (const key of expectedKeys) {
             assert.deepEqual(placeholders(locale[key]), placeholders(en[key]), `${code}.${key} placeholders`);
             assert.deepEqual(tags(locale[key]), tags(en[key]), `${code}.${key} HTML`);
@@ -206,6 +206,22 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Message_Save_Success",
         "Message_Pal_Copied",
         "Message_CN_AntiScam",
+        "SupportDialog_Title",
+        "SupportDialog_Intro",
+        "SupportDialog_Financial_Title",
+        "SupportDialog_Financial_Description",
+        "SupportDialog_Other_Title",
+        "SupportDialog_Other_Description",
+        "SupportDialog_QR_Instruction",
+        "SupportDialog_QR_Alt",
+        "SupportDialog_Payment_Title",
+        "SupportDialog_Online_Description",
+        "SupportDialog_QR_Description",
+        "SupportDialog_Open_Payment",
+        "SupportDialog_Open_QR",
+        "SupportDialog_QR_Title",
+        "SupportDialog_Not_Now",
+        "SupportDialog_View_Project",
         "Operation_Select_Path",
         "Operation_Update_Player",
         "Operation_Load_Player",

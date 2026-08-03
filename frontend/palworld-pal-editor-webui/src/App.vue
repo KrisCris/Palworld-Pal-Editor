@@ -13,8 +13,8 @@ export function persistRosterCollapsed(key, value) {
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
-import MarkdownModal from '@/components/MarkdownModal.vue'
 import MessageCenter from '@/components/MessageCenter.vue'
+import SupportDialog from '@/components/SupportDialog.vue'
 import TopBar from '@/components/TopBar.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import AuthView from '@/views/AuthView.vue'
@@ -26,7 +26,11 @@ import uiIconSprite from '@/assets/ui-icons.svg?raw'
 const palStore = usePalEditorStore()
 const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
 const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
+const supportDialogVisible = computed(() =>
+  palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(palStore.APP_STATE)
+)
 const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
+const modalOverlay = computed(() => blockingOverlay.value || supportDialogVisible.value)
 const playersCollapsed = ref(readRosterCollapsed('editor.playersCollapsed'))
 const palsCollapsed = ref(readRosterCollapsed('editor.palsCollapsed'))
 const refreshPage = () => window.location.reload()
@@ -35,7 +39,7 @@ const rememberFocus = event => {
   const control = event.target.closest?.('button, a[href], input, select, textarea, [tabindex]')
   if (control) previousFocus = control
 }
-watch(blockingOverlay, async (visible, wasVisible) => {
+watch(modalOverlay, async (visible, wasVisible) => {
   if (!visible && wasVisible) {
     await nextTick()
     previousFocus?.focus()
@@ -50,8 +54,8 @@ onMounted(palStore.bootstrap)
 <template>
   <div class="ui-icon-sprite" aria-hidden="true" v-html="uiIconSprite"></div>
   <div
-    :class="['app-content', { obscured: blockingOverlay }]"
-    :inert="blockingOverlay || undefined"
+    :class="['app-content', { obscured: modalOverlay }]"
+    :inert="modalOverlay || undefined"
     @focusin="rememberFocus"
   >
     <TopBar :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
@@ -76,11 +80,9 @@ onMounted(palStore.bootstrap)
       :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
       @collapse-players="playersCollapsed = true" @collapse-pals="palsCollapsed = true" />
 
-    <MarkdownModal
-      v-if="palStore.APP_STATE === 'entry' || palStore.APP_STATE === 'editor'"
-      url="/docs/keep_this_project_alive.md"
-    />
   </div>
+
+  <SupportDialog v-if="palStore.APP_STATE === 'entry' || palStore.APP_STATE === 'editor'" />
 
   <BackendErrorView
     v-if="runtimeError"

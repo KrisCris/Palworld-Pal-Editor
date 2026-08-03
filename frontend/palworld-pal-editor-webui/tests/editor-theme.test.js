@@ -15,7 +15,7 @@ const paths = {
   search: "../src/components/modules/SearchSelect.vue",
   technology: "../src/components/modules/TechCard.vue",
   messages: "../src/components/MessageCenter.vue",
-  markdown: "../src/components/MarkdownModal.vue",
+  support: "../src/components/SupportDialog.vue",
 };
 
 const sources = Object.fromEntries(await Promise.all(
@@ -105,7 +105,7 @@ test("rendered technology cards consume the shared palette", () => {
   assert.match(sources.technology, /\.tech-header,[\s\S]*?\.tech-state\s*\{[^}]*background:\s*color-mix\([^}]*var\(--editor-color-background\)/s);
 });
 
-test("messages and markdown use shared status and dialog colors", () => {
+test("messages and support dialog use shared status and dialog colors", () => {
   assert.match(sources.messages, /\.message-toast\s*\{[^}]*var\(--editor-color-surface-raised\)/s);
   assert.match(sources.messages, /\.message-toast\.warning\s*\{[^}]*var\(--editor-color-warning\)/s);
   assert.match(sources.messages, /\.message-toast\.success\s*\{[^}]*var\(--editor-color-success\)/s);
@@ -115,14 +115,14 @@ test("messages and markdown use shared status and dialog colors", () => {
   assert.match(sources.messages, /\.message-dialog\.error\s*\{[^}]*var\(--editor-color-danger\)/s);
 
   for (const token of ["text", "primary", "danger"])
-    assert.match(sources.markdown, new RegExp(`var\\(--editor-color-${token}\\)`));
+    assert.match(sources.support, new RegExp(`var\\(--editor-color-${token}\\)`));
 });
 
 test("saturated controls keep readable semantic foregrounds", () => {
   assert.match(sources.editor, /\.editor-button--primary\s*\{[^}]*color:\s*var\(--editor-color-background\)/s);
   assert.match(sources.topBar, /\.op--primary\s*\{[^}]*color:\s*var\(--editor-color-background\)[^}]*background:\s*var\(--editor-color-primary\)/s);
   assert.match(sources.species, /\.selector-actions \.apply:disabled\s*\{[^}]*var\(--editor-color-surface-subtle\)/s);
-  assert.match(sources.markdown, /\.markdown-content a\)[^}]*color:\s*color-mix\([^}]*var\(--editor-color-primary\)/s);
+  assert.match(sources.support, /\.support-primary\s*\{[^}]*color:\s*var\(--editor-color-background\)[^}]*background:\s*var\(--editor-color-primary\)/s);
 });
 
 test("danger text controls meet normal-text contrast in normal and hover states", () => {

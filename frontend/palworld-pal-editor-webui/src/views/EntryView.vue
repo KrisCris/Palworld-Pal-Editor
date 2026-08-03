@@ -80,10 +80,9 @@ onMounted(palStore.get_updates)
                   <small>{{ palStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
                 </span>
               </a>
-              <a
+              <button
                 class="entry-action entry-action--support"
-                target="_blank"
-                href="https://github.com/KrisCris/Palworld-Pal-Editor/blob/develop/keep_this_project_alive.md"
+                type="button"
                 @click="palStore.SHOW_DONATE_FLAG = true"
               >
                 <UiIcon name="heart" />
@@ -91,7 +90,7 @@ onMounted(palStore.get_updates)
                   <strong>{{ palStore.getTranslatedText('Entry_Support_Author_Title') }}</strong>
                   <small>{{ palStore.getTranslatedText('Entry_Support_Author_Description') }}</small>
                 </span>
-              </a>
+              </button>
             </div>
           </section>
 
@@ -298,6 +297,13 @@ onMounted(palStore.get_updates)
   color: var(--editor-color-text);
   background: var(--editor-color-control);
   text-decoration: none;
+}
+
+button.entry-action {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .entry-action:hover,

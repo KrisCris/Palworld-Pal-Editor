@@ -97,6 +97,7 @@ test("the local SVG icon renderer and sprite are available", async () => {
         "save", "refresh", "home", "more", "language", "search", "plus",
         "minus", "maximum", "check", "close", "delete", "copy", "export",
         "folder", "file", "back", "forward", "unlock", "warning", "eye",
+        "coffee", "card", "qr", "external-link",
     ]) {
         assert.match(sprite, new RegExp(`<symbol\\s+id=["']${icon}["']`), icon);
     }
@@ -142,6 +143,7 @@ test("runtime game image URLs use the selected backend", async () => {
         readFile(new URL("../src/App.vue", import.meta.url), "utf8"),
     ]);
     assert.match(topBar, /src="@\/assets\/logo\.ico"/);
-    assert.match(app, /url="\/docs\/keep_this_project_alive\.md"/);
+    assert.match(app, /<SupportDialog/);
+    assert.doesNotMatch(app, /keep_this_project_alive\.md/);
     assert.match(app, /ui-icons\.svg\?raw/);
 });

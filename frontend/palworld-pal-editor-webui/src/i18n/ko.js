@@ -1,4 +1,6 @@
 export default {
+    SupportDialog_Title: "Palworld Pal Editor 후원", SupportDialog_Intro: "이 무료 오픈 소스 편집기는 제작자의 여가 시간에 유지됩니다. 모든 기여는 게임 업데이트 후에도 안정적으로 작동하는 데 도움이 됩니다.", SupportDialog_Financial_Title: "제작자 후원", SupportDialog_Financial_Description: "편리한 결제 방법을 선택하세요.", SupportDialog_Other_Title: "기부 없이 후원", SupportDialog_Other_Description: "시간, 피드백, 전문 지식도 똑같이 소중합니다.", SupportDialog_QR_Instruction: "로컬 {{0}} QR 코드를 표시하려면 마우스를 올리거나 포커스하거나 클릭하세요.", SupportDialog_QR_Alt: "{{0}} 결제 QR 코드", SupportDialog_Not_Now: "나중에", SupportDialog_View_Project: "프로젝트 보기",
+    SupportDialog_Payment_Title: "{{0}}로 후원", SupportDialog_Online_Description: "새 창에서 {{0}}를 열어 프로젝트를 후원합니다.", SupportDialog_QR_Description: "로컬에 포함된 코드를 {{0}}로 스캔하세요.", SupportDialog_Open_Payment: "{{0}} 열기", SupportDialog_Open_QR: "QR 코드 크게 보기", SupportDialog_QR_Title: "{{0}} QR 코드",
     App_Connecting: "백엔드에 연결하는 중…",
     AuthView_PW_Prompt_1: "안녕하세요! 보호 비밀번호가 설정된 것 같습니다.",
     AuthView_PW_Prompt_2: "계속하려면 비밀번호를 입력하세요:",
