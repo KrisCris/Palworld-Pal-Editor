@@ -44,10 +44,6 @@ const useBackend = async value => {
   let origin
   try { origin = normalizeBackendOrigin(value, pageOrigin) }
   catch { errorKey.value = 'BackendSelector_Invalid_Address'; return }
-  if (window.location.protocol === 'https:' && origin.startsWith('http:')) {
-    errorKey.value = 'BackendSelector_Mixed_Content'
-    return
-  }
   if (await palStore.connectBackend(origin)) close(true)
   else errorKey.value = 'BackendSelector_Connection_Failed'
 }

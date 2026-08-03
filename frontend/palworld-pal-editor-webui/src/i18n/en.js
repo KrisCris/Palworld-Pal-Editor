@@ -21,7 +21,7 @@ export default {
     BackendSelector_Remove: "Remove",
     BackendSelector_Invalid_Address: "Enter an HTTP or HTTPS server origin.",
     BackendSelector_Mixed_Content: "An HTTPS page cannot connect to an HTTP server.",
-    BackendSelector_Connection_Failed: "Unable to connect to this server. Check the address and make sure the backend is running.",
+    BackendSelector_Connection_Failed: "Unable to connect. Remote HTTP servers may require HTTPS; check CORS and the backend password. For local servers, allow Local Network Access in your browser.",
     BackendSelector_Cors_Hint: "The server must allow this page to connect.",
 
     Entry_Title: "Hello, welcome to Palworld Pal Editor",
