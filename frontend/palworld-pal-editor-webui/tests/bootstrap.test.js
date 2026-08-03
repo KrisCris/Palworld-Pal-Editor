@@ -534,7 +534,32 @@ test("selected Pal data retains its game-derived family", async () => {
     assert.equal(store.SELECTED_PAL_DATA.FamilyID, "Anubis");
 });
 
-test("fetch_config publishes backend locales and accepts its untranslated locale", async () => {
+test("successful Pal edits are tracked only until the next save load", async () => {
+    const store = newStore();
+    mockBackend({
+        password: false,
+        loaded: true,
+        players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
+    });
+
+    await store.bootstrap();
+    await store.updatePal({ target: { name: "NickName", value: "Edited" } });
+
+    assert.deepEqual([...store.EDITED_PAL_IDS], ["pal-1"]);
+    store.CREATED_PAL_IDS.add("pal-1");
+    store.PAL_LIST_EDITED_ONLY = true;
+    store.PAL_LIST_CREATED_ONLY = true;
+
+    await store.loadSave();
+
+    assert.deepEqual([...store.EDITED_PAL_IDS], []);
+    assert.deepEqual([...store.CREATED_PAL_IDS], []);
+    assert.equal(store.PAL_LIST_EDITED_ONLY, false);
+    assert.equal(store.PAL_LIST_CREATED_ONLY, false);
+});
+
+test("fetch_config publishes backend locales and switches to the translated locale", async () => {
     const store = newStore();
     const locales = {
         en: "English",
@@ -547,7 +572,7 @@ test("fetch_config publishes backend locales and accepts its untranslated locale
 
     assert.deepEqual(store.I18nList, locales);
     assert.equal(store.I18n, "de");
-    assert.equal(store.getTranslatedText("BackendError_Title"), "Something went wrong");
+    assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
 });
 
 test("healing all pals does not try to reselect a missing pal", async t => {

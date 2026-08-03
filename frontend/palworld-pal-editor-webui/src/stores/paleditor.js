@@ -233,6 +233,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.CharacterID = obj.CharacterID;
             this.FamilyID = obj.FamilyID;
             this.IconAccessKey = obj.IconAccessKey;
+            this.IconKey = obj.IconKey;
             this.DataAccessKey = obj.DataAccessKey;
             this.DataAccessKeyOG = obj.DataAccessKey;
             this.SelectionKey = PAL_STATIC_DATA.value[obj.CharacterID]
@@ -543,7 +544,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_LIST_SEARCH_KEYWORD = ref("");
     const PAL_LIST_SORT = ref("paldeck");
     const PAL_LIST_PRIORITY_FILTER = ref("all");
+    const PAL_LIST_EDITED_ONLY = ref(false);
     const PAL_LIST_CREATED_ONLY = ref(false);
+    const EDITED_PAL_IDS = ref(new Set());
     const CREATED_PAL_IDS = ref(new Set());
 
     const IS_PAL_SAVE_PATH = ref(false);
@@ -1144,7 +1147,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_LIST_SEARCH_KEYWORD.value = "";
         PAL_LIST_SORT.value = "paldeck";
         PAL_LIST_PRIORITY_FILTER.value = "all";
+        PAL_LIST_EDITED_ONLY.value = false;
         PAL_LIST_CREATED_ONLY.value = false;
+        EDITED_PAL_IDS.value.clear();
         CREATED_PAL_IDS.value.clear();
         SHOW_UNREF_PAL_FLAG.value = false;
         SHOW_OOB_PAL_FLAG.value = true;
@@ -1285,7 +1290,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function sorryandfuckyou() {
-        if (I18n.value == "zh-CN" && CN_WARNING_ON_LOAD.value) {
+        if (CN_WARNING_ON_LOAD.value) {
             showMessage({
                 severity: "warning",
                 presentation: "dialog",
@@ -1543,11 +1548,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // sometimes we manually construct a "e" target in a very hacked way
         let key = e.target.name;
         let value = e.target.value;
+        const addingActiveSkill = key === "add_MasteredWaza" || key === "add_EquipWaza";
+        const activeSkill = ACTIVE_SKILLS.value[value];
         if (
-            (key === "add_MasteredWaza" || key === "add_EquipWaza")
-            && !isSkillAssignable(
-                ACTIVE_SKILLS.value[value],
-                SELECTED_PAL_DATA.value?.IsHuman,
+            addingActiveSkill
+            && (
+                !activeSkill
+                || (
+                    HIDE_INVALID_OPTIONS.value
+                    && !isSkillAssignable(activeSkill, SELECTED_PAL_DATA.value?.IsHuman)
+                )
             )
         ) {
             showToast("Message_Skill_Not_Assignable");
@@ -1572,6 +1582,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return;
 
         if (response.status == 0) {
+            if (SELECTED_PAL_ID.value) EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
             // A hack way to trigger vue re-rendering.
             // The object is simply too nested that I can't figure out how to have vue properly refresh.
             if (SELECTED_PAL_ID.value) {
@@ -1881,7 +1892,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_LIST_SEARCH_KEYWORD,
         PAL_LIST_SORT,
         PAL_LIST_PRIORITY_FILTER,
+        PAL_LIST_EDITED_ONLY,
         PAL_LIST_CREATED_ONLY,
+        EDITED_PAL_IDS,
         CREATED_PAL_IDS,
 
         IS_LOCKED,

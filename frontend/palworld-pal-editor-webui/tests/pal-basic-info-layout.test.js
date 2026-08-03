@@ -111,7 +111,7 @@ test("Pal summary uses Paldeck identity without duplicate or N/A tags", () => {
   assert.match(panel, /<PalPortrait[^>]*size="5\.5rem"/s);
   assert.match(panel, /<template #top-left>[\s\S]*?v-if="palStore\.SELECTED_PAL_DATA\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
   assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
-  assert.match(panel, /<template #top-right>[\s\S]*?v-if="palStore\.SELECTED_PAL_DATA\.IsBOSS && palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+  assert.match(panel, /v-(?:else-)?if="palStore\.SELECTED_PAL_DATA\.IsBOSS && palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
   assert.match(panel, /PAL \$\{currentPaldeck\(\)\}/);
   assert.doesNotMatch(panel.match(/<h2[\s\S]*?<\/h2>/)?.[0] || "", /displayPalElement/);
   assert.match(panel, /specialTypeKeys\(palStore\.SELECTED_PAL_DATA\)\.length/);
@@ -132,6 +132,17 @@ test("Pal basic info keeps specific translated icon action names", () => {
   ]) {
     assert.match(panel, new RegExp(`:aria-label="palStore\\.getTranslatedText\\('${key}'\\)"`));
   }
+});
+
+test("Pal priority is editable as an accessible four-state segmented control", () => {
+  const panel = basicPanel();
+  assert.match(panel, /PalList_Sort_Priority/);
+  assert.match(panel, /class="pal-priority-control"/);
+  assert.match(panel, /v-for="priority in \[0, 1, 2, 3\]"/);
+  assert.match(panel, /:aria-pressed="palStore\.SELECTED_PAL_DATA\.FavoriteIndex === priority"/);
+  assert.match(panel, /updateRange\('FavoriteIndex', priority\)/);
+  assert.match(panel, /image\/ui\/priority-/);
+  assert.match(panel, /#top-right/);
 });
 
 test("estimated Pal stats span the full basic-info card width", () => {

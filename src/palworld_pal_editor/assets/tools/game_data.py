@@ -185,6 +185,7 @@ _PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 _PASSIVE_BUFF_FIELDS = frozenset(
     {"b_Attack", "b_Defense", "b_CraftSpeed", "b_MoveSpeed"}
 )
+_OPTIONAL_PASSIVE_BUFF_FIELDS = frozenset({"b_HP"})
 _PASSIVE_INVOCATION_FIELDS = frozenset(
     {"ActiveOtomo", "Worker", "Riding", "Reserve", "InOtomo", "Always", "InBaseCamp"}
 )
@@ -3105,10 +3106,16 @@ def build_passive_records(
         "InBaseCamp": "InvokeInBaseCamp",
     }
     buff_fields = {
+        "MaxHP": "b_HP",
         "ShotAttack": "b_Attack",
         "Defense": "b_Defense",
         "CraftSpeed": "b_CraftSpeed",
         "MoveSpeed": "b_MoveSpeed",
+    }
+    effect_label_keys = {
+        "ShotAttack": "COMMON_STATUS_RANGE_ATTACK",
+        "Defense": "COMMON_STATUS_DEFENCE",
+        "CraftSpeed": "COMMON_STATUS_SPEED",
     }
     for passive_id, row in passive_rows.items():
         for field in invocation_fields.values():
@@ -3151,7 +3158,8 @@ def build_passive_records(
                 target_type in {"ToSelf", "ToSelfAndTrainer"}
                 and effect_type in buff_fields
             ):
-                buff[buff_fields[effect_type]] += value / 100
+                buff_key = buff_fields[effect_type]
+                buff[buff_key] = buff.get(buff_key, 0.0) + value / 100
         triggers = []
         for index in range(1, 3):
             trigger = _enum_tail(
@@ -3199,12 +3207,16 @@ def build_passive_records(
                 parts = []
                 for effect in effects:
                     effect_type = effect["EffectType"]
-                    label = (
-                        _text_value(ui_by_locale[locale], effect_type) or effect_type
-                    )
+                    label_key = effect_label_keys.get(effect_type, effect_type)
+                    label = _text_value(ui_by_locale[locale], label_key)
+                    if label is None:
+                        missing.append(
+                            f"passive:{passive_id}:{locale}:Description:UI:{label_key}"
+                        )
+                        label = effect_type
                     parts.append(
-                        f"{effect['TargetType']}: {label} "
-                        f"{_number_text(effect['EffectValue'], signed=True)}"
+                        f"{label} "
+                        f"{_number_text(effect['EffectValue'], signed=True)}%"
                     )
                 description = "; ".join(parts) or passive_id
                 source = "composed"
@@ -5371,7 +5383,8 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
         buff = row.get("Buff")
         if (
             not isinstance(buff, dict)
-            or set(buff) != _PASSIVE_BUFF_FIELDS
+            or not _PASSIVE_BUFF_FIELDS <= set(buff)
+            or not set(buff) <= _PASSIVE_BUFF_FIELDS | _OPTIONAL_PASSIVE_BUFF_FIELDS
             or any(not _is_number(value) for value in buff.values())
         ):
             errors.append(f"{prefix}: Buff metadata is invalid")

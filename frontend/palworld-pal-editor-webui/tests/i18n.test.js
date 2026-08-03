@@ -12,7 +12,7 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
-const { GAME_LANGUAGES } = await import("../src/i18n/index.js");
+const { GAME_LANGUAGES, UI_TRANSLATIONS } = await import("../src/i18n/index.js");
 const locales = await Promise.all([
     import("../src/i18n/en.js"),
     import("../src/i18n/fr.js"),
@@ -98,13 +98,40 @@ test("offline and backend game-data locale maps stay identical", async () => {
     assert.deepEqual(GAME_LANGUAGES, backendLanguages);
 });
 
-test("saved game-data locales remain selected with English chrome fallback", () => {
+test("saved game-data locales use their complete frontend translation", () => {
     values.set("PAL_I18n", "zh-TW");
     setActivePinia(createPinia());
     const store = usePalEditorStore();
 
     assert.equal(store.I18n, "zh-TW");
-    assert.equal(store.getTranslatedText("BackendError_Title"), "Something went wrong");
+    assert.equal(store.getTranslatedText("BackendError_Title"), UI_TRANSLATIONS["zh-TW"].BackendError_Title);
+});
+
+test("every supported language has a complete standalone frontend translation", async () => {
+    assert.deepEqual(Object.keys(UI_TRANSLATIONS), Object.keys(GAME_LANGUAGES));
+    const expectedKeys = Object.keys(en);
+    const placeholders = value => [...value.matchAll(/\{\{\d+\}\}/g)].map(match => match[0]);
+    const tags = value => [...value.matchAll(/<\/?[a-z][^>]*>/gi)].map(match => match[0]);
+
+    for (const [code, locale] of Object.entries(UI_TRANSLATIONS)) {
+        assert.deepEqual(Object.keys(locale), expectedKeys, `${code} key order`);
+        for (const key of expectedKeys) {
+            assert.deepEqual(placeholders(locale[key]), placeholders(en[key]), `${code}.${key} placeholders`);
+            assert.deepEqual(tags(locale[key]), tags(en[key]), `${code}.${key} HTML`);
+        }
+        assert.ok(locale.Message_CN_AntiScam.trim(), `${code}.Message_CN_AntiScam`);
+
+        if (code !== "en") {
+            const source = await readFile(new URL(`../src/i18n/${code}.js`, import.meta.url), "utf8");
+            assert.doesNotMatch(source, /^import\s/m, `${code} runtime import fallback`);
+            assert.doesNotMatch(source, /\.\.\./, `${code} runtime spread fallback`);
+        }
+    }
+});
+
+test("the anti-scam warning is not restricted to Chinese", async () => {
+    const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+    assert.doesNotMatch(source, /I18n\.value\s*==={0,1}\s*["']zh-CN["']/);
 });
 
 test("bootstrap, authentication, and error controls are translated in every locale", () => {
@@ -188,7 +215,7 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Operation_Donation",
         ...palBasicInfoKeys,
     ];
-    for (const { default: locale } of locales) {
+    for (const locale of Object.values(UI_TRANSLATIONS)) {
         for (const key of keys) {
             assert.equal(typeof locale[key], "string", key);
             assert.notEqual(locale[key], "", key);
@@ -197,7 +224,7 @@ test("bootstrap, authentication, and error controls are translated in every loca
 });
 
 test("roster collapse controls are translated in every locale", () => {
-    for (const { default: locale } of locales) {
+    for (const locale of Object.values(UI_TRANSLATIONS)) {
         for (const key of ["PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {
             assert.equal(typeof locale[key], "string", key);
             assert.ok(locale[key].trim(), key);

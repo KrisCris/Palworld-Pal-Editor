@@ -2,7 +2,8 @@ from flask_jwt_extended import decode_token
 from werkzeug.security import generate_password_hash
 
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.core import SaveManager
+from palworld_pal_editor.core import PalEntity, SaveManager
+from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.webui import app
 
 
@@ -104,6 +105,41 @@ def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch)
 
     assert response.get_json()["status"] == 0
     assert updates == [("Handcraft", 5), ("Mining", 5)]
+
+
+def test_priority_uses_the_generic_pal_patch(monkeypatch):
+    configure_app(monkeypatch)
+    pal = PalEntity(PalObjects.PalSaveParameter(
+        PalObjects.EMPTY_UUID,
+        PalObjects.EMPTY_UUID,
+        PalObjects.EMPTY_UUID,
+        0,
+        PalObjects.EMPTY_UUID,
+    ))
+
+    class Player:
+        NickName = "Tester"
+
+        def get_pal(self, _pal_id):
+            return pal
+
+    monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: Player())
+
+    with app.test_client() as client:
+        token = login(client)
+        response = client.patch(
+            "/api/pal/paldata",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "PlayerUId": "player",
+                "PalGuid": "pal",
+                "key": "FavoriteIndex",
+                "value": 3,
+            },
+        )
+
+    assert response.get_json()["status"] == 0
+    assert pal.FavoriteIndex == 3
 
 
 def test_uncaught_api_error_returns_exception_details(monkeypatch):

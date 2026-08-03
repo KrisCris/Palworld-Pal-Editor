@@ -4,7 +4,13 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { filterPalPriority, isCreatedPal, sortPalList } from '@/components/modules/pal-list-order'
+import {
+  filterPalPriority,
+  isCreatedPal,
+  isEditedPal,
+  matchesPalSessionFilter,
+  sortPalList,
+} from '@/components/modules/pal-list-order'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { usePalEditorStore } from '@/stores/paleditor'
@@ -62,7 +68,13 @@ const visiblePals = computed(() => sortPalList(
   Array.from(palStore.PAL_MAP.values())
     .filter(pal => !palStore.isFilteredPal(pal))
     .filter(pal => filterPalPriority(pal, palStore.PAL_LIST_PRIORITY_FILTER))
-    .filter(pal => !palStore.PAL_LIST_CREATED_ONLY || isCreatedPal(pal, palStore.CREATED_PAL_IDS)),
+    .filter(pal => matchesPalSessionFilter(
+      pal,
+      palStore.PAL_LIST_EDITED_ONLY,
+      palStore.PAL_LIST_CREATED_ONLY,
+      palStore.EDITED_PAL_IDS,
+      palStore.CREATED_PAL_IDS,
+    )),
   palStore.PAL_LIST_SORT,
   pal => paldeckForRow(palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]),
 ))
@@ -71,6 +83,7 @@ watch(
   [
     () => palStore.PAL_LIST_SORT,
     () => palStore.PAL_LIST_PRIORITY_FILTER,
+    () => palStore.PAL_LIST_EDITED_ONLY,
     () => palStore.PAL_LIST_CREATED_ONLY,
   ],
   async () => {
@@ -97,6 +110,9 @@ const portraitBorder = pal => pal.IsAwakening
 const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   ? pal.IsRarePal ? 'AlphaLucky' : 'Alpha'
   : pal.IsRarePal ? 'Lucky' : 'Ordinary'}`)
+
+const palWasCreated = pal => isCreatedPal(pal, palStore.CREATED_PAL_IDS)
+const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.CREATED_PAL_IDS)
 </script>
 
 <template>
@@ -132,10 +148,20 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
                 <option value="0">{{ palStore.getTranslatedText('PalList_Filter_Unprioritized') }}</option>
               </select>
             </label>
-            <label class="pal-list-menu__checkbox">
-              <input v-model="palStore.PAL_LIST_CREATED_ONLY" type="checkbox">
-              <span>{{ palStore.getTranslatedText('PalList_Filter_Created') }}</span>
-            </label>
+            <div class="pal-list-menu__session-buttons">
+              <button class="pal-list-menu__session-button" type="button"
+                :aria-pressed="palStore.PAL_LIST_EDITED_ONLY"
+                @click="palStore.PAL_LIST_EDITED_ONLY = !palStore.PAL_LIST_EDITED_ONLY">
+                <UiIcon name="edit" />
+                <span>{{ palStore.getTranslatedText('PalList_Filter_Edited') }}</span>
+              </button>
+              <button class="pal-list-menu__session-button" type="button"
+                :aria-pressed="palStore.PAL_LIST_CREATED_ONLY"
+                @click="palStore.PAL_LIST_CREATED_ONLY = !palStore.PAL_LIST_CREATED_ONLY">
+                <UiIcon name="plus" />
+                <span>{{ palStore.getTranslatedText('PalList_Filter_Created') }}</span>
+              </button>
+            </div>
           </div>
         </details>
         <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
@@ -165,10 +191,18 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
             <img v-else-if="pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
-            <img v-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
+              :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
+              @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+          <template #bottom-left>
+            <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-right>
-            <span v-if="pal.IsNewPal" class="new-pal-marker"><UiIcon name="plus" /></span>
+            <span v-if="palWasCreated(pal)" class="new-pal-marker"><UiIcon name="plus" /></span>
+            <span v-else-if="palWasEdited(pal)" class="edited-pal-marker"><UiIcon name="edit" /></span>
           </template>
         </PalPortrait>
         <span class="pal-copy">
@@ -177,7 +211,8 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
           </strong>
           <small>{{ palMetadata(pal) }}</small>
           <span class="sr-only">{{ palStatus(pal) }}</span>
-          <span v-if="pal.IsNewPal" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
+          <span v-if="palWasCreated(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
+          <span v-else-if="palWasEdited(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Edited') }}</span>
         </span>
       </button>
     </div>
@@ -239,7 +274,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   top: calc(100% + var(--editor-space-2));
   left: 0;
   display: grid;
-  width: min(15rem, calc(100vw - 2rem));
+  width: min(22rem, calc(100vw - 2rem));
   gap: var(--editor-space-3);
   padding: var(--editor-space-3);
   border: 1px solid var(--editor-color-border);
@@ -255,9 +290,48 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   font-size: .75rem;
 }
 
-.pal-list-menu__popover .pal-list-menu__checkbox {
+.pal-list-menu__session-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--editor-space-1);
+  padding-top: var(--editor-space-2);
+  border-top: 1px solid var(--editor-color-border);
+}
+
+.pal-list-menu__session-button {
   display: flex;
+  min-width: 0;
+  min-height: 2.5rem;
   align-items: center;
+  justify-content: center;
+  gap: var(--editor-space-1);
+  padding: var(--editor-space-2);
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control);
+  font: inherit;
+  font-size: .72rem;
+  cursor: pointer;
+}
+
+.pal-list-menu__session-button:hover {
+  background: var(--editor-color-control-hover);
+}
+
+.pal-list-menu__session-button[aria-pressed="true"] {
+  border-color: var(--editor-color-primary);
+  color: var(--editor-color-background);
+  background: var(--editor-color-primary);
+}
+
+.pal-list-menu__session-button .ui-icon {
+  flex: 0 0 auto;
+}
+
+.pal-list-menu__session-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pal-list-menu__popover select {
@@ -303,6 +377,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 }
 
 .pal-row {
+  --pal-row-accent: var(--editor-color-focus);
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr);
   align-items: center;
@@ -322,23 +397,24 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 }
 
 .pal-row[aria-current="true"] {
-  border-color: var(--editor-color-focus);
+  border-color: var(--pal-row-accent);
   color: var(--editor-color-text);
   background: var(--editor-color-surface-raised);
-  box-shadow: inset .2rem 0 var(--editor-color-focus), 0 0 .7rem color-mix(in srgb, var(--editor-color-focus) 25%, transparent);
+  box-shadow: inset .2rem 0 var(--pal-row-accent), 0 0 .7rem color-mix(in srgb, var(--pal-row-accent) 25%, transparent);
 }
 
 .pal-row:disabled {
   cursor: default;
 }
 
-.pal-row.male { border-left-color: var(--editor-color-male); }
-.pal-row.female { border-left-color: var(--editor-color-female); }
+.pal-row.male { --pal-row-accent: var(--editor-color-male); border-left-color: var(--pal-row-accent); }
+.pal-row.female { --pal-row-accent: var(--editor-color-female); border-left-color: var(--pal-row-accent); }
 .pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
 .pal-row[aria-current="true"] small { color: var(--editor-color-muted); }
 
-.new-pal-marker {
+.new-pal-marker,
+.edited-pal-marker {
   display: grid;
   width: 100%;
   height: 100%;
@@ -348,6 +424,10 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   color: var(--editor-color-background);
   background: var(--editor-color-primary);
   font-size: .7rem;
+}
+
+.edited-pal-marker {
+  background: var(--editor-color-success);
 }
 
 .pal-copy {

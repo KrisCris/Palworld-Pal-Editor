@@ -26,6 +26,10 @@ const canAssignActiveSkill = skill => palStore.isSkillAssignable(
   palStore.SELECTED_PAL_DATA.IsHuman,
 );
 
+const canSelectActiveSkill = skill => (
+  !palStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
+);
+
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
 };
@@ -66,8 +70,18 @@ const currentPaldeck = () => paldeckForRow(
 );
 
 const skinOptions = () => [
-  { value: '', label: palStore.getTranslatedText('Editor_Skin_Default') },
-  ...availableSkins().map(skin => ({ value: skin.SkinName, label: skin.SkinName })),
+  {
+    value: '',
+    label: palStore.getTranslatedText('Editor_Skin_Default'),
+    icon: palStore.backendAssetUrl(`/image/pals/${palStore.SELECTED_PAL_DATA.IconKey || 'unknown'}`),
+  },
+  ...availableSkins().map(skin => ({
+    value: skin.SkinName,
+    label: skin.SkinName,
+    icon: palStore.backendAssetUrl(skin.Invalid
+      ? '/image/pals/unknown'
+      : `/image/pals/skin-${skin.SkinName}`),
+  })),
 ]
 
 const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
@@ -85,7 +99,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     label: skill.I18n[0],
     description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
     meta: `${skill.InternalName} ${skill.Element}`,
-    disabled: !canAssignActiveSkill(skill),
+    disabled: !canSelectActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
@@ -122,7 +136,15 @@ const portraitBorder = pal => pal.IsAwakening
             <img v-else-if="palStore.SELECTED_PAL_DATA.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
-            <img v-if="palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="palStore.SELECTED_PAL_DATA.FavoriteIndex > 0" class="game-priority-icon"
+              :src="palStore.backendAssetUrl(`/image/ui/priority-${palStore.SELECTED_PAL_DATA.FavoriteIndex}`)" alt=""
+              @error="$event.currentTarget.hidden = true">
+            <img v-else-if="palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+          </template>
+          <template #bottom-left>
+            <img v-if="palStore.SELECTED_PAL_DATA.FavoriteIndex > 0 && palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
         </PalPortrait>
         <div class="editor-summary__identity">
@@ -219,6 +241,22 @@ const portraitBorder = pal => pal.IsAwakening
                 @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
                 :aria-label="palStore.getTranslatedText('Editor_Gender')"
                 :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
+            </div>
+          </div>
+          <div class="editor-field">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("PalList_Sort_Priority") }}</span>
+            <div class="pal-priority-control" role="group" :aria-label="palStore.getTranslatedText('PalList_Sort_Priority')">
+              <button v-for="priority in [0, 1, 2, 3]" :key="priority" type="button"
+                :class="['editor-button', palStore.SELECTED_PAL_DATA.FavoriteIndex === priority ? 'editor-button--primary' : 'editor-button--secondary']"
+                :aria-label="`${palStore.getTranslatedText('PalList_Sort_Priority')}: ${['—', 'I', 'II', 'III'][priority]}`"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.FavoriteIndex === priority"
+                :disabled="palStore.LOADING_FLAG"
+                @click="updateRange('FavoriteIndex', priority)">
+                <span v-if="priority === 0">—</span>
+                <img v-else class="game-priority-icon"
+                  :src="palStore.backendAssetUrl(`/image/ui/priority-${priority}`)"
+                  :alt="['—', 'I', 'II', 'III'][priority]">
+              </button>
             </div>
           </div>
           <div class="editor-field" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
@@ -500,7 +538,7 @@ const portraitBorder = pal => pal.IsAwakening
                 class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
                 :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-                :disabled="palStore.LOADING_FLAG || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
+                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon editor-button--danger"
                 @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
@@ -519,7 +557,7 @@ const portraitBorder = pal => pal.IsAwakening
             :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
             :disabled="palStore.LOADING_FLAG
               || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-              || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
+              || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
         </div>
       </div>
     </section>
@@ -661,6 +699,22 @@ const portraitBorder = pal => pal.IsAwakening
 .editor-button--variant.is-active {
   border-color: var(--editor-color-primary);
   background: color-mix(in srgb, var(--editor-color-primary) 24%, var(--editor-color-surface-raised));
+}
+
+.pal-priority-control {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(2.5rem, 1fr));
+  gap: var(--editor-space-1);
+}
+
+.pal-priority-control .editor-button {
+  min-width: 0;
+}
+
+.pal-priority-control .game-priority-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  object-fit: contain;
 }
 
 .passive-tier {

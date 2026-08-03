@@ -12,6 +12,20 @@ export const isCreatedPal = (pal, createdIds) => Boolean(
   pal?.IsNewPal || createdIds.has(pal?.InstanceId),
 );
 
+export const isEditedPal = (pal, editedIds, createdIds) => Boolean(
+  editedIds.has(pal?.InstanceId) || isCreatedPal(pal, createdIds),
+);
+
+export const matchesPalSessionFilter = (
+  pal,
+  editedOnly,
+  createdOnly,
+  editedIds,
+  createdIds,
+) => createdOnly
+  ? isCreatedPal(pal, createdIds)
+  : !editedOnly || isEditedPal(pal, editedIds, createdIds);
+
 export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Paldeck) {
   return [...pals].sort((left, right) => {
     if (mode === "priority") {
@@ -23,6 +37,10 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
       const location = (locationOrder[left.ContainerKind] ?? 2)
         - (locationOrder[right.ContainerKind] ?? 2);
       if (location) return location;
+      const missingContainer = Number(!left.ContainerId) - Number(!right.ContainerId);
+      if (missingContainer) return missingContainer;
+      const container = textOrder(left.ContainerId, right.ContainerId);
+      if (container) return container;
       const slot = (left.SlotIndex ?? Number.MAX_SAFE_INTEGER)
         - (right.SlotIndex ?? Number.MAX_SAFE_INTEGER);
       if (slot) return slot;

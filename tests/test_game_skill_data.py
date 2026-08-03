@@ -193,6 +193,16 @@ def test_game_derived_pal_passive_contract():
     assert {"MiniNushi", "Nushi"} <= passives.keys()
     assert passives["MiniNushi"]["Rating"] == 3
     assert passives["MiniNushi"]["I18n"]["zh-CN"]["Name"] == "大猎物"
+    assert passives["CraftSpeed_up3"]["I18n"]["en"]["Description"] == "Work Speed +75%"
+    assert passives["CraftSpeed_up3"]["I18n"]["zh-CN"]["Description"] == "工作速度 +75%"
+    assert passives["WorldTree_FullStomach"]["Buff"]["b_HP"] == -0.2
+    assert passives["WorldTree_ATK_DEF"]["Buff"]["b_HP"] == -0.5
+    required_buff_fields = {
+        "b_Attack",
+        "b_Defense",
+        "b_CraftSpeed",
+        "b_MoveSpeed",
+    }
     for passive_id, row in passives.items():
         assert set(row) == PASSIVE_FIELDS, passive_id
         assert row["InternalName"] == passive_id
@@ -200,12 +210,8 @@ def test_game_derived_pal_passive_contract():
         assert set(row["DescriptionSource"]) == LOCALES
         assert set(row["Invocation"]) == INVOCATION_FIELDS
         assert all(type(value) is bool for value in row["Invocation"].values())
-        assert set(row["Buff"]) == {
-            "b_Attack",
-            "b_Defense",
-            "b_CraftSpeed",
-            "b_MoveSpeed",
-        }
+        assert required_buff_fields <= set(row["Buff"])
+        assert set(row["Buff"]) <= required_buff_fields | {"b_HP"}
         assert all(
             set(text) == {"Name", "Description"}
             and text["Name"]

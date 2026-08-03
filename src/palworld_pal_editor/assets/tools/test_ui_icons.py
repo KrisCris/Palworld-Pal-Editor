@@ -42,6 +42,9 @@ EXPECTED_SOURCES = {
     "revive": (
         "Pal/Content/Pal/Texture/UI/InGame/SkillIcon/T_icon_skill_pal_Revive"
     ),
+    "priority-1": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock",
+    "priority-2": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock_2",
+    "priority-3": "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock_3",
     **{
         name: (
             "Pal/Content/Pal/Texture/UI/IngameMenu/Buildup/"
@@ -83,6 +86,9 @@ EXPECTED_DIMENSIONS = {
     "soul": (36, 36),
     "heal": (128, 128),
     "revive": (128, 128),
+    "priority-1": (32, 32),
+    "priority-2": (32, 32),
+    "priority-3": (32, 32),
     **{
         name: (48, 48)
         for name in (

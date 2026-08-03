@@ -217,6 +217,11 @@ class DataProvider:
         scaling_list: dict = PAL_DATA[pal]["Stats"]
         return scaling_list.get(scaling_type, None)
 
+    @none_guard(data_source=PAL_DATA, subkey="Parameters")
+    @staticmethod
+    def get_pal_parameter(pal: str, parameter: str) -> Optional[float]:
+        return PAL_DATA[pal]["Parameters"].get(parameter)
+
     @none_guard(data_source=PAL_DATA, subkey="SortingKey")
     @staticmethod
     def get_pal_sorting_key(key: str, sorting_key="paldeck") -> Optional[str]:

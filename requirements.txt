@@ -1,5 +1,5 @@
 setuptools==80.9.0
-git+https://github.com/KrisCris/palworld-save-tools.git@2bcaea5b388dda955df2177e2dd88c05ba64f50f#egg=palworld-save-tools
+git+https://github.com/KrisCris/palworld-save-tools.git@82dc6ad06e6162b29c0ef7d321fed2a73609a4d6#egg=palworld-save-tools
 wheel==0.46.1
 Flask==3.1.2
 pyinstaller==6.17.0
@@ -7,4 +7,6 @@ waitress==3.0.2
 Flask-JWT-Extended==4.7.1
 pywebview==4.4.1
 requests==2.32.5
+beautifulsoup4==4.15.0
+Pillow==12.3.0
 aiohttp==3.13.2

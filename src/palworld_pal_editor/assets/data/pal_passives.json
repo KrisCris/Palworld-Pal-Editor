@@ -5,71 +5,71 @@
         "I18n": {
             "ja": {
                 "Name": "超絶技巧",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "作業速度 +75%"
             },
             "de": {
                 "Name": "Goldenes Händchen",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Arbeitstempo +75%"
             },
             "en": {
                 "Name": "Remarkable Craftsmanship",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Work Speed +75%"
             },
             "es": {
                 "Name": "Maestría trascendental",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Vel. de trabajo +75%"
             },
             "es-MX": {
                 "Name": "Maestro artesano",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Velocidad de trabajo +75%"
             },
             "fr": {
                 "Name": "Maîtrise Exceptionnelle",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Vitesse de travail +75%"
             },
             "id": {
                 "Name": "Teknik Super",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Kecepatan Kerja +75%"
             },
             "it": {
                 "Name": "Tecnica sopraffina",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Velocità delle attività +75%"
             },
             "ko": {
                 "Name": "초절기교",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "작업 속도 +75%"
             },
             "pl": {
                 "Name": "Mistrzowski kunszt",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Szybkość pracy +75%"
             },
             "pt-BR": {
                 "Name": "Artesão Transcendental",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Velocidade de trabalho +75%"
             },
             "ru": {
                 "Name": "Виртуоз",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Скорость работы +75%"
             },
             "th": {
                 "Name": "ยอดฝีมือ",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "ความเร็วการทำงาน +75%"
             },
             "tr": {
                 "Name": "Ciddi Zanaatkârlık",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Çalışma Hızı +75%"
             },
             "vi": {
                 "Name": "Kỹ Năng Siêu Việt",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "Tốc độ làm việc +75%"
             },
             "zh-CN": {
                 "Name": "卓绝技艺",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "工作速度 +75%"
             },
             "zh-TW": {
                 "Name": "卓絕技藝",
-                "Description": "ToSelf: CraftSpeed +75"
+                "Description": "工作速度 +75%"
             }
         },
         "Buff": {
@@ -123,71 +123,71 @@
         "I18n": {
             "ja": {
                 "Name": "職人気質",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "作業速度 +50%"
             },
             "de": {
                 "Name": "Handwerksmeister",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Arbeitstempo +50%"
             },
             "en": {
                 "Name": "Artisan",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Work Speed +50%"
             },
             "es": {
                 "Name": "Maestría",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Vel. de trabajo +50%"
             },
             "es-MX": {
                 "Name": "Espíritu artesano",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Velocidad de trabajo +50%"
             },
             "fr": {
                 "Name": "Appliqué",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Vitesse de travail +50%"
             },
             "id": {
                 "Name": "Tekun",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Kecepatan Kerja +50%"
             },
             "it": {
                 "Name": "Spirito artigiano",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Velocità delle attività +50%"
             },
             "ko": {
                 "Name": "장인 기질",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "작업 속도 +50%"
             },
             "pl": {
                 "Name": "Mistrz rzemiosła",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Szybkość pracy +50%"
             },
             "pt-BR": {
                 "Name": "Espírito artesão",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Velocidade de trabalho +50%"
             },
             "ru": {
                 "Name": "Мастеровитый",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Скорость работы +50%"
             },
             "th": {
                 "Name": "ช่างฝีมือ",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "ความเร็วการทำงาน +50%"
             },
             "tr": {
                 "Name": "Usta",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Çalışma Hızı +50%"
             },
             "vi": {
                 "Name": "Nghệ Nhân Đích Thực",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "Tốc độ làm việc +50%"
             },
             "zh-CN": {
                 "Name": "工匠精神",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "工作速度 +50%"
             },
             "zh-TW": {
                 "Name": "工匠精神",
-                "Description": "ToSelf: CraftSpeed +50"
+                "Description": "工作速度 +50%"
             }
         },
         "Buff": {
@@ -241,71 +241,71 @@
         "I18n": {
             "ja": {
                 "Name": "まじめ",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "作業速度 +20%"
             },
             "de": {
                 "Name": "Fleißig",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Arbeitstempo +20%"
             },
             "en": {
                 "Name": "Serious",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Work Speed +20%"
             },
             "es": {
                 "Name": "Diligencia",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Vel. de trabajo +20%"
             },
             "es-MX": {
                 "Name": "Disciplina",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Velocidad de trabajo +20%"
             },
             "fr": {
                 "Name": "Sérieux",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Vitesse de travail +20%"
             },
             "id": {
                 "Name": "Rajin",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Kecepatan Kerja +20%"
             },
             "it": {
                 "Name": "Diligenza",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Velocità delle attività +20%"
             },
             "ko": {
                 "Name": "성실함",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "작업 속도 +20%"
             },
             "pl": {
                 "Name": "Poważny",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Szybkość pracy +20%"
             },
             "pt-BR": {
                 "Name": "Dedicado",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Velocidade de trabalho +20%"
             },
             "ru": {
                 "Name": "Старательный",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Скорость работы +20%"
             },
             "th": {
                 "Name": "จริงจัง",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "ความเร็วการทำงาน +20%"
             },
             "tr": {
                 "Name": "Ciddi",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Çalışma Hızı +20%"
             },
             "vi": {
                 "Name": "Chú Tâm",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "Tốc độ làm việc +20%"
             },
             "zh-CN": {
                 "Name": "认真",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "工作速度 +20%"
             },
             "zh-TW": {
                 "Name": "認真",
-                "Description": "ToSelf: CraftSpeed +20"
+                "Description": "工作速度 +20%"
             }
         },
         "Buff": {
@@ -359,71 +359,71 @@
         "I18n": {
             "ja": {
                 "Name": "不器用",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "作業速度 -10%"
             },
             "de": {
                 "Name": "Ungeschickt",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Arbeitstempo -10%"
             },
             "en": {
                 "Name": "Clumsy",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Work Speed -10%"
             },
             "es": {
                 "Name": "Torpeza",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Vel. de trabajo -10%"
             },
             "es-MX": {
                 "Name": "Torpeza",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Velocidad de trabajo -10%"
             },
             "fr": {
                 "Name": "Maladroit",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Vitesse de travail -10%"
             },
             "id": {
                 "Name": "Canggung",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Kecepatan Kerja -10%"
             },
             "it": {
                 "Name": "Goffaggine",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Velocità delle attività -10%"
             },
             "ko": {
                 "Name": "서투름",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "작업 속도 -10%"
             },
             "pl": {
                 "Name": "Niezdarny",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Szybkość pracy -10%"
             },
             "pt-BR": {
                 "Name": "Desajeitado",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Velocidade de trabalho -10%"
             },
             "ru": {
                 "Name": "Неуклюжий",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Скорость работы -10%"
             },
             "th": {
                 "Name": "งุ่มง่าม",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "ความเร็วการทำงาน -10%"
             },
             "tr": {
                 "Name": "Sakar",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Çalışma Hızı -10%"
             },
             "vi": {
                 "Name": "Vụng Về",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "Tốc độ làm việc -10%"
             },
             "zh-CN": {
                 "Name": "笨手笨脚",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "工作速度 -10%"
             },
             "zh-TW": {
                 "Name": "笨手笨腳",
-                "Description": "ToSelf: CraftSpeed -10"
+                "Description": "工作速度 -10%"
             }
         },
         "Buff": {
@@ -477,71 +477,71 @@
         "I18n": {
             "ja": {
                 "Name": "サボり癖",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "作業速度 -30%"
             },
             "de": {
                 "Name": "Faulpelz",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Arbeitstempo -30%"
             },
             "en": {
                 "Name": "Slacker",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Work Speed -30%"
             },
             "es": {
                 "Name": "Holgazanería",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Vel. de trabajo -30%"
             },
             "es-MX": {
                 "Name": "Flojera",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Velocidad de trabajo -30%"
             },
             "fr": {
                 "Name": "Négligent",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Vitesse de travail -30%"
             },
             "id": {
                 "Name": "Malas",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Kecepatan Kerja -30%"
             },
             "it": {
                 "Name": "Svogliatezza",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Velocità delle attività -30%"
             },
             "ko": {
                 "Name": "농땡이치는 버릇",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "작업 속도 -30%"
             },
             "pl": {
                 "Name": "Obibok",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Szybkość pracy -30%"
             },
             "pt-BR": {
                 "Name": "Tendência ao ócio",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Velocidade de trabalho -30%"
             },
             "ru": {
                 "Name": "Халтурщик",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Скорость работы -30%"
             },
             "th": {
                 "Name": "จอมอู้",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "ความเร็วการทำงาน -30%"
             },
             "tr": {
                 "Name": "Tembel",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Çalışma Hızı -30%"
             },
             "vi": {
                 "Name": "Lười Biếng",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "Tốc độ làm việc -30%"
             },
             "zh-CN": {
                 "Name": "偷懒成瘾",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "工作速度 -30%"
             },
             "zh-TW": {
                 "Name": "偷懶成癮",
-                "Description": "ToSelf: CraftSpeed -30"
+                "Description": "工作速度 -30%"
             }
         },
         "Buff": {
@@ -831,71 +831,71 @@
         "I18n": {
             "ja": {
                 "Name": "硬い皮膚",
-                "Description": "ToSelf: Defense +10"
+                "Description": "防御 +10%"
             },
             "de": {
                 "Name": "Hart im Nehmen",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Verteidigung +10%"
             },
             "en": {
                 "Name": "Hard Skin",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Defense +10%"
             },
             "es": {
                 "Name": "Piel curtida",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Defensa +10%"
             },
             "es-MX": {
                 "Name": "Piel curtida",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Defensa +10%"
             },
             "fr": {
                 "Name": "Peau dure",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Défense +10%"
             },
             "id": {
                 "Name": "Kulit Keras",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Pertahanan +10%"
             },
             "it": {
                 "Name": "Pelle dura",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Difesa +10%"
             },
             "ko": {
                 "Name": "단단한 피부",
-                "Description": "ToSelf: Defense +10"
+                "Description": "방어 +10%"
             },
             "pl": {
                 "Name": "Twarda skóra",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Obrona +10%"
             },
             "pt-BR": {
                 "Name": "Casca grossa",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Defesa +10%"
             },
             "ru": {
                 "Name": "Толстокожий",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Защита +10%"
             },
             "th": {
                 "Name": "หนังเหนียว",
-                "Description": "ToSelf: Defense +10"
+                "Description": "ป้องกัน +10%"
             },
             "tr": {
                 "Name": "Kalın Deri",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Savunma +10%"
             },
             "vi": {
                 "Name": "Da Sắt",
-                "Description": "ToSelf: Defense +10"
+                "Description": "Phòng thủ +10%"
             },
             "zh-CN": {
                 "Name": "坚硬皮肤",
-                "Description": "ToSelf: Defense +10"
+                "Description": "防御 +10%"
             },
             "zh-TW": {
                 "Name": "堅硬皮膚",
-                "Description": "ToSelf: Defense +10"
+                "Description": "防禦 +10%"
             }
         },
         "Buff": {
@@ -949,71 +949,71 @@
         "I18n": {
             "ja": {
                 "Name": "うたれ弱い",
-                "Description": "ToSelf: Defense -10"
+                "Description": "防御 -10%"
             },
             "de": {
                 "Name": "Unbelastbar",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Verteidigung -10%"
             },
             "en": {
                 "Name": "Downtrodden",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Defense -10%"
             },
             "es": {
                 "Name": "Vulnerable",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Defensa -10%"
             },
             "es-MX": {
                 "Name": "Vulnerable",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Defensa -10%"
             },
             "fr": {
                 "Name": "Vulnérable aux Coups",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Défense -10%"
             },
             "id": {
                 "Name": "Mudah Diserang",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Pertahanan -10%"
             },
             "it": {
                 "Name": "Debolezza",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Difesa -10%"
             },
             "ko": {
                 "Name": "약한 맷집",
-                "Description": "ToSelf: Defense -10"
+                "Description": "방어 -10%"
             },
             "pl": {
                 "Name": "Przygnębiony",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Obrona -10%"
             },
             "pt-BR": {
                 "Name": "Delicado",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Defesa -10%"
             },
             "ru": {
                 "Name": "Мягкотелый",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Защита -10%"
             },
             "th": {
                 "Name": "ปวกเปียก",
-                "Description": "ToSelf: Defense -10"
+                "Description": "ป้องกัน -10%"
             },
             "tr": {
                 "Name": "Mağdur",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Savunma -10%"
             },
             "vi": {
                 "Name": "Yếu Ớt",
-                "Description": "ToSelf: Defense -10"
+                "Description": "Phòng thủ -10%"
             },
             "zh-CN": {
                 "Name": "弱不禁风",
-                "Description": "ToSelf: Defense -10"
+                "Description": "防御 -10%"
             },
             "zh-TW": {
                 "Name": "弱不禁風",
-                "Description": "ToSelf: Defense -10"
+                "Description": "防禦 -10%"
             }
         },
         "Buff": {
@@ -1067,71 +1067,71 @@
         "I18n": {
             "ja": {
                 "Name": "すぐ骨折する",
-                "Description": "ToSelf: Defense -20"
+                "Description": "防御 -20%"
             },
             "de": {
                 "Name": "Fragil",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Verteidigung -20%"
             },
             "en": {
                 "Name": "Brittle",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Defense -20%"
             },
             "es": {
                 "Name": "Quebradizo",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Defensa -20%"
             },
             "es-MX": {
                 "Name": "Frágil",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Defensa -20%"
             },
             "fr": {
                 "Name": "Os fragiles",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Défense -20%"
             },
             "id": {
                 "Name": "Mudah Patah Tulang",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Pertahanan -20%"
             },
             "it": {
                 "Name": "Ossa fragili",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Difesa -20%"
             },
             "ko": {
                 "Name": "부실한 뼈",
-                "Description": "ToSelf: Defense -20"
+                "Description": "방어 -20%"
             },
             "pl": {
                 "Name": "Kruchy",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Obrona -20%"
             },
             "pt-BR": {
                 "Name": "Quebradiço",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Defesa -20%"
             },
             "ru": {
                 "Name": "Хрупкие кости",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Защита -20%"
             },
             "th": {
                 "Name": "กระดูกเปราะ",
-                "Description": "ToSelf: Defense -20"
+                "Description": "ป้องกัน -20%"
             },
             "tr": {
                 "Name": "Çıtkırıldım",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Savunma -20%"
             },
             "vi": {
                 "Name": "Mỏng Manh",
-                "Description": "ToSelf: Defense -20"
+                "Description": "Phòng thủ -20%"
             },
             "zh-CN": {
                 "Name": "骨质疏松",
-                "Description": "ToSelf: Defense -20"
+                "Description": "防御 -20%"
             },
             "zh-TW": {
                 "Name": "骨質疏鬆",
-                "Description": "ToSelf: Defense -20"
+                "Description": "防禦 -20%"
             }
         },
         "Buff": {
@@ -1185,71 +1185,71 @@
         "I18n": {
             "ja": {
                 "Name": "脳筋",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "攻撃 +30%; 作業速度 -50%"
             },
             "de": {
                 "Name": "Mehr Kraft als Verstand",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Angriff +30%; Arbeitstempo -50%"
             },
             "en": {
                 "Name": "Musclehead",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Attack +30%; Work Speed -50%"
             },
             "es": {
                 "Name": "Impulsividad",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Ataque +30%; Vel. de trabajo -50%"
             },
             "es-MX": {
                 "Name": "Impulsividad",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Ataque +30%; Velocidad de trabajo -50%"
             },
             "fr": {
                 "Name": "Impulsif",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Attaque +30%; Vitesse de travail -50%"
             },
             "id": {
                 "Name": "Berpikir Pendek",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Serangan +30%; Kecepatan Kerja -50%"
             },
             "it": {
                 "Name": "Tutto muscoli",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Attacco +30%; Velocità delle attività -50%"
             },
             "ko": {
                 "Name": "운동 바보",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "공격 +30%; 작업 속도 -50%"
             },
             "pl": {
                 "Name": "Mięśniak",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Atak +30%; Szybkość pracy -50%"
             },
             "pt-BR": {
                 "Name": "Brutamontes",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Ataque +30%; Velocidade de trabalho -50%"
             },
             "ru": {
                 "Name": "Мистер мускул",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Атака +30%; Скорость работы -50%"
             },
             "th": {
                 "Name": "หน่วยใช้กำลัง",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "โจมตี +30%; ความเร็วการทำงาน -50%"
             },
             "tr": {
                 "Name": "Kas Yığını",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Saldırı +30%; Çalışma Hızı -50%"
             },
             "vi": {
                 "Name": "Cơ Bắp",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "Tấn công +30%; Tốc độ làm việc -50%"
             },
             "zh-CN": {
                 "Name": "脑筋",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "攻击 +30%; 工作速度 -50%"
             },
             "zh-TW": {
                 "Name": "腦筋",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: CraftSpeed -50"
+                "Description": "攻擊 +30%; 工作速度 -50%"
             }
         },
         "Buff": {
@@ -1308,71 +1308,71 @@
         "I18n": {
             "ja": {
                 "Name": "希少",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "攻撃 +15%; 防御 +15%; 作業速度 +20%"
             },
             "de": {
                 "Name": "Außergewöhnlich",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Angriff +15%; Verteidigung +15%; Arbeitstempo +20%"
             },
             "en": {
                 "Name": "Lucky",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Attack +15%; Defense +15%; Work Speed +20%"
             },
             "es": {
                 "Name": "Poco común",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Ataque +15%; Defensa +15%; Vel. de trabajo +20%"
             },
             "es-MX": {
                 "Name": "Suertudo",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Ataque +15%; Defensa +15%; Velocidad de trabajo +20%"
             },
             "fr": {
                 "Name": "Chanceux",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Attaque +15%; Défense +15%; Vitesse de travail +20%"
             },
             "id": {
                 "Name": "Hoki",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Serangan +15%; Pertahanan +15%; Kecepatan Kerja +20%"
             },
             "it": {
                 "Name": "Fortunato",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Attacco +15%; Difesa +15%; Velocità delle attività +20%"
             },
             "ko": {
                 "Name": "희귀",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "공격 +15%; 방어 +15%; 작업 속도 +20%"
             },
             "pl": {
                 "Name": "Szczęściarz",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Atak +15%; Obrona +15%; Szybkość pracy +20%"
             },
             "pt-BR": {
                 "Name": "Da sorte",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Ataque +15%; Defesa +15%; Velocidade de trabalho +20%"
             },
             "ru": {
                 "Name": "Удачливый",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Атака +15%; Защита +15%; Скорость работы +20%"
             },
             "th": {
                 "Name": "นำโชค",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "โจมตี +15%; ป้องกัน +15%; ความเร็วการทำงาน +20%"
             },
             "tr": {
                 "Name": "Şanslı",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Saldırı +15%; Savunma +15%; Çalışma Hızı +20%"
             },
             "vi": {
                 "Name": "May Mắn",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "Tấn công +15%; Phòng thủ +15%; Tốc độ làm việc +20%"
             },
             "zh-CN": {
                 "Name": "稀有",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "攻击 +15%; 防御 +15%; 工作速度 +20%"
             },
             "zh-TW": {
                 "Name": "稀有",
-                "Description": "ToSelf: ShotAttack +15; None: Defense +15; ToSelf: CraftSpeed +20"
+                "Description": "攻擊 +15%; 防禦 +15%; 工作速度 +20%"
             }
         },
         "Buff": {
@@ -1933,71 +1933,71 @@
         "I18n": {
             "ja": {
                 "Name": "鬼神",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "攻撃 +30%; 防御 +5%"
             },
             "de": {
                 "Name": "Schattenherrscher",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Angriff +30%; Verteidigung +5%"
             },
             "en": {
                 "Name": "Demon God",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Attack +30%; Defense +5%"
             },
             "es": {
                 "Name": "Dios demoníaco",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Ataque +30%; Defensa +5%"
             },
             "es-MX": {
                 "Name": "Dios demoníaco",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Ataque +30%; Defensa +5%"
             },
             "fr": {
                 "Name": "Colère Divine",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Attaque +30%; Défense +5%"
             },
             "id": {
                 "Name": "Dewa Iblis",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Serangan +30%; Pertahanan +5%"
             },
             "it": {
                 "Name": "Divinità feroce",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Attacco +30%; Difesa +5%"
             },
             "ko": {
                 "Name": "귀신",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "공격 +30%; 방어 +5%"
             },
             "pl": {
                 "Name": "Bóg Demonów",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Atak +30%; Obrona +5%"
             },
             "pt-BR": {
                 "Name": "Deus Inclemente",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Ataque +30%; Defesa +5%"
             },
             "ru": {
                 "Name": "Демон-бог",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Атака +30%; Защита +5%"
             },
             "th": {
                 "Name": "เทพมาร",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "โจมตี +30%; ป้องกัน +5%"
             },
             "tr": {
                 "Name": "İblis Tanrısı",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Saldırı +30%; Savunma +5%"
             },
             "vi": {
                 "Name": "Quỷ Thần",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "Tấn công +30%; Phòng thủ +5%"
             },
             "zh-CN": {
                 "Name": "鬼神",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "攻击 +30%; 防御 +5%"
             },
             "zh-TW": {
                 "Name": "鬼神",
-                "Description": "ToSelf: ShotAttack +30; ToSelf: Defense +5"
+                "Description": "攻擊 +30%; 防禦 +5%"
             }
         },
         "Buff": {
@@ -2056,71 +2056,71 @@
         "I18n": {
             "ja": {
                 "Name": "獰猛",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "攻撃 +20%"
             },
             "de": {
                 "Name": "Wild",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Angriff +20%"
             },
             "en": {
                 "Name": "Ferocious",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Attack +20%"
             },
             "es": {
                 "Name": "Ferocidad",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Ataque +20%"
             },
             "es-MX": {
                 "Name": "Ferocidad",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Ataque +20%"
             },
             "fr": {
                 "Name": "Féroce",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Attaque +20%"
             },
             "id": {
                 "Name": "Ganas",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Serangan +20%"
             },
             "it": {
                 "Name": "Animo feroce",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Attacco +20%"
             },
             "ko": {
                 "Name": "사나움",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "공격 +20%"
             },
             "pl": {
                 "Name": "Zaciekły",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Atak +20%"
             },
             "pt-BR": {
                 "Name": "Brutal",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Ataque +20%"
             },
             "ru": {
                 "Name": "Свирепый",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Атака +20%"
             },
             "th": {
                 "Name": "ดุร้าย",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "โจมตี +20%"
             },
             "tr": {
                 "Name": "Gaddar",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Saldırı +20%"
             },
             "vi": {
                 "Name": "Cuồng Bạo",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "Tấn công +20%"
             },
             "zh-CN": {
                 "Name": "凶猛",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "攻击 +20%"
             },
             "zh-TW": {
                 "Name": "兇猛",
-                "Description": "ToSelf: ShotAttack +20"
+                "Description": "攻擊 +20%"
             }
         },
         "Buff": {
@@ -2174,71 +2174,71 @@
         "I18n": {
             "ja": {
                 "Name": "勇敢",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "攻撃 +10%"
             },
             "de": {
                 "Name": "Mutig",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Angriff +10%"
             },
             "en": {
                 "Name": "Brave",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Attack +10%"
             },
             "es": {
                 "Name": "Valentía",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Ataque +10%"
             },
             "es-MX": {
                 "Name": "Valentía",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Ataque +10%"
             },
             "fr": {
                 "Name": "Brave",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Attaque +10%"
             },
             "id": {
                 "Name": "Berani",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Serangan +10%"
             },
             "it": {
                 "Name": "Animo prode",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Attacco +10%"
             },
             "ko": {
                 "Name": "용감",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "공격 +10%"
             },
             "pl": {
                 "Name": "Odważny",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Atak +10%"
             },
             "pt-BR": {
                 "Name": "Ousado",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Ataque +10%"
             },
             "ru": {
                 "Name": "Отважный",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Атака +10%"
             },
             "th": {
                 "Name": "กล้าหาญ",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "โจมตี +10%"
             },
             "tr": {
                 "Name": "Cesur",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Saldırı +10%"
             },
             "vi": {
                 "Name": "Dũng Cảm",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "Tấn công +10%"
             },
             "zh-CN": {
                 "Name": "勇敢",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "攻击 +10%"
             },
             "zh-TW": {
                 "Name": "勇敢",
-                "Description": "ToSelf: ShotAttack +10"
+                "Description": "攻擊 +10%"
             }
         },
         "Buff": {
@@ -2292,71 +2292,71 @@
         "I18n": {
             "ja": {
                 "Name": "ビビり",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "攻撃 -10%"
             },
             "de": {
                 "Name": "Angsthase",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Angriff -10%"
             },
             "en": {
                 "Name": "Coward",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Attack -10%"
             },
             "es": {
                 "Name": "Cobardía",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Ataque -10%"
             },
             "es-MX": {
                 "Name": "Cobardía",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Ataque -10%"
             },
             "fr": {
                 "Name": "Lâche",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Attaque -10%"
             },
             "id": {
                 "Name": "Penakut",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Serangan -10%"
             },
             "it": {
                 "Name": "Codardia",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Attacco -10%"
             },
             "ko": {
                 "Name": "겁쟁이",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "공격 -10%"
             },
             "pl": {
                 "Name": "Tchórz",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Atak -10%"
             },
             "pt-BR": {
                 "Name": "Medroso",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Ataque -10%"
             },
             "ru": {
                 "Name": "Трусливый",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Атака -10%"
             },
             "th": {
                 "Name": "ขี้ขลาด",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "โจมตี -10%"
             },
             "tr": {
                 "Name": "Korkak",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Saldırı -10%"
             },
             "vi": {
                 "Name": "Nhút Nhát",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "Tấn công -10%"
             },
             "zh-CN": {
                 "Name": "胆小",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "攻击 -10%"
             },
             "zh-TW": {
                 "Name": "膽小",
-                "Description": "ToSelf: ShotAttack -10"
+                "Description": "攻擊 -10%"
             }
         },
         "Buff": {
@@ -2410,71 +2410,71 @@
         "I18n": {
             "ja": {
                 "Name": "ことなかれ主義者",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "攻撃 -20%"
             },
             "de": {
                 "Name": "Duckmäuser",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Angriff -20%"
             },
             "en": {
                 "Name": "Pacifist",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Attack -20%"
             },
             "es": {
                 "Name": "Anticonflictos",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Ataque -20%"
             },
             "es-MX": {
                 "Name": "Sumisión",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Ataque -20%"
             },
             "fr": {
                 "Name": "Pacifiste",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Attaque -20%"
             },
             "id": {
                 "Name": "Cinta Damai",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Serangan -20%"
             },
             "it": {
                 "Name": "Piedi di piombo",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Attacco -20%"
             },
             "ko": {
                 "Name": "무사주의자",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "공격 -20%"
             },
             "pl": {
                 "Name": "Pacyfista",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Atak -20%"
             },
             "pt-BR": {
                 "Name": "Pusilânime",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Ataque -20%"
             },
             "ru": {
                 "Name": "Бегущий от проблем",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Атака -20%"
             },
             "th": {
                 "Name": "ไม่ชอบมีเรื่อง",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "โจมตี -20%"
             },
             "tr": {
                 "Name": "Pasifist",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Saldırı -20%"
             },
             "vi": {
                 "Name": "Dĩ Hòa Vi Quý",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "Tấn công -20%"
             },
             "zh-CN": {
                 "Name": "消极主义者",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "攻击 -20%"
             },
             "zh-TW": {
                 "Name": "消極主義者",
-                "Description": "ToSelf: ShotAttack -20"
+                "Description": "攻擊 -20%"
             }
         },
         "Buff": {
@@ -2528,71 +2528,71 @@
         "I18n": {
             "ja": {
                 "Name": "粗暴",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "攻撃 +15%; 作業速度 -10%"
             },
             "de": {
                 "Name": "Grobian",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Angriff +15%; Arbeitstempo -10%"
             },
             "en": {
                 "Name": "Hooligan",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Attack +15%; Work Speed -10%"
             },
             "es": {
                 "Name": "Grosero",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Ataque +15%; Vel. de trabajo -10%"
             },
             "es-MX": {
                 "Name": "Bruto",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Ataque +15%; Velocidad de trabajo -10%"
             },
             "fr": {
                 "Name": "Trouble-Fête",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Attaque +15%; Vitesse de travail -10%"
             },
             "id": {
                 "Name": "Kasar",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Serangan +15%; Kecepatan Kerja -10%"
             },
             "it": {
                 "Name": "Brutalità",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Attacco +15%; Velocità delle attività -10%"
             },
             "ko": {
                 "Name": "난폭함",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "공격 +15%; 작업 속도 -10%"
             },
             "pl": {
                 "Name": "Chuligan",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Atak +15%; Szybkość pracy -10%"
             },
             "pt-BR": {
                 "Name": "Violento",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Ataque +15%; Velocidade de trabalho -10%"
             },
             "ru": {
                 "Name": "Грубый",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Атака +15%; Скорость работы -10%"
             },
             "th": {
                 "Name": "อันธพาล",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "โจมตี +15%; ความเร็วการทำงาน -10%"
             },
             "tr": {
                 "Name": "Holigan",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Saldırı +15%; Çalışma Hızı -10%"
             },
             "vi": {
                 "Name": "Thô Lỗ",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "Tấn công +15%; Tốc độ làm việc -10%"
             },
             "zh-CN": {
                 "Name": "粗暴",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "攻击 +15%; 工作速度 -10%"
             },
             "zh-TW": {
                 "Name": "粗暴",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: CraftSpeed -10"
+                "Description": "攻擊 +15%; 工作速度 -10%"
             }
         },
         "Buff": {
@@ -2651,71 +2651,71 @@
         "I18n": {
             "ja": {
                 "Name": "うぬぼれ屋",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "作業速度 +10%; 防御 -10%"
             },
             "de": {
                 "Name": "Eingebildet",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Arbeitstempo +10%; Verteidigung -10%"
             },
             "en": {
                 "Name": "Conceited",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Work Speed +10%; Defense -10%"
             },
             "es": {
                 "Name": "Vanidad",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Vel. de trabajo +10%; Defensa -10%"
             },
             "es-MX": {
                 "Name": "Vanidad",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Velocidad de trabajo +10%; Defensa -10%"
             },
             "fr": {
                 "Name": "Vaniteux",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Vitesse de travail +10%; Défense -10%"
             },
             "id": {
                 "Name": "Sombong",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Kecepatan Kerja +10%; Pertahanan -10%"
             },
             "it": {
                 "Name": "Vanità",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Velocità delle attività +10%; Difesa -10%"
             },
             "ko": {
                 "Name": "자만심",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "작업 속도 +10%; 방어 -10%"
             },
             "pl": {
                 "Name": "Zarozumiały",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Szybkość pracy +10%; Obrona -10%"
             },
             "pt-BR": {
                 "Name": "Presunçoso",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Velocidade de trabalho +10%; Defesa -10%"
             },
             "ru": {
                 "Name": "Тщеславный",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Скорость работы +10%; Защита -10%"
             },
             "th": {
                 "Name": "หลงตัวเอง",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "ความเร็วการทำงาน +10%; ป้องกัน -10%"
             },
             "tr": {
                 "Name": "Kibirli",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Çalışma Hızı +10%; Savunma -10%"
             },
             "vi": {
                 "Name": "Tự Cao",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "Tốc độ làm việc +10%; Phòng thủ -10%"
             },
             "zh-CN": {
                 "Name": "自恋狂",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "工作速度 +10%; 防御 -10%"
             },
             "zh-TW": {
                 "Name": "自戀狂",
-                "Description": "ToSelf: CraftSpeed +10; ToSelf: Defense -10"
+                "Description": "工作速度 +10%; 防禦 -10%"
             }
         },
         "Buff": {
@@ -2774,71 +2774,71 @@
         "I18n": {
             "ja": {
                 "Name": "サディスト",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "攻撃 +15%; 防御 -15%"
             },
             "de": {
                 "Name": "Sadist",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Angriff +15%; Verteidigung -15%"
             },
             "en": {
                 "Name": "Sadist",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Attack +15%; Defense -15%"
             },
             "es": {
                 "Name": "Sadismo",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Ataque +15%; Defensa -15%"
             },
             "es-MX": {
                 "Name": "Sadismo",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Ataque +15%; Defensa -15%"
             },
             "fr": {
                 "Name": "Sadique",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Attaque +15%; Défense -15%"
             },
             "id": {
                 "Name": "Sadis",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Serangan +15%; Pertahanan -15%"
             },
             "it": {
                 "Name": "Sadismo",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Attacco +15%; Difesa -15%"
             },
             "ko": {
                 "Name": "사디스트",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "공격 +15%; 방어 -15%"
             },
             "pl": {
                 "Name": "Sadysta",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Atak +15%; Obrona -15%"
             },
             "pt-BR": {
                 "Name": "Sádico",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Ataque +15%; Defesa -15%"
             },
             "ru": {
                 "Name": "Садист",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Атака +15%; Защита -15%"
             },
             "th": {
                 "Name": "ซาดิสต์",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "โจมตี +15%; ป้องกัน -15%"
             },
             "tr": {
                 "Name": "Sadist",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Saldırı +15%; Savunma -15%"
             },
             "vi": {
                 "Name": "Tàn Bạo",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "Tấn công +15%; Phòng thủ -15%"
             },
             "zh-CN": {
                 "Name": "虐待狂",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "攻击 +15%; 防御 -15%"
             },
             "zh-TW": {
                 "Name": "虐待狂",
-                "Description": "ToSelf: ShotAttack +15; ToSelf: Defense -15"
+                "Description": "攻擊 +15%; 防禦 -15%"
             }
         },
         "Buff": {
@@ -2897,71 +2897,71 @@
         "I18n": {
             "ja": {
                 "Name": "マゾヒスト",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "防御 +15%; 攻撃 -15%"
             },
             "de": {
                 "Name": "Masochist",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Verteidigung +15%; Angriff -15%"
             },
             "en": {
                 "Name": "Masochist",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Defense +15%; Attack -15%"
             },
             "es": {
                 "Name": "Masoquismo",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Defensa +15%; Ataque -15%"
             },
             "es-MX": {
                 "Name": "Masoquismo",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Defensa +15%; Ataque -15%"
             },
             "fr": {
                 "Name": "Masochiste",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Défense +15%; Attaque -15%"
             },
             "id": {
                 "Name": "Masokis",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Pertahanan +15%; Serangan -15%"
             },
             "it": {
                 "Name": "Masochismo",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Difesa +15%; Attacco -15%"
             },
             "ko": {
                 "Name": "마조히스트",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "방어 +15%; 공격 -15%"
             },
             "pl": {
                 "Name": "Masochista",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Obrona +15%; Atak -15%"
             },
             "pt-BR": {
                 "Name": "Masoquista",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Defesa +15%; Ataque -15%"
             },
             "ru": {
                 "Name": "Мазохист",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Защита +15%; Атака -15%"
             },
             "th": {
                 "Name": "มาโซคิสต์",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "ป้องกัน +15%; โจมตี -15%"
             },
             "tr": {
                 "Name": "Mazoşist",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Savunma +15%; Saldırı -15%"
             },
             "vi": {
                 "Name": "Chịu Trận",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "Phòng thủ +15%; Tấn công -15%"
             },
             "zh-CN": {
                 "Name": "受虐狂",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "防御 +15%; 攻击 -15%"
             },
             "zh-TW": {
                 "Name": "受虐狂",
-                "Description": "ToSelf: Defense +15; ToSelf: ShotAttack -15"
+                "Description": "防禦 +15%; 攻擊 -15%"
             }
         },
         "Buff": {
@@ -3020,71 +3020,71 @@
         "I18n": {
             "ja": {
                 "Name": "社畜",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "作業速度 +30%; 攻撃 -30%"
             },
             "de": {
                 "Name": "Arbeitsvieh",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Arbeitstempo +30%; Angriff -30%"
             },
             "en": {
                 "Name": "Work Slave",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Work Speed +30%; Attack -30%"
             },
             "es": {
                 "Name": "Explotación",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Vel. de trabajo +30%; Ataque -30%"
             },
             "es-MX": {
                 "Name": "Explotación laboral",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Velocidad de trabajo +30%; Ataque -30%"
             },
             "fr": {
                 "Name": "Soumis",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Vitesse de travail +30%; Attaque -30%"
             },
             "id": {
                 "Name": "Budak Perusahaan",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Kecepatan Kerja +30%; Serangan -30%"
             },
             "it": {
                 "Name": "Crumiro",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Velocità delle attività +30%; Attacco -30%"
             },
             "ko": {
                 "Name": "일 노예",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "작업 속도 +30%; 공격 -30%"
             },
             "pl": {
                 "Name": "Zaharowany",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Szybkość pracy +30%; Atak -30%"
             },
             "pt-BR": {
                 "Name": "Escravo do trabalho",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Velocidade de trabalho +30%; Ataque -30%"
             },
             "ru": {
                 "Name": "Корпоративный раб",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Скорость работы +30%; Атака -30%"
             },
             "th": {
                 "Name": "แรงงานทาส",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "ความเร็วการทำงาน +30%; โจมตี -30%"
             },
             "tr": {
                 "Name": "Köle İşçi",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Çalışma Hızı +30%; Saldırı -30%"
             },
             "vi": {
                 "Name": "Đam Mê Công Việc",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "Tốc độ làm việc +30%; Tấn công -30%"
             },
             "zh-CN": {
                 "Name": "社畜",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "工作速度 +30%; 攻击 -30%"
             },
             "zh-TW": {
                 "Name": "社畜",
-                "Description": "ToSelf: CraftSpeed +30; ToSelf: ShotAttack -30"
+                "Description": "工作速度 +30%; 攻擊 -30%"
             }
         },
         "Buff": {
@@ -3143,71 +3143,71 @@
         "I18n": {
             "ja": {
                 "Name": "オラオラ系",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "攻撃 +10%; 防御 -10%"
             },
             "de": {
                 "Name": "Großkotz",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Angriff +10%; Verteidigung -10%"
             },
             "en": {
                 "Name": "Aggressive",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Attack +10%; Defense -10%"
             },
             "es": {
                 "Name": "Insistencia",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Ataque +10%; Defensa -10%"
             },
             "es-MX": {
                 "Name": "Prepotente",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Ataque +10%; Defensa -10%"
             },
             "fr": {
                 "Name": "Rentre-Dedans",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Attaque +10%; Défense -10%"
             },
             "id": {
                 "Name": "Agresif",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Serangan +10%; Pertahanan -10%"
             },
             "it": {
                 "Name": "Arroganza",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Attacco +10%; Difesa -10%"
             },
             "ko": {
                 "Name": "불량배",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "공격 +10%; 방어 -10%"
             },
             "pl": {
                 "Name": "Agresywny",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Atak +10%; Obrona -10%"
             },
             "pt-BR": {
                 "Name": "Confrontador",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Ataque +10%; Defesa -10%"
             },
             "ru": {
                 "Name": "Агрессивный",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Атака +10%; Защита -10%"
             },
             "th": {
                 "Name": "บ้าพลัง",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "โจมตี +10%; ป้องกัน -10%"
             },
             "tr": {
                 "Name": "Agresif",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Saldırı +10%; Savunma -10%"
             },
             "vi": {
                 "Name": "Hung Hăng",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "Tấn công +10%; Phòng thủ -10%"
             },
             "zh-CN": {
                 "Name": "强势",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "攻击 +10%; 防御 -10%"
             },
             "zh-TW": {
                 "Name": "強勢",
-                "Description": "ToSelf: ShotAttack +10; ToSelf: Defense -10"
+                "Description": "攻擊 +10%; 防禦 -10%"
             }
         },
         "Buff": {
@@ -11406,6 +11406,7 @@
             }
         },
         "Buff": {
+            "b_HP": -0.2,
             "b_Attack": 0.0,
             "b_Defense": 0.0,
             "b_CraftSpeed": 0.0,
@@ -11775,6 +11776,7 @@
             }
         },
         "Buff": {
+            "b_HP": -0.5,
             "b_Attack": 0.4,
             "b_Defense": 0.2,
             "b_CraftSpeed": 0.0,

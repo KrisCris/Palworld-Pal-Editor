@@ -173,6 +173,7 @@ def _pal_data(pal: PalEntity):
         "group_id": str(pal.group_id) if pal.group_id else None,
         "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
         "SlotIndex": pal.SlotIndex,
+        "FavoriteIndex": pal.FavoriteIndex,
         "OwnerName": pal.OwnerName or None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,

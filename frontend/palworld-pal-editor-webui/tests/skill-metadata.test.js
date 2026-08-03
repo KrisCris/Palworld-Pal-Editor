@@ -182,6 +182,65 @@ test("public updatePal blocks non-assignable skill additions before loading or P
     assert.deepEqual(loadingChanges, []);
 });
 
+test("public updatePal allows known non-assignable skills in cheat mode", async t => {
+    setActivePinia(createPinia());
+    const store = usePalEditorStore();
+    const skillId = "EPalWazaID::Cheat_Test";
+    store.ACTIVE_SKILLS = {
+        [skillId]: {
+            InternalName: skillId,
+            Invalid: true,
+            Disabled: true,
+            Assignable: false,
+        },
+    };
+    store.SELECTED_PAL_DATA = { IsHuman: false };
+    store.HIDE_INVALID_OPTIONS = false;
+
+    const patchCalls = [];
+    const originalPatch = axios.patch;
+    axios.patch = async (url, payload) => {
+        patchCalls.push([url, payload]);
+        return { data: { status: 0, data: null, msg: null } };
+    };
+    t.after(() => { axios.patch = originalPatch; });
+
+    for (const name of ["add_MasteredWaza", "add_EquipWaza"]) {
+        await store.updatePal({ target: { name, value: skillId } });
+    }
+
+    assert.deepEqual(
+        patchCalls.map(([, payload]) => [payload.key, payload.value]),
+        [
+            ["add_MasteredWaza", skillId],
+            ["add_EquipWaza", skillId],
+        ],
+    );
+});
+
+test("public updatePal rejects unknown skills in cheat mode", async t => {
+    setActivePinia(createPinia());
+    const store = usePalEditorStore();
+    store.ACTIVE_SKILLS = {};
+    store.SELECTED_PAL_DATA = { IsHuman: false };
+    store.HIDE_INVALID_OPTIONS = false;
+
+    const patchCalls = [];
+    const originalPatch = axios.patch;
+    axios.patch = async (...args) => {
+        patchCalls.push(args);
+        return { data: { status: 0, data: null, msg: null } };
+    };
+    t.after(() => { axios.patch = originalPatch; });
+
+    await store.updatePal({
+        target: { name: "add_MasteredWaza", value: "EPalWazaID::Unknown" },
+    });
+
+    assert.deepEqual(patchCalls, []);
+    assert.equal(store.LOADING_FLAG, false);
+});
+
 test("public updatePal allows human-only skills for a selected human", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();

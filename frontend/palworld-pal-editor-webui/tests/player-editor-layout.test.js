@@ -80,6 +80,7 @@ test("technology levels partition normal and ancient lanes without mutating stor
     assert.doesNotMatch(source, /items\.(?:sort|splice)\s*\(/);
     assert.match(source, /grid-template-columns:\s*4rem\s+minmax\(7\.5rem,\s*1fr\)\s+max-content/);
     assert.match(source, /@container\s*\(max-width:[^)]+\)[\s\S]*\.technology-lane--ancient\s*\{[\s\S]*grid-column:\s*2/);
+    assert.match(source, /\.technology-level__track\s*\{[^}]*place-items:\s*center;/s);
 });
 
 test("technology lanes render a stable non-mutating partition", async () => {

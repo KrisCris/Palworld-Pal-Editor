@@ -429,7 +429,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 .technology-level__track {
   position: relative;
   display: grid;
-  place-items: start center;
+  place-items: center;
 }
 .technology-level__track::before {
   position: absolute;

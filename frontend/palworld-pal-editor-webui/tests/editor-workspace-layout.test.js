@@ -108,7 +108,7 @@ test("player and Pal rows preserve selection contracts without grayscale selecti
     assert.match(pals, /<PalPortrait[^>]*alt=""/s);
     assert.match(pals, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
     assert.match(pals, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
-    assert.match(pals, /<template #top-right>[\s\S]*?v-if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+    assert.match(pals, /<template #top-right>[\s\S]*?v-(?:else-)?if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
     assert.doesNotMatch(players + pals, /\[selected|filter:\s*grayscale[^}]*selected/s);
 });
 
