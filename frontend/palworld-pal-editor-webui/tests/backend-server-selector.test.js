@@ -35,7 +35,6 @@ test("backend selector exposes an accessible, dismissible connection popover", a
         'BackendSelector_Other',
         'BackendSelector_Use_Page_Server',
         'BackendSelector_Invalid_Address',
-        'BackendSelector_Mixed_Content',
         'BackendSelector_Connection_Failed',
         'palStore.connectBackend',
         'keydown',
@@ -62,6 +61,8 @@ test("backend selector exposes an accessible, dismissible connection popover", a
     assert.match(source, /class="editor-button editor-button--primary"/);
     assert.match(source, /class="backend-selector__page-server"/);
     assert.match(source, /if \(await palStore\.connectBackend\(origin\)\) close\(true\)[\s\S]*else errorKey\.value = 'BackendSelector_Connection_Failed'/);
+    assert.doesNotMatch(source, /window\.location\.protocol/);
+    assert.doesNotMatch(source, /BackendSelector_Mixed_Content/);
     assert.match(source, /const visibleRecent = computed\(\(\) => palStore\.BACKEND_RECENT\.filter\(origin => origin !== currentOrigin\.value\)\)/);
     assert.doesNotMatch(source, /class="op(?:\s|"|-)/);
     assert.match(source, /@media \(max-width: 760px\)[\s\S]*\.backend-selector__popover\s*\{[^}]*position:\s*fixed;[^}]*right:\s*var\(--editor-space-3\);[^}]*width:\s*min\(44rem,/);

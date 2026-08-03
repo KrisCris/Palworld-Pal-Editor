@@ -89,6 +89,12 @@ test("startup translations are available synchronously without the backend", () 
     });
 });
 
+test("backend connection failures explain browser and server requirements", () => {
+    for (const detail of ["HTTPS", "CORS", "password", "Local Network Access"]) {
+        assert.match(en.BackendSelector_Connection_Failed, new RegExp(detail, "i"));
+    }
+});
+
 test("offline and backend game-data locale maps stay identical", async () => {
     const backendLanguages = JSON.parse(await readFile(
         new URL("../../../src/palworld_pal_editor/assets/data/i18n_list.json", import.meta.url),
