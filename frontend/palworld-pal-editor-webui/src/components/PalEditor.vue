@@ -26,6 +26,10 @@ const canAssignActiveSkill = skill => palStore.isSkillAssignable(
   palStore.SELECTED_PAL_DATA.IsHuman,
 );
 
+const canSelectActiveSkill = skill => (
+  !palStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
+);
+
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
 };
@@ -95,7 +99,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     label: skill.I18n[0],
     description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
     meta: `${skill.InternalName} ${skill.Element}`,
-    disabled: !canAssignActiveSkill(skill),
+    disabled: !canSelectActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
@@ -534,7 +538,7 @@ const portraitBorder = pal => pal.IsAwakening
                 class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
                 :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-                :disabled="palStore.LOADING_FLAG || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
+                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon editor-button--danger"
                 @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
@@ -553,7 +557,7 @@ const portraitBorder = pal => pal.IsAwakening
             :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
             :disabled="palStore.LOADING_FLAG
               || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-              || !canAssignActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
+              || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
         </div>
       </div>
     </section>

@@ -1548,11 +1548,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // sometimes we manually construct a "e" target in a very hacked way
         let key = e.target.name;
         let value = e.target.value;
+        const addingActiveSkill = key === "add_MasteredWaza" || key === "add_EquipWaza";
+        const activeSkill = ACTIVE_SKILLS.value[value];
         if (
-            (key === "add_MasteredWaza" || key === "add_EquipWaza")
-            && !isSkillAssignable(
-                ACTIVE_SKILLS.value[value],
-                SELECTED_PAL_DATA.value?.IsHuman,
+            addingActiveSkill
+            && (
+                !activeSkill
+                || (
+                    HIDE_INVALID_OPTIONS.value
+                    && !isSkillAssignable(activeSkill, SELECTED_PAL_DATA.value?.IsHuman)
+                )
             )
         ) {
             showToast("Message_Skill_Not_Assignable");
