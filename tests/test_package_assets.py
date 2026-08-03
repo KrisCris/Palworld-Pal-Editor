@@ -247,6 +247,35 @@ def test_appimage_uses_host_gbm_library():
     assert [binary[0] for binary in captured["binaries"]] == ["libstdc++.so.6"]
 
 
+def test_pages_workflow_deploys_release_tags_and_manual_refs():
+    workflow = ROOT / ".github/workflows/pages.yml"
+    assert workflow.is_file(), "missing dedicated GitHub Pages workflow"
+
+    source = workflow.read_text("utf-8")
+    triggers = source.split("concurrency:", 1)[0]
+    expected = (
+        "v[0-9]+.[0-9]+.[0-9]+",
+        "workflow_dispatch:",
+        "required: false",
+        "ref: ${{ inputs.ref || github.sha }}",
+        "group: github-pages",
+        "cancel-in-progress: true",
+        "contents: read",
+        "pages: write",
+        "id-token: write",
+        "actions/configure-pages@v5",
+        "BASE_PATH: ${{ steps.pages.outputs.base_path }}",
+        "run: npm ci",
+        'npm run build -- --base "${BASE_PATH:-}/"',
+        "actions/upload-pages-artifact@v4",
+        "frontend/palworld-pal-editor-webui/dist",
+        "actions/deploy-pages@v4",
+        "name: github-pages",
+    )
+    assert all(value in source for value in expected)
+    assert "branches:" not in triggers
+
+
 def test_built_archives_include_runtime_assets_and_exclude_maintainer_files():
     wheel, sdist, wheel_required, sdist_required = _archive_members()
     _assert_archive_policy(wheel, wheel_required, "palworld_pal_editor")
