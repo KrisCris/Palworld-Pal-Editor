@@ -30,7 +30,7 @@ executables = [
 
 setup(
     name="Palworld Pal Editor",
-    version="1.0.0",
+    version="1.0.1",
     description="A Palworld Pal Editor developed by _connlost with ❤️.",
     options={"build_exe": options},
     executables=executables,
