@@ -23,8 +23,15 @@ test("support methods reveal details before opening links or a closable full-siz
   assert.match(dialog, /class="support-qr-crop support-qr-crop--compact"/);
   assert.match(dialog, /https:\/\/ko-fi\.com\/connlost/);
   assert.match(dialog, /https:\/\/www\.paypal\.com\/paypalme\/c0nnlost/);
-  assert.match(dialog, /qr: ['"]\/support\/alipay\.png['"]/);
-  assert.match(dialog, /qr: ['"]\/support\/wechat-pay\.png['"]/);
+  assert.match(dialog, /const publicAsset = path => `\$\{import\.meta\.env\.BASE_URL\}\$\{path\}`/);
+  assert.match(dialog, /qr: publicAsset\(['"]support\/alipay\.png['"]\)/);
+  assert.match(dialog, /qr: publicAsset\(['"]support\/wechat-pay\.png['"]\)/);
+  assert.doesNotMatch(dialog, /qr: ['"]\/support\//);
+  assert.match(dialog, /\.support-dialog\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-surface-raised\)/s);
+  assert.match(dialog, /\.support-panel\s*\{[^}]*background: var\(--editor-color-control-hover\)/s);
+  assert.match(dialog, /\.support-payment\s*\{[^}]*background: var\(--editor-color-surface\)/s);
+  assert.match(dialog, /\.support-payment-detail\s*\{[^}]*background: var\(--editor-color-surface\)/s);
+  assert.match(dialog, /\.support-payment--selected\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-primary\)/s);
   assert.match(dialog, /https:\/\/discord\.gg\/FnuA95nMJ8/);
   assert.match(dialog, /https:\/\/github\.com\/KrisCris\/Palworld-Pal-Editor\/issues/);
   assert.doesNotMatch(dialog, /<details/);
