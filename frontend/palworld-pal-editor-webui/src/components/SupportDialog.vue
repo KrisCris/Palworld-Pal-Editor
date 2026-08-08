@@ -52,13 +52,13 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 <template>
   <div
     v-show="palStore.SHOW_DONATE_FLAG"
-    class="support-overlay"
+    class="support-overlay editor-modal-overlay"
     role="presentation"
     @click.self="close"
     @keydown.esc.stop="close"
   >
     <section
-      class="support-dialog"
+      class="support-dialog editor-glass-surface"
       role="dialog"
       aria-modal="true"
       aria-labelledby="support-dialog-title"
@@ -213,13 +213,13 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 
     <div
       v-if="expandedPayment"
-      class="support-qr-overlay"
+      class="support-qr-overlay editor-modal-overlay"
       role="presentation"
       @click.self="closeQr"
       @keydown.esc.stop="closeQr"
     >
       <section
-        class="support-qr-dialog"
+        class="support-qr-dialog editor-glass-surface"
         role="dialog"
         aria-modal="true"
         aria-labelledby="support-qr-title"
@@ -257,9 +257,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   display: grid;
   place-items: center;
   padding: clamp(var(--editor-space-3), 3vw, 2.5rem);
-  background: color-mix(in srgb, var(--editor-color-background) 74%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 
 .support-dialog {
@@ -268,10 +265,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   overflow: auto;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
-  color: var(--editor-color-text);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 96%, transparent);
-  -webkit-backdrop-filter: var(--editor-glass-filter);
-  backdrop-filter: var(--editor-glass-filter);
   box-shadow: var(--editor-glass-shadow), 0 2.2rem 5rem rgb(0 0 0 / 52%);
 }
 
@@ -491,9 +484,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   display: grid;
   place-items: center;
   padding: var(--editor-space-3);
-  background: rgb(0 0 0 / 72%);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
 }
 
 .support-qr-dialog {
@@ -501,8 +491,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   padding: var(--editor-space-4);
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
-  color: var(--editor-color-text);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-glass-shadow), 0 2rem 5rem rgb(0 0 0 / 60%);
 }
 

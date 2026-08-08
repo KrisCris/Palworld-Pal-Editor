@@ -57,7 +57,10 @@ test("blocking dialogs render their existing severity semantics", () => {
     });
 
     assert.equal(store.CURRENT_MESSAGE.severity, "warning");
-    assert.match(messageCenterSource, /:class="\['message-dialog', current\.severity\]"/);
+    assert.match(
+        messageCenterSource,
+        /:class="\['message-dialog', 'editor-glass-surface', current\.severity\]"/,
+    );
     for (const [severity, token] of Object.entries({
         warning: "warning",
         success: "success",

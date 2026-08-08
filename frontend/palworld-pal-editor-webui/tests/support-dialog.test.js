@@ -17,7 +17,8 @@ test("support methods reveal details before opening links or a closable full-siz
   assert.match(dialog, /@click="selectedMethod = method\.id"/);
   assert.match(dialog, /class="support-payment-detail"/);
   assert.match(dialog, /expandedQr/);
-  assert.match(dialog, /class="support-qr-overlay"/);
+  assert.match(dialog, /class="support-qr-overlay editor-modal-overlay"/);
+  assert.match(dialog, /class="support-qr-dialog editor-glass-surface"/);
   assert.match(dialog, /@click\.self="closeQr"/);
   assert.match(dialog, /@keydown\.esc\.stop="closeQr"/);
   assert.match(dialog, /class="support-qr-crop support-qr-crop--compact"/);
@@ -27,7 +28,7 @@ test("support methods reveal details before opening links or a closable full-siz
   assert.match(dialog, /qr: publicAsset\(['"]support\/alipay\.png['"]\)/);
   assert.match(dialog, /qr: publicAsset\(['"]support\/wechat-pay\.png['"]\)/);
   assert.doesNotMatch(dialog, /qr: ['"]\/support\//);
-  assert.match(dialog, /\.support-dialog\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-surface-raised\)/s);
+  assert.match(dialog, /class="support-dialog editor-glass-surface"/);
   assert.match(dialog, /\.support-panel\s*\{[^}]*background: var\(--editor-color-control-hover\)/s);
   assert.match(dialog, /\.support-payment\s*\{[^}]*background: var\(--editor-color-surface\)/s);
   assert.match(dialog, /\.support-payment-detail\s*\{[^}]*background: var\(--editor-color-surface\)/s);

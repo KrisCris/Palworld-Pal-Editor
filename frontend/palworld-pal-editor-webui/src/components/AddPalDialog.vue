@@ -90,8 +90,8 @@ async function deleteTemplate(id) {
 
 <template>
   <Teleport to="body">
-    <div class="add-pal-layer" @click.self="emit('close')" @keydown.esc="emit('close')">
-    <section ref="dialog" class="add-pal-dialog" role="dialog" aria-modal="true" aria-labelledby="add-pal-title"
+    <div class="add-pal-layer editor-modal-overlay" @click.self="emit('close')" @keydown.esc="emit('close')">
+    <section ref="dialog" class="add-pal-dialog editor-glass-surface" role="dialog" aria-modal="true" aria-labelledby="add-pal-title"
       tabindex="-1" @keydown.esc="emit('close')" @keydown.tab="trapFocus">
       <header>
         <div>
@@ -200,8 +200,6 @@ async function deleteTemplate(id) {
   display: grid;
   place-items: center;
   padding: var(--editor-space-4);
-  background: color-mix(in srgb, var(--editor-color-background) 76%, transparent);
-  backdrop-filter: blur(10px);
 }
 
 .add-pal-dialog {
@@ -212,10 +210,6 @@ async function deleteTemplate(id) {
   overflow: hidden;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
-  color: var(--editor-color-text);
-  background: var(--editor-color-glass-surface);
-  backdrop-filter: var(--editor-glass-filter);
-  box-shadow: var(--editor-glass-shadow);
 }
 
 header,

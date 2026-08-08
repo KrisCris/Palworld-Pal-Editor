@@ -138,8 +138,8 @@ const variantTabindex = (variant, index) => (
     </button>
 
     <Teleport to="body">
-    <div v-if="open" class="selector-overlay" @pointerdown.self="close">
-    <div class="selector-popover" role="dialog" aria-modal="true" :aria-label="t('Editor_Pal_Selector_Title')"
+    <div v-if="open" class="selector-overlay editor-modal-overlay" @pointerdown.self="close">
+    <div class="selector-popover editor-glass-surface" role="dialog" aria-modal="true" :aria-label="t('Editor_Pal_Selector_Title')"
       @keydown.esc.stop="close">
       <label class="search-label">
         <span>{{ t("Editor_Pal_Selector_Search") }}</span>
@@ -314,8 +314,6 @@ small {
   place-items: center;
   box-sizing: border-box;
   padding: var(--editor-space-4);
-  background: color-mix(in srgb, var(--editor-color-background) 60%, transparent);
-  backdrop-filter: blur(2px);
 }
 
 .selector-popover {
@@ -330,9 +328,6 @@ small {
   padding: var(--editor-space-3);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-md);
-  color: var(--editor-color-text);
-  background: var(--editor-color-surface);
-  box-shadow: var(--editor-shadow-compact);
 }
 
 .search-label {

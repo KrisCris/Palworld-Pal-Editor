@@ -156,10 +156,17 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   z-index: 20;
   display: grid;
   border-bottom: 1px solid var(--editor-color-glass-border);
+  box-shadow: var(--editor-glass-shadow);
+}
+
+.editor-toolbar::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
   background: var(--editor-color-glass-toolbar);
   -webkit-backdrop-filter: var(--editor-glass-filter);
   backdrop-filter: var(--editor-glass-filter);
-  box-shadow: var(--editor-glass-shadow);
 }
 
 .loading-bar {

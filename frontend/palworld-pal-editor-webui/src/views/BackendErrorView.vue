@@ -25,9 +25,9 @@ onMounted(() => refreshButton.value?.focus())
 </script>
 
 <template>
-  <div :class="['error-layer', { startup }]">
+  <div :class="['error-layer', { startup, 'editor-modal-overlay': !startup }]">
     <section
-      class="backend-error"
+      :class="['backend-error', { 'editor-glass-surface': !startup }]"
       :role="startup ? 'alert' : 'alertdialog'"
       :aria-modal="startup ? undefined : true"
       aria-labelledby="backend-error-title"
@@ -70,20 +70,17 @@ onMounted(() => refreshButton.value?.focus())
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, .62);
 }
 .backend-error {
   width: min(42rem, calc(100vw - 2rem));
   padding: 1rem;
-  border: 1px solid #b36b00;
+  border: 1px solid var(--editor-color-warning);
   border-radius: .75rem;
-  background: #3b2c18;
-  box-shadow: 2px 2px 10px #262626;
 }
 .error-layer.startup {
   top: 3rem;
   z-index: 10;
-  background: #181818;
+  background: var(--editor-color-surface);
 }
 .startup .backend-error {
   border: 0;
@@ -92,7 +89,7 @@ onMounted(() => refreshButton.value?.focus())
   text-align: center;
 }
 h1, p { margin: .4rem 0; }
-code { margin: .75rem 0; color: #ffcf87; overflow-wrap: anywhere; }
+code { margin: .75rem 0; color: var(--editor-color-warning); overflow-wrap: anywhere; }
 label { display: block; margin-top: .75rem; }
 textarea {
   box-sizing: border-box;
@@ -100,10 +97,10 @@ textarea {
   margin-top: .25rem;
   padding: .75rem;
   resize: vertical;
-  border: 1px solid #7e6847;
+  border: 1px solid var(--editor-color-border);
   border-radius: .4rem;
-  color: #ffcf87;
-  background: #181818;
+  color: var(--editor-color-warning);
+  background: var(--editor-color-surface-subtle);
   font-family: monospace;
 }
 .actions { display: flex; gap: .75rem; margin-top: .75rem; }
@@ -113,10 +110,10 @@ button {
   padding: .5rem 1rem;
   border: 0;
   border-radius: .5rem;
-  color: whitesmoke;
-  background: #3365da;
+  color: var(--editor-color-background);
+  background: var(--editor-color-primary);
   cursor: pointer;
 }
-button.secondary { background: #555; }
-button:disabled { background: #8a8a8a; cursor: default; }
+button.secondary { color: var(--editor-color-text); background: var(--editor-color-control-hover); }
+button:disabled { color: var(--editor-color-muted); background: var(--editor-color-disabled); cursor: default; }
 </style>

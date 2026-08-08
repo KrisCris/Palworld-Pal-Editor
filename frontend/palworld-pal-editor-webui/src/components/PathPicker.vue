@@ -51,8 +51,8 @@ const abort = () => {
 </script>
 
 <template>
-    <div class="modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @click.self="abort">
-        <div class="popup">
+    <div class="modal-overlay editor-modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @click.self="abort">
+        <div class="popup editor-glass-surface">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">
                 <IconButton icon="back" :label="palStore.getTranslatedText('PathPicker_Back')" @click="palStore.path_back" />
@@ -79,7 +79,6 @@ const abort = () => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(22, 27, 34, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -92,16 +91,14 @@ const abort = () => {
     left: 50%;
     transform: translate(-50%, -50%);
 
-    border: none;
+    border: 1px solid var(--editor-color-glass-border);
     outline: none;
     width: 75vw;
     height: 75vh;
 
     border-radius: 0.5rem;
     padding: 2rem 4rem;
-    background-color: #515151;
     z-index: 10;
-    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
 
     display: flex;
     flex-direction: column;
@@ -129,29 +126,29 @@ const abort = () => {
     margin: .2rem .2rem;
     padding: .3rem .3rem;
     border-radius: 0.5rem;
-    color: whitesmoke;
+    color: var(--editor-color-text);
 }
 
 .popup li:hover[isdir=true] {
-    background-color: #4b8d5e;
+    background-color: var(--editor-color-control-hover);
 }
 
 .close-btn {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(209, 209, 209, 0.206);
+    background: color-mix(in srgb, var(--editor-color-control-hover) 70%, transparent);
     border-radius: 25%;
     width: 30px;
     height: 30px;
     border: none;
-    color: #c9d1d9;
+    color: var(--editor-color-text);
     font-size: 1.5rem;
     cursor: pointer;
 }
 
 .close-btn:hover {
-    background: rgba(62, 62, 62, 0.686);
-    color: #f85149;
+    background: var(--editor-color-control-hover);
+    color: var(--editor-color-danger);
 }
 </style>
