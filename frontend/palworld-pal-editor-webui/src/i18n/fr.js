@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
-    Editor_Identity_Appearance: "IDENTITÉ ET APPARENCE",
+    Editor_Identity_Appearance: "PROFIL ET APPARENCE",
     Editor_Growth: "PROGRESSION",
     Editor_Save_Details: "DÉTAILS DE SAUVEGARDE",
     Editor_Btn_Friendship_Decrease: "Réduire le niveau de confiance",
@@ -352,6 +352,8 @@ export default {
     SkillTemplate_Delete: "Supprimer",
     SkillTemplate_Apply: "Appliquer",
     SkillTemplate_Empty: "Aucun modèle enregistré pour ce groupe.",
+    SkillTemplate_Expand: "Développer les compétences",
+    SkillTemplate_Collapse: "Réduire les compétences",
     Message_Skill_Template_Saved: "Modèle de compétences enregistré.",
     Message_Skill_Template_Renamed: "Modèle de compétences renommé.",
     Message_Skill_Template_Applied: "Modèle de compétences appliqué.",
@@ -361,4 +363,7 @@ export default {
     Operation_Rename_Skill_Template: "renommage du modèle de compétences",
     Operation_Apply_Skill_Template: "application du modèle de compétences",
     Operation_Delete_Skill_Template: "suppression du modèle de compétences",
+    Editor_Btn_Maximize_Pal: "Maximiser les attributs",
+    Message_Pal_Maximized: "Les attributs du Pal ont été définis au maximum autorisé.",
+    Operation_Maximize_Pal: "maximisation des attributs du Pal",
 };

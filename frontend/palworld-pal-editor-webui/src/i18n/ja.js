@@ -100,7 +100,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
-    Editor_Identity_Appearance: "個体・外見",
+    Editor_Identity_Appearance: "プロフィールと外見",
     Editor_Growth: "成長",
     Editor_Save_Details: "セーブ詳細",
     Editor_Btn_Friendship_Decrease: "親密度を下げる",
@@ -352,6 +352,8 @@ export default {
     SkillTemplate_Delete: "削除",
     SkillTemplate_Apply: "適用",
     SkillTemplate_Empty: "この種類のテンプレートはまだありません。",
+    SkillTemplate_Expand: "スキルを展開",
+    SkillTemplate_Collapse: "スキルを折りたたむ",
     Message_Skill_Template_Saved: "スキルテンプレートを保存しました。",
     Message_Skill_Template_Renamed: "スキルテンプレート名を変更しました。",
     Message_Skill_Template_Applied: "スキルテンプレートを適用しました。",
@@ -361,4 +363,7 @@ export default {
     Operation_Rename_Skill_Template: "スキルテンプレート名の変更",
     Operation_Apply_Skill_Template: "スキルテンプレートの適用",
     Operation_Delete_Skill_Template: "スキルテンプレートの削除",
+    Editor_Btn_Maximize_Pal: "ステータスを最大化",
+    Message_Pal_Maximized: "パルのステータスを正規の上限に設定しました。",
+    Operation_Maximize_Pal: "パルのステータスを最大化",
 };

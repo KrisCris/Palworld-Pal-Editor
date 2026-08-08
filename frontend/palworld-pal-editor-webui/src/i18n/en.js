@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
-    Editor_Identity_Appearance: "IDENTITY & APPEARANCE",
+    Editor_Identity_Appearance: "PROFILE & APPEARANCE",
     Editor_Growth: "GROWTH",
     Editor_Save_Details: "SAVE DETAILS",
     Editor_Btn_Friendship_Decrease: "Decrease friendship",
@@ -351,6 +351,8 @@ export default {
     SkillTemplate_Delete: "Delete",
     SkillTemplate_Apply: "Apply",
     SkillTemplate_Empty: "No templates saved for this skill group.",
+    SkillTemplate_Expand: "Expand skills",
+    SkillTemplate_Collapse: "Collapse skills",
     Message_Skill_Template_Saved: "Skill template saved.",
     Message_Skill_Template_Renamed: "Skill template renamed.",
     Message_Skill_Template_Applied: "Skill template applied.",
@@ -360,4 +362,7 @@ export default {
     Operation_Rename_Skill_Template: "renaming the skill template",
     Operation_Apply_Skill_Template: "applying the skill template",
     Operation_Delete_Skill_Template: "deleting the skill template",
+    Editor_Btn_Maximize_Pal: "Maximize attributes",
+    Message_Pal_Maximized: "Pal attributes set to their legal maximum.",
+    Operation_Maximize_Pal: "maximizing Pal attributes",
 };

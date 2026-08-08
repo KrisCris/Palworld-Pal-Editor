@@ -217,6 +217,22 @@ def paldata():
     )
 
 
+@pal_blueprint.route("/maximize", methods=["POST"])
+@jwt_required()
+def maximize_pal():
+    payload = request.json or {}
+    pal = _selected_pal(payload)
+    if pal is None:
+        return reply(1, None, "Failed to find the selected Pal.")
+    try:
+        pal.maximize_progression()
+    except (KeyError, TypeError, ValueError):
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error maximizing Pal progression {stack_trace}")
+        return reply(1, None, f"Error maximizing Pal progression {stack_trace}")
+    return reply(0, _pal_data(pal))
+
+
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
     record = DataProvider.get_pal_record(pal.CharacterID) or {}

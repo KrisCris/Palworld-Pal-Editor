@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "También puedes descargarla desde ",
     Editor_Note_Ghost_Pal: "ES PROBABLE QUE ESTE PAL NO TENGA REFERENCIA EN EL JUEGO",
     Editor_Basic_Info: "INFORMACIÓN BÁSICA",
-    Editor_Identity_Appearance: "IDENTIDAD Y APARIENCIA",
+    Editor_Identity_Appearance: "PERFIL Y APARIENCIA",
     Editor_Growth: "CRECIMIENTO",
     Editor_Save_Details: "DETALLES DEL GUARDADO",
     Editor_Btn_Friendship_Decrease: "Reducir confianza",
@@ -345,4 +345,9 @@ export default {
     Operation_Rename_Skill_Template: "renombrar la plantilla de habilidades",
     Operation_Apply_Skill_Template: "aplicar la plantilla de habilidades",
     Operation_Delete_Skill_Template: "eliminar la plantilla de habilidades",
+    SkillTemplate_Expand: "Expandir habilidades",
+    SkillTemplate_Collapse: "Contraer habilidades",
+    Editor_Btn_Maximize_Pal: "Maximizar atributos",
+    Message_Pal_Maximized: "Los atributos del Pal se establecieron en el máximo permitido.",
+    Operation_Maximize_Pal: "maximizando los atributos del Pal",
 };

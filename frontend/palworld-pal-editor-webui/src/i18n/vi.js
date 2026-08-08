@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "Hoặc bạn có thể tải từ ",
     Editor_Note_Ghost_Pal: "PAL NÀY CÓ THỂ KHÔNG CÒN ĐƯỢC THAM CHIẾU TRONG GAME",
     Editor_Basic_Info: "THÔNG TIN CƠ BẢN",
-    Editor_Identity_Appearance: "DANH TÍNH VÀ NGOẠI HÌNH",
+    Editor_Identity_Appearance: "HỒ SƠ & NGOẠI HÌNH",
     Editor_Growth: "PHÁT TRIỂN",
     Editor_Save_Details: "CHI TIẾT BẢN LƯU",
     Editor_Btn_Friendship_Decrease: "Giảm thân thiết",
@@ -324,4 +324,9 @@ export default {
     Editor_ImportedCharacter: "Được nhập từ Kho Pal toàn cầu",
     SkillTemplate_Button: "Mẫu kỹ năng", SkillTemplate_Eyebrow: "Bộ kỹ năng có thể tái sử dụng", SkillTemplate_Passive_Title: "Mẫu kỹ năng bị động", SkillTemplate_Active_Title: "Mẫu kỹ năng chủ động", SkillTemplate_Description: "Lưu bộ hiện tại hoặc thay thế bộ kỹ năng tương ứng của Pal này.", SkillTemplate_Save_Current: "Lưu bộ hiện tại", SkillTemplate_Name_Placeholder: "Tên mẫu", SkillTemplate_Save: "Lưu", SkillTemplate_Name: "Tên mẫu", SkillTemplate_Rename: "Đổi tên mẫu", SkillTemplate_Equipped: "Đã trang bị", SkillTemplate_Delete: "Xóa", SkillTemplate_Apply: "Áp dụng", SkillTemplate_Empty: "Chưa có mẫu được lưu cho bộ kỹ năng này.",
     Message_Skill_Template_Saved: "Đã lưu mẫu kỹ năng.", Message_Skill_Template_Renamed: "Đã đổi tên mẫu kỹ năng.", Message_Skill_Template_Applied: "Đã áp dụng mẫu kỹ năng.", Message_Skill_Template_Deleted: "Đã xóa mẫu kỹ năng.", Operation_Load_Skill_Templates: "đang tải mẫu kỹ năng", Operation_Save_Skill_Template: "đang lưu mẫu kỹ năng", Operation_Rename_Skill_Template: "đang đổi tên mẫu kỹ năng", Operation_Apply_Skill_Template: "đang áp dụng mẫu kỹ năng", Operation_Delete_Skill_Template: "đang xóa mẫu kỹ năng",
+    SkillTemplate_Expand: "Mở rộng kỹ năng",
+    SkillTemplate_Collapse: "Thu gọn kỹ năng",
+    Editor_Btn_Maximize_Pal: "Tối đa hóa chỉ số",
+    Message_Pal_Maximized: "Chỉ số của Pal đã được đặt ở mức tối đa hợp lệ.",
+    Operation_Maximize_Pal: "tối đa hóa chỉ số Pal",
 };

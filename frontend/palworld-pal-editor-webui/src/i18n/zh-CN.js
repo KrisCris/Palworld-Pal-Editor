@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
-    Editor_Identity_Appearance: "身份与外观",
+    Editor_Identity_Appearance: "档案与外观",
     Editor_Growth: "成长",
     Editor_Save_Details: "存档技术信息",
     Editor_Btn_Friendship_Decrease: "降低信赖度",
@@ -351,6 +351,8 @@ export default {
     SkillTemplate_Delete: "删除",
     SkillTemplate_Apply: "应用",
     SkillTemplate_Empty: "尚未保存该类技能模板。",
+    SkillTemplate_Expand: "展开技能",
+    SkillTemplate_Collapse: "收起技能",
     Message_Skill_Template_Saved: "技能模板已保存。",
     Message_Skill_Template_Renamed: "技能模板已重命名。",
     Message_Skill_Template_Applied: "技能模板已应用。",
@@ -360,4 +362,7 @@ export default {
     Operation_Rename_Skill_Template: "重命名技能模板",
     Operation_Apply_Skill_Template: "应用技能模板",
     Operation_Delete_Skill_Template: "删除技能模板",
+    Editor_Btn_Maximize_Pal: "属性最大化",
+    Message_Pal_Maximized: "已将帕鲁属性设置为合法上限。",
+    Operation_Maximize_Pal: "最大化帕鲁属性",
 };

@@ -187,6 +187,8 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "BackendSelector_Invalid_Address",
         "BackendSelector_Mixed_Content",
         "BackendSelector_Connection_Failed",
+        "SkillTemplate_Expand",
+        "SkillTemplate_Collapse",
         "BackendSelector_Cors_Hint",
         "Message_Title_Success",
         "Message_Title_Warning",

@@ -186,6 +186,10 @@ const portraitBorder = pal => pal.IsAwakening
           </p>
         </div>
         <div class="editor-summary__actions">
+          <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal"
+            :disabled="palStore.LOADING_FLAG">
+            <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}
+          </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
             :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
             {{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}

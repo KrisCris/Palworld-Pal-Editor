@@ -1633,6 +1633,42 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    async function maximizePal() {
+        if (!SELECTED_PAL_ID.value) return false;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/maximize", {
+                PlayerUId: GET_PAL_OWNER_API_ID(),
+                PalGuid: SELECTED_PAL_ID.value,
+            });
+            if (response === false) return false;
+            if (response.status == 0) {
+                const palData = new PalData({
+                    ...SELECTED_PAL_DATA.value,
+                    ...response.data,
+                });
+                PAL_MAP.value.set(palData.InstanceId, palData);
+                SELECTED_PAL_DATA.value = palData;
+                EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+                UPDATE_PAL_RESELECT_CTR.value++;
+                showToast("Message_Pal_Maximized", "success");
+                return true;
+            }
+            if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Maximize_Pal", response);
+            }
+            return false;
+        } catch (error) {
+            reportFrontendError(error, getTranslatedText("Operation_Maximize_Pal"));
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
+    }
+
     function isFilteredPal(pal) {
         if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
             return true;
@@ -2053,6 +2089,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         writeSave,
         fetch_config,
         dumpPalData,
+        maximizePal,
         delPal,
         addPal,
         dupePal,

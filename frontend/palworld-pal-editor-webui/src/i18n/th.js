@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "หรือดาวน์โหลดได้จาก ",
     Editor_Note_Ghost_Pal: "PAL นี้น่าจะไม่มีการอ้างอิงในเกม",
     Editor_Basic_Info: "ข้อมูลพื้นฐาน",
-    Editor_Identity_Appearance: "ตัวตนและรูปลักษณ์",
+    Editor_Identity_Appearance: "โปรไฟล์และรูปลักษณ์",
     Editor_Growth: "การเติบโต",
     Editor_Save_Details: "รายละเอียดเซฟ",
     Editor_Btn_Friendship_Decrease: "ลดความสนิท",
@@ -324,4 +324,9 @@ export default {
     Editor_ImportedCharacter: "นำเข้าจากคลัง Pal ส่วนกลาง",
     SkillTemplate_Button: "เทมเพลตสกิล", SkillTemplate_Eyebrow: "ชุดสกิลที่ใช้ซ้ำได้", SkillTemplate_Passive_Title: "เทมเพลตสกิลติดตัว", SkillTemplate_Active_Title: "เทมเพลตสกิลใช้งาน", SkillTemplate_Description: "บันทึกชุดปัจจุบันหรือแทนที่ชุดสกิลที่เกี่ยวข้องของ Pal นี้", SkillTemplate_Save_Current: "บันทึกชุดปัจจุบัน", SkillTemplate_Name_Placeholder: "ชื่อเทมเพลต", SkillTemplate_Save: "บันทึก", SkillTemplate_Name: "ชื่อเทมเพลต", SkillTemplate_Rename: "เปลี่ยนชื่อเทมเพลต", SkillTemplate_Equipped: "ติดตั้งแล้ว", SkillTemplate_Delete: "ลบ", SkillTemplate_Apply: "ใช้", SkillTemplate_Empty: "ยังไม่มีเทมเพลตที่บันทึกไว้สำหรับชุดนี้",
     Message_Skill_Template_Saved: "บันทึกเทมเพลตสกิลแล้ว", Message_Skill_Template_Renamed: "เปลี่ยนชื่อเทมเพลตสกิลแล้ว", Message_Skill_Template_Applied: "ใช้เทมเพลตสกิลแล้ว", Message_Skill_Template_Deleted: "ลบเทมเพลตสกิลแล้ว", Operation_Load_Skill_Templates: "กำลังโหลดเทมเพลตสกิล", Operation_Save_Skill_Template: "กำลังบันทึกเทมเพลตสกิล", Operation_Rename_Skill_Template: "กำลังเปลี่ยนชื่อเทมเพลตสกิล", Operation_Apply_Skill_Template: "กำลังใช้เทมเพลตสกิล", Operation_Delete_Skill_Template: "กำลังลบเทมเพลตสกิล",
+    SkillTemplate_Expand: "ขยายสกิล",
+    SkillTemplate_Collapse: "ย่อสกิล",
+    Editor_Btn_Maximize_Pal: "เพิ่มค่าสถานะสูงสุด",
+    Message_Pal_Maximized: "ตั้งค่าคุณสมบัติของ Pal เป็นค่าสูงสุดที่ถูกต้องแล้ว",
+    Operation_Maximize_Pal: "กำลังเพิ่มค่าสถานะของ Pal สูงสุด",
 };
