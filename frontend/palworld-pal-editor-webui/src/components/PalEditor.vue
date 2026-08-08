@@ -239,8 +239,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="editor-field">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
             <span class="editor-tag">
-              <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
-              <UiIcon v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" name="check" />
+              <img v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
               <template v-else>-</template>
             </span>
             <div class="editor-field__actions">
@@ -250,7 +249,7 @@ const portraitBorder = pal => pal.IsAwakening
                 :aria-pressed="palStore.SELECTED_PAL_DATA.IsImportedCharacter"
                 :disabled="palStore.LOADING_FLAG"
                 @click="updateRange('IsImportedCharacter', !palStore.SELECTED_PAL_DATA.IsImportedCharacter)">
-                <UiIcon name="refresh" />
+                <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
               </button>
             </div>
           </div>

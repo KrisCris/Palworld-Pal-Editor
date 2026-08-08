@@ -116,7 +116,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
     <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
       <div v-if="playersCollapsed" class="editor-roster-dock">
         <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Restore')" @click="emit('restorePlayers')">
+          :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
           <UiIcon name="users" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
           <small>{{ playerCount }}</small>
         </button>
@@ -126,7 +126,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       </div>
       <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
         <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
-          :aria-label="palStore.getTranslatedText('PalList_Restore')" @click="emit('restorePals')">
+          :aria-label="palStore.getTranslatedText('PalList_Restore')">
           <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
           <small>{{ palCount }}</small>
         </button>
@@ -446,22 +446,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 
 @media (max-width: 760px) {
   .editor-app-bar {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .editor-app-bar__primary {
-    width: 100%;
-  }
-
-  .savePath {
-    flex: 1;
-    width: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .editor-app-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -477,6 +461,11 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 
   .op span {
     display: none;
+  }
+
+  .editor-roster-preview--pals { 
+    left: auto;
+    right: 0px;
   }
 }
 
