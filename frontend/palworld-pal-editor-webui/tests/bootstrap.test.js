@@ -371,6 +371,38 @@ test("runtime failures preserve editor state", async () => {
     assert.equal(store.SAVE_LOADED_FLAG, true);
 });
 
+test("a failed Pal detail request preserves the current complete selection", async () => {
+    const store = newStore();
+    const currentPal = {
+        InstanceId: "pal-current",
+        CharacterID: "SheepBall",
+        EquipWaza: [],
+        MasteredWaza: [],
+        PassiveSkillList: [],
+    };
+    const nextSummary = {
+        InstanceId: "pal-next",
+        CharacterID: "ChickenPal",
+    };
+    store.PAL_MAP = new Map([
+        [currentPal.InstanceId, currentPal],
+        [nextSummary.InstanceId, nextSummary],
+    ]);
+    store.SELECTED_PAL_ID = currentPal.InstanceId;
+    store.SELECTED_PAL_DATA = currentPal;
+    axios.post = async () => {
+        const error = new Error("Network Error");
+        error.request = {};
+        throw error;
+    };
+
+    assert.equal(await store.selectPal(nextSummary.InstanceId), false);
+    assert.equal(store.BACKEND_ERROR.kind, "connection");
+    assert.equal(store.SELECTED_PAL_ID, currentPal.InstanceId);
+    assert.deepEqual(store.SELECTED_PAL_DATA, currentPal);
+    assert.equal(store.LOADING_FLAG, false);
+});
+
 test("a failed path-picker request does not clear the current save path", async () => {
     const store = newStore();
     mockBackend({ password: false, loaded: false });

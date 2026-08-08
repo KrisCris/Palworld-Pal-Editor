@@ -1475,73 +1475,74 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function fetchPalData(player, pal) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
 
-        const response = await POST("/api/pal/paldata", {
-            PlayerUId: player,
-            InstanceId: pal,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            // construct new pal
-            let pal_data = new PalData({
-                ...PAL_MAP.value.get(response.data.InstanceId),
-                ...response.data,
+        try {
+            const response = await POST("/api/pal/paldata", {
+                PlayerUId: player,
+                InstanceId: pal,
             });
-            // update the pal from the correct pal container
-            if (player == PAL_BASE_WORKER_BTN.value) {
-                BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
-            } else {
-                PLAYER_MAP.value
-                    .get(player)
-                    .pals.set(pal_data.InstanceId, pal_data);
-            }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Pal", response);
-        }
+            if (response === false) return false;
 
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            if (response.status == 0) {
+                // construct new pal
+                let pal_data = new PalData({
+                    ...PAL_MAP.value.get(response.data.InstanceId),
+                    ...response.data,
+                });
+                // update the pal from the correct pal container
+                if (player == PAL_BASE_WORKER_BTN.value) {
+                    BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+                } else {
+                    PLAYER_MAP.value
+                        .get(player)
+                        .pals.set(pal_data.InstanceId, pal_data);
+                }
+                return true;
+            } else if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Load_Pal", response);
+            }
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
     }
 
     async function selectPal(palId, manual = false) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
 
-        if (!manual) {
-            // SELECTED_PAL_EL = e.target;
-            SELECTED_PAL_DATA.value = null;
-            SELECTED_PAL_ID.value = null;
+        try {
+            // set selected pal, and print out debug info
+            const palData = PAL_MAP.value.get(palId);
+            if (palData == null) {
+                showToast("Message_Select_Pal_Failed");
+                return false;
+            }
+            // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
+
+            if (!await fetchPalData(
+                // get player id, or BASE INDICATION STR
+                GET_PAL_OWNER_API_ID(),
+                palId
+            )) return false;
+
+            // Update selected pal id and pal data only after the full payload arrives.
+            SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
+            SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+            SHOW_PLAYER_EDIT_FLAG.value = false;
+
+            // Scroll to selected pal
+            // if (!isElementInViewport(SELECTED_PAL_EL)) {
+            //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
+            // }
+            return true;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
         }
-
-        // set selected pal, and print out debug info
-        let palData = PAL_MAP.value.get(palId);
-        if (palData == null) {
-            showToast("Message_Select_Pal_Failed");
-            if (!no_set_loading_flag) LOADING_FLAG.value = false;
-            return;
-        }
-        // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
-
-        await fetchPalData(
-            // get player id, or BASE INDICATION STR
-            GET_PAL_OWNER_API_ID(),
-            palId
-        );
-
-        // Update selected pal id and pal data
-        SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
-        SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
-        SHOW_PLAYER_EDIT_FLAG.value = false;
-
-        // Scroll to selected pal
-        // if (!isElementInViewport(SELECTED_PAL_EL)) {
-        //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
-        // }
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
     async function updatePal(e) {
