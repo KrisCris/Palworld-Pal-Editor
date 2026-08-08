@@ -1,4 +1,5 @@
 <script setup>
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
@@ -12,10 +13,11 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 <template>
   <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
     <header class="roster-header">
-      <button class="roster-title-button" :title="toggleLabel()"
+      <button class="roster-collapse-button" :title="toggleLabel()"
         :aria-label="toggleLabel()" @click="emit('toggle')">
-        {{ palStore.getTranslatedText("PlayerList_Text") }}
+        <UiIcon :name="preview ? 'plus' : 'minus'" />
       </button>
+      <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
 
     <div class="roster-list">
@@ -47,24 +49,51 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 }
 
 .roster-header {
-  display: flex;
+  position: relative;
+  display: grid;
+  min-height: 3.5rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--editor-space-2);
   padding: var(--editor-space-3);
   border-bottom: 1px solid var(--editor-color-border);
 }
 
-.roster-title-button {
+.roster-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: calc(100% - 6rem);
+  margin: 0;
+  overflow: hidden;
+  color: var(--editor-color-muted);
+  font-size: .8rem;
+  font-weight: 400;
+  letter-spacing: .04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.roster-collapse-button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: var(--editor-radius-sm);
   color: var(--editor-color-muted);
   background: transparent;
-  font-size: .8rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
   cursor: pointer;
+  transition: color .15s ease, background-color .15s ease;
+}
+
+.roster-collapse-button:hover {
+  color: var(--editor-color-text);
+  background: var(--editor-color-control-hover);
 }
 
 .roster-list {
@@ -130,7 +159,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 }
 
 .roster-row:focus-visible,
-.roster-title-button:focus-visible {
+.roster-collapse-button:focus-visible {
   outline: 2px solid var(--editor-color-focus);
   outline-offset: 2px;
 }

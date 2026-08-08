@@ -132,20 +132,23 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
 </script>
 
 <template>
-  <nav class="pal-roster" :aria-label="palStore.getTranslatedText('PalList_Text')">
+  <nav :class="['pal-roster', { 'pal-roster--preview': preview }]"
+    :aria-label="palStore.getTranslatedText('PalList_Text')">
     <header class="roster-header">
-      <button class="roster-title-button" :title="toggleLabel()"
-        :aria-label="toggleLabel()" @click="emit('toggle')">
-        {{ palStore.getTranslatedText("PalList_Text") }}
-      </button>
-      <div class="roster-actions">
-        <details v-if="!props.preview" ref="sortMenu" class="pal-list-menu">
+      <div class="roster-heading-row">
+        <button class="roster-collapse-button" :title="toggleLabel()"
+          :aria-label="toggleLabel()" @click="emit('toggle')">
+          <UiIcon :name="preview ? 'plus' : 'minus'" />
+        </button>
+        <h2 class="roster-title">{{ palStore.getTranslatedText("PalList_Text") }}</h2>
+        <div class="roster-actions">
+          <details ref="sortMenu" class="pal-list-menu">
           <summary class="roster-icon-button"
             :title="palStore.getTranslatedText('PalList_SortFilter')"
             :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
             <UiIcon name="filter" />
           </summary>
-          <div class="pal-list-menu__popover">
+          <div class="pal-list-menu__popover editor-glass-surface">
             <label>
               <span>{{ palStore.getTranslatedText('PalList_Sort') }}</span>
               <select v-model="palStore.PAL_LIST_SORT">
@@ -183,12 +186,13 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
               </button>
             </div>
           </div>
-        </details>
-        <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
-          :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
-          :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
-          <UiIcon name="plus" />
-        </button>
+          </details>
+          <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+            :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
+            :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
+            <UiIcon name="plus" />
+          </button>
+        </div>
       </div>
       <label class="pal-search">
         <UiIcon name="search" />
@@ -253,31 +257,63 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
 }
 
 .roster-header {
-  position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
   gap: var(--editor-space-2);
   padding: var(--editor-space-3);
   border-bottom: 1px solid var(--editor-color-border);
 }
 
-.roster-title-button {
+.roster-heading-row {
+  position: relative;
+  display: grid;
+  min-height: 2rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--editor-space-2);
+}
+
+.roster-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: calc(100% - 8rem);
+  margin: 0;
+  overflow: hidden;
+  color: var(--editor-color-muted);
+  font-size: .8rem;
+  font-weight: 400;
+  letter-spacing: .04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.roster-collapse-button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: var(--editor-radius-sm);
   color: var(--editor-color-muted);
   background: transparent;
-  font-size: .8rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
   cursor: pointer;
+  transition: color .15s ease, background-color .15s ease;
+}
+
+.roster-collapse-button:hover {
+  color: var(--editor-color-text);
+  background: var(--editor-color-control-hover);
 }
 
 .roster-actions {
   display: flex;
   gap: var(--editor-space-1);
+  grid-column: 3;
 }
 
 .pal-list-menu {
@@ -303,8 +339,13 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   padding: var(--editor-space-3);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-shadow-compact);
+}
+
+.pal-roster--preview .pal-list-menu__popover {
+  right: 0;
+  left: auto;
+  width: min(13rem, calc(100vw - 2rem));
 }
 
 .pal-list-menu__popover label {
@@ -561,7 +602,7 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
 
 .pal-search:focus-within,
 .pal-row:focus-visible,
-.roster-title-button:focus-visible,
+.roster-collapse-button:focus-visible,
 .roster-icon-button:focus-visible {
   outline: 2px solid var(--editor-color-focus);
   outline-offset: 2px;

@@ -139,6 +139,27 @@ test("Pal portraits expose the in-game priority icon", async () => {
   assert.match(source, /pal\.FavoriteIndex > 0/);
 });
 
+test("collapsed Pal roster preview retains sort, filter, and add actions", async () => {
+  const [{ default: PalList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PalList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  store.PAL_MAP = new Map(pals.map(pal => [pal.InstanceId, pal]));
+  store.PAL_STATIC_DATA = { TestPal: { Paldeck: 1 } };
+
+  const html = await renderVue(PalList, { pinia, props: { preview: true } });
+  assert.match(html, /pal-roster--preview/);
+  assert.match(html, /class="pal-list-menu"/);
+  assert.match(html, /aria-label="Sort and filter Pals"/);
+  assert.match(html, /name="add_pal"/);
+
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /\.pal-roster--preview\s+\.pal-list-menu__popover\s*\{[^}]*right:\s*0[^}]*left:\s*auto[^}]*width:\s*min\(13rem,/s);
+});
+
 test("Pal list exposes game-derived DNA origin markers and union filter buttons", async () => {
   const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
   assert.match(source, /pal\.IsImportedCharacter/);
