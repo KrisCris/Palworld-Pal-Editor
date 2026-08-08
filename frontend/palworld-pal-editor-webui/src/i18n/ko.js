@@ -20,4 +20,6 @@ export default {
     PalList_Filter_DNA: "DNA",
     PalList_Filter_Human: "인간",
     Editor_ImportedCharacter: "글로벌 Pal 보관함에서 가져옴",
+    SkillTemplate_Button: "스킬 템플릿", SkillTemplate_Eyebrow: "재사용 가능한 스킬 세트", SkillTemplate_Passive_Title: "패시브 스킬 템플릿", SkillTemplate_Active_Title: "액티브 스킬 템플릿", SkillTemplate_Description: "현재 세트를 저장하거나 이 Pal의 해당 스킬 세트를 교체합니다.", SkillTemplate_Save_Current: "현재 세트 저장", SkillTemplate_Name_Placeholder: "템플릿 이름", SkillTemplate_Save: "저장", SkillTemplate_Name: "템플릿 이름", SkillTemplate_Rename: "템플릿 이름 변경", SkillTemplate_Equipped: "장착됨", SkillTemplate_Delete: "삭제", SkillTemplate_Apply: "적용", SkillTemplate_Empty: "이 스킬 세트에 저장된 템플릿이 없습니다.",
+    Message_Skill_Template_Saved: "스킬 템플릿을 저장했습니다.", Message_Skill_Template_Renamed: "스킬 템플릿 이름을 변경했습니다.", Message_Skill_Template_Applied: "스킬 템플릿을 적용했습니다.", Message_Skill_Template_Deleted: "스킬 템플릿을 삭제했습니다.", Operation_Load_Skill_Templates: "스킬 템플릿 불러오기", Operation_Save_Skill_Template: "스킬 템플릿 저장", Operation_Rename_Skill_Template: "스킬 템플릿 이름 변경", Operation_Apply_Skill_Template: "스킬 템플릿 적용", Operation_Delete_Skill_Template: "스킬 템플릿 삭제",
 };

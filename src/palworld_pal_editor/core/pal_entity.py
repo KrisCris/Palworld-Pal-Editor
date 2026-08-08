@@ -885,6 +885,12 @@ class PalEntity:
         except Exception as e:
             LOGGER.warning(f"{e}")
 
+    @LOGGER.change_logger("PassiveSkillList")
+    def replace_PassiveSkillList(self, skills: list[str]) -> None:
+        self._pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
+            "NameProperty", {"values": list(skills)}
+        )
+
     @property
     def EquipWaza(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("EquipWaza"))
@@ -990,6 +996,20 @@ class PalEntity:
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
+
+    def replace_EquipWaza(self, equipped: list[str]) -> None:
+        old_equipped = list(self.EquipWaza or [])
+        if self.MasteredWaza is None:
+            self._pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+                "EnumProperty", {"values": []}
+            )
+        for skill in equipped:
+            if skill not in self.MasteredWaza:
+                self.MasteredWaza.append(skill)
+        self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
+            "EnumProperty", {"values": list(equipped)}
+        )
+        LOGGER.info(f"{self} | EquipWaza: {old_equipped} -> {equipped}")
 
     @property
     def AddedWorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:

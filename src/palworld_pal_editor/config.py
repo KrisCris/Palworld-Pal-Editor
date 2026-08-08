@@ -107,6 +107,7 @@ class Config:
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
     shownDonateInfo: dict[str, bool] = {}
     palTemplates: ClassVar[list[dict]] = []
+    skillTemplates: ClassVar[list[dict]] = []
 
     @classmethod
     def load_from_file(cls, file_path: str=CONFIG_PATH):
@@ -171,5 +172,6 @@ class Config:
             'JWT_SECRET_KEY': Config.JWT_SECRET_KEY,
             'shownDonateInfo': Config.shownDonateInfo,
             'palTemplates': Config.palTemplates,
+            'skillTemplates': Config.skillTemplates,
         }
 

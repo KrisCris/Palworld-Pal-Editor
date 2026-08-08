@@ -525,6 +525,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_STATIC_DATA_LIST = ref([]);
     const SKIN_DATA_LIST = ref([]);
     const PAL_TEMPLATES = ref([]);
+    const SKILL_TEMPLATES = ref([]);
     const I18nList = ref(GAME_LANGUAGES);
 
     // flags
@@ -815,6 +816,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             : readRecentBackends(localStorage);
         if (changed) {
             PAL_TEMPLATES.value = [];
+            SKILL_TEMPLATES.value = [];
             auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
             PAL_GAME_SAVE_PATH.value = readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
             PAL_FILE_PICKER_PATH.value = PAL_GAME_SAVE_PATH.value;
@@ -1144,6 +1146,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
         PAL_TEMPLATES.value = [];
+        SKILL_TEMPLATES.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
         PAL_LIST_SORT.value = "paldeck";
@@ -1794,6 +1797,94 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return false;
     }
 
+    async function fetchSkillTemplates() {
+        const response = await GET("/api/pal/skill_templates");
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value = response.data || [];
+            return true;
+        }
+        reportOperationError("Operation_Load_Skill_Templates", response);
+        return false;
+    }
+
+    async function saveSkillTemplate(type, name) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST("/api/pal/skill_templates", {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+            Type: type,
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value.push(response.data);
+            showToast("Message_Skill_Template_Saved", "success");
+            return true;
+        }
+        reportOperationError("Operation_Save_Skill_Template", response);
+        return false;
+    }
+
+    async function renameSkillTemplate(templateId, name) {
+        const response = await PATCH(`/api/pal/skill_templates/${templateId}`, {
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            const index = SKILL_TEMPLATES.value.findIndex(
+                template => template.Id == templateId
+            );
+            if (index >= 0) SKILL_TEMPLATES.value[index] = response.data;
+            showToast("Message_Skill_Template_Renamed", "success");
+            return true;
+        }
+        reportOperationError("Operation_Rename_Skill_Template", response);
+        return false;
+    }
+
+    async function applySkillTemplate(templateId) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST(`/api/pal/skill_templates/${templateId}/apply`, {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            if (response.data.Type === "passive") {
+                SELECTED_PAL_DATA.value.PassiveSkillList = [
+                    ...(response.data.PassiveSkillList || []),
+                ];
+            } else {
+                SELECTED_PAL_DATA.value.EquipWaza = [
+                    ...(response.data.EquipWaza || []),
+                ];
+                SELECTED_PAL_DATA.value.MasteredWaza = [
+                    ...(response.data.MasteredWaza || []),
+                ];
+            }
+            EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+            showToast("Message_Skill_Template_Applied", "success");
+            return true;
+        }
+        reportOperationError("Operation_Apply_Skill_Template", response);
+        return false;
+    }
+
+    async function deleteSkillTemplate(templateId) {
+        const response = await DELETE(`/api/pal/skill_templates/${templateId}`);
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value = SKILL_TEMPLATES.value.filter(
+                template => template.Id != templateId
+            );
+            showToast("Message_Skill_Template_Deleted", "success");
+            return true;
+        }
+        reportOperationError("Operation_Delete_Skill_Template", response);
+        return false;
+    }
+
     async function dupePal() {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
@@ -1935,6 +2026,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         ACTIVE_SKILLS_LIST,
         TECH_LV_DICT,
         PAL_TEMPLATES,
+        SKILL_TEMPLATES,
 
         getTranslatedText,
         getMessageText,
@@ -1967,6 +2059,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         fetchPalTemplates,
         savePalTemplate,
         deletePalTemplate,
+        fetchSkillTemplates,
+        saveSkillTemplate,
+        renameSkillTemplate,
+        applySkillTemplate,
+        deleteSkillTemplate,
 
         bootstrap,
         connectBackend,

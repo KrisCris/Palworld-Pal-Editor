@@ -322,4 +322,6 @@ export default {
     PalList_Filter_DNA: "DNA",
     PalList_Filter_Human: "Con người",
     Editor_ImportedCharacter: "Được nhập từ Kho Pal toàn cầu",
+    SkillTemplate_Button: "Mẫu kỹ năng", SkillTemplate_Eyebrow: "Bộ kỹ năng có thể tái sử dụng", SkillTemplate_Passive_Title: "Mẫu kỹ năng bị động", SkillTemplate_Active_Title: "Mẫu kỹ năng chủ động", SkillTemplate_Description: "Lưu bộ hiện tại hoặc thay thế bộ kỹ năng tương ứng của Pal này.", SkillTemplate_Save_Current: "Lưu bộ hiện tại", SkillTemplate_Name_Placeholder: "Tên mẫu", SkillTemplate_Save: "Lưu", SkillTemplate_Name: "Tên mẫu", SkillTemplate_Rename: "Đổi tên mẫu", SkillTemplate_Equipped: "Đã trang bị", SkillTemplate_Delete: "Xóa", SkillTemplate_Apply: "Áp dụng", SkillTemplate_Empty: "Chưa có mẫu được lưu cho bộ kỹ năng này.",
+    Message_Skill_Template_Saved: "Đã lưu mẫu kỹ năng.", Message_Skill_Template_Renamed: "Đã đổi tên mẫu kỹ năng.", Message_Skill_Template_Applied: "Đã áp dụng mẫu kỹ năng.", Message_Skill_Template_Deleted: "Đã xóa mẫu kỹ năng.", Operation_Load_Skill_Templates: "đang tải mẫu kỹ năng", Operation_Save_Skill_Template: "đang lưu mẫu kỹ năng", Operation_Rename_Skill_Template: "đang đổi tên mẫu kỹ năng", Operation_Apply_Skill_Template: "đang áp dụng mẫu kỹ năng", Operation_Delete_Skill_Template: "đang xóa mẫu kỹ năng",
 };

@@ -1,13 +1,18 @@
 <script setup>
+import { ref } from 'vue'
+
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
+import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 const palStore = usePalEditorStore()
 const updateRange = (name, value) => palStore.updatePal({ target: { name, value } })
+const skillTemplateType = ref('')
+const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
   ...(palStore.SELECTED_PAL_DATA.EquipWaza || []),
@@ -499,7 +504,12 @@ const portraitBorder = pal => pal.IsAwakening
 
     <section class="pal-panel editor-surface">
       <div class="skill-section">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Passive_Skills") }}</h2>
+        <div class="skill-section__header">
+          <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Passive_Skills") }}</h2>
+          <button class="editor-button editor-button--secondary" type="button" @click="openSkillTemplates('passive')">
+            <UiIcon name="copy" /> {{ palStore.getTranslatedText('SkillTemplate_Button') }}
+          </button>
+        </div>
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.PassiveSkillList" :key="skill"
             :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
@@ -528,7 +538,12 @@ const portraitBorder = pal => pal.IsAwakening
       </div>
 
       <div class="skill-section">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Equipped_Skills") }}</h2>
+        <div class="skill-section__header">
+          <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Equipped_Skills") }}</h2>
+          <button class="editor-button editor-button--secondary" type="button" @click="openSkillTemplates('active')">
+            <UiIcon name="copy" /> {{ palStore.getTranslatedText('SkillTemplate_Button') }}
+          </button>
+        </div>
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.EquipWaza" :key="skill"
             :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
@@ -588,6 +603,7 @@ const portraitBorder = pal => pal.IsAwakening
         </div>
       </div>
     </section>
+    <SkillTemplateDialog v-if="skillTemplateType" :type="skillTemplateType" @close="skillTemplateType = ''" />
   </div>
 </template>
 
@@ -889,6 +905,13 @@ const portraitBorder = pal => pal.IsAwakening
   display: grid;
   gap: var(--editor-space-2);
   min-width: 0;
+}
+
+.skill-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--editor-space-3);
 }
 
 .skill-section + .skill-section {
