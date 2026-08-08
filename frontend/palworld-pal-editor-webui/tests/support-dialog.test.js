@@ -29,9 +29,11 @@ test("support methods reveal details before opening links or a closable full-siz
   assert.match(dialog, /qr: publicAsset\(['"]support\/wechat-pay\.png['"]\)/);
   assert.doesNotMatch(dialog, /qr: ['"]\/support\//);
   assert.match(dialog, /class="support-dialog editor-glass-surface"/);
-  assert.match(dialog, /\.support-panel\s*\{[^}]*background: var\(--editor-color-control-hover\)/s);
-  assert.match(dialog, /\.support-payment\s*\{[^}]*background: var\(--editor-color-surface\)/s);
-  assert.match(dialog, /\.support-payment-detail\s*\{[^}]*background: var\(--editor-color-surface\)/s);
+  assert.match(dialog, /\.support-dialog\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-surface\) 70%, transparent\)/s);
+  assert.match(dialog, /\.support-header\s*\{[^}]*background: var\(--editor-color-glass-toolbar\)[^}]*backdrop-filter:/s);
+  assert.match(dialog, /\.support-panel\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-surface-raised\) 72%, transparent\)/s);
+  assert.match(dialog, /\.support-payment\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-control\) 86%, transparent\)/s);
+  assert.match(dialog, /\.support-payment-detail\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-control\) 86%, transparent\)/s);
   assert.match(dialog, /\.support-payment--selected\s*\{[^}]*background: color-mix\(in srgb, var\(--editor-color-primary\)/s);
   assert.match(dialog, /https:\/\/discord\.gg\/FnuA95nMJ8/);
   assert.match(dialog, /https:\/\/github\.com\/KrisCris\/Palworld-Pal-Editor\/issues/);

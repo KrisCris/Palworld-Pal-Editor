@@ -76,9 +76,9 @@
   z-index: 0;
   inset: 0;
   content: '';
-  background: color-mix(in srgb, var(--editor-color-background) 72%, transparent);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--editor-color-background) 50%, transparent);
+  -webkit-backdrop-filter: blur(6px) saturate(90%);
+  backdrop-filter: blur(6px) saturate(90%);
 }
 
 .editor-modal-overlay > * {

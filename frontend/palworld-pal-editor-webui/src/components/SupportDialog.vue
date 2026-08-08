@@ -265,6 +265,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   overflow: auto;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
+  background: color-mix(in srgb, var(--editor-color-surface) 70%, transparent);
   box-shadow: var(--editor-glass-shadow), 0 2.2rem 5rem rgb(0 0 0 / 52%);
 }
 
@@ -284,8 +285,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   align-items: flex-start;
   gap: var(--editor-space-3);
   padding: var(--editor-space-5);
-  border-bottom: 1px solid var(--editor-color-border);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 97%, transparent);
+  border-bottom: 1px solid var(--editor-color-glass-border);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  backdrop-filter: blur(18px) saturate(115%);
 }
 
 .support-logo {
@@ -355,10 +358,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 .support-panel {
   min-width: 0;
   padding: var(--editor-space-4);
-  border: 1px solid var(--editor-color-border);
+  border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-control-hover);
-  box-shadow: var(--editor-shadow-compact);
+  background: color-mix(in srgb, var(--editor-color-surface-raised) 72%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), var(--editor-shadow-compact);
 }
 
 .support-financial {
@@ -393,7 +396,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   cursor: pointer;
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-surface);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
 }
 
 .support-payment > span {
@@ -428,7 +431,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   padding: var(--editor-space-3);
   border-left: .2rem solid var(--editor-color-focus);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-surface);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
   box-shadow: var(--editor-shadow-compact);
 }
 
@@ -524,7 +527,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   color: var(--editor-color-text);
-  background: var(--editor-color-surface);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
   text-decoration: none;
 }
 
@@ -555,8 +558,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   justify-content: space-between;
   gap: var(--editor-space-4);
   padding: var(--editor-space-4) var(--editor-space-5);
-  border-top: 1px solid var(--editor-color-border);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 97%, transparent);
+  border-top: 1px solid var(--editor-color-glass-border);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  backdrop-filter: blur(18px) saturate(115%);
 }
 
 .support-warning {
