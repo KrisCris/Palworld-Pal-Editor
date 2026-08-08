@@ -58,6 +58,7 @@ UI_ICON_SOURCES = (
     ("priority-1", "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock"),
     ("priority-2", "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock_2"),
     ("priority-3", "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_PalLock_3"),
+    ("dna", "Pal/Content/Pal/Texture/UI/Main_Menu/T_Icon_PalGlobalInport"),
     *(
         (
             logical_name,
@@ -102,6 +103,7 @@ UI_ICON_DIMENSIONS = {
     "priority-1": (32, 32),
     "priority-2": (32, 32),
     "priority-3": (32, 32),
+    "dna": (64, 64),
     **{
         name: (48, 48)
         for name, _ in UI_ICON_SOURCES

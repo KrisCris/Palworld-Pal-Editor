@@ -5,6 +5,7 @@ import {
   filterPalPriority,
   isCreatedPal,
   isEditedPal,
+  matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
 } from "../src/components/modules/pal-list-order.js";
@@ -59,6 +60,31 @@ test("Pal priority filtering recognizes unprioritized and I to III", () => {
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "1")).map(pal => pal.InstanceId), ["storage-2"]);
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "2")).map(pal => pal.InstanceId), ["party-4"]);
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "3")).map(pal => pal.InstanceId), ["party-0"]);
+});
+
+test("Pal attribute filters combine priority and origin tags with union semantics", () => {
+  const tagged = [
+    { InstanceId: "priority", FavoriteIndex: 2 },
+    { InstanceId: "alpha", IsBOSS: true },
+    { InstanceId: "lucky", IsRarePal: true },
+    { InstanceId: "dna", IsImportedCharacter: true },
+    { InstanceId: "human", IsHuman: true },
+    { InstanceId: "plain" },
+  ];
+
+  assert.deepEqual(tagged.filter(pal => matchesPalAttributeFilters(pal, [])), tagged);
+  assert.deepEqual(
+    tagged
+      .filter(pal => matchesPalAttributeFilters(pal, ["priority-2", "dna", "human"]))
+      .map(pal => pal.InstanceId),
+    ["priority", "dna", "human"],
+  );
+  assert.deepEqual(
+    tagged
+      .filter(pal => matchesPalAttributeFilters(pal, ["alpha", "lucky"]))
+      .map(pal => pal.InstanceId),
+    ["alpha", "lucky"],
+  );
 });
 
 test("Editor-created Pals can be filtered explicitly without changing sort order", () => {

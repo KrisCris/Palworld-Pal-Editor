@@ -316,4 +316,10 @@ export default {
     BackendError_Details: "Chi tiết lỗi",
     BackendError_Refresh: "Làm mới",
     BackendError_Dismiss: "Đóng",
+    PalList_Filter_Attributes: "Bộ lọc trạng thái",
+    PalList_Filter_Alpha: "Alpha",
+    PalList_Filter_Lucky: "May mắn",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "Con người",
+    Editor_ImportedCharacter: "Được nhập từ Kho Pal toàn cầu",
 };

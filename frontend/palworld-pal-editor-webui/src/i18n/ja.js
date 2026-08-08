@@ -332,4 +332,10 @@ export default {
     BackendError_Details: "エラーの詳細",
     BackendError_Refresh: "再読み込み",
     BackendError_Dismiss: "閉じる",
+    PalList_Filter_Attributes: "状態フィルター",
+    PalList_Filter_Alpha: "ボス",
+    PalList_Filter_Lucky: "希少",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "人間",
+    Editor_ImportedCharacter: "グローバルパルストレージからインポート",
 };

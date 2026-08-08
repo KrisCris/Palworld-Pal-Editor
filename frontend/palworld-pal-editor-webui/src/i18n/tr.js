@@ -316,4 +316,10 @@ export default {
     BackendError_Details: "Hata ayrıntıları",
     BackendError_Refresh: "Yenile",
     BackendError_Dismiss: "Kapat",
+    PalList_Filter_Attributes: "Durum filtreleri",
+    PalList_Filter_Alpha: "Alfa",
+    PalList_Filter_Lucky: "Şanslı",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "İnsan",
+    Editor_ImportedCharacter: "Küresel Pal Deposu'ndan içe aktarıldı",
 };

@@ -316,4 +316,10 @@ export default {
     BackendError_Details: "Detalles del error",
     BackendError_Refresh: "Actualizar",
     BackendError_Dismiss: "Descartar",
+    PalList_Filter_Attributes: "Filtros de estado",
+    PalList_Filter_Alpha: "Alfa",
+    PalList_Filter_Lucky: "Afortunado",
+    PalList_Filter_DNA: "ADN",
+    PalList_Filter_Human: "Humano",
+    Editor_ImportedCharacter: "Importado del almacén global de Pals",
 };

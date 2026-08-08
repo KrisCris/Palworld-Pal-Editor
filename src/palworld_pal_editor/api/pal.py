@@ -174,6 +174,7 @@ def _pal_data(pal: PalEntity):
         "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
         "SlotIndex": pal.SlotIndex,
         "FavoriteIndex": pal.FavoriteIndex,
+        "IsImportedCharacter": pal.IsImportedCharacter,
         "OwnerName": pal.OwnerName or None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,

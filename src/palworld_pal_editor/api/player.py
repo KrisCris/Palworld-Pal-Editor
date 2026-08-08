@@ -49,6 +49,8 @@ def get_player_pals():
                 "IsBOSS": pal.IsBOSS or False,
                 "IsRarePal": pal.IsRarePal or False,
                 "IsAwakening": pal.IsAwakening,
+                "IsImportedCharacter": pal.IsImportedCharacter,
+                "IsHuman": pal.IsHuman,
                 "IsNewPal": pal.is_new_pal,
                 "ContainerId": str(pal.ContainerId) if pal.ContainerId else None,
                 "SlotIndex": pal.SlotIndex,

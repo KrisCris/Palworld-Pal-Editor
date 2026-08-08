@@ -8,6 +8,20 @@ export const filterPalPriority = (pal, priority) => (
   priority === "all" || Number(pal?.FavoriteIndex ?? 0) === Number(priority)
 );
 
+const palAttributeFilterMatches = Object.freeze({
+  "priority-1": pal => Number(pal?.FavoriteIndex ?? 0) === 1,
+  "priority-2": pal => Number(pal?.FavoriteIndex ?? 0) === 2,
+  "priority-3": pal => Number(pal?.FavoriteIndex ?? 0) === 3,
+  alpha: pal => Boolean(pal?.IsBOSS),
+  lucky: pal => Boolean(pal?.IsRarePal),
+  dna: pal => Boolean(pal?.IsImportedCharacter),
+  human: pal => Boolean(pal?.IsHuman),
+});
+
+export const matchesPalAttributeFilters = (pal, filters) => (
+  !filters?.length || filters.some(filter => palAttributeFilterMatches[filter]?.(pal))
+);
+
 export const isCreatedPal = (pal, createdIds) => Boolean(
   pal?.IsNewPal || createdIds.has(pal?.InstanceId),
 );

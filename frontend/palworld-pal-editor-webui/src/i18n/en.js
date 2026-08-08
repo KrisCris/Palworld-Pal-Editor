@@ -331,4 +331,10 @@ export default {
     BackendError_Details: "Error details",
     BackendError_Refresh: "Refresh",
     BackendError_Dismiss: "Dismiss",
+    PalList_Filter_Attributes: "Status filters",
+    PalList_Filter_Alpha: "Alpha",
+    PalList_Filter_Lucky: "Lucky",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "Human",
+    Editor_ImportedCharacter: "Imported from Global Pal Storage",
 };

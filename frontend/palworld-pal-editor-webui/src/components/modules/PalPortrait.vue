@@ -60,8 +60,23 @@ const style = computed(() => ({
 .pal-portrait__marker:empty { display: none; }
 .pal-portrait__marker :deep(img) { display: block; width: 100%; height: 100%; object-fit: contain; }
 .pal-portrait__marker :deep(.game-priority-icon) { filter: sepia(1) saturate(9) hue-rotate(355deg) brightness(1.12); }
+.pal-portrait__marker :deep(.game-lucky-icon),
+.pal-portrait__marker :deep(.game-dna-icon) { transform: scale(1.2); }
 .pal-portrait__marker--top-left { top: 0; left: 0; }
 .pal-portrait__marker--top-right { top: 0; right: 0; transform: translate(25%, -25%); }
-.pal-portrait__marker--bottom-left { bottom: 0; left: 0; transform: translate(-25%, 25%); }
+.pal-portrait__marker--bottom-left {
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-25%, 25%);
+}
+.pal-portrait__marker--bottom-left :deep(img) {
+  width: 82%;
+  height: 82%;
+  flex: 0 0 82%;
+}
+.pal-portrait__marker--bottom-left :deep(img + img) { margin-left: -36%; }
 .pal-portrait__marker--bottom-right { right: 0; bottom: 0; transform: translate(25%, 25%); }
 </style>

@@ -229,6 +229,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.SlotIndex = obj.SlotIndex;
             this.ContainerKind = obj.ContainerKind;
             this.FavoriteIndex = obj.FavoriteIndex ?? 0;
+            this.IsImportedCharacter = obj.IsImportedCharacter ?? false;
             this.OwnerName = obj.OwnerName;
             this.CharacterID = obj.CharacterID;
             this.FamilyID = obj.FamilyID;
@@ -543,7 +544,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     const PAL_LIST_SEARCH_KEYWORD = ref("");
     const PAL_LIST_SORT = ref("paldeck");
-    const PAL_LIST_PRIORITY_FILTER = ref("all");
+    const PAL_LIST_ATTRIBUTE_FILTERS = ref([]);
     const PAL_LIST_EDITED_ONLY = ref(false);
     const PAL_LIST_CREATED_ONLY = ref(false);
     const EDITED_PAL_IDS = ref(new Set());
@@ -1146,7 +1147,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
         PAL_LIST_SORT.value = "paldeck";
-        PAL_LIST_PRIORITY_FILTER.value = "all";
+        PAL_LIST_ATTRIBUTE_FILTERS.value = [];
         PAL_LIST_EDITED_ONLY.value = false;
         PAL_LIST_CREATED_ONLY.value = false;
         EDITED_PAL_IDS.value.clear();
@@ -1892,7 +1893,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         PAL_LIST_SEARCH_KEYWORD,
         PAL_LIST_SORT,
-        PAL_LIST_PRIORITY_FILTER,
+        PAL_LIST_ATTRIBUTE_FILTERS,
         PAL_LIST_EDITED_ONLY,
         PAL_LIST_CREATED_ONLY,
         EDITED_PAL_IDS,

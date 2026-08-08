@@ -5,9 +5,9 @@ import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import {
-  filterPalPriority,
   isCreatedPal,
   isEditedPal,
+  matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
 } from '@/components/modules/pal-list-order'
@@ -22,6 +22,22 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Re
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
+const attributeFilters = Object.freeze([
+  { key: 'priority-1', icon: 'priority-1', label: 'I' },
+  { key: 'priority-2', icon: 'priority-2', label: 'II' },
+  { key: 'priority-3', icon: 'priority-3', label: 'III' },
+  { key: 'alpha', icon: 'boss', translation: 'PalList_Filter_Alpha' },
+  { key: 'lucky', icon: 'rare', translation: 'PalList_Filter_Lucky' },
+  { key: 'dna', icon: 'dna', translation: 'PalList_Filter_DNA' },
+  { key: 'human', uiIcon: 'users', translation: 'PalList_Filter_Human' },
+])
+
+const toggleAttributeFilter = key => {
+  const filters = palStore.PAL_LIST_ATTRIBUTE_FILTERS
+  palStore.PAL_LIST_ATTRIBUTE_FILTERS = filters.includes(key)
+    ? filters.filter(filter => filter !== key)
+    : [...filters, key]
+}
 
 const closeSortMenuOnOutsidePointer = event => closeDisclosureOnOutsidePointer(sortMenu.value, event.target)
 onMounted(() => window.addEventListener('pointerdown', closeSortMenuOnOutsidePointer))
@@ -67,7 +83,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
 const visiblePals = computed(() => sortPalList(
   Array.from(palStore.PAL_MAP.values())
     .filter(pal => !palStore.isFilteredPal(pal))
-    .filter(pal => filterPalPriority(pal, palStore.PAL_LIST_PRIORITY_FILTER))
+    .filter(pal => matchesPalAttributeFilters(pal, palStore.PAL_LIST_ATTRIBUTE_FILTERS))
     .filter(pal => matchesPalSessionFilter(
       pal,
       palStore.PAL_LIST_EDITED_ONLY,
@@ -82,7 +98,7 @@ const visiblePals = computed(() => sortPalList(
 watch(
   [
     () => palStore.PAL_LIST_SORT,
-    () => palStore.PAL_LIST_PRIORITY_FILTER,
+    () => palStore.PAL_LIST_ATTRIBUTE_FILTERS,
     () => palStore.PAL_LIST_EDITED_ONLY,
     () => palStore.PAL_LIST_CREATED_ONLY,
   ],
@@ -138,16 +154,20 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
                 <option value="priority">{{ palStore.getTranslatedText('PalList_Sort_Priority') }}</option>
               </select>
             </label>
-            <label>
-              <span>{{ palStore.getTranslatedText('PalList_Filter_Priority') }}</span>
-              <select v-model="palStore.PAL_LIST_PRIORITY_FILTER">
-                <option value="all">{{ palStore.getTranslatedText('PalList_Filter_All') }}</option>
-                <option value="3">III</option>
-                <option value="2">II</option>
-                <option value="1">I</option>
-                <option value="0">{{ palStore.getTranslatedText('PalList_Filter_Unprioritized') }}</option>
-              </select>
-            </label>
+            <fieldset class="pal-list-menu__attribute-filters">
+              <legend>{{ palStore.getTranslatedText('PalList_Filter_Attributes') }}</legend>
+              <button v-for="filter in attributeFilters" :key="filter.key" type="button"
+                :class="['pal-list-menu__attribute-button', { 'is-active': palStore.PAL_LIST_ATTRIBUTE_FILTERS.includes(filter.key) }]"
+                :aria-pressed="palStore.PAL_LIST_ATTRIBUTE_FILTERS.includes(filter.key)"
+                :title="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
+                :aria-label="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
+                @click="toggleAttributeFilter(filter.key)">
+                <img v-if="filter.icon" :src="palStore.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
+                  @error="$event.currentTarget.hidden = true">
+                <UiIcon v-else :name="filter.uiIcon" />
+                <span>{{ filter.label || palStore.getTranslatedText(filter.translation) }}</span>
+              </button>
+            </fieldset>
             <div class="pal-list-menu__session-buttons">
               <button class="pal-list-menu__session-button" type="button"
                 :aria-pressed="palStore.PAL_LIST_EDITED_ONLY"
@@ -188,17 +208,21 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
             <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
-            <img v-else-if="pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsRarePal" class="game-lucky-icon"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
             <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
               :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
               @error="$event.currentTarget.hidden = true">
-            <img v-else-if="pal.IsBOSS && pal.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-left>
-            <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal"
+            <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
               :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsImportedCharacter" class="game-dna-icon"
+              :src="palStore.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-right>
             <span v-if="palWasCreated(pal)" class="new-pal-marker"><UiIcon name="plus" /></span>
@@ -296,6 +320,55 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   gap: var(--editor-space-1);
   padding-top: var(--editor-space-2);
   border-top: 1px solid var(--editor-color-border);
+}
+
+.pal-list-menu__attribute-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--editor-space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pal-list-menu__attribute-filters legend {
+  grid-column: 1 / -1;
+  margin-bottom: var(--editor-space-1);
+  color: var(--editor-color-muted);
+  font-size: .75rem;
+}
+
+.pal-list-menu__attribute-button {
+  display: grid;
+  min-width: 0;
+  min-height: 3rem;
+  place-items: center;
+  gap: .15rem;
+  padding: .3rem;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-control);
+  font: inherit;
+  font-size: .65rem;
+  cursor: pointer;
+}
+
+.pal-list-menu__attribute-button:hover {
+  background: var(--editor-color-control-hover);
+}
+
+.pal-list-menu__attribute-button.is-active {
+  border-color: var(--editor-color-primary);
+  color: var(--editor-color-primary);
+  background: color-mix(in srgb, var(--editor-color-primary) 15%, var(--editor-color-control));
+}
+
+.pal-list-menu__attribute-button img,
+.pal-list-menu__attribute-button .ui-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
 }
 
 .pal-list-menu__session-button {

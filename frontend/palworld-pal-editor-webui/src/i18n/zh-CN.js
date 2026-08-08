@@ -331,4 +331,10 @@ export default {
     BackendError_Details: "错误详情",
     BackendError_Refresh: "刷新",
     BackendError_Dismiss: "关闭",
+    PalList_Filter_Attributes: "状态筛选",
+    PalList_Filter_Alpha: "头目",
+    PalList_Filter_Lucky: "稀有",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "人类",
+    Editor_ImportedCharacter: "从跨界终端导入",
 };

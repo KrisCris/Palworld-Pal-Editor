@@ -138,3 +138,14 @@ test("Pal portraits expose the in-game priority icon", async () => {
   assert.match(source, /image\/ui\/priority-/);
   assert.match(source, /pal\.FavoriteIndex > 0/);
 });
+
+test("Pal list exposes game-derived DNA origin markers and union filter buttons", async () => {
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /pal\.IsImportedCharacter/);
+  assert.match(source, /image\/ui\/dna/);
+  assert.match(source, /PAL_LIST_ATTRIBUTE_FILTERS/);
+  assert.match(source, /matchesPalAttributeFilters/);
+  for (const key of ["priority-1", "priority-2", "priority-3", "alpha", "lucky", "dna", "human"]) {
+    assert.match(source, new RegExp(`key: '${key}'`));
+  }
+});

@@ -389,6 +389,22 @@ class PalEntity:
             PalObjects.set_BaseType(favorite, value)
 
     @property
+    def IsImportedCharacter(self) -> bool:
+        """Whether the game marks this Pal as imported from Global Pal Storage."""
+        return bool(
+            PalObjects.get_BaseType(self._pal_param.get("bImportedCharacter"))
+        )
+
+    @IsImportedCharacter.setter
+    @LOGGER.change_logger("IsImportedCharacter")
+    @type_guard
+    def IsImportedCharacter(self, value: bool) -> None:
+        if value:
+            self._pal_param["bImportedCharacter"] = PalObjects.BoolProperty(True)
+        else:
+            self._pal_param.pop("bImportedCharacter", None)
+
+    @property
     def IsInvalid(self) -> bool:
         return DataProvider.is_pal_invalid(self.DataAccessKey)
 

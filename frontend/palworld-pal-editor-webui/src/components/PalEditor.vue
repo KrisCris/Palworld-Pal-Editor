@@ -139,18 +139,21 @@ const portraitBorder = pal => pal.IsAwakening
           :glow-color="palStore.SELECTED_PAL_DATA.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
             <img v-if="palStore.SELECTED_PAL_DATA.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
-            <img v-else-if="palStore.SELECTED_PAL_DATA.IsRarePal" :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-else-if="palStore.SELECTED_PAL_DATA.IsRarePal" class="game-lucky-icon"
+              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
             <img v-if="palStore.SELECTED_PAL_DATA.FavoriteIndex > 0" class="game-priority-icon"
               :src="palStore.backendAssetUrl(`/image/ui/priority-${palStore.SELECTED_PAL_DATA.FavoriteIndex}`)" alt=""
               @error="$event.currentTarget.hidden = true">
-            <img v-else-if="palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal"
+            <img v-else-if="palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal" class="game-lucky-icon"
               :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-left>
-            <img v-if="palStore.SELECTED_PAL_DATA.FavoriteIndex > 0 && palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal"
+            <img v-if="palStore.SELECTED_PAL_DATA.FavoriteIndex > 0 && palStore.SELECTED_PAL_DATA.IsBOSS && palStore.SELECTED_PAL_DATA.IsRarePal" class="game-lucky-icon"
               :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" class="game-dna-icon"
+              :src="palStore.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
         </PalPortrait>
         <div class="editor-summary__identity">
@@ -222,6 +225,24 @@ const portraitBorder = pal => pal.IsAwakening
                 name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
                 :aria-label="palStore.getTranslatedText('Editor_Nickname')"
                 :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
+            </div>
+          </div>
+          <div class="editor-field">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
+            <span class="editor-tag">
+              <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
+              <UiIcon v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" name="check" />
+              <template v-else>-</template>
+            </span>
+            <div class="editor-field__actions">
+              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsImportedCharacter }]"
+                name="IsImportedCharacter"
+                :aria-label="palStore.getTranslatedText('Editor_ImportedCharacter')"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.IsImportedCharacter"
+                :disabled="palStore.LOADING_FLAG"
+                @click="updateRange('IsImportedCharacter', !palStore.SELECTED_PAL_DATA.IsImportedCharacter)">
+                <UiIcon name="refresh" />
+              </button>
             </div>
           </div>
           <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">

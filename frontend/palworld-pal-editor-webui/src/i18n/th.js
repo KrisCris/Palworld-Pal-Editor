@@ -316,4 +316,10 @@ export default {
     BackendError_Details: "รายละเอียดข้อผิดพลาด",
     BackendError_Refresh: "รีเฟรช",
     BackendError_Dismiss: "ปิด",
+    PalList_Filter_Attributes: "ตัวกรองสถานะ",
+    PalList_Filter_Alpha: "อัลฟ่า",
+    PalList_Filter_Lucky: "ลัคกี้",
+    PalList_Filter_DNA: "DNA",
+    PalList_Filter_Human: "มนุษย์",
+    Editor_ImportedCharacter: "นำเข้าจากคลัง Pal ส่วนกลาง",
 };

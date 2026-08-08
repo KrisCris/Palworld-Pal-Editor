@@ -332,4 +332,10 @@ export default {
     BackendError_Details: "Détails de l’erreur",
     BackendError_Refresh: "Actualiser",
     BackendError_Dismiss: "Fermer",
+    PalList_Filter_Attributes: "Filtres d’état",
+    PalList_Filter_Alpha: "Alpha",
+    PalList_Filter_Lucky: "Chanceux",
+    PalList_Filter_DNA: "ADN",
+    PalList_Filter_Human: "Humain",
+    Editor_ImportedCharacter: "Importé du stockage global de Pals",
 };
