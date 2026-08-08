@@ -93,7 +93,9 @@ test("workspace uses the selected Palworld color lighting and glass surfaces", (
   assert.match(sources.base, /radial-gradient\([^}]*var\(--editor-color-backdrop-warm\)[^}]*radial-gradient\([^}]*var\(--editor-color-focus\)[^}]*radial-gradient\([^}]*var\(--editor-color-ancient\)/s);
   assert.match(sources.editor, /--editor-glass-filter:\s*blur\(26px\) saturate\(125%\)/);
   assert.match(sources.editor, /\.editor-surface\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*\n\s*backdrop-filter:\s*var\(--editor-glass-filter\)[^}]*box-shadow:\s*var\(--editor-glass-shadow\)/s);
-  assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)/s);
+  assert.doesNotMatch(sources.workspace, /\.editor-roster\s*\{[^}]*backdrop-filter:/s);
+  assert.match(sources.workspace, /\.editor-roster::before\s*\{[^}]*inset:\s*0;[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
   assert.doesNotMatch(sources.topBar, /\.editor-toolbar\s*\{[^}]*backdrop-filter:/s);
   assert.match(sources.topBar, /\.editor-toolbar::before\s*\{[^}]*background:\s*var\(--editor-color-glass-toolbar\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
   assert.match(sources.topBar, /\.editor-roster-preview\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
