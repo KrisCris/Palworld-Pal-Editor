@@ -116,6 +116,19 @@ test("floating dialogs share the restrained glass surface and overlay", () => {
   assert.match(sources.backendError, /editor-glass-surface/);
 });
 
+test("floating editor menus use the shared restrained glass surface", () => {
+  assert.match(sources.search, /class="search-select__popover editor-glass-surface"/);
+  assert.match(sources.pals, /class="pal-list-menu__popover editor-glass-surface"/);
+  assert.match(sources.topBar, /class="editor-more__menu editor-glass-surface"/);
+  for (const [source, selector] of [
+    [sources.search, "search-select__popover"],
+    [sources.pals, "pal-list-menu__popover"],
+    [sources.topBar, "editor-more__menu"],
+  ]) {
+    assert.doesNotMatch(source, new RegExp(`\\.${selector}\\s*\\{[^}]*background:\\s*var\\(--editor-color-surface-raised\\)`, "s"));
+  }
+});
+
 test("rendered technology cards consume the shared palette", () => {
   assert.doesNotMatch(sources.technology, /#[0-9a-f]{3,8}|rgba?\(/i);
   assert.match(sources.technology, /\.tech\s*\{[^}]*color:\s*var\(--editor-color-text\)[^}]*background-color:\s*var\(--editor-color-control\)/s);
@@ -124,7 +137,8 @@ test("rendered technology cards consume the shared palette", () => {
 });
 
 test("messages and support dialog use shared status and dialog colors", () => {
-  assert.match(sources.messages, /\.message-toast\s*\{[^}]*var\(--editor-color-surface-raised\)/s);
+  assert.match(sources.messages, /\['message-toast', 'editor-glass-surface', current\.severity\]/);
+  assert.doesNotMatch(sources.messages, /\.message-toast\s*\{[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
   assert.match(sources.messages, /\.message-toast\.warning\s*\{[^}]*var\(--editor-color-warning\)/s);
   assert.match(sources.messages, /\.message-toast\.success\s*\{[^}]*var\(--editor-color-success\)/s);
   assert.match(sources.messages, /\.message-toast\.error\s*\{[^}]*var\(--editor-color-danger\)/s);

@@ -73,6 +73,20 @@ test("blocking dialogs render their existing severity semantics", () => {
     }
 });
 
+test("messages stay above editor dialogs", () => {
+    const skillTemplateSource = readFile(
+        new URL("../src/components/SkillTemplateDialog.vue", import.meta.url),
+        "utf8",
+    );
+    return skillTemplateSource.then(source => {
+        const messageLayer = Number(messageCenterSource.match(/\.message-layer\s*\{[\s\S]*?z-index:\s*(\d+)/)?.[1]);
+        const messageToast = Number(messageCenterSource.match(/\.message-toast\s*\{[\s\S]*?z-index:\s*(\d+)/)?.[1]);
+        const skillDialog = Number(source.match(/\.skill-template-layer\s*\{[\s\S]*?z-index:\s*(\d+)/)?.[1]);
+        assert.ok(messageLayer > skillDialog, `${messageLayer} should exceed ${skillDialog}`);
+        assert.ok(messageToast > skillDialog, `${messageToast} should exceed ${skillDialog}`);
+    });
+});
+
 test("operation errors retain backend diagnostics and translatable context", () => {
     const store = newStore();
 

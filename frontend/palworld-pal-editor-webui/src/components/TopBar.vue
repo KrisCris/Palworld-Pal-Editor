@@ -88,7 +88,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       <div class="editor-app-bar__utilities">
         <details v-if="palStore.SAVE_LOADED_FLAG" class="editor-more">
           <summary class="op"><UiIcon name="more" /> {{ palStore.getTranslatedText("TopBar_More") }}</summary>
-          <div class="editor-more__menu">
+          <div class="editor-more__menu editor-glass-surface">
             <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
               @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
               :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
@@ -431,7 +431,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   padding: var(--editor-space-2);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-shadow-compact);
 }
 
