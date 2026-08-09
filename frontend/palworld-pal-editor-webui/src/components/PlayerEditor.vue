@@ -25,14 +25,16 @@ export function previewStatAllocation(player, name, target) {
 </script>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
+import PlayerInventory from '@/components/PlayerInventory.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
+const activeTab = ref('character')
 const playerName = () => palStore.SELECTED_PLAYER_DATA.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = () => playerName().trim().charAt(0).toUpperCase() || '?'
 const isMaxLv = () => palStore.SELECTED_PLAYER_DATA.Level >= (
@@ -75,6 +77,16 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
       </div>
     </header>
 
+    <nav class="player-tabs" :aria-label="palStore.getTranslatedText('PlayerEditor_Title')">
+      <button type="button" :class="{ active: activeTab === 'character' }" @click="activeTab = 'character'">
+        {{ palStore.getTranslatedText('PlayerEditor_Character') }}
+      </button>
+      <button type="button" :class="{ active: activeTab === 'items' }" @click="activeTab = 'items'">
+        {{ palStore.getTranslatedText('PlayerEditor_Items') }}
+      </button>
+    </nav>
+
+    <div v-if="activeTab === 'character'" class="player-character">
     <div class="player-dashboard">
       <section class="player-panel">
         <h2>{{ palStore.getTranslatedText('Editor_Basic_Info') }}</h2>
@@ -226,6 +238,8 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
         </section>
       </div>
     </section>
+    </div>
+    <PlayerInventory v-else />
   </section>
 </template>
 
@@ -237,6 +251,28 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
   min-width: 0;
   color: var(--editor-color-text);
 }
+
+.player-character { display: grid; gap: var(--editor-space-3); min-width: 0; }
+.player-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .35rem;
+  padding: .4rem;
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: var(--editor-radius-md);
+  background: var(--editor-color-glass-surface);
+  box-shadow: var(--editor-glass-shadow);
+  backdrop-filter: var(--editor-glass-filter);
+}
+.player-tabs button {
+  padding: .75rem 1rem;
+  border: 0;
+  border-radius: calc(var(--editor-radius-md) - .3rem);
+  color: var(--editor-color-muted);
+  background: transparent;
+  cursor: pointer;
+}
+.player-tabs button.active { color: var(--editor-color-text); background: var(--editor-color-primary); }
 
 .player-summary,
 .player-panel {

@@ -126,6 +126,50 @@ def get_player_data():
     return reply(0, player_dict)
 
 
+@player_blueprint.route("/inventory", methods=["POST"])
+@jwt_required()
+def get_player_inventory():
+    player_uid = request.json.get("PlayerUId")
+    if player_uid == "PAL_BASE_WORKER_BTN":
+        return reply(1, None, "PAL_BASE_WORKER_BTN is not a real player")
+    player = SaveManager().get_player(player_uid)
+    if not player:
+        return reply(1, None, f"Player {player_uid} not exist")
+    try:
+        return reply(0, SaveManager().item_container_data.inventory_snapshot(player))
+    except Exception:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error reading player inventory {stack_trace}")
+        return reply(1, None, "Unable to read this player's item containers")
+
+
+@player_blueprint.route("/inventory_slot", methods=["PATCH"])
+@jwt_required()
+def patch_player_inventory_slot():
+    player_uid = request.json.get("PlayerUId")
+    if player_uid == "PAL_BASE_WORKER_BTN":
+        return reply(1, None, "PAL_BASE_WORKER_BTN is not a real player")
+    player = SaveManager().get_player(player_uid)
+    if not player:
+        return reply(1, None, f"Player {player_uid} not exist")
+    try:
+        slot = SaveManager().item_container_data.patch_slot(
+            player,
+            request.json.get("ContainerKind"),
+            request.json.get("SlotIndex"),
+            request.json.get("ItemId"),
+            request.json.get("Count", 0),
+            allow_overstack=bool(request.json.get("AllowOverstack", False)),
+        )
+        return reply(0, slot)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    except Exception:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error patching player inventory slot {stack_trace}")
+        return reply(1, None, "Unable to update this inventory slot")
+
+
 def player_to_dict(player: PlayerEntity):
     return {
         "InstanceId": str(player.PlayerUId),

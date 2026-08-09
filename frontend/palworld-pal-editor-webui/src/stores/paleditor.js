@@ -523,6 +523,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const ACTIVE_SKILLS_LIST = ref([]);
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
+    const ITEM_STATIC_DATA = ref({});
+    const ITEM_STATIC_DATA_LIST = ref([]);
+    const PLAYER_INVENTORY = ref(null);
     const SKIN_DATA_LIST = ref([]);
     const PAL_TEMPLATES = ref([]);
     const SKILL_TEMPLATES = ref([]);
@@ -1105,6 +1108,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return false;
         }
 
+        const item_data_raw = await GET("/api/save/item_data");
+        if (item_data_raw === false) return false;
+        if (item_data_raw.status == 0) {
+            ITEM_STATIC_DATA.value = item_data_raw.data.dict;
+            ITEM_STATIC_DATA_LIST.value = item_data_raw.data.arr;
+        } else if (item_data_raw.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+            return false;
+        } else {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [item_data_raw.msg]));
+            return false;
+        }
+
         const tech_data_raw = await GET("/api/save/tech_data");
         if (tech_data_raw === false) return false;
 
@@ -1140,6 +1156,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         BASE_PAL_BTN_CLK_FLAG.value = false;
         SELECTED_PAL_ID.value = null;
         SELECTED_PLAYER_ID.value = null;
+        PLAYER_INVENTORY.value = null;
 
         BASE_PAL_MAP.value = new Map();
         PLAYER_MAP.value = new Map();
@@ -1217,6 +1234,43 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             reportOperationError("Operation_Update_Player", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+    }
+
+    async function loadPlayerInventory() {
+        if (!SELECTED_PLAYER_ID.value) return false;
+        const response = await POST("/api/player/inventory", {
+            PlayerUId: SELECTED_PLAYER_ID.value,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            PLAYER_INVENTORY.value = response.data;
+            return true;
+        }
+        if (response.status == 2) requireAuth("AuthView_Session_Expired");
+        else reportOperationError("Operation_Load_Player_Data", response);
+        return false;
+    }
+
+    async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
+        if (!SELECTED_PLAYER_ID.value) return false;
+        LOADING_FLAG.value = true;
+        const response = await PATCH("/api/player/inventory_slot", {
+            PlayerUId: SELECTED_PLAYER_ID.value,
+            ContainerKind: containerKind,
+            SlotIndex: slotIndex,
+            ItemId: itemId,
+            Count: count,
+            AllowOverstack: !HIDE_INVALID_OPTIONS.value,
+        });
+        if (response !== false && response.status == 0) {
+            await loadPlayerInventory();
+            LOADING_FLAG.value = false;
+            return true;
+        }
+        if (response?.status == 2) requireAuth("AuthView_Session_Expired");
+        else if (response !== false) reportOperationError("Operation_Update_Player", response);
+        LOADING_FLAG.value = false;
+        return false;
     }
 
     async function loadPlayer(playerUId, updatePal = false) {
@@ -2055,6 +2109,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         I18nList,
         PAL_STATIC_DATA,
         PAL_STATIC_DATA_LIST,
+        ITEM_STATIC_DATA,
+        ITEM_STATIC_DATA_LIST,
+        PLAYER_INVENTORY,
         SKIN_DATA_LIST,
         PASSIVE_SKILLS,
         PASSIVE_SKILLS_LIST,
@@ -2086,6 +2143,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         selectPal,
         updatePal,
         updatePlayer,
+        loadPlayerInventory,
+        patchInventorySlot,
         writeSave,
         fetch_config,
         dumpPalData,

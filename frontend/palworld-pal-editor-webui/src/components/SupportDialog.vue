@@ -54,7 +54,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
     v-show="palStore.SHOW_DONATE_FLAG"
     class="support-overlay editor-modal-overlay"
     role="presentation"
-    @click.self="close"
+    @pointerdown.self="close"
     @keydown.esc.stop="close"
   >
     <section
@@ -215,7 +215,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       v-if="expandedPayment"
       class="support-qr-overlay editor-modal-overlay"
       role="presentation"
-      @click.self="closeQr"
+      @pointerdown.self="closeQr"
       @keydown.esc.stop="closeQr"
     >
       <section

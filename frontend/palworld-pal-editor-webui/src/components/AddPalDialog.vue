@@ -90,7 +90,7 @@ async function deleteTemplate(id) {
 
 <template>
   <Teleport to="body">
-    <div class="add-pal-layer editor-modal-overlay" @click.self="emit('close')" @keydown.esc="emit('close')">
+    <div class="add-pal-layer editor-modal-overlay" @pointerdown.self="emit('close')" @keydown.esc="emit('close')">
     <section ref="dialog" class="add-pal-dialog editor-glass-surface" role="dialog" aria-modal="true" aria-labelledby="add-pal-title"
       tabindex="-1" @keydown.esc="emit('close')" @keydown.tab="trapFocus">
       <header>

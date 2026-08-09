@@ -79,6 +79,7 @@ PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
 PLAYER_STATUS_DATA: dict[str, dict] = load_json("player_status_data.json")
 TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 SKIN_DATA: dict[str, dict] = load_json("skin_data.json")
+ITEM_DATA: dict[str, dict] = load_json("item_data.json")
 
 # PAL_ICONS: dict[str] = load_icons("pals")
 
@@ -118,6 +119,14 @@ def none_guard(
 
 class DataProvider:
     icon_cache = {}
+
+    @staticmethod
+    def get_item_data() -> dict[str, dict]:
+        return ITEM_DATA
+
+    @staticmethod
+    def get_item(key: str) -> Optional[dict]:
+        return ITEM_DATA.get(key)
 
     @staticmethod
     def default_i18n() -> str:

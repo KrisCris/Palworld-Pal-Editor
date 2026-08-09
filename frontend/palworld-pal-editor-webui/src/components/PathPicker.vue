@@ -51,7 +51,7 @@ const abort = () => {
 </script>
 
 <template>
-    <div class="modal-overlay editor-modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @click.self="abort">
+    <div class="modal-overlay editor-modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @pointerdown.self="abort">
         <div class="popup editor-glass-surface">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">

@@ -77,7 +77,7 @@ async function renameTemplate(template) {
 
 <template>
   <Teleport to="body">
-    <div class="skill-template-layer editor-modal-overlay" @click.self="emit('close')" @keydown.esc="emit('close')">
+    <div class="skill-template-layer editor-modal-overlay" @pointerdown.self="emit('close')" @keydown.esc="emit('close')">
       <section ref="dialog" class="skill-template-dialog editor-glass-surface" role="dialog" aria-modal="true"
         aria-labelledby="skill-template-title" tabindex="-1">
         <header>
