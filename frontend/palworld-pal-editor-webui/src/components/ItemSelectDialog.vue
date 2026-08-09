@@ -46,6 +46,7 @@ const selectedTypes = ref(readStoredArray(TYPE_FILTER_STORAGE_KEY).filter(value 
 const selectedRarities = ref(readStoredArray(RARITY_FILTER_STORAGE_KEY)
   .map(Number).filter(value => Number.isInteger(value) && value >= 0 && value <= 4))
 const selectedId = ref(null)
+const pinnedItemId = ref(null)
 const count = ref(1)
 const searchInput = ref(null)
 const filterMenu = ref(null)
@@ -61,9 +62,16 @@ const setOptionRef = (itemId, element) => {
 
 watch(() => props.open, async value => {
   clearHover()
-  if (!value) return
+  if (!value) {
+    pinnedItemId.value = null
+    return
+  }
   query.value = ''
   selectedId.value = props.slot?.static_id ?? null
+  pinnedItemId.value = selectedId.value
+    && !filteredItems.value.some(item => item.InternalName === selectedId.value)
+    ? selectedId.value
+    : null
   count.value = props.equipment ? 1 : Math.max(1, props.slot?.count || 1)
   await nextTick()
   const currentOption = optionElements.get(selectedId.value)
@@ -91,6 +99,12 @@ const filteredItems = computed(() => {
     && (!effectiveRarities.value.length
       || effectiveRarities.value.includes(Math.max(0, Math.min(4, item.Rarity || 0))))
   ))
+})
+const visibleItems = computed(() => {
+  const pinned = props.items.find(item => item.InternalName === pinnedItemId.value)
+  return !pinned
+    ? filteredItems.value
+    : [pinned, ...filteredItems.value.filter(item => item.InternalName !== pinned.InternalName)]
 })
 const typeIcon = type => TYPE_ICONS[type]
 const toggleType = type => {
@@ -216,7 +230,7 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
         :placeholder="palStore.getTranslatedText('Inventory_Search')">
 
       <div class="item-results">
-        <button v-for="item in filteredItems" :key="item.InternalName"
+        <button v-for="item in visibleItems" :key="item.InternalName"
           :ref="element => setOptionRef(item.InternalName, element)" type="button"
           class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
           @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
@@ -227,7 +241,7 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
           </span>
           <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
         </button>
-        <p v-if="!filteredItems.length" class="empty-results">{{ palStore.getTranslatedText('Inventory_No_Results') }}</p>
+        <p v-if="!visibleItems.length" class="empty-results">{{ palStore.getTranslatedText('Inventory_No_Results') }}</p>
       </div>
 
       <footer>
