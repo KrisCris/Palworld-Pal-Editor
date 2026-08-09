@@ -22,6 +22,9 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Re
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
+const activePalFilterCount = computed(() => palStore.PAL_LIST_ATTRIBUTE_FILTERS.length
+  + Number(palStore.PAL_LIST_EDITED_ONLY)
+  + Number(palStore.PAL_LIST_CREATED_ONLY))
 const attributeFilters = Object.freeze([
   { key: 'priority-1', icon: 'priority-1', label: 'I' },
   { key: 'priority-2', icon: 'priority-2', label: 'II' },
@@ -138,15 +141,16 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
       <div class="roster-heading-row">
         <button class="roster-collapse-button" :title="toggleLabel()"
           :aria-label="toggleLabel()" @click="emit('toggle')">
-          <UiIcon :name="preview ? 'plus' : 'minus'" />
+          <UiIcon :name="preview ? 'panel' : 'minus'" />
         </button>
         <h2 class="roster-title">{{ palStore.getTranslatedText("PalList_Text") }}</h2>
         <div class="roster-actions">
           <details ref="sortMenu" class="pal-list-menu">
-          <summary class="roster-icon-button"
+          <summary class="roster-icon-button" :class="{ 'is-active': activePalFilterCount > 0 }"
             :title="palStore.getTranslatedText('PalList_SortFilter')"
             :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
             <UiIcon name="filter" />
+            <span v-if="activePalFilterCount" class="filter-count">{{ activePalFilterCount }}</span>
           </summary>
           <div class="pal-list-menu__popover editor-glass-surface">
             <label>
@@ -582,15 +586,43 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
 }
 
 .roster-icon-button {
+  position: relative;
   display: grid;
   width: 2rem;
   height: 2rem;
   place-items: center;
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-control);
+  cursor: pointer;
+}
+
+.filter-count {
+  position: absolute;
+  top: -.3rem;
+  right: -.3rem;
+  display: grid;
+  min-width: 1rem;
+  height: 1rem;
+  place-items: center;
+  padding: 0 .2rem;
+  border-radius: 999px;
+  color: var(--editor-color-primary);
+  background: var(--editor-color-text);
+  font-size: .6rem;
+  font-weight: 700;
+}
+
+.roster-icon-button:hover {
+  color: var(--editor-color-text);
+  background: var(--editor-color-control-hover);
+}
+
+.roster-icon-button.is-active {
+  border-color: var(--editor-color-primary);
   color: var(--editor-color-background);
   background: var(--editor-color-primary);
-  cursor: pointer;
 }
 
 .roster-icon-button:disabled {

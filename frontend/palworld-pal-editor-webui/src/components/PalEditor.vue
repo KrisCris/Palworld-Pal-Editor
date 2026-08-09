@@ -521,10 +521,10 @@ const portraitBorder = pal => pal.IsAwakening
               <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
               <small>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</small>
             </div>
-            <button class="editor-button editor-button--icon editor-button--danger"
+            <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
               :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`"
-              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
+              :disabled="palStore.LOADING_FLAG">×</button>
           </article>
         </div>
         <div class="skill-add" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
@@ -557,10 +557,10 @@ const portraitBorder = pal => pal.IsAwakening
               <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
               <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
             </div>
-            <button class="editor-button editor-button--icon editor-button--danger"
+            <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
               :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`"
-              :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
+              :disabled="palStore.LOADING_FLAG">×</button>
           </article>
         </div>
       </div>
@@ -584,10 +584,10 @@ const portraitBorder = pal => pal.IsAwakening
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
                 :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
                 :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
-              <button class="editor-button editor-button--icon editor-button--danger"
+              <button type="button" class="skill-card__remove"
                 @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
-                :disabled="palStore.LOADING_FLAG"><UiIcon name="close" /></button>
+                :disabled="palStore.LOADING_FLAG">×</button>
             </div>
           </article>
         </div>
@@ -923,11 +923,41 @@ const portraitBorder = pal => pal.IsAwakening
 }
 
 .skill-card {
+  position: relative;
   padding: var(--editor-space-2);
+  padding-right: 2rem;
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   background: var(--editor-color-surface-subtle);
 }
+
+.skill-card__remove {
+  position: absolute;
+  z-index: 1;
+  top: .12rem;
+  right: .16rem;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 0;
+  place-items: center;
+  color: rgb(255 255 255 / .8);
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+  text-shadow: 0 1px 4px #000;
+}
+
+.skill-card:hover .skill-card__remove,
+.skill-card__remove:focus-visible {
+  opacity: 1;
+}
+
+.skill-card__remove:hover { color: #fca5a5; }
+.skill-card__remove:disabled { cursor: not-allowed; opacity: .35; }
 
 .skill-card__identity {
   display: grid;

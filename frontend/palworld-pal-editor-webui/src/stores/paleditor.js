@@ -1,4 +1,4 @@
-import { ref, computed, reactive, nextTick } from "vue";
+import { ref, computed, reactive, nextTick, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import {
@@ -546,13 +546,32 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
+    const PAL_LIST_PREFERENCES_KEY = "PAL_LIST_PREFERENCES";
+    const PAL_LIST_SORT_VALUES = new Set(["paldeck", "location", "priority"]);
+    const PAL_LIST_ATTRIBUTE_VALUES = new Set([
+        "priority-1", "priority-2", "priority-3", "alpha", "lucky", "dna", "human",
+    ]);
+    let savedPalListPreferences = {};
+    try {
+        savedPalListPreferences = JSON.parse(
+            readStorage(localStorage, PAL_LIST_PREFERENCES_KEY) || "{}"
+        );
+    } catch {
+        savedPalListPreferences = {};
+    }
     const PAL_LIST_SEARCH_KEYWORD = ref("");
-    const PAL_LIST_SORT = ref("paldeck");
-    const PAL_LIST_ATTRIBUTE_FILTERS = ref([]);
+    const PAL_LIST_SORT = ref(PAL_LIST_SORT_VALUES.has(savedPalListPreferences.sort)
+        ? savedPalListPreferences.sort : "paldeck");
+    const PAL_LIST_ATTRIBUTE_FILTERS = ref(Array.isArray(savedPalListPreferences.attributes)
+        ? [...new Set(savedPalListPreferences.attributes.filter(value => PAL_LIST_ATTRIBUTE_VALUES.has(value)))]
+        : []);
     const PAL_LIST_EDITED_ONLY = ref(false);
     const PAL_LIST_CREATED_ONLY = ref(false);
     const EDITED_PAL_IDS = ref(new Set());
     const CREATED_PAL_IDS = ref(new Set());
+    watch([PAL_LIST_SORT, PAL_LIST_ATTRIBUTE_FILTERS], ([sort, attributes]) => {
+        writeStorage(localStorage, PAL_LIST_PREFERENCES_KEY, JSON.stringify({ sort, attributes }));
+    }, { deep: true });
 
     const IS_PAL_SAVE_PATH = ref(false);
 
@@ -1166,8 +1185,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SKILL_TEMPLATES.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
-        PAL_LIST_SORT.value = "paldeck";
-        PAL_LIST_ATTRIBUTE_FILTERS.value = [];
         PAL_LIST_EDITED_ONLY.value = false;
         PAL_LIST_CREATED_ONLY.value = false;
         EDITED_PAL_IDS.value.clear();

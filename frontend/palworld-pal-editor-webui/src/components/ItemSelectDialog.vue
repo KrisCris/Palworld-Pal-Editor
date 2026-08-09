@@ -1,8 +1,37 @@
 <script setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import NumberSliderField from '@/components/NumberSliderField.vue'
+import UiIcon from '@/components/modules/UiIcon.vue'
+import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
+import { readStorage, writeStorage } from '@/services/backend-connection'
 import { usePalEditorStore } from '@/stores/paleditor'
+
+const TYPE_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_TYPES'
+const RARITY_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_RARITIES'
+const TYPE_ICONS = Object.freeze({
+  Accessory: 'Accessory_AT',
+  Ammo: 'AssaultRifleBullet',
+  Armor: 'AncientArmor',
+  Blueprint: 'Blueprint',
+  CaptureItemModifier: 'SphereModule_Homing',
+  Consume: 'AffectionFruit_01',
+  Essential: 'AdditionalInventory_001',
+  Food: 'BLT',
+  Glider: 'Glider_Good',
+  Material: 'AIcore',
+  SpecialWeapon: 'CapturePrism',
+  Weapon: 'AssaultRifle_Default',
+})
+const readStoredArray = key => {
+  try {
+    const value = JSON.parse(readStorage(localStorage, key) || '[]')
+    return Array.isArray(value) ? value : []
+  } catch {
+    return []
+  }
+}
 
 const props = defineProps({
   open: Boolean,
@@ -13,10 +42,17 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 const palStore = usePalEditorStore()
 const query = ref('')
+const selectedTypes = ref(readStoredArray(TYPE_FILTER_STORAGE_KEY).filter(value => typeof value === 'string'))
+const selectedRarities = ref(readStoredArray(RARITY_FILTER_STORAGE_KEY)
+  .map(Number).filter(value => Number.isInteger(value) && value >= 0 && value <= 4))
 const selectedId = ref(null)
 const count = ref(1)
 const searchInput = ref(null)
+const filterMenu = ref(null)
 const optionElements = new Map()
+const hoveredItem = ref(null)
+const hoverPoint = ref({ clientX: 0, clientY: 0 })
+let hoverTimer = null
 
 const setOptionRef = (itemId, element) => {
   if (element) optionElements.set(itemId, element)
@@ -24,6 +60,7 @@ const setOptionRef = (itemId, element) => {
 }
 
 watch(() => props.open, async value => {
+  clearHover()
   if (!value) return
   query.value = ''
   selectedId.value = props.slot?.static_id ?? null
@@ -38,11 +75,40 @@ watch(() => props.open, async value => {
   }
 })
 
+const availableTypes = computed(() => [...new Set(props.items.map(item => item.TypeA).filter(Boolean))]
+  .sort((left, right) => palStore.getTranslatedText(`Inventory_Type_${left}`)
+    .localeCompare(palStore.getTranslatedText(`Inventory_Type_${right}`))))
+const availableRarities = computed(() => [...new Set(props.items.map(item => Math.max(0, Math.min(4, item.Rarity || 0))))]
+  .sort((left, right) => left - right))
+const effectiveTypes = computed(() => selectedTypes.value.filter(type => availableTypes.value.includes(type)))
+const effectiveRarities = computed(() => selectedRarities.value.filter(rarity => availableRarities.value.includes(rarity)))
+const activeFilterCount = computed(() => effectiveTypes.value.length + effectiveRarities.value.length)
 const filteredItems = computed(() => {
   const needle = query.value.trim().toLocaleLowerCase()
-  if (!needle) return props.items
-  return props.items.filter(item => `${item.Name} ${item.InternalName}`.toLocaleLowerCase().includes(needle))
+  return props.items.filter(item => (
+    (!needle || `${item.Name} ${item.InternalName}`.toLocaleLowerCase().includes(needle))
+    && (!effectiveTypes.value.length || effectiveTypes.value.includes(item.TypeA))
+    && (!effectiveRarities.value.length
+      || effectiveRarities.value.includes(Math.max(0, Math.min(4, item.Rarity || 0))))
+  ))
 })
+const typeIcon = type => TYPE_ICONS[type]
+const toggleType = type => {
+  selectedTypes.value = selectedTypes.value.includes(type)
+    ? selectedTypes.value.filter(current => current !== type)
+    : [...selectedTypes.value, type]
+}
+const toggleRarity = rarity => {
+  selectedRarities.value = selectedRarities.value.includes(rarity)
+    ? selectedRarities.value.filter(current => current !== rarity)
+    : [...selectedRarities.value, rarity]
+}
+const clearFilters = () => {
+  selectedTypes.value = []
+  selectedRarities.value = []
+}
+watch(selectedTypes, value => writeStorage(localStorage, TYPE_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
+watch(selectedRarities, value => writeStorage(localStorage, RARITY_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
 const selectedItem = computed(() => palStore.ITEM_STATIC_DATA[selectedId.value])
 const isStackable = computed(() => (selectedItem.value?.MaxStackCount || 1) > 1)
 const maximum = computed(() => {
@@ -62,6 +128,28 @@ const selectItem = item => {
     ? Math.min(maximum.value, Math.max(1, props.slot?.count || 1))
     : 1
 }
+function clearHover() {
+  if (hoverTimer != null) window.clearTimeout(hoverTimer)
+  hoverTimer = null
+  hoveredItem.value = null
+}
+const startHover = (event, item) => {
+  clearHover()
+  hoverPoint.value = { clientX: event.clientX, clientY: event.clientY }
+  hoverTimer = window.setTimeout(() => {
+    hoveredItem.value = item
+    hoverTimer = null
+  }, 500)
+}
+const moveHover = event => {
+  if (hoveredItem.value) hoverPoint.value = { clientX: event.clientX, clientY: event.clientY }
+}
+const closeFilterMenuOnOutsidePointer = event => closeDisclosureOnOutsidePointer(filterMenu.value, event.target)
+onMounted(() => window.addEventListener('pointerdown', closeFilterMenuOnOutsidePointer))
+onBeforeUnmount(() => {
+  clearHover()
+  window.removeEventListener('pointerdown', closeFilterMenuOnOutsidePointer)
+})
 const save = () => emit('save', {
   itemId: selectedId.value,
   count: canAdjustCount.value
@@ -79,7 +167,49 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
           <small>{{ palStore.getTranslatedText('Inventory_Select_Hint') }}</small>
           <h2 id="item-dialog-title">{{ palStore.getTranslatedText('Inventory_Select_Item') }}</h2>
         </div>
-        <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
+        <div class="dialog-header-actions">
+          <details ref="filterMenu" class="item-filter-menu">
+            <summary class="icon-button filter-button" :class="{ 'is-active': activeFilterCount > 0 }"
+              :title="palStore.getTranslatedText('Inventory_Filter')"
+              :aria-label="palStore.getTranslatedText('Inventory_Filter')">
+              <UiIcon name="filter" />
+              <span v-if="activeFilterCount" class="filter-count">{{ activeFilterCount }}</span>
+            </summary>
+            <div class="item-filter-popover editor-glass-surface">
+              <fieldset>
+                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Type') }}</legend>
+                <div class="type-filter-grid">
+                  <button v-for="type in availableTypes" :key="type" type="button" class="filter-option type-filter-option"
+                    :class="{ 'is-active': selectedTypes.includes(type) }"
+                    :aria-pressed="selectedTypes.includes(type)"
+                    @click="toggleType(type)">
+                    <img v-if="typeIcon(type)" :src="iconUrl(typeIcon(type))" alt=""
+                      @error="$event.currentTarget.hidden = true">
+                    <span>{{ palStore.getTranslatedText(`Inventory_Type_${type}`) }}</span>
+                  </button>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Rarity') }}</legend>
+                <div class="rarity-filter-grid">
+                  <button v-for="rarity in availableRarities" :key="rarity" type="button"
+                    class="filter-option rarity-filter-option" :class="[`rarity-${rarity}`, { 'is-active': selectedRarities.includes(rarity) }]"
+                    :aria-pressed="selectedRarities.includes(rarity)"
+                    @click="toggleRarity(rarity)">
+                    <i></i>
+                    <span>{{ palStore.getTranslatedText(`Inventory_Rarity_${rarity}`) }}</span>
+                  </button>
+                </div>
+              </fieldset>
+              <button type="button" class="clear-filter-button" :disabled="!selectedTypes.length && !selectedRarities.length"
+                @click="clearFilters">
+                <UiIcon name="close" />
+                {{ palStore.getTranslatedText('Inventory_Filter_Clear') }}
+              </button>
+            </div>
+          </details>
+          <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
+        </div>
       </header>
 
       <input ref="searchInput" v-model="query" class="item-search" type="search"
@@ -89,6 +219,7 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
         <button v-for="item in filteredItems" :key="item.InternalName"
           :ref="element => setOptionRef(item.InternalName, element)" type="button"
           class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
+          @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
           @click="selectItem(item)">
           <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
             <img :src="iconUrl(item.IconKey)" alt="">
@@ -103,7 +234,8 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
         <NumberSliderField v-if="canAdjustCount" v-model="count" class="quantity-control"
           :label="palStore.getTranslatedText('Inventory_Count')" :min="1" :max="maximum" :step="1" />
         <span v-else class="dialog-spacer"></span>
-        <button type="button" class="danger-button" @click="emit('save', { itemId: null, count: 0 })">
+        <button type="button" class="editor-button editor-button--danger danger-button"
+          @click="emit('save', { itemId: null, count: 0 })">
           {{ palStore.getTranslatedText('Inventory_Clear') }}
         </button>
         <button type="button" class="primary-button" :disabled="!selectedId || palStore.LOADING_FLAG" @click="save">
@@ -111,6 +243,9 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
         </button>
       </footer>
     </section>
+    <ItemHoverCard v-if="hoveredItem" :item="hoveredItem"
+      :count="hoveredItem.InternalName === selectedId ? count : null"
+      :client-x="hoverPoint.clientX" :client-y="hoverPoint.clientY" />
   </div>
 </template>
 
@@ -140,16 +275,64 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 }
 .item-dialog header, .item-dialog footer { display: flex; align-items: center; gap: .75rem; }
 .item-dialog header { justify-content: space-between; }
+.dialog-header-actions { display: flex; align-items: center; gap: .55rem; }
 .item-dialog h2 { margin: .15rem 0 0; }
 .item-dialog small { color: var(--editor-color-muted); }
-.icon-button, .danger-button, .primary-button {
+.icon-button, .primary-button {
   border: 1px solid var(--editor-color-border);
   border-radius: .6rem;
   color: var(--editor-color-text);
   background: rgb(255 255 255 / .06);
   cursor: pointer;
 }
-.icon-button { width: 2.5rem; height: 2.5rem; font-size: 1.5rem; }
+.icon-button { position: relative; display: grid; width: 2.5rem; height: 2.5rem; padding: 0; place-items: center; font-size: 1.5rem; list-style: none; }
+.icon-button::-webkit-details-marker { display: none; }
+.filter-button { color: var(--editor-color-muted); background: var(--editor-color-control); }
+.filter-button:hover { color: var(--editor-color-text); background: var(--editor-color-control-hover); }
+.filter-button.is-active { border-color: var(--editor-color-primary); color: var(--editor-color-background); background: var(--editor-color-primary); }
+.filter-button .ui-icon { font-size: 1rem; }
+.filter-count { position: absolute; top: -.3rem; right: -.3rem; display: grid; min-width: 1rem; height: 1rem; place-items: center; padding: 0 .2rem; border-radius: 999px; color: var(--editor-color-background); background: var(--editor-color-primary); font-size: .6rem; font-weight: 700; }
+.filter-button.is-active .filter-count { color: var(--editor-color-primary); background: var(--editor-color-text); }
+.item-filter-menu { position: relative; }
+.item-filter-popover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + .55rem);
+  right: 0;
+  display: grid;
+  width: min(34rem, calc(100vw - 3rem));
+  gap: .85rem;
+  padding: .9rem;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-md);
+  box-shadow: var(--editor-shadow-compact);
+}
+.item-filter-popover fieldset { display: grid; gap: .45rem; margin: 0; padding: 0; border: 0; }
+.item-filter-popover legend { margin-bottom: .35rem; color: var(--editor-color-muted); font-size: .72rem; }
+.type-filter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4rem; }
+.rarity-filter-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
+.filter-option {
+  min-width: 0;
+  border: 1px solid var(--editor-color-border);
+  border-radius: var(--editor-radius-sm);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-control);
+  cursor: pointer;
+}
+.filter-option:hover { color: var(--editor-color-text); background: var(--editor-color-control-hover); }
+.filter-option.is-active { border-color: var(--editor-color-primary); color: var(--editor-color-primary); background: color-mix(in srgb, var(--editor-color-primary) 15%, var(--editor-color-control)); }
+.type-filter-option { display: grid; min-height: 4rem; place-items: center; gap: .15rem; padding: .35rem; font-size: .65rem; }
+.type-filter-option img { width: 2rem; height: 2rem; object-fit: contain; filter: drop-shadow(0 2px 3px rgb(0 0 0 / .35)); }
+.type-filter-option span, .rarity-filter-option span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rarity-filter-option { --rarity-filter-color: #9ca3af; display: grid; min-height: 2.65rem; place-items: center; gap: .2rem; padding: .35rem; font-size: .65rem; }
+.rarity-filter-option.rarity-1 { --rarity-filter-color: #4ade80; }
+.rarity-filter-option.rarity-2 { --rarity-filter-color: #38bdf8; }
+.rarity-filter-option.rarity-3 { --rarity-filter-color: #c084fc; }
+.rarity-filter-option.rarity-4 { --rarity-filter-color: #facc15; }
+.rarity-filter-option i { width: .8rem; height: .8rem; border-radius: .2rem; background: var(--rarity-filter-color); box-shadow: 0 0 .45rem color-mix(in srgb, var(--rarity-filter-color) 55%, transparent); transform: rotate(45deg); }
+.rarity-filter-option.is-active { border-color: var(--rarity-filter-color); color: var(--rarity-filter-color); background: color-mix(in srgb, var(--rarity-filter-color) 16%, var(--editor-color-control)); }
+.clear-filter-button { display: flex; min-height: 2.25rem; align-items: center; justify-content: center; gap: .35rem; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); color: var(--editor-color-text); background: var(--editor-color-control); cursor: pointer; }
+.clear-filter-button:hover { background: var(--editor-color-control-hover); }
 .item-search {
   border: 1px solid var(--editor-color-border);
   border-radius: .65rem;
@@ -193,7 +376,10 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 .dialog-spacer { flex: 1; }
 .quantity-control { min-width: 16rem; flex: 1 1 24rem; }
 .danger-button, .primary-button { padding: .65rem 1rem; }
-.danger-button { color: #fca5a5; }
 .primary-button { border-color: var(--editor-color-focus); background: var(--editor-color-primary); }
 button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 38rem) {
+  .type-filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rarity-filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 </style>

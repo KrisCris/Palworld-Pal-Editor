@@ -1,6 +1,7 @@
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, ref } from 'vue'
 
+import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
@@ -15,41 +16,23 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'clear'])
 const palStore = usePalEditorStore()
 const tooltipVisible = ref(false)
-const tooltipRef = ref(null)
-const tooltipPosition = ref({ left: '0px', top: '0px' })
+const tooltipPoint = ref({ clientX: 0, clientY: 0 })
 
 const rarity = computed(() => Math.max(0, Math.min(4, props.item?.Rarity ?? 0)))
-const rarityName = computed(() => palStore.getTranslatedText(`Inventory_Rarity_${rarity.value}`))
-const itemType = computed(() => props.item
-  ? palStore.getTranslatedText(`Inventory_Type_${props.item.TypeA}`)
-  : '')
 const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 
-const placeTooltip = ({ clientX, clientY }) => {
-  const rect = tooltipRef.value?.getBoundingClientRect()
-  const width = rect?.width || 320
-  const height = rect?.height || 280
-  let left = clientX + 14
-  let top = clientY + 14
-  if (left + width + 12 > window.innerWidth) left = clientX - width - 14
-  if (top + height + 12 > window.innerHeight) top = clientY - height - 14
-  tooltipPosition.value = {
-    left: `${Math.max(12, left)}px`,
-    top: `${Math.max(12, top)}px`,
-  }
-}
 const showTooltip = event => {
   if (!props.item) return
+  tooltipPoint.value = { clientX: event.clientX, clientY: event.clientY }
   tooltipVisible.value = true
-  const point = { clientX: event.clientX, clientY: event.clientY }
-  nextTick(() => placeTooltip(point))
 }
+const moveTooltip = event => { tooltipPoint.value = { clientX: event.clientX, clientY: event.clientY } }
 const hideTooltip = () => { tooltipVisible.value = false }
 </script>
 
 <template>
   <div class="inventory-item-slot" :class="[`rarity-${rarity}`, { square, 'has-name': showName }]"
-    @pointerenter="showTooltip" @pointermove="item && placeTooltip($event)" @pointerleave="hideTooltip">
+    @pointerenter="showTooltip" @pointermove="item && moveTooltip($event)" @pointerleave="hideTooltip">
     <button type="button" class="item-slot-button" :aria-label="label" @click="emit('edit')">
       <span v-if="item?.IconKey" class="item-icon" :class="{ layered: item.OverlayIconKey }">
         <img :src="iconUrl(item.IconKey)" alt="">
@@ -66,32 +49,8 @@ const hideTooltip = () => { tooltipVisible.value = false }
       :aria-label="palStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
   </div>
 
-  <Teleport to="body">
-    <aside v-if="tooltipVisible && item" ref="tooltipRef" class="item-hover-card"
-      :class="`rarity-${rarity}`" :style="tooltipPosition" role="tooltip">
-      <header>
-        <strong>{{ item.Name }}</strong>
-        <div class="tooltip-meta">
-          <div class="tooltip-summary">
-            <span>{{ itemType }}</span>
-            <b>{{ rarityName }}</b>
-          </div>
-          <small>{{ item.InternalName }}</small>
-        </div>
-      </header>
-      <section>
-        <span class="tooltip-icon item-icon" :class="{ layered: item.OverlayIconKey }">
-          <img :src="iconUrl(item.IconKey)" alt="">
-          <img v-if="item.OverlayIconKey" class="item-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
-        </span>
-        <span class="tooltip-count">
-          <small>{{ palStore.getTranslatedText('Inventory_Count') }}</small>
-          <strong>{{ slot.count }}</strong>
-        </span>
-      </section>
-      <p>{{ item.Description }}</p>
-    </aside>
-  </Teleport>
+  <ItemHoverCard v-if="tooltipVisible && item" :item="item" :count="slot.count"
+    :client-x="tooltipPoint.clientX" :client-y="tooltipPoint.clientY" />
 </template>
 
 <style scoped>
@@ -153,34 +112,4 @@ const hideTooltip = () => { tooltipVisible.value = false }
 .rarity-2 .item-slot-button { background: linear-gradient(145deg, rgb(33 101 166 / .4), rgb(13 27 47 / .48)); }
 .rarity-3 .item-slot-button { background: linear-gradient(145deg, rgb(111 63 162 / .44), rgb(35 20 53 / .5)); }
 .rarity-4 .item-slot-button { background: linear-gradient(145deg, rgb(158 104 24 / .5), rgb(52 35 14 / .52)); }
-.item-hover-card {
-  --rarity-accent: #9ca3af;
-  --rarity-header: rgb(73 78 87 / .46);
-  position: fixed;
-  z-index: 2200;
-  width: min(21rem, calc(100vw - 1.5rem));
-  overflow: hidden;
-  border: 1px solid var(--editor-color-glass-border);
-  border-radius: .55rem;
-  color: var(--editor-color-text);
-  background: color-mix(in srgb, var(--editor-color-glass-surface) 94%, #0c1722);
-  box-shadow: 0 18px 55px rgb(0 0 0 / .55);
-  backdrop-filter: var(--editor-glass-filter);
-  pointer-events: none;
-}
-.item-hover-card.rarity-1 { --rarity-accent: #4ade80; --rarity-header: rgb(24 94 55 / .5); }
-.item-hover-card.rarity-2 { --rarity-accent: #38bdf8; --rarity-header: rgb(21 82 117 / .52); }
-.item-hover-card.rarity-3 { --rarity-accent: #c084fc; --rarity-header: rgb(89 46 128 / .52); }
-.item-hover-card.rarity-4 { --rarity-accent: #facc15; --rarity-header: rgb(120 82 17 / .54); }
-.item-hover-card header { display: grid; gap: .35rem; padding: .75rem .85rem; border-bottom: 2px solid var(--rarity-accent); background: linear-gradient(135deg, var(--rarity-header), rgb(8 18 26 / .8)); }
-.item-hover-card header > strong { font-size: 1.08rem; }
-.tooltip-meta { display: grid; min-width: 0; gap: .15rem; }
-.tooltip-summary { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: .75rem; color: var(--editor-color-muted); font-size: .78rem; }
-.tooltip-meta > small { overflow: hidden; color: color-mix(in srgb, var(--editor-color-muted) 80%, transparent); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
-.item-hover-card header b { padding: .15rem .5rem; border-right: 1px solid currentColor; border-left: 1px solid currentColor; color: var(--rarity-accent); }
-.item-hover-card section { position: relative; display: flex; min-height: 8.5rem; align-items: center; padding: .75rem 1.15rem; background: rgb(255 255 255 / .05); }
-.item-hover-card .tooltip-icon { width: 7rem; }
-.tooltip-count { position: absolute; right: .85rem; bottom: .7rem; display: flex; min-width: 7.5rem; align-items: center; justify-content: space-between; gap: 1rem; padding: .35rem .55rem; border: 1px solid var(--editor-color-border); background: rgb(7 16 23 / .68); }
-.tooltip-count small { color: var(--editor-color-muted); }
-.item-hover-card p { margin: 0; padding: .75rem .85rem; color: #d5e1ea; font-size: .83rem; line-height: 1.45; white-space: pre-line; }
 </style>

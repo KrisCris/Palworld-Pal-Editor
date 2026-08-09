@@ -225,5 +225,7 @@ onBeforeUnmount(() => {
   .inventory-layout > .equipment-panel { order: 2; height: auto; min-height: 0; }
   .equipment-layout { height: auto; overflow: visible; }
   .slot-grid--bag { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .slot-grid--bag :deep(.inventory-item-slot.square) { height: var(--inventory-slot-height); aspect-ratio: auto; }
+  .slot-grid--bag :deep(.inventory-item-slot.square .item-icon) { width: 4rem; height: 4rem; max-width: 92%; max-height: 92%; }
 }
 </style>
