@@ -7,6 +7,7 @@ import { usePalEditorStore } from '@/stores/paleditor'
 const props = defineProps({
   slot: { type: Object, required: true },
   item: { type: Object, default: null },
+  detailsItem: { type: Object, default: null },
   label: { type: String, required: true },
   editable: { type: Boolean, default: true },
   showName: { type: Boolean, default: false },
@@ -42,14 +43,14 @@ const hideTooltip = () => { tooltipVisible.value = false }
       <strong v-if="slot.count > 1" class="slot-count">{{ slot.count }}</strong>
       <span v-if="slot.warning" class="slot-warning">!</span>
       <span v-if="showDurability && slot.durability != null" class="durability">
-        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (item?.MaxDurability || 1))}%` }"></i>
+        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (detailsItem?.MaxDurability || item?.MaxDurability || 1))}%` }"></i>
       </span>
     </button>
     <button v-if="item && editable" type="button" class="slot-clear"
       :aria-label="palStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
   </div>
 
-  <ItemHoverCard v-if="tooltipVisible && item" :item="item" :count="slot.count"
+  <ItemHoverCard v-if="tooltipVisible && item" :item="item" :details-item="detailsItem" :count="slot.count"
     :client-x="tooltipPoint.clientX" :client-y="tooltipPoint.clientY" />
 </template>
 

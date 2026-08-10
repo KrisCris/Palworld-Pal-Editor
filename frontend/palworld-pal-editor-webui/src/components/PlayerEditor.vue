@@ -64,7 +64,8 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
 </script>
 
 <template>
-  <section class="player-editor">
+  <div class="player-editor-shell">
+  <section class="player-editor" :class="{ 'player-editor--items': activeTab === 'items' }">
     <header class="player-summary">
       <span class="player-summary__avatar">{{ playerInitial() }}</span>
       <div class="player-summary__identity">
@@ -241,15 +242,30 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
     </div>
     <PlayerInventory v-else />
   </section>
+  </div>
 </template>
 
 <style scoped>
-.player-editor {
+.player-editor-shell {
   container-type: inline-size;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+.player-editor {
   display: grid;
   gap: var(--editor-space-3);
   min-width: 0;
   color: var(--editor-color-text);
+}
+.player-editor--items {
+  min-height: 0;
+}
+@container (min-width: 50.001rem) {
+  .player-editor--items {
+    grid-template-rows: auto auto minmax(0, 1fr);
+    height: 100%;
+  }
 }
 
 .player-character { display: grid; gap: var(--editor-space-3); min-width: 0; }

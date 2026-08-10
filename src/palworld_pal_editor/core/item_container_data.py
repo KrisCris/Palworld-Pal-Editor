@@ -165,6 +165,7 @@ class ItemContainerData:
             return {
                 "slot_index": slot_index,
                 "static_id": None,
+                "effective_static_id": None,
                 "count": 0,
                 "dynamic_id": None,
                 "dynamic_type": None,
@@ -180,15 +181,25 @@ class ItemContainerData:
         warning = None
         dynamic = None if local_id == EMPTY_UUID else self.dynamic_items.get(local_id)
         dynamic_raw = dynamic["RawData"]["value"] if dynamic else None
+        effective_static_id = (
+            dynamic_raw["id"]["static_id"] if dynamic_raw is not None else static_id
+        )
+        effective_item = DataProvider.get_item(effective_static_id)
         if item is None:
             warning = f"unknown item: {static_id}"
-        if local_id != EMPTY_UUID and dynamic_raw is None:
+        elif local_id != EMPTY_UUID and dynamic_raw is None:
             warning = f"dangling dynamic item GUID: {local_id}"
-        elif dynamic_raw is not None and dynamic_raw["id"]["static_id"] != static_id:
-            warning = "dynamic item static ID does not match its slot"
+        elif effective_item is None:
+            warning = f"unknown dynamic item: {effective_static_id}"
+        elif effective_static_id != static_id and any(
+            item.get(field) != effective_item.get(field)
+            for field in ("NameKey", "Group", "TypeA", "TypeB", "DynamicType")
+        ):
+            warning = "dynamic item static ID does not match its slot family"
         return {
             "slot_index": slot_index,
             "static_id": static_id,
+            "effective_static_id": effective_static_id,
             "count": int(raw["count"]),
             "dynamic_id": None if local_id == EMPTY_UUID else local_id,
             "dynamic_type": dynamic_raw.get("type") if dynamic_raw else None,

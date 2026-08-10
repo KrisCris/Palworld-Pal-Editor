@@ -29,6 +29,7 @@ const armorSlots = computed(() => containers.value.armor?.slots || [])
 const primaryArmorSlots = computed(() => armorSlots.value.filter(slot => [0, 1, 4, 5, 8].includes(slot.slot_index)))
 const accessorySlots = computed(() => armorSlots.value.filter(slot => [2, 3, 6, 7].includes(slot.slot_index)))
 const itemFor = slot => palStore.ITEM_STATIC_DATA[slot?.static_id]
+const detailsItemFor = slot => palStore.ITEM_STATIC_DATA[slot?.effective_static_id] || itemFor(slot)
 const slotName = slot => itemFor(slot)?.Name || slot?.static_id || palStore.getTranslatedText('Inventory_Empty')
 const armorLabel = slot => palStore.getTranslatedText(armorLabels[slot.slot_index] || 'Inventory_Accessory')
 const isEditable = kind => containers.value[kind]?.editable !== false
@@ -116,7 +117,7 @@ onBeforeUnmount(() => {
           <p v-if="currentBag?.warning" class="container-warning">{{ currentBag.warning }}</p>
           <div ref="bagGrid" class="slot-grid slot-grid--bag">
             <InventoryItemSlot v-for="slot in currentBag?.slots" :key="slot.slot_index"
-              :slot="slot" :item="itemFor(slot)" :label="slotName(slot)" :editable="isEditable(bagTab)" square
+              :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable(bagTab)" square
               @edit="openSlot(bagTab, slot)" @clear="clearSlot(bagTab, slot)" />
           </div>
         </div>
@@ -134,7 +135,7 @@ onBeforeUnmount(() => {
             <h3>{{ palStore.getTranslatedText('Inventory_Weapons') }}</h3>
             <div class="slot-grid slot-grid--equipment">
               <InventoryItemSlot v-for="slot in containers.weapons?.slots" :key="slot.slot_index"
-                :slot="slot" :item="itemFor(slot)" :label="slotName(slot)" :editable="isEditable('weapons')"
+                :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable('weapons')"
                 show-name show-durability @edit="openSlot('weapons', slot)" @clear="clearSlot('weapons', slot)" />
             </div>
           </section>
@@ -145,7 +146,7 @@ onBeforeUnmount(() => {
               <div class="armor-main-slots">
                 <div v-for="slot in primaryArmorSlots" :key="slot.slot_index" class="equipment-slot-field">
                   <span>{{ armorLabel(slot) }}</span>
-                  <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :label="slotName(slot)"
+                  <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
                     :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
                 </div>
               </div>
@@ -153,7 +154,7 @@ onBeforeUnmount(() => {
                 <span>{{ palStore.getTranslatedText('Inventory_Accessories') }}</span>
                 <div class="accessory-grid">
                   <div v-for="slot in accessorySlots" :key="slot.slot_index" class="equipment-slot-field accessory-slot-field">
-                    <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :label="slotName(slot)"
+                    <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
                       :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
                   </div>
                 </div>
@@ -165,7 +166,7 @@ onBeforeUnmount(() => {
             <h3>{{ palStore.getTranslatedText('Inventory_Food') }}</h3>
             <div class="slot-grid slot-grid--food">
               <InventoryItemSlot v-for="slot in containers.food?.slots" :key="slot.slot_index"
-                :slot="slot" :item="itemFor(slot)" :label="slotName(slot)" :editable="isEditable('food')"
+                :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable('food')"
                 @edit="openSlot('food', slot)" @clear="clearSlot('food', slot)" />
             </div>
           </section>
@@ -179,14 +180,16 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.inventory-editor { --inventory-slot-height: 4.5rem; display: grid; gap: var(--editor-space-3); color: var(--editor-color-text); }
+.inventory-editor { --inventory-slot-height: 4.5rem; display: grid; min-height: 0; height: 100%; color: var(--editor-color-text); }
 .inventory-layout {
   display: grid;
   grid-template-columns: var(--bag-panel-width) minmax(27rem, 1fr);
+  min-height: 0;
+  height: 100%;
   gap: var(--editor-space-3);
   align-items: stretch;
 }
-.inventory-layout > .inventory-panel { height: min(46rem, 70vh); min-height: 36rem; }
+.inventory-layout > .inventory-panel { min-height: 0; height: 100%; }
 .inventory-panel {
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
@@ -220,7 +223,7 @@ onBeforeUnmount(() => {
 .equipment-panel :deep(.inventory-item-slot) { height: var(--inventory-slot-height); }
 .container-warning, .inventory-loading { color: var(--editor-color-muted); }
 @container (max-width: 50rem) {
-  .inventory-layout { grid-template-columns: 1fr; }
+  .inventory-layout { grid-template-columns: 1fr; height: auto; }
   .inventory-layout > .bag-panel { order: 1; height: min(42rem, 70vh); min-height: 30rem; }
   .inventory-layout > .equipment-panel { order: 2; height: auto; min-height: 0; }
   .equipment-layout { height: auto; overflow: visible; }

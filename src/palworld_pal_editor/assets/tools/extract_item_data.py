@@ -18,6 +18,7 @@ ITEM_SOURCES = {
     "items": "Pal/Content/Pal/DataTable/Item/DT_ItemDataTable_Common",
     "icons": "Pal/Content/Pal/DataTable/Item/DT_ItemIconDataTable_Common",
     "recipes": "Pal/Content/Pal/DataTable/Item/DT_ItemRecipeDataTable_Common",
+    "passives": "Pal/Content/Pal/DataTable/PassiveSkill/DT_PassiveSkill_Main_Common",
 }
 ITEM_TEXT_TABLES = {
     "items": "DT_ItemNameText_Common",
@@ -38,6 +39,16 @@ _DYNAMIC_TYPES = {
     "CommonWeapon": "weapon",
     "CommonArmor": "armor",
     "PalEgg": "egg",
+}
+_ITEM_STAT_FIELDS = {
+    "Weight": "Weight",
+    "Price": "Price",
+    "PhysicalAttack": "PhysicalAttackValue",
+    "HP": "HPValue",
+    "PhysicalDefense": "PhysicalDefenseValue",
+    "Shield": "ShieldValue",
+    "MagicAttack": "MagicAttackValue",
+    "MagicDefense": "MagicDefenseValue",
 }
 
 
@@ -81,10 +92,38 @@ def _text_key(row: dict, override_field: str, prefix: str, item_id: str) -> str:
     )
 
 
+def _passive_effects(passive_id: str, row: dict) -> list[dict]:
+    effects = []
+    for index in range(1, 5):
+        effect_type = _enum_tail(
+            row.get(f"EffectType{index}"),
+            f"{passive_id}.EffectType{index}",
+        )
+        target_type = _enum_tail(
+            row.get(f"TargetType{index}"),
+            f"{passive_id}.TargetType{index}",
+        )
+        value = row.get(f"EffectValue{index}")
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise TypeError(f"{passive_id}.EffectValue{index} must be numeric")
+        if effect_type in {"None", "no"} or value == 0:
+            continue
+        effects.append(
+            {
+                "PassiveSkillId": passive_id,
+                "EffectType": effect_type,
+                "EffectValue": value,
+                "TargetType": target_type,
+            }
+        )
+    return effects
+
+
 def build_item_records(
     items: dict[str, dict],
     icons: dict[str, dict],
     recipes: dict[str, dict],
+    passives: dict[str, dict],
     texts: dict[str, dict[str, dict]],
 ) -> dict:
     """Project raw game tables into the runtime item catalog."""
@@ -94,6 +133,7 @@ def build_item_records(
         raise ValueError("Item localization must contain every supported locale")
 
     icon_index = game_data.casefold_index(icons)
+    passive_index = game_data.casefold_index(passives)
     blueprint_products: dict[str, str] = {}
     for recipe_id, recipe in sorted(recipes.items()):
         unlock_item = recipe.get("UnlockItemID")
@@ -192,9 +232,43 @@ def build_item_records(
                 "Description": description or name or item_id,
             }
 
+        stats = {}
+        for output_field, source_field in _ITEM_STAT_FIELDS.items():
+            value = row.get(source_field)
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                raise TypeError(f"{item_id}.{source_field} must be numeric")
+            stats[output_field] = value
+
+        passive_ids = []
+        effects = []
+        for index in range(1, 5):
+            source_field = "PassiveSkillName" if index == 1 else f"PassiveSkillName{index}"
+            field = f"{item_id}.{source_field}"
+            serialized_name = row.get(source_field)
+            if serialized_name is None:
+                continue
+            if isinstance(serialized_name, str):
+                value = serialized_name
+            elif isinstance(serialized_name, dict) and isinstance(
+                serialized_name.get("Key"), str
+            ):
+                value = serialized_name["Key"]
+            else:
+                raise TypeError(f"{field} has unsupported value: {serialized_name!r}")
+            if value.casefold() == "none":
+                continue
+            passive_id = passive_index.get(value.casefold())
+            if passive_id is None:
+                raise ValueError(
+                    f"{item_id}.PassiveSkillName{index} references unknown passive {value}"
+                )
+            passive_ids.append(passive_id)
+            effects.extend(_passive_effects(passive_id, passives[passive_id]))
+
         record = {
             "InternalName": item_id,
             "I18n": i18n,
+            "NameKey": name_key,
             "Group": _item_group(type_a, type_b),
             "TypeA": type_a,
             "TypeB": type_b,
@@ -209,6 +283,9 @@ def build_item_records(
             "Legal": legal,
             "Disabled": not legal,
             "MonsterOnly": type_a == "MonsterEquipWeapon",
+            "Stats": stats,
+            "PassiveSkillIds": passive_ids,
+            "Effects": effects,
         }
         product_id = blueprint_products.get(item_id)
         product_row = items.get(product_id) if product_id else None
@@ -227,6 +304,9 @@ def build_item_records(
         "records": records,
         "icon_sources": dict(sorted(icon_sources.items())),
         "missing_localizations": sorted(set(missing_localizations)),
+        "passive_reference_count": sum(
+            len(record["PassiveSkillIds"]) for record in records.values()
+        ),
     }
 
 
@@ -267,6 +347,7 @@ def build_outputs(
     items = game_data.load_table(export_root, ITEM_SOURCES["items"])
     icons = game_data.load_table(export_root, ITEM_SOURCES["icons"])
     recipes = game_data.load_table(export_root, ITEM_SOURCES["recipes"])
+    passives = game_data.load_table(export_root, ITEM_SOURCES["passives"])
     texts = {
         name: {
             locale: game_data.load_text_table(export_root, table_name, locale)
@@ -274,7 +355,7 @@ def build_outputs(
         }
         for name, table_name in ITEM_TEXT_TABLES.items()
     }
-    built = build_item_records(items, icons, recipes, texts)
+    built = build_item_records(items, icons, recipes, passives, texts)
     extract_game_data.export_sources(
         toolchain,
         game / extract_game_data._PAK_RELATIVE.parent,
@@ -291,6 +372,7 @@ def build_outputs(
         "item_count": len(built["records"]),
         "icon_count": len(built["icon_sources"]),
         "missing_localizations": len(built["missing_localizations"]),
+        "passive_reference_count": built["passive_reference_count"],
     }
     return outputs, metadata
 
@@ -303,13 +385,14 @@ def _provenance(
 ) -> dict:
     icons = {path: data for path, data in outputs.items() if path.endswith(".png")}
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "game_build": build_id,
         "uex_revision": toolchain.uex_revision,
         "mapping_sha256": toolchain.mapping_sha256,
         "item_count": metadata["item_count"],
         "icon_count": metadata["icon_count"],
         "missing_localizations": metadata["missing_localizations"],
+        "passive_reference_count": metadata["passive_reference_count"],
         "catalog_sha256": hashlib.sha256(outputs["data/item_data.json"]).hexdigest(),
         "icon_root_sha256": _output_root_hash(icons),
     }

@@ -1,11 +1,12 @@
 {
-  "catalog_sha256": "3a64f43ec4e54303dcb1fd141859e0eb3d5b12ffba66211dcd9c048af6cd7c15",
+  "catalog_sha256": "3910a70f2f818e224d00090a44b4c8668e851391a87addfe113f8cbf9f687381",
   "game_build": "24467282",
   "icon_count": 929,
   "icon_root_sha256": "ac0500a6bcf0caca7aa044c68a6e1b5ac9a8e8ad530278124edbece966179961",
   "item_count": 2466,
   "mapping_sha256": "241c45de9d5b55b246cd4b39d62b9209faf7758ce0637e1f7a545aa0f75f71f0",
   "missing_localizations": 1616,
-  "schema_version": 1,
+  "passive_reference_count": 937,
+  "schema_version": 2,
   "uex_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d"
 }
