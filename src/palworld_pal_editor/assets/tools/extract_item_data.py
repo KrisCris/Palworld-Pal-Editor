@@ -19,6 +19,9 @@ ITEM_SOURCES = {
     "icons": "Pal/Content/Pal/DataTable/Item/DT_ItemIconDataTable_Common",
     "recipes": "Pal/Content/Pal/DataTable/Item/DT_ItemRecipeDataTable_Common",
     "passives": "Pal/Content/Pal/DataTable/PassiveSkill/DT_PassiveSkill_Main_Common",
+    "characters": (
+        "Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter_Common"
+    ),
 }
 ITEM_TEXT_TABLES = {
     "items": "DT_ItemNameText_Common",
@@ -34,6 +37,9 @@ PROVENANCE_PATH = Path(__file__).with_name("item_provenance.json")
 _SAFE_ICON_KEY = re.compile(r"^[A-Za-z0-9_.-]+$")
 _QUOTED_PLACEHOLDER_END = re.compile(r"\|'(?=/>)")
 _MISSING_PLACEHOLDER_PIPE = re.compile(r"(id=\|[^|<>]+)'(?=/>)")
+_CHARACTER_PLACEHOLDER = re.compile(
+    r"<characterName\s+id=\|([^|]+)\|(?:\s+[^>]*)?/>", re.IGNORECASE
+)
 _DYNAMIC_TYPES = {
     "None": None,
     "CommonWeapon": "weapon",
@@ -119,11 +125,53 @@ def _passive_effects(passive_id: str, row: dict) -> list[dict]:
     return effects
 
 
+def _pal_gear_characters(
+    items: dict[str, dict],
+    characters: dict[str, dict],
+    descriptions: dict[str, dict],
+) -> dict[str, str]:
+    character_index = game_data.casefold_index(characters)
+    mappings = {}
+    legal_gear = set()
+    for item_id, row in sorted(items.items()):
+        if row.get("TypeB") != "EPalItemTypeB::Essential_PalGear":
+            continue
+        if row.get("bLegalInGame") is True:
+            legal_gear.add(item_id)
+        description_key = _text_key(
+            row, "OverrideDescription", "ITEM_DESC_", item_id
+        )
+        description = game_data._text_value(descriptions, description_key) or ""
+        referenced = {
+            character_index.get(value.casefold())
+            for value in _CHARACTER_PLACEHOLDER.findall(description)
+        }
+        if None in referenced:
+            raise ValueError(
+                f"{item_id} description references an unknown Pal character"
+            )
+        if len(referenced) > 1:
+            raise ValueError(
+                f"{item_id} description references multiple Pal characters: "
+                f"{sorted(referenced)}"
+            )
+        if referenced:
+            mappings[item_id] = next(iter(referenced))
+
+    missing = sorted(legal_gear - set(mappings))
+    if missing:
+        raise ValueError(
+            f"Legal Pal gear character mappings are incomplete: missing={missing}"
+        )
+    return mappings
+
+
 def build_item_records(
     items: dict[str, dict],
     icons: dict[str, dict],
     recipes: dict[str, dict],
     passives: dict[str, dict],
+    pal_gear_characters: dict[str, str],
     texts: dict[str, dict[str, dict]],
 ) -> dict:
     """Project raw game tables into the runtime item catalog."""
@@ -299,6 +347,8 @@ def build_item_records(
                     f"{item_id} product icon does not resolve safely: {product_icon_name}"
                 )
             record["OverlayIconKey"] = product_icon_id
+        if item_id in pal_gear_characters:
+            record["PalGearCharacterId"] = pal_gear_characters[item_id]
         records[item_id] = record
     return {
         "records": records,
@@ -307,6 +357,7 @@ def build_item_records(
         "passive_reference_count": sum(
             len(record["PassiveSkillIds"]) for record in records.values()
         ),
+        "pal_gear_count": len(pal_gear_characters),
     }
 
 
@@ -348,6 +399,7 @@ def build_outputs(
     icons = game_data.load_table(export_root, ITEM_SOURCES["icons"])
     recipes = game_data.load_table(export_root, ITEM_SOURCES["recipes"])
     passives = game_data.load_table(export_root, ITEM_SOURCES["passives"])
+    characters = game_data.load_table(export_root, ITEM_SOURCES["characters"])
     texts = {
         name: {
             locale: game_data.load_text_table(export_root, table_name, locale)
@@ -355,7 +407,12 @@ def build_outputs(
         }
         for name, table_name in ITEM_TEXT_TABLES.items()
     }
-    built = build_item_records(items, icons, recipes, passives, texts)
+    pal_gear_characters = _pal_gear_characters(
+        items, characters, texts["item_descriptions"]["ja"]
+    )
+    built = build_item_records(
+        items, icons, recipes, passives, pal_gear_characters, texts
+    )
     extract_game_data.export_sources(
         toolchain,
         game / extract_game_data._PAK_RELATIVE.parent,
@@ -373,6 +430,7 @@ def build_outputs(
         "icon_count": len(built["icon_sources"]),
         "missing_localizations": len(built["missing_localizations"]),
         "passive_reference_count": built["passive_reference_count"],
+        "pal_gear_count": built["pal_gear_count"],
     }
     return outputs, metadata
 
@@ -385,7 +443,7 @@ def _provenance(
 ) -> dict:
     icons = {path: data for path, data in outputs.items() if path.endswith(".png")}
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "game_build": build_id,
         "uex_revision": toolchain.uex_revision,
         "mapping_sha256": toolchain.mapping_sha256,
@@ -393,6 +451,7 @@ def _provenance(
         "icon_count": metadata["icon_count"],
         "missing_localizations": metadata["missing_localizations"],
         "passive_reference_count": metadata["passive_reference_count"],
+        "pal_gear_count": metadata["pal_gear_count"],
         "catalog_sha256": hashlib.sha256(outputs["data/item_data.json"]).hexdigest(),
         "icon_root_sha256": _output_root_hash(icons),
     }

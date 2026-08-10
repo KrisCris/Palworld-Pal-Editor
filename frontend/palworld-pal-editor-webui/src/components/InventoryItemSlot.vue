@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
+import PalGearBadge from '@/components/PalGearBadge.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
@@ -38,6 +39,7 @@ const hideTooltip = () => { tooltipVisible.value = false }
       <span v-if="item?.IconKey" class="item-icon" :class="{ layered: item.OverlayIconKey }">
         <img :src="iconUrl(item.IconKey)" alt="">
         <img v-if="item.OverlayIconKey" class="item-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
+        <PalGearBadge :item="item" />
       </span>
       <span v-if="showName" class="slot-name">{{ label }}</span>
       <strong v-if="slot.count > 1" class="slot-count">{{ slot.count }}</strong>
@@ -88,7 +90,7 @@ const hideTooltip = () => { tooltipVisible.value = false }
 .slot-warning { position: absolute; top: .3rem; left: .3rem; display: grid; width: 1.1rem; height: 1.1rem; place-items: center; border-radius: 50%; color: #1f1300; background: #fbbf24; font-size: .7rem; font-weight: 800; }
 .slot-clear {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: .12rem;
   right: .16rem;
   display: grid;

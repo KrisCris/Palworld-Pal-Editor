@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import NumberSliderField from '@/components/NumberSliderField.vue'
+import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { readStorage, writeStorage } from '@/services/backend-connection'
@@ -238,6 +239,7 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
           <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
             <img :src="iconUrl(item.IconKey)" alt="">
             <img v-if="item.OverlayIconKey" class="option-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
+            <PalGearBadge :item="item" />
           </span>
           <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
         </button>
