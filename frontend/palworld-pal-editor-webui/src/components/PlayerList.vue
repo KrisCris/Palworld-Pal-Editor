@@ -52,28 +52,23 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   position: relative;
   display: grid;
   min-height: 3.5rem;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
   align-items: center;
-  gap: var(--editor-space-2);
-  padding: var(--editor-space-3);
+  padding: var(--editor-space-3) var(--editor-space-2);
   border-bottom: 1px solid var(--editor-color-border);
 }
 
 .roster-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  max-width: calc(100% - 6rem);
   margin: 0;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--editor-color-muted);
   font-size: .8rem;
   font-weight: 400;
+  line-height: 1.2;
   letter-spacing: .04em;
-  text-overflow: ellipsis;
+  text-align: center;
   text-transform: uppercase;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .roster-collapse-button {
