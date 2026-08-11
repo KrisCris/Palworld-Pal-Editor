@@ -32,7 +32,14 @@ class PalBaseCamp:
     
     @property
     def container_id(self) -> Optional[UUID]:
-        return self._camp_param.get('container_id')
+        return (
+            self._camp_obj.get("value", {})
+            .get("WorkerDirector", {})
+            .get("value", {})
+            .get("RawData", {})
+            .get("value", {})
+            .get("container_id")
+        )
 
 class BaseCampData:
     def __init__(self, gvas_file: GvasFile) -> None:
@@ -59,7 +66,7 @@ class BaseCampData:
             LOGGER.info(f"BaseCamp found: {camp_entity}")
 
     def get_camp(self, camp_id: UUID | str) -> Optional[PalBaseCamp]:
-        self.camp_map.get(camp_id)
+        return self.camp_map.get(str(camp_id))
 
     def get_camps(self) -> list[PalBaseCamp]:
         return self.camp_map.values()

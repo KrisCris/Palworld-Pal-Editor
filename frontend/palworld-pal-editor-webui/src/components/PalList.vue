@@ -3,8 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
+import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import {
+  groupPalList,
   isCreatedPal,
   isEditedPal,
   matchesPalAttributeFilters,
@@ -97,6 +99,21 @@ const visiblePals = computed(() => sortPalList(
   palStore.PAL_LIST_SORT,
   pal => paldeckForRow(palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]),
 ))
+
+const visiblePalGroups = computed(() => groupPalList(
+  visiblePals.value,
+  palStore.PAL_LIST_SORT,
+).map(group => ({
+  ...group,
+  container: palStore.PAL_CONTAINERS.find(container => container.ContainerId === group.key),
+})))
+const containerLabel = group => formatContainerLabel(
+  group.container || {
+    ContainerKind: group.key === 'anomaly' ? 'anomaly' : 'other',
+    ContainerLabel: group.label,
+  },
+  palStore.getTranslatedText,
+)
 
 watch(
   [
@@ -191,7 +208,7 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
             </div>
           </div>
           </details>
-          <button class="roster-icon-button" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+          <button class="roster-icon-button"
             :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
             :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
             <UiIcon name="plus" />
@@ -206,7 +223,12 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
     </header>
 
     <div class="roster-list" ref="palListContainer">
-      <button v-for="pal in visiblePals" :key="pal.InstanceId"
+      <template v-for="group in visiblePalGroups" :key="group.key">
+      <h3 v-if="group.label" class="container-heading">
+        <span>{{ containerLabel(group) }}</span>
+        <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
+      </h3>
+      <button v-for="pal in group.pals" :key="pal.InstanceId"
         :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': !pal.in_owner_palbox }]"
         :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
         :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
@@ -240,6 +262,13 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
         <span class="pal-copy">
           <strong class="pal-name">
             <span>{{ pal.DisplayName }}</span>
+            <span v-if="pal.IsExpeditionPal" class="pal-location-badge pal-location-badge--expedition">
+              {{ palStore.getTranslatedText('PalList_Expedition') }}
+            </span>
+            <span v-if="pal.LocationStatus && pal.LocationStatus !== 'ok'"
+              class="pal-location-badge pal-location-badge--anomaly" :title="pal.LocationAnomaly">
+              {{ palStore.getTranslatedText('PalList_Location_Anomaly') }}
+            </span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>
           <span class="sr-only">{{ palStatus(pal) }}</span>
@@ -247,6 +276,7 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
           <span v-else-if="palWasEdited(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Edited') }}</span>
         </span>
       </button>
+      </template>
     </div>
     <AddPalDialog v-if="showAddPalDialog" @close="showAddPalDialog = false" />
   </nav>
@@ -494,6 +524,20 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   padding: var(--editor-space-2);
 }
 
+.container-heading {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--editor-space-2);
+  margin: var(--editor-space-2) var(--editor-space-1) 0;
+  color: var(--editor-color-muted);
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.container-heading small { font-weight: 400; }
+
 .pal-row {
   --pal-row-accent: var(--editor-color-focus);
   display: grid;
@@ -563,6 +607,19 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.pal-location-badge {
+  flex: 0 0 auto;
+  padding: .1rem .35rem;
+  border-radius: 999px;
+  color: var(--editor-color-background);
+  background: var(--editor-color-muted);
+  font-size: .58rem;
+  font-weight: 700;
+}
+
+.pal-location-badge--expedition { background: var(--editor-color-primary); }
+.pal-location-badge--anomaly { background: var(--editor-color-danger); }
 
 .pal-copy strong,
 .pal-copy small {

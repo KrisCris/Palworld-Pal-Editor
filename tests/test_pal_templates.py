@@ -49,8 +49,8 @@ class FakeManager:
     def get_player(self, _player_id):
         return FakePlayer(self.pal)
 
-    def add_pal(self, player_id, pal_obj=None):
-        self.added.append((player_id, pal_obj))
+    def add_pal(self, player_id, pal_obj=None, target_container_id=None):
+        self.added.append((player_id, pal_obj, target_container_id))
         result = PalEntity(copy.deepcopy(pal_obj or self.pal._pal_obj))
         result.is_new_pal = True
         return result
@@ -139,6 +139,21 @@ class PalTemplateApiTests(unittest.TestCase):
         ).get_json()
         self.assertEqual(1, invalid["status"])
         self.assertEqual(calls, len(self.manager.added))
+
+    def test_add_pal_forwards_an_explicit_target_container(self):
+        created = self.client.post(
+            "/api/pal/add_pal",
+            json={
+                "PlayerUId": str(PLAYER_ID),
+                "Mode": "json",
+                "PalJson": self.pal.dump_obj(),
+                "TargetContainerId": "base-container",
+            },
+            headers=self.headers,
+        ).get_json()
+
+        self.assertEqual(0, created["status"])
+        self.assertEqual("base-container", self.manager.added[-1][2])
 
     def test_template_names_and_import_sizes_are_bounded(self):
         invalid_name = self.client.post(

@@ -10,6 +10,7 @@ from palworld_pal_editor.core.pal_objects import (
     PalSuitability,
     get_nested_attr,
     dumps,
+    toUUID,
 )
 from palworld_pal_editor.utils.util import type_guard
 
@@ -120,6 +121,30 @@ class PalEntity:
         return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
 
     def set_owner_player_entity(self, player):
+        self.owner_player_entity = player
+
+    def set_owner_player_uid(self, player_uid: UUID | str | None, player=None):
+        if player_uid is None:
+            self._pal_param.pop("OwnerPlayerUId", None)
+            self.owner_player_entity = None
+            return
+
+        player_uid = toUUID(str(player_uid))
+        self._pal_param["OwnerPlayerUId"] = PalObjects.Guid(player_uid)
+        owners = self.OldOwnerPlayerUIds
+        if owners is None:
+            self._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+                "StructProperty",
+                {
+                    "prop_name": "OldOwnerPlayerUIds",
+                    "prop_type": "StructProperty",
+                    "values": [player_uid],
+                    "type_name": "Guid",
+                    "id": PalObjects.EMPTY_UUID,
+                },
+            )
+        elif not owners or str(owners[-1]) != str(player_uid):
+            owners.append(player_uid)
         self.owner_player_entity = player
 
     @property

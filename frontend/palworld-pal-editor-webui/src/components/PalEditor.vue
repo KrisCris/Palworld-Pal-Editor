@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
+import PalContainerMoveDialog from '@/components/PalContainerMoveDialog.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
@@ -12,6 +13,9 @@ import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/store
 const palStore = usePalEditorStore()
 const updateRange = (name, value) => palStore.updatePal({ target: { name, value } })
 const skillTemplateType = ref('')
+const showMoveDialog = ref(false)
+const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
+  || palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok')
 const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
@@ -371,18 +375,36 @@ const portraitBorder = pal => pal.IsAwakening
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
           <div class="pal-technical-slot">
             <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
-            <code :class="{ 'is-out-of-container': !palStore.SELECTED_PAL_DATA.in_owner_palbox }"
-              :title="palStore.SELECTED_PAL_DATA.in_owner_palbox ? '' : 'Pal is out of owner palbox, i.e. in viewing cage or taken by someone.'">
-              {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
-            </code>
-            <button class="editor-button editor-button--primary" @click="palStore.updatePal" name="in_owner_palbox"
-              :disabled="palStore.LOADING_FLAG" v-if="!palStore.SELECTED_PAL_DATA.in_owner_palbox">
-              {{ palStore.getTranslatedText("Editor_Btn_Retrieve_Pal") }}
-            </button>
+            <div class="pal-technical-location__value">
+              <code :class="{ 'is-location-anomaly': palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok' }"
+                :title="palStore.SELECTED_PAL_DATA.LocationAnomaly || ''">
+                {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
+              </code>
+            </div>
+            <small v-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">
+              {{ palStore.SELECTED_PAL_DATA.LocationAnomaly }}
+              <template v-if="palStore.SELECTED_PAL_DATA.ActualContainerId">
+                {{ palStore.SELECTED_PAL_DATA.ActualContainerId }} @ {{ palStore.SELECTED_PAL_DATA.ActualSlotIndex }}
+              </template>
+            </small>
+            <small v-if="palStore.SELECTED_PAL_DATA.IsExpeditionPal">
+              {{ palStore.getTranslatedText('Editor_Move_Blocked_Expedition') }}
+            </small>
+            <small v-else-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">
+              {{ palStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
+            </small>
           </div>
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
+          <div class="pal-technical-move">
+            <button class="editor-button pal-location-move" @click="showMoveDialog = true"
+              :disabled="moveBlocked || palStore.LOADING_FLAG">
+              {{ palStore.getTranslatedText('Editor_Move_Pal') }}
+            </button>
+          </div>
         </div>
       </details>
+
+      <PalContainerMoveDialog v-if="showMoveDialog" @close="showMoveDialog = false" />
 
       <div class="pal-health-actions" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick || palStore.SELECTED_PAL_DATA.IsFaintedPal">
         <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick"
@@ -658,6 +680,7 @@ const portraitBorder = pal => pal.IsAwakening
 .pal-technical-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: var(--editor-space-3) var(--editor-space-5);
   min-width: 0;
 }
@@ -675,16 +698,19 @@ const portraitBorder = pal => pal.IsAwakening
 }
 
 .pal-technical-slot {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
 }
 
 .pal-technical-slot > .editor-disclosure__label {
   grid-column: 1 / -1;
 }
 
-.is-out-of-container {
-  color: var(--editor-color-success);
+.is-location-anomaly {
+  color: var(--editor-color-danger);
 }
+
+.pal-technical-location__value { min-width: 0; }
+.pal-location-move { justify-self: start; }
 
 @container pal-basic-info (max-width: 720px) {
   .editor-summary {

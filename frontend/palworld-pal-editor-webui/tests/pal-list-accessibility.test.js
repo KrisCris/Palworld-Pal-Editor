@@ -170,3 +170,24 @@ test("Pal list exposes game-derived DNA origin markers and union filter buttons"
     assert.match(source, new RegExp(`key: '${key}'`));
   }
 });
+
+test("location sorting renders container headers and explicit safety markers", async () => {
+  const [listSource, editorSource, moveDialogSource] = await Promise.all([
+    readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/PalEditor.vue", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/PalContainerMoveDialog.vue", import.meta.url), "utf8"),
+  ]);
+  assert.match(listSource, /visiblePalGroups/);
+  assert.match(listSource, /class="container-heading"/);
+  assert.match(listSource, /formatContainerLabel/);
+  assert.match(listSource, /containerLabel\(group\)/);
+  assert.match(listSource, /group\.container\.Occupied.*group\.container\.Size/s);
+  assert.match(listSource, /pal\.IsExpeditionPal/);
+  assert.match(listSource, /pal\.LocationStatus !== 'ok'/);
+  assert.doesNotMatch(listSource, /v-if="!palStore\.BASE_PAL_BTN_CLK_FLAG"[^>]*name="add_pal"/);
+
+  assert.match(editorSource, /PalContainerMoveDialog/);
+  assert.match(moveDialogSource, /palStore\.movePal\(pendingContainerId\.value\)/);
+  assert.match(editorSource, /IsExpeditionPal[\s\S]*LocationStatus !== 'ok'/);
+  assert.match(editorSource, /ActualContainerId/);
+});

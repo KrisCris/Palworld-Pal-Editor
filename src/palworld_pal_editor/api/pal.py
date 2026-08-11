@@ -18,6 +18,31 @@ MAX_PAL_JSON_BYTES = 2 * 1024 * 1024
 SKILL_TEMPLATE_TYPES = {"active", "passive"}
 
 
+@pal_blueprint.route("/containers", methods=["GET"])
+@jwt_required()
+def list_pal_containers():
+    return reply(0, SaveManager().get_container_registry())
+
+
+@pal_blueprint.route("/move", methods=["POST"])
+@jwt_required()
+def move_pal():
+    payload = request.json or {}
+    pal_guid = payload.get("PalGuid")
+    target_container_id = payload.get("TargetContainerId")
+    if not pal_guid or not target_container_id:
+        return reply(1, None, "PalGuid and TargetContainerId are required.")
+    try:
+        SaveManager().move_pal(pal_guid, target_container_id)
+        pal = SaveManager().get_pal(pal_guid)
+        return reply(0, _pal_data(pal) if pal else None)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    except Exception:
+        LOGGER.error(f"Error moving Pal: {traceback.format_exc()}")
+        return reply(1, None, "Error moving Pal. No changes were kept.")
+
+
 def _pal_templates() -> list[dict]:
     if not isinstance(Config.palTemplates, list):
         Config.palTemplates = []
@@ -236,12 +261,32 @@ def maximize_pal():
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
     record = DataProvider.get_pal_record(pal.CharacterID) or {}
+    manager = SaveManager()
+    resolver = getattr(manager, "resolve_pal_location", None)
+    location = resolver(pal) if resolver and getattr(manager, "container_data", None) else {
+        "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "RecordedSlotIndex": pal.SlotIndex,
+        "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "ActualSlotIndex": pal.SlotIndex,
+        "ActualLocations": [],
+        "LocationStatus": "ok",
+        "LocationAnomaly": None,
+        "ContainerKind": "other",
+        "ContainerLabel": None,
+    }
     return {
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
         "group_id": str(pal.group_id) if pal.group_id else None,
-        "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
-        "SlotIndex": pal.SlotIndex,
+        "ContainerId": location["RecordedContainerId"],
+        "SlotIndex": location["RecordedSlotIndex"],
+        "ActualContainerId": location["ActualContainerId"],
+        "ActualSlotIndex": location["ActualSlotIndex"],
+        "ActualLocations": location["ActualLocations"],
+        "LocationStatus": location["LocationStatus"],
+        "LocationAnomaly": location["LocationAnomaly"],
+        "ContainerKind": location["ContainerKind"],
+        "ContainerLabel": location["ContainerLabel"],
         "FavoriteIndex": pal.FavoriteIndex,
         "IsImportedCharacter": pal.IsImportedCharacter,
         "OwnerName": pal.OwnerName or None,
@@ -345,9 +390,10 @@ def delete_pal(pal_id):
 def add_pal():
     payload = request.json or {}
     PlayerUId = payload.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
+    target_container_id = payload.get("TargetContainerId")
+    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_container_id:
         LOGGER.warning("Directly add pal to basecamp is not yet supported.")
-        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
+        return reply(1, None, "Choose a base container before adding a Pal.")
     try:
         mode = payload.get("Mode", "default")
         pal_obj = None
@@ -365,7 +411,11 @@ def add_pal():
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
-        pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
+        pal_entity = (
+            SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
+            if target_container_id
+            else SaveManager().add_pal(PlayerUId, pal_obj)
+        )
         if not pal_entity:
             return reply(
                 1,

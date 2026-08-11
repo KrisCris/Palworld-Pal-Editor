@@ -2,15 +2,18 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import PalPortrait from '@/components/modules/PalPortrait.vue'
+import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
+const containerLabel = container => formatContainerLabel(container, palStore.getTranslatedText)
 const mode = ref('default')
 const templateId = ref('')
 const templateName = ref('')
 const palJson = ref('')
+const targetContainerId = ref('')
 const dialog = ref(null)
 let previousFocus
 let appContent
@@ -18,9 +21,16 @@ let previousAriaHidden
 
 const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
   .find(template => template.Id === templateId.value))
-const canCreate = computed(() => mode.value === 'default'
+const targetContainers = computed(() => palStore.PAL_CONTAINERS.filter(container => (
+  container.MovableInto
+  && (!palStore.BASE_PAL_BTN_CLK_FLAG || container.ContainerKind === 'base')
+  && (palStore.BASE_PAL_BTN_CLK_FLAG
+    || !palStore.SELECTED_PLAYER_DATA?.GroupId
+    || container.GroupId === palStore.SELECTED_PLAYER_DATA.GroupId)
+)))
+const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
-  || (mode.value === 'json' && palJson.value.trim()))
+  || (mode.value === 'json' && palJson.value.trim())))
 
 const tabs = [
   ['default', 'AddPal_Tab_Default'],
@@ -42,6 +52,12 @@ onMounted(async () => {
   previousAriaHidden = appContent?.getAttribute('aria-hidden')
   appContent?.setAttribute('aria-hidden', 'true')
   await palStore.fetchPalTemplates()
+  await palStore.fetchPalContainers()
+  targetContainerId.value = palStore.BASE_PAL_BTN_CLK_FLAG
+    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.ContainerId || ''
+    : targetContainers.value.find(
+      container => container.ContainerId === palStore.SELECTED_PLAYER_DATA?.PalStorageContainerId
+    )?.ContainerId || targetContainers.value[0]?.ContainerId || ''
   await nextTick()
   dialog.value?.focus()
 })
@@ -74,6 +90,7 @@ async function createPal() {
     : mode.value === 'json'
       ? { Mode: 'json', PalJson: palJson.value }
       : { Mode: 'default' }
+  options.TargetContainerId = targetContainerId.value
   if (await palStore.addPal(options)) emit('close')
 }
 
@@ -175,9 +192,15 @@ async function deleteTemplate(id) {
       </main>
 
       <footer>
-        <span>{{ palStore.getTranslatedText('AddPal_Target_Player') }}:
-          <strong>{{ palStore.SELECTED_PLAYER_DATA?.NickName || palStore.SELECTED_PLAYER_ID }}</strong>
-        </span>
+        <label class="target-container">
+          <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
+          <select v-model="targetContainerId">
+            <option v-for="container in targetContainers" :key="container.ContainerId"
+              :value="container.ContainerId" :disabled="container.Occupied >= container.Size">
+              {{ containerLabel(container) }} ({{ container.Occupied }}/{{ container.Size }})
+            </option>
+          </select>
+        </label>
         <div>
           <button class="secondary-button" @click="emit('close')">
             {{ palStore.getTranslatedText('AddPal_Cancel') }}
@@ -262,7 +285,8 @@ main { min-height: 0; overflow: auto; padding: var(--editor-space-5); }
 .template-save { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(10rem, 1fr) auto; align-items: end; gap: var(--editor-space-3); }
 .template-save div { display: grid; }
 input,
-textarea {
+textarea,
+select {
   box-sizing: border-box;
   width: 100%;
   border: 1px solid var(--editor-color-border);
@@ -271,6 +295,7 @@ textarea {
   background: var(--editor-color-control);
 }
 input { min-height: var(--editor-control-height); padding: 0 var(--editor-space-3); }
+select { min-height: var(--editor-control-height); padding: 0 var(--editor-space-3); }
 textarea { resize: vertical; padding: var(--editor-space-3); font: .8rem/1.5 ui-monospace, monospace; }
 
 .template-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--editor-space-2); }
@@ -289,6 +314,7 @@ textarea { resize: vertical; padding: var(--editor-space-3); font: .8rem/1.5 ui-
 .json-panel { display: grid; gap: var(--editor-space-2); }
 footer { border-top: 1px solid var(--editor-color-border); }
 footer div { display: flex; gap: var(--editor-space-2); }
+.target-container { display: grid; min-width: min(24rem, 50vw); gap: var(--editor-space-1); }
 button { min-height: 2.25rem; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); }
 .primary-button,
 .secondary-button { padding: 0 var(--editor-space-4); }

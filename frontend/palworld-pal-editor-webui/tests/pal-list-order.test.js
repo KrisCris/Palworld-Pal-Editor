@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   filterPalPriority,
+  groupPalList,
   isCreatedPal,
   isEditedPal,
   matchesPalAttributeFilters,
@@ -43,6 +44,27 @@ test("location sorting groups base-camp Pals by container before slot", () => {
     sortPalList(baseCampPals, "location").map(pal => pal.InstanceId),
     ["container-a-slot-1", "container-a-slot-5", "container-b-slot-0"],
   );
+});
+
+test("location groups use labels and place all anomalies last", () => {
+  const rows = [
+    { InstanceId: "bad", ContainerKind: "anomaly", ContainerId: "broken", LocationStatus: "slot_mismatch" },
+    { InstanceId: "box", ContainerKind: "storage", ContainerId: "box", ContainerLabel: "Alice · Palbox", SlotIndex: 2, LocationStatus: "ok" },
+    { InstanceId: "party", ContainerKind: "party", ContainerId: "party", ContainerLabel: "Alice · Party", SlotIndex: 1, LocationStatus: "ok" },
+    { InstanceId: "cage", ContainerKind: "special", ContainerId: "cage", ContainerLabel: "Alice · Viewing cage", SlotIndex: 0, LocationStatus: "ok" },
+  ];
+
+  const groups = groupPalList(sortPalList(rows, "location"), "location");
+
+  assert.deepEqual(groups.map(group => group.label), [
+    "Alice · Party",
+    "Alice · Palbox",
+    "Alice · Viewing cage",
+    "Location anomaly",
+  ]);
+  assert.deepEqual(groups.at(-1).pals.map(pal => pal.InstanceId), ["bad"]);
+  assert.equal(groupPalList(rows, "paldeck").length, 1);
+  assert.equal(groupPalList(rows, "paldeck")[0].label, null);
 });
 
 test("Paldeck sorting places Pals without a Paldeck number last", () => {
