@@ -510,24 +510,22 @@ class SaveManager:
                 movable_into=True,
             )
 
-        for camp in self.camp_data.get_camps():
+        for base_ordinal, camp in enumerate(self.camp_data.get_camps(), start=1):
             template_match = re.fullmatch(
                 r"新規生成拠点テンプレート名(\d+)\(仮\)", camp.name or ""
             )
-            base_ordinal = (
-                int(template_match.group(1)) + 1 if template_match else None
-            )
+            display_ordinal = base_ordinal if template_match else None
             add_descriptor(
                 camp.container_id,
                 kind="base",
                 label=(
-                    f"Base {base_ordinal}"
-                    if base_ordinal is not None
+                    f"Base {display_ordinal}"
+                    if display_ordinal is not None
                     else camp.name or f"Base {str(camp.id)[:8]}"
                 ),
                 base_id=str(camp.id),
                 base_name=camp.name,
-                base_ordinal=base_ordinal,
+                base_ordinal=display_ordinal,
                 group_id=str(camp.owner_group_id),
                 classification="exact",
                 movable_into=True,

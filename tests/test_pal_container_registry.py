@@ -72,6 +72,35 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
 
         self.assertEqual([3, 36, 44], sorted(counts.values()))
 
+    def test_duplicate_template_names_use_the_base_save_data_order(self):
+        camps = list(self.manager.camp_data.get_camps())
+        group = self.manager.group_data.get_group(camps[0].owner_group_id)
+        original_base_ids = group._group_param["base_ids"]
+        original_names = [camp._camp_param.get("name") for camp in camps]
+        original_cache = getattr(self.manager, "_container_registry_cache", None)
+
+        try:
+            group._group_param["base_ids"] = [camp.id for camp in reversed(camps)]
+            for camp in camps:
+                camp._camp_param["name"] = "新規生成拠点テンプレート名2(仮)"
+            self.manager._container_registry_cache = None
+
+            descriptors = {
+                item["BaseId"]: item
+                for item in self.manager.get_container_registry()
+                if item["ContainerKind"] == "base"
+            }
+
+            self.assertEqual(
+                [1, 2, 3],
+                [descriptors[str(camp.id)]["BaseOrdinal"] for camp in camps],
+            )
+        finally:
+            group._group_param["base_ids"] = original_base_ids
+            for camp, name in zip(camps, original_names):
+                camp._camp_param["name"] = name
+            self.manager._container_registry_cache = original_cache
+
 
 class PalContainerRoundTripTests(unittest.TestCase):
     def test_moved_pal_serializes_and_reloads_in_the_same_slot(self):
