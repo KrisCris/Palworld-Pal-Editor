@@ -190,15 +190,34 @@ def test_unique_breeding_requires_reachable_parents_and_alpha_follows_valid_base
         "BlackFurDragon",
         "DarkMutant",
         "ElecLion",
-        "FlowerPrince",
         "GrassDragon",
-        "Mothman",
         "PinkKangaroo",
         "WaterLizard",
     ):
         assert pals[character_id]["Invalid"] is True, character_id
         assert pals[character_id]["RegularlyObtainable"] is False, character_id
         assert pals[character_id]["AvailabilitySources"] == [], character_id
+
+    assert pals["FlowerPrince"]["AvailabilitySources"] == [
+        {"Kind": "unique-breeding", "ID": "258"}
+    ]
+    assert pals["BOSS_FlowerPrince"]["AvailabilitySources"] == [
+        {"Kind": "worldtree-alpha", "ID": "WorldTreeMiddleBoss1"}
+    ]
+    assert pals["Mothman"]["AvailabilitySources"] == [
+        {"Kind": "unique-breeding", "ID": "259"}
+    ]
+    assert pals["BOSS_Mothman"]["AvailabilitySources"] == [
+        {"Kind": "worldtree-alpha", "ID": "WorldTreeMiddleBoss2"}
+    ]
+    for character_id in (
+        "FlowerPrince",
+        "BOSS_FlowerPrince",
+        "Mothman",
+        "BOSS_Mothman",
+    ):
+        assert pals[character_id]["Invalid"] is False, character_id
+        assert pals[character_id]["RegularlyObtainable"] is True, character_id
 
     assert pals["PoseidonOrca"]["AvailabilitySources"] == [
         {"Kind": "unique-breeding", "ID": "193"}

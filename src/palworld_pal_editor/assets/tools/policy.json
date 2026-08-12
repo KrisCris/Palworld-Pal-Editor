@@ -43,6 +43,8 @@
         "Pal/Content/Pal/Blueprint/FlowGraph/NPCTalkFlow/Graph/FABP_GrassBoss01",
         "Pal/Content/Pal/Blueprint/Controller/Monster/BP_MonsterAIController_Wild_KingWhale",
         "Pal/Content/Pal/Blueprint/Controller/Monster/BP_AICombatModule_KingWhale_Wild",
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_FlowerPrince",
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_Mothman",
         "Pal/Content/Pal/DataTable/Waza/DT_WazaDataTable_Common",
         "Pal/Content/Pal/DataTable/Waza/DT_WazaMasterLevel_Common",
         "Pal/Content/Pal/DataTable/Item/DT_ItemDataTable_Common",
@@ -118,7 +120,8 @@
         "quest_spawner",
         "oilrig",
         "quest_reward",
-        "capture_replace"
+        "capture_replace",
+        "worldtree_alpha"
       ],
       "known_build_invariants": {
         "24181527": {
@@ -188,6 +191,8 @@
         "Pal/Content/Pal/Blueprint/FlowGraph/NPCTalkFlow/Graph/FABP_GrassBoss01",
         "Pal/Content/Pal/Blueprint/Controller/Monster/BP_MonsterAIController_Wild_KingWhale",
         "Pal/Content/Pal/Blueprint/Controller/Monster/BP_AICombatModule_KingWhale_Wild",
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_FlowerPrince",
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_Mothman",
         "Pal/Content/Pal/DataTable/Waza/DT_WazaMasterLevel_Common",
         "Pal/Content/Pal/DataTable/PassiveSkill/DT_PassiveSkill_Main_Common",
         "Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable_Common",
@@ -213,7 +218,8 @@
         "quest_spawner",
         "oilrig",
         "quest_reward",
-        "capture_replace"
+        "capture_replace",
+        "worldtree_alpha"
       ],
       "known_build_invariants": {
         "24181527": {

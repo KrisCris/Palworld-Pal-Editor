@@ -215,6 +215,14 @@ CHARACTER_SCENARIO_SOURCES = {
     "kingwhale_combat": (
         "Pal/Content/Pal/Blueprint/Controller/Monster/BP_AICombatModule_KingWhale_Wild"
     ),
+    "worldtree_flowerprince_quest": (
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/"
+        "BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_FlowerPrince"
+    ),
+    "worldtree_mothman_quest": (
+        "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/"
+        "BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_Mothman"
+    ),
 }
 CHARACTER_SCENARIO_PREFIX_SOURCES = frozenset(
     CHARACTER_SCENARIO_SOURCES[name]
@@ -274,6 +282,7 @@ SUPPORTED_CHARACTER_ROUTES = frozenset(
         "oilrig",
         "quest_reward",
         "capture_replace",
+        "worldtree_alpha",
     }
 )
 SKILL_SOURCES = {
@@ -2367,23 +2376,84 @@ def build_character_evidence(
         if target is not None and all(parents):
             breeding_recipes.append((row_id, target, parents))
 
-    incident_enabled = route_enabled(
-        "mainworld5_incident", CHARACTER_ROUTE_SOURCES["incident_world"]
+    world_source = CHARACTER_ROUTE_SOURCES["incident_world"]
+    worldtree_enabled = route_enabled("worldtree_alpha", world_source)
+    incident_enabled = route_enabled("mainworld5_incident", world_source)
+    world = (
+        load_asset(export_root, world_source)
+        if worldtree_enabled or incident_enabled
+        else []
     )
+    persistent_level = "Level'PL_MainWorld5:PersistentLevel'"
+
+    if worldtree_enabled:
+        tower_class = (
+            "BlueprintGeneratedClass'Pal/Content/Pal/Blueprint/BossBattle/Logic/"
+            "BP_PalBossTower_MiddleBoss.BP_PalBossTower_MiddleBoss_C'"
+        )
+        placed_boss_types = []
+        for actor in world:
+            outer = actor.get("Outer")
+            if (
+                actor.get("Type") != "BP_PalBossTower_MiddleBoss_C"
+                or actor.get("Class") != tower_class
+                or not isinstance(outer, dict)
+                or outer.get("ObjectName") != persistent_level
+            ):
+                continue
+            properties = actor.get("Properties")
+            if not isinstance(properties, dict):
+                raise TypeError("World Tree middle-boss Properties must be an object")
+            placed_boss_types.append(
+                _enum_tail(
+                    properties.get("BossType"), "World Tree middle-boss BossType"
+                )
+            )
+
+        quest_prefix = "BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_"
+        for source_name in (
+            "worldtree_flowerprince_quest",
+            "worldtree_mothman_quest",
+        ):
+            quest_source = CHARACTER_SCENARIO_SOURCES[source_name]
+            quest_stem = PurePosixPath(quest_source).name
+            if not quest_stem.startswith(quest_prefix):
+                raise ValueError(f"unexpected World Tree quest source {quest_source}")
+            family_id = quest_stem.removeprefix(quest_prefix)
+            quest_properties = _select_blueprint_default(
+                load_evidence_asset(quest_source), quest_source, quest_source
+            )
+            boss_type = _enum_tail(
+                quest_properties.get("CheckBossType"),
+                f"{quest_source}.CheckBossType",
+            )
+            if placed_boss_types.count(boss_type) != 1:
+                raise ValueError(
+                    f"{quest_source} requires one placed {boss_type} tower"
+                )
+            boss_id = _resolve_character(
+                character_index, f"BOSS_{family_id}", f"{quest_source}.boss"
+            )
+            if boss_id is None:
+                raise ValueError(f"{quest_source} resolved an empty boss character")
+            boss = mutable[boss_id]
+            if boss["family_id"].casefold() != family_id.casefold() or not {
+                "boss"
+            }.issubset(boss["tags"]):
+                raise ValueError(f"{quest_source} does not resolve to its boss family")
+            capture_rate = monsters[boss_id].get("CaptureRateCorrect")
+            if not _is_number(capture_rate) or capture_rate <= 0:
+                raise ValueError(f"{boss_id}.CaptureRateCorrect must be positive")
+            record_route(boss_id, "worldtree-alpha", boss_type)
+
     incident_settings = (
         load_table(export_root, CHARACTER_ROUTE_SOURCES["incident_settings"])
         if incident_enabled
         else {}
     )
     incident_setting_index = casefold_index(incident_settings)
-    world = (
-        load_asset(export_root, CHARACTER_ROUTE_SOURCES["incident_world"])
-        if incident_enabled
-        else []
-    )
-    persistent_level = "Level'PL_MainWorld5:PersistentLevel'"
     placed_incident_spawners = 0
-    for actor_index, actor in enumerate(world):
+    for actor_index, actor in enumerate(world if incident_enabled else ()):
         outer = actor.get("Outer")
         if not isinstance(outer, dict) or outer.get("ObjectName") != persistent_level:
             continue
