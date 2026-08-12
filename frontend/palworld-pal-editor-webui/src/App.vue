@@ -114,7 +114,6 @@ onMounted(palStore.bootstrap)
 }
 
 .app-content.obscured {
-  filter: blur(4px);
   pointer-events: none;
   user-select: none;
 }

@@ -3,8 +3,10 @@ import test from "node:test";
 
 import {
   filterPalPriority,
+  groupPalList,
   isCreatedPal,
   isEditedPal,
+  matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
 } from "../src/components/modules/pal-list-order.js";
@@ -44,6 +46,27 @@ test("location sorting groups base-camp Pals by container before slot", () => {
   );
 });
 
+test("location groups use labels and place all anomalies last", () => {
+  const rows = [
+    { InstanceId: "bad", ContainerKind: "anomaly", ContainerId: "broken", LocationStatus: "slot_mismatch" },
+    { InstanceId: "box", ContainerKind: "storage", ContainerId: "box", ContainerLabel: "Alice · Palbox", SlotIndex: 2, LocationStatus: "ok" },
+    { InstanceId: "party", ContainerKind: "party", ContainerId: "party", ContainerLabel: "Alice · Party", SlotIndex: 1, LocationStatus: "ok" },
+    { InstanceId: "cage", ContainerKind: "special", ContainerId: "cage", ContainerLabel: "Alice · Viewing cage", SlotIndex: 0, LocationStatus: "ok" },
+  ];
+
+  const groups = groupPalList(sortPalList(rows, "location"), "location");
+
+  assert.deepEqual(groups.map(group => group.label), [
+    "Alice · Party",
+    "Alice · Palbox",
+    "Alice · Viewing cage",
+    "Location anomaly",
+  ]);
+  assert.deepEqual(groups.at(-1).pals.map(pal => pal.InstanceId), ["bad"]);
+  assert.equal(groupPalList(rows, "paldeck").length, 1);
+  assert.equal(groupPalList(rows, "paldeck")[0].label, null);
+});
+
 test("Paldeck sorting places Pals without a Paldeck number last", () => {
   const withoutPaldeck = { InstanceId: "human", Paldeck: "" };
 
@@ -59,6 +82,31 @@ test("Pal priority filtering recognizes unprioritized and I to III", () => {
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "1")).map(pal => pal.InstanceId), ["storage-2"]);
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "2")).map(pal => pal.InstanceId), ["party-4"]);
   assert.deepEqual(pals.filter(pal => filterPalPriority(pal, "3")).map(pal => pal.InstanceId), ["party-0"]);
+});
+
+test("Pal attribute filters combine priority and origin tags with union semantics", () => {
+  const tagged = [
+    { InstanceId: "priority", FavoriteIndex: 2 },
+    { InstanceId: "alpha", IsBOSS: true },
+    { InstanceId: "lucky", IsRarePal: true },
+    { InstanceId: "dna", IsImportedCharacter: true },
+    { InstanceId: "human", IsHuman: true },
+    { InstanceId: "plain" },
+  ];
+
+  assert.deepEqual(tagged.filter(pal => matchesPalAttributeFilters(pal, [])), tagged);
+  assert.deepEqual(
+    tagged
+      .filter(pal => matchesPalAttributeFilters(pal, ["priority-2", "dna", "human"]))
+      .map(pal => pal.InstanceId),
+    ["priority", "dna", "human"],
+  );
+  assert.deepEqual(
+    tagged
+      .filter(pal => matchesPalAttributeFilters(pal, ["alpha", "lucky"]))
+      .map(pal => pal.InstanceId),
+    ["alpha", "lucky"],
+  );
 });
 
 test("Editor-created Pals can be filtered explicitly without changing sort order", () => {

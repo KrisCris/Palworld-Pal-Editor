@@ -61,23 +61,32 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 }
 
 .editor-roster {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
   background: var(--editor-color-glass-surface);
-  -webkit-backdrop-filter: var(--editor-glass-filter);
-  backdrop-filter: var(--editor-glass-filter);
   box-shadow: var(--editor-glass-shadow);
   animation: roster-rail-enter .2s ease-out;
 }
 
+.editor-roster::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  pointer-events: none;
+}
+
 .editor-roster--players {
-  position: relative;
   z-index: 1;
 }
 
 .editor-roster--pals {
-  position: relative;
   z-index: 2;
   overflow: visible;
 }

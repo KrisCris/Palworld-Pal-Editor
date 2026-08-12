@@ -15,12 +15,90 @@ pal_blueprint = Blueprint("pal", __name__)
 MAX_PAL_TEMPLATE_COUNT = 50
 MAX_PAL_TEMPLATE_NAME_LENGTH = 64
 MAX_PAL_JSON_BYTES = 2 * 1024 * 1024
+SKILL_TEMPLATE_TYPES = {"active", "passive"}
+
+
+@pal_blueprint.route("/containers", methods=["GET"])
+@jwt_required()
+def list_pal_containers():
+    return reply(0, SaveManager().get_container_registry())
+
+
+@pal_blueprint.route("/move", methods=["POST"])
+@jwt_required()
+def move_pal():
+    payload = request.json or {}
+    pal_guid = payload.get("PalGuid")
+    target_container_id = payload.get("TargetContainerId")
+    if not pal_guid or not target_container_id:
+        return reply(1, None, "PalGuid and TargetContainerId are required.")
+    try:
+        SaveManager().move_pal(pal_guid, target_container_id)
+        pal = SaveManager().get_pal(pal_guid)
+        return reply(0, _pal_data(pal) if pal else None)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    except Exception:
+        LOGGER.error(f"Error moving Pal: {traceback.format_exc()}")
+        return reply(1, None, "Error moving Pal. No changes were kept.")
 
 
 def _pal_templates() -> list[dict]:
     if not isinstance(Config.palTemplates, list):
         Config.palTemplates = []
     return Config.palTemplates
+
+
+def _skill_templates() -> list[dict]:
+    if not isinstance(Config.skillTemplates, list):
+        Config.skillTemplates = []
+    return Config.skillTemplates
+
+
+def _selected_pal(payload: dict) -> PalEntity | None:
+    pal_guid = payload.get("PalGuid")
+    player_uid = payload.get("PlayerUId")
+    if player_uid == "PAL_BASE_WORKER_BTN":
+        return SaveManager().get_working_pal(pal_guid)
+    player = SaveManager().get_player(player_uid)
+    return player.get_pal(pal_guid) if player else None
+
+
+def _skill_template_summary(template: dict) -> dict:
+    summary = {
+        "Id": template["Id"],
+        "Name": template["Name"],
+        "Type": template["Type"],
+    }
+    if template["Type"] == "passive":
+        summary["PassiveSkillList"] = list(template.get("PassiveSkillList") or [])
+    else:
+        summary["EquipWaza"] = list(template.get("EquipWaza") or [])
+    return summary
+
+
+def _replace_skill_group(pal: PalEntity, template: dict) -> None:
+    template_type = template.get("Type")
+    if template_type == "passive":
+        skills = list(template.get("PassiveSkillList") or [])
+        if len(skills) != len(set(skills)) or not all(
+            isinstance(skill, str) and DataProvider.has_passive_skill(skill)
+            for skill in skills
+        ):
+            raise ValueError("Passive skill template contains invalid skills.")
+        pal.replace_PassiveSkillList(skills)
+        return
+
+    equipped = list(template.get("EquipWaza") or [])
+    if (
+        len(equipped) != len(set(equipped))
+        or not all(
+            isinstance(skill, str) and DataProvider.has_attack(skill)
+            for skill in equipped
+        )
+    ):
+        raise ValueError("Active skill template contains invalid skills.")
+    pal.replace_EquipWaza(equipped)
 
 
 def _parse_pal_json(raw: str) -> dict:
@@ -164,16 +242,53 @@ def paldata():
     )
 
 
+@pal_blueprint.route("/maximize", methods=["POST"])
+@jwt_required()
+def maximize_pal():
+    payload = request.json or {}
+    pal = _selected_pal(payload)
+    if pal is None:
+        return reply(1, None, "Failed to find the selected Pal.")
+    try:
+        pal.maximize_progression()
+    except (KeyError, TypeError, ValueError):
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error maximizing Pal progression {stack_trace}")
+        return reply(1, None, f"Error maximizing Pal progression {stack_trace}")
+    return reply(0, _pal_data(pal))
+
+
 # Just some dumb shit
 def _pal_data(pal: PalEntity):
     record = DataProvider.get_pal_record(pal.CharacterID) or {}
+    manager = SaveManager()
+    resolver = getattr(manager, "resolve_pal_location", None)
+    location = resolver(pal) if resolver and getattr(manager, "container_data", None) else {
+        "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "RecordedSlotIndex": pal.SlotIndex,
+        "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "ActualSlotIndex": pal.SlotIndex,
+        "ActualLocations": [],
+        "LocationStatus": "ok",
+        "LocationAnomaly": None,
+        "ContainerKind": "other",
+        "ContainerLabel": None,
+    }
     return {
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
         "group_id": str(pal.group_id) if pal.group_id else None,
-        "ContainerId": str(pal.ContainerId) if pal.CharacterID else None,
-        "SlotIndex": pal.SlotIndex,
+        "ContainerId": location["RecordedContainerId"],
+        "SlotIndex": location["RecordedSlotIndex"],
+        "ActualContainerId": location["ActualContainerId"],
+        "ActualSlotIndex": location["ActualSlotIndex"],
+        "ActualLocations": location["ActualLocations"],
+        "LocationStatus": location["LocationStatus"],
+        "LocationAnomaly": location["LocationAnomaly"],
+        "ContainerKind": location["ContainerKind"],
+        "ContainerLabel": location["ContainerLabel"],
         "FavoriteIndex": pal.FavoriteIndex,
+        "IsImportedCharacter": pal.IsImportedCharacter,
         "OwnerName": pal.OwnerName or None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,
@@ -275,9 +390,10 @@ def delete_pal(pal_id):
 def add_pal():
     payload = request.json or {}
     PlayerUId = payload.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
+    target_container_id = payload.get("TargetContainerId")
+    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_container_id:
         LOGGER.warning("Directly add pal to basecamp is not yet supported.")
-        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
+        return reply(1, None, "Choose a base container before adding a Pal.")
     try:
         mode = payload.get("Mode", "default")
         pal_obj = None
@@ -295,7 +411,11 @@ def add_pal():
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
-        pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
+        pal_entity = (
+            SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
+            if target_container_id
+            else SaveManager().add_pal(PlayerUId, pal_obj)
+        )
         if not pal_entity:
             return reply(
                 1,
@@ -367,6 +487,121 @@ def delete_pal_template(template_id: str):
     template = next((item for item in templates if item.get("Id") == template_id), None)
     if template is None:
         return reply(1, None, "Pal template not found.")
+    index = templates.index(template)
+    templates.pop(index)
+    try:
+        Config.save_to_file()
+    except Exception:
+        templates.insert(index, template)
+        raise
+    return reply(0)
+
+
+@pal_blueprint.route("/skill_templates", methods=["GET"])
+@jwt_required()
+def list_skill_templates():
+    templates = []
+    for template in _skill_templates():
+        try:
+            if template.get("Type") in SKILL_TEMPLATE_TYPES:
+                templates.append(_skill_template_summary(template))
+        except (AttributeError, KeyError, TypeError):
+            LOGGER.warning("Ignoring invalid skill template entry")
+    return reply(0, templates)
+
+
+@pal_blueprint.route("/skill_templates", methods=["POST"])
+@jwt_required()
+def create_skill_template():
+    payload = request.json or {}
+    name = payload.get("Name")
+    template_type = payload.get("Type")
+    if not isinstance(name, str) or not (name := name.strip()):
+        return reply(1, None, "Template name is required.")
+    if len(name) > MAX_PAL_TEMPLATE_NAME_LENGTH:
+        return reply(1, None, "Template name must be 64 characters or fewer.")
+    if template_type not in SKILL_TEMPLATE_TYPES:
+        return reply(1, None, "Skill template type must be active or passive.")
+    if len(_skill_templates()) >= MAX_PAL_TEMPLATE_COUNT:
+        return reply(1, None, "At most 50 skill templates can be saved.")
+
+    pal = _selected_pal(payload)
+    if pal is None:
+        return reply(1, None, "Selected Pal not found.")
+
+    template = {
+        "Id": uuid.uuid4().hex,
+        "Name": name,
+        "Type": template_type,
+    }
+    if template_type == "passive":
+        template["PassiveSkillList"] = list(pal.PassiveSkillList or [])
+    else:
+        template["EquipWaza"] = list(pal.EquipWaza or [])
+
+    templates = _skill_templates()
+    templates.append(template)
+    try:
+        Config.save_to_file()
+    except Exception:
+        templates.remove(template)
+        raise
+    return reply(0, _skill_template_summary(template))
+
+
+@pal_blueprint.route("/skill_templates/<template_id>", methods=["PATCH"])
+@jwt_required()
+def rename_skill_template(template_id: str):
+    name = (request.json or {}).get("Name")
+    if not isinstance(name, str) or not (name := name.strip()):
+        return reply(1, None, "Template name is required.")
+    if len(name) > MAX_PAL_TEMPLATE_NAME_LENGTH:
+        return reply(1, None, "Template name must be 64 characters or fewer.")
+    template = next(
+        (item for item in _skill_templates() if item.get("Id") == template_id),
+        None,
+    )
+    if template is None:
+        return reply(1, None, "Skill template not found.")
+    old_name = template.get("Name")
+    template["Name"] = name
+    try:
+        Config.save_to_file()
+    except Exception:
+        template["Name"] = old_name
+        raise
+    return reply(0, _skill_template_summary(template))
+
+
+@pal_blueprint.route("/skill_templates/<template_id>/apply", methods=["POST"])
+@jwt_required()
+def apply_skill_template(template_id: str):
+    template = next(
+        (item for item in _skill_templates() if item.get("Id") == template_id),
+        None,
+    )
+    if template is None:
+        return reply(1, None, "Skill template not found.")
+    pal = _selected_pal(request.json or {})
+    if pal is None:
+        return reply(1, None, "Selected Pal not found.")
+    try:
+        _replace_skill_group(pal, template)
+    except (AttributeError, TypeError, ValueError) as error:
+        return reply(1, None, str(error))
+    summary = _skill_template_summary(template)
+    if template.get("Type") == "active":
+        summary["MasteredWaza"] = list(pal.MasteredWaza or [])
+    return reply(0, summary)
+
+
+@pal_blueprint.route("/skill_templates/<template_id>", methods=["DELETE"])
+@jwt_required()
+def delete_skill_template(template_id: str):
+    templates = _skill_templates()
+    template = next((item for item in templates if item.get("Id") == template_id), None)
+    if template is None:
+        return reply(1, None, "Skill template not found.")
     index = templates.index(template)
     templates.pop(index)
     try:

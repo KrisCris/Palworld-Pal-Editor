@@ -12,15 +12,39 @@ from palworld_pal_editor.utils.util import reply
 player_blueprint = Blueprint("player", __name__)
 
 
+def _pal_location(manager, pal, party_container_id=None, storage_container_id=None):
+    resolver = getattr(manager, "resolve_pal_location", None)
+    if resolver is not None:
+        return resolver(pal)
+    return {
+        "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "RecordedSlotIndex": pal.SlotIndex,
+        "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
+        "ActualSlotIndex": pal.SlotIndex,
+        "ActualLocations": [],
+        "LocationStatus": "ok",
+        "LocationAnomaly": None,
+        "ContainerKind": (
+            "party"
+            if pal.ContainerId == party_container_id
+            else "storage"
+            if pal.ContainerId == storage_container_id
+            else "other"
+        ),
+        "ContainerLabel": None,
+    }
+
+
 @player_blueprint.route("/player_pals", methods=["POST"])
 @jwt_required()
 def get_player_pals():
     id = request.json.get("PlayerUId")
+    manager = SaveManager()
     player_entity = None
     if id == "PAL_BASE_WORKER_BTN":
-        pals = SaveManager().get_working_pals()
+        pals = manager.get_working_pals()
     else:
-        player_entity = SaveManager().get_player(id)
+        player_entity = manager.get_player(id)
         if not player_entity:
             return reply(1, None, f"Player {id} Not Found")
         pals = player_entity.get_sorted_pals()
@@ -32,55 +56,42 @@ def get_player_pals():
         player_entity.PalStorageContainerId if player_entity else None
     )
 
-    # I hate this piece of shit
+    def pal_to_summary(pal):
+        location = _pal_location(
+            manager, pal, party_container_id, storage_container_id
+        )
+        return {
+            "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
+            "IconAccessKey": pal.IconAccessKey or None,
+            "DataAccessKey": pal.DataAccessKey or None,
+            "I18nName": pal.I18nName or None,
+            "DisplayName": pal.DisplayName or None,
+            "Gender": pal.Gender.value if pal.Gender else None,
+            "IsTower": pal.IsTower or False,
+            "IsBOSS": pal.IsBOSS or False,
+            "IsRarePal": pal.IsRarePal or False,
+            "IsAwakening": pal.IsAwakening,
+            "IsImportedCharacter": pal.IsImportedCharacter,
+            "IsHuman": pal.IsHuman,
+            "IsNewPal": pal.is_new_pal,
+            "ContainerId": location["RecordedContainerId"],
+            "SlotIndex": location["RecordedSlotIndex"],
+            "ActualContainerId": location["ActualContainerId"],
+            "ActualSlotIndex": location["ActualSlotIndex"],
+            "ActualLocations": location["ActualLocations"],
+            "LocationStatus": location["LocationStatus"],
+            "LocationAnomaly": location["LocationAnomaly"],
+            "ContainerKind": location["ContainerKind"],
+            "ContainerLabel": location["ContainerLabel"],
+            "FavoriteIndex": pal.FavoriteIndex,
+            "IsExpeditionPal": pal.IsExpeditionPal,
+            "Is_Unref_Pal": pal.is_unreferenced_pal,
+            "in_owner_palbox": pal.in_owner_palbox,
+        }
+
     return reply(
         0,
-        [
-            {
-                "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
-                # "OwnerPlayerUId": str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None,
-                # "OwnerName": pal.OwnerName or None,
-                "IconAccessKey": pal.IconAccessKey or None,
-                "DataAccessKey": pal.DataAccessKey or None,
-                "I18nName": pal.I18nName or None,
-                "DisplayName": pal.DisplayName or None,
-                "Gender": pal.Gender.value if pal.Gender else None,
-                "IsTower": pal.IsTower or False,
-                "IsBOSS": pal.IsBOSS or False,
-                "IsRarePal": pal.IsRarePal or False,
-                "IsAwakening": pal.IsAwakening,
-                "IsNewPal": pal.is_new_pal,
-                "ContainerId": str(pal.ContainerId) if pal.ContainerId else None,
-                "SlotIndex": pal.SlotIndex,
-                "ContainerKind": (
-                    "party"
-                    if pal.ContainerId == party_container_id
-                    else "storage"
-                    if pal.ContainerId == storage_container_id
-                    else "other"
-                ),
-                "FavoriteIndex": pal.FavoriteIndex,
-                # "NickName": pal.NickName or "",
-                # "Level": pal.Level or 1,
-                # "Rank": pal.Rank.value if pal.Rank else 1,
-                # "Rank_HP": pal.Rank_HP or 0,
-                # "Rank_Attack": pal.Rank_Attack or 0,
-                # "Rank_Defence": pal.Rank_Defence or 0,
-                # "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
-                # "MaxHP": pal.MaxHP or None,
-                # "ComputedAttack": pal.ComputedAttack or None,
-                # "ComputedDefense": pal.ComputedDefense or None,
-                # "PassiveSkillList": pal.PassiveSkillList or [],
-                # "MasteredWaza": pal.MasteredWaza or [],
-                # "Talent_HP": pal.Talent_HP or 0,
-                # "Talent_Melee": pal.Talent_Melee or 0,
-                # "Talent_Shot": pal.Talent_Shot or 0,
-                # "Talent_Defense": pal.Talent_Defense or 0,
-                "Is_Unref_Pal": pal.is_unreferenced_pal,
-                "in_owner_palbox": pal.in_owner_palbox,
-            }
-            for pal in pals
-        ],
+        [pal_to_summary(pal) for pal in pals],
     )
 
 
@@ -98,6 +109,7 @@ def get_player_list():
                 player_to_dict(player) for player in SaveManager().get_players()
             ],
             "hasWorkingPal": (True if len(workingpals) else False),
+            "containers": SaveManager().get_container_registry(),
         },
     )
 
@@ -124,9 +136,54 @@ def get_player_data():
     return reply(0, player_dict)
 
 
+@player_blueprint.route("/inventory", methods=["POST"])
+@jwt_required()
+def get_player_inventory():
+    player_uid = request.json.get("PlayerUId")
+    if player_uid == "PAL_BASE_WORKER_BTN":
+        return reply(1, None, "PAL_BASE_WORKER_BTN is not a real player")
+    player = SaveManager().get_player(player_uid)
+    if not player:
+        return reply(1, None, f"Player {player_uid} not exist")
+    try:
+        return reply(0, SaveManager().item_container_data.inventory_snapshot(player))
+    except Exception:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error reading player inventory {stack_trace}")
+        return reply(1, None, "Unable to read this player's item containers")
+
+
+@player_blueprint.route("/inventory_slot", methods=["PATCH"])
+@jwt_required()
+def patch_player_inventory_slot():
+    player_uid = request.json.get("PlayerUId")
+    if player_uid == "PAL_BASE_WORKER_BTN":
+        return reply(1, None, "PAL_BASE_WORKER_BTN is not a real player")
+    player = SaveManager().get_player(player_uid)
+    if not player:
+        return reply(1, None, f"Player {player_uid} not exist")
+    try:
+        slot = SaveManager().item_container_data.patch_slot(
+            player,
+            request.json.get("ContainerKind"),
+            request.json.get("SlotIndex"),
+            request.json.get("ItemId"),
+            request.json.get("Count", 0),
+            allow_overstack=bool(request.json.get("AllowOverstack", False)),
+        )
+        return reply(0, slot)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    except Exception:
+        stack_trace = traceback.format_exc()
+        LOGGER.error(f"Error patching player inventory slot {stack_trace}")
+        return reply(1, None, "Unable to update this inventory slot")
+
+
 def player_to_dict(player: PlayerEntity):
     return {
         "InstanceId": str(player.PlayerUId),
+        "GroupId": str(player.group_id) if player.group_id else None,
         "NickName": player.NickName or "",
         "Level": player.Level or 1,
         "Exp": player.Exp or 0,

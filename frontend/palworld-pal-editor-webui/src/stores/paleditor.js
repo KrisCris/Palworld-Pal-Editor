@@ -1,4 +1,4 @@
-import { ref, computed, reactive, nextTick } from "vue";
+import { ref, computed, reactive, nextTick, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import {
@@ -146,6 +146,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     class Player {
         constructor(obj) {
             this.InstanceId = obj.InstanceId;
+            this.GroupId = obj.GroupId;
             this.NickName = obj.NickName;
             this.Level = obj.Level;
             this.Exp = obj.Exp;
@@ -227,8 +228,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.group_id = obj.group_id;
             this.ContainerId = obj.ContainerId;
             this.SlotIndex = obj.SlotIndex;
+            this.ActualContainerId = obj.ActualContainerId;
+            this.ActualSlotIndex = obj.ActualSlotIndex;
+            this.ActualLocations = obj.ActualLocations || [];
+            this.LocationStatus = obj.LocationStatus || "ok";
+            this.LocationAnomaly = obj.LocationAnomaly;
             this.ContainerKind = obj.ContainerKind;
+            this.ContainerLabel = obj.ContainerLabel;
             this.FavoriteIndex = obj.FavoriteIndex ?? 0;
+            this.IsImportedCharacter = obj.IsImportedCharacter ?? false;
             this.OwnerName = obj.OwnerName;
             this.CharacterID = obj.CharacterID;
             this.FamilyID = obj.FamilyID;
@@ -522,8 +530,13 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const ACTIVE_SKILLS_LIST = ref([]);
     const PAL_STATIC_DATA = ref({});
     const PAL_STATIC_DATA_LIST = ref([]);
+    const ITEM_STATIC_DATA = ref({});
+    const ITEM_STATIC_DATA_LIST = ref([]);
+    const PLAYER_INVENTORY = ref(null);
     const SKIN_DATA_LIST = ref([]);
     const PAL_TEMPLATES = ref([]);
+    const SKILL_TEMPLATES = ref([]);
+    const PAL_CONTAINERS = ref([]);
     const I18nList = ref(GAME_LANGUAGES);
 
     // flags
@@ -531,6 +544,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const LOADING_FLAG = ref(false);
     const SAVE_LOADED_FLAG = ref(false);
     const HAS_WORKING_PAL_FLAG = ref(false);
+    const PREFER_BASE_PAL_LIST = ref(false);
     const BASE_PAL_BTN_CLK_FLAG = ref(false);
     const SHOW_PLAYER_EDIT_FLAG = ref(false);
     // const ADD_PAL_RESELECT_CTR = ref(0);
@@ -541,13 +555,32 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
+    const PAL_LIST_PREFERENCES_KEY = "PAL_LIST_PREFERENCES";
+    const PAL_LIST_SORT_VALUES = new Set(["paldeck", "location", "priority"]);
+    const PAL_LIST_ATTRIBUTE_VALUES = new Set([
+        "priority-1", "priority-2", "priority-3", "alpha", "lucky", "dna", "human",
+    ]);
+    let savedPalListPreferences = {};
+    try {
+        savedPalListPreferences = JSON.parse(
+            readStorage(localStorage, PAL_LIST_PREFERENCES_KEY) || "{}"
+        );
+    } catch {
+        savedPalListPreferences = {};
+    }
     const PAL_LIST_SEARCH_KEYWORD = ref("");
-    const PAL_LIST_SORT = ref("paldeck");
-    const PAL_LIST_PRIORITY_FILTER = ref("all");
+    const PAL_LIST_SORT = ref(PAL_LIST_SORT_VALUES.has(savedPalListPreferences.sort)
+        ? savedPalListPreferences.sort : "paldeck");
+    const PAL_LIST_ATTRIBUTE_FILTERS = ref(Array.isArray(savedPalListPreferences.attributes)
+        ? [...new Set(savedPalListPreferences.attributes.filter(value => PAL_LIST_ATTRIBUTE_VALUES.has(value)))]
+        : []);
     const PAL_LIST_EDITED_ONLY = ref(false);
     const PAL_LIST_CREATED_ONLY = ref(false);
     const EDITED_PAL_IDS = ref(new Set());
     const CREATED_PAL_IDS = ref(new Set());
+    watch([PAL_LIST_SORT, PAL_LIST_ATTRIBUTE_FILTERS], ([sort, attributes]) => {
+        writeStorage(localStorage, PAL_LIST_PREFERENCES_KEY, JSON.stringify({ sort, attributes }));
+    }, { deep: true });
 
     const IS_PAL_SAVE_PATH = ref(false);
 
@@ -814,6 +847,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             : readRecentBackends(localStorage);
         if (changed) {
             PAL_TEMPLATES.value = [];
+            SKILL_TEMPLATES.value = [];
             auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
             PAL_GAME_SAVE_PATH.value = readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH"));
             PAL_FILE_PICKER_PATH.value = PAL_GAME_SAVE_PATH.value;
@@ -1102,6 +1136,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return false;
         }
 
+        const item_data_raw = await GET("/api/save/item_data");
+        if (item_data_raw === false) return false;
+        if (item_data_raw.status == 0) {
+            ITEM_STATIC_DATA.value = item_data_raw.data.dict;
+            ITEM_STATIC_DATA_LIST.value = item_data_raw.data.arr;
+        } else if (item_data_raw.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+            return false;
+        } else {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [item_data_raw.msg]));
+            return false;
+        }
+
         const tech_data_raw = await GET("/api/save/tech_data");
         if (tech_data_raw === false) return false;
 
@@ -1133,20 +1180,22 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     function reset(updateAppState = true) {
         LOADING_FLAG.value = false;
         HAS_WORKING_PAL_FLAG.value = false;
+        PREFER_BASE_PAL_LIST.value = false;
         SAVE_LOADED_FLAG.value = false;
         BASE_PAL_BTN_CLK_FLAG.value = false;
         SELECTED_PAL_ID.value = null;
         SELECTED_PLAYER_ID.value = null;
+        PLAYER_INVENTORY.value = null;
 
         BASE_PAL_MAP.value = new Map();
         PLAYER_MAP.value = new Map();
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
         PAL_TEMPLATES.value = [];
+        SKILL_TEMPLATES.value = [];
+        PAL_CONTAINERS.value = [];
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
-        PAL_LIST_SORT.value = "paldeck";
-        PAL_LIST_PRIORITY_FILTER.value = "all";
         PAL_LIST_EDITED_ONLY.value = false;
         PAL_LIST_CREATED_ONLY.value = false;
         EDITED_PAL_IDS.value.clear();
@@ -1215,6 +1264,43 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
+    async function loadPlayerInventory() {
+        if (!SELECTED_PLAYER_ID.value) return false;
+        const response = await POST("/api/player/inventory", {
+            PlayerUId: SELECTED_PLAYER_ID.value,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            PLAYER_INVENTORY.value = response.data;
+            return true;
+        }
+        if (response.status == 2) requireAuth("AuthView_Session_Expired");
+        else reportOperationError("Operation_Load_Player_Data", response);
+        return false;
+    }
+
+    async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
+        if (!SELECTED_PLAYER_ID.value) return false;
+        LOADING_FLAG.value = true;
+        const response = await PATCH("/api/player/inventory_slot", {
+            PlayerUId: SELECTED_PLAYER_ID.value,
+            ContainerKind: containerKind,
+            SlotIndex: slotIndex,
+            ItemId: itemId,
+            Count: count,
+            AllowOverstack: !HIDE_INVALID_OPTIONS.value,
+        });
+        if (response !== false && response.status == 0) {
+            await loadPlayerInventory();
+            LOADING_FLAG.value = false;
+            return true;
+        }
+        if (response?.status == 2) requireAuth("AuthView_Session_Expired");
+        else if (response !== false) reportOperationError("Operation_Update_Player", response);
+        LOADING_FLAG.value = false;
+        return false;
+    }
+
     async function loadPlayer(playerUId, updatePal = false) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
@@ -1264,7 +1350,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return false;
 
         if (response.status == 0) {
+            PAL_CONTAINERS.value = response.data.containers || [];
             if (response.data.hasWorkingPal) {
+                HAS_WORKING_PAL_FLAG.value = true;
+                PREFER_BASE_PAL_LIST.value = true;
+            }
+            if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
                 HAS_WORKING_PAL_FLAG.value = true;
             }
 
@@ -1287,6 +1378,21 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
         return true;
+    }
+
+    async function fetchPalContainers() {
+        const response = await GET("/api/pal/containers");
+        if (response === false) return false;
+        if (response.status == 0) {
+            PAL_CONTAINERS.value = response.data || [];
+            if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
+                HAS_WORKING_PAL_FLAG.value = true;
+            }
+            return true;
+        }
+        if (response.status == 2) requireAuth("AuthView_Session_Expired");
+        else reportOperationError("Operation_Load_Pals", response);
+        return false;
     }
 
     async function sorryandfuckyou() {
@@ -1329,9 +1435,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             if (!await updateI18n()) return false;
             if (!await loadPlayers()) return false;
             if (!await fetchStaticData()) return false;
-            const defaultPlayer = HAS_WORKING_PAL_FLAG.value
+            const defaultPlayer = PREFER_BASE_PAL_LIST.value
                 ? PAL_BASE_WORKER_BTN.value
-                : PLAYER_MAP.value.keys().next().value;
+                : PLAYER_MAP.value.keys().next().value
+                    ?? (HAS_WORKING_PAL_FLAG.value ? PAL_BASE_WORKER_BTN.value : undefined);
             if (defaultPlayer !== undefined) await selectPlayer(defaultPlayer);
             const defaultPal = PAL_MAP.value.keys().next().value;
             if (defaultPal !== undefined) await selectPal(defaultPal);
@@ -1475,73 +1582,74 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function fetchPalData(player, pal) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
 
-        const response = await POST("/api/pal/paldata", {
-            PlayerUId: player,
-            InstanceId: pal,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            // construct new pal
-            let pal_data = new PalData({
-                ...PAL_MAP.value.get(response.data.InstanceId),
-                ...response.data,
+        try {
+            const response = await POST("/api/pal/paldata", {
+                PlayerUId: player,
+                InstanceId: pal,
             });
-            // update the pal from the correct pal container
-            if (player == PAL_BASE_WORKER_BTN.value) {
-                BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
-            } else {
-                PLAYER_MAP.value
-                    .get(player)
-                    .pals.set(pal_data.InstanceId, pal_data);
-            }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Pal", response);
-        }
+            if (response === false) return false;
 
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            if (response.status == 0) {
+                // construct new pal
+                let pal_data = new PalData({
+                    ...PAL_MAP.value.get(response.data.InstanceId),
+                    ...response.data,
+                });
+                // update the pal from the correct pal container
+                if (player == PAL_BASE_WORKER_BTN.value) {
+                    BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+                } else {
+                    PLAYER_MAP.value
+                        .get(player)
+                        .pals.set(pal_data.InstanceId, pal_data);
+                }
+                return true;
+            } else if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Load_Pal", response);
+            }
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
     }
 
     async function selectPal(palId, manual = false) {
-        let no_set_loading_flag = LOADING_FLAG.value;
-        if (!no_set_loading_flag) LOADING_FLAG.value = true;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
 
-        if (!manual) {
-            // SELECTED_PAL_EL = e.target;
-            SELECTED_PAL_DATA.value = null;
-            SELECTED_PAL_ID.value = null;
+        try {
+            // set selected pal, and print out debug info
+            const palData = PAL_MAP.value.get(palId);
+            if (palData == null) {
+                showToast("Message_Select_Pal_Failed");
+                return false;
+            }
+            // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
+
+            if (!await fetchPalData(
+                // get player id, or BASE INDICATION STR
+                GET_PAL_OWNER_API_ID(),
+                palId
+            )) return false;
+
+            // Update selected pal id and pal data only after the full payload arrives.
+            SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
+            SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+            SHOW_PLAYER_EDIT_FLAG.value = false;
+
+            // Scroll to selected pal
+            // if (!isElementInViewport(SELECTED_PAL_EL)) {
+            //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
+            // }
+            return true;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
         }
-
-        // set selected pal, and print out debug info
-        let palData = PAL_MAP.value.get(palId);
-        if (palData == null) {
-            showToast("Message_Select_Pal_Failed");
-            if (!no_set_loading_flag) LOADING_FLAG.value = false;
-            return;
-        }
-        // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
-
-        await fetchPalData(
-            // get player id, or BASE INDICATION STR
-            GET_PAL_OWNER_API_ID(),
-            palId
-        );
-
-        // Update selected pal id and pal data
-        SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
-        SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
-        SHOW_PLAYER_EDIT_FLAG.value = false;
-
-        // Scroll to selected pal
-        // if (!isElementInViewport(SELECTED_PAL_EL)) {
-        //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
-        // }
-        if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
     async function updatePal(e) {
@@ -1628,6 +1736,42 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    async function maximizePal() {
+        if (!SELECTED_PAL_ID.value) return false;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/maximize", {
+                PlayerUId: GET_PAL_OWNER_API_ID(),
+                PalGuid: SELECTED_PAL_ID.value,
+            });
+            if (response === false) return false;
+            if (response.status == 0) {
+                const palData = new PalData({
+                    ...SELECTED_PAL_DATA.value,
+                    ...response.data,
+                });
+                PAL_MAP.value.set(palData.InstanceId, palData);
+                SELECTED_PAL_DATA.value = palData;
+                EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+                UPDATE_PAL_RESELECT_CTR.value++;
+                showToast("Message_Pal_Maximized", "success");
+                return true;
+            }
+            if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_Maximize_Pal", response);
+            }
+            return false;
+        } catch (error) {
+            reportFrontendError(error, getTranslatedText("Operation_Maximize_Pal"));
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
+    }
+
     function isFilteredPal(pal) {
         if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
             return true;
@@ -1706,15 +1850,54 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
+    async function refreshPalContainerState() {
+        await fetchPalContainers();
+        for (const playerId of PLAYER_MAP.value.keys()) {
+            await fetchPlayerPal(playerId);
+        }
+        if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
+            await fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
+        }
+    }
+
+    async function movePal(targetContainerId) {
+        if (!SELECTED_PAL_ID.value || !targetContainerId) return false;
+        const palId = SELECTED_PAL_ID.value;
+        const target = PAL_CONTAINERS.value.find(
+            container => container.ContainerId === targetContainerId
+        );
+        LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/move", {
+                PalGuid: palId,
+                TargetContainerId: targetContainerId,
+            });
+            if (response === false) return false;
+            if (response.status != 0) {
+                if (response.status == 2) requireAuth("AuthView_Session_Expired");
+                else reportOperationError("Operation_Move_Pal", response);
+                return false;
+            }
+            EDITED_PAL_IDS.value.add(palId);
+            await refreshPalContainerState();
+            const ownerList = target?.ContainerKind === "base"
+                ? PAL_BASE_WORKER_BTN.value
+                : target?.OwnerPlayerUId;
+            if (ownerList) {
+                await selectPlayer(ownerList, true);
+                await selectPal(palId, true);
+            }
+            showToast("Message_Pal_Moved", "success");
+            return true;
+        } finally {
+            LOADING_FLAG.value = false;
+        }
+    }
+
     async function addPal(options = {}) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
-        if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-            showToast("Message_Basecamp_Add_Unsupported");
-            if (!no_set_loading_flag) LOADING_FLAG.value = false;
-            return;
-        }
         const response = await POST("/api/pal/add_pal", {
             PlayerUId: PlayerUId,
             ...options,
@@ -1728,16 +1911,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
             CREATED_PAL_IDS.value.add(pal_data.InstanceId);
-            const temp_map = new Map();
-            PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
-            PAL_MAP.value.clear();
-            PAL_MAP.value.set(pal_data.InstanceId, pal_data);
-            temp_map.forEach((v, k) => PAL_MAP.value.set(k, v));
-
-            // ADD_PAL_RESELECT_CTR.value++
+            const target = PAL_CONTAINERS.value.find(
+                container => container.ContainerId === options.TargetContainerId
+            );
+            await refreshPalContainerState();
+            const ownerList = target?.ContainerKind === "base"
+                ? PAL_BASE_WORKER_BTN.value
+                : target?.OwnerPlayerUId || SELECTED_PLAYER_ID.value;
+            if (ownerList) await selectPlayer(ownerList, true);
             SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.InstanceId;
-            SELECTED_PAL_DATA.value = pal_data;
+            await selectPal(pal_data.InstanceId, true);
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return true;
         } else if (response.status == 2) {
@@ -1789,6 +1973,94 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return true;
         }
         reportOperationError("Operation_Delete_Pal_Template", response);
+        return false;
+    }
+
+    async function fetchSkillTemplates() {
+        const response = await GET("/api/pal/skill_templates");
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value = response.data || [];
+            return true;
+        }
+        reportOperationError("Operation_Load_Skill_Templates", response);
+        return false;
+    }
+
+    async function saveSkillTemplate(type, name) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST("/api/pal/skill_templates", {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+            Type: type,
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value.push(response.data);
+            showToast("Message_Skill_Template_Saved", "success");
+            return true;
+        }
+        reportOperationError("Operation_Save_Skill_Template", response);
+        return false;
+    }
+
+    async function renameSkillTemplate(templateId, name) {
+        const response = await PATCH(`/api/pal/skill_templates/${templateId}`, {
+            Name: name,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            const index = SKILL_TEMPLATES.value.findIndex(
+                template => template.Id == templateId
+            );
+            if (index >= 0) SKILL_TEMPLATES.value[index] = response.data;
+            showToast("Message_Skill_Template_Renamed", "success");
+            return true;
+        }
+        reportOperationError("Operation_Rename_Skill_Template", response);
+        return false;
+    }
+
+    async function applySkillTemplate(templateId) {
+        if (!SELECTED_PAL_ID.value) return false;
+        const response = await POST(`/api/pal/skill_templates/${templateId}/apply`, {
+            PlayerUId: GET_PAL_OWNER_API_ID(),
+            PalGuid: SELECTED_PAL_ID.value,
+        });
+        if (response === false) return false;
+        if (response.status == 0) {
+            if (response.data.Type === "passive") {
+                SELECTED_PAL_DATA.value.PassiveSkillList = [
+                    ...(response.data.PassiveSkillList || []),
+                ];
+            } else {
+                SELECTED_PAL_DATA.value.EquipWaza = [
+                    ...(response.data.EquipWaza || []),
+                ];
+                SELECTED_PAL_DATA.value.MasteredWaza = [
+                    ...(response.data.MasteredWaza || []),
+                ];
+            }
+            EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+            showToast("Message_Skill_Template_Applied", "success");
+            return true;
+        }
+        reportOperationError("Operation_Apply_Skill_Template", response);
+        return false;
+    }
+
+    async function deleteSkillTemplate(templateId) {
+        const response = await DELETE(`/api/pal/skill_templates/${templateId}`);
+        if (response === false) return false;
+        if (response.status == 0) {
+            SKILL_TEMPLATES.value = SKILL_TEMPLATES.value.filter(
+                template => template.Id != templateId
+            );
+            showToast("Message_Skill_Template_Deleted", "success");
+            return true;
+        }
+        reportOperationError("Operation_Delete_Skill_Template", response);
         return false;
     }
 
@@ -1891,7 +2163,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         PAL_LIST_SEARCH_KEYWORD,
         PAL_LIST_SORT,
-        PAL_LIST_PRIORITY_FILTER,
+        PAL_LIST_ATTRIBUTE_FILTERS,
         PAL_LIST_EDITED_ONLY,
         PAL_LIST_CREATED_ONLY,
         EDITED_PAL_IDS,
@@ -1926,6 +2198,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         I18nList,
         PAL_STATIC_DATA,
         PAL_STATIC_DATA_LIST,
+        ITEM_STATIC_DATA,
+        ITEM_STATIC_DATA_LIST,
+        PLAYER_INVENTORY,
         SKIN_DATA_LIST,
         PASSIVE_SKILLS,
         PASSIVE_SKILLS_LIST,
@@ -1933,6 +2208,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         ACTIVE_SKILLS_LIST,
         TECH_LV_DICT,
         PAL_TEMPLATES,
+        SKILL_TEMPLATES,
+        PAL_CONTAINERS,
 
         getTranslatedText,
         getMessageText,
@@ -1956,15 +2233,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         selectPal,
         updatePal,
         updatePlayer,
+        loadPlayerInventory,
+        patchInventorySlot,
         writeSave,
         fetch_config,
         dumpPalData,
+        maximizePal,
         delPal,
         addPal,
+        movePal,
+        fetchPalContainers,
         dupePal,
         fetchPalTemplates,
         savePalTemplate,
         deletePalTemplate,
+        fetchSkillTemplates,
+        saveSkillTemplate,
+        renameSkillTemplate,
+        applySkillTemplate,
+        deleteSkillTemplate,
 
         bootstrap,
         connectBackend,

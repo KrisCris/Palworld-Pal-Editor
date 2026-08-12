@@ -138,3 +138,56 @@ test("Pal portraits expose the in-game priority icon", async () => {
   assert.match(source, /image\/ui\/priority-/);
   assert.match(source, /pal\.FavoriteIndex > 0/);
 });
+
+test("collapsed Pal roster preview retains sort, filter, and add actions", async () => {
+  const [{ default: PalList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PalList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  store.PAL_MAP = new Map(pals.map(pal => [pal.InstanceId, pal]));
+  store.PAL_STATIC_DATA = { TestPal: { Paldeck: 1 } };
+
+  const html = await renderVue(PalList, { pinia, props: { preview: true } });
+  assert.match(html, /pal-roster--preview/);
+  assert.match(html, /class="pal-list-menu"/);
+  assert.match(html, /aria-label="Sort and filter Pals"/);
+  assert.match(html, /name="add_pal"/);
+
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /\.pal-roster--preview\s+\.pal-list-menu__popover\s*\{[^}]*right:\s*0[^}]*left:\s*auto[^}]*width:\s*min\(13rem,/s);
+});
+
+test("Pal list exposes game-derived DNA origin markers and union filter buttons", async () => {
+  const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
+  assert.match(source, /pal\.IsImportedCharacter/);
+  assert.match(source, /image\/ui\/dna/);
+  assert.match(source, /PAL_LIST_ATTRIBUTE_FILTERS/);
+  assert.match(source, /matchesPalAttributeFilters/);
+  for (const key of ["priority-1", "priority-2", "priority-3", "alpha", "lucky", "dna", "human"]) {
+    assert.match(source, new RegExp(`key: '${key}'`));
+  }
+});
+
+test("location sorting renders container headers and explicit safety markers", async () => {
+  const [listSource, editorSource, moveDialogSource] = await Promise.all([
+    readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/PalEditor.vue", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/PalContainerMoveDialog.vue", import.meta.url), "utf8"),
+  ]);
+  assert.match(listSource, /visiblePalGroups/);
+  assert.match(listSource, /class="container-heading"/);
+  assert.match(listSource, /formatContainerLabel/);
+  assert.match(listSource, /containerLabel\(group\)/);
+  assert.match(listSource, /group\.container\.Occupied.*group\.container\.Size/s);
+  assert.match(listSource, /pal\.IsExpeditionPal/);
+  assert.match(listSource, /pal\.LocationStatus !== 'ok'/);
+  assert.doesNotMatch(listSource, /v-if="!palStore\.BASE_PAL_BTN_CLK_FLAG"[^>]*name="add_pal"/);
+
+  assert.match(editorSource, /PalContainerMoveDialog/);
+  assert.match(moveDialogSource, /palStore\.movePal\(pendingContainerId\.value\)/);
+  assert.match(editorSource, /IsExpeditionPal[\s\S]*LocationStatus !== 'ok'/);
+  assert.match(editorSource, /ActualContainerId/);
+});

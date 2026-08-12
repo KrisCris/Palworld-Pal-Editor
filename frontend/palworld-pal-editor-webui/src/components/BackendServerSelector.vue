@@ -83,7 +83,7 @@ onBeforeUnmount(() => {
       <span class="backend-selector__state">{{ text(palStore.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected') }}</span>
       <span class="backend-selector__chevron" aria-hidden="true"></span>
     </button>
-    <section v-if="open" id="backend-server-popover" class="backend-selector__popover"
+    <section v-if="open" id="backend-server-popover" class="backend-selector__popover editor-glass-surface"
       :style="{ '--backend-selector-popover-top': popoverTop }" :aria-label="text('BackendSelector_Title')">
       <header class="backend-selector__header">
         <div>
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
 .backend-selector__status.connected { background: var(--editor-color-success); }
 .backend-selector__state { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .backend-selector__chevron { width: .42rem; height: .42rem; margin: 0 0 .22rem .05rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); }
-.backend-selector__popover { position: absolute; z-index: 30; top: calc(100% + var(--editor-space-2)); right: 0; display: grid; width: min(44rem, calc(100vw - 2 * var(--editor-space-3))); box-sizing: border-box; gap: var(--editor-space-3); padding: var(--editor-space-4); border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-md); color: var(--editor-color-text); background: var(--editor-color-surface-raised); box-shadow: var(--editor-shadow-compact); }
+.backend-selector__popover { position: absolute; z-index: 30; top: calc(100% + var(--editor-space-2)); right: 0; display: grid; width: min(44rem, calc(100vw - 2 * var(--editor-space-3))); box-sizing: border-box; gap: var(--editor-space-3); padding: var(--editor-space-4); border: 1px solid var(--editor-color-glass-border); border-radius: var(--editor-radius-md); }
 .backend-selector__popover h2, .backend-selector__popover p { margin: 0; }
 .backend-selector__popover h2 { font-size: 1.45rem; line-height: 1.2; }
 .backend-selector__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--editor-space-4); }

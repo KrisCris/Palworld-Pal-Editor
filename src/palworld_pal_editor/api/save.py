@@ -145,6 +145,32 @@ def get_active_skills():
     return reply(0, {"dict": atk_dict, "arr": atk_arr})
 
 
+@save_blueprint.route("/item_data", methods=["GET"])
+@jwt_required()
+def get_item_data():
+    item_dict = {}
+    item_arr = []
+    for internal_name, item in DataProvider.get_item_data().items():
+        translations = item.get("I18n", {})
+        localized = translations.get(Config.i18n) or translations.get("en") or {}
+        row = {
+            key: value
+            for key, value in item.items()
+            if key != "I18n"
+        }
+        row.update(
+            {
+                "InternalName": internal_name,
+                "Name": localized.get("Name") or internal_name,
+                "Description": localized.get("Description") or "",
+            }
+        )
+        item_dict[internal_name] = row
+        item_arr.append(row)
+    item_arr.sort(key=lambda row: (row["SortId"], row["InternalName"]))
+    return reply(0, {"dict": item_dict, "arr": item_arr})
+
+
 @save_blueprint.route("/i18n", methods=["PATCH"])
 # @jwt_required()
 def update_i18n():

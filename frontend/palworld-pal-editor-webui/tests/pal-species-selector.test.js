@@ -235,7 +235,8 @@ test("species selector is centered in a dismissible viewport overlay", async () 
         "utf8",
     );
 
-    assert.match(source, /class="selector-overlay"[^>]*@pointerdown\.self="close"/);
+    assert.match(source, /class="selector-overlay editor-modal-overlay"[^>]*@pointerdown\.self="close"/);
+    assert.match(source, /class="selector-popover editor-glass-surface"/);
     assert.match(source, /\.selector-overlay\s*\{[^}]*position:\s*fixed;[^}]*inset:\s*0;[^}]*place-items:\s*center;/s);
     assert.match(source, /\.selector-popover\s*\{[^}]*position:\s*relative;/s);
     assert.doesNotMatch(source, /\.selector-popover\s*\{[^}]*transform:\s*translate/s);

@@ -1,3 +1,4 @@
+import copy
 import heapq
 from typing import Optional, overload
 from palworld_save_tools.gvas import GvasFile
@@ -18,17 +19,17 @@ class PalContainer:
         if self.ID is None or self._slots_data is None:
             raise Exception("Invalid Container")
 
-        self.slots: list[ContainerSlot] = [
-            ContainerSlot(slot_dict) for slot_dict in self._slots_data
-        ]
-
         self.size: int = PalObjects.get_BaseType(self._container_obj["value"]["SlotNum"])
         if self.size is None:
             raise Exception(f"Container {self.ID} Size Unknown")
-        
+
+        self._rebuild_slot_state()
+
+    def _rebuild_slot_state(self):
+        self.slots = [ContainerSlot(slot_dict) for slot_dict in self._slots_data]
         self.available_inv_idx_set = set(range(0, self.size))
         for slot in self.slots:
-            self.available_inv_idx_set.remove(slot.inv_idx)
+            self.available_inv_idx_set.discard(slot.inv_idx)
         self.available_inv_idx_set = list(self.available_inv_idx_set)
         heapq.heapify(self.available_inv_idx_set)
 
@@ -72,6 +73,30 @@ class PalContainer:
 
         LOGGER.info(f"Pal {pal_id} add to container {self.ID} @ {slot.inv_idx} ")
         return slot.inv_idx
+
+    def get_slot(self, pal_id: UUID | str) -> Optional["ContainerSlot"]:
+        slot_idx = self.get_pal_idx(pal_id)
+        return self.slots[slot_idx] if slot_idx is not None else None
+
+    def add_slot_copy(self, source_slot: "ContainerSlot") -> int:
+        if source_slot is None or self.has_pal(source_slot.instance_id):
+            return -1
+        inv_idx = self.get_empty_inv_slot()
+        if inv_idx == -1:
+            return -1
+
+        slot_data = copy.deepcopy(source_slot._slot_data)
+        PalObjects.set_BaseType(slot_data["SlotIndex"], inv_idx)
+        self._slots_data.append(slot_data)
+        self.slots.append(ContainerSlot(slot_data))
+        return inv_idx
+
+    def snapshot_slots(self) -> list[dict]:
+        return copy.deepcopy(self._slots_data)
+
+    def restore_slots(self, snapshot: list[dict]):
+        self._slots_data[:] = copy.deepcopy(snapshot)
+        self._rebuild_slot_state()
 
     def del_pal(self, pal_id: UUID):
         slot_idx = self.get_pal_idx(pal_id)
@@ -192,7 +217,25 @@ class ContainerData:
             LOGGER.info(f"Container Found: {container_entity}")
 
     def get_container(self, id: UUID | str) -> Optional[PalContainer]:
-        return self.container_map.get(id)
+        if id is None:
+            return None
+        container = self.container_map.get(id)
+        if container is not None:
+            return container
+        try:
+            return self.container_map.get(toUUID(str(id)))
+        except (TypeError, ValueError):
+            return None
 
     def get_containers(self) -> list[PalContainer]:
         return self.container_map.values()
+
+    def find_pal_slots(
+        self, pal_id: UUID | str
+    ) -> list[tuple[PalContainer, ContainerSlot]]:
+        matches = []
+        for container in self.get_containers():
+            for slot in container.slots:
+                if str(slot.instance_id) == str(pal_id):
+                    matches.append((container, slot))
+        return matches

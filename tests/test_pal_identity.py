@@ -175,6 +175,7 @@ class PalIdentityTests(unittest.TestCase):
     def test_pal_list_includes_awakened_and_new_state_before_selection(self):
         pal = self.make_pal("SheepBall")
         pal.IsAwakening = True
+        pal.IsImportedCharacter = True
         pal.is_new_pal = True
 
         class Manager:
@@ -197,6 +198,8 @@ class PalIdentityTests(unittest.TestCase):
 
         pal_summary = response.get_json()["data"][0]
         self.assertTrue(pal_summary["IsAwakening"])
+        self.assertTrue(pal_summary["IsImportedCharacter"])
+        self.assertFalse(pal_summary["IsHuman"])
         self.assertTrue(pal_summary["IsNewPal"])
 
     def test_pal_list_includes_verified_location_and_priority_fields(self):
@@ -271,6 +274,23 @@ class PalIdentityTests(unittest.TestCase):
         pal = self.make_pal("SheepBall")
         pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
         self.assertEqual(2, _pal_data(pal)["FavoriteIndex"])
+
+    def test_imported_character_flag_round_trips_and_reaches_api_payloads(self):
+        pal = self.make_pal("SheepBall")
+
+        self.assertFalse(pal.IsImportedCharacter)
+        self.assertFalse(_pal_data(pal)["IsImportedCharacter"])
+
+        pal.IsImportedCharacter = True
+        self.assertTrue(pal.IsImportedCharacter)
+        self.assertEqual(
+            "BoolProperty", pal._pal_param["bImportedCharacter"]["type"]
+        )
+        self.assertTrue(_pal_data(pal)["IsImportedCharacter"])
+
+        pal.IsImportedCharacter = False
+        self.assertFalse(pal.IsImportedCharacter)
+        self.assertNotIn("bImportedCharacter", pal._pal_param)
 
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):

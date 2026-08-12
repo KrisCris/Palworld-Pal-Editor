@@ -35,13 +35,19 @@ test("PalPortrait renders caller sizing and all four marker slots", async () => 
 test("PalPortrait scales markers and supports the awakened glow", async () => {
   const source = await readFile(new URL("../src/components/modules/PalPortrait.vue", import.meta.url), "utf8");
   assert.match(source, /clamp\(\.9rem,\s*36%,\s*2rem\)/);
+  assert.match(source, /game-lucky-icon[\s\S]*scale\(1\.2\)/);
+  assert.match(source, /game-dna-icon[\s\S]*scale\(1\.2\)/);
   assert.match(source, /\.has-glow\s+\.pal-portrait__image[\s\S]*box-shadow/);
 
   for (const component of ["PalEditor.vue", "PalList.vue"]) {
     const consumer = await readFile(new URL(`../src/components/${component}`, import.meta.url), "utf8");
     assert.match(consumer, /const portraitBorder = pal => pal\.IsAwakening/);
     assert.match(consumer, /:glow-color="[^\"]*IsAwakening/);
+    assert.match(consumer, /class="game-lucky-icon"/);
+    assert.doesNotMatch(consumer, /pal-corner-stack/);
   }
+
+  assert.match(source, /pal-portrait__marker--bottom-left[^{]*\{[^}]*display:\s*flex[^}]*align-items:\s*center[^}]*justify-content:\s*center/s);
 });
 
 test("PalPortrait uses the compact default size", async () => {

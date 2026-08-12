@@ -47,7 +47,8 @@
                 "--mode=web",
                 "--lang=zh-CN",
                 "--debug",
-                "--port=58080"
+                "--port=58080",
+                "--password=test"
             ],
             "justMyCode": false
         }

@@ -3487,6 +3487,18 @@ class CharacterEvidenceTests(unittest.TestCase):
         "Pal/Content/Pal/Blueprint/Character/NPC/BP_NPC_StandardHumanDataSet"
     )
     ITEMS = game_data.SKILL_SOURCES["items"]
+    WORLDTREE_QUEST_SOURCES = {
+        "WorldTreeMiddleBoss1": (
+            "FlowerPrince",
+            "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/"
+            "BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_FlowerPrince",
+        ),
+        "WorldTreeMiddleBoss2": (
+            "Mothman",
+            "Pal/Content/Pal/Blueprint/Quest/MainQuest/Block/"
+            "BP_MainQuestBlock_DefeatWorldTreeMiddleBoss_Defeat_Mothman",
+        ),
+    }
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -3523,6 +3535,7 @@ class CharacterEvidenceTests(unittest.TestCase):
             "oilrig",
             "quest_reward",
             "capture_replace",
+            "worldtree_alpha",
         ]
         self.policy["domains"]["characters"]["required_sources"] = list(
             self.policy["domains"]["skills"]["required_sources"]
@@ -3639,6 +3652,22 @@ class CharacterEvidenceTests(unittest.TestCase):
             },
         )
         monsters = load_table(self.export_root, self.MONSTERS)
+        for family_id, _ in self.WORLDTREE_QUEST_SOURCES.values():
+            monsters[family_id] = {
+                "Tribe": f"EPalTribeID::{family_id}",
+                "IsBoss": False,
+                "IsTowerBoss": False,
+                "IsRaidBoss": False,
+                "Predator": False,
+            }
+            monsters[f"BOSS_{family_id}"] = {
+                "Tribe": f"EPalTribeID::{family_id}",
+                "IsBoss": True,
+                "IsTowerBoss": False,
+                "IsRaidBoss": False,
+                "Predator": False,
+                "CaptureRateCorrect": 0.7,
+            }
         for character_id, row in monsters.items():
             row["BPClass"] = character_id
         write_table(self.export_root, self.MONSTERS, monsters)
@@ -3771,6 +3800,55 @@ class CharacterEvidenceTests(unittest.TestCase):
                     }
                 ],
             )
+        write_table(
+            self.export_root,
+            game_data.CHARACTER_ROUTE_SOURCES["breeding"],
+            {
+                f"SelfBreed_{family_id}": {
+                    "ChildCharacterID": family_id,
+                    "ParentTribeA": f"EPalTribeID::{family_id}",
+                    "ParentTribeB": f"EPalTribeID::{family_id}",
+                }
+                for family_id, _ in self.WORLDTREE_QUEST_SOURCES.values()
+            },
+        )
+        write_asset(
+            self.export_root,
+            game_data.CHARACTER_ROUTE_SOURCES["incident_world"],
+            [
+                {
+                    "Type": "BP_PalBossTower_MiddleBoss_C",
+                    "Name": f"Placed_{boss_type}",
+                    "Class": (
+                        "BlueprintGeneratedClass'Pal/Content/Pal/Blueprint/"
+                        "BossBattle/Logic/BP_PalBossTower_MiddleBoss."
+                        "BP_PalBossTower_MiddleBoss_C'"
+                    ),
+                    "Outer": {
+                        "ObjectName": "Level'PL_MainWorld5:PersistentLevel'"
+                    },
+                    "Properties": {
+                        "BossType": f"EPalBossType::{boss_type}"
+                    },
+                }
+                for boss_type in self.WORLDTREE_QUEST_SOURCES
+            ],
+        )
+        for boss_type, (_, quest_source) in self.WORLDTREE_QUEST_SOURCES.items():
+            quest_stem = PurePosixPath(quest_source).name
+            write_asset(
+                self.export_root,
+                quest_source,
+                [
+                    {
+                        "Type": f"{quest_stem}_C",
+                        "Name": f"Default__{quest_stem}_C",
+                        "Properties": {
+                            "CheckBossType": f"EPalBossType::{boss_type}"
+                        },
+                    }
+                ],
+            )
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -3778,10 +3856,13 @@ class CharacterEvidenceTests(unittest.TestCase):
     def _write_incident_lottery_fixture(
         self, *, object_name: str, lottery_exports: list[dict]
     ) -> None:
+        world_source = game_data.CHARACTER_ROUTE_SOURCES["incident_world"]
+        world = load_asset(self.export_root, world_source)
         write_asset(
             self.export_root,
-            game_data.CHARACTER_ROUTE_SOURCES["incident_world"],
+            world_source,
             [
+                *world,
                 {
                     "Type": "BP_Incident_C",
                     "Name": "PlacedIncident",
@@ -5355,6 +5436,28 @@ class CharacterEvidenceTests(unittest.TestCase):
         )
         self.assertTrue(any(item.kind == "coverage_gap" for item in graph.diagnostics))
 
+    def test_worldtree_middle_bosses_make_alpha_and_base_families_obtainable(
+        self,
+    ) -> None:
+        graph = self.build()
+
+        for boss_type, (family_id, _) in self.WORLDTREE_QUEST_SOURCES.items():
+            with self.subTest(family_id=family_id):
+                self.assertEqual(
+                    graph[f"BOSS_{family_id}"].acquisition_sources,
+                    (game_data.EvidenceSource("worldtree-alpha", boss_type),),
+                )
+                self.assertEqual(
+                    graph[family_id].acquisition_sources,
+                    (
+                        game_data.EvidenceSource(
+                            "unique-breeding", f"SelfBreed_{family_id}"
+                        ),
+                    ),
+                )
+                self.assertTrue(graph[f"BOSS_{family_id}"].regularly_obtainable)
+                self.assertTrue(graph[family_id].regularly_obtainable)
+
     def test_each_supported_route_is_individually_gated_by_policy(self) -> None:
         target = "UnreachableHuman"
         write_table(
@@ -5545,6 +5648,7 @@ class CharacterEvidenceTests(unittest.TestCase):
             "raid_servant": "scenario-raid-servant",
             "unique_breeding": "unique-breeding",
             "mainworld5_incident": "incident",
+            "worldtree_alpha": "worldtree-alpha",
         }
         self._seed_reachable_raid_items("Raid")
         baseline = self.build()
@@ -6008,10 +6112,12 @@ class CharacterEvidenceTests(unittest.TestCase):
         self,
     ) -> None:
         world = game_data.CHARACTER_ROUTE_SOURCES["incident_world"]
+        existing_world = load_asset(self.export_root, world)
         write_asset(
             self.export_root,
             world,
             [
+                *existing_world,
                 {
                     "Type": "BP_Incident_C",
                     "Name": "PlacedIncident",

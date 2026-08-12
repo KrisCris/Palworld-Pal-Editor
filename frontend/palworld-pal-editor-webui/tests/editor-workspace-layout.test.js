@@ -63,8 +63,18 @@ test("editor workspace owns independently persisted roster collapse state", asyn
     assert.doesNotMatch(view, /editor-roster-launchers|editor-roster-launcher/);
     assert.match(players, /defineEmits\(\['toggle'\]\)/);
     assert.match(pals, /defineEmits\(\['toggle'\]\)/);
-    assert.match(players, /class="roster-title-button"[\s\S]*@click="emit\('toggle'\)"/);
-    assert.match(pals, /class="roster-title-button"[\s\S]*@click="emit\('toggle'\)"/);
+    for (const roster of [players, pals]) {
+        assert.match(roster, /class="roster-collapse-button"[\s\S]*@click="emit\('toggle'\)"/);
+        assert.match(roster, /<UiIcon :name="preview \? 'plus' : 'minus'"/);
+        assert.match(roster, /class="roster-title"/);
+        assert.doesNotMatch(roster, /roster-title[^>]*@click=/);
+        assert.match(roster, /\.roster-title\s*\{[^}]*position:\s*absolute[^}]*top:\s*50%[^}]*left:\s*50%[^}]*transform:\s*translate\(-50%,\s*-50%\)/s);
+        assert.match(roster, /\.roster-collapse-button\s*\{[^}]*border:\s*0[^}]*background:\s*transparent/s);
+        assert.match(roster, /\.roster-collapse-button:hover\s*\{[^}]*background:\s*var\(--editor-color-control-hover\)/s);
+    }
+    assert.match(pals, /<header class="roster-header">\s*<div class="roster-heading-row">[\s\S]*?<\/div>\s*<label class="pal-search"/);
+    assert.match(pals, /\.roster-heading-row\s*\{[^}]*position:\s*relative[^}]*min-height:\s*2rem/s);
+    assert.doesNotMatch(pals, /\.roster-header\s*\{[^}]*position:\s*relative/s);
     assert.match(players, /PlayerList_Collapse/);
     assert.match(pals, /PalList_Collapse/);
     assert.match(players, /preview \? 'PlayerList_Restore' : 'PlayerList_Collapse'/);

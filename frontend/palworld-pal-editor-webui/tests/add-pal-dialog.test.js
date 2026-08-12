@@ -82,3 +82,13 @@ test("Pal templates are cleared when the editor resets or switches backends", as
   const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
   assert.ok(source.match(/PAL_TEMPLATES\.value = \[\]/g)?.length >= 2);
 });
+
+test("Add Pal chooses an explicit capacity-checked container, including bases", async () => {
+  const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
+  assert.match(source, /v-model="targetContainerId"/);
+  assert.match(source, /container\.Occupied >= container\.Size/);
+  assert.match(source, /container\.ContainerKind === 'base'/);
+  assert.match(source, /options\.TargetContainerId = targetContainerId\.value/);
+  assert.match(source, /formatContainerLabel/);
+  assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
+});

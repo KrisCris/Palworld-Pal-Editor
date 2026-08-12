@@ -36,6 +36,6 @@ test("the loaded-save toolbar prioritizes save actions and keeps cheat options o
   assert.ok(html.indexOf("More") < html.indexOf("Donation"));
   const contextBar = html.match(/class="editor-context-bar"[^>]*>([\s\S]*?)<\/div><\/header>/)?.[1] ?? "";
   assert.doesNotMatch(contextBar, /Show Out of Box Pal/);
-  assert.match(html, /class="editor-more__menu"[\s\S]*?Show Out of Box Pal/);
+  assert.match(html, /class="editor-more__menu editor-glass-surface"[\s\S]*?Show Out of Box Pal/);
   assert.match(html, /aria-pressed="false"[^>]*>[\s\S]*?Show Cheat Options/);
 });

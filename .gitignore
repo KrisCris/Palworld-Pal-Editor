@@ -170,3 +170,6 @@ frontend/palworld-pal-editor-webui/dev-dist/
 
 config.json
 .worktrees/
+*.lock
+tmp/
+.playwright-cli

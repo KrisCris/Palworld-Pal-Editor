@@ -62,6 +62,30 @@
   box-shadow: var(--editor-glass-shadow);
 }
 
+.editor-glass-surface {
+  border-color: var(--editor-color-glass-border);
+  color: var(--editor-color-text);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
+}
+
+.editor-modal-overlay::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: '';
+  background: color-mix(in srgb, var(--editor-color-background) 50%, transparent);
+  -webkit-backdrop-filter: blur(6px) saturate(90%);
+  backdrop-filter: blur(6px) saturate(90%);
+}
+
+.editor-modal-overlay > * {
+  position: relative;
+  z-index: 1;
+}
+
 .editor-surface:has(.search-select[open]) {
   position: relative;
   z-index: 50;

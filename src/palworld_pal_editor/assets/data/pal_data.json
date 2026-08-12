@@ -51343,10 +51343,17 @@
             "boss"
         ],
         "IconKey": "Mothman",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "worldtree-alpha"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "worldtree-alpha",
+                "ID": "WorldTreeMiddleBoss2"
+            }
+        ],
         "I18n": {
             "ja": "悠久の紫影 モスローン",
             "de": "Purpurschatten der Ewigkeit Silvance",
@@ -51758,10 +51765,17 @@
             "boss"
         ],
         "IconKey": "FlowerPrince",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "worldtree-alpha"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "worldtree-alpha",
+                "ID": "WorldTreeMiddleBoss1"
+            }
+        ],
         "I18n": {
             "ja": "樹影に潜む妖霧 ノクサージュ",
             "de": "Nebelgeist im Baumschatten Dandilord",
@@ -346263,10 +346277,17 @@
             "base"
         ],
         "IconKey": "Mothman",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "unique-breeding"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "unique-breeding",
+                "ID": "259"
+            }
+        ],
         "I18n": {
             "ja": "モスローン",
             "de": "Silvance",
@@ -346916,10 +346937,17 @@
             "base"
         ],
         "IconKey": "FlowerPrince",
-        "Invalid": true,
-        "RegularlyObtainable": false,
-        "ObtainMethods": [],
-        "AvailabilitySources": [],
+        "Invalid": false,
+        "RegularlyObtainable": true,
+        "ObtainMethods": [
+            "unique-breeding"
+        ],
+        "AvailabilitySources": [
+            {
+                "Kind": "unique-breeding",
+                "ID": "258"
+            }
+        ],
         "I18n": {
             "ja": "ノクサージュ",
             "de": "Dandilord",

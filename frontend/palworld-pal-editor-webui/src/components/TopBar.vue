@@ -88,7 +88,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       <div class="editor-app-bar__utilities">
         <details v-if="palStore.SAVE_LOADED_FLAG" class="editor-more">
           <summary class="op"><UiIcon name="more" /> {{ palStore.getTranslatedText("TopBar_More") }}</summary>
-          <div class="editor-more__menu">
+          <div class="editor-more__menu editor-glass-surface">
             <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
               @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
               :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
@@ -116,7 +116,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
     <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
       <div v-if="playersCollapsed" class="editor-roster-dock">
         <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Restore')" @click="emit('restorePlayers')">
+          :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
           <UiIcon name="users" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
           <small>{{ playerCount }}</small>
         </button>
@@ -126,7 +126,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       </div>
       <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
         <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
-          :aria-label="palStore.getTranslatedText('PalList_Restore')" @click="emit('restorePals')">
+          :aria-label="palStore.getTranslatedText('PalList_Restore')">
           <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
           <small>{{ palCount }}</small>
         </button>
@@ -156,10 +156,17 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   z-index: 20;
   display: grid;
   border-bottom: 1px solid var(--editor-color-glass-border);
+  box-shadow: var(--editor-glass-shadow);
+}
+
+.editor-toolbar::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
   background: var(--editor-color-glass-toolbar);
   -webkit-backdrop-filter: var(--editor-glass-filter);
   backdrop-filter: var(--editor-glass-filter);
-  box-shadow: var(--editor-glass-shadow);
 }
 
 .loading-bar {
@@ -424,7 +431,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   padding: var(--editor-space-2);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-shadow-compact);
 }
 
@@ -439,22 +445,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 }
 
 @media (max-width: 760px) {
-  .editor-app-bar {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .editor-app-bar__primary {
-    width: 100%;
-  }
-
-  .savePath {
-    flex: 1;
-    width: auto;
-  }
-}
-
-@media (max-width: 480px) {
   .editor-app-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -471,6 +461,11 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 
   .op span {
     display: none;
+  }
+
+  .editor-roster-preview--pals { 
+    left: auto;
+    right: 0px;
   }
 }
 

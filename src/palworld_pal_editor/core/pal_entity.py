@@ -10,6 +10,7 @@ from palworld_pal_editor.core.pal_objects import (
     PalSuitability,
     get_nested_attr,
     dumps,
+    toUUID,
 )
 from palworld_pal_editor.utils.util import type_guard
 
@@ -69,6 +70,10 @@ def condensation_work_suitability_bonus(
 class PalEntity:
     MAX_LEVEL = 80
     MAX_INVALID_LEVEL = 100
+    MAX_FRIENDSHIP_LEVEL = 10
+    MAX_CONDENSATION_RANK = 5
+    MAX_SOUL_RANK = 20
+    MAX_TALENT = 100
 
     def __init__(self, pal_obj: dict) -> None:
         self._pal_obj: dict = pal_obj
@@ -116,6 +121,30 @@ class PalEntity:
         return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
 
     def set_owner_player_entity(self, player):
+        self.owner_player_entity = player
+
+    def set_owner_player_uid(self, player_uid: UUID | str | None, player=None):
+        if player_uid is None:
+            self._pal_param.pop("OwnerPlayerUId", None)
+            self.owner_player_entity = None
+            return
+
+        player_uid = toUUID(str(player_uid))
+        self._pal_param["OwnerPlayerUId"] = PalObjects.Guid(player_uid)
+        owners = self.OldOwnerPlayerUIds
+        if owners is None:
+            self._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+                "StructProperty",
+                {
+                    "prop_name": "OldOwnerPlayerUIds",
+                    "prop_type": "StructProperty",
+                    "values": [player_uid],
+                    "type_name": "Guid",
+                    "id": PalObjects.EMPTY_UUID,
+                },
+            )
+        elif not owners or str(owners[-1]) != str(player_uid):
+            owners.append(player_uid)
         self.owner_player_entity = player
 
     @property
@@ -387,6 +416,22 @@ class PalEntity:
             PalObjects.set_ByteProperty(favorite, value)
         else:
             PalObjects.set_BaseType(favorite, value)
+
+    @property
+    def IsImportedCharacter(self) -> bool:
+        """Whether the game marks this Pal as imported from Global Pal Storage."""
+        return bool(
+            PalObjects.get_BaseType(self._pal_param.get("bImportedCharacter"))
+        )
+
+    @IsImportedCharacter.setter
+    @LOGGER.change_logger("IsImportedCharacter")
+    @type_guard
+    def IsImportedCharacter(self, value: bool) -> None:
+        if value:
+            self._pal_param["bImportedCharacter"] = PalObjects.BoolProperty(True)
+        else:
+            self._pal_param.pop("bImportedCharacter", None)
 
     @property
     def IsInvalid(self) -> bool:
@@ -869,6 +914,12 @@ class PalEntity:
         except Exception as e:
             LOGGER.warning(f"{e}")
 
+    @LOGGER.change_logger("PassiveSkillList")
+    def replace_PassiveSkillList(self, skills: list[str]) -> None:
+        self._pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
+            "NameProperty", {"values": list(skills)}
+        )
+
     @property
     def EquipWaza(self) -> Optional[list[str]]:
         return PalObjects.get_ArrayProperty(self._pal_param.get("EquipWaza"))
@@ -974,6 +1025,20 @@ class PalEntity:
             return waza
         except Exception as e:
             LOGGER.warning(f"{e}")
+
+    def replace_EquipWaza(self, equipped: list[str]) -> None:
+        old_equipped = list(self.EquipWaza or [])
+        if self.MasteredWaza is None:
+            self._pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+                "EnumProperty", {"values": []}
+            )
+        for skill in equipped:
+            if skill not in self.MasteredWaza:
+                self.MasteredWaza.append(skill)
+        self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
+            "EnumProperty", {"values": list(equipped)}
+        )
+        LOGGER.info(f"{self} | EquipWaza: {old_equipped} -> {equipped}")
 
     @property
     def AddedWorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:
@@ -1345,6 +1410,28 @@ class PalEntity:
                 self.pop_MasteredWaza(item=atk)
             elif DataProvider.is_unique_attacks(atk):
                 self.pop_MasteredWaza(item=atk)
+
+    def maximize_progression(self) -> None:
+        """Set every normal, player-facing Pal upgrade to its legal maximum."""
+        self.Level = self.MAX_LEVEL
+        self.FriendshipLevel = self.MAX_FRIENDSHIP_LEVEL
+        self.Rank = self.MAX_CONDENSATION_RANK
+        self.RankUpExp = 0
+
+        self.Rank_HP = self.MAX_SOUL_RANK
+        self.Rank_Attack = self.MAX_SOUL_RANK
+        self.Rank_Defence = self.MAX_SOUL_RANK
+        self.Rank_CraftSpeed = self.MAX_SOUL_RANK
+
+        self.Talent_HP = self.MAX_TALENT
+        self.Talent_Shot = self.MAX_TALENT
+        self.Talent_Defense = self.MAX_TALENT
+
+        if not self.IsHuman:
+            self.IsAwakening = True
+
+        for suitability in tuple(self.MinimumWorkSuitabilities or {}):
+            self.set_WorkSuitability(suitability, MAX_WORK_SUITABILITY)
 
     def print_obj(self):
         print(self.dump_obj())

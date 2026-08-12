@@ -117,7 +117,7 @@ class GroupData:
             LOGGER.info(f"Guild Found: {group_entity}")
 
     def get_group(self, group_id: UUID | str) -> Optional[PalGroup]:
-        return self.group_map.get(group_id)
+        return self.group_map.get(str(group_id))
 
     def get_groups(self) -> list[PalGroup]:
         return list(self.group_map.values())

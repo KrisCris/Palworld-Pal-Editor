@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
       <span>{{ selected?.label || placeholder }}</span>
       <UiIcon name="more" />
     </summary>
-    <div class="search-select__popover">
+    <div class="search-select__popover editor-glass-surface">
       <label class="search-select__search">
         <UiIcon name="search" />
         <input type="search" v-model="query" :placeholder="searchPlaceholder" :aria-label="searchPlaceholder"
@@ -130,7 +130,6 @@ onBeforeUnmount(() => {
   padding: var(--editor-space-2);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-shadow-compact);
 }
 

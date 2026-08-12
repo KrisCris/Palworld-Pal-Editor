@@ -16,6 +16,11 @@ const paths = {
   technology: "../src/components/modules/TechCard.vue",
   messages: "../src/components/MessageCenter.vue",
   support: "../src/components/SupportDialog.vue",
+  addPal: "../src/components/AddPalDialog.vue",
+  pathPicker: "../src/components/PathPicker.vue",
+  speciesSelector: "../src/components/modules/PalSpeciesSelector.vue",
+  backendSelector: "../src/components/BackendServerSelector.vue",
+  backendError: "../src/views/BackendErrorView.vue",
 };
 
 const sources = Object.fromEntries(await Promise.all(
@@ -88,14 +93,42 @@ test("workspace uses the selected Palworld color lighting and glass surfaces", (
   assert.match(sources.base, /radial-gradient\([^}]*var\(--editor-color-backdrop-warm\)[^}]*radial-gradient\([^}]*var\(--editor-color-focus\)[^}]*radial-gradient\([^}]*var\(--editor-color-ancient\)/s);
   assert.match(sources.editor, /--editor-glass-filter:\s*blur\(26px\) saturate\(125%\)/);
   assert.match(sources.editor, /\.editor-surface\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*\n\s*backdrop-filter:\s*var\(--editor-glass-filter\)[^}]*box-shadow:\s*var\(--editor-glass-shadow\)/s);
-  assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
-  assert.match(sources.topBar, /\.editor-toolbar\s*\{[^}]*background:\s*var\(--editor-color-glass-toolbar\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.match(sources.workspace, /\.editor-roster\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)/s);
+  assert.doesNotMatch(sources.workspace, /\.editor-roster\s*\{[^}]*backdrop-filter:/s);
+  assert.match(sources.workspace, /\.editor-roster::before\s*\{[^}]*inset:\s*0;[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.doesNotMatch(sources.topBar, /\.editor-toolbar\s*\{[^}]*backdrop-filter:/s);
+  assert.match(sources.topBar, /\.editor-toolbar::before\s*\{[^}]*background:\s*var\(--editor-color-glass-toolbar\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
+  assert.match(sources.topBar, /\.editor-roster-preview\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
   assert.match(sources.playerEditor, /\.player-summary,[\s\S]*?\.player-panel\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)/s);
 
   assert.ok(contrast(
     rgb(tokenHex("--editor-color-border")),
     rgb(tokenHex("--editor-color-control")),
   ) >= 3, "control boundary");
+});
+
+test("floating dialogs share the restrained glass surface and overlay", () => {
+  assert.match(sources.editor, /\.editor-glass-surface\s*\{[^}]*background:\s*var\(--editor-color-glass-surface\)[^}]*backdrop-filter:\s*var\(--editor-glass-filter\)[^}]*box-shadow:\s*var\(--editor-glass-shadow\)/s);
+  assert.match(sources.editor, /\.editor-modal-overlay::before\s*\{[^}]*background:\s*color-mix\([^}]*var\(--editor-color-background\)[^}]*backdrop-filter:\s*blur\(/s);
+
+  for (const source of [sources.messages, sources.support, sources.addPal, sources.pathPicker, sources.speciesSelector, sources.backendSelector])
+    assert.match(source, /editor-glass-surface/);
+  for (const source of [sources.messages, sources.support, sources.addPal, sources.pathPicker, sources.speciesSelector])
+    assert.match(source, /editor-modal-overlay/);
+  assert.match(sources.backendError, /editor-glass-surface/);
+});
+
+test("floating editor menus use the shared restrained glass surface", () => {
+  assert.match(sources.search, /class="search-select__popover editor-glass-surface"/);
+  assert.match(sources.pals, /class="pal-list-menu__popover editor-glass-surface"/);
+  assert.match(sources.topBar, /class="editor-more__menu editor-glass-surface"/);
+  for (const [source, selector] of [
+    [sources.search, "search-select__popover"],
+    [sources.pals, "pal-list-menu__popover"],
+    [sources.topBar, "editor-more__menu"],
+  ]) {
+    assert.doesNotMatch(source, new RegExp(`\\.${selector}\\s*\\{[^}]*background:\\s*var\\(--editor-color-surface-raised\\)`, "s"));
+  }
 });
 
 test("rendered technology cards consume the shared palette", () => {
@@ -106,7 +139,8 @@ test("rendered technology cards consume the shared palette", () => {
 });
 
 test("messages and support dialog use shared status and dialog colors", () => {
-  assert.match(sources.messages, /\.message-toast\s*\{[^}]*var\(--editor-color-surface-raised\)/s);
+  assert.match(sources.messages, /\['message-toast', 'editor-glass-surface', current\.severity\]/);
+  assert.doesNotMatch(sources.messages, /\.message-toast\s*\{[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
   assert.match(sources.messages, /\.message-toast\.warning\s*\{[^}]*var\(--editor-color-warning\)/s);
   assert.match(sources.messages, /\.message-toast\.success\s*\{[^}]*var\(--editor-color-success\)/s);
   assert.match(sources.messages, /\.message-toast\.error\s*\{[^}]*var\(--editor-color-danger\)/s);

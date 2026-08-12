@@ -10,12 +10,13 @@ const openQrButton = ref()
 const qrCloseButton = ref()
 const selectedMethod = ref('kofi')
 const expandedQr = ref()
+const publicAsset = path => `${import.meta.env.BASE_URL}${path}`
 
 const paymentMethods = [
   { id: 'kofi', label: 'Ko-fi', icon: 'coffee', href: 'https://ko-fi.com/connlost' },
   { id: 'paypal', label: 'PayPal', icon: 'card', href: 'https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US' },
-  { id: 'alipay', label: 'AliPay', icon: 'qr', qr: '/support/alipay.png' },
-  { id: 'wechat', label: 'WeChat Pay', icon: 'qr', qr: '/support/wechat-pay.png' },
+  { id: 'alipay', label: 'AliPay', icon: 'qr', qr: publicAsset('support/alipay.png') },
+  { id: 'wechat', label: 'WeChat Pay', icon: 'qr', qr: publicAsset('support/wechat-pay.png') },
 ]
 
 const selectedPayment = computed(() => paymentMethods.find(method => method.id === selectedMethod.value))
@@ -51,13 +52,13 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 <template>
   <div
     v-show="palStore.SHOW_DONATE_FLAG"
-    class="support-overlay"
+    class="support-overlay editor-modal-overlay"
     role="presentation"
-    @click.self="close"
+    @pointerdown.self="close"
     @keydown.esc.stop="close"
   >
     <section
-      class="support-dialog"
+      class="support-dialog editor-glass-surface"
       role="dialog"
       aria-modal="true"
       aria-labelledby="support-dialog-title"
@@ -66,7 +67,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       :inert="expandedQr ? '' : undefined"
     >
       <header class="support-header">
-        <img src="/icons/512.png" alt="" class="support-logo">
+        <img :src="publicAsset('icons/512.png')" alt="" class="support-logo">
         <div>
           <h2 id="support-dialog-title">{{ palStore.getTranslatedText('SupportDialog_Title') }}</h2>
           <p id="support-dialog-intro">{{ palStore.getTranslatedText('SupportDialog_Intro') }}</p>
@@ -155,7 +156,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
           <div class="support-section-heading">
             <div>
               <h3>{{ palStore.getTranslatedText('SupportDialog_Other_Title') }}</h3>
-              <p>{{ palStore.getTranslatedText('SupportDialog_Other_Description') }}</p>
+              <!-- <p>{{ palStore.getTranslatedText('SupportDialog_Other_Description') }}</p> -->
             </div>
           </div>
 
@@ -212,13 +213,13 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 
     <div
       v-if="expandedPayment"
-      class="support-qr-overlay"
+      class="support-qr-overlay editor-modal-overlay"
       role="presentation"
-      @click.self="closeQr"
+      @pointerdown.self="closeQr"
       @keydown.esc.stop="closeQr"
     >
       <section
-        class="support-qr-dialog"
+        class="support-qr-dialog editor-glass-surface"
         role="dialog"
         aria-modal="true"
         aria-labelledby="support-qr-title"
@@ -256,9 +257,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   display: grid;
   place-items: center;
   padding: clamp(var(--editor-space-3), 3vw, 2.5rem);
-  background: color-mix(in srgb, var(--editor-color-background) 74%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 
 .support-dialog {
@@ -267,10 +265,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   overflow: auto;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
-  color: var(--editor-color-text);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 94%, transparent);
-  -webkit-backdrop-filter: var(--editor-glass-filter);
-  backdrop-filter: var(--editor-glass-filter);
+  background: color-mix(in srgb, var(--editor-color-surface) 70%, transparent);
   box-shadow: var(--editor-glass-shadow), 0 2.2rem 5rem rgb(0 0 0 / 52%);
 }
 
@@ -290,8 +285,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   align-items: flex-start;
   gap: var(--editor-space-3);
   padding: var(--editor-space-5);
-  border-bottom: 1px solid var(--editor-color-border);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 97%, transparent);
+  border-bottom: 1px solid var(--editor-color-glass-border);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  backdrop-filter: blur(18px) saturate(115%);
 }
 
 .support-logo {
@@ -361,9 +358,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 .support-panel {
   min-width: 0;
   padding: var(--editor-space-4);
-  border: 1px solid var(--editor-color-border);
+  border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
-  background: var(--editor-color-surface);
+  background: color-mix(in srgb, var(--editor-color-surface-raised) 72%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), var(--editor-shadow-compact);
 }
 
 .support-financial {
@@ -398,7 +396,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   cursor: pointer;
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
-  background: var(--editor-color-control);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
 }
 
 .support-payment > span {
@@ -411,14 +409,15 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 }
 
 .support-payment:hover,
-.support-payment:focus-visible,
-.support-payment--selected {
+.support-payment:focus-visible {
   border-color: var(--editor-color-focus);
-  background: var(--editor-color-surface-raised);
+  background: var(--editor-color-control-hover);
 }
 
 .support-payment--selected {
+  border-color: var(--editor-color-focus);
   color: var(--editor-color-focus);
+  background: color-mix(in srgb, var(--editor-color-primary) 16%, var(--editor-color-surface));
   box-shadow: inset .2rem 0 0 var(--editor-color-focus);
 }
 
@@ -432,7 +431,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   padding: var(--editor-space-3);
   border-left: .2rem solid var(--editor-color-focus);
   border-radius: var(--editor-radius-md);
-  background: color-mix(in srgb, var(--editor-color-background) 60%, transparent);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
   box-shadow: var(--editor-shadow-compact);
 }
 
@@ -488,9 +487,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   display: grid;
   place-items: center;
   padding: var(--editor-space-3);
-  background: rgb(0 0 0 / 72%);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
 }
 
 .support-qr-dialog {
@@ -498,8 +494,6 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   padding: var(--editor-space-4);
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
-  color: var(--editor-color-text);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-glass-shadow), 0 2rem 5rem rgb(0 0 0 / 60%);
 }
 
@@ -533,7 +527,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   color: var(--editor-color-text);
-  background: var(--editor-color-control);
+  background: color-mix(in srgb, var(--editor-color-control) 86%, transparent);
   text-decoration: none;
 }
 
@@ -564,8 +558,10 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
   justify-content: space-between;
   gap: var(--editor-space-4);
   padding: var(--editor-space-4) var(--editor-space-5);
-  border-top: 1px solid var(--editor-color-border);
-  background: color-mix(in srgb, var(--editor-color-surface-raised) 97%, transparent);
+  border-top: 1px solid var(--editor-color-glass-border);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+  backdrop-filter: blur(18px) saturate(115%);
 }
 
 .support-warning {

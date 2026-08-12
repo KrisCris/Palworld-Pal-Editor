@@ -46,9 +46,9 @@ onBeforeUnmount(clearDismissTimer)
 </script>
 
 <template>
-  <div v-if="current?.presentation === 'dialog'" class="message-layer">
+  <div v-if="current?.presentation === 'dialog'" class="message-layer editor-modal-overlay">
     <section
-      :class="['message-dialog', current.severity]"
+      :class="['message-dialog', 'editor-glass-surface', current.severity]"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="message-center-title"
@@ -75,7 +75,7 @@ onBeforeUnmount(clearDismissTimer)
 
   <aside
     v-else-if="current"
-    :class="['message-toast', current.severity]"
+    :class="['message-toast', 'editor-glass-surface', current.severity]"
     :role="current.severity === 'success' ? 'status' : 'alert'"
   >
     <div>
@@ -95,12 +95,11 @@ onBeforeUnmount(clearDismissTimer)
 .message-layer {
   position: fixed;
   inset: 0;
-  z-index: 2100;
+  z-index: 3200;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: color-mix(in srgb, var(--editor-color-background) 82%, transparent);
 }
 
 .message-dialog {
@@ -108,9 +107,6 @@ onBeforeUnmount(clearDismissTimer)
   padding: 1rem;
   border: 1px solid var(--editor-color-border);
   border-radius: .75rem;
-  color: var(--editor-color-text);
-  background: var(--editor-color-surface-raised);
-  box-shadow: var(--editor-shadow-compact);
 }
 
 .message-dialog.warning {
@@ -163,7 +159,7 @@ onBeforeUnmount(clearDismissTimer)
   position: fixed;
   top: 3.5rem;
   right: 1rem;
-  z-index: 2100;
+  z-index: 3200;
   display: flex;
   gap: 1rem;
   align-items: flex-start;
@@ -172,7 +168,6 @@ onBeforeUnmount(clearDismissTimer)
   border: 1px solid var(--editor-color-border);
   border-radius: .6rem;
   color: var(--editor-color-text);
-  background: var(--editor-color-surface-raised);
   box-shadow: var(--editor-shadow-compact);
 }
 
