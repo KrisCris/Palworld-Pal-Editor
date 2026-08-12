@@ -1,269 +1,285 @@
 # Palworld Pal Editor
 
-<h3 align="center">
-   <a href="/README.md">English</a> | <strong>简体中文</strong>
-</h3>
-
-<p align='center'>
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/kriscris/palworld-pal-editor?display_name=tag&style=for-the-badge"></a>
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="GitHub Repo Downloads" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>&nbsp;
+<p align="center">
+  <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
-<p align='center'>
-<img alt="Python" src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">&nbsp;
-<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/palworld-pal-editor?style=for-the-badge"></a>&nbsp;
-<a href="https://pypi.org/project/palworld-pal-editor/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dd/palworld-pal-editor?style=for-the-badge&label=PYPI%20DOWNLOADS"></a>&nbsp;
+<p align="center">
+  <a href="https://github.com/KrisCris/Palworld-Pal-Editor/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>
+  <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/KrisCris/Palworld-Pal-Editor?display_name=tag&style=for-the-badge"></a>
+  <a href="https://github.com/KrisCris/Palworld-Pal-Editor/releases"><img alt="总下载量" src="https://img.shields.io/github/downloads/KrisCris/Palworld-Pal-Editor/total?style=for-the-badge"></a>
+  <a href="./LICENSE"><img alt="GPL-3.0 许可证" src="https://img.shields.io/github/license/KrisCris/Palworld-Pal-Editor?style=for-the-badge"></a>
+</p>
+<p align="center">
+  <a href="https://ko-fi.com/connlost"><img alt="Ko-fi" src="https://img.shields.io/badge/Ko--fi-FF9AA2?style=for-the-badge&logo=ko-fi&logoColor=white"></a>
+  <a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-1683E2?style=for-the-badge&logo=paypal&logoColor=white"></a>
+  <a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="支付宝" src="https://img.shields.io/badge/AliPay-00D9E9?style=for-the-badge&logo=alipay&logoColor=white"></a>
+  <a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="微信支付" src="https://img.shields.io/badge/WeChat-20D997?style=for-the-badge&logo=wechat&logoColor=white"></a>
+  <a href="#支持本项目"><img alt="支持本项目" src="https://img.shields.io/badge/Sponsor-59636F?style=for-the-badge&logo=heart&logoColor=FF70D2"></a>
 </p>
 
-<p align='center'>
-<a href="https://ko-fi.com/connlost"><img alt="Ko-Fi" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"></a>&nbsp;
-<a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>&nbsp;
-<a href="https://afdian.com/a/_connlost"><img width="100" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a>&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="AliPay" src="https://img.shields.io/badge/alipay-00A1E9?style=for-the-badge&logo=alipay&logoColor=white"></a>&nbsp;
-<a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white"></a>&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor?tab=readme-ov-file#sponsor"><img alt="PayPal" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA"></a>&nbsp;
+
+<p align="center">
+  功能丰富的《幻兽帕鲁》存档修改器，支持玩家、帕鲁、科技、背包等内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 运行。
 </p>
 
-<p align='center'>
-<a href="https://discord.gg/FnuA95nMJ8"><img alt="Discord Server" src="https://dcbadge.vercel.app/api/server/FnuA95nMJ8"></a>&nbsp;
-</p>
+![Palworld Pal Editor](.github/assets/readme-pal-editor-zh.webp)
 
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/stargazers"><img width="720" alt="Star History Chart" src="https://api.star-history.com/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date"></a>&nbsp;
+> [!CAUTION]
+> 修改前请备份存档。修改器会自动创建备份，但仍建议你另外保留一份副本。
 
-## 支持的语言
+> [!WARNING]
+> 本软件开源免费。如果你从任何平台付费购买了此工具，请立即退款。请仅通过本仓库或官方构建的修改器内嵌链接支持作者。
 
-- **English** | **日本語** | **简体中文** | **French**
+## 目录
 
-## 这是什么？
+- [项目简介](#项目简介)
+- [下载](#下载)
+- [快速开始](#快速开始)
+- [功能](#功能)
+  - [通用](#通用)
+  - [帕鲁](#帕鲁)
+  - [模板与批量操作](#模板与批量操作)
+  - [玩家](#玩家)
+  - [物品栏](#物品栏)
+- [安装与运行](#安装与运行)
+- [命令行参数](#命令行参数)
+- [视频教程](#视频教程)
+- [支持本项目](#支持本项目)
+- [参与贡献](#参与贡献)
+- [鸣谢](#鸣谢)
+- [许可证](#许可证)
 
-### 幻兽帕鲁 帕鲁 编辑器
+## 项目简介
 
-- [帕鲁、塔主NPC，词条，主被动技能 修改 | 帕鲁编辑器 Palworld Pal Editor 0.13.0 | 幻兽帕鲁 泰拉瑞亚联动 0.6.0更新](https://www.bilibili.com/video/BV1xV3qzbE9r/?share_source=copy_web&vd_source=fe2d6c1e59f6c8d600d221e1800972f5)
-- [Slightly updated video on Youtube](https://www.youtube.com/watch?v=PhSWpr0f70g&lc=Ugx1zdLQ-jqsf-O_ht14AaABAg)
-- [An old showcase video posted on youtube](https://youtu.be/v9U60jj5Ugw), the idea should be the same though.
+**由 \_connlost 用 ❤️ 开发的《幻兽帕鲁》帕鲁修改器。**
+
+Palworld Pal Editor 是一个功能丰富的存档修改器，支持修改玩家、帕鲁、科技、背包等存档内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 容器运行。
 
 > [!NOTE]
-> 帕鲁 Steam 版 本地游戏 存档文件夹: `%localappdata%\Pal\Saved\SaveGames`
+> Steam 存档根目录：`%LOCALAPPDATA%\Pal\Saved\SaveGames`
 >
-> 你要修改的存档文件夹: `%localappdata%\Pal\Saved\SaveGames\[你的 Steam ID]\[你的 游戏存档 ID]`
-> 
-> **本工具目前只支持Steam，如果你使用的是Xbox Game Pass版本，可以参考一下两个工具来转换存档格式：**
+> 存档目录：`%LOCALAPPDATA%\Pal\Saved\SaveGames\<Steam ID>\<存档 ID>`
 >
-> - [XGP-save-extractor (XGP -> Steam)](https://github.com/windwq/XGP-save-extractor)
-> - [Palworld XGP Save Importer (Steam -> XGP)](https://github.com/HarukaMa/palworld-xgp-import)
-> 
-> 我们的 Discord 服务器里也有一些人提供了教程。
-
-> [!IMPORTANT]
-> **为了防止数据丢失，请注意备份存档 (这个工具会自动帮你备份)。**
+> 请在修改器中选择包含 `Level.sav` 的文件夹。
 >
-> ***如果遇到BUG欢迎提交 [Issue](https://github.com/KrisCris/Palworld-Pal-Editor/issues) 。***
+> 修改器目前支持 Steam 格式存档。可使用 [PalworldSaveTools](https://github.com/deafdudecomputers/PalworldSaveTools/releases) 在 Xbox Game Pass 与 Steam 存档之间转换。请先备份存档；游戏更新后，转换功能可能暂时不兼容。
 
-<img width="720" alt="Screenshot" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/51a9c262-a71a-4008-b2a3-f4a68e78046a">
+Palworld Pal Editor 完整支持 Deutsch、English、Español、Español (México)、Français、Bahasa Indonesia、Italiano、日本語、한국어、Polski、Português (Brasil)、Русский、ไทย、Türkçe、Tiếng Việt、简体中文和繁體中文。
 
----
+## 下载
 
-- [Palworld Pal Editor](#palworld-pal-editor)
-  - [支持的语言](#支持的语言)
-  - [这是什么？](#这是什么)
-    - [幻兽帕鲁 帕鲁 编辑器](#幻兽帕鲁-帕鲁-编辑器)
-  - [这个工具能干啥](#这个工具能干啥)
-  - [未来计划 (No ETA)](#未来计划-no-eta)
-  - [使用](#使用)
-    - [方案 A. 使用打包的可执行文件](#方案-a-使用打包的可执行文件)
-    - [方案 B. 通过 pip 安装](#方案-b-通过-pip-安装)
-    - [方案 C. 使用 Docker Container](#方案-c-使用-docker-container)
-      - [如果你想手动构建 Image](#如果你想手动构建-image)
-    - [方案 D. 直接运行代码](#方案-d-直接运行代码)
-    - [可选命令行参数](#可选命令行参数)
-    - [配置文件](#配置文件)
-  - [视频](#视频)
-  - [贡献](#贡献)
-  - [赞助](#赞助)
-  - [感谢](#感谢)
-  - [原因?](#原因)
+- [GitHub Releases](https://github.com/KrisCris/Palworld-Pal-Editor/releases) — 正式版本与更新记录
+- [Nexus Mods](https://www.nexusmods.com/palworld/mods/995) — 从 Nexus 下载最新正式版
+- [Nightly Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases/tag/auto-nightly-buiilds) — 自动更新的开发测试版本
 
----
+建议普通用户直接下载打包好的桌面应用，无需另外安装 Python。
 
-## 这个工具能干啥
+## 快速开始
 
-- [x] 列出玩家和帕鲁
-- [x] 修改玩家等级
-- [x] 修改玩家昵称
-- [x] 解锁科技
-- [x] 查看帕鲁数据
-- [x] 修改 帕鲁种族
+1. 备份需要修改的存档文件夹。
+2. 启动桌面应用。
+3. 选择包含 `Level.sav` 的文件夹，然后点击 **载入存档**。
+4. 选择玩家、基地或帕鲁并进行修改。
+5. 点击 **保存更改**，然后进入游戏确认结果。
+
+![载入《幻兽帕鲁》存档](.github/assets/readme-quick-start-zh.webp)
+
+## 功能
+
+### 通用
+
+![帕鲁列表与筛选](.github/assets/readme-features-general-zh.webp)
+
+- [x] 列出玩家及其帕鲁
+- [x] 修改基地帕鲁
+- [x] 搜索帕鲁
+- [x] 对帕鲁排序
+- [x] 筛选帕鲁
+- [x] 显示不在常规容器中的帕鲁
+- [x] 通过作弊模式启用通常不可用的选项
+
+### 帕鲁
+
+![帕鲁编辑器](.github/assets/readme-features-pal-zh.webp)
+
+- [x] 修改帕鲁种族
+- [x] 切换头目帕鲁
+- [x] 切换稀有帕鲁
+- [x] 支持修改游戏内无法正常获得的：塔主、突袭、狂暴、油田、首领连战形态
+- [x] 修改帕鲁昵称
+- [x] 修改帕鲁性别
+- [x] 修改帕鲁外观
+- [x] 修改帕鲁优先级
+- [x] 查看和切换跨界终端导入（DNA）状态
+- [x] 修改帕鲁等级
+- [x] 修改信赖度
+- [x] 修改潜力
+- [x] 修改觉醒
+- [x] 修改帕鲁强化
+- [x] 修改浓缩等级
+- [x] 修改工作适应性
+- [x] 修改装备的主动技能
+- [x] 修改学会的主动技能
+- [x] 修改被动技能
+- [x] 治愈和复活帕鲁
+- [x] 治愈所有帕鲁
+- [x] 在合法范围内最大化帕鲁属性
+- [x] 删除帕鲁
+
+### 模板与批量操作
+
+![模板与批量操作](.github/assets/readme-features-templates-zh.webp)
+
+- [x] 创建主动技能模板
+- [x] 创建被动技能模板
+- [x] 创建可重复使用的帕鲁模板
 - [x] 添加帕鲁
 - [x] 复制帕鲁
-- [x] 删除帕鲁
-- [x] 改变帕鲁性别
-- [x] 切换 BOSS / 稀有 / 塔主 / 石板 等特殊品种
-- [x] 修改 / 删除帕鲁昵称
-- [x] 增删 帕鲁学会的主动技能
-- [x] 增删 帕鲁装备的主动技能
-- [x] 增删 帕鲁被动技能
-- [x] 修改 帕鲁等级
-- [x] 修改 帕鲁浓缩机等级
-- [x] 修改 帕鲁魂强化等级
-- [x] 修改 帕鲁个体值
-- [x] 修改帕鲁工作适应性
-- [x] 计算并展示 最大生命值，攻击力，防御力，工作速度
-- [x] 治愈（复活）所有帕鲁，移除所有负面效果
-- [x] 允许作弊，超出游戏内允许的数值上限，比如255级强化等级，装备超过三个技能等。（需要手动启用作弊功能）
-- [x] 修改 食物BUFF 的时间 （目前只支持CLI）
-- [x] 显示 / 隐藏 不在所有者玩家帕鲁栏位中的帕鲁
-- [x] 显示 / 隐藏 无用的帕鲁数据
+- [x] 从 JSON 导入帕鲁
+- [x] 将帕鲁导出为 JSON
 
-## 未来计划 (No ETA)
+### 玩家
 
-- [ ] 用户可以自定义的技能预设组合。
-- [ ] 重写帕鲁工会和背包的代码，实现切换所有者，帕鲁按存放容器分类等功能。
-- [ ] 用户界面。。。
+![玩家编辑器](.github/assets/readme-features-player-zh.webp)
 
-## 使用
+- [x] 修改玩家昵称
+- [x] 修改玩家等级
+- [x] 修改玩家属性
+    - [x] 生命值
+    - [x] 耐力
+    - [x] 攻击
+    - [x] 负重上限
+    - [x] 工作速度
+- [x] 修改未使用属性点
+- [x] 修改雕像能力强化
+    - [x] 捕获力
+    - [x] 耐饿能力
+    - [x] 游泳能力
+    - [x] 食物保存
+    - [x] 跳跃力
+    - [x] 滑翔能力
+    - [x] 攀爬能力
+    - [x] 异常状态抵抗
+    - [x] 持久力
+    - [x] 帕鲁球追踪
+    - [x] 经验值获取
+    - [x] 虹彩之运
+    - [x] 移动速度
+- [x] 修改科技点
+- [x] 修改古代科技点
+- [x] 切换普通与古代科技解锁状态
+- [x] 一键解锁所有科技
 
-### 方案 A. 使用打包的可执行文件
+### 物品栏
 
-***直接运行可执行文件，你不需要安装Python等依赖。***
+![物品栏编辑器](.github/assets/readme-features-inventory-zh.webp)
 
-- 稳定版:
-  - [Nexusmods](https://www.nexusmods.com/palworld/mods/995)
-  - [Github Release](https://github.com/KrisCris/Palworld-Pal-Editor/releases)
-- 最新（你可能会遇到问题）:
-  - [Github Actions Artifacts](https://github.com/KrisCris/Palworld-Pal-Editor/actions)
+- [x] 修改背包物品
+- [x] 修改重要物品
+- [x] 修改武器
+- [x] 修改防具
+- [x] 修改盾牌
+- [x] 修改滑翔伞
+- [x] 修改饰品
+- [x] 修改帕鲁球模块
+- [x] 修改装备的食物
+- [x] 修改物品数量
+- [x] 清空物品栏槽位
 
-> [!NOTE]
-> 如果你的目标只是简单修改帕鲁存档，那就不需要往下读了。后面的内容为开发者，及更进阶的用户参考。
+## 安装与运行
 
-### 方案 B. 通过 pip 安装
+### 桌面应用
 
-1. 请确保你使用了 Python 3.11+
-2. `pip install --upgrade palworld-pal-editor`
-3. `python -m palworld_pal_editor`
+下载正式版本，解压后运行可执行文件。如果内置窗口无法正常工作，可以在现代浏览器中打开程序显示的 WebUI 地址。
 
-### 方案 C. 使用 Docker Container
+### Docker
 
-1. 下载 `./docker/sample-docker-compose.yml`
-2. 做适当的修改，并重命名为`docker-compse.yml`
-3. 运行 `docker compose up -d`
+1. 下载仓库中的 [`sample-docker-compose.yml`](./docker/sample-docker-compose.yml)，并保存为 `docker-compose.yml`。
+2. 修改 `docker-compose.yml` 中的以下配置：
+   - 在 `ports` 中，将 `8080:58888` 左侧的 `8080` 改成需要使用的主机端口；右侧容器端口 `58888` 保持不变。
+   - 在 `volumes` 中，将 `/Host/Path/To/The/GameSave/AF518B19A47340B8A55BC58137981393` 替换为包含 `Level.sav` 的存档目录；右侧 `/mnt/gamesave` 保持不变。
+   - 将默认 `PASSWORD` 替换为强密码。还可以修改 `APP_LANG`；在 Linux 上，可将 `PUID`/`PGID` 改为主机用户的 UID/GID。
+3. 在 Compose 文件所在目录运行 `docker compose up -d`。
 
-#### 如果你想手动构建 Image
+示例配置会将修改器映射到 `http://localhost:8080`。只要服务器能被其他设备访问，就强烈建议设置密码。
 
-1. 克隆项目.
-2. 复制 `./docker/sample-docker-compose.yml` 到 `./docker/docker-compose.yml`, 并根据需求做适当修改（网络不佳的用户建议传入代理环境变量）。
-3. 运行 `./build_and_run_docker.sh` 以构建容器并运行容器。（Windows的话你把里面的命令复制出来手动跑就行了）。
+### 从源码运行
 
-### 方案 D. 直接运行代码
+安装 Python 3.11+ 和 Node.js，克隆本仓库，然后运行：
 
-1. 安装 Python 3.11+ 和 node.js
-2. 克隆 / 下载项目代码
-3. 在项目文件夹里运行，Windows：`setup_and_run.ps1`， Unix-like系统：`setup_and_run.sh`.
+```powershell
+.\setup_and_run.ps1
+```
 
-### 可选命令行参数
+在 Linux 或 macOS 上运行：
+
+```bash
+./setup_and_run.sh
+```
+
+脚本会安装仓库锁定的依赖、构建 WebUI 并启动修改器。项目已不再发布 PyPI 构建。
+
+### WebUI 与远程访问
+
+以 Web 模式启动并设置密码：
+
+```powershell
+palworld-pal-editor.exe --mode web --port 58080 --password "请设置强密码"
+```
+
+使用独立部署的前端时，请通过入口页面右上角的服务器菜单选择后端。
+
+## 命令行参数
 
 ```text
-options:
-  -h, --help           显示帮助
-  --lang LANG          设置应用语言，可选项: en, zh-CN, ja
-  --path PATH          存档文件夹的路径
-  --mode MODE          运行模式，可选项: cli, gui, web
-  --port PORT          WebUI监听的端口
-  --password PASSWORD  WebUI的密码，默认无密码
+--lang LANG          界面语言
+--path PATH          存档文件夹路径
+--mode MODE          cli、gui 或 web
+--port PORT          WebUI 端口
+--password PASSWORD  WebUI 访问密码
+--debug              仅供开发使用的调试模式
+--nocli              在 GUI/WebUI 模式中禁用交互式 CLI
 ```
 
-### 配置文件
+运行 `palworld-pal-editor.exe --help` 可查看当前参数。命令行参数会覆盖 `config.json`；通常不需要手动编辑该文件。
 
-> [!NOTE]
->
-> 1. 通常来说你不需要手动修改配置文件
-> 2. 命令行参数会覆盖并写入配置文件
+## 视频教程
 
-默认:
+- [Bilibili：Palworld Pal Editor 1.0 功能展示](https://www.bilibili.com/video/BV1j4M26UEim/?share_source=copy_web&vd_source=fe2d6c1e59f6c8d600d221e1800972f5)
+- [YouTube：旧版功能展示](https://www.youtube.com/watch?v=PhSWpr0f70g)
+- [旧版 WebUI/GUI 教程](https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-401e-b8a1-987ac3e6b02d)
+- [旧版 Docker 教程](https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/d7008b22-a2ff-4a2c-8903-32bab0922b32)
 
-```json
-// config.json
-{
-    "i18n": "en",
-    "mode": "web",
-    "port": 58080,
-    "path": null,
-    "password": null,
-    "JWT_SECRET_KEY": "X2Nvbm5sb3N0"
-}
-```
+只有 1.0 功能展示对应当前修改器；其他视频仅保留为旧版操作流程参考。
 
-自定义:
+## 支持本项目
 
-```json
-// config.json
-{
-    "i18n": "zh-CN",
-    "mode": "gui",
-    "port": 12345,
-    "path": "/path/to/save/folder",
-    "password": "YOUR PASSWORD FOR WEBUI AUTH",
-    "JWT_SECRET_KEY": "JUST SOME RANDOM TEXTS"
-}
-```
-
-## 视频
-
-> [!IMPORTANT]
-> 以下视频展示了如何从代码运行，如果你下载的可执行文件的话，你可以快进跳过那些部分。
-
-- DOCKER
-
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/d7008b22-a2ff-4a2c-8903-32bab0922b32
-
-- GUI / WEB
-  
-
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/66f3cb1e-f1fc-401e-b8a1-987ac3e6b02d
-
-- CLI: (old, but you get the idea)
-
-https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/02284dda-f1d7-40af-b12d-6b4ae11d4113
-
-## 贡献
-
-1. 如果你遇到任何问题，或者需要新功能，请先搜索 [Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues) 板块。
-2. 先看一看最新的分支
-3. 如果你真的想贡献的话，建议先开PR让大家知道。
-
-## 赞助
-
-**如果你喜欢这个工具，可以考虑赞助我，以帮助我继续开发和维护这个工具。**
-
-<p align='center'>
-<a href="https://ko-fi.com/connlost"><img alt="Ko-Fi" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"></a>&nbsp;
-<a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>&nbsp;
-<a href="https://afdian.com/a/_connlost"><img width="100" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a>&nbsp;
-<a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="AliPay" src="https://img.shields.io/badge/alipay-00A1E9?style=for-the-badge&logo=alipay&logoColor=white"></a>&nbsp;
-<a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="WeChat" src="https://img.shields.io/badge/WeChat-07C160?style=for-the-badge&logo=wechat&logoColor=white"></a>&nbsp;
+<p align="center">
+  <a href="https://ko-fi.com/connlost"><img alt="Ko-fi" src="https://img.shields.io/badge/Ko--fi-FF9AA2?style=for-the-badge&logo=ko-fi&logoColor=white"></a>
+  <a href="https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US"><img alt="PayPal" src="https://img.shields.io/badge/PayPal-1683E2?style=for-the-badge&logo=paypal&logoColor=white"></a>
+  <a href="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b"><img alt="支付宝" src="https://img.shields.io/badge/AliPay-00D9E9?style=for-the-badge&logo=alipay&logoColor=white"></a>
+  <a href="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5"><img alt="微信支付" src="https://img.shields.io/badge/WeChat-20D997?style=for-the-badge&logo=wechat&logoColor=white"></a>
 </p>
 
-[ko-fi ❤️](https://ko-fi.com/connlost)
+本项目由 _connlost 利用业余时间开发和维护。
 
-[PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)
+- [加入 Discord 社区](https://discord.gg/FnuA95nMJ8)，提问或帮助其他用户。
+- 在 [GitHub Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues) 报告可复现的问题，并附上可以安全分享的日志和存档信息。
+- 通过 Pull Request 贡献目标明确、便于维护的修复。
+- 通过 [Ko-fi](https://ko-fi.com/connlost)、[PayPal](https://www.paypal.com/paypalme/c0nnlost?country.x=US&locale.x=en_US)、[支付宝](https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b) 或 [微信支付](https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5) 支持后续维护。
 
-<img width="256" alt="AliPay" src="https://github.com/KrisCris/Palworld-Pal-Editor/assets/38860226/78d85efd-3a3f-4007-a8a3-4c7ada0cfc5b">
-<img width="256" alt="WeChat" src="https://github.com/user-attachments/assets/8dcbb43f-1270-49fd-b621-db70d2833de5">
+## 参与贡献
 
-## 感谢
+提交问题或功能请求前，请先搜索现有 [Issues](https://github.com/KrisCris/Palworld-Pal-Editor/issues)。贡献代码时，请基于最新开发分支、保持每个 Pull Request 目标单一、说明用户可见的变化，并为界面修改提供截图。
 
-- 感谢 [Take-Me1010](https://github.com/Take-Me1010) 的日语翻译。
+## 鸣谢
 
----
+- [Take-Me1010](https://github.com/Take-Me1010) — 日语翻译
+- [MagicBear](https://github.com/magicbear) — 快速载入存档的方法
+- [palworld-save-tools](https://github.com/KrisCris/palworld-save-tools) — 《幻兽帕鲁》存档序列化
+- [Palworld Server Toolkit](https://github.com/magicbear/palworld-server-toolkit) — 项目早期参考
 
-- 感谢 [MagicBear](https://github.com/magicbear) 大大的超快速存档载入方法。
-- 感谢 [palworld-save-tools](https://github.com/cheahjs/palworld-save-tools) 提供的存档解包工具。
-- 感谢 [MagicBear](https://github.com/magicbear) 大佬的 [Palworld-Server-Toolkit](https://github.com/magicbear/palworld-server-toolkit) 的启发。
-- 感谢 [EternalWraith](https://github.com/EternalWraith) 的 [PalEdit](https://github.com/EternalWraith/PalEdit) 的启发。
+## 许可证
 
-## 原因?
-
-1. 感谢各位能和我一起玩游戏的朋友 ❤。
-2. 复健一下两三年没用的Python。
-3. 这个人实在是太无聊了。
-4. 这个人已经被另外一个工具的BUG折磨坏了。
+Palworld Pal Editor 使用 [GNU General Public License v3.0](./LICENSE) 发布。
