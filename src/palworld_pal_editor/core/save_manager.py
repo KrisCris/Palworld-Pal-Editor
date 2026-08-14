@@ -659,62 +659,95 @@ class SaveManager:
         pal_id: UUID | str,
         target_container_ids: UUID | str | list[UUID | str],
     ) -> bool:
-        pal_entity = self.get_pal(pal_id)
-        if pal_entity is None:
-            raise ValueError("Pal not found.")
-        if pal_entity.IsExpeditionPal:
-            raise ValueError("Expedition Pals must be recalled in-game before moving.")
-
-        location = self.resolve_pal_location(pal_entity)
-        if location["LocationStatus"] != "ok":
-            raise ValueError(
-                f"Pal location is {location['LocationStatus']}; repair it before moving."
-            )
-
-        registry = self._container_descriptor_map()
         candidate_ids = (
             target_container_ids
             if isinstance(target_container_ids, list)
             else [target_container_ids]
         )
+        target_ids_text = ",".join(
+            str(candidate_id) for candidate_id in candidate_ids
+        )
+
+        def reject(reason: str, details: str = "") -> None:
+            suffix = f"; {details}" if details else ""
+            LOGGER.warning(
+                f"Move Pal rejected: pal={pal_id} targets=[{target_ids_text}]"
+                f"{suffix}; reason={reason}"
+            )
+            raise ValueError(reason)
+
+        pal_entity = self.get_pal(pal_id)
+        if pal_entity is None:
+            reject("Pal not found.")
+        if pal_entity.IsExpeditionPal:
+            reject("Expedition Pals must be recalled in-game before moving.")
+
+        location = self.resolve_pal_location(pal_entity)
+        if location["LocationStatus"] != "ok":
+            reject(
+                f"Pal location is {location['LocationStatus']}; repair it before moving."
+            )
+
+        source_text = (
+            f"{location['ActualContainerId']}@{location['ActualSlotIndex']}"
+        )
+        LOGGER.info(
+            f"Move Pal requested: pal={pal_entity.InstanceId} source={source_text} "
+            f"owner={pal_entity.OwnerPlayerUId} targets=[{target_ids_text}]"
+        )
+
+        registry = self._container_descriptor_map()
         target_descriptor = None
         target_container = None
+        candidate_statuses = []
         for candidate_id in candidate_ids:
             descriptor = registry.get(str(candidate_id))
             container = self.container_data.get_container(candidate_id)
+            exists = container is not None
+            occupied = len(container.slots) if exists else None
+            size = container.size if exists else None
+            movable = bool(descriptor and descriptor["MovableInto"])
+            candidate_statuses.append(
+                f"container={candidate_id} exists={exists} "
+                f"kind={descriptor['ContainerKind'] if descriptor else 'unknown'} "
+                f"occupied={occupied}/{size} movable={movable}"
+            )
             if (
                 descriptor
                 and descriptor["MovableInto"]
-                and container
+                and container is not None
                 and len(container.slots) < container.size
             ):
                 target_descriptor = descriptor
                 target_container = container
                 break
         if target_descriptor is None or target_container is None:
-            raise ValueError("Target container is unknown, unsafe, or full.")
+            reject(
+                "Target container is unknown, unsafe, or full.",
+                f"candidates=[{'; '.join(candidate_statuses)}]",
+            )
 
         source_container = self.container_data.get_container(
             location["ActualContainerId"]
         )
         if source_container is None:
-            raise ValueError("Source container is unavailable.")
+            reject("Source container is unavailable.", f"source={source_text}")
         if str(source_container.ID) == str(target_container.ID):
-            raise ValueError("Pal is already in the target container.")
+            reject("Pal is already in the target container.", f"source={source_text}")
         if target_container.has_pal(pal_entity.InstanceId):
-            raise ValueError("Pal already exists in the target container.")
+            reject("Pal already exists in the target container.")
         target_is_shared = target_descriptor.get("Shared", False)
         if target_is_shared and pal_entity.OwnerPlayerUId is None:
-            raise ValueError("A shared container requires a Pal with an owner.")
+            reject("A shared container requires a Pal with an owner.")
         if (
             not target_is_shared
             and str(pal_entity.group_id) != str(target_descriptor.get("GroupId"))
         ):
-            raise ValueError("Cross-guild Pal movement is not supported.")
+            reject("Cross-guild Pal movement is not supported.")
 
         source_slot = source_container.get_slot(pal_entity.InstanceId)
         if source_slot is None:
-            raise ValueError("Source slot is unavailable.")
+            reject("Source slot is unavailable.", f"source={source_text}")
 
         source_snapshot = source_container.snapshot_slots()
         target_snapshot = target_container.snapshot_slots()
@@ -768,8 +801,13 @@ class SaveManager:
                 pal_entity.set_owner_player_uid(target_owner.PlayerUId, target_owner)
 
             self._container_registry_cache = None
+            LOGGER.info(
+                f"Move Pal succeeded: pal={pal_entity.InstanceId} "
+                f"source={source_text} target={target_container.ID}@{target_slot_index} "
+                f"owner={old_owner_id}->{pal_entity.OwnerPlayerUId}"
+            )
             return True
-        except Exception:
+        except Exception as error:
             source_container.restore_slots(source_snapshot)
             target_container.restore_slots(target_snapshot)
             pal_entity._pal_param.clear()
@@ -784,6 +822,12 @@ class SaveManager:
             self.baseworker_mapping.clear()
             self.baseworker_mapping.update(baseworker_snapshot)
             self._container_registry_cache = registry_snapshot
+            LOGGER.error(
+                f"Move Pal rolled back: pal={pal_entity.InstanceId} "
+                f"source={source_text} target={target_container.ID} "
+                f"owner={pal_entity.OwnerPlayerUId}; error={error}\n"
+                f"{traceback.format_exc()}"
+            )
             raise
     
     def delete_pal(self, guid: str | UUID) -> bool:
@@ -803,7 +847,9 @@ class SaveManager:
         try:
             if pal_group := self.group_data.get_group(popped_pal.group_id):
                 pal_group.del_pal(popped_pal.InstanceId)
-            if pal_container := self.container_data.get_container(popped_pal.ContainerId):
+            if (
+                pal_container := self.container_data.get_container(popped_pal.ContainerId)
+            ) is not None:
                 pal_container.del_pal(popped_pal.InstanceId)
             self._entities_list.remove(popped_pal._pal_obj)
         except:
@@ -877,7 +923,9 @@ class SaveManager:
                         requested_player.OtomoCharacterContainerId,
                         requested_player.PalStorageContainerId,
                     )
-                    if (container := self.container_data.get_container(container_id))
+                    if (
+                        container := self.container_data.get_container(container_id)
+                    ) is not None
                     and container.get_empty_slot() != -1
                 ),
                 None,
