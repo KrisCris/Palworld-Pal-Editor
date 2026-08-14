@@ -157,26 +157,40 @@ def get_player_inventory():
 @jwt_required()
 def patch_player_inventory_slot():
     player_uid = request.json.get("PlayerUId")
+    container_kind = request.json.get("ContainerKind")
+    slot_index = request.json.get("SlotIndex")
+    item_id = request.json.get("ItemId")
+    count = request.json.get("Count", 0)
+    allow_overstack = bool(request.json.get("AllowOverstack", False))
+    context = (
+        f"player={player_uid} container={container_kind} slot={slot_index} "
+        f"item={item_id} count={count} allow_overstack={allow_overstack}"
+    )
     if player_uid == "PAL_BASE_WORKER_BTN":
+        LOGGER.warning(f"Inventory slot update rejected: {context}; invalid player")
         return reply(1, None, "PAL_BASE_WORKER_BTN is not a real player")
     player = SaveManager().get_player(player_uid)
     if not player:
+        LOGGER.warning(f"Inventory slot update rejected: {context}; player not found")
         return reply(1, None, f"Player {player_uid} not exist")
+    LOGGER.info(f"Inventory slot update requested: {context}")
     try:
         slot = SaveManager().item_container_data.patch_slot(
             player,
-            request.json.get("ContainerKind"),
-            request.json.get("SlotIndex"),
-            request.json.get("ItemId"),
-            request.json.get("Count", 0),
-            allow_overstack=bool(request.json.get("AllowOverstack", False)),
+            container_kind,
+            slot_index,
+            item_id,
+            count,
+            allow_overstack=allow_overstack,
         )
+        LOGGER.info(f"Inventory slot update succeeded: {context}")
         return reply(0, slot)
     except ValueError as error:
+        LOGGER.warning(f"Inventory slot update rejected: {context}; reason={error}")
         return reply(1, None, str(error))
     except Exception:
         stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error patching player inventory slot {stack_trace}")
+        LOGGER.error(f"Inventory slot update failed: {context}\n{stack_trace}")
         return reply(1, None, "Unable to update this inventory slot")
 
 

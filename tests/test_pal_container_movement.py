@@ -281,6 +281,42 @@ class SaveManagerMovementTests(unittest.TestCase):
         self.assertIsNone(source_player.get_pal(PAL_ID))
         self.assertIs(pal, target_player.get_pal(PAL_ID))
 
+    def test_move_accepts_a_completely_empty_party_container_and_logs_the_route(self):
+        manager, pal, source, target, _, _ = movement_manager("party")
+        target.restore_slots([])
+        manager._container_registry_cache[str(target.ID)]["Occupied"] = 0
+
+        with self.assertLogs("Palworld-Pal-Editor", level="INFO") as captured:
+            result = manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
+
+        self.assertTrue(result)
+        self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
+        self.assertFalse(source.has_pal(PAL_ID))
+        self.assertTrue(target.has_pal(PAL_ID))
+        log_text = "\n".join(captured.output)
+        self.assertIn(f"pal={PAL_ID}", log_text)
+        self.assertIn(f"source={CONTAINER_ID}@1", log_text)
+        self.assertIn(f"target={TARGET_CONTAINER_ID}@0", log_text)
+
+    def test_rejected_move_logs_each_target_status_and_reason(self):
+        manager, _, _, target, _, _ = movement_manager("storage")
+        target.size = 1
+        descriptor = manager._container_registry_cache[str(target.ID)]
+        descriptor.update({"Size": 1, "Occupied": 1})
+
+        with self.assertLogs("Palworld-Pal-Editor", level="WARNING") as captured:
+            with self.assertRaisesRegex(ValueError, "unknown, unsafe, or full"):
+                manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
+
+        log_text = "\n".join(captured.output)
+        self.assertIn(f"pal={PAL_ID}", log_text)
+        self.assertIn(f"container={TARGET_CONTAINER_ID}", log_text)
+        self.assertIn("exists=True", log_text)
+        self.assertIn("kind=storage", log_text)
+        self.assertIn("occupied=1/1", log_text)
+        self.assertIn("movable=True", log_text)
+        self.assertIn("reason=Target container is unknown, unsafe, or full.", log_text)
+
     def test_base_to_player_and_base_to_base_moves_keep_mappings_consistent(self):
         manager, pal, _, _, source_player, target_player = movement_manager("storage")
         source_player.pop_pal(PAL_ID)
@@ -397,6 +433,21 @@ class SaveManagerMovementTests(unittest.TestCase):
             "MapObjectConcreteInstanceIdAssignedToExpedition", pal._pal_param
         )
         self.assertIs(pal, manager.baseworker_mapping[str(pal.InstanceId)])
+
+    def test_default_creation_prefers_an_empty_party_over_pal_storage(self):
+        manager, _, party, storage, player, _ = movement_manager("storage")
+        party.restore_slots([])
+        player.OtomoCharacterContainerId = party.ID
+        player.PalStorageContainerId = storage.ID
+        manager.group_data = FakeGroupData(FakeGroup())
+        manager._entities_list = []
+
+        pal = manager.add_pal(player.PlayerUId)
+
+        self.assertIsNotNone(pal)
+        self.assertEqual((party.ID, 0), pal.SlotId)
+        self.assertTrue(party.has_pal(pal.InstanceId))
+        self.assertFalse(storage.has_pal(pal.InstanceId))
 
 
 if __name__ == "__main__":
