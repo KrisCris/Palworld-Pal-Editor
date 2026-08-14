@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
+import * as backendConnection from "../src/services/backend-connection.js";
+
+const {
     backendStorageKey,
     backendUrl,
     normalizeBackendOrigin,
@@ -10,7 +12,7 @@ import {
     rememberBackend,
     removeStorage,
     writeStorage,
-} from "../src/services/backend-connection.js";
+} = backendConnection;
 
 const storage = () => {
     const values = new Map();
@@ -31,6 +33,32 @@ test("normalizes backend origins and builds backend URLs", () => {
     assert.throws(() => normalizeBackendOrigin("http://example.test/api", "http://127.0.0.1:58080"), /origin/);
     assert.equal(backendUrl("", "/api/save/status"), "/api/save/status");
     assert.equal(backendUrl("http://10.0.0.2:58080", "/image/ui/heal"), "http://10.0.0.2:58080/image/ui/heal");
+});
+
+test("versions backend images with the first six Git hash characters", () => {
+    assert.equal(typeof backendConnection.versionedBackendAssetUrl, "function");
+    assert.equal(
+        backendConnection.versionedBackendAssetUrl(
+            "http://10.0.0.2:58080",
+            "/image/ui/heal",
+            "1.0.0-NIGHTLY-a1b2c3d-KrisCris/Palworld-Pal-Editor-20260814",
+        ),
+        "http://10.0.0.2:58080/image/ui/heal?v=a1b2c3",
+    );
+    assert.equal(
+        backendConnection.versionedBackendAssetUrl("", "/image/ui/heal", "1.0.0-RELEASE-ABCDEF1"),
+        "/image/ui/heal?v=abcdef",
+    );
+});
+
+test("leaves backend images unversioned when the Git hash cannot be extracted", () => {
+    assert.equal(typeof backendConnection.versionedBackendAssetUrl, "function");
+    for (const version of ["development", "0.0.0", "1.0.0-NIGHTLY-not-a-hash-repo-time", "", undefined]) {
+        assert.equal(
+            backendConnection.versionedBackendAssetUrl("http://10.0.0.2:58080", "/image/ui/heal", version),
+            "http://10.0.0.2:58080/image/ui/heal",
+        );
+    }
 });
 
 test("scopes storage values by backend and retains five recent backends", () => {

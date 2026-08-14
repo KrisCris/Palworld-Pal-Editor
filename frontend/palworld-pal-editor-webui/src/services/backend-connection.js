@@ -14,6 +14,13 @@ export function backendUrl(origin, path) {
     return origin ? new URL(path, `${origin}/`).href : path;
 }
 
+export function versionedBackendAssetUrl(origin, path, version) {
+    const url = backendUrl(origin, path);
+    const match = /(?:^|-)(?:NIGHTLY|RELEASE)-([0-9a-f]{6,40})(?:-|$)/i.exec(version || "");
+    if (!path.startsWith("/image/") || !match) return url;
+    return `${url}${url.includes("?") ? "&" : "?"}v=${match[1].slice(0, 6).toLowerCase()}`;
+}
+
 export function backendStorageKey(name, origin) {
     return origin ? `${name}:${encodeURIComponent(origin)}` : name;
 }

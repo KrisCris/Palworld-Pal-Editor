@@ -9,6 +9,7 @@ import {
     readStorage,
     rememberBackend,
     removeStorage,
+    versionedBackendAssetUrl,
     writeStorage,
 } from "../services/backend-connection.js";
 import {
@@ -623,7 +624,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const BACKEND_REQUEST_ORIGIN = ref(BACKEND_ORIGIN.value);
     const BACKEND_RECENT = ref(readRecentBackends(localStorage));
     const BACKEND_CONNECTED = ref(false);
-    const backendAssetUrl = path => backendUrl(BACKEND_ORIGIN.value, path);
+    const backendAssetUrl = path => versionedBackendAssetUrl(BACKEND_ORIGIN.value, path, VERSION.value);
     const storageKey = name => backendStorageKey(name, BACKEND_ORIGIN.value);
     const PAL_GAME_SAVE_PATH = ref(readStorage(localStorage, storageKey("PAL_GAME_SAVE_PATH")));
     const HAS_PASSWORD = ref(false);
