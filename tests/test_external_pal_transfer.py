@@ -285,3 +285,34 @@ def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
         duplicate.record_key,
     }
     assert source.pal._pal_param == source_snapshot
+
+
+def test_save_transaction_restores_level_dps_and_global_on_replace_failure(
+    tmp_path, monkeypatch
+):
+    manager = open_copied_world(tmp_path, with_global=True)
+    manager.create_pal(LOSSY_UID, f"dps:{LOSSY_UID}")
+    manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    level_path = manager._file_path / "Level.sav"
+    dps_path = manager._dps_storages[f"dps:{LOSSY_UID}"].path
+    global_path = manager._global_palbox.path
+    original = {
+        level_path: level_path.read_bytes(),
+        dps_path: dps_path.read_bytes(),
+        global_path: global_path.read_bytes(),
+    }
+    replace_count = 0
+    real_replace = manager._replace_staged_output
+
+    def fail_second_replace(temp, target):
+        nonlocal replace_count
+        replace_count += 1
+        if replace_count == 2:
+            raise OSError("injected replacement failure")
+        real_replace(temp, target)
+
+    monkeypatch.setattr(manager, "_replace_staged_output", fail_second_replace)
+
+    assert manager.save(str(manager._file_path)) is False
+    assert replace_count == 2
+    assert {path: path.read_bytes() for path in original} == original

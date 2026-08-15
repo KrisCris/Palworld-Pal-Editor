@@ -249,8 +249,6 @@ class SaveManager:
                 LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
                 return False
             
-        file_path: Path = output_path / "Level.sav"
-
         if output_path.exists():
             BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
             backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
@@ -265,22 +263,114 @@ class SaveManager:
                 LOGGER.error(f"Error backing up directory: {e}")
                 return False
 
-        LOGGER.info("Saving Player Data...")
-        for player in self.player_mapping.values():
-            self.save_player_sav(player, output_path)
-
-        LOGGER.info("Saving Level.sav...")
-        gvas_file = copy.deepcopy(self.gvas_file)
-        LOGGER.info("Compressing Main GVAS file")
-        sav_data = compress_gvas_to_sav(
-            gvas_file.write(MAIN_SKIP_PROPERTIES), self._save_type
+        outputs: list[tuple[Path, bytes, dict]] = []
+        level_data = compress_gvas_to_sav(
+            copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
+            self._save_type,
         )
+        outputs.append((output_path / "Level.sav", level_data, MAIN_SKIP_PROPERTIES))
+        for player in self.player_mapping.values():
+            if player.PlayerGVAS is None:
+                continue
+            player.save_new_pal_records()
+            player_gvas, player_save_type = player.PlayerGVAS
+            player_data = compress_gvas_to_sav(
+                copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
+                player_save_type,
+            )
+            outputs.append(
+                (
+                    output_path
+                    / "Players"
+                    / f"{UUID2HexStr(player.PlayerUId)}.sav",
+                    player_data,
+                    PLAYER_SKIP_PROPERTIES,
+                )
+            )
+        dirty_storages = [
+            storage for storage in self._dps_storages.values() if storage.dirty
+        ]
+        if self._global_palbox is not None and self._global_palbox.dirty:
+            dirty_storages.append(self._global_palbox)
+        for storage in dirty_storages:
+            target = (
+                output_path.parent / "GlobalPalStorage.sav"
+                if storage.kind == "global_palbox"
+                else output_path / "Players" / storage.path.name
+            )
+            outputs.append(
+                (target, storage.serialize(), PALWORLD_CUSTOM_PROPERTIES)
+            )
 
-        LOGGER.info(f"Saving to {file_path}")
-        with file_path.open("wb") as file:
-            file.write(sav_data)
-        LOGGER.info(f"Saved to {file_path}")
+        staged: list[tuple[Path, Path]] = []
+        backups: dict[Path, Path | None] = {}
+        replaced: list[Path] = []
+        transaction_id = uuid.uuid4().hex
+        try:
+            for target, sav_data, custom_properties in outputs:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                staged.append(
+                    (target, self._staged_output(target, sav_data, custom_properties))
+                )
+            for target, _ in staged:
+                if target.exists():
+                    backup = target.with_name(
+                        f".{target.name}.{transaction_id}.bak"
+                    )
+                    shutil.copy2(target, backup)
+                    backups[target] = backup
+                else:
+                    backups[target] = None
+            for target, temp in staged:
+                self._replace_staged_output(temp, target)
+                replaced.append(target)
+                LOGGER.info(f"Saved verified output: file_path={target}")
+        except Exception:
+            LOGGER.error(
+                f"Save transaction failed; restoring outputs: {traceback.format_exc()}"
+            )
+            for target in reversed(replaced):
+                backup = backups.get(target)
+                try:
+                    if backup is None:
+                        target.unlink(missing_ok=True)
+                    else:
+                        shutil.copy2(backup, target)
+                    LOGGER.info(f"Restored output: file_path={target}")
+                except Exception:
+                    LOGGER.critical(
+                        f"Failed restoring output {target}: {traceback.format_exc()}"
+                    )
+            return False
+        finally:
+            for _, temp in staged:
+                temp.unlink(missing_ok=True)
+            for backup in backups.values():
+                if backup is not None:
+                    backup.unlink(missing_ok=True)
+        for storage in dirty_storages:
+            storage.dirty = False
         return True
+
+    @staticmethod
+    def _staged_output(
+        path: Path,
+        sav_data: bytes,
+        custom_properties: dict,
+    ) -> Path:
+        temp = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+        try:
+            temp.write_bytes(sav_data)
+            raw_gvas, _ = decompress_sav_to_gvas(temp.read_bytes())
+            GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, custom_properties)
+            return temp
+        except Exception:
+            temp.unlink(missing_ok=True)
+            raise
+
+    @staticmethod
+    def _replace_staged_output(temp: Path, target: Path) -> None:
+        temp.replace(target)
     
     def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
         player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
@@ -558,6 +648,18 @@ class SaveManager:
         if domain == "dps":
             return [record for record in records if record.storage_kind == "dps"]
         raise ValueError(f"Unknown Pal record domain: {domain}")
+
+    def get_unique_world_record(
+        self, instance_id: UUID | str | None
+    ) -> Optional[PalRecordRef]:
+        if instance_id is None:
+            return None
+        records = self.records_by_instance(instance_id, "world")
+        if len(records) > 1:
+            raise ValueError(
+                "Multiple ordinary world records share this Instance ID; use RecordKey."
+            )
+        return records[0] if records else None
 
     def records_for_roster(self, roster_key: str) -> list[PalRecordRef]:
         return [
@@ -1141,6 +1243,20 @@ class SaveManager:
         }
         return save_parameter, outer_instance
 
+    def normalize_external_record(self, record: PalRecordRef) -> None:
+        if record.storage_kind == "global_palbox":
+            save_parameter, _ = self._prepare_global_parameter(
+                record.pal, preserve_provenance=True
+            )
+            record.pal._pal_param.clear()
+            record.pal._pal_param.update(save_parameter["value"])
+            self._global_palbox.dirty = True
+        elif record.storage_kind == "dps":
+            self._add_locker_id(record.pal.InstanceId)
+            storage = self._dps_storages.get(record.storage_key)
+            if storage is not None:
+                storage.dirty = True
+
     def _global_collision_candidates(self, source: PalRecordRef) -> list[PalRecordRef]:
         records = self.records_by_instance(source.pal.InstanceId)
         if source.storage_kind == "global_palbox":
@@ -1719,6 +1835,28 @@ class SaveManager:
     def delete_pal(self, guid: str | UUID) -> bool:
         guid = str(guid)
         record = self.get_record(guid)
+        if record is not None and record.storage_kind == "global_palbox":
+            storage = self._global_palbox
+            snapshot = self._snapshot_external_mutation(
+                [(storage, record.slot_index)], []
+            )
+            try:
+                storage.clear(record.record_key)
+                self._unregister_record(record)
+                self._container_registry_cache = None
+                LOGGER.info(
+                    "Deleted Global Palbox Pal: "
+                    f"record={record.record_key} slot={record.slot_index} "
+                    f"pal={record.pal.InstanceId}"
+                )
+                return True
+            except Exception:
+                self._restore_external_mutation(snapshot)
+                LOGGER.error(
+                    f"Failed deleting Global Palbox Pal {record.record_key}: "
+                    f"{traceback.format_exc()}"
+                )
+                return False
         if record is not None and record.storage_kind == "dps":
             storage = self._dps_storages.get(record.storage_key)
             if storage is None:

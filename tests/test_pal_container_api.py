@@ -1,15 +1,45 @@
+import copy
 import unittest
 from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_entity import PalEntity
+from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_storage import PalRecordRef
 
 
 class FakeManager:
     def __init__(self):
         self.moves = []
         self.transfers = []
+        instance_id = toUUID("10000000-0000-0000-0000-000000000001")
+        world_pal = PalEntity(
+            PalObjects.PalSaveParameter(
+                instance_id,
+                PalObjects.EMPTY_UUID,
+                PalObjects.EMPTY_UUID,
+                0,
+                PalObjects.EMPTY_UUID,
+            )
+        )
+        world_pal.set_owner_player_uid(None)
+        world_pal.NickName = "World copy"
+        gps_pal = PalEntity(copy.deepcopy(world_pal._pal_obj))
+        gps_pal.NickName = "GPS copy"
+        self.records = {
+            f"world:{instance_id}": PalRecordRef(
+                f"world:{instance_id}",
+                "world-container:box",
+                "world",
+                0,
+                world_pal,
+            ),
+            "gps:0": PalRecordRef(
+                "gps:0", "global-palbox", "global_palbox", 0, gps_pal
+            ),
+        }
 
     def get_container_registry(self):
         return [
@@ -34,8 +64,24 @@ class FakeManager:
     def get_pal(self, _pal_id):
         return None
 
-    def get_record(self, _record_key):
-        return None
+    def get_record(self, record_key):
+        return self.records.get(record_key)
+
+    def get_unique_world_record(self, instance_id):
+        return self.records.get(f"world:{instance_id}")
+
+    def resolve_record_location(self, record):
+        return {
+            "RecordedContainerId": None,
+            "RecordedSlotIndex": record.pal.SlotIndex,
+            "ActualContainerId": None,
+            "ActualSlotIndex": record.slot_index,
+            "ActualLocations": [],
+            "LocationStatus": "ok",
+            "LocationAnomaly": None,
+            "ContainerKind": record.storage_kind,
+            "ContainerLabel": record.storage_key,
+        }
 
 
 class PalContainerApiTests(unittest.TestCase):
@@ -93,6 +139,22 @@ class PalContainerApiTests(unittest.TestCase):
             [("world:pal", "dps:owner", "move", None)],
             self.manager.transfers,
         )
+
+    def test_paldata_selects_record_key_when_instance_id_is_shared(self):
+        gps = self.client.post(
+            "/api/pal/paldata",
+            json={"RecordKey": "gps:0"},
+            headers=self.headers,
+        ).get_json()
+        world = self.client.post(
+            "/api/pal/paldata",
+            json={"RecordKey": next(iter(self.manager.records))},
+            headers=self.headers,
+        ).get_json()
+
+        self.assertEqual("GPS copy", gps["data"]["NickName"])
+        self.assertEqual("World copy", world["data"]["NickName"])
+        self.assertEqual("gps:0", gps["data"]["RecordKey"])
 
 
 if __name__ == "__main__":
