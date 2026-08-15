@@ -6,6 +6,7 @@ import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
+import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
@@ -16,17 +17,22 @@ const skillTemplateType = ref('')
 const showMoveDialog = ref(false)
 const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
   || palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok')
+const externalContainerLabel = computed(() => formatContainerLabel(
+  palStore.SELECTED_PAL_DATA,
+  palStore.getTranslatedText,
+  palStore.getTechName,
+))
 const ownerLabel = computed(() => palStore.SELECTED_PAL_DATA.OwnerName
   || (palStore.SELECTED_PAL_DATA.StorageKind !== 'world'
-    ? palStore.SELECTED_PAL_DATA.ContainerLabel
+    ? externalContainerLabel.value
     : palStore.getTranslatedText('Editor_Pal_No_Owner')))
 const guildLabel = computed(() => palStore.SELECTED_PAL_DATA.group_id
   || (palStore.SELECTED_PAL_DATA.StorageKind === 'global_palbox'
-    ? palStore.SELECTED_PAL_DATA.ContainerLabel
+    ? externalContainerLabel.value
     : ''))
 const technicalContainer = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
   ? palStore.SELECTED_PAL_DATA.ContainerId
-  : palStore.SELECTED_PAL_DATA.ContainerLabel)
+  : externalContainerLabel.value)
 const technicalSlot = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
   ? palStore.SELECTED_PAL_DATA.SlotIndex
   : palStore.SELECTED_PAL_DATA.ActualSlotIndex)

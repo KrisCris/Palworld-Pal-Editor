@@ -1911,10 +1911,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             if (response.status != 0) {
                 if (response.status == 2) requireAuth("AuthView_Session_Expired");
                 else if (response.data?.Code === "PAL_IDENTITY_CONFLICT") {
+                    const lockedTarget = response.data.Candidates?.find(
+                        candidate => candidate.RecordKey === response.data.LockedTarget,
+                    );
                     PAL_TRANSFER_CONFLICT.value = {
                         ...response.data,
                         SourceRecordKey: palId,
-                        TargetStorageKey: target?.StorageKey || targetContainerId,
+                        TargetStorageKey: lockedTarget?.StorageKey
+                            || target?.StorageKey
+                            || targetContainerId,
                     };
                 }
                 else reportOperationError("Operation_Move_Pal", response);

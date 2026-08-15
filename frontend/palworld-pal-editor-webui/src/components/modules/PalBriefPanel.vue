@@ -12,35 +12,25 @@ const props = defineProps({
 const palStore = usePalEditorStore()
 const changed = key => Object.hasOwn(props.changedFields, key)
 const uiIcon = name => palStore.backendAssetUrl(`/image/ui/${name}`)
+const cleanLabel = key => palStore.getTranslatedText(key).replace(/\s*[:：]\s*$/, '').trim()
+const attributeLabel = row => row.suffix
+  ? `${cleanLabel(row.label)} ${cleanLabel(row.suffix)}`
+  : cleanLabel(row.label)
 const friendshipPercent = computed(() => Math.min(
   100,
   Math.max(0, Number(props.data.FriendshipLevel || 0) * 100 / palStore.MAX_FRIENDSHIP_LEVEL),
 ))
-const progressRows = computed(() => [
+const potentialRows = computed(() => [
   { key: 'Rank', label: 'Editor_Condenser_Rank', icon: 'condense', value: Math.max(0, Number(props.data.Rank ?? 1) - 1) },
+  { key: 'Talent_HP', label: 'Editor_IV_HP', suffix: 'Editor_IV', icon: 'stat-health', value: props.data.Talent_HP ?? 0 },
+  { key: 'Talent_Shot', label: 'Editor_IV_ATK', suffix: 'Editor_IV', icon: 'stat-attack', value: props.data.Talent_Shot ?? 0 },
+  { key: 'Talent_Defense', label: 'Editor_IV_DEF', suffix: 'Editor_IV', icon: 'stat-defense', value: props.data.Talent_Defense ?? 0 },
+])
+const soulRows = computed(() => [
   { key: 'Rank_HP', label: 'Editor_Souls_HP', icon: 'stat-health', value: props.data.Rank_HP ?? 0 },
   { key: 'Rank_Attack', label: 'Editor_Souls_ATK', icon: 'stat-attack', value: props.data.Rank_Attack ?? 0 },
   { key: 'Rank_Defence', label: 'Editor_Souls_DEF', icon: 'stat-defense', value: props.data.Rank_Defence ?? 0 },
   { key: 'Rank_CraftSpeed', label: 'Editor_Souls_CraftSpeed', icon: 'stat-work-speed', value: props.data.Rank_CraftSpeed ?? 0 },
-])
-const statRows = computed(() => [
-  {
-    key: 'ComputedMaxHP', label: 'Editor_Estimated_HP', icon: 'stat-health',
-    value: props.data.ComputedMaxHP == null ? '—' : props.data.ComputedMaxHP / 1000,
-    ivKey: 'Talent_HP', ivLabel: 'Editor_IV_HP', iv: props.data.Talent_HP,
-  },
-  {
-    key: 'ComputedAttack', label: 'Editor_Estimated_ATK', icon: 'stat-attack',
-    value: props.data.ComputedAttack ?? '—', ivKey: 'Talent_Shot', ivLabel: 'Editor_IV_ATK', iv: props.data.Talent_Shot,
-  },
-  {
-    key: 'ComputedDefense', label: 'Editor_Estimated_DEF', icon: 'stat-defense',
-    value: props.data.ComputedDefense ?? '—', ivKey: 'Talent_Defense', ivLabel: 'Editor_IV_DEF', iv: props.data.Talent_Defense,
-  },
-  {
-    key: 'ComputedCraftSpeed', label: 'Editor_Estimated_WorkSpeed', icon: 'stat-work-speed',
-    value: props.data.ComputedCraftSpeed ?? '—',
-  },
 ])
 const suitabilityEntries = computed(() => Object.entries(props.data.Suitabilities || {})
   .filter(([, value]) => Number(value) > 0))
@@ -75,8 +65,8 @@ const elementIcon = skill => {
 
     <div class="pal-brief__attributes">
       <dl class="pal-brief__attribute-column">
-        <div v-for="row in progressRows" :key="row.key" :class="{ changed: changed(row.key) }">
-          <dt><img :src="uiIcon(row.icon)" alt=""><span>{{ palStore.getTranslatedText(row.label) }}</span></dt>
+        <div v-for="row in potentialRows" :key="row.key" :class="{ changed: changed(row.key) }">
+          <dt><img :src="uiIcon(row.icon)" alt=""><span>{{ attributeLabel(row) }}</span></dt>
           <dd>{{ row.value }}</dd>
         </div>
       </dl>
@@ -86,13 +76,9 @@ const elementIcon = skill => {
           <dd>{{ data.FriendshipLevel }}</dd>
           <i><b :style="{ width: `${friendshipPercent}%` }" /></i>
         </div>
-        <div v-for="row in statRows" :key="row.key" :class="{ changed: changed(row.key) || (row.ivKey && changed(row.ivKey)) }">
-          <dt><img :src="uiIcon(row.icon)" alt=""><span>{{ palStore.getTranslatedText(row.label) }}</span></dt>
-          <dd>
-            <small v-if="row.iv != null" :class="{ changed: changed(row.ivKey) }"
-              :title="palStore.getTranslatedText(row.ivLabel)">IV {{ row.iv }}</small>
-            {{ row.value }}
-          </dd>
+        <div v-for="row in soulRows" :key="row.key" :class="{ changed: changed(row.key) }">
+          <dt><img :src="uiIcon(row.icon)" alt=""><span>{{ attributeLabel(row) }}</span></dt>
+          <dd>{{ row.value }}</dd>
         </div>
       </dl>
     </div>
@@ -141,11 +127,11 @@ const elementIcon = skill => {
 <style scoped>
 .pal-brief {
   display: grid;
-  width: 20.5rem;
+  width: 28rem;
   min-width: 0;
   box-sizing: border-box;
-  gap: .58rem;
-  padding: .85rem;
+  gap: .72rem;
+  padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--editor-color-primary) 30%, var(--editor-color-glass-border));
   border-radius: var(--editor-radius-md);
   background: color-mix(in srgb, var(--editor-color-surface) 74%, transparent);
@@ -171,8 +157,8 @@ header {
 .pal-brief__identity { display: grid; min-width: 0; gap: .08rem; }
 .pal-brief__identity strong,
 .pal-brief__identity span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pal-brief__identity strong { font-size: 1rem; }
-.pal-brief__identity span { color: var(--editor-color-muted); font-size: .68rem; }
+.pal-brief__identity strong { font-size: 1.08rem; }
+.pal-brief__identity span { color: var(--editor-color-muted); font-size: .76rem; }
 .pal-brief__favorite { width: 1.35rem; height: 1.35rem; object-fit: contain; }
 
 .pal-brief__attributes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .38rem; }
@@ -184,7 +170,7 @@ header {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: .25rem;
-  min-height: 1.55rem;
+  min-height: 1.8rem;
   box-sizing: border-box;
   padding: .22rem .34rem;
   border: 1px solid color-mix(in srgb, var(--editor-color-border) 70%, transparent);
@@ -194,9 +180,8 @@ header {
 
 dt { display: flex; min-width: 0; align-items: center; gap: .28rem; }
 dt img { width: .9rem; height: .9rem; flex: 0 0 auto; object-fit: contain; }
-dt span { overflow: hidden; color: var(--editor-color-muted); font-size: .6rem; text-overflow: ellipsis; white-space: nowrap; }
-dd { display: flex; align-items: center; gap: .22rem; margin: 0; font-size: .67rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-dd small { padding: .08rem .2rem; border-radius: .2rem; color: #7dd3fc; background: rgb(14 116 144 / .22); font-size: .5rem; font-weight: 700; }
+dt span { overflow: hidden; color: var(--editor-color-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+dd { display: flex; align-items: center; gap: .22rem; margin: 0; font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .pal-brief__friendship { padding-bottom: .34rem !important; }
 .pal-brief__friendship > i { position: absolute; right: .34rem; bottom: .16rem; left: .34rem; height: .18rem; overflow: hidden; border-radius: 999px; background: rgb(255 255 255 / .08); }
@@ -250,8 +235,8 @@ h4 { margin: 0 0 .28rem; color: var(--editor-color-muted); font-size: .61rem; le
 .pal-brief__active-skills img { width: 1.05rem; height: 1.05rem; object-fit: contain; }
 .pal-brief__active-skills strong,
 .pal-brief__active-skills small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pal-brief__active-skills strong { font-size: .65rem; }
-.pal-brief__active-skills small { color: var(--editor-color-muted); font-size: .52rem; }
+.pal-brief__active-skills strong { font-size: .72rem; }
+.pal-brief__active-skills small { color: var(--editor-color-muted); font-size: .6rem; }
 
 .pal-brief__passive-skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .25rem; }
 .pal-brief__passive-skills > div {
@@ -265,12 +250,12 @@ h4 { margin: 0 0 .28rem; color: var(--editor-color-muted); font-size: .61rem; le
   border-radius: .22rem;
   background: color-mix(in srgb, var(--editor-color-control) 78%, transparent);
 }
-.pal-brief__passive-skills i { width: .42rem; height: .85rem; flex: 0 0 auto; border-radius: 999px; background: #94a3b8; }
-.pal-brief__passive-skills i.passive-tier--negative { background: #ef4444; }
-.pal-brief__passive-skills i.passive-tier--positive { background: #2dd4bf; }
-.pal-brief__passive-skills i.passive-tier--high { background: #38bdf8; }
-.pal-brief__passive-skills i.passive-tier--top { background: #a78bfa; box-shadow: 0 0 .4rem #8b5cf6; }
-.pal-brief__passive-skills strong { overflow: hidden; font-size: .61rem; text-overflow: ellipsis; white-space: nowrap; }
+.pal-brief__passive-skills i { width: .42rem; height: .85rem; flex: 0 0 auto; border-radius: 999px; background: var(--editor-color-muted); }
+.pal-brief__passive-skills i.passive-tier--negative { background: var(--editor-color-passive-negative); }
+.pal-brief__passive-skills i.passive-tier--positive { background: var(--editor-color-passive-positive); }
+.pal-brief__passive-skills i.passive-tier--high { background: var(--editor-color-passive-high); }
+.pal-brief__passive-skills i.passive-tier--top { background: var(--editor-color-passive-top); }
+.pal-brief__passive-skills strong { overflow: hidden; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
 .pal-brief__overflow {
   position: absolute;
   top: .22rem;
@@ -286,6 +271,6 @@ h4 { margin: 0 0 .28rem; color: var(--editor-color-muted); font-size: .61rem; le
 .changed { outline: 1px solid var(--editor-color-warning); outline-offset: 1px; }
 
 @media (max-width: 700px) {
-  .pal-brief { width: min(20.5rem, calc(100vw - 3rem)); }
+  .pal-brief { width: min(28rem, calc(100vw - 3rem)); }
 }
 </style>

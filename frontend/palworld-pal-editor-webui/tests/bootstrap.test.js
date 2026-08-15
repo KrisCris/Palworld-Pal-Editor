@@ -152,6 +152,38 @@ test("loading Pal details preserves list-only location and priority metadata", a
     assert.equal(store.PAL_MAP.get(id).FavoriteIndex, 3);
 });
 
+test("GPS conflicts lock updates to the matching Pal's actual container", async () => {
+    const store = newStore();
+    store.SELECTED_PAL_ID = "gps:0";
+    store.SELECTED_PAL_DATA = { StorageKind: "global_palbox" };
+    store.PAL_CONTAINERS = [{
+        StorageKey: "world-container:palbox",
+        StorageKind: "world",
+        ContainerKind: "storage",
+    }];
+    axios.post = async (url, payload) => {
+        assert.match(url, /\/api\/pal\/transfer$/);
+        assert.equal(payload.TargetStorageKey, "world-container:palbox");
+        return {
+            data: {
+                status: 1,
+                msg: "This genetic identity already exists.",
+                data: {
+                    Code: "PAL_IDENTITY_CONFLICT",
+                    LockedTarget: "world:pal-id",
+                    Candidates: [{
+                        RecordKey: "world:pal-id",
+                        StorageKey: "world-container:party",
+                    }],
+                },
+            },
+        };
+    };
+
+    assert.equal(await store.movePal("world-container:palbox"), false);
+    assert.equal(store.PAL_TRANSFER_CONFLICT.TargetStorageKey, "world-container:party");
+});
+
 test("a failed probe preserves the active backend's ephemeral token", async () => {
     const store = newStore();
     mockBackend({ password: true });

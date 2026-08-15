@@ -117,7 +117,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       <div v-if="playersCollapsed" class="editor-roster-dock">
         <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
           :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
-          <UiIcon name="users" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
+          <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
           <small>{{ playerCount }}</small>
         </button>
         <aside class="editor-roster-preview editor-roster-preview--players">
