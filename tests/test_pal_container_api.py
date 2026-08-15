@@ -9,6 +9,7 @@ from palworld_pal_editor.webui import app
 class FakeManager:
     def __init__(self):
         self.moves = []
+        self.transfers = []
 
     def get_container_registry(self):
         return [
@@ -25,6 +26,10 @@ class FakeManager:
     def move_pal(self, pal_id, target_container_id):
         self.moves.append((pal_id, target_container_id))
         return True
+
+    def transfer_pal(self, source_key, target_key, action, expected_key=None):
+        self.transfers.append((source_key, target_key, action, expected_key))
+        return {"RecordKey": "dps:owner:0", "StorageKey": target_key}
 
     def get_pal(self, _pal_id):
         return None
@@ -67,6 +72,24 @@ class PalContainerApiTests(unittest.TestCase):
         self.assertEqual(1, missing["status"])
         self.assertEqual(0, moved["status"])
         self.assertEqual([("pal", "target")], self.manager.moves)
+
+    def test_transfer_endpoint_uses_storage_qualified_keys(self):
+        moved = self.client.post(
+            "/api/pal/move",
+            json={
+                "SourceRecordKey": "world:pal",
+                "TargetStorageKey": "dps:owner",
+                "Action": "move",
+            },
+            headers=self.headers,
+        ).get_json()
+
+        self.assertEqual(0, moved["status"])
+        self.assertEqual("dps:owner:0", moved["data"]["RecordKey"])
+        self.assertEqual(
+            [("world:pal", "dps:owner", "move", None)],
+            self.manager.transfers,
+        )
 
 
 if __name__ == "__main__":

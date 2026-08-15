@@ -321,9 +321,10 @@ class PalEntity:
 
     @property
     def IsExpeditionPal(self) -> bool:
-        return bool(
+        expedition_id = PalObjects.get_BaseType(
             self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition")
         )
+        return expedition_id not in (None, PalObjects.EMPTY_UUID)
 
     @property
     def IsRAID(self) -> bool:

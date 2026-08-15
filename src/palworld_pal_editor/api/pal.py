@@ -24,10 +24,39 @@ def list_pal_containers():
     return reply(0, SaveManager().get_container_registry())
 
 
+@pal_blueprint.route("/creation_targets/<path:roster_key>", methods=["GET"])
+@jwt_required()
+def list_pal_creation_targets(roster_key):
+    return reply(0, SaveManager().creation_targets(roster_key))
+
+
 @pal_blueprint.route("/move", methods=["POST"])
 @jwt_required()
 def move_pal():
     payload = request.json or {}
+    source_record_key = payload.get("SourceRecordKey")
+    target_storage_key = payload.get("TargetStorageKey")
+    if source_record_key or target_storage_key:
+        if not source_record_key or not target_storage_key:
+            return reply(
+                1,
+                None,
+                "SourceRecordKey and TargetStorageKey are required.",
+            )
+        try:
+            result = SaveManager().transfer_pal(
+                source_record_key,
+                target_storage_key,
+                payload.get("Action", "move"),
+                payload.get("ExpectedTargetRecordKey"),
+            )
+            return reply(0, result)
+        except ValueError as error:
+            return reply(1, None, str(error))
+        except Exception:
+            LOGGER.error(f"Error transferring Pal: {traceback.format_exc()}")
+            return reply(1, None, "Error transferring Pal. No changes were kept.")
+
     pal_guid = payload.get("PalGuid")
     target_container_id = payload.get("TargetContainerId")
     if not pal_guid or not target_container_id:
@@ -390,6 +419,8 @@ def delete_pal(pal_id):
 def add_pal():
     payload = request.json or {}
     PlayerUId = payload.get("PlayerUId")
+    roster_key = payload.get("RosterKey")
+    target_storage_key = payload.get("TargetStorageKey")
     target_container_id = payload.get("TargetContainerId")
     if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_container_id:
         LOGGER.warning("Directly add pal to basecamp is not yet supported.")
@@ -411,11 +442,24 @@ def add_pal():
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
-        pal_entity = (
-            SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
-            if target_container_id
-            else SaveManager().add_pal(PlayerUId, pal_obj)
-        )
+        if roster_key or target_storage_key:
+            if not roster_key or not target_storage_key:
+                return reply(
+                    1,
+                    None,
+                    "RosterKey and TargetStorageKey are required.",
+                )
+            record = SaveManager().create_pal(
+                roster_key, target_storage_key, pal_obj
+            )
+            pal_entity = record.pal
+        else:
+            record = None
+            pal_entity = (
+                SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
+                if target_container_id
+                else SaveManager().add_pal(PlayerUId, pal_obj)
+            )
         if not pal_entity:
             return reply(
                 1,
@@ -427,7 +471,16 @@ def add_pal():
     except Exception:
         LOGGER.error(f"Error adding Pal: {traceback.format_exc()}")
         return reply(1, None, "Error adding Pal. Check the logs for details.")
-    return reply(0, _pal_data(pal_entity))
+    data = _pal_data(pal_entity)
+    if record is not None:
+        data.update(
+            {
+                "RecordKey": record.record_key,
+                "StorageKey": record.storage_key,
+                "StorageKind": record.storage_kind,
+            }
+        )
+    return reply(0, data)
 
 
 @pal_blueprint.route("/templates", methods=["GET"])
