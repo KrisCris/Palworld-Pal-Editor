@@ -6,6 +6,7 @@ from flask_jwt_extended import create_access_token
 from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.core.pal_storage import PalRecordRef
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
@@ -153,13 +154,14 @@ class PalFamilyProviderTests(unittest.TestCase):
     def test_character_patch_and_refresh_keep_exact_variant(self):
         pal = make_pal("SheepBall")
 
-        class Player:
-            def get_pal(self, _instance_id):
-                return pal
-
         class Manager:
-            def get_player(self, _player_id):
-                return Player()
+            def get_unique_world_record(self, _instance_id):
+                return PalRecordRef(
+                    f"world:{pal.InstanceId}", "world-container:test", "world", 0, pal
+                )
+
+            def normalize_external_record(self, _record):
+                pass
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():

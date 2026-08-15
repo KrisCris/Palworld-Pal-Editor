@@ -253,6 +253,29 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert locker_ids(manager) == destination_envelope["locker"]
 
 
+def test_global_import_requires_an_owned_player_party_or_palbox(tmp_path):
+    manager = open_copied_world(tmp_path, with_global=True)
+    source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    lossy = manager.get_player(LOSSY_UID)
+    base = next(
+        descriptor
+        for descriptor in manager.get_container_registry()
+        if descriptor["ContainerKind"] == "base"
+    )
+
+    for target in (f"dps:{LOSSY_UID}", base["StorageKey"]):
+        with pytest.raises(ValueError, match="player Party or Palbox"):
+            manager.transfer_pal(source.record_key, target, "clone")
+
+    imported = manager.transfer_pal(
+        source.record_key,
+        f"world-container:{lossy.PalStorageContainerId}",
+        "clone",
+    )
+    imported_record = manager.get_record(imported["RecordKey"])
+    assert imported_record.pal.OwnerPlayerUId == lossy.PlayerUId
+
+
 def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
     manager = open_copied_world(tmp_path, with_global=True)
     lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]

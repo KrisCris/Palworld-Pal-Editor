@@ -20,6 +20,16 @@ const ownerLabel = computed(() => palStore.SELECTED_PAL_DATA.OwnerName
   || (palStore.SELECTED_PAL_DATA.StorageKind !== 'world'
     ? palStore.SELECTED_PAL_DATA.ContainerLabel
     : palStore.getTranslatedText('Editor_Pal_No_Owner')))
+const guildLabel = computed(() => palStore.SELECTED_PAL_DATA.group_id
+  || (palStore.SELECTED_PAL_DATA.StorageKind === 'global_palbox'
+    ? palStore.SELECTED_PAL_DATA.ContainerLabel
+    : ''))
+const technicalContainer = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
+  ? palStore.SELECTED_PAL_DATA.ContainerId
+  : palStore.SELECTED_PAL_DATA.ContainerLabel)
+const technicalSlot = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
+  ? palStore.SELECTED_PAL_DATA.SlotIndex
+  : palStore.SELECTED_PAL_DATA.ActualSlotIndex)
 const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
@@ -375,14 +385,14 @@ const portraitBorder = pal => pal.IsAwakening
         <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
         <div class="pal-technical-grid">
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_ID }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.InstanceId }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ guildLabel }}</code></div>
           <div class="pal-technical-slot">
             <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
             <div class="pal-technical-location__value">
               <code :class="{ 'is-location-anomaly': palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok' }"
                 :title="palStore.SELECTED_PAL_DATA.LocationAnomaly || ''">
-                {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
+                {{ technicalContainer }} @ {{ technicalSlot }}
               </code>
             </div>
             <small v-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">

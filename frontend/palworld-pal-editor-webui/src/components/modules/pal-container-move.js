@@ -49,16 +49,19 @@ export function buildContainerMoveGroups(containers, players, selectedPlayerId) 
 export function containerMoveDisabledReason(container, pal) {
   if ((container.StorageKey && container.StorageKey === pal.StorageKey)
     || (!container.StorageKey && container.ContainerId === pal.ActualContainerId)) return "current";
-  const globalTransfer = container.StorageKind === "global_palbox"
-    || pal.StorageKind === "global_palbox";
-  if (globalTransfer ? !container.CloneableInto && container.StorageKind === "global_palbox" : !container.MovableInto) return "unsafe";
-  if (container.Occupied >= container.Size) return "full";
-  if (globalTransfer) {
-    return container.StorageKind === "global_palbox"
-      || (container.StorageKind === "world" && ["party", "storage"].includes(container.ContainerKind))
-      ? null
-      : "unsafe";
+  if (pal.StorageKind === "global_palbox") {
+    const ownedPlayerContainer = container.StorageKind === "world"
+      && ["party", "storage"].includes(container.ContainerKind)
+      && container.OwnerPlayerUId;
+    if (!ownedPlayerContainer) return "gps_player_required";
+    return container.Occupied >= container.Size ? "full" : null;
   }
+  if (container.StorageKind === "global_palbox") {
+    if (!container.CloneableInto) return "unsafe";
+    return container.Occupied >= container.Size ? "full" : null;
+  }
+  if (!container.MovableInto) return "unsafe";
+  if (container.Occupied >= container.Size) return "full";
   if (container.Shared) return pal.OwnerPlayerUId ? null : "owner_required";
   if (container.GroupId !== pal.group_id) return "different_guild";
   return null;

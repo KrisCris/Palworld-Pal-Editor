@@ -337,7 +337,7 @@ export default {
     Editor_Move_Blocked_Anomaly: "This Pal cannot move until its container location is repaired.",
     Operation_Move_Pal: "Move Pal",
     Message_Pal_Moved: "Pal moved successfully.",
-    Editor_Move_Dialog_Title: "Move Pal", Editor_Move_Dialog_Subtitle: "Choose a group, then select the destination container.", Editor_Move_Groups: "Groups", Editor_Move_Containers: "Containers", Editor_Move_Group_Bases: "Bases", Editor_Move_Group_Other: "Other", Editor_Move_Current_Player: "Current", Editor_Move_No_Containers: "No containers in this group.", Editor_Move_Reason_Current: "Current container", Editor_Move_Reason_Full: "Container is full", Editor_Move_Reason_Unsafe: "Container cannot be modified safely", Editor_Move_Reason_DifferentGuild: "Container belongs to another guild", Editor_Move_Reason_OwnerRequired: "Move this base Pal to a player first",
+    Editor_Move_Dialog_Title: "Move Pal", Editor_Move_Dialog_Subtitle: "Choose a group, then select the destination container.", Editor_Move_Groups: "Groups", Editor_Move_Containers: "Containers", Editor_Move_Group_Bases: "Bases", Editor_Move_Group_Other: "Other", Editor_Move_Current_Player: "Current", Editor_Move_No_Containers: "No containers in this group.", Editor_Move_Reason_Current: "Current container", Editor_Move_Reason_Full: "Container is full", Editor_Move_Reason_Unsafe: "Container cannot be modified safely", Editor_Move_Reason_DifferentGuild: "Container belongs to another guild", Editor_Move_Reason_OwnerRequired: "Move this base Pal to a player first", Editor_Move_Reason_GpsPlayerRequired: "Trước tiên hãy chuyển Pal này vào đội hoặc Palbox của người chơi",
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Palbox",

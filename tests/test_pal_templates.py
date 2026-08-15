@@ -10,6 +10,7 @@ from flask_jwt_extended import create_access_token
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_storage import PalRecordRef
 from palworld_pal_editor.webui import app
 
 PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -31,23 +32,22 @@ def make_pal() -> PalEntity:
     return PalEntity(pal_obj)
 
 
-class FakePlayer:
-    NickName = "Target"
-
-    def __init__(self, pal):
-        self.pal = pal
-
-    def get_pal(self, _pal_id):
-        return self.pal
-
-
 class FakeManager:
     def __init__(self, pal):
         self.pal = pal
         self.added = []
 
+    def get_unique_world_record(self, _instance_id):
+        return PalRecordRef(
+            f"world:{self.pal.InstanceId}",
+            "world-container:test",
+            "world",
+            0,
+            self.pal,
+        )
+
     def get_player(self, _player_id):
-        return FakePlayer(self.pal)
+        return type("Player", (), {"NickName": "Target"})()
 
     def add_pal(self, player_id, pal_obj=None, target_container_id=None):
         self.added.append((player_id, pal_obj, target_container_id))

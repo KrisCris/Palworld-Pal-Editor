@@ -371,6 +371,7 @@ export default {
     Editor_Move_Reason_Unsafe: "無法安全修改此容器",
     Editor_Move_Reason_DifferentGuild: "容器屬於其他公會",
     Editor_Move_Reason_OwnerRequired: "請先把基地帕魯移動給一名玩家",
+    Editor_Move_Reason_GpsPlayerRequired: "請先將這隻帕魯放入玩家的隊伍或帕魯終端",
     Editor_Container_Base: "基地 {{0}}",
     Editor_Container_Party: "隊伍",
     Editor_Container_Palbox: "帕魯終端",

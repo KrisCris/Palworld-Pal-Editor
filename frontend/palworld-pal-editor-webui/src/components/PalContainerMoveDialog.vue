@@ -30,6 +30,7 @@ const reasonKey = Object.freeze({
   unsafe: "Editor_Move_Reason_Unsafe",
   different_guild: "Editor_Move_Reason_DifferentGuild",
   owner_required: "Editor_Move_Reason_OwnerRequired",
+  gps_player_required: "Editor_Move_Reason_GpsPlayerRequired",
 });
 const groupLabel = group => group.label || palStore.getTranslatedText(
   group.kind === "bases" ? "Editor_Move_Group_Bases" : "Editor_Move_Group_Other",

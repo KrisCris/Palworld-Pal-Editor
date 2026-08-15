@@ -257,6 +257,7 @@ export default {
     Editor_Move_Reason_Unsafe: "Container cannot be modified safely",
     Editor_Move_Reason_DifferentGuild: "Container belongs to another guild",
     Editor_Move_Reason_OwnerRequired: "Move this base Pal to a player first",
+    Editor_Move_Reason_GpsPlayerRequired: "Move this Pal to a player's Party or Palbox first",
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Palbox",

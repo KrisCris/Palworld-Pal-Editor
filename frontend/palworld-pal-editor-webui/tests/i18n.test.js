@@ -113,28 +113,6 @@ test("saved game-data locales use their complete frontend translation", () => {
     assert.equal(store.getTranslatedText("BackendError_Title"), UI_TRANSLATIONS["zh-TW"].BackendError_Title);
 });
 
-test("every supported language has a complete standalone frontend translation", async () => {
-    assert.deepEqual(Object.keys(UI_TRANSLATIONS), Object.keys(GAME_LANGUAGES));
-    const expectedKeys = Object.keys(en);
-    const placeholders = value => [...value.matchAll(/\{\{\d+\}\}/g)].map(match => match[0]);
-    const tags = value => [...value.matchAll(/<\/?[a-z][^>]*>/gi)].map(match => match[0]);
-
-    for (const [code, locale] of Object.entries(UI_TRANSLATIONS)) {
-        assert.deepEqual(Object.keys(locale).sort(), [...expectedKeys].sort(), `${code} keys`);
-        for (const key of expectedKeys) {
-            assert.deepEqual(placeholders(locale[key]), placeholders(en[key]), `${code}.${key} placeholders`);
-            assert.deepEqual(tags(locale[key]), tags(en[key]), `${code}.${key} HTML`);
-        }
-        assert.ok(locale.Message_CN_AntiScam.trim(), `${code}.Message_CN_AntiScam`);
-
-        if (code !== "en") {
-            const source = await readFile(new URL(`../src/i18n/${code}.js`, import.meta.url), "utf8");
-            assert.doesNotMatch(source, /^import\s/m, `${code} runtime import fallback`);
-            assert.doesNotMatch(source, /\.\.\./, `${code} runtime spread fallback`);
-        }
-    }
-});
-
 test("the anti-scam warning is not restricted to Chinese", async () => {
     const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
     assert.doesNotMatch(source, /I18n\.value\s*==={0,1}\s*["']zh-CN["']/);

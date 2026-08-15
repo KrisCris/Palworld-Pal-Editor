@@ -257,6 +257,7 @@ export default {
     Editor_Move_Reason_Unsafe: "无法安全修改此容器",
     Editor_Move_Reason_DifferentGuild: "容器属于其他公会",
     Editor_Move_Reason_OwnerRequired: "请先把基地帕鲁移动给一名玩家",
+    Editor_Move_Reason_GpsPlayerRequired: "请先将这只帕鲁放入玩家的队伍或帕鲁终端",
     Editor_Container_Base: "基地 {{0}}",
     Editor_Container_Party: "队伍",
     Editor_Container_Palbox: "帕鲁终端",

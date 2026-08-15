@@ -8,9 +8,9 @@ from typing import Literal, Optional
 import uuid
 
 from palworld_save_tools.gvas import GvasFile
-from palworld_save_tools.archive import FArchiveReader, FArchiveWriter, UUID
+from palworld_save_tools.archive import UUID
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
-from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
+from palworld_save_tools.paltypes import PALWORLD_TYPE_HINTS
 
 from palworld_pal_editor.core.basecamp_data import BaseCampData
 
@@ -21,109 +21,13 @@ from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_storage import FixedPalStorage, PalRecordRef
+from palworld_pal_editor.core.save_codec import (
+    MAIN_SKIP_PROPERTIES,
+    PAL_STORAGE_CUSTOM_PROPERTIES,
+    PLAYER_SKIP_PROPERTIES,
+)
 from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
-
-
-def skip_decode(reader: FArchiveReader, type_name: str, size: int, path: str):
-    if type_name == "ArrayProperty":
-        array_type = reader.fstring()
-        value = {
-            "skip_type": type_name,
-            "array_type": array_type,
-            "id": reader.optional_guid(),
-            "value": reader.read(size),
-        }
-    elif type_name == "MapProperty":
-        key_type = reader.fstring()
-        value_type = reader.fstring()
-        _id = reader.optional_guid()
-        value = {
-            "skip_type": type_name,
-            "key_type": key_type,
-            "value_type": value_type,
-            "id": _id,
-            "value": reader.read(size),
-        }
-    elif type_name == "StructProperty":
-        value = {
-            "skip_type": type_name,
-            "struct_type": reader.fstring(),
-            "struct_id": reader.guid(),
-            "id": reader.optional_guid(),
-            "value": reader.read(size),
-        }
-    else:
-        raise Exception(
-            f"Expected ArrayProperty or MapProperty or StructProperty, got {type_name} in {path}"
-        )
-    return value
-
-
-def skip_encode(writer: FArchiveWriter, property_type: str, properties: dict) -> int:
-    if "skip_type" not in properties:
-        if properties["custom_type"] in PALWORLD_CUSTOM_PROPERTIES is not None:
-            return PALWORLD_CUSTOM_PROPERTIES[properties["custom_type"]][1](
-                writer, property_type, properties
-            )
-        else:
-            # Never be run to here
-            return writer.property_inner(writer, property_type, properties)
-    if property_type == "ArrayProperty":
-        del properties["custom_type"]
-        del properties["skip_type"]
-        writer.fstring(properties["array_type"])
-        writer.optional_guid(properties.get("id", None))
-        writer.write(properties["value"])
-        return len(properties["value"])
-    elif property_type == "MapProperty":
-        del properties["custom_type"]
-        del properties["skip_type"]
-        writer.fstring(properties["key_type"])
-        writer.fstring(properties["value_type"])
-        writer.optional_guid(properties.get("id", None))
-        writer.write(properties["value"])
-        return len(properties["value"])
-    elif property_type == "StructProperty":
-        del properties["custom_type"]
-        del properties["skip_type"]
-        writer.fstring(properties["struct_type"])
-        writer.guid(properties["struct_id"])
-        writer.optional_guid(properties.get("id", None))
-        writer.write(properties["value"])
-        return len(properties["value"])
-    else:
-        raise Exception(
-            f"Expected ArrayProperty or MapProperty or StructProperty, got {property_type}"
-        )
-
-
-MAIN_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
-MAIN_SKIP_PROPERTIES[".worldSaveData.MapObjectSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.FoliageGridSaveDataMap"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.MapObjectSpawnerInStageSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.WorkSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.EnemyCampSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.CharacterParameterStorageSaveData"] = (skip_decode, skip_encode)
-
-MAIN_SKIP_PROPERTIES[".worldSaveData.InvaderSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.DungeonPointMarkerSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.GameTimeSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.FixedWeaponDestroySaveData"] = (skip_decode, skip_encode)
-
-MAIN_SKIP_PROPERTIES[".worldSaveData.OilrigSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.SupplySaveData"] = (skip_decode, skip_encode)
-
-MAIN_SKIP_PROPERTIES[".worldSaveData.RandomizerSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.GuildExtraSaveDataMap"] = (skip_decode, skip_encode)
-
-
-PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
-PLAYER_SKIP_PROPERTIES[".SaveData.PlayerCharacterMakeData"] = (skip_decode, skip_encode)
-PLAYER_SKIP_PROPERTIES[".SaveData.LastTransform"] = (skip_decode, skip_encode)
-# PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
-
 
 class PalIdentityConflict(ValueError):
     def __init__(self, candidates: list[PalRecordRef]):
@@ -299,7 +203,7 @@ class SaveManager:
                 else output_path / "Players" / storage.path.name
             )
             outputs.append(
-                (target, storage.serialize(), PALWORLD_CUSTOM_PROPERTIES)
+                (target, storage.serialize(), PAL_STORAGE_CUSTOM_PROPERTIES)
             )
 
         staged: list[tuple[Path, Path]] = []
@@ -1307,6 +1211,7 @@ class SaveManager:
             if not (
                 descriptor["StorageKind"] == "world"
                 and descriptor["ContainerKind"] in {"party", "storage"}
+                and descriptor.get("OwnerPlayerUId")
             ):
                 raise ValueError(
                     "Global Palbox imports must target a player Party or Palbox."

@@ -51,7 +51,7 @@ function mockBackend({
         if (url.endsWith("players_data")) {
             return reply({ hasWorkingPal, players });
         }
-        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data")) {
+        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
             return reply({ dict: {}, arr: [] });
         }
         if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
@@ -66,9 +66,17 @@ function mockBackend({
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
         if (url.endsWith("/save/load")) return reply(null);
-        if (url.endsWith("/player_pals")) return reply(pals);
+        if (url.endsWith("/player_pals")) return reply(pals.map(pal => ({
+            ...pal,
+            RecordKey: pal.RecordKey || `world:${pal.InstanceId}`,
+        })));
         if (url.endsWith("/paldata")) {
-            return reply(pals.find(pal => pal.InstanceId === data.InstanceId));
+            const selected = data.RecordKey || data.InstanceId;
+            const pal = pals.find(row => (
+                (row.RecordKey || `world:${row.InstanceId}`) === selected
+                || row.InstanceId === selected
+            ));
+            return reply(pal && { ...pal, RecordKey: pal.RecordKey || `world:${pal.InstanceId}` });
         }
         if (url.endsWith("/player_data")) {
             return reply(players.find(player => player.InstanceId === data.PlayerUId));
@@ -518,12 +526,12 @@ test("loaded-save hydration selects base camp again after reloading", async () =
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
 });
 
 test("loaded-save hydration selects the first player when there is no base camp", async () => {
@@ -538,12 +546,12 @@ test("loaded-save hydration selects the first player when there is no base camp"
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
 });
 
 test("selected Pal data retains its game-derived family", async () => {
@@ -561,7 +569,7 @@ test("selected Pal data retains its game-derived family", async () => {
     });
 
     await store.bootstrap();
-    await store.selectPal("pal-1");
+    await store.selectPal("world:pal-1");
 
     assert.equal(store.SELECTED_PAL_DATA.FamilyID, "Anubis");
 });
@@ -578,8 +586,8 @@ test("successful Pal edits are tracked only until the next save load", async () 
     await store.bootstrap();
     await store.updatePal({ target: { name: "NickName", value: "Edited" } });
 
-    assert.deepEqual([...store.EDITED_PAL_IDS], ["pal-1"]);
-    store.CREATED_PAL_IDS.add("pal-1");
+    assert.deepEqual([...store.EDITED_PAL_IDS], ["world:pal-1"]);
+    store.CREATED_PAL_IDS.add("world:pal-1");
     store.PAL_LIST_EDITED_ONLY = true;
     store.PAL_LIST_CREATED_ONLY = true;
 

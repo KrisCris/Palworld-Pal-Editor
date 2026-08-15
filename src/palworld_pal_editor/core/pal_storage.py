@@ -6,10 +6,11 @@ from typing import Literal
 from palworld_save_tools.archive import UUID
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
-from palworld_save_tools.paltypes import PALWORLD_CUSTOM_PROPERTIES, PALWORLD_TYPE_HINTS
+from palworld_save_tools.paltypes import PALWORLD_TYPE_HINTS
 
 from .pal_entity import PalEntity
 from .pal_objects import PalObjects, toUUID
+from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 
 
 StorageKind = Literal["dps", "global_palbox"]
@@ -63,7 +64,7 @@ class FixedPalStorage:
         gvas_file = GvasFile.read(
             raw_gvas,
             PALWORLD_TYPE_HINTS,
-            PALWORLD_CUSTOM_PROPERTIES,
+            PAL_STORAGE_CUSTOM_PROPERTIES,
         )
         if gvas_file.header.save_game_class_name != cls._EXPECTED_CLASS[kind]:
             raise ValueError(
@@ -134,6 +135,7 @@ class FixedPalStorage:
         if slot_index < 0:
             raise ValueError(f"{self.storage_key} is full")
         entry = self._entries[slot_index]
+        entry.clear()
         entry["SaveParameter"] = copy.deepcopy(save_parameter)
         entry["InstanceId"] = self._instance_id(instance_id, player_uid)
         self.dirty = True
@@ -150,7 +152,7 @@ class FixedPalStorage:
         self.dirty = True
 
     def serialize(self) -> bytes:
-        raw_gvas = copy.deepcopy(self.gvas_file).write(PALWORLD_CUSTOM_PROPERTIES)
+        raw_gvas = copy.deepcopy(self.gvas_file).write(PAL_STORAGE_CUSTOM_PROPERTIES)
         return compress_gvas_to_sav(raw_gvas, self.save_type)
 
     def _record(self, slot_index: int, entry: dict) -> PalRecordRef:
