@@ -341,6 +341,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "กล่องพาล",
+    Editor_Container_DimensionalPalStorage: "ช่องมิติเก็บพาล",
+    Editor_Container_GlobalPalbox: "กล่องพาลสากล",
     Editor_Container_ViewingCage: "กรงสัตว์เลี้ยง",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

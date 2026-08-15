@@ -113,7 +113,6 @@ const containerLabel = group => formatContainerLabel(
     ContainerLabel: group.label,
   },
   palStore.getTranslatedText,
-  palStore.getTechName,
 )
 
 watch(

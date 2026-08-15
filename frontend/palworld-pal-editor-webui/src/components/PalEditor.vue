@@ -20,7 +20,6 @@ const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
 const externalContainerLabel = computed(() => formatContainerLabel(
   palStore.SELECTED_PAL_DATA,
   palStore.getTranslatedText,
-  palStore.getTechName,
 ))
 const ownerLabel = computed(() => palStore.SELECTED_PAL_DATA.OwnerName
   || (palStore.SELECTED_PAL_DATA.StorageKind !== 'world'

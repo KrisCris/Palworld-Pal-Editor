@@ -378,6 +378,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "パルボックス",
+    Editor_Container_DimensionalPalStorage: "パル次元ストレージ",
+    Editor_Container_GlobalPalbox: "グローバルパルボックス",
     Editor_Container_ViewingCage: "鑑賞用ケージ",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

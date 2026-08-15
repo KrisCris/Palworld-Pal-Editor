@@ -39,6 +39,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "팰 상자",
+    Editor_Container_DimensionalPalStorage: "팰 복원 스토리지",
+    Editor_Container_GlobalPalbox: "글로벌 팰 상자",
     Editor_Container_ViewingCage: "감상용 케이지",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

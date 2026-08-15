@@ -35,6 +35,22 @@ test("container labels use descriptor metadata and the active locale", () => {
     "Alice · Palbox",
   );
   assert.equal(
+    formatContainerLabel(
+      { ContainerKind: "dps", OwnerName: "Alice", ContainerLabel: "Stale DPS" },
+      chinese,
+      () => "后端旧名称",
+    ),
+    "Alice · 帕鲁次元仓库",
+  );
+  assert.equal(
+    formatContainerLabel(
+      { ContainerKind: "global_palbox", ContainerLabel: "Stale GPS" },
+      english,
+      () => "Stale backend name",
+    ),
+    "Global Palbox",
+  );
+  assert.equal(
     formatContainerLabel({ ContainerKind: "special", Shared: true }, chinese),
     "观赏笼",
   );

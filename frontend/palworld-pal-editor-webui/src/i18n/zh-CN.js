@@ -261,6 +261,8 @@ export default {
     Editor_Container_Base: "基地 {{0}}",
     Editor_Container_Party: "队伍",
     Editor_Container_Palbox: "帕鲁终端",
+    Editor_Container_DimensionalPalStorage: "帕鲁次元仓库",
+    Editor_Container_GlobalPalbox: "跨界帕鲁终端",
     Editor_Container_ViewingCage: "观赏笼",
     Editor_Container_Special: "特殊容器（{{0}} 格）",
     Editor_Container_Unknown: "未知容器（{{0}} 格）",

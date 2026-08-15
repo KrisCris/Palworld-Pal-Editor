@@ -60,6 +60,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Caja Pal",
+    Editor_Container_DimensionalPalStorage: "Almacén DimensioPal",
+    Editor_Container_GlobalPalbox: "Caja Pal global",
     Editor_Container_ViewingCage: "Jaula de observación",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

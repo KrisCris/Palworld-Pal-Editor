@@ -36,6 +36,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Palbox",
+    Editor_Container_DimensionalPalStorage: "Ruang Penyimpanan Pal Dimensional",
+    Editor_Container_GlobalPalbox: "Palbox Global",
     Editor_Container_ViewingCage: "Kandang Pajangan",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

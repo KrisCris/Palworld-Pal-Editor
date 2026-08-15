@@ -341,6 +341,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Palbox",
+    Editor_Container_DimensionalPalStorage: "Kho Chứa Pal Đa Chiều",
+    Editor_Container_GlobalPalbox: "Palbox Toàn Cầu",
     Editor_Container_ViewingCage: "Lồng Quan Sát",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

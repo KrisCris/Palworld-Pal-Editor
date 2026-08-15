@@ -37,6 +37,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Палбокс",
+    Editor_Container_DimensionalPalStorage: "Многомерное хранилище Палов",
+    Editor_Container_GlobalPalbox: "Глобальный Палбокс",
     Editor_Container_ViewingCage: "Клетка для демонстрации",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

@@ -375,6 +375,8 @@ export default {
     Editor_Container_Base: "基地 {{0}}",
     Editor_Container_Party: "隊伍",
     Editor_Container_Palbox: "帕魯終端",
+    Editor_Container_DimensionalPalStorage: "帕魯次元倉庫",
+    Editor_Container_GlobalPalbox: "跨界帕魯終端",
     Editor_Container_ViewingCage: "觀賞專用籠",
     Editor_Container_Special: "特殊容器（{{0}} 格）",
     Editor_Container_Unknown: "未知容器（{{0}} 格）",

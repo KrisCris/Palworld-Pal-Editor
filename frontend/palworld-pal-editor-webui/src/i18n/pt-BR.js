@@ -35,6 +35,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Caixa de Pal",
+    Editor_Container_DimensionalPalStorage: "Armazenamento Dimensional de Pals",
+    Editor_Container_GlobalPalbox: "Caixa Global de Pals",
     Editor_Container_ViewingCage: "Gaiola para Apreciação",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

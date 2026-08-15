@@ -11,7 +11,6 @@ const palStore = usePalEditorStore()
 const containerLabel = container => formatContainerLabel(
   container,
   palStore.getTranslatedText,
-  palStore.getTechName,
 )
 const mode = ref('default')
 const templateId = ref('')

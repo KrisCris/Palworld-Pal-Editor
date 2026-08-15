@@ -38,6 +38,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Box per Pal",
+    Editor_Container_DimensionalPalStorage: "Magazzino dimensionale per Pal",
+    Editor_Container_GlobalPalbox: "Box per Pal globale",
     Editor_Container_ViewingCage: "Gabbia di osservazione",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

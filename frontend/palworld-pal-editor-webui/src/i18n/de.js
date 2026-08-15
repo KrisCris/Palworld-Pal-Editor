@@ -81,6 +81,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Pal-Box",
+    Editor_Container_DimensionalPalStorage: "Dimensionaler Pal-Speicher",
+    Editor_Container_GlobalPalbox: "Globale Pal-Box",
     Editor_Container_ViewingCage: "Schaukäfig",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",

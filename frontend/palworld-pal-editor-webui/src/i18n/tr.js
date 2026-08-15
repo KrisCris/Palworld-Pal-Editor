@@ -341,6 +341,8 @@ export default {
     Editor_Container_Base: "Base {{0}}",
     Editor_Container_Party: "Party",
     Editor_Container_Palbox: "Pal Kutusu",
+    Editor_Container_DimensionalPalStorage: "Boyutsal Pal Deposu",
+    Editor_Container_GlobalPalbox: "Global Pal Kutusu",
     Editor_Container_ViewingCage: "Sergileme Kafesi",
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",
