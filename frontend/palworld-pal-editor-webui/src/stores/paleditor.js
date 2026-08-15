@@ -1080,16 +1080,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
         const response = await PATCH("/api/save/i18n", { I18n: I18n.value });
-        if (response === false) return false;
+        if (response === false) {
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return false;
+        }
 
+        let refreshSucceeded = response.status == 0;
         if (response.status == 0) {
             // if on pal editor panel, refresh all translated texts (except for hardcoded ui)
             if (SAVE_LOADED_FLAG.value) {
-                PLAYER_MAP.value.forEach((player, playerUId) => {
-                    fetchPlayerPal(playerUId);
-                });
-                fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
-                await fetchStaticData();
+                const rosterRefreshes = Array.from(
+                    PLAYER_MAP.value.keys(),
+                    playerUId => fetchPlayerPal(playerUId),
+                );
+                rosterRefreshes.push(fetchPlayerPal(PAL_BASE_WORKER_BTN.value));
+                if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")) {
+                    rosterRefreshes.push(fetchPlayerPal(PAL_GLOBAL_STORAGE_BTN.value));
+                }
+                const rosterResults = await Promise.all(rosterRefreshes);
+                refreshSucceeded = rosterResults.every(Boolean);
+                if (refreshSucceeded) refreshSucceeded = await fetchStaticData();
             }
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
@@ -1097,7 +1107,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
-        return response.status == 0;
+        return response.status == 0 && refreshSucceeded;
     }
 
     async function fetchStaticData() {
@@ -1499,8 +1509,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const response = await POST("/api/player/player_pals", {
             PlayerUId: playerUId,
         });
-        if (response === false) return;
+        if (response === false) {
+            if (!no_set_loading_flag) LOADING_FLAG.value = false;
+            return false;
+        }
 
+        let success = false;
         if (response.status == 0) {
             // get old map
             let map =
@@ -1520,12 +1534,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
                 // );
             }
+            success = true;
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
         } else {
             reportOperationError("Operation_Load_Pals", response);
         }
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
+        return success;
     }
 
     async function fetchPlayerData(playerUId) {

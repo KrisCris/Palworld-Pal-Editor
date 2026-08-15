@@ -647,6 +647,70 @@ test("fetch_config publishes backend locales and switches to the translated loca
     assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
 });
 
+test("language changes refresh translated Global Palbox Pal summaries before completing", async () => {
+    const store = newStore();
+    store.IS_LOCKED = false;
+    store.SAVE_LOADED_FLAG = true;
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+
+    const requestedRosters = [];
+    axios.patch = async url => {
+        assert.equal(url, "/api/save/i18n");
+        return reply(null);
+    };
+    axios.post = async (url, data) => {
+        assert.equal(url, "/api/player/player_pals");
+        requestedRosters.push(data.PlayerUId);
+        return reply(data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
+            ? [{ InstanceId: "gps-pal", RecordKey: "gps:0", DisplayName: "Translated GPS Pal" }]
+            : []);
+    };
+    axios.get = async url => {
+        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
+            return reply({ dict: {}, arr: [] });
+        }
+        if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
+        if (url.endsWith("skin_data")) return reply({ arr: [] });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+
+    assert.equal(await store.updateI18n(), true);
+    assert.deepEqual(requestedRosters, [
+        "player-1",
+        store.PAL_BASE_WORKER_BTN,
+        store.PAL_GLOBAL_STORAGE_BTN,
+    ]);
+    await store.selectPlayer(store.PAL_GLOBAL_STORAGE_BTN, true);
+    assert.equal(store.PAL_MAP.get("gps:0").DisplayName, "Translated GPS Pal");
+});
+
+test("language changes fail when a required roster cannot be refreshed", async () => {
+    const store = newStore();
+    store.IS_LOCKED = false;
+    store.SAVE_LOADED_FLAG = true;
+    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+
+    let staticRequests = 0;
+    axios.patch = async () => reply(null);
+    axios.post = async (url, data) => {
+        assert.equal(url, "/api/player/player_pals");
+        return data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
+            ? { data: { status: 1, msg: "GPS refresh failed" } }
+            : reply([]);
+    };
+    axios.get = async () => {
+        staticRequests += 1;
+        return reply({ dict: {}, arr: [] });
+    };
+
+    assert.equal(await store.updateI18n(), false);
+    assert.equal(staticRequests, 0);
+    assert.equal(store.LOADING_FLAG, false);
+});
+
 test("healing all pals does not try to reselect a missing pal", async t => {
     const store = newStore();
     const calls = mockBackend({

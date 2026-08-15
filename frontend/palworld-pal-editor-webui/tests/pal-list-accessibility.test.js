@@ -160,6 +160,23 @@ test("collapsed Pal roster preview retains sort, filter, and add actions", async
   assert.match(source, /\.pal-roster--preview\s+\.pal-list-menu__popover\s*\{[^}]*right:\s*0[^}]*left:\s*auto[^}]*width:\s*min\(13rem,/s);
 });
 
+test("Global Palbox roster label follows frontend locale without backend translation data", async () => {
+  const [{ default: PlayerList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PlayerList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  store.I18n = "zh-CN";
+  store.SPECIAL_ROSTERS = [{ Kind: "global_palbox", Label: "stale backend label" }];
+
+  const html = await renderVue(PlayerList, { pinia });
+
+  assert.match(html, />跨界帕鲁终端</);
+  assert.doesNotMatch(html, /stale backend label/);
+});
+
 test("Pal list exposes game-derived DNA origin markers and union filter buttons", async () => {
   const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
   assert.match(source, /pal\.IsImportedCharacter/);

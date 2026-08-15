@@ -24,6 +24,12 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Re
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
+const attemptedAutoSelectRoster = ref(null)
+const activeSpecialRoster = computed(() => palStore.BASE_PAL_BTN_CLK_FLAG
+  ? palStore.PAL_BASE_WORKER_BTN
+  : palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN
+  ? palStore.PAL_GLOBAL_STORAGE_BTN
+  : null)
 const activePalFilterCount = computed(() => palStore.PAL_LIST_ATTRIBUTE_FILTERS.length
   + Number(palStore.PAL_LIST_EDITED_ONLY)
   + Number(palStore.PAL_LIST_CREATED_ONLY))
@@ -48,16 +54,23 @@ const closeSortMenuOnOutsidePointer = event => closeDisclosureOnOutsidePointer(s
 onMounted(() => window.addEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 onBeforeUnmount(() => window.removeEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 
-watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+watch([
+  activeSpecialRoster,
+  () => palStore.LOADING_FLAG,
+], async ([roster, loading], previous = []) => {
+  if (roster !== previous[0]) attemptedAutoSelectRoster.value = null
+  if (!roster || loading || palStore.SELECTED_PAL_ID || attemptedAutoSelectRoster.value === roster) return
   await nextTick()
-  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  if (palStore.LOADING_FLAG || palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return
   try {
-    if (palStore.BASE_PAL_BTN_CLK_FLAG == false) return
-    palListContainer.value.querySelector('button:not(:disabled)')?.click()
+    const button = palListContainer.value?.querySelector('button:not(:disabled)')
+    if (!button) return
+    attemptedAutoSelectRoster.value = roster
+    button.click()
   } catch (error) {
     return
   }
-})
+}, { immediate: true, flush: 'post' })
 
 watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
   await nextTick()

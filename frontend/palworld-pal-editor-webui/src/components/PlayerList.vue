@@ -9,7 +9,6 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind === 'global_palbox')
-const globalRosterLabel = () => palStore.getTechName('GlobalPalStorage') || globalRoster()?.Label
 </script>
 
 <template>
@@ -28,7 +27,7 @@ const globalRosterLabel = () => palStore.getTechName('GlobalPalStorage') || glob
         :aria-current="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
         :disabled="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
         <span class="player-avatar">GPS</span>
-        <span class="roster-copy">{{ globalRosterLabel() }}</span>
+        <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>
 
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
@@ -158,9 +157,17 @@ const globalRosterLabel = () => palStore.getTechName('GlobalPalStorage') || glob
   font-weight: 700;
 }
 
+.roster-row--base .player-avatar,
+.roster-row--global .player-avatar {
+  font-size: .55rem;
+}
+
 .roster-row--base .player-avatar {
   background: var(--editor-color-warning);
-  font-size: .55rem;
+}
+
+.roster-row--global .player-avatar {
+  background: var(--editor-color-dna);
 }
 
 .roster-row:focus-visible,
