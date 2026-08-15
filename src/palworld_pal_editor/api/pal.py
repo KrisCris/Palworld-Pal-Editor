@@ -765,25 +765,19 @@ def dupe_pal():
     if PlayerUId == "PAL_BASE_WORKER_BTN":
         LOGGER.warning("Directly add pal to basecamp is not yet supported.")
         return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
-    else:
-        try:
-            record = _selected_record(payload)
-            if record is None:
-                return reply(1, None, "Selected Pal not found.")
-            player = SaveManager().get_player(PlayerUId)
-            pal_obj = record.pal._pal_obj
-
-            pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
-            if not pal_entity:
-                return reply(
-                    1,
-                    None,
-                    f"Failed duping pal, likely your pal containers are full, check logs for detail.",
-                )
-        except:
-            return reply(
-                1,
-                None,
-                f"Error happened during duping pal, check logs for detail. {traceback.format_exc()}",
-            )
-    return reply(0, _pal_data(pal_entity))
+    try:
+        record = SaveManager().duplicate_pal(payload.get("RecordKey"), PlayerUId)
+    except ValueError as error:
+        LOGGER.warning(
+            "Failed duplicating Pal: "
+            f"record={payload.get('RecordKey')} roster={PlayerUId} error={error}"
+        )
+        return reply(1, None, str(error))
+    except Exception:
+        LOGGER.error(
+            "Failed duplicating Pal: "
+            f"record={payload.get('RecordKey')} roster={PlayerUId}\n"
+            f"{traceback.format_exc()}"
+        )
+        return reply(1, None, "Failed duplicating Pal. Check logs for details.")
+    return reply(0, _pal_data(record.pal, record))

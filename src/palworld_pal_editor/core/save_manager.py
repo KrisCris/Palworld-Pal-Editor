@@ -1955,6 +1955,7 @@ class SaveManager:
         roster_key: str,
         target_storage_key: str,
         pal_obj: dict | None = None,
+        pal_owner_uid: str | UUID | None = None,
     ) -> PalRecordRef:
         allowed = {
             descriptor["StorageKey"]: descriptor
@@ -2037,9 +2038,10 @@ class SaveManager:
         if descriptor["StorageKind"] != "dps":
             raise ValueError("Creation for this storage is not implemented yet.")
 
-        player = self.get_player(roster_key)
+        storage_owner = self.get_player(roster_key)
+        player = self.get_player(pal_owner_uid) if pal_owner_uid else storage_owner
         storage = self._dps_storages.get(descriptor["StorageKey"])
-        if player is None or storage is None:
+        if storage_owner is None or player is None or storage is None:
             raise ValueError("DPS owner or storage is unavailable.")
         target_index = storage.free_index()
         if target_index < 0:
@@ -2088,6 +2090,56 @@ class SaveManager:
             self._restore_external_mutation(snapshot)
             LOGGER.error(f"Failed creating DPS Pal: {traceback.format_exc()}")
             raise
+
+    def duplicate_pal(self, record_key: str, roster_key: str) -> PalRecordRef:
+        source = self.get_record(record_key)
+        if source is None:
+            raise ValueError("Selected Pal not found.")
+
+        if source.storage_kind == "global_palbox":
+            clone = self.create_pal(
+                "PAL_GLOBAL_STORAGE_BTN",
+                source.storage_key,
+                source.pal._pal_obj,
+            )
+        elif source.storage_kind == "dps":
+            storage = self._dps_storages.get(source.storage_key)
+            if storage is None:
+                raise ValueError("Source DPS is unavailable.")
+            clone = self.create_pal(
+                str(storage.owner_uid),
+                source.storage_key,
+                source.pal._pal_obj,
+                pal_owner_uid=source.pal.OwnerPlayerUId,
+            )
+        else:
+            targets = [
+                descriptor
+                for descriptor in self.creation_targets(roster_key)
+                if descriptor["StorageKind"] == "world"
+                and descriptor["ContainerKind"] in {"party", "storage"}
+                and descriptor["Occupied"] < descriptor["Capacity"]
+            ]
+            if not targets:
+                raise ValueError("The player's Pal containers are full.")
+            clone = self.create_pal(
+                roster_key,
+                targets[0]["StorageKey"],
+                source.pal._pal_obj,
+            )
+
+        LOGGER.info(
+            "Duplicated Pal: "
+            f"source_record={source.record_key} "
+            f"source_storage={source.storage_key} "
+            f"source_pal={source.pal.InstanceId} "
+            f"target_record={clone.record_key} "
+            f"target_storage={clone.storage_key} "
+            f"target_slot={clone.slot_index} "
+            f"target_pal={clone.pal.InstanceId} "
+            f"owner={clone.pal.OwnerPlayerUId}"
+        )
+        return clone
     
     def heal_all_pals(self):
         for pal in self.baseworker_mapping.values():

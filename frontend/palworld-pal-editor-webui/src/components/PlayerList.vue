@@ -9,6 +9,7 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind === 'global_palbox')
+const globalRosterLabel = () => palStore.getTechName('GlobalPalStorage') || globalRoster()?.Label
 </script>
 
 <template>
@@ -27,7 +28,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
         :aria-current="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
         :disabled="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
         <span class="player-avatar">GPS</span>
-        <span class="roster-copy">{{ globalRoster().Label }}</span>
+        <span class="roster-copy">{{ globalRosterLabel() }}</span>
       </button>
 
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"

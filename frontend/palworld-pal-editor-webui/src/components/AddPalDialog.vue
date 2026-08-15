@@ -8,7 +8,11 @@ import { usePalEditorStore } from '@/stores/paleditor'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
-const containerLabel = container => formatContainerLabel(container, palStore.getTranslatedText)
+const containerLabel = container => formatContainerLabel(
+  container,
+  palStore.getTranslatedText,
+  palStore.getTechName,
+)
 const mode = ref('default')
 const templateId = ref('')
 const templateName = ref('')

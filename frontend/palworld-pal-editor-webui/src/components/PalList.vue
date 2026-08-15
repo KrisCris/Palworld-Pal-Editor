@@ -113,6 +113,7 @@ const containerLabel = group => formatContainerLabel(
     ContainerLabel: group.label,
   },
   palStore.getTranslatedText,
+  palStore.getTechName,
 )
 
 watch(
@@ -537,7 +538,17 @@ const palKey = pal => pal.RecordKey || pal.InstanceId
   font-weight: 600;
 }
 
-.container-heading small { font-weight: 400; }
+.container-heading span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.container-heading small {
+  flex: none;
+  font-weight: 400;
+}
 
 .pal-row {
   --pal-row-accent: var(--editor-color-focus);

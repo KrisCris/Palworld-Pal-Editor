@@ -1239,6 +1239,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return translation;
     }
 
+    function getTechName(internalName) {
+        for (const entries of Object.values(TECH_LV_DICT.value)) {
+            const tech = entries.find(item => item.InternalName === internalName);
+            if (tech) return tech.I18n?.Name || tech.InternalName;
+        }
+        return "";
+    }
+
     async function updatePlayer(e) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
@@ -2178,6 +2186,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // PAL_RESELECT_CTR.value++
             SELECTED_PAL_ID.value = pal_data.RecordKey;
             SELECTED_PAL_DATA.value = pal_data;
+            await fetchPalContainers();
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
         } else {
@@ -2298,6 +2307,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_TRANSFER_CONFLICT,
 
         getTranslatedText,
+        getTechName,
         getMessageText,
 
         isFilteredPal,

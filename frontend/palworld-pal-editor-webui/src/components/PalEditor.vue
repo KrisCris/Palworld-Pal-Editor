@@ -244,7 +244,7 @@ const portraitBorder = pal => pal.IsAwakening
                 :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
             </div>
           </div>
-          <div class="editor-field">
+          <div v-if="palStore.SELECTED_PAL_DATA.StorageKind !== 'global_palbox'" class="editor-field">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
             <span class="editor-tag">
               <img v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">

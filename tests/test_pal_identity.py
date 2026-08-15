@@ -65,6 +65,13 @@ class PalIdentityTests(unittest.TestCase):
         self.assertEqual("unknown", pal.IconAccessKey)
         self.assertFalse(pal.IsBOSS)
 
+    def test_external_no_skin_sentinel_uses_the_species_icon(self):
+        pal = self.make_pal("BlackMetalDragon")
+        pal._pal_param["SkinName"] = PalObjects.NameProperty("None")
+
+        self.assertIsNone(pal.SkinName)
+        self.assertEqual("BlackMetalDragon", pal.IconAccessKey)
+
     def test_metadata_predicates_do_not_infer_from_prefixes(self):
         boss_rush = self.make_pal("BOSS_ElecPanda_BossRush")
         self.assertFalse(boss_rush._IsBOSS)

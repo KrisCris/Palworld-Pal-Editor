@@ -253,6 +253,63 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert locker_ids(manager) == destination_envelope["locker"]
 
 
+def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
+    manager = open_copied_world(tmp_path, with_global=True)
+    lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]
+
+    dps_source = next(
+        record
+        for record in lossy_dps.records()
+        if str(record.pal.OwnerPlayerUId) == MINT_UID
+    )
+    gps_source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    world_source = next(
+        record
+        for record in manager.records_for_roster(LOSSY_UID)
+        if record.storage_kind == "world"
+        and manager.resolve_record_location(record)["LocationStatus"] == "ok"
+    )
+
+    dps_clone = manager.duplicate_pal(dps_source.record_key, LOSSY_UID)
+    gps_clone = manager.duplicate_pal(gps_source.record_key, "PAL_GLOBAL_STORAGE_BTN")
+    world_clone = manager.duplicate_pal(world_source.record_key, LOSSY_UID)
+
+    assert dps_clone.storage_key == dps_source.storage_key
+    assert dps_clone.pal.InstanceId != dps_source.pal.InstanceId
+    assert dps_clone.pal.OwnerPlayerUId == dps_source.pal.OwnerPlayerUId
+    assert manager.get_record(dps_clone.record_key) is dps_clone
+    assert str(dps_clone.pal.InstanceId) in locker_ids(manager)
+
+    assert gps_clone.storage_key == gps_source.storage_key == "global-palbox"
+    assert gps_clone.pal.InstanceId != gps_source.pal.InstanceId
+    assert manager.get_record(gps_clone.record_key) is gps_clone
+    assert str(gps_clone.pal.InstanceId) not in locker_ids(manager)
+
+    assert world_clone.storage_kind == "world"
+    assert world_clone.pal.InstanceId != world_source.pal.InstanceId
+    assert manager.get_record(world_clone.record_key) is world_clone
+
+    clone_keys = [
+        dps_clone.record_key,
+        gps_clone.record_key,
+        world_clone.record_key,
+    ]
+    clone_ids = [
+        str(dps_clone.pal.InstanceId),
+        str(gps_clone.pal.InstanceId),
+        str(world_clone.pal.InstanceId),
+    ]
+    assert manager.save(str(manager._file_path)) is True
+
+    SaveManager._instance = None
+    reopened = SaveManager()
+    assert reopened.open(str(manager._file_path)) is not None
+    for record_key, instance_id in zip(clone_keys, clone_ids):
+        record = reopened.get_record(record_key)
+        assert record is not None
+        assert str(record.pal.InstanceId) == instance_id
+
+
 def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
     manager = open_copied_world(tmp_path, with_global=True)
     lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]

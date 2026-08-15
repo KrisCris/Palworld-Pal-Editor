@@ -37,6 +37,7 @@ const groupLabel = group => group.label || palStore.getTranslatedText(
 const containerLabel = container => formatContainerLabel(
   container,
   palStore.getTranslatedText,
+  palStore.getTechName,
 );
 const disabledReason = container => containerMoveDisabledReason(
   container,

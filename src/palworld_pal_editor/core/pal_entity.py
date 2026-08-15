@@ -1347,7 +1347,8 @@ class PalEntity:
 
     @property
     def SkinName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+        value = PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+        return None if not value or value == "None" else value
 
     @property
     def SkinAppliedCharacterId(self) -> Optional[UUID]:

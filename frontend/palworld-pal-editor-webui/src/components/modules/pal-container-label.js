@@ -1,4 +1,4 @@
-export function formatContainerLabel(container, translate) {
+export function formatContainerLabel(container, translate, techName = () => "") {
   if (!container) return translate("Editor_Container_Anomaly");
 
   const ownerPrefix = container.OwnerName ? `${container.OwnerName} · ` : "";
@@ -11,6 +11,12 @@ export function formatContainerLabel(container, translate) {
       return `${ownerPrefix}${translate("Editor_Container_Party")}`;
     case "storage":
       return `${ownerPrefix}${translate("Editor_Container_Palbox")}`;
+    case "dps": {
+      const name = techName("DimensionPalStorage");
+      return name ? `${ownerPrefix}${name}` : container.ContainerLabel;
+    }
+    case "global_palbox":
+      return techName("GlobalPalStorage") || container.ContainerLabel;
     case "special":
       return container.Shared
         ? translate("Editor_Container_ViewingCage")
