@@ -25,6 +25,8 @@
 
 ![Palworld Pal Editor](.github/assets/readme-pal-editor-zh.webp)
 
+<a href="https://star-history.dera.page/#KrisCris/Palworld-Pal-Editor&type=Date"><img width="720" alt="Star History Chart" src="https://star-history.dera.page/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date"></a>&nbsp;
+
 > [!CAUTION]
 > 修改前请备份存档。修改器会自动创建备份，但仍建议你另外保留一份副本。
 
