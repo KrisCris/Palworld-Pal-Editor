@@ -20,7 +20,8 @@ from palworld_pal_editor.core.item_container_data import ItemContainerData
 from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.utils import LOGGER, alphanumeric_key
+from palworld_pal_editor.core.pal_storage import FixedPalStorage, PalRecordRef
+from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
 
 
@@ -128,7 +129,7 @@ class SaveManager:
     _instance = None
     _file_path: Optional[Path]
     _raw_gvas: Optional[bytes]
-    _compression_times: Optional[int]
+    _save_type: Optional[int]
 
     gvas_file: Optional[GvasFile]
     _entities_list: Optional[list[dict]]
@@ -153,6 +154,12 @@ class SaveManager:
                 
     def open(self, file_path: str) -> Optional[GvasFile]:
         self._file_path = Path(file_path).resolve()
+        self._record_mapping: dict[str, PalRecordRef] = {}
+        self._records_by_instance: dict[str, list[PalRecordRef]] = {}
+        self._roster_record_keys: dict[str, list[str]] = {}
+        self._dps_storages: dict[str, FixedPalStorage] = {}
+        self._global_palbox: FixedPalStorage | None = None
+        self.load_warnings: list[str] = []
 
         level_sav_path = self._file_path / "Level.sav"
 
@@ -166,20 +173,7 @@ class SaveManager:
 
             try:
                 LOGGER.info("Decompressing sav")
-                self._raw_gvas, self._compression_times = decompress_sav_to_gvas(data)
-
-                # LOGGER.info("Compressing Main GVAS file")
-                # sav_data = compress_gvas_to_sav(
-                #     self._raw_gvas, 
-                #     # self._compression_times, 
-                #     0x32,
-                #     True
-                # )
-
-                # with level_sav_path.open("wb") as file:
-                #     file.write(sav_data)
-
-                # return
+                self._raw_gvas, self._save_type = decompress_sav_to_gvas(data)
             except Exception as e:
                 LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
                 return None
@@ -222,6 +216,8 @@ class SaveManager:
                 return None
 
             self._load_entities()
+            self._register_world_records()
+            self._load_external_storages()
             self._container_registry_cache = None
 
             LOGGER.info("Done")
@@ -231,8 +227,8 @@ class SaveManager:
         if self.gvas_file is None:
             LOGGER.error("No gvas_file stored in save manager, aborting")
             return False
-        if self._compression_times is None:
-            LOGGER.warning("_compression_times is None, aborting")
+        if self._save_type is None:
+            LOGGER.warning("_save_type is None, aborting")
             return False
 
         output_path = Path(file_path).resolve() 
@@ -270,7 +266,7 @@ class SaveManager:
         gvas_file = copy.deepcopy(self.gvas_file)
         LOGGER.info("Compressing Main GVAS file")
         sav_data = compress_gvas_to_sav(
-            gvas_file.write(MAIN_SKIP_PROPERTIES), self._compression_times
+            gvas_file.write(MAIN_SKIP_PROPERTIES), self._save_type
         )
 
         LOGGER.info(f"Saving to {file_path}")
@@ -380,9 +376,13 @@ class SaveManager:
                     if owner:
                         owner_str = str(owner)
                         if owner_str in self.player_mapping:
-                            self.player_mapping[owner_str].add_pal(pal_entity)
+                            self.player_mapping[owner_str].add_pal(
+                                pal_entity, f"world:{pal_entity.InstanceId}"
+                            )
                         else:
-                            temp_player_pal_mapping.setdefault(owner_str, dict())[str(pal_entity.InstanceId)] = pal_entity
+                            temp_player_pal_mapping.setdefault(owner_str, dict())[
+                                f"world:{pal_entity.InstanceId}"
+                            ] = pal_entity
                         LOGGER.info(f"Found pal: {pal_entity}")
 
                     else:
@@ -425,6 +425,120 @@ class SaveManager:
             for pal in pal_list.values():
                 self._dangling_pals[str(pal.InstanceId)] = pal
                 LOGGER.warning(f"\t{pal}")
+
+    @property
+    def has_global_palbox(self) -> bool:
+        return self._global_palbox is not None
+
+    def _register_record(self, record: PalRecordRef, roster_key: str) -> None:
+        if record.record_key in self._record_mapping:
+            raise ValueError(f"Duplicated Pal RecordKey: {record.record_key}")
+        self._record_mapping[record.record_key] = record
+        instance_id = str(record.pal.InstanceId)
+        self._records_by_instance.setdefault(instance_id, []).append(record)
+        self._roster_record_keys.setdefault(roster_key, []).append(record.record_key)
+
+    def _register_world_records(self) -> None:
+        for player in self.get_players():
+            roster_key = str(player.PlayerUId)
+            for pal in player.get_pals():
+                self._register_world_record(pal, roster_key)
+        for pal in self.baseworker_mapping.values():
+            self._register_world_record(pal, "PAL_BASE_WORKER_BTN")
+        for pal in self._dangling_pals.values():
+            self._register_world_record(pal, "PAL_OTHER_PAL_BTN")
+
+    def _register_world_record(self, pal: PalEntity, roster_key: str) -> None:
+        container_id = str(pal.ContainerId) if pal.ContainerId else None
+        self._register_record(
+            PalRecordRef(
+                record_key=f"world:{pal.InstanceId}",
+                storage_key=(
+                    f"world-container:{container_id}"
+                    if container_id
+                    else "world-anomaly"
+                ),
+                storage_kind="world",
+                slot_index=pal.SlotIndex if pal.SlotIndex is not None else -1,
+                pal=pal,
+                storage_owner_uid=(
+                    str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
+                ),
+            ),
+            roster_key,
+        )
+
+    def _load_external_storages(self) -> None:
+        players_path = self._file_path / "Players"
+        for dps_path in sorted(players_path.glob("*_dps.sav")):
+            owner_hex = dps_path.stem.removesuffix("_dps")
+            try:
+                owner_uid = toUUID(str(uuid.UUID(owner_hex)))
+                storage = FixedPalStorage.open(dps_path, "dps", owner_uid)
+                self._dps_storages[storage.storage_key] = storage
+                LOGGER.info(
+                    f"Loaded DPS: path={dps_path} owner={owner_uid} "
+                    f"occupied={storage.occupied}/{storage.capacity}"
+                )
+                for record in storage.records():
+                    owner = self.get_player(record.pal.OwnerPlayerUId)
+                    roster_key = "PAL_OTHER_PAL_BTN"
+                    if owner is not None:
+                        record.pal.group_id = owner.group_id
+                        owner.add_pal(record.pal, record.record_key)
+                        roster_key = str(owner.PlayerUId)
+                    self._register_record(record, roster_key)
+            except Exception as error:
+                warning = f"Unable to load DPS {dps_path}: {error}"
+                self.load_warnings.append(warning)
+                LOGGER.warning(warning)
+
+        gps_path = self._file_path.parent / "GlobalPalStorage.sav"
+        if not gps_path.exists():
+            return
+        try:
+            self._global_palbox = FixedPalStorage.open(
+                gps_path, "global_palbox"
+            )
+            LOGGER.info(
+                f"Loaded Global Palbox: path={gps_path} "
+                f"occupied={self._global_palbox.occupied}/"
+                f"{self._global_palbox.capacity}"
+            )
+            for record in self._global_palbox.records():
+                self._register_record(record, "PAL_GLOBAL_STORAGE_BTN")
+        except Exception as error:
+            warning = f"Unable to load Global Palbox {gps_path}: {error}"
+            self.load_warnings.append(warning)
+            LOGGER.warning(warning)
+            self._global_palbox = None
+
+    def get_record(self, record_key: str) -> Optional[PalRecordRef]:
+        return self._record_mapping.get(str(record_key))
+
+    def records_by_instance(
+        self, instance_id: UUID | str, domain: str = "all"
+    ) -> list[PalRecordRef]:
+        records = list(self._records_by_instance.get(str(instance_id), []))
+        if domain == "all":
+            return records
+        if domain == "world":
+            return [record for record in records if record.storage_kind == "world"]
+        if domain == "gps":
+            return [
+                record
+                for record in records
+                if record.storage_kind == "global_palbox"
+            ]
+        if domain == "dps":
+            return [record for record in records if record.storage_kind == "dps"]
+        raise ValueError(f"Unknown Pal record domain: {domain}")
+
+    def records_for_roster(self, roster_key: str) -> list[PalRecordRef]:
+        return [
+            self._record_mapping[key]
+            for key in self._roster_record_keys.get(str(roster_key), [])
+        ]
 
     def get_players(self) -> list[PlayerEntity]:
         return self.player_mapping.values()
@@ -470,18 +584,23 @@ class SaveManager:
                 return
             descriptors[str(container.ID)] = {
                 "ContainerId": str(container.ID),
+                "StorageKey": f"world-container:{container.ID}",
+                "StorageKind": "world",
                 "ContainerKind": values["kind"],
                 "ContainerLabel": values["label"],
                 "OwnerPlayerUId": values.get("owner_player_uid"),
+                "StorageOwnerPlayerUid": values.get("owner_player_uid"),
                 "OwnerName": values.get("owner_name"),
                 "BaseId": values.get("base_id"),
                 "BaseName": values.get("base_name"),
                 "BaseOrdinal": values.get("base_ordinal"),
                 "GroupId": values.get("group_id"),
                 "Size": container.size,
+                "Capacity": container.size,
                 "Occupied": len(container.slots),
                 "Classification": values["classification"],
                 "MovableInto": values["movable_into"],
+                "CloneableInto": False,
                 "Shared": values.get("shared", False),
                 "Anomaly": values.get("anomaly"),
             }
@@ -589,11 +708,77 @@ class SaveManager:
                 anomaly=anomaly,
             )
 
+        dps_name = DataProvider.get_tech_i18n("DimensionPalStorage") or (
+            "Dimensional Pal Storage"
+        )
+        for storage in getattr(self, "_dps_storages", {}).values():
+            owner = self.get_player(storage.owner_uid)
+            owner_name = owner.NickName if owner else storage.owner_uid
+            descriptors[storage.storage_key] = {
+                "ContainerId": None,
+                "StorageKey": storage.storage_key,
+                "StorageKind": "dps",
+                "ContainerKind": "dps",
+                "ContainerLabel": f"{owner_name} · {dps_name}",
+                "OwnerPlayerUId": storage.owner_uid,
+                "StorageOwnerPlayerUid": storage.owner_uid,
+                "OwnerName": owner_name,
+                "BaseId": None,
+                "BaseName": None,
+                "BaseOrdinal": None,
+                "GroupId": str(owner.group_id) if owner else None,
+                "Size": storage.capacity,
+                "Capacity": storage.capacity,
+                "Occupied": storage.occupied,
+                "Classification": "exact" if owner else "unknown_owner",
+                "MovableInto": True,
+                "CloneableInto": False,
+                "Shared": True,
+                "Anomaly": None if owner else "unknown_storage_owner",
+            }
+
+        global_palbox = getattr(self, "_global_palbox", None)
+        if global_palbox is not None:
+            storage = global_palbox
+            descriptors[storage.storage_key] = {
+                "ContainerId": None,
+                "StorageKey": storage.storage_key,
+                "StorageKind": "global_palbox",
+                "ContainerKind": "global_palbox",
+                "ContainerLabel": (
+                    DataProvider.get_tech_i18n("GlobalPalStorage")
+                    or "Global Palbox"
+                ),
+                "OwnerPlayerUId": None,
+                "StorageOwnerPlayerUid": None,
+                "OwnerName": None,
+                "BaseId": None,
+                "BaseName": None,
+                "BaseOrdinal": None,
+                "GroupId": None,
+                "Size": storage.capacity,
+                "Capacity": storage.capacity,
+                "Occupied": storage.occupied,
+                "Classification": "exact",
+                "MovableInto": False,
+                "CloneableInto": True,
+                "Shared": True,
+                "Anomaly": None,
+            }
+
         self._container_registry_cache = descriptors
         return descriptors
 
     def get_container_registry(self) -> list[dict]:
-        order = {"party": 0, "storage": 1, "special": 2, "base": 3, "unknown": 4}
+        order = {
+            "global_palbox": -1,
+            "party": 0,
+            "storage": 1,
+            "dps": 2,
+            "special": 3,
+            "base": 4,
+            "unknown": 5,
+        }
         return sorted(
             self._container_descriptor_map().values(),
             key=lambda item: (
@@ -603,6 +788,52 @@ class SaveManager:
                 item["ContainerId"],
             ),
         )
+
+    def get_storage_descriptor(self, storage_key: str) -> Optional[dict]:
+        return next(
+            (
+                descriptor
+                for descriptor in self._container_descriptor_map().values()
+                if descriptor["StorageKey"] == str(storage_key)
+                or descriptor.get("ContainerId") == str(storage_key)
+            ),
+            None,
+        )
+
+    def resolve_record_location(self, record: PalRecordRef | str) -> dict:
+        record_ref = record if isinstance(record, PalRecordRef) else self.get_record(record)
+        if record_ref is None:
+            raise ValueError("Pal record not found")
+        if record_ref.storage_kind == "world":
+            location = self.resolve_pal_location(record_ref.pal)
+            location["StorageKey"] = record_ref.storage_key
+            location["StorageKind"] = "world"
+            return location
+        descriptor = self.get_storage_descriptor(record_ref.storage_key)
+        return {
+            "RecordedContainerId": (
+                str(record_ref.pal.ContainerId)
+                if record_ref.pal.ContainerId
+                else None
+            ),
+            "RecordedSlotIndex": record_ref.pal.SlotIndex,
+            "ActualContainerId": None,
+            "ActualSlotIndex": record_ref.slot_index,
+            "ActualLocations": [
+                {
+                    "StorageKey": record_ref.storage_key,
+                    "SlotIndex": record_ref.slot_index,
+                }
+            ],
+            "LocationStatus": "ok",
+            "LocationAnomaly": None,
+            "ContainerKind": record_ref.storage_kind,
+            "ContainerLabel": (
+                descriptor["ContainerLabel"] if descriptor else record_ref.storage_key
+            ),
+            "StorageKey": record_ref.storage_key,
+            "StorageKind": record_ref.storage_kind,
+        }
 
     def resolve_pal_location(self, pal: PalEntity | UUID | str) -> dict:
         pal_entity = pal if isinstance(pal, PalEntity) else self.get_pal(pal)
