@@ -124,6 +124,13 @@ PLAYER_SKIP_PROPERTIES[".SaveData.PlayerCharacterMakeData"] = (skip_decode, skip
 PLAYER_SKIP_PROPERTIES[".SaveData.LastTransform"] = (skip_decode, skip_encode)
 # PLAYER_SKIP_PROPERTIES[".SaveData.RecordData"] = (skip_decode, skip_encode)
 
+
+class PalIdentityConflict(ValueError):
+    def __init__(self, candidates: list[PalRecordRef]):
+        self.candidates = candidates
+        super().__init__("Pal identity already exists in the destination")
+
+
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
     _instance = None
@@ -1092,6 +1099,251 @@ class SaveManager:
         if str(source_group_id) != str(descriptor.get("GroupId")):
             raise ValueError("Cross-guild Pal movement is not supported.")
 
+    def _prepare_global_parameter(
+        self,
+        source: PalEntity,
+        *,
+        preserve_provenance: bool,
+    ) -> tuple[dict, dict]:
+        save_parameter = copy.deepcopy(self._save_parameter(source))
+        parameter = save_parameter["value"]
+        parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
+        parameter["ItemContainerId"] = PalObjects.PalContainerId(
+            PalObjects.EMPTY_UUID
+        )
+        parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
+            PalObjects.Guid(PalObjects.EMPTY_UUID)
+        )
+        parameter["bImportedCharacter"] = PalObjects.BoolProperty(True)
+        parameter["BaseCampWorkerEventType"] = PalObjects.EnumProperty(
+            "EPalBaseCampWorkerEventType",
+            "EPalBaseCampWorkerEventType::None",
+        )
+        parameter["BaseCampWorkerEventProgressTime"] = PalObjects.FloatProperty(0.0)
+        if not preserve_provenance:
+            parameter["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+                "StructProperty",
+                {
+                    "prop_name": "OldOwnerPlayerUIds",
+                    "prop_type": "StructProperty",
+                    "values": [],
+                    "type_name": "Guid",
+                    "id": PalObjects.EMPTY_UUID,
+                },
+            )
+            parameter["SlotId"] = PalObjects.PalCharacterSlotId(
+                -1, PalObjects.EMPTY_UUID
+            )
+        outer_instance = {
+            "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
+            "InstanceId": PalObjects.Guid(source.InstanceId),
+            "DebugName": PalObjects.StrProperty(""),
+        }
+        return save_parameter, outer_instance
+
+    def _global_collision_candidates(self, source: PalRecordRef) -> list[PalRecordRef]:
+        records = self.records_by_instance(source.pal.InstanceId)
+        if source.storage_kind == "global_palbox":
+            return [
+                record
+                for record in records
+                if record.storage_kind in {"world", "dps"}
+            ]
+        return [
+            record
+            for record in records
+            if record.storage_kind == "global_palbox"
+        ]
+
+    @staticmethod
+    def _restore_local_parameter_envelope(
+        incoming_parameter: dict,
+        destination_parameter: dict,
+    ) -> dict:
+        local_keys = {
+            "OwnerPlayerUId",
+            "OldOwnerPlayerUIds",
+            "SlotId",
+            "ItemContainerId",
+            "EquipItemContainerId",
+            "MapObjectConcreteInstanceIdAssignedToExpedition",
+            "BaseCampWorkerEventType",
+            "BaseCampWorkerEventProgressTime",
+            "bImportedCharacter",
+        }
+        merged = copy.deepcopy(incoming_parameter)
+        for key in local_keys:
+            if key in destination_parameter:
+                merged[key] = copy.deepcopy(destination_parameter[key])
+            else:
+                merged.pop(key, None)
+        return merged
+
+    def _transfer_global(
+        self,
+        source: PalRecordRef,
+        descriptor: dict,
+        action: str,
+        expected_target_record_key: str | None,
+    ) -> dict:
+        is_import = source.storage_kind == "global_palbox"
+        if is_import:
+            if not (
+                descriptor["StorageKind"] == "world"
+                and descriptor["ContainerKind"] in {"party", "storage"}
+            ):
+                raise ValueError(
+                    "Global Palbox imports must target a player Party or Palbox."
+                )
+        elif descriptor["StorageKind"] != "global_palbox":
+            raise ValueError("Global Palbox exports must target Global Palbox.")
+
+        candidates = self._global_collision_candidates(source)
+        if action == "clone" and candidates:
+            raise PalIdentityConflict(candidates)
+        if action == "update":
+            if len(candidates) != 1:
+                if candidates:
+                    raise PalIdentityConflict(candidates)
+                raise ValueError("No matching destination identity exists.")
+            destination = candidates[0]
+            if (
+                destination.record_key != expected_target_record_key
+                or destination.storage_key != descriptor["StorageKey"]
+            ):
+                raise ValueError("The locked update target is stale or changed.")
+            external_slots = []
+            destination_storage = None
+            if destination.storage_kind == "dps":
+                destination_storage = self._dps_storages[destination.storage_key]
+            elif destination.storage_kind == "global_palbox":
+                destination_storage = self._global_palbox
+            if destination_storage is not None:
+                external_slots.append(
+                    (destination_storage, destination.slot_index)
+                )
+            snapshot = self._snapshot_external_mutation(external_slots, [])
+            try:
+                if destination.storage_kind == "global_palbox":
+                    updated_parameter, _ = self._prepare_global_parameter(
+                        source.pal, preserve_provenance=True
+                    )
+                    destination.pal._pal_param.clear()
+                    destination.pal._pal_param.update(
+                        copy.deepcopy(updated_parameter["value"])
+                    )
+                else:
+                    incoming = copy.deepcopy(
+                        self._save_parameter(source.pal)["value"]
+                    )
+                    merged = self._restore_local_parameter_envelope(
+                        incoming, destination.pal._pal_param
+                    )
+                    destination.pal._pal_param.clear()
+                    destination.pal._pal_param.update(merged)
+                destination.pal._display_name_cache = {}
+                if destination_storage is not None:
+                    destination_storage.dirty = True
+                LOGGER.info(
+                    "Global Palbox update succeeded: "
+                    f"source_record={source.record_key} "
+                    f"target_record={destination.record_key} "
+                    f"target_storage={destination.storage_key} "
+                    f"target_slot={destination.slot_index} "
+                    f"pal={destination.pal.InstanceId}"
+                )
+                return {
+                    "RecordKey": destination.record_key,
+                    "StorageKey": destination.storage_key,
+                    "InstanceId": str(destination.pal.InstanceId),
+                }
+            except Exception:
+                self._restore_external_mutation(snapshot)
+                LOGGER.error(
+                    f"Global Palbox update rolled back: {traceback.format_exc()}"
+                )
+                raise
+
+        if action != "clone":
+            raise ValueError(f"Unsupported Global Palbox action: {action}")
+        if is_import:
+            target_container = self.container_data.get_container(
+                descriptor["ContainerId"]
+            )
+            if target_container is None or target_container.get_empty_slot() == -1:
+                raise ValueError("Target world container is full or unavailable.")
+            snapshot = self._snapshot_external_mutation([], [target_container])
+            try:
+                target_slot = target_container.add_pal(source.pal.InstanceId)
+                target_pal, target_group = self._make_world_pal(
+                    source.pal, descriptor, target_container, target_slot
+                )
+                target_pal._pal_param.pop(
+                    "MapObjectConcreteInstanceIdAssignedToExpedition", None
+                )
+                if not target_group.add_pal(target_pal.InstanceId):
+                    raise ValueError("Pal already exists in the target guild.")
+                self._entities_list.append(target_pal._pal_obj)
+                target_record = PalRecordRef(
+                    record_key=f"world:{target_pal.InstanceId}",
+                    storage_key=descriptor["StorageKey"],
+                    storage_kind="world",
+                    slot_index=target_slot,
+                    pal=target_pal,
+                    storage_owner_uid=descriptor.get("StorageOwnerPlayerUid"),
+                )
+                owner = self.get_player(target_pal.OwnerPlayerUId)
+                owner.add_pal(target_pal, target_record.record_key)
+                self._register_record(
+                    target_record, str(target_pal.OwnerPlayerUId)
+                )
+            except Exception:
+                self._restore_external_mutation(snapshot)
+                LOGGER.error(
+                    f"Global Palbox import rolled back: {traceback.format_exc()}"
+                )
+                raise
+        else:
+            global_storage = self._global_palbox
+            if global_storage is None:
+                raise ValueError("Global Palbox is unavailable.")
+            target_index = global_storage.free_index()
+            if target_index < 0:
+                raise ValueError("Global Palbox is full.")
+            snapshot = self._snapshot_external_mutation(
+                [(global_storage, target_index)], []
+            )
+            try:
+                save_parameter, _ = self._prepare_global_parameter(
+                    source.pal, preserve_provenance=True
+                )
+                target_record = global_storage.allocate(
+                    save_parameter, source.pal.InstanceId
+                )
+                self._register_record(
+                    target_record, "PAL_GLOBAL_STORAGE_BTN"
+                )
+            except Exception:
+                self._restore_external_mutation(snapshot)
+                LOGGER.error(
+                    f"Global Palbox export rolled back: {traceback.format_exc()}"
+                )
+                raise
+        self._container_registry_cache = None
+        LOGGER.info(
+            "Global Palbox clone succeeded: "
+            f"source_record={source.record_key} "
+            f"target_record={target_record.record_key} "
+            f"target_storage={target_record.storage_key} "
+            f"target_slot={target_record.slot_index} "
+            f"pal={target_record.pal.InstanceId}"
+        )
+        return {
+            "RecordKey": target_record.record_key,
+            "StorageKey": target_record.storage_key,
+            "InstanceId": str(target_record.pal.InstanceId),
+        }
+
     def transfer_pal(
         self,
         source_record_key: str,
@@ -1099,17 +1351,25 @@ class SaveManager:
         action: Literal["move", "clone", "update"],
         expected_target_record_key: str | None = None,
     ) -> dict:
-        if action != "move":
-            raise ValueError(f"Unsupported transfer action: {action}")
         source = self.get_record(source_record_key)
         if source is None:
             raise ValueError("Source Pal record not found.")
-        if source.storage_kind == "global_palbox":
-            raise ValueError("Global Palbox records cannot be moved.")
-        if source.pal.IsExpeditionPal:
+        if source.pal.IsExpeditionPal and action == "move":
             raise ValueError("Expedition Pals must be recalled in-game before moving.")
         descriptor = self.get_storage_descriptor(target_storage_key)
-        if descriptor is None or not descriptor["MovableInto"]:
+        if descriptor is None:
+            raise ValueError("Target storage is unknown or unsafe.")
+        if (
+            source.storage_kind == "global_palbox"
+            or descriptor["StorageKind"] == "global_palbox"
+            or action in {"clone", "update"}
+        ):
+            return self._transfer_global(
+                source, descriptor, action, expected_target_record_key
+            )
+        if action != "move":
+            raise ValueError(f"Unsupported transfer action: {action}")
+        if not descriptor["MovableInto"]:
             raise ValueError("Target storage is unknown or unsafe.")
         target_storage_key = descriptor["StorageKey"]
         if source.storage_key == target_storage_key:
@@ -1589,6 +1849,53 @@ class SaveManager:
             )
             self._register_record(record, roster)
             return record
+        if descriptor["StorageKind"] == "global_palbox":
+            storage = self._global_palbox
+            if storage is None:
+                raise ValueError("Global Palbox is unavailable.")
+            target_index = storage.free_index()
+            if target_index < 0:
+                raise ValueError("Global Palbox is full.")
+            snapshot = self._snapshot_external_mutation(
+                [(storage, target_index)], []
+            )
+            try:
+                instance_id = toUUID(str(uuid.uuid4()))
+                while self.records_by_instance(instance_id):
+                    instance_id = toUUID(str(uuid.uuid4()))
+                new_pal_obj = (
+                    PalObjects.PalSaveParameter(
+                        instance_id,
+                        PalObjects.EMPTY_UUID,
+                        PalObjects.EMPTY_UUID,
+                        -1,
+                        PalObjects.EMPTY_UUID,
+                    )
+                    if pal_obj is None
+                    else copy.deepcopy(pal_obj)
+                )
+                pal = PalEntity(new_pal_obj)
+                pal.InstanceId = instance_id
+                pal.PlayerUId = PalObjects.EMPTY_UUID
+                pal.SlotId = (PalObjects.EMPTY_UUID, -1)
+                save_parameter, _ = self._prepare_global_parameter(
+                    pal, preserve_provenance=False
+                )
+                record = storage.allocate(save_parameter, instance_id)
+                self._register_record(record, "PAL_GLOBAL_STORAGE_BTN")
+                self._container_registry_cache = None
+                LOGGER.info(
+                    "Created Global Palbox Pal: "
+                    f"record={record.record_key} slot={record.slot_index} "
+                    f"pal={record.pal.InstanceId}"
+                )
+                return record
+            except Exception:
+                self._restore_external_mutation(snapshot)
+                LOGGER.error(
+                    f"Failed creating Global Palbox Pal: {traceback.format_exc()}"
+                )
+                raise
         if descriptor["StorageKind"] != "dps":
             raise ValueError("Creation for this storage is not implemented yet.")
 

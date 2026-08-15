@@ -34,6 +34,9 @@ class FakeManager:
     def get_pal(self, _pal_id):
         return None
 
+    def get_record(self, _record_key):
+        return None
+
 
 class PalContainerApiTests(unittest.TestCase):
     def setUp(self):

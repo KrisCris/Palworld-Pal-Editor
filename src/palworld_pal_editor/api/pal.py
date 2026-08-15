@@ -6,7 +6,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.core import PalEntity, SaveManager
+from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
@@ -31,6 +31,7 @@ def list_pal_creation_targets(roster_key):
 
 
 @pal_blueprint.route("/move", methods=["POST"])
+@pal_blueprint.route("/transfer", methods=["POST"])
 @jwt_required()
 def move_pal():
     payload = request.json or {}
@@ -44,13 +45,36 @@ def move_pal():
                 "SourceRecordKey and TargetStorageKey are required.",
             )
         try:
-            result = SaveManager().transfer_pal(
+            manager = SaveManager()
+            source = manager.get_record(source_record_key)
+            result = manager.transfer_pal(
                 source_record_key,
                 target_storage_key,
                 payload.get("Action", "move"),
                 payload.get("ExpectedTargetRecordKey"),
             )
             return reply(0, result)
+        except PalIdentityConflict as conflict:
+            locked = conflict.candidates[0] if len(conflict.candidates) == 1 else None
+            return reply(
+                1,
+                {
+                    "Code": "PAL_IDENTITY_CONFLICT",
+                    "Incoming": _pal_brief(source.pal) if source else None,
+                    "Candidates": [
+                        _record_location(manager, candidate)
+                        for candidate in conflict.candidates
+                    ],
+                    "LockedTarget": locked.record_key if locked else None,
+                    "Existing": _pal_brief(locked.pal) if locked else None,
+                    "FieldChanges": (
+                        _brief_field_changes(source.pal, locked.pal)
+                        if source and locked
+                        else {}
+                    ),
+                },
+                "This genetic identity already exists.",
+            )
         except ValueError as error:
             return reply(1, None, str(error))
         except Exception:
@@ -380,6 +404,65 @@ def _pal_data(pal: PalEntity):
         "MasteredWaza": pal.MasteredWaza or [],
         "Suitabilities": pal.WorkSuitabilities or {},
         "SuitabilityMinimums": pal.MinimumWorkSuitabilities or {},
+    }
+
+
+def _pal_brief(pal: PalEntity) -> dict:
+    return {
+        "CharacterID": pal.CharacterID,
+        "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
+        "DisplayName": pal.DisplayName,
+        "NickName": pal.NickName or "",
+        "Gender": pal.Gender.value if pal.Gender else None,
+        "Level": pal.Level or 1,
+        "Exp": pal.Exp or 0,
+        "Rank": pal.Rank or 1,
+        "FriendshipLevel": pal.FriendshipLevel or 0,
+        "FavoriteIndex": pal.FavoriteIndex,
+        "Talent_HP": pal.Talent_HP or 0,
+        "Talent_Melee": pal.Talent_Melee or 0,
+        "Talent_Shot": pal.Talent_Shot or 0,
+        "Talent_Defense": pal.Talent_Defense or 0,
+        "Rank_HP": pal.Rank_HP or 0,
+        "Rank_Attack": pal.Rank_Attack or 0,
+        "Rank_Defence": pal.Rank_Defence or 0,
+        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
+        "ComputedMaxHP": pal.ComputedMaxHP,
+        "ComputedAttack": pal.ComputedAttack,
+        "ComputedDefense": pal.ComputedDefense,
+        "ComputedCraftSpeed": pal.ComputedCraftSpeed,
+        "Suitabilities": pal.WorkSuitabilities or {},
+        "EquipWaza": pal.EquipWaza or [],
+        "PassiveSkillList": pal.PassiveSkillList or [],
+    }
+
+
+def _brief_field_changes(incoming: PalEntity, existing: PalEntity) -> dict:
+    incoming_data = _pal_brief(incoming)
+    existing_data = _pal_brief(existing)
+    return {
+        key: {"Incoming": value, "Existing": existing_data.get(key)}
+        for key, value in incoming_data.items()
+        if value != existing_data.get(key)
+    }
+
+
+def _record_location(manager: SaveManager, record) -> dict:
+    location = manager.resolve_record_location(record)
+    return {
+        "RecordKey": record.record_key,
+        "StorageKey": record.storage_key,
+        "StorageKind": record.storage_kind,
+        "StorageOwnerPlayerUid": record.storage_owner_uid,
+        "InstanceId": str(record.pal.InstanceId),
+        "OwnerPlayerUId": (
+            str(record.pal.OwnerPlayerUId)
+            if record.pal.OwnerPlayerUId
+            else None
+        ),
+        "ContainerLabel": location["ContainerLabel"],
+        "ActualSlotIndex": location["ActualSlotIndex"],
+        "LocationStatus": location["LocationStatus"],
     }
 
 
