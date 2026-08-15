@@ -16,6 +16,10 @@ const skillTemplateType = ref('')
 const showMoveDialog = ref(false)
 const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
   || palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok')
+const ownerLabel = computed(() => palStore.SELECTED_PAL_DATA.OwnerName
+  || (palStore.SELECTED_PAL_DATA.StorageKind !== 'world'
+    ? palStore.SELECTED_PAL_DATA.ContainerLabel
+    : palStore.getTranslatedText('Editor_Pal_No_Owner')))
 const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
@@ -394,7 +398,7 @@ const portraitBorder = pal => pal.IsAwakening
               {{ palStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
             </small>
           </div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ ownerLabel }}</span></div>
           <div class="pal-technical-move">
             <button class="editor-button pal-location-move" @click="showMoveDialog = true"
               :disabled="moveBlocked || palStore.LOADING_FLAG">

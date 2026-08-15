@@ -88,7 +88,7 @@ test("Add Pal chooses an explicit capacity-checked container, including bases", 
   assert.match(source, /v-model="targetContainerId"/);
   assert.match(source, /container\.Occupied >= container\.Size/);
   assert.match(source, /container\.ContainerKind === 'base'/);
-  assert.match(source, /options\.TargetContainerId = targetContainerId\.value/);
+  assert.match(source, /options\.TargetStorageKey = targetContainerId\.value/);
   assert.match(source, /formatContainerLabel/);
   assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
 });

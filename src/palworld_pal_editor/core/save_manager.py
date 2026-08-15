@@ -835,7 +835,7 @@ class SaveManager:
                 anomaly=anomaly,
             )
 
-        dps_name = DataProvider.get_tech_i18n("DimensionPalStorage") or (
+        dps_name = DataProvider.get_tech_name("DimensionPalStorage") or (
             "Dimensional Pal Storage"
         )
         for storage in getattr(self, "_dps_storages", {}).values():
@@ -873,7 +873,7 @@ class SaveManager:
                 "StorageKind": "global_palbox",
                 "ContainerKind": "global_palbox",
                 "ContainerLabel": (
-                    DataProvider.get_tech_i18n("GlobalPalStorage")
+                    DataProvider.get_tech_name("GlobalPalStorage")
                     or "Global Palbox"
                 ),
                 "OwnerPlayerUId": None,

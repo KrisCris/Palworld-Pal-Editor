@@ -8,6 +8,7 @@ const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
+const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind === 'global_palbox')
 </script>
 
 <template>
@@ -21,6 +22,14 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
     </header>
 
     <div class="roster-list">
+      <button v-if="globalRoster()" class="roster-row roster-row--global"
+        @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
+        :aria-current="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
+        :disabled="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
+        <span class="player-avatar">GPS</span>
+        <span class="roster-copy">{{ globalRoster().Label }}</span>
+      </button>
+
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
         @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
         :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"

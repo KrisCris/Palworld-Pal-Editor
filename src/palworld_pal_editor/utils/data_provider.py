@@ -484,6 +484,13 @@ class DataProvider:
         )
 
     @staticmethod
+    def get_tech_name(key: str) -> str | None:
+        translation = DataProvider.get_tech_i18n(key)
+        if isinstance(translation, dict):
+            return translation.get("Name") or key
+        return translation
+
+    @staticmethod
     def get_tech_lv(key: str) -> int:
         return TECH_DATA.get(key, {}).get("Level", 0)
 

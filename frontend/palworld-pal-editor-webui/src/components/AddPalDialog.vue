@@ -22,11 +22,14 @@ let previousAriaHidden
 const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
   .find(template => template.Id === templateId.value))
 const targetContainers = computed(() => palStore.PAL_CONTAINERS.filter(container => (
-  container.MovableInto
-  && (!palStore.BASE_PAL_BTN_CLK_FLAG || container.ContainerKind === 'base')
-  && (palStore.BASE_PAL_BTN_CLK_FLAG
-    || !palStore.SELECTED_PLAYER_DATA?.GroupId
-    || container.GroupId === palStore.SELECTED_PLAYER_DATA.GroupId)
+  (palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN
+    ? container.StorageKind === 'global_palbox'
+    : palStore.BASE_PAL_BTN_CLK_FLAG
+      ? container.ContainerKind === 'base'
+      : (container.OwnerPlayerUId === palStore.SELECTED_PLAYER_ID
+        && ['party', 'storage'].includes(container.ContainerKind))
+        || (container.StorageKind === 'dps'
+          && container.StorageOwnerPlayerUid === palStore.SELECTED_PLAYER_ID))
 )))
 const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
@@ -54,10 +57,10 @@ onMounted(async () => {
   await palStore.fetchPalTemplates()
   await palStore.fetchPalContainers()
   targetContainerId.value = palStore.BASE_PAL_BTN_CLK_FLAG
-    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.ContainerId || ''
+    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.StorageKey || ''
     : targetContainers.value.find(
       container => container.ContainerId === palStore.SELECTED_PLAYER_DATA?.PalStorageContainerId
-    )?.ContainerId || targetContainers.value[0]?.ContainerId || ''
+    )?.StorageKey || targetContainers.value[0]?.StorageKey || ''
   await nextTick()
   dialog.value?.focus()
 })
@@ -90,7 +93,7 @@ async function createPal() {
     : mode.value === 'json'
       ? { Mode: 'json', PalJson: palJson.value }
       : { Mode: 'default' }
-  options.TargetContainerId = targetContainerId.value
+  options.TargetStorageKey = targetContainerId.value
   if (await palStore.addPal(options)) emit('close')
 }
 
@@ -132,7 +135,7 @@ async function deleteTemplate(id) {
           <PalPortrait :src="palStore.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
           <div>
             <h3>{{ palStore.getTranslatedText('AddPal_Default_Title') }}</h3>
-            <p>{{ palStore.getTranslatedText('AddPal_Default_Description') }}</p>
+            <p>{{ palStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
             <small>SheepBall</small>
           </div>
         </section>
@@ -195,8 +198,8 @@ async function deleteTemplate(id) {
         <label class="target-container">
           <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
           <select v-model="targetContainerId">
-            <option v-for="container in targetContainers" :key="container.ContainerId"
-              :value="container.ContainerId" :disabled="container.Occupied >= container.Size">
+            <option v-for="container in targetContainers" :key="container.StorageKey"
+              :value="container.StorageKey" :disabled="container.Occupied >= container.Size">
               {{ containerLabel(container) }} ({{ container.Occupied }}/{{ container.Size }})
             </option>
           </select>

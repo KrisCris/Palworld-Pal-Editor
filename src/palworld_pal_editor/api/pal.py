@@ -326,6 +326,7 @@ def _pal_data(pal: PalEntity, pal_record=None):
         "ContainerLabel": None,
         }
     )
+    owner_uid = _guid_string_or_none(pal.OwnerPlayerUId)
     return {
         "RecordKey": pal_record.record_key if pal_record else f"world:{pal.InstanceId}",
         "StorageKey": pal_record.storage_key if pal_record else None,
@@ -334,8 +335,8 @@ def _pal_data(pal: PalEntity, pal_record=None):
             pal_record.storage_owner_uid if pal_record else None
         ),
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
-        "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
-        "group_id": str(pal.group_id) if pal.group_id else None,
+        "OwnerPlayerUId": owner_uid,
+        "group_id": _guid_string_or_none(pal.group_id),
         "ContainerId": location["RecordedContainerId"],
         "SlotIndex": location["RecordedSlotIndex"],
         "ActualContainerId": location["ActualContainerId"],
@@ -347,7 +348,7 @@ def _pal_data(pal: PalEntity, pal_record=None):
         "ContainerLabel": location["ContainerLabel"],
         "FavoriteIndex": pal.FavoriteIndex,
         "IsImportedCharacter": pal.IsImportedCharacter,
-        "OwnerName": pal.OwnerName or None,
+        "OwnerName": pal.OwnerName if owner_uid else None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,
         "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
@@ -460,15 +461,20 @@ def _record_location(manager: SaveManager, record) -> dict:
         "StorageKind": record.storage_kind,
         "StorageOwnerPlayerUid": record.storage_owner_uid,
         "InstanceId": str(record.pal.InstanceId),
-        "OwnerPlayerUId": (
-            str(record.pal.OwnerPlayerUId)
-            if record.pal.OwnerPlayerUId
-            else None
-        ),
+        "OwnerPlayerUId": _guid_string_or_none(record.pal.OwnerPlayerUId),
         "ContainerLabel": location["ContainerLabel"],
         "ActualSlotIndex": location["ActualSlotIndex"],
         "LocationStatus": location["LocationStatus"],
     }
+
+
+def _guid_string_or_none(value) -> str | None:
+    if value is None:
+        return None
+    text = str(value)
+    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
+        return None
+    return text
 
 
 @pal_blueprint.route("/dump_data", methods=["POST"])

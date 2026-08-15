@@ -345,4 +345,6 @@ export default {
     Editor_Container_Special: "Special container ({{0}} slots)",
     Editor_Container_Unknown: "Unknown container ({{0}} slots)",
     Editor_Container_Anomaly: "Location anomaly",
+    Editor_Transfer_Conflict_Title: "This Pal already exists at the destination", Editor_Transfer_Conflict_Subtitle: "The destination is locked to the matching Pal. Jump to it, or update it in place.", Editor_Transfer_Jump: "Jump to Pal", Editor_Transfer_Update: "Update existing Pal", Editor_Transfer_Incoming: "Incoming saved data", Editor_Transfer_Existing: "Existing saved data", Editor_Transfer_Clone: "Clone Pal", PalBrief_Level: "Level", Message_Pal_Updated: "Existing Pal updated.",
+    AddPal_Default_Description_Target: "สร้าง Pal เริ่มต้นที่ปลอดภัยในคอนเทนเนอร์ปลายทางที่เลือก",
 };

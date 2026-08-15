@@ -31,11 +31,12 @@ export const matchesPalAttributeFilters = (pal, filters) => (
 );
 
 export const isCreatedPal = (pal, createdIds) => Boolean(
-  pal?.IsNewPal || createdIds.has(pal?.InstanceId),
+  pal?.IsNewPal || createdIds.has(pal?.RecordKey) || createdIds.has(pal?.InstanceId),
 );
 
 export const isEditedPal = (pal, editedIds, createdIds) => Boolean(
-  editedIds.has(pal?.InstanceId) || isCreatedPal(pal, createdIds),
+  editedIds.has(pal?.RecordKey) || editedIds.has(pal?.InstanceId)
+  || isCreatedPal(pal, createdIds),
 );
 
 export const matchesPalSessionFilter = (
@@ -59,12 +60,14 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
       const location = (locationOrder[left.ContainerKind] ?? 2)
         - (locationOrder[right.ContainerKind] ?? 2);
       if (location) return location;
-      const missingContainer = Number(!left.ContainerId) - Number(!right.ContainerId);
+      const leftStorageKey = left.StorageKey || left.ContainerId;
+      const rightStorageKey = right.StorageKey || right.ContainerId;
+      const missingContainer = Number(!leftStorageKey) - Number(!rightStorageKey);
       if (missingContainer) return missingContainer;
-      const container = textOrder(left.ContainerId, right.ContainerId);
+      const container = textOrder(leftStorageKey, rightStorageKey);
       if (container) return container;
-      const slot = (left.SlotIndex ?? Number.MAX_SAFE_INTEGER)
-        - (right.SlotIndex ?? Number.MAX_SAFE_INTEGER);
+      const slot = (left.ActualSlotIndex ?? Number.MAX_SAFE_INTEGER)
+        - (right.ActualSlotIndex ?? Number.MAX_SAFE_INTEGER);
       if (slot) return slot;
     } else {
       const leftPaldeck = paldeckFor(left);
@@ -87,14 +90,15 @@ export function groupPalList(pals, mode = "paldeck") {
   const groups = [];
   for (const pal of pals) {
     const anomalous = pal.LocationStatus && pal.LocationStatus !== "ok";
-    const key = anomalous ? "anomaly" : pal.ContainerId || "unknown";
+    const storageKey = pal.StorageKey || pal.ContainerId;
+    const key = anomalous ? "anomaly" : storageKey || "unknown";
     let group = groups.at(-1);
     if (!group || group.key !== key) {
       group = {
         key,
         label: anomalous
           ? "Location anomaly"
-          : pal.ContainerLabel || `Container ${pal.ContainerId || "unknown"}`,
+          : pal.ContainerLabel || `Container ${storageKey || "unknown"}`,
         pals: [],
       };
       groups.push(group);

@@ -75,7 +75,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
   try {
     const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
     if (button) {
-      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
+      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.RecordKey) {
         palStore.selectPal(palStore.SELECTED_PAL_ID, true)
       }
       button.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -105,7 +105,7 @@ const visiblePalGroups = computed(() => groupPalList(
   palStore.PAL_LIST_SORT,
 ).map(group => ({
   ...group,
-  container: palStore.PAL_CONTAINERS.find(container => container.ContainerId === group.key),
+  container: palStore.PAL_CONTAINERS.find(container => container.StorageKey === group.key),
 })))
 const containerLabel = group => formatContainerLabel(
   group.container || {
@@ -149,6 +149,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 
 const palWasCreated = pal => isCreatedPal(pal, palStore.CREATED_PAL_IDS)
 const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.CREATED_PAL_IDS)
+const palKey = pal => pal.RecordKey || pal.InstanceId
 </script>
 
 <template>
@@ -228,11 +229,11 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
         <span>{{ containerLabel(group) }}</span>
         <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
       </h3>
-      <button v-for="pal in group.pals" :key="pal.InstanceId"
+      <button v-for="pal in group.pals" :key="palKey(pal)"
         :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': !pal.in_owner_palbox }]"
-        :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
-        :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
-        :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
+        :value="palKey(pal)" @click="palStore.selectPal(palKey(pal))"
+        :aria-current="palStore.SELECTED_PAL_ID == palKey(pal) ? 'true' : undefined"
+        :disabled="palStore.SELECTED_PAL_ID == palKey(pal) || palStore.LOADING_FLAG">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">

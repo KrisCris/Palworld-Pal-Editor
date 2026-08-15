@@ -224,6 +224,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     class PalData {
         constructor(obj) {
+            this.RecordKey = obj.RecordKey || `world:${obj.InstanceId}`;
+            this.StorageKey = obj.StorageKey;
+            this.StorageKind = obj.StorageKind || "world";
+            this.StorageOwnerPlayerUid = obj.StorageOwnerPlayerUid;
             this.InstanceId = obj.InstanceId;
             this.OwnerPlayerUId = obj.OwnerPlayerUId;
             this.group_id = obj.group_id;
@@ -523,6 +527,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     const PAL_BASE_WORKER_BTN = ref("PAL_BASE_WORKER_BTN");
+    const PAL_GLOBAL_STORAGE_BTN = ref("PAL_GLOBAL_STORAGE_BTN");
 
     const TECH_LV_DICT = ref({});
     const PASSIVE_SKILLS = ref({});
@@ -538,6 +543,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_TEMPLATES = ref([]);
     const SKILL_TEMPLATES = ref([]);
     const PAL_CONTAINERS = ref([]);
+    const PAL_TRANSFER_CONFLICT = ref(null);
     const I18nList = ref(GAME_LANGUAGES);
 
     // flags
@@ -587,6 +593,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // data
     const BASE_PAL_MAP = ref(new Map());
+    const GLOBAL_PAL_MAP = ref(new Map());
+    const SPECIAL_ROSTERS = ref([]);
     const PLAYER_MAP = ref(new Map());
     const PAL_PASSIVE_SELECTED_ITEM = ref("");
     const PAL_ACTIVE_SELECTED_ITEM = ref("");
@@ -1189,12 +1197,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PLAYER_INVENTORY.value = null;
 
         BASE_PAL_MAP.value = new Map();
+        GLOBAL_PAL_MAP.value = new Map();
         PLAYER_MAP.value = new Map();
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
         PAL_TEMPLATES.value = [];
         SKILL_TEMPLATES.value = [];
         PAL_CONTAINERS.value = [];
+        SPECIAL_ROSTERS.value = [];
+        PAL_TRANSFER_CONFLICT.value = null;
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
         PAL_LIST_EDITED_ONLY.value = false;
@@ -1352,6 +1363,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             PAL_CONTAINERS.value = response.data.containers || [];
+            SPECIAL_ROSTERS.value = response.data.specialRosters || [];
             if (response.data.hasWorkingPal) {
                 HAS_WORKING_PAL_FLAG.value = true;
                 PREFER_BASE_PAL_LIST.value = true;
@@ -1486,14 +1498,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             let map =
                 playerUId == PAL_BASE_WORKER_BTN.value
                     ? BASE_PAL_MAP.value
+                    : playerUId == PAL_GLOBAL_STORAGE_BTN.value
+                    ? GLOBAL_PAL_MAP.value
                     : PLAYER_MAP.value.get(playerUId).pals;
             // clear old map
             map.clear();
             // insert new data
             for (let pal of response.data) {
                 let pal_data = new PalData(pal);
-                if (pal_data.IsNewPal) CREATED_PAL_IDS.value.add(pal_data.InstanceId);
-                map.set(pal_data.InstanceId, pal_data);
+                if (pal_data.IsNewPal) CREATED_PAL_IDS.value.add(pal_data.RecordKey);
+                map.set(pal_data.RecordKey, pal_data);
                 // console.log(
                 //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
                 // );
@@ -1555,7 +1569,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (
             (playerUId == PAL_BASE_WORKER_BTN.value &&
                 BASE_PAL_MAP.value.size == 0) ||
-            (playerUId != PAL_BASE_WORKER_BTN.value &&
+            (playerUId == PAL_GLOBAL_STORAGE_BTN.value && GLOBAL_PAL_MAP.value.size == 0) ||
+            (playerUId != PAL_BASE_WORKER_BTN.value && playerUId != PAL_GLOBAL_STORAGE_BTN.value &&
                 PLAYER_MAP.value.get(playerUId).pals.size == 0)
         ) {
             await fetchPlayerPal(playerUId);
@@ -1565,11 +1580,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_MAP.value =
             playerUId == PAL_BASE_WORKER_BTN.value
                 ? BASE_PAL_MAP.value
+                : playerUId == PAL_GLOBAL_STORAGE_BTN.value
+                ? GLOBAL_PAL_MAP.value
                 : PLAYER_MAP.value.get(playerUId).pals;
 
         // properly setup selected player flag
         if (playerUId == PAL_BASE_WORKER_BTN.value) {
             BASE_PAL_BTN_CLK_FLAG.value = true;
+        } else if (playerUId == PAL_GLOBAL_STORAGE_BTN.value) {
+            SELECTED_PLAYER_ID.value = playerUId;
+            SHOW_PLAYER_EDIT_FLAG.value = false;
         } else {
             SELECTED_PLAYER_ID.value = playerUId;
             if (!manual) {
@@ -1588,24 +1608,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         try {
             const response = await POST("/api/pal/paldata", {
-                PlayerUId: player,
-                InstanceId: pal,
+                RecordKey: pal,
             });
             if (response === false) return false;
 
             if (response.status == 0) {
                 // construct new pal
                 let pal_data = new PalData({
-                    ...PAL_MAP.value.get(response.data.InstanceId),
+                    ...PAL_MAP.value.get(response.data.RecordKey),
                     ...response.data,
                 });
                 // update the pal from the correct pal container
                 if (player == PAL_BASE_WORKER_BTN.value) {
-                    BASE_PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+                    BASE_PAL_MAP.value.set(pal_data.RecordKey, pal_data);
+                } else if (player == PAL_GLOBAL_STORAGE_BTN.value) {
+                    GLOBAL_PAL_MAP.value.set(pal_data.RecordKey, pal_data);
                 } else {
                     PLAYER_MAP.value
                         .get(player)
-                        .pals.set(pal_data.InstanceId, pal_data);
+                        .pals.set(pal_data.RecordKey, pal_data);
                 }
                 return true;
             } else if (response.status == 2) {
@@ -1640,7 +1661,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
             // Update selected pal id and pal data only after the full payload arrives.
             SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
-            SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.InstanceId;
+            SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.RecordKey;
             SHOW_PLAYER_EDIT_FLAG.value = false;
 
             // Scroll to selected pal
@@ -1685,8 +1706,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const response = await PATCH("/api/pal/paldata", {
             key: key,
             value: value,
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
+            RecordKey: SELECTED_PAL_ID.value,
         });
         if (response === false) return;
 
@@ -1707,6 +1727,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function GET_PAL_OWNER_API_ID() {
+        if (SELECTED_PLAYER_ID.value == PAL_GLOBAL_STORAGE_BTN.value) {
+            return PAL_GLOBAL_STORAGE_BTN.value;
+        }
         return BASE_PAL_BTN_CLK_FLAG.value
             ? PAL_BASE_WORKER_BTN.value
             : SELECTED_PLAYER_ID.value;
@@ -1717,8 +1740,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (managesLoading) LOADING_FLAG.value = true;
         try {
             const response = await POST("/api/pal/dump_data", {
-                PlayerUId: GET_PAL_OWNER_API_ID(),
-                PalGuid: SELECTED_PAL_ID.value,
+                RecordKey: SELECTED_PAL_ID.value,
             });
 
             if (response === false) return;
@@ -1743,8 +1765,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (managesLoading) LOADING_FLAG.value = true;
         try {
             const response = await POST("/api/pal/maximize", {
-                PlayerUId: GET_PAL_OWNER_API_ID(),
-                PalGuid: SELECTED_PAL_ID.value,
+                RecordKey: SELECTED_PAL_ID.value,
             });
             if (response === false) return false;
             if (response.status == 0) {
@@ -1752,7 +1773,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     ...SELECTED_PAL_DATA.value,
                     ...response.data,
                 });
-                PAL_MAP.value.set(palData.InstanceId, palData);
+                PAL_MAP.value.set(palData.RecordKey, palData);
                 SELECTED_PAL_DATA.value = palData;
                 EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
                 UPDATE_PAL_RESELECT_CTR.value++;
@@ -1825,7 +1846,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-        const response = await DELETE(`/api/pal/pal/${SELECTED_PAL_ID.value}`);
+        const response = await DELETE(`/api/pal/pal/${encodeURIComponent(SELECTED_PAL_ID.value)}`);
 
         if (response === false) return;
 
@@ -1834,7 +1855,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 PAL_MAP.value,
                 SELECTED_PAL_ID.value
             );
-            PAL_MAP.value.delete(SELECTED_PAL_DATA.value.InstanceId);
+            PAL_MAP.value.delete(SELECTED_PAL_DATA.value.RecordKey);
             SELECTED_PAL_ID.value = null;
             // SELECTED_PAL_EL = null;
             SELECTED_PAL_DATA.value = null;
@@ -1853,6 +1874,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     async function refreshPalContainerState() {
         await fetchPalContainers();
+        if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")) {
+            await fetchPlayerPal(PAL_GLOBAL_STORAGE_BTN.value);
+        }
         for (const playerId of PLAYER_MAP.value.keys()) {
             await fetchPlayerPal(playerId);
         }
@@ -1865,17 +1889,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!SELECTED_PAL_ID.value || !targetContainerId) return false;
         const palId = SELECTED_PAL_ID.value;
         const target = PAL_CONTAINERS.value.find(
-            container => container.ContainerId === targetContainerId
+            container => container.StorageKey === targetContainerId || container.ContainerId === targetContainerId
         );
         LOADING_FLAG.value = true;
+        PAL_TRANSFER_CONFLICT.value = null;
         try {
-            const response = await POST("/api/pal/move", {
-                PalGuid: palId,
-                TargetContainerId: targetContainerId,
+            const response = await POST("/api/pal/transfer", {
+                SourceRecordKey: palId,
+                TargetStorageKey: target?.StorageKey || targetContainerId,
+                Action: target?.StorageKind === "global_palbox" || SELECTED_PAL_DATA.value?.StorageKind === "global_palbox" ? "clone" : "move",
             });
             if (response === false) return false;
             if (response.status != 0) {
                 if (response.status == 2) requireAuth("AuthView_Session_Expired");
+                else if (response.data?.Code === "PAL_IDENTITY_CONFLICT") {
+                    PAL_TRANSFER_CONFLICT.value = {
+                        ...response.data,
+                        SourceRecordKey: palId,
+                        TargetStorageKey: target?.StorageKey || targetContainerId,
+                    };
+                }
                 else reportOperationError("Operation_Move_Pal", response);
                 return false;
             }
@@ -1883,10 +1916,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             await refreshPalContainerState();
             const ownerList = target?.ContainerKind === "base"
                 ? PAL_BASE_WORKER_BTN.value
+                : target?.StorageKind === "dps"
+                ? SELECTED_PAL_DATA.value?.OwnerPlayerUId
                 : target?.OwnerPlayerUId;
             if (ownerList) {
                 await selectPlayer(ownerList, true);
-                await selectPal(palId, true);
+                await selectPal(response.data.RecordKey, true);
             }
             showToast("Message_Pal_Moved", "success");
             return true;
@@ -1895,12 +1930,60 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    async function updateConflictingPal() {
+        const conflict = PAL_TRANSFER_CONFLICT.value;
+        if (!conflict?.LockedTarget) return false;
+        LOADING_FLAG.value = true;
+        try {
+            const response = await POST("/api/pal/transfer", {
+                SourceRecordKey: conflict.SourceRecordKey,
+                TargetStorageKey: conflict.TargetStorageKey,
+                Action: "update",
+                ExpectedTargetRecordKey: conflict.LockedTarget,
+            });
+            if (response === false) return false;
+            if (response.status != 0) {
+                if (response.status == 2) requireAuth("AuthView_Session_Expired");
+                else reportOperationError("Operation_Move_Pal", response);
+                return false;
+            }
+            EDITED_PAL_IDS.value.add(conflict.LockedTarget);
+            PAL_TRANSFER_CONFLICT.value = null;
+            await refreshPalContainerState();
+            showToast("Message_Pal_Updated", "success");
+            return true;
+        } finally {
+            LOADING_FLAG.value = false;
+        }
+    }
+
+    async function jumpToConflictingPal() {
+        const conflict = PAL_TRANSFER_CONFLICT.value;
+        const candidate = conflict?.Candidates?.find(
+            item => item.RecordKey === conflict.LockedTarget,
+        );
+        if (!candidate) return false;
+        const rosterKey = candidate.StorageKind === "global_palbox"
+            ? PAL_GLOBAL_STORAGE_BTN.value
+            : candidate.OwnerPlayerUId || PAL_BASE_WORKER_BTN.value;
+        PAL_TRANSFER_CONFLICT.value = null;
+        await selectPlayer(rosterKey, true);
+        await selectPal(candidate.RecordKey, true);
+        return true;
+    }
+
+    function clearPalTransferConflict() {
+        PAL_TRANSFER_CONFLICT.value = null;
+    }
+
     async function addPal(options = {}) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
         const response = await POST("/api/pal/add_pal", {
             PlayerUId: PlayerUId,
+            RosterKey: PlayerUId,
+            TargetStorageKey: options.TargetStorageKey,
             ...options,
         });
 
@@ -1911,18 +1994,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
-            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
+            CREATED_PAL_IDS.value.add(pal_data.RecordKey);
             const target = PAL_CONTAINERS.value.find(
-                container => container.ContainerId === options.TargetContainerId
+                container => container.StorageKey === options.TargetStorageKey
             );
             await refreshPalContainerState();
             const ownerList = target?.ContainerKind === "base"
                 ? PAL_BASE_WORKER_BTN.value
+                : target?.StorageKind === "global_palbox"
+                ? PAL_GLOBAL_STORAGE_BTN.value
                 : target?.OwnerPlayerUId || SELECTED_PLAYER_ID.value;
             if (ownerList) await selectPlayer(ownerList, true);
             SHOW_PLAYER_EDIT_FLAG.value = false;
-            SELECTED_PAL_ID.value = pal_data.InstanceId;
-            await selectPal(pal_data.InstanceId, true);
+            SELECTED_PAL_ID.value = pal_data.RecordKey;
+            await selectPal(pal_data.RecordKey, true);
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
             return true;
         } else if (response.status == 2) {
@@ -1949,8 +2034,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function savePalTemplate(name) {
         if (!SELECTED_PAL_ID.value) return false;
         const response = await POST("/api/pal/templates", {
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
+            RecordKey: SELECTED_PAL_ID.value,
             Name: name,
         });
         if (response === false) return false;
@@ -1991,8 +2075,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function saveSkillTemplate(type, name) {
         if (!SELECTED_PAL_ID.value) return false;
         const response = await POST("/api/pal/skill_templates", {
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
+            RecordKey: SELECTED_PAL_ID.value,
             Type: type,
             Name: name,
         });
@@ -2026,8 +2109,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function applySkillTemplate(templateId) {
         if (!SELECTED_PAL_ID.value) return false;
         const response = await POST(`/api/pal/skill_templates/${templateId}/apply`, {
-            PlayerUId: GET_PAL_OWNER_API_ID(),
-            PalGuid: SELECTED_PAL_ID.value,
+            RecordKey: SELECTED_PAL_ID.value,
         });
         if (response === false) return false;
         if (response.status == 0) {
@@ -2076,25 +2158,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         const response = await POST("/api/pal/dupe_pal", {
             PlayerUId: PlayerUId,
-            PalGuid: SELECTED_PAL_ID.value,
+            RecordKey: SELECTED_PAL_ID.value,
         });
 
         if (response === false) return;
 
         if (response.status == 0) {
             const pal_data = new PalData(response.data);
-            CREATED_PAL_IDS.value.add(pal_data.InstanceId);
+            CREATED_PAL_IDS.value.add(pal_data.RecordKey);
             const temp_map = new Map();
             PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
             PAL_MAP.value.clear();
             temp_map.forEach((v, k) => {
                 PAL_MAP.value.set(k, v);
                 if (v == SELECTED_PAL_DATA.value) {
-                    PAL_MAP.value.set(pal_data.InstanceId, pal_data);
+                    PAL_MAP.value.set(pal_data.RecordKey, pal_data);
                 }
             });
             // PAL_RESELECT_CTR.value++
-            SELECTED_PAL_ID.value = pal_data.InstanceId;
+            SELECTED_PAL_ID.value = pal_data.RecordKey;
             SELECTED_PAL_DATA.value = pal_data;
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
@@ -2146,6 +2228,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_PASSIVE_SELECTED_ITEM,
         PAL_ACTIVE_SELECTED_ITEM,
         PAL_BASE_WORKER_BTN,
+        PAL_GLOBAL_STORAGE_BTN,
+        SPECIAL_ROSTERS,
         PLAYER_MAP,
         PAL_MAP,
         SELECTED_PLAYER_ID,
@@ -2211,6 +2295,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_TEMPLATES,
         SKILL_TEMPLATES,
         PAL_CONTAINERS,
+        PAL_TRANSFER_CONFLICT,
 
         getTranslatedText,
         getMessageText,
@@ -2243,6 +2328,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         delPal,
         addPal,
         movePal,
+        updateConflictingPal,
+        jumpToConflictingPal,
+        clearPalTransferConflict,
         fetchPalContainers,
         dupePal,
         fetchPalTemplates,

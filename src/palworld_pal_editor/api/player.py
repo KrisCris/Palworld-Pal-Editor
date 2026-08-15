@@ -12,6 +12,15 @@ from palworld_pal_editor.utils.util import reply
 player_blueprint = Blueprint("player", __name__)
 
 
+def _guid_string_or_none(value):
+    if value is None:
+        return None
+    text = str(value)
+    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
+        return None
+    return text
+
+
 def _pal_location(manager, pal, party_container_id=None, storage_container_id=None):
     resolver = getattr(manager, "resolve_pal_location", None)
     if resolver is not None:
@@ -104,9 +113,7 @@ def get_player_pals():
             "StorageKey": record.storage_key,
             "StorageKind": record.storage_kind,
             "StorageOwnerPlayerUid": record.storage_owner_uid,
-            "OwnerPlayerUid": (
-                str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
-            ),
+            "OwnerPlayerUid": _guid_string_or_none(pal.OwnerPlayerUId),
             "IconAccessKey": pal.IconAccessKey or None,
             "DataAccessKey": pal.DataAccessKey or None,
             "I18nName": pal.I18nName or None,
@@ -161,7 +168,7 @@ def get_player_list():
                         "RosterKey": "PAL_GLOBAL_STORAGE_BTN",
                         "Kind": "global_palbox",
                         "Label": (
-                            DataProvider.get_tech_i18n("GlobalPalStorage")
+                            DataProvider.get_tech_name("GlobalPalStorage")
                             or "Global Palbox"
                         ),
                     }
