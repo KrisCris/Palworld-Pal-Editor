@@ -267,7 +267,7 @@ footer button { padding: 0 var(--editor-space-4); }
 .move-dialog__confirm { border-color: var(--editor-color-primary); color: var(--editor-color-background); background: var(--editor-color-primary); }
 .move-dialog__update-action { position: relative; }
 .move-dialog__update { height: 100%; padding: 0 var(--editor-space-4); border-color: var(--editor-color-danger, #dc4655); color: #fff; background: var(--editor-color-danger, #b92f3d); }
-.move-dialog__preview { display: none; position: absolute; z-index: 5; right: 0; bottom: calc(100% + var(--editor-space-2)); width: min(64rem, calc(100vw - 3rem)); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--editor-space-2); pointer-events: none; }
+.move-dialog__preview { display: none; position: absolute; z-index: 5; right: 0; bottom: calc(100% - 6rem); width: min(42rem, calc(100vw - 3rem)); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--editor-space-2); pointer-events: none; }
 .move-dialog__update-action:hover .move-dialog__preview,
 .move-dialog__update-action:focus-within .move-dialog__preview { display: grid; }
 .move-dialog__confirm:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
