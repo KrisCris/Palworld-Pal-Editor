@@ -8,6 +8,7 @@ const props = defineProps({
   data: { type: Object, default: () => ({}) },
   title: { type: String, default: '' },
   changedFields: { type: Object, default: () => ({}) },
+  tone: { type: String, default: 'neutral' },
 })
 const palStore = usePalEditorStore()
 const changed = key => Object.hasOwn(props.changedFields, key)
@@ -38,6 +39,11 @@ const activeSkills = computed(() => props.data.EquipWaza || [])
 const passiveSkills = computed(() => props.data.PassiveSkillList || [])
 const passiveName = skill => palStore.PASSIVE_SKILLS[skill]?.I18n?.[0] || skill
 const activeName = skill => palStore.ACTIVE_SKILLS[skill]?.I18n?.[0] || skill
+const portraitBorder = computed(() => props.data.IsAwakening
+  ? 'var(--editor-color-awakened)'
+  : props.data.IsBOSS
+  ? 'var(--editor-color-danger)'
+  : props.data.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)')
 const elementIcon = skill => {
   const key = palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)
   return key ? palStore.backendAssetUrl(`/image/elements/Element_${key}`) : uiIcon('stat-attack')
@@ -45,10 +51,30 @@ const elementIcon = skill => {
 </script>
 
 <template>
-  <article class="pal-brief editor-glass-surface">
+  <article :class="['pal-brief', 'editor-glass-surface', `pal-brief--${tone}`]">
     <p class="pal-brief__title">{{ title }}</p>
     <header>
-      <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${data.IconKey}`)" alt="" size="4.25rem" />
+      <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${data.IconKey}`)" alt="" size="4.25rem"
+        :border-color="portraitBorder"
+        :glow-color="data.IsAwakening ? 'var(--editor-color-awakened)' : ''">
+        <template #top-left>
+          <img v-if="data.IsBOSS" :src="uiIcon('boss')" alt="" @error="$event.currentTarget.hidden = true">
+          <img v-else-if="data.IsRarePal" class="game-lucky-icon"
+            :src="uiIcon('rare')" alt="" @error="$event.currentTarget.hidden = true">
+        </template>
+        <template #top-right>
+          <img v-if="data.FavoriteIndex > 0" class="game-priority-icon"
+            :src="uiIcon(`priority-${data.FavoriteIndex}`)" alt="" @error="$event.currentTarget.hidden = true">
+          <img v-else-if="data.IsBOSS && data.IsRarePal" class="game-lucky-icon"
+            :src="uiIcon('rare')" alt="" @error="$event.currentTarget.hidden = true">
+        </template>
+        <template #bottom-left>
+          <img v-if="data.FavoriteIndex > 0 && data.IsBOSS && data.IsRarePal" class="game-lucky-icon"
+            :src="uiIcon('rare')" alt="" @error="$event.currentTarget.hidden = true">
+          <img v-if="data.IsImportedCharacter" class="game-dna-icon"
+            :src="uiIcon('dna')" alt="" @error="$event.currentTarget.hidden = true">
+        </template>
+      </PalPortrait>
       <div class="pal-brief__identity">
         <strong :class="{ changed: changed('NickName') || changed('DisplayName') }">
           {{ data.NickName || data.DisplayName || data.CharacterID }}
@@ -58,10 +84,15 @@ const elementIcon = skill => {
           {{ palStore.getTranslatedText('PalBrief_Level') }} {{ data.Level }}
         </span>
       </div>
-      <img v-if="data.FavoriteIndex" class="pal-brief__favorite"
-        :src="uiIcon(`priority-${data.FavoriteIndex}`)"
-        :title="palStore.getTranslatedText('PalList_Sort_Priority')" alt="">
     </header>
+
+    <dl class="pal-brief__friendship-row" :class="{ changed: changed('FriendshipLevel') }">
+      <div>
+        <dt><img :src="uiIcon('friendship')" alt=""><span>{{ palStore.getTranslatedText('Editor_Friendship_Level') }}</span></dt>
+        <dd>{{ data.FriendshipLevel }}</dd>
+        <i><b :style="{ width: `${friendshipPercent}%` }" /></i>
+      </div>
+    </dl>
 
     <div class="pal-brief__attributes">
       <dl class="pal-brief__attribute-column">
@@ -71,11 +102,6 @@ const elementIcon = skill => {
         </div>
       </dl>
       <dl class="pal-brief__attribute-column">
-        <div class="pal-brief__friendship" :class="{ changed: changed('FriendshipLevel') }">
-          <dt><img :src="uiIcon('friendship')" alt=""><span>{{ palStore.getTranslatedText('Editor_Friendship_Level') }}</span></dt>
-          <dd>{{ data.FriendshipLevel }}</dd>
-          <i><b :style="{ width: `${friendshipPercent}%` }" /></i>
-        </div>
         <div v-for="row in soulRows" :key="row.key" :class="{ changed: changed(row.key) }">
           <dt><img :src="uiIcon(row.icon)" alt=""><span>{{ attributeLabel(row) }}</span></dt>
           <dd>{{ row.value }}</dd>
@@ -126,6 +152,7 @@ const elementIcon = skill => {
 
 <style scoped>
 .pal-brief {
+  --pal-brief-change: var(--editor-color-primary);
   display: grid;
   width: 28rem;
   min-width: 0;
@@ -134,9 +161,10 @@ const elementIcon = skill => {
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--editor-color-primary) 30%, var(--editor-color-glass-border));
   border-radius: var(--editor-radius-md);
-  background: color-mix(in srgb, var(--editor-color-surface) 74%, transparent);
+  background: var(--editor-color-glass-surface);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
   box-shadow: var(--editor-shadow-compact);
-  backdrop-filter: blur(20px) saturate(130%);
 }
 
 .pal-brief__title {
@@ -159,10 +187,11 @@ header {
 .pal-brief__identity span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pal-brief__identity strong { font-size: 1.08rem; }
 .pal-brief__identity span { color: var(--editor-color-muted); font-size: .76rem; }
-.pal-brief__favorite { width: 1.35rem; height: 1.35rem; object-fit: contain; }
 
 .pal-brief__attributes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .38rem; }
 .pal-brief__attribute-column { display: grid; align-content: start; margin: 0; gap: .26rem; }
+.pal-brief__friendship-row { margin: 0; }
+.pal-brief__friendship-row > div,
 .pal-brief__attribute-column > div {
   position: relative;
   display: grid;
@@ -183,9 +212,9 @@ dt img { width: .9rem; height: .9rem; flex: 0 0 auto; object-fit: contain; }
 dt span { overflow: hidden; color: var(--editor-color-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
 dd { display: flex; align-items: center; gap: .22rem; margin: 0; font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-.pal-brief__friendship { padding-bottom: .34rem !important; }
-.pal-brief__friendship > i { position: absolute; right: .34rem; bottom: .16rem; left: .34rem; height: .18rem; overflow: hidden; border-radius: 999px; background: rgb(255 255 255 / .08); }
-.pal-brief__friendship > i b { display: block; height: 100%; background: linear-gradient(90deg, #d94691, #ff85c2); }
+.pal-brief__friendship-row > div { padding-bottom: .38rem; }
+.pal-brief__friendship-row i { position: absolute; right: .34rem; bottom: .16rem; left: .34rem; height: .18rem; overflow: hidden; border-radius: 999px; background: rgb(255 255 255 / .08); }
+.pal-brief__friendship-row i b { display: block; height: 100%; background: linear-gradient(90deg, #d94691, #ff85c2); }
 
 .pal-brief__section { position: relative; min-width: 0; }
 h4 { margin: 0 0 .28rem; color: var(--editor-color-muted); font-size: .61rem; letter-spacing: .03em; }
@@ -268,7 +297,22 @@ h4 { margin: 0 0 .28rem; color: var(--editor-color-muted); font-size: .61rem; le
   line-height: 1.2;
 }
 
-.changed { outline: 1px solid var(--editor-color-warning); outline-offset: 1px; }
+.pal-brief__identity .changed {
+  color: var(--editor-color-text);
+  text-decoration: underline .12rem var(--pal-brief-change);
+  text-underline-offset: .18rem;
+}
+
+.pal-brief__friendship-row.changed > div,
+.pal-brief__attribute-column > .changed,
+.pal-brief__suitabilities.changed,
+.pal-brief__section.changed {
+  border-color: color-mix(in srgb, var(--pal-brief-change) 55%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--pal-brief-change) 9%, var(--editor-color-control));
+  box-shadow: inset .18rem 0 var(--pal-brief-change);
+}
+
+.pal-brief__suitabilities.changed { padding: .28rem; border-radius: .3rem; }
 
 @media (max-width: 700px) {
   .pal-brief { width: min(28rem, calc(100vw - 3rem)); }

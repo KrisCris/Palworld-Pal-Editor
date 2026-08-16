@@ -86,17 +86,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
       </div>
 
       <div class="editor-app-bar__utilities">
-        <details v-if="palStore.SAVE_LOADED_FLAG" class="editor-more">
-          <summary class="op"><UiIcon name="more" /> {{ palStore.getTranslatedText("TopBar_More") }}</summary>
-          <div class="editor-more__menu editor-glass-surface">
-            <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
-              @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
-              :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
-              :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
-              <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
-            </button>
-          </div>
-        </details>
         <button v-if="palStore.SAVE_LOADED_FLAG" class="op support-button"
           @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
           <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
@@ -407,35 +396,6 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 
 #languageSelect {
   padding: 0 var(--editor-space-2);
-}
-
-.editor-more {
-  position: relative;
-}
-
-.editor-more summary {
-  list-style: none;
-}
-
-.editor-more summary::-webkit-details-marker {
-  display: none;
-}
-
-.editor-more__menu {
-  position: absolute;
-  top: calc(100% + var(--editor-space-1));
-  right: 0;
-  display: grid;
-  min-width: 12rem;
-  gap: var(--editor-space-1);
-  padding: var(--editor-space-2);
-  border: 1px solid var(--editor-color-border);
-  border-radius: var(--editor-radius-sm);
-  box-shadow: var(--editor-shadow-compact);
-}
-
-.editor-more__menu .op {
-  justify-content: flex-start;
 }
 
 .game-icon {

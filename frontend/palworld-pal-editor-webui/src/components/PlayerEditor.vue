@@ -29,6 +29,7 @@ import { computed, ref } from 'vue'
 
 import PlayerInventory from '@/components/PlayerInventory.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
+import NumberStepper from '@/components/modules/NumberStepper.vue'
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
@@ -105,8 +106,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
           <div class="player-field">
             <label for="technology-points">{{ palStore.getTranslatedText('Editor_TechPoint') }}</label>
             <div class="player-control">
-              <input id="technology-points" type="number" name="TechnologyPoint" min="0" max="65535"
-                v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint">
+              <NumberStepper id="technology-points" name="TechnologyPoint" :min="0" :max="65535"
+                :label="palStore.getTranslatedText('Editor_TechPoint')"
+                v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="TechnologyPoint"
                 :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" :disabled="palStore.LOADING_FLAG"
                 :aria-label="fieldActionLabel('Editor_TechPoint')"><UiIcon name="check" /></button>
@@ -116,8 +118,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
           <div class="player-field">
             <label for="boss-technology-points">{{ palStore.getTranslatedText('Editor_BossTechPoint') }}</label>
             <div class="player-control">
-              <input id="boss-technology-points" type="number" name="bossTechnologyPoint" min="0" max="65535"
-                v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint">
+              <NumberStepper id="boss-technology-points" name="bossTechnologyPoint" :min="0" :max="65535"
+                :label="palStore.getTranslatedText('Editor_BossTechPoint')"
+                v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="bossTechnologyPoint"
                 :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" :disabled="palStore.LOADING_FLAG"
                 :aria-label="fieldActionLabel('Editor_BossTechPoint')"><UiIcon name="check" /></button>
@@ -127,8 +130,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
           <div class="player-field">
             <label for="unused-status-points">{{ palStore.getTranslatedText('Editor_UnusedStatusPoints') }}</label>
             <div class="player-control">
-              <input id="unused-status-points" type="number" name="UnusedStatusPoint" min="0" max="65535"
-                v-model.number="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint">
+              <NumberStepper id="unused-status-points" name="UnusedStatusPoint" :min="0" :max="65535"
+                :label="palStore.getTranslatedText('Editor_UnusedStatusPoints')"
+                v-model="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint" />
               <button type="button" @click="palStore.updatePlayer" name="UnusedStatusPoint"
                 :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint" :disabled="palStore.LOADING_FLAG"
                 :aria-label="fieldActionLabel('Editor_UnusedStatusPoints')"><UiIcon name="check" /></button>
@@ -416,6 +420,15 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   color: var(--editor-color-text);
+  background: var(--editor-color-control);
+}
+
+.player-control .number-stepper {
+  width: 100%;
+  min-width: 0;
+  height: 2.35rem;
+  flex: 1 1 auto;
+  border-radius: var(--editor-radius-sm);
   background: var(--editor-color-control);
 }
 

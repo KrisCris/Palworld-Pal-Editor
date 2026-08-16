@@ -558,7 +558,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // const DEL_PAL_RESELECT_CTR = ref(0)
     const UPDATE_PAL_RESELECT_CTR = ref(0);
     const SHOW_UNREF_PAL_FLAG = ref(false);
-    const SHOW_OOB_PAL_FLAG = ref(true);
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
@@ -1223,7 +1222,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         EDITED_PAL_IDS.value.clear();
         CREATED_PAL_IDS.value.clear();
         SHOW_UNREF_PAL_FLAG.value = false;
-        SHOW_OOB_PAL_FLAG.value = true;
         SHOW_PLAYER_EDIT_FLAG.value = false;
 
         // display data
@@ -1826,14 +1824,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return true;
         }
 
-        // if (SHOW_OOB_PAL_FLAG.value && pal.in_owner_palbox) {
-        //   return true
-        // }
-
-        if (!SHOW_OOB_PAL_FLAG.value && !pal.in_owner_palbox) {
-            return true;
-        }
-
         if (
             PAL_LIST_SEARCH_KEYWORD.value &&
             !pal.DisplayName.toLowerCase().includes(
@@ -2272,7 +2262,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // ADD_PAL_RESELECT_CTR,
         UPDATE_PAL_RESELECT_CTR,
         SHOW_UNREF_PAL_FLAG,
-        SHOW_OOB_PAL_FLAG,
         HIDE_INVALID_OPTIONS,
         PAL_SAVE_DETAILS_OPEN,
 

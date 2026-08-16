@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onMounted, ref } from "vue";
 
+import OverlayScrollArea from "@/components/modules/OverlayScrollArea.vue";
 import PalBriefPanel from "@/components/modules/PalBriefPanel.vue";
 import {
   buildContainerMoveGroups,
@@ -124,37 +125,43 @@ onMounted(async () => {
         <div v-if="!conflict" class="move-dialog__panes">
           <section class="move-dialog__pane">
             <h3>{{ palStore.getTranslatedText('Editor_Move_Groups') }}</h3>
-            <div class="move-dialog__groups" role="listbox" :aria-label="palStore.getTranslatedText('Editor_Move_Groups')">
-              <button v-for="group in groups" :key="group.key" type="button" role="option"
-                :aria-selected="group.key === activeGroup?.key"
-                :class="{ 'is-active': group.key === activeGroup?.key, 'is-current-player': group.selected }"
-                @click="activeGroupKey = group.key">
-                <span>{{ groupLabel(group) }}</span>
-                <small v-if="group.selected">{{ palStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
-              </button>
-            </div>
+            <OverlayScrollArea>
+              <div class="move-dialog__groups overlay-scroll-area__viewport" role="listbox"
+                :aria-label="palStore.getTranslatedText('Editor_Move_Groups')">
+                <button v-for="group in groups" :key="group.key" type="button" role="option"
+                  :aria-selected="group.key === activeGroup?.key"
+                  :class="{ 'is-active': group.key === activeGroup?.key, 'is-current-player': group.selected }"
+                  @click="activeGroupKey = group.key">
+                  <span>{{ groupLabel(group) }}</span>
+                  <small v-if="group.selected">{{ palStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
+                </button>
+              </div>
+            </OverlayScrollArea>
           </section>
 
           <section class="move-dialog__pane">
             <h3>{{ palStore.getTranslatedText('Editor_Move_Containers') }}</h3>
-            <div class="move-dialog__containers" role="listbox" :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
-              <button v-for="container in activeGroup?.containers || []" :key="container.StorageKey" type="button"
-                role="option" :aria-selected="container.StorageKey === pendingContainerId"
-                :aria-disabled="Boolean(disabledReason(container))"
-                :class="{ 'is-active': container.StorageKey === pendingContainerId }"
-                @click="selectContainer(container)">
-                <span class="move-dialog__container-copy">
-                  <strong>{{ containerLabel(container) }}</strong>
-                  <small v-if="disabledReason(container)">
-                    {{ palStore.getTranslatedText(reasonKey[disabledReason(container)]) }}
-                  </small>
-                </span>
-                <span class="move-dialog__capacity">{{ container.Occupied }}/{{ container.Size }}</span>
-              </button>
-              <p v-if="!activeGroup?.containers?.length" class="move-dialog__empty">
-                {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
-              </p>
-            </div>
+            <OverlayScrollArea>
+              <div class="move-dialog__containers overlay-scroll-area__viewport" role="listbox"
+                :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
+                <button v-for="container in activeGroup?.containers || []" :key="container.StorageKey" type="button"
+                  role="option" :aria-selected="container.StorageKey === pendingContainerId"
+                  :aria-disabled="Boolean(disabledReason(container))"
+                  :class="{ 'is-active': container.StorageKey === pendingContainerId }"
+                  @click="selectContainer(container)">
+                  <span class="move-dialog__container-copy">
+                    <strong>{{ containerLabel(container) }}</strong>
+                    <small v-if="disabledReason(container)">
+                      {{ palStore.getTranslatedText(reasonKey[disabledReason(container)]) }}
+                    </small>
+                  </span>
+                  <span class="move-dialog__capacity">{{ container.Occupied }}/{{ container.Size }}</span>
+                </button>
+                <p v-if="!activeGroup?.containers?.length" class="move-dialog__empty">
+                  {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
+                </p>
+              </div>
+            </OverlayScrollArea>
           </section>
         </div>
 
@@ -168,12 +175,6 @@ onMounted(async () => {
         </section>
 
         <footer>
-          <span v-if="conflict?.LockedTarget" class="move-dialog__preview" role="tooltip">
-            <PalBriefPanel :data="conflict.Incoming" :changed-fields="conflict.FieldChanges"
-              :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
-            <PalBriefPanel :data="conflict.Existing" :changed-fields="conflict.FieldChanges"
-              :title="palStore.getTranslatedText('Editor_Transfer_Existing')" />
-          </span>
           <button type="button" @click="closeDialog">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
           <template v-if="conflict">
             <button type="button" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG" @click="jumpToPal">
@@ -188,6 +189,13 @@ onMounted(async () => {
             @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>
+      <div v-if="conflict?.LockedTarget" class="move-dialog__preview" role="tooltip">
+        <PalBriefPanel :data="conflict.Incoming" :changed-fields="conflict.FieldChanges" tone="incoming"
+          :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
+        <span class="move-dialog__comparison-arrow" aria-hidden="true" />
+        <PalBriefPanel :data="conflict.Existing" :changed-fields="conflict.FieldChanges" tone="existing"
+          :title="palStore.getTranslatedText('Editor_Transfer_Existing')" />
+      </div>
     </div>
   </Teleport>
 </template>
@@ -206,8 +214,10 @@ onMounted(async () => {
 .move-dialog {
   position: relative;
   display: grid;
+  height: min(44rem, calc(100dvh - 2rem));
   width: min(52rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   box-sizing: border-box;
   gap: var(--editor-space-3);
   padding: var(--editor-space-4);
@@ -215,7 +225,7 @@ onMounted(async () => {
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
 }
-.move-dialog.has-conflict { overflow: visible; }
+.move-dialog.has-conflict { height: auto; overflow: visible; }
 
 header,
 footer {
@@ -241,7 +251,7 @@ button {
 
 .move-dialog__close { min-width: var(--editor-control-height); font-size: 1.25rem; }
 .move-dialog__panes { display: grid; min-height: 0; grid-template-columns: minmax(12rem, .75fr) minmax(18rem, 1.25fr); gap: var(--editor-space-2); }
-.move-dialog__pane { display: grid; min-height: 18rem; grid-template-rows: auto minmax(0, 1fr); gap: var(--editor-space-2); padding: var(--editor-space-2); overflow: hidden; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); background: var(--editor-color-surface-subtle); }
+.move-dialog__pane { display: grid; min-height: 0; grid-template-rows: auto minmax(0, 1fr); gap: var(--editor-space-2); padding: var(--editor-space-2); overflow: hidden; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); background: var(--editor-color-surface-subtle); }
 .move-dialog__pane h3 { color: var(--editor-color-muted); font-size: .8rem; }
 .move-dialog__groups,
 .move-dialog__containers { display: flex; min-height: 0; flex-direction: column; gap: var(--editor-space-1); overflow-y: auto; }
@@ -281,16 +291,72 @@ footer button { padding: 0 var(--editor-space-4); }
 .move-dialog__confirm { border-color: var(--editor-color-primary); color: var(--editor-color-background); background: var(--editor-color-primary); }
 .move-dialog__update-action { position: relative; }
 .move-dialog__update { height: 100%; padding: 0 var(--editor-space-4); border-color: var(--editor-color-danger, #dc4655); color: #fff; background: var(--editor-color-danger, #b92f3d); }
-.move-dialog__preview { display: none; position: absolute; z-index: 5; left: 50%; bottom: calc(100% + var(--editor-space-2)); width: min(64rem, calc(100vw - 3rem)); max-height: calc(100dvh - 6rem); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--editor-space-3); overflow: hidden; transform: translateX(-50%); pointer-events: none; }
-footer:has(.move-dialog__update-action:hover) .move-dialog__preview,
-footer:has(.move-dialog__update-action:focus-within) .move-dialog__preview { display: grid; }
+.move-dialog-layer > .move-dialog__preview {
+  position: absolute;
+  z-index: 5;
+  top: var(--editor-space-4);
+  left: 50%;
+  display: none;
+  width: min(66rem, calc(100vw - 3rem));
+  max-height: calc(100dvh - 8rem);
+  box-sizing: border-box;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  gap: var(--editor-space-4);
+  padding: var(--editor-space-4);
+  overflow-y: auto;
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: var(--editor-radius-lg);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.move-dialog-layer:has(.move-dialog__update-action:hover) > .move-dialog__preview,
+.move-dialog-layer:has(.move-dialog__update-action:focus-within) > .move-dialog__preview { display: grid; }
+.move-dialog__comparison-arrow {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-glass-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--editor-color-primary) 16%, var(--editor-color-control));
+  box-shadow: var(--editor-shadow-compact);
+}
+.move-dialog__comparison-arrow::before {
+  width: 1.15rem;
+  height: .12rem;
+  content: '';
+  border-radius: 999px;
+  background: var(--editor-color-primary);
+}
+.move-dialog__comparison-arrow::after {
+  position: absolute;
+  width: .5rem;
+  height: .5rem;
+  content: '';
+  border-top: .12rem solid var(--editor-color-primary);
+  border-right: .12rem solid var(--editor-color-primary);
+  transform: translateX(.32rem) rotate(45deg);
+}
 .move-dialog__confirm:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
 button:focus-visible { outline: 2px solid var(--editor-color-focus); outline-offset: 2px; }
 
 @media (max-width: 700px) {
-  .move-dialog { overflow-y: auto; }
-  .move-dialog__panes { grid-template-columns: 1fr; }
-  .move-dialog__pane { min-height: 10rem; max-height: 32vh; }
-  .move-dialog__preview { width: calc(100vw - 2rem); grid-template-columns: 1fr; max-height: 70vh; overflow: auto; }
+  .move-dialog { overflow: hidden; }
+  .move-dialog__panes { grid-template-columns: 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .move-dialog__pane { min-height: 0; }
+  .move-dialog-layer > .move-dialog__preview {
+    top: var(--editor-space-2);
+    width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 5rem);
+    grid-template-columns: 1fr;
+  }
+  .move-dialog__comparison-arrow { transform: rotate(90deg); }
 }
 </style>

@@ -1,6 +1,18 @@
 import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
-import test from "node:test";
+import test, { after } from "node:test";
+
+import { createPinia, setActivePinia } from "pinia";
+
+import { closeVueServer, loadVueModule, renderVue } from "./vue-render.js";
+
+globalThis.localStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
+after(closeVueServer);
 
 const dialogPath = new URL("../src/components/PalContainerMoveDialog.vue", import.meta.url);
 const editorPath = new URL("../src/components/PalEditor.vue", import.meta.url);
@@ -18,6 +30,50 @@ test("Pal movement uses a glass two-pane confirmation dialog", async () => {
   assert.match(source, /aria-disabled/);
   assert.match(source, /Editor_Move_Reason_Full/);
   assert.match(source, /Editor_Move_Pal/);
+});
+
+test("Pal update comparison is a centered directional glass layer", async () => {
+  const [{ default: PalContainerMoveDialog }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PalContainerMoveDialog.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  const pal = {
+    CharacterID: "JetDragon",
+    DisplayName: "Jetragon",
+    IconKey: "JetDragon",
+    Level: 62,
+    Rank: 1,
+    FriendshipLevel: 0,
+    FavoriteIndex: 2,
+    IsBOSS: true,
+    IsAwakening: true,
+    IsImportedCharacter: true,
+  };
+  store.PAL_TRANSFER_CONFLICT = {
+    LockedTarget: "world:pal-1",
+    Incoming: pal,
+    Existing: { ...pal, Level: 71 },
+    FieldChanges: { Level: true },
+    Candidates: [{
+      RecordKey: "world:pal-1",
+      StorageKey: "container-1",
+      ContainerLabel: "Player · Palbox",
+    }],
+  };
+
+  const html = await renderVue(PalContainerMoveDialog, { pinia });
+
+  assert.match(html, /<\/section><div class="move-dialog__preview"/);
+  assert.match(html, /move-dialog__comparison-arrow/);
+  assert.match(html, /pal-brief--incoming/);
+  assert.match(html, /pal-brief--existing/);
+  assert.equal((html.match(/pal-brief__friendship-row/g) || []).length, 2);
+  assert.match(html, /game-priority-icon/);
+  assert.match(html, /game-dna-icon/);
+  assert.match(html, /image\/ui\/boss/);
 });
 
 test("PalEditor opens the dialog instead of embedding movement SearchSelect controls", async () => {

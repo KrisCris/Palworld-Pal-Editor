@@ -5,7 +5,7 @@ from uuid import UUID
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.api.pal import _pal_data
+from palworld_pal_editor.api.pal import _pal_brief, _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
@@ -281,6 +281,21 @@ class PalIdentityTests(unittest.TestCase):
         pal = self.make_pal("SheepBall")
         pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
         self.assertEqual(2, _pal_data(pal)["FavoriteIndex"])
+
+    def test_pal_conflict_brief_includes_portrait_status_flags(self):
+        pal = self.make_pal("SheepBall")
+        pal.IsBOSS = True
+        pal.IsAwakening = True
+        pal.IsImportedCharacter = True
+        pal.FavoriteIndex = 2
+
+        brief = _pal_brief(pal)
+
+        self.assertTrue(brief["IsBOSS"])
+        self.assertFalse(brief["IsRarePal"])
+        self.assertTrue(brief["IsAwakening"])
+        self.assertTrue(brief["IsImportedCharacter"])
+        self.assertEqual(2, brief["FavoriteIndex"])
 
     def test_imported_character_flag_round_trips_and_reaches_api_payloads(self):
         pal = self.make_pal("SheepBall")

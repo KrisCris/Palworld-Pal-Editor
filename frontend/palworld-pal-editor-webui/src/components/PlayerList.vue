@@ -1,4 +1,5 @@
 <script setup>
+import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
@@ -21,7 +22,8 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
       <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
 
-    <div class="roster-list">
+    <OverlayScrollArea>
+    <div class="roster-list overlay-scroll-area__viewport">
       <button v-if="globalRoster()" class="roster-row roster-row--global"
         @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
         :aria-current="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
@@ -46,6 +48,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
         <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
       </button>
     </div>
+    </OverlayScrollArea>
   </nav>
 </template>
 
@@ -102,6 +105,8 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
 
 .roster-list {
   display: grid;
+  width: 100%;
+  height: 100%;
   min-height: 0;
   align-content: start;
   gap: var(--editor-space-1);
