@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import OverlayScrollArea from "@/components/modules/OverlayScrollArea.vue";
 import PalBriefPanel from "@/components/modules/PalBriefPanel.vue";
@@ -13,9 +13,13 @@ import { usePalEditorStore } from "@/stores/paleditor";
 const emit = defineEmits(["close"]);
 const palStore = usePalEditorStore();
 const dialog = ref(null);
+const updateAction = ref(null);
+const preview = ref(null);
+const previewScale = ref(1);
 const activeGroupKey = ref("");
 const pendingContainerId = ref("");
 const conflict = computed(() => palStore.PAL_TRANSFER_CONFLICT);
+let previewFrame = 0;
 
 const groups = computed(() => buildContainerMoveGroups(
   palStore.PAL_CONTAINERS,
@@ -64,6 +68,27 @@ const isGlobalTransfer = computed(() => (
   palStore.SELECTED_PAL_DATA?.StorageKind === "global_palbox"
   || pendingContainer.value?.StorageKind === "global_palbox"
 ));
+const previewStyle = computed(() => ({
+  "--move-preview-scale": previewScale.value,
+}));
+
+function updatePreviewScale() {
+  previewFrame = 0;
+  if (!preview.value || !updateAction.value) return;
+
+  const previewTop = preview.value.getBoundingClientRect().top;
+  const actionTop = updateAction.value.getBoundingClientRect().top;
+  const availableHeight = Math.max(0, actionTop - previewTop - 12);
+  const naturalHeight = preview.value.scrollHeight;
+  previewScale.value = naturalHeight > 0
+    ? Math.min(1, availableHeight / naturalHeight)
+    : 1;
+}
+
+function schedulePreviewScale() {
+  if (previewFrame) cancelAnimationFrame(previewFrame);
+  previewFrame = requestAnimationFrame(updatePreviewScale);
+}
 
 function selectContainer(container) {
   if (disabledReason(container)) return;
@@ -105,6 +130,22 @@ onMounted(async () => {
       : current?.OwnerPlayerUId || "other";
   await nextTick();
   dialog.value?.focus();
+  window.addEventListener("resize", schedulePreviewScale);
+});
+
+watch(
+  () => conflict.value?.LockedTarget,
+  async lockedTarget => {
+    if (!lockedTarget) return;
+    await nextTick();
+    schedulePreviewScale();
+  },
+  { flush: "post" },
+);
+
+onBeforeUnmount(() => {
+  if (previewFrame) cancelAnimationFrame(previewFrame);
+  window.removeEventListener("resize", schedulePreviewScale);
 });
 </script>
 
@@ -180,7 +221,8 @@ onMounted(async () => {
             <button type="button" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG" @click="jumpToPal">
               {{ palStore.getTranslatedText('Editor_Transfer_Jump') }}
             </button>
-            <span class="move-dialog__update-action">
+            <span ref="updateAction" class="move-dialog__update-action" @pointerenter="schedulePreviewScale"
+              @focusin="schedulePreviewScale">
               <button type="button" class="move-dialog__update" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG"
                 @click="updatePal">{{ palStore.getTranslatedText('Editor_Transfer_Update') }}</button>
             </span>
@@ -189,7 +231,8 @@ onMounted(async () => {
             @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>
-      <div v-if="conflict?.LockedTarget" class="move-dialog__preview" role="tooltip">
+      <div v-if="conflict?.LockedTarget" ref="preview" class="move-dialog__preview" role="tooltip"
+        :style="previewStyle">
         <PalBriefPanel :data="conflict.Incoming" :changed-fields="conflict.FieldChanges" tone="incoming"
           :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
         <span class="move-dialog__comparison-arrow" aria-hidden="true" />
@@ -296,27 +339,32 @@ footer button { padding: 0 var(--editor-space-4); }
   z-index: 5;
   top: var(--editor-space-4);
   left: 50%;
-  display: none;
+  display: grid;
   width: min(66rem, calc(100vw - 3rem));
-  max-height: calc(100dvh - 8rem);
   box-sizing: border-box;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   justify-items: center;
   gap: var(--editor-space-4);
   padding: var(--editor-space-4);
-  overflow-y: auto;
+  overflow: visible;
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-lg);
   background: var(--editor-color-glass-toolbar);
   -webkit-backdrop-filter: var(--editor-glass-filter);
   backdrop-filter: var(--editor-glass-filter);
   box-shadow: var(--editor-glass-shadow);
-  transform: translateX(-50%);
+  opacity: 0;
+  transform: translateX(-50%) scale(var(--move-preview-scale, 1));
+  transform-origin: top center;
+  visibility: hidden;
   pointer-events: none;
 }
 .move-dialog-layer:has(.move-dialog__update-action:hover) > .move-dialog__preview,
-.move-dialog-layer:has(.move-dialog__update-action:focus-within) > .move-dialog__preview { display: grid; }
+.move-dialog-layer:has(.move-dialog__update-action:focus-within) > .move-dialog__preview {
+  opacity: 1;
+  visibility: visible;
+}
 .move-dialog__comparison-arrow {
   position: relative;
   display: grid;
@@ -354,7 +402,6 @@ button:focus-visible { outline: 2px solid var(--editor-color-focus); outline-off
   .move-dialog-layer > .move-dialog__preview {
     top: var(--editor-space-2);
     width: calc(100vw - 2rem);
-    max-height: calc(100dvh - 5rem);
     grid-template-columns: 1fr;
   }
   .move-dialog__comparison-arrow { transform: rotate(90deg); }

@@ -143,7 +143,10 @@ onBeforeUnmount(() => {
   scrollbar-width: none;
 }
 
-.overlay-scroll-area.is-fit-content,
+.overlay-scroll-area.is-fit-content {
+  height: auto;
+}
+
 .overlay-scroll-area.is-fit-content :deep(.overlay-scroll-area__viewport) {
   height: auto;
   max-height: inherit;
