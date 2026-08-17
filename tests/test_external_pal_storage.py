@@ -123,3 +123,33 @@ def test_save_manager_discovers_qualified_dps_and_optional_global_records(tmp_pa
         }
     finally:
         SaveManager._instance = previous_manager
+
+
+def test_save_persists_prewrite_global_storage_backup(tmp_path):
+    previous_manager = SaveManager._instance
+    try:
+        world = copied_world(tmp_path)
+        global_path = world.parent / "GlobalPalStorage.sav"
+        write_synthetic_global(global_path, WORLD_PAL_ID)
+        original_global_data = global_path.read_bytes()
+
+        SaveManager._instance = None
+        manager = SaveManager()
+        assert manager.open(str(world)) is not None
+        manager._global_palbox.allocate(
+            make_save_parameter(INSTANCE_IDS[2]),
+            INSTANCE_IDS[2],
+        )
+
+        assert manager.save(str(world)) is True
+
+        backup_directories = list(
+            (world / "Palworld-Pal-Editor-Backup").iterdir()
+        )
+        assert len(backup_directories) == 1
+        assert (
+            backup_directories[0] / "GlobalPalStorage.sav"
+        ).read_bytes() == original_global_data
+        assert global_path.read_bytes() != original_global_data
+    finally:
+        SaveManager._instance = previous_manager

@@ -161,6 +161,18 @@ class SaveManager:
                     LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
                     shutil.copytree(self._file_path, backup_dir, 
                                     ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
+                    global_storage_path = output_path.parent / "GlobalPalStorage.sav"
+                    if (
+                        self._global_palbox is not None
+                        and global_storage_path.exists()
+                    ):
+                        global_storage_backup = backup_dir / global_storage_path.name
+                        LOGGER.info(
+                            "Saving Global Pal Storage backup: "
+                            f"source={global_storage_path} "
+                            f"destination={global_storage_backup}"
+                        )
+                        shutil.copy2(global_storage_path, global_storage_backup)
                 else:
                     LOGGER.info(f"No existing directory to backup: {output_path}")
             except Exception as e:
