@@ -116,35 +116,43 @@ const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
   value: skill.InternalName,
   label: skill.I18n[0],
   description: skill.I18n[1],
-  meta: skill.InternalName,
+  meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
   tone: palStore.passiveTier(skill.Rating),
 }))
+
+function activeSkillMetadata(skill = {}) {
+  const badges = palStore.skillBadges(skill, palStore.SELECTED_PAL_DATA.IsHuman)
+  const metadata = [
+    ...badges
+      .filter(badge => badge !== 'exclusive')
+      .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))),
+    `${palStore.getTranslatedText('Editor_Skill_ATK')}${skill.Power}`,
+    `${palStore.getTranslatedText('Editor_Skill_CD')}${skill.CT}`,
+  ]
+
+  if (badges.includes('exclusive')) {
+    metadata.push(palStore.getTranslatedText(palStore.skillBadgeTranslationKey('exclusive')))
+    if (skill.LearnerNames?.length) metadata.push(skill.LearnerNames.join(' / '))
+  }
+
+  return metadata.join(' · ')
+}
 
 const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
   const element = palStore.elementIconKey(skill.Element)
   return {
     value: skill.InternalName,
     label: skill.I18n[0],
-    description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
+    description: activeSkillMetadata(skill),
     tooltip: skill.I18n[1],
-    meta: `${skill.InternalName} ${skill.Element}`,
+    meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
+    searchMeta: skill.Element,
     disabled: !canSelectActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
 
 const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
-const skillBadgeLabels = skill => palStore.skillBadges(
-  skill,
-  palStore.SELECTED_PAL_DATA.IsHuman,
-)
-  .map(badge => {
-    const label = palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))
-    return badge === 'exclusive' && skill.LearnerNames?.length
-      ? `${skill.LearnerNames.join(' / ')} · ${label}`
-      : label
-  })
-  .join(' · ');
 
 const portraitBorder = pal => pal.IsAwakening
   ? 'var(--editor-color-awakened)'
@@ -559,7 +567,10 @@ const portraitBorder = pal => pal.IsAwakening
             :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
             <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span>
             <div class="skill-card__identity">
-              <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+              <div class="skill-card__title">
+                <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
               <small>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</small>
             </div>
             <button type="button" class="skill-card__remove"
@@ -594,9 +605,11 @@ const portraitBorder = pal => pal.IsAwakening
             <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
               :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
-              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
-              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <div class="skill-card__title">
+                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
+              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
@@ -614,9 +627,11 @@ const portraitBorder = pal => pal.IsAwakening
             <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
               :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
-              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
-              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <div class="skill-card__title">
+                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
+              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
             <div class="skill-card__actions">
               <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
@@ -1006,27 +1021,42 @@ const portraitBorder = pal => pal.IsAwakening
 
 .skill-card__identity {
   display: grid;
-  gap: var(--editor-space-1);
+  gap: 0;
   overflow: hidden;
+}
+
+.skill-card__title {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--editor-space-1);
 }
 
 .skill-card__identity strong,
 .skill-card__identity small {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .skill-card__identity small {
   color: var(--editor-color-muted);
+  font-size: .75rem;
+  line-height: 1.05;
+}
+
+.skill-card__identity .skill-card__internal-name {
+  min-width: 0;
+  flex: 1;
+  color: var(--editor-color-muted);
+  font-size: .62rem;
+  line-height: .8;
+  opacity: .55;
 }
 
 .skill-add > :first-child {
   min-width: 0;
   flex: 1;
-}
-
-.skill-warning {
-  color: var(--editor-color-warning) !important;
 }
 
 @container pal-editor (max-width: 42rem) {

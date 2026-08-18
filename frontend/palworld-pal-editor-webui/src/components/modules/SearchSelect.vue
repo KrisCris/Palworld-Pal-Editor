@@ -126,7 +126,10 @@ onBeforeUnmount(() => {
             <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
             <img v-if="option.icon" :src="option.icon" alt="">
             <span class="search-select__copy">
-              <strong>{{ option.label }}</strong>
+              <span class="search-select__title">
+                <strong>{{ option.label }}</strong>
+                <small v-if="option.meta" class="search-select__meta">{{ option.meta }}</small>
+              </span>
               <small v-if="option.description">{{ option.description }}</small>
             </span>
           </button>
@@ -239,9 +242,11 @@ onBeforeUnmount(() => {
 .search-select__options button[aria-selected='true'] .search-select__copy small { color: var(--editor-color-background); }
 .search-select__options button:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
 .search-select__copy { display: grid; min-width: 0; }
+.search-select__title { display: flex; min-width: 0; align-items: baseline; gap: var(--editor-space-1); }
 .search-select__copy strong,
 .search-select__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search-select__copy small { color: var(--editor-color-muted); font-size: .7rem; }
+.search-select__copy .search-select__meta { min-width: 0; flex: 1; color: var(--editor-color-muted); font-size: .62rem; line-height: .9; opacity: .55; }
 .search-select__empty { margin: 0; padding: var(--editor-space-3); color: var(--editor-color-muted); text-align: center; }
 .search-select__tooltip {
   min-height: calc(1.45em + 2 * var(--editor-space-2) + 1px);

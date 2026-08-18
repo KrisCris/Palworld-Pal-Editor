@@ -39,6 +39,11 @@ test("all Pal edit contracts and validity rules remain available", () => {
   assert.match(source, /key != 'EPalWorkSuitability::OilExtraction'/);
   assert.match(source, /canAssignActiveSkill/);
   assert.match(source, /elementIconKey/);
-  assert.match(source, /skillBadgeLabels/);
+  assert.match(source, /activeSkillMetadata/);
   assert.match(source, /canToggleBossVariant/);
+});
+
+test("skill card rows stay compact and do not add a redundant warning row", () => {
+  assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space:\s*nowrap;/);
+  assert.doesNotMatch(source, /class="skill-warning"/);
 });

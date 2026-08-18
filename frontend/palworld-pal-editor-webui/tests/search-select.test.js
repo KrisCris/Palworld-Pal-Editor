@@ -15,11 +15,12 @@ const read = path => readFile(new URL(path, import.meta.url), "utf8");
 
 test("searchable options match labels, descriptions, metadata, and internal values", () => {
     const options = [
-        { value: "Skill_A", label: "Thunder Spear", description: "Electric attack", meta: "exclusive" },
+        { value: "Skill_A", label: "Thunder Spear", description: "Electric attack", meta: "exclusive", searchMeta: "electricity" },
         { value: "Skill_B", label: "Wind Cutter", description: "Leaf attack", meta: "fruit" },
     ];
     assert.deepEqual(filterSearchOptions(options, "thunder"), [options[0]]);
     assert.deepEqual(filterSearchOptions(options, "electric"), [options[0]]);
+    assert.deepEqual(filterSearchOptions(options, "electricity"), [options[0]]);
     assert.deepEqual(filterSearchOptions(options, "fruit"), [options[1]]);
     assert.deepEqual(filterSearchOptions(options, "skill_b"), [options[1]]);
     assert.deepEqual(filterSearchOptions(options, ""), options);
@@ -52,6 +53,11 @@ test("shared selector uses native disclosure, search, and option buttons", async
     assert.match(source, /1200/);
 });
 
+test("skill options show their internal metadata beside the name before details", async () => {
+    const source = await read("../src/components/modules/SearchSelect.vue");
+    assert.match(source, /<span class="search-select__title">\s*<strong>{{ option\.label }}<\/strong>\s*<small v-if="option\.meta" class="search-select__meta">{{ option\.meta }}<\/small>\s*<\/span>\s*<small v-if="option\.description">{{ option\.description }}<\/small>/);
+});
+
 test("Pal editor routes every ordinary dropdown through the searchable selector", async () => {
     const source = await read("../src/components/PalEditor.vue");
     const editorCss = await read("../src/assets/editor-ui.css");
@@ -62,9 +68,20 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.match(source, /:options="activeSkillSelectOptions\(\)"/);
     assert.match(source, /tooltip:\s*skill\.I18n\[1\]/);
     assert.match(source, /skill\.LearnerNames/);
+    assert.equal((source.match(/meta: palStore\.HIDE_INVALID_OPTIONS \? '' : skill\.InternalName/g) || []).length, 2);
+    assert.match(source, /searchMeta: skill\.Element/);
+    assert.equal((source.match(/activeSkillMetadata\(/g) || []).length, 4);
+    assert.match(source, /function activeSkillMetadata\(skill = \{\}\)/);
+    assert.match(source, /filter\(badge => badge !== 'exclusive'\)[\s\S]*Editor_Skill_ATK[\s\S]*Editor_Skill_CD[\s\S]*badges\.includes\('exclusive'\)[\s\S]*skill\.LearnerNames\.join\(' \/ '\)/);
     assert.doesNotMatch(source, /<select\b/);
+    assert.match(source, /\.skill-card__identity \{[\s\S]*?gap: 0;/);
+    assert.match(source, /\.skill-card__internal-name \{[\s\S]*?opacity: \.55;/);
+    assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space: nowrap;/);
+    assert.doesNotMatch(source, /class="skill-warning"/);
     assert.match(editorCss, /\.editor-surface:has\(\.search-select\[open\]\)/);
     for (const handler of ["add_PassiveSkillList", "add_MasteredWaza"]) assert.match(source, new RegExp(handler));
+    assert.equal((source.match(/class="skill-card__title"/g) || []).length, 3);
+    assert.equal((source.match(/<small v-if="!palStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
     for (const locale of [en, fr, ja, zhCN]) {
         for (const key of ["Editor_Select_Search", "Editor_Select_No_Results"]) {
             assert.equal(typeof locale[key], "string", key);
