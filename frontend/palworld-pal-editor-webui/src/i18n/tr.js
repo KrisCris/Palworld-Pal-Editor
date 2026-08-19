@@ -149,7 +149,7 @@ export default {
     Editor_Condenser_Rank: "Kademe: ",
     Editor_Awakening: "Uyanış: ",
     Editor_Awakened: "Uyandı",
-    Editor_Passive_Skills: "PASİF BECERİLER",
+    Editor_Passive_Skills: "PASİF BECERİLER", Editor_Passive_Category_Pal: "Pal pasif becerileri", Editor_Passive_Category_Regular: "Normal pasif beceriler", Editor_Passive_Category_Partner: "Partner becerileri",
     Editor_Select_Skill: "Beceri ekle",
     Editor_Select_Search: "Seçeneklerde ara",
     Editor_Select_No_Results: "Eşleşen seçenek yok",

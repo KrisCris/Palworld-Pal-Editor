@@ -149,7 +149,7 @@ export default {
     Editor_Condenser_Rank: "Rango: ",
     Editor_Awakening: "Despertar: ",
     Editor_Awakened: "Despertado",
-    Editor_Passive_Skills: "HABILIDADES PASIVAS",
+    Editor_Passive_Skills: "HABILIDADES PASIVAS", Editor_Passive_Category_Pal: "Habilidades pasivas de Pal", Editor_Passive_Category_Regular: "Habilidades pasivas normales", Editor_Passive_Category_Partner: "Habilidades de compañero",
     Editor_Select_Skill: "Añadir habilidades",
     Editor_Select_Search: "Buscar opciones",
     Editor_Select_No_Results: "No hay opciones coincidentes",

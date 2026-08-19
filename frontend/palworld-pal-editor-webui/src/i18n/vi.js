@@ -149,7 +149,7 @@ export default {
     Editor_Condenser_Rank: "Hạng: ",
     Editor_Awakening: "Thức tỉnh: ",
     Editor_Awakened: "Đã thức tỉnh",
-    Editor_Passive_Skills: "KỸ NĂNG BỊ ĐỘNG",
+    Editor_Passive_Skills: "KỸ NĂNG BỊ ĐỘNG", Editor_Passive_Category_Pal: "Kỹ năng bị động của Pal", Editor_Passive_Category_Regular: "Kỹ năng bị động thông thường", Editor_Passive_Category_Partner: "Kỹ năng đồng hành",
     Editor_Select_Skill: "Thêm kỹ năng",
     Editor_Select_Search: "Tìm tùy chọn",
     Editor_Select_No_Results: "Không có tùy chọn phù hợp",

@@ -74,6 +74,10 @@ PAL_VARIANTS_BY_FAMILY: dict[str, tuple[str, ...]] = {
     for family_id, variants in _pal_variants_by_family.items()
 }
 PAL_PASSIVES: dict[str, dict] = load_json("pal_passives.json")
+PASSIVE_SKILLS: dict[str, dict] = load_json("passive_skills.json")
+PARTNER_SKILLS: dict[str, dict] = load_json("partner_skills.json")
+INVALID_PASSIVES: dict[str, dict] = PASSIVE_SKILLS | PARTNER_SKILLS
+ALL_PASSIVES: dict[str, dict] = PAL_PASSIVES | INVALID_PASSIVES
 PAL_EXP_TABLE: list[int] = load_json("pal_exp_table.json")
 PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
 PLAYER_STATUS_DATA: dict[str, dict] = load_json("player_status_data.json")
@@ -402,10 +406,10 @@ class DataProvider:
         )
         return sorted_list
 
-    @none_guard(data_source=PAL_PASSIVES, subkey="I18n")
+    @none_guard(data_source=ALL_PASSIVES, subkey="I18n")
     @staticmethod
     def get_passive_i18n(key: str) -> Optional[tuple[str, str]]:
-        i18n_list: dict = PAL_PASSIVES[key]["I18n"]
+        i18n_list: dict = ALL_PASSIVES[key]["I18n"]
         english: dict = i18n_list.get("en", {})
         i18n: dict = i18n_list.get(Config.i18n, {})
         return (
@@ -415,22 +419,48 @@ class DataProvider:
 
     @staticmethod
     def has_passive_skill(key: str) -> bool:
-        return key in PAL_PASSIVES
+        return key in PAL_PASSIVES or key in INVALID_PASSIVES
+
+    @staticmethod
+    def is_invalid_passive(key: str) -> bool:
+        return key in INVALID_PASSIVES
+
+    @staticmethod
+    def get_passive_group(key: str) -> str:
+        if key in PAL_PASSIVES:
+            return "pal"
+        if key in PARTNER_SKILLS:
+            return "partner"
+        return "passive"
 
     @staticmethod
     def get_sorted_passives() -> list[dict]:
-        sorted_list = sorted(
+        pal_passives = sorted(
             PAL_PASSIVES.values(),
             key=lambda item: (
                 -item["Rating"],
                 DataProvider.get_passive_i18n(item["InternalName"]),
             ),
         )
-        return sorted_list
+        regular_passives = sorted(
+            PASSIVE_SKILLS.values(),
+            key=lambda item: (
+                -item["Rating"],
+                DataProvider.get_passive_i18n(item["InternalName"]),
+            ),
+        )
+        partner_passives = sorted(
+            PARTNER_SKILLS.values(),
+            key=lambda item: (
+                -item["Rating"],
+                DataProvider.get_passive_i18n(item["InternalName"]),
+            ),
+        )
+        return pal_passives + regular_passives + partner_passives
 
     @staticmethod
     def get_passive_buff(key: str, buff_key: str) -> float:
-        return PAL_PASSIVES.get(key, {}).get("Buff", {}).get(buff_key, 0)
+        return ALL_PASSIVES.get(key, {}).get("Buff", {}).get(buff_key, 0)
 
     @staticmethod
     def get_attacks_to_learn(pal: str, level: int) -> list[str]:

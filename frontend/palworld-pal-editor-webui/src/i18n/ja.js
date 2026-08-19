@@ -157,7 +157,7 @@ export default {
     Editor_Condenser_Rank: "濃縮ランク: ",
     Editor_Awakening: "覚醒: ",
     Editor_Awakened: "覚醒済み",
-    Editor_Passive_Skills: "パッシブスキル",
+    Editor_Passive_Skills: "パッシブスキル", Editor_Passive_Category_Pal: "パルのパッシブスキル", Editor_Passive_Category_Regular: "通常のパッシブスキル", Editor_Passive_Category_Partner: "パートナースキル",
     Editor_Select_Skill: "スキルを追加",
     Editor_Select_Search: "選択肢を検索",
     Editor_Select_No_Results: "一致する選択肢はありません",

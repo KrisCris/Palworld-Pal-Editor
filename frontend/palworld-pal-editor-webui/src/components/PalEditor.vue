@@ -112,13 +112,22 @@ const skinOptions = () => [
   })),
 ]
 
-const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
+const passiveSkillCategoryKey = group => ({
+  pal: 'Editor_Passive_Category_Pal',
+  passive: 'Editor_Passive_Category_Regular',
+  partner: 'Editor_Passive_Category_Partner',
+}[group] || 'Editor_Passive_Skills')
+
+const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST
+  .filter(skill => !palStore.HIDE_INVALID_OPTIONS || !skill.Invalid)
+  .map(skill => ({
   value: skill.InternalName,
   label: skill.I18n[0],
   description: skill.I18n[1],
   meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
   tone: palStore.passiveTier(skill.Rating),
-}))
+  group: palStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
+  }))
 
 function activeSkillMetadata(skill = {}) {
   const badges = palStore.skillBadges(skill, palStore.SELECTED_PAL_DATA.IsHuman)
@@ -1050,7 +1059,7 @@ const portraitBorder = pal => pal.IsAwakening
   flex: 1;
   color: var(--editor-color-muted);
   font-size: .62rem;
-  line-height: .8;
+  line-height: 1.25;
   opacity: .55;
 }
 

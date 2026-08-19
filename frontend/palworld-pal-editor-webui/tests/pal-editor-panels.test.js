@@ -47,3 +47,13 @@ test("skill card rows stay compact and do not add a redundant warning row", () =
   assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space:\s*nowrap;/);
   assert.doesNotMatch(source, /class="skill-warning"/);
 });
+
+test("non-Pal passive skills stay cheat-only without a duplicate UI warning", () => {
+  assert.match(source, /PASSIVE_SKILLS_LIST\s*\.filter\(skill => !palStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
+  assert.doesNotMatch(source, /<UiIcon v-if="palStore\.PASSIVE_SKILLS\[skill\]\?\.Invalid" name="warning"/);
+  assert.doesNotMatch(source, /skill-warning-icon/);
+});
+
+test("internal skill names keep their descenders visible", () => {
+  assert.match(source, /\.skill-card__internal-name\s*\{[\s\S]*?line-height:\s*1\.25;/);
+});

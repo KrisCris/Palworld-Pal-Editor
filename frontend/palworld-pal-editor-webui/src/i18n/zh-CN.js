@@ -156,7 +156,7 @@ export default {
     Editor_Condenser_Rank: "浓缩等级: ",
     Editor_Awakening: "觉醒: ",
     Editor_Awakened: "已觉醒",
-    Editor_Passive_Skills: "被动技能",
+    Editor_Passive_Skills: "被动技能", Editor_Passive_Category_Pal: "帕鲁被动技能", Editor_Passive_Category_Regular: "普通被动技能", Editor_Passive_Category_Partner: "伙伴技能",
     Editor_Select_Skill: "选择添加的技能",
     Editor_Select_Search: "搜索选项",
     Editor_Select_No_Results: "没有匹配的选项",

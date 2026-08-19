@@ -156,7 +156,7 @@ export default {
     Editor_Condenser_Rank: "Rank: ",
     Editor_Awakening: "Awakening: ",
     Editor_Awakened: "Awakened",
-    Editor_Passive_Skills: "PASSIVE SKILLS",
+    Editor_Passive_Skills: "PASSIVE SKILLS", Editor_Passive_Category_Pal: "Pal Passive Skills", Editor_Passive_Category_Regular: "Regular Passive Skills", Editor_Passive_Category_Partner: "Partner Skills",
     Editor_Select_Skill: "Add Skills",
     Editor_Select_Search: "Search options",
     Editor_Select_No_Results: "No matching options",

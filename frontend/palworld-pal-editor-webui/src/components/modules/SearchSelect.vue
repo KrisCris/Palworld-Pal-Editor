@@ -119,20 +119,24 @@ onBeforeUnmount(() => {
       </label>
       <OverlayScrollArea fit-content class="search-select__options-scroll">
         <div class="search-select__options overlay-scroll-area__viewport" role="listbox" :aria-label="ariaLabel">
-          <button v-for="option in visibleOptions" :key="option.value" type="button" role="option"
-            :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
-            @pointerenter="queueTooltip(option)" @pointerleave="clearTooltip"
-            @focus="queueTooltip(option)" @blur="clearTooltip">
-            <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
-            <img v-if="option.icon" :src="option.icon" alt="">
-            <span class="search-select__copy">
-              <span class="search-select__title">
-                <strong>{{ option.label }}</strong>
-                <small v-if="option.meta" class="search-select__meta">{{ option.meta }}</small>
+          <template v-for="(option, index) in visibleOptions" :key="option.value">
+            <div v-if="option.group && (index === 0 || visibleOptions[index - 1].group !== option.group)"
+              class="search-select__group-label">{{ option.group }}</div>
+            <button type="button" role="option"
+              :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
+              @pointerenter="queueTooltip(option)" @pointerleave="clearTooltip"
+              @focus="queueTooltip(option)" @blur="clearTooltip">
+              <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
+              <img v-if="option.icon" :src="option.icon" alt="">
+              <span class="search-select__copy">
+                <span class="search-select__title">
+                  <strong>{{ option.label }}</strong>
+                  <small v-if="option.meta" class="search-select__meta">{{ option.meta }}</small>
+                </span>
+                <small v-if="option.description">{{ option.description }}</small>
               </span>
-              <small v-if="option.description">{{ option.description }}</small>
-            </span>
-          </button>
+            </button>
+          </template>
           <p v-if="!visibleOptions.length" class="search-select__empty">{{ noResults }}</p>
         </div>
       </OverlayScrollArea>
@@ -241,12 +245,19 @@ onBeforeUnmount(() => {
 .search-select__options button:hover .search-select__copy small,
 .search-select__options button[aria-selected='true'] .search-select__copy small { color: var(--editor-color-background); }
 .search-select__options button:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
+.search-select__group-label {
+  padding: var(--editor-space-2) var(--editor-space-2) var(--editor-space-1);
+  color: var(--editor-color-muted);
+  font-size: .7rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
 .search-select__copy { display: grid; min-width: 0; }
 .search-select__title { display: flex; min-width: 0; align-items: baseline; gap: var(--editor-space-1); }
 .search-select__copy strong,
 .search-select__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search-select__copy small { color: var(--editor-color-muted); font-size: .7rem; }
-.search-select__copy .search-select__meta { min-width: 0; flex: 1; color: var(--editor-color-muted); font-size: .62rem; line-height: .9; opacity: .55; }
+.search-select__copy .search-select__meta { min-width: 0; flex: 1; color: var(--editor-color-muted); font-size: .62rem; line-height: 1.1; opacity: .55; }
 .search-select__empty { margin: 0; padding: var(--editor-space-3); color: var(--editor-color-muted); text-align: center; }
 .search-select__tooltip {
   min-height: calc(1.45em + 2 * var(--editor-space-2) + 1px);

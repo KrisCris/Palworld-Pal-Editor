@@ -90,10 +90,16 @@ def get_passive_skills():
     for passive in passives_raw:
         data = {
             "InternalName": passive["InternalName"],
-            "I18n": DataProvider.get_passive_i18n(passive["InternalName"])
-            or (passive["InternalName"], passive["InternalName"]),
+            "I18n": list(
+                DataProvider.get_passive_i18n(passive["InternalName"])
+                or (passive["InternalName"], passive["InternalName"])
+            ),
             "Rating": passive["Rating"],
+            "Invalid": DataProvider.is_invalid_passive(passive["InternalName"]),
+            "Group": DataProvider.get_passive_group(passive["InternalName"]),
         }
+        if data["Invalid"]:
+            data["I18n"][0] = "⚠️ " + data["I18n"][0]
         passive_dict[passive["InternalName"]] = data
         passive_arr.append(data)
 

@@ -58,6 +58,15 @@ test("skill options show their internal metadata beside the name before details"
     assert.match(source, /<span class="search-select__title">\s*<strong>{{ option\.label }}<\/strong>\s*<small v-if="option\.meta" class="search-select__meta">{{ option\.meta }}<\/small>\s*<\/span>\s*<small v-if="option\.description">{{ option\.description }}<\/small>/);
 });
 
+test("passive skill options are grouped with category headers", async () => {
+    const source = await read("../src/components/modules/SearchSelect.vue");
+    const editorSource = await read("../src/components/PalEditor.vue");
+    assert.match(source, /option\.group/);
+    assert.match(source, /search-select__group-label/);
+    assert.doesNotMatch(source, /\.search-select__group-label\s*\{[\s\S]*?font-weight\s*:/);
+    assert.match(editorSource, /passiveSkillCategoryKey[\s\S]*Editor_Passive_Category_Partner/);
+});
+
 test("Pal editor routes every ordinary dropdown through the searchable selector", async () => {
     const source = await read("../src/components/PalEditor.vue");
     const editorCss = await read("../src/assets/editor-ui.css");

@@ -217,6 +217,9 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Operation_Add_Pal",
         "Operation_Duplicate_Pal",
         "Operation_Donation",
+        "Editor_Passive_Category_Pal",
+        "Editor_Passive_Category_Regular",
+        "Editor_Passive_Category_Partner",
         ...palBasicInfoKeys,
     ];
     for (const locale of Object.values(UI_TRANSLATIONS)) {

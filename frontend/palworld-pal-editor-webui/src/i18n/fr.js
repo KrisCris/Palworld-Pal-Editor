@@ -156,7 +156,7 @@ export default {
     Editor_Condenser_Rank: "Rang : ",
     Editor_Awakening: "Éveil : ",
     Editor_Awakened: "Éveillé",
-    Editor_Passive_Skills: "COMPÉTENCES PASSIVES",
+    Editor_Passive_Skills: "COMPÉTENCES PASSIVES", Editor_Passive_Category_Pal: "Compétences passives de Pal", Editor_Passive_Category_Regular: "Compétences passives normales", Editor_Passive_Category_Partner: "Compétences de partenaire",
     Editor_Select_Skill: "Ajouter des compétences",
     Editor_Select_Search: "Rechercher des options",
     Editor_Select_No_Results: "Aucune option correspondante",

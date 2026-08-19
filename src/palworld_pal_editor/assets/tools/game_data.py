@@ -119,7 +119,32 @@ _ENTITY_SCHEMAS = {
             "Effects",
             "Invocation",
             "AddInvokeTriggerTypes",
-            "DescriptionSource",
+        }
+    ),
+    "data/passive_skills.json": frozenset(
+        {
+            "InternalName",
+            "Rating",
+            "I18n",
+            "Buff",
+            "Category",
+            "TargetElementType",
+            "Effects",
+            "Invocation",
+            "AddInvokeTriggerTypes",
+        }
+    ),
+    "data/partner_skills.json": frozenset(
+        {
+            "InternalName",
+            "Rating",
+            "I18n",
+            "Buff",
+            "Category",
+            "TargetElementType",
+            "Effects",
+            "Invocation",
+            "AddInvokeTriggerTypes",
         }
     ),
     "data/tech_data.json": frozenset(
@@ -164,6 +189,8 @@ _OUTPUT_KINDS = {
     "data/skin_data.json": "skins",
     "data/pal_attacks.json": "skills",
     "data/pal_passives.json": "passives",
+    "data/passive_skills.json": "passives",
+    "data/partner_skills.json": "passives",
     "data/tech_data.json": "technology",
 }
 _REQUIRED_OUTPUTS = {
@@ -290,6 +317,9 @@ SKILL_SOURCES = {
     "levels": "Pal/Content/Pal/DataTable/Waza/DT_WazaMasterLevel_Common",
     "items": "Pal/Content/Pal/DataTable/Item/DT_ItemDataTable_Common",
     "passives": "Pal/Content/Pal/DataTable/PassiveSkill/DT_PassiveSkill_Main_Common",
+    "partner_skills": (
+        "Pal/Content/Pal/DataTable/PassiveSkill/DT_PartnerSkillParameter"
+    ),
     "bp_classes": "Pal/Content/Pal/DataTable/Character/DT_PalBPClass_Common",
 }
 PROGRESSION_SOURCES = {
@@ -3182,13 +3212,108 @@ def _locale_fallback(
     return internal_id
 
 
+def build_partner_skill_assignments(
+    partner_rows: dict[str, dict], monster_rows: dict[str, dict]
+) -> dict[str, tuple[str, int]]:
+    """Map unambiguous hidden passives to their owning partner-skill text key."""
+    monster_index = casefold_index(monster_rows)
+    candidates: dict[str, set[tuple[str, int]]] = {}
+    sources = (
+        ("PassiveSkills", "SkillAndParametersArray", "SkillName"),
+        ("TextReferencePassiveSkills", "PassiveSkillIds", None),
+    )
+    for character_id, partner_row in partner_rows.items():
+        monster_id = monster_index.get(character_id.casefold())
+        if monster_id is None:
+            continue
+        monster = monster_rows[monster_id]
+        name_key = monster.get("OverridePartnerSkillNameTextID")
+        if not isinstance(name_key, str):
+            raise TypeError(
+                f"{monster_id}.OverridePartnerSkillNameTextID must be a string"
+            )
+        if name_key == "None":
+            tribe = _enum_tail(monster.get("Tribe"), f"{monster_id}.Tribe")
+            name_key = f"PARTNERSKILL_{tribe}"
+        for source_field, entries_field, nested_field in sources:
+            ranks = partner_row.get(source_field)
+            if not isinstance(ranks, list):
+                raise TypeError(f"{character_id}.{source_field} must be a list")
+            for rank, rank_row in enumerate(ranks, 1):
+                if not isinstance(rank_row, dict):
+                    raise TypeError(
+                        f"{character_id}.{source_field}[{rank - 1}] must be an object"
+                    )
+                entries = rank_row.get(entries_field)
+                if not isinstance(entries, list):
+                    raise TypeError(
+                        f"{character_id}.{source_field}[{rank - 1}]."
+                        f"{entries_field} must be a list"
+                    )
+                for entry in entries:
+                    if not isinstance(entry, dict):
+                        raise TypeError(
+                            f"{character_id}.{source_field}[{rank - 1}]."
+                            f"{entries_field} entries must be objects"
+                        )
+                    reference = entry.get(nested_field) if nested_field else entry
+                    if not isinstance(reference, dict) or not isinstance(
+                        reference.get("Key"), str
+                    ):
+                        raise TypeError(
+                            f"{character_id}.{source_field}[{rank - 1}] contains "
+                            "an invalid passive-skill reference"
+                        )
+                    passive_id = reference["Key"]
+                    candidates.setdefault(passive_id, set()).add((name_key, rank))
+    return {
+        passive_id: next(iter(owners))
+        for passive_id, owners in candidates.items()
+        if len(owners) == 1
+    }
+
+
+def build_partner_skill_ids(partner_rows: dict[str, dict]) -> set[str]:
+    """Return every passive referenced by a partner-skill parameter row."""
+    ids: set[str] = set()
+    for character_id, partner_row in partner_rows.items():
+        for source_field, entries_field, nested_field in (
+            ("PassiveSkills", "SkillAndParametersArray", "SkillName"),
+            ("TextReferencePassiveSkills", "PassiveSkillIds", None),
+        ):
+            ranks = partner_row.get(source_field, [])
+            if not isinstance(ranks, list):
+                raise TypeError(f"{character_id}.{source_field} must be a list")
+            for rank, rank_row in enumerate(ranks):
+                if not isinstance(rank_row, dict):
+                    raise TypeError(
+                        f"{character_id}.{source_field}[{rank}] must be an object"
+                    )
+                entries = rank_row.get(entries_field, [])
+                if not isinstance(entries, list):
+                    raise TypeError(
+                        f"{character_id}.{source_field}[{rank}]."
+                        f"{entries_field} must be a list"
+                    )
+                for entry in entries:
+                    reference = entry.get(nested_field) if nested_field else entry
+                    if isinstance(reference, dict) and isinstance(
+                        reference.get("Key"), str
+                    ):
+                        ids.add(reference["Key"])
+    return ids
+
+
 def build_passive_records(
     passive_rows: dict[str, dict],
     names_by_locale: dict[str, dict[str, dict]],
     descriptions_by_locale: dict[str, dict[str, dict]],
     ui_by_locale: dict[str, dict[str, dict]],
+    *,
+    category_filter: str = "SortDisplayable",
+    partner_skill_assignments: dict[str, tuple[str, int]] | None = None,
 ) -> tuple[dict[str, dict], tuple[str, ...]]:
-    """Build the exact Pal-passive projection from already loaded source tables."""
+    """Build a passive projection for one game-data category."""
     if (
         set(names_by_locale) != set(LOCALE_DIRECTORIES)
         or set(descriptions_by_locale) != set(LOCALE_DIRECTORIES)
@@ -3223,7 +3348,7 @@ def build_passive_records(
             if type(row.get(field)) is not bool:
                 raise TypeError(f"{passive_id}.{field} must be a bool")
         category = _enum_tail(row.get("Category"), f"{passive_id}.Category")
-        if category != "SortDisplayable":
+        if category != category_filter:
             continue
         effects = []
         effect_values = []
@@ -3283,9 +3408,19 @@ def build_passive_records(
             f"PASSIVE_{passive_id}",
         )
         i18n = {}
-        sources = {}
         for locale in LOCALE_DIRECTORIES:
             name = _text_value(names_by_locale[locale], name_key)
+            partner_assignment = (partner_skill_assignments or {}).get(passive_id)
+            if name is None and partner_assignment is not None:
+                partner_name_key, _rank = partner_assignment
+                name = _text_value(names_by_locale[locale], partner_name_key)
+                if name is None:
+                    missing.append(
+                        f"passive:{passive_id}:{locale}:Name:{partner_name_key}"
+                    )
+                    name = _locale_fallback(
+                        names_by_locale, partner_name_key, passive_id
+                    )
             if name is None:
                 missing.append(f"passive:{passive_id}:{locale}:Name:{name_key}")
                 name = _locale_fallback(names_by_locale, name_key, passive_id)
@@ -3303,7 +3438,6 @@ def build_passive_records(
                     missing,
                     f"passive:{passive_id}:{locale}:Description",
                 )
-                source = "explicit"
             else:
                 parts = []
                 for effect in effects:
@@ -3320,9 +3454,7 @@ def build_passive_records(
                         f"{_number_text(effect['EffectValue'], signed=True)}%"
                     )
                 description = "; ".join(parts) or passive_id
-                source = "composed"
             i18n[locale] = {"Name": name, "Description": description}
-            sources[locale] = source
         records[passive_id] = {
             "InternalName": passive_id,
             "Rating": row.get("Rank"),
@@ -3338,9 +3470,27 @@ def build_passive_records(
                 output: row[source] for output, source in invocation_fields.items()
             },
             "AddInvokeTriggerTypes": triggers,
-            "DescriptionSource": sources,
         }
     return records, tuple(sorted(set(missing)))
+
+
+def build_non_pal_passive_records(
+    passive_rows: dict[str, dict],
+    names_by_locale: dict[str, dict[str, dict]],
+    descriptions_by_locale: dict[str, dict[str, dict]],
+    ui_by_locale: dict[str, dict[str, dict]],
+    *,
+    partner_skill_assignments: dict[str, tuple[str, int]] | None = None,
+) -> tuple[dict[str, dict], tuple[str, ...]]:
+    """Build the v1 non-Pal passive projection from SortNotDisplayable rows."""
+    return build_passive_records(
+        passive_rows,
+        names_by_locale,
+        descriptions_by_locale,
+        ui_by_locale,
+        category_filter="SortNotDisplayable",
+        partner_skill_assignments=partner_skill_assignments,
+    )
 
 
 def build_active_records(
@@ -3632,7 +3782,7 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
     loaded = {
         name: load_table(export_root, path)
         for name, path in SKILL_SOURCES.items()
-        if name != "bp_classes" or path in required_sources
+        if name not in {"bp_classes", "partner_skills"} or path in required_sources
     }
     monster_rows = load_table(export_root, CHARACTER_EVIDENCE_SOURCES["monsters"])
     names = {
@@ -3664,6 +3814,27 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
     passive, missing_passive = build_passive_records(
         loaded["passives"], names, descriptions, ui
     )
+    partner_skill_assignments = build_partner_skill_assignments(
+        loaded.get("partner_skills", {}), monster_rows
+    )
+    all_non_pal_passive, missing_non_pal_passive = build_non_pal_passive_records(
+        loaded["passives"],
+        names,
+        descriptions,
+        ui,
+        partner_skill_assignments=partner_skill_assignments,
+    )
+    partner_skill_ids = build_partner_skill_ids(loaded.get("partner_skills", {}))
+    partner_passive = {
+        passive_id: record
+        for passive_id, record in all_non_pal_passive.items()
+        if passive_id in partner_skill_ids
+    }
+    non_pal_passive = {
+        passive_id: record
+        for passive_id, record in all_non_pal_passive.items()
+        if passive_id not in partner_skill_ids
+    }
     source_counts = {SKILL_SOURCES[name]: len(rows) for name, rows in loaded.items()}
     source_counts[CHARACTER_EVIDENCE_SOURCES["monsters"]] = len(monster_rows)
     source_counts.update(_scenario_source_counts(export_root, required_sources))
@@ -3698,6 +3869,8 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
     outputs = {
         "data/pal_attacks.json": _json_document_bytes(active),
         "data/pal_passives.json": _json_document_bytes(passive),
+        "data/passive_skills.json": _json_document_bytes(non_pal_passive),
+        "data/partner_skills.json": _json_document_bytes(partner_passive),
     }
     return snapshot_from_outputs(
         "skills",
@@ -3705,7 +3878,9 @@ def build_skills_domain(export_root: Path, policy: dict) -> DomainSnapshot:
         _identity_from_policy(policy),
         domain_policy_hash(policy, "skills"),
         source_counts,
-        missing_localizations=tuple(sorted(set(missing_active + missing_passive))),
+        missing_localizations=tuple(
+            sorted(set(missing_active + missing_passive + missing_non_pal_passive))
+        ),
     )
 
 
@@ -5258,6 +5433,10 @@ def _output_contract_errors(domain: str, candidate: DomainSnapshot) -> list[str]
                 and path.startswith("icons/tech/")
                 and path.endswith(".png")
             )
+            or (
+                domain == "skills"
+                and path in {"data/passive_skills.json", "data/partner_skills.json"}
+            )
         )
         if not _canonical_output_path(path) or not allowed:
             errors.append(f"{domain}: forbidden output {path}")
@@ -5497,7 +5676,11 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
             for effect in effects
         ):
             errors.append(f"{prefix}: Effects metadata is invalid")
-    elif path == "data/pal_passives.json":
+    elif path in {
+        "data/pal_passives.json",
+        "data/passive_skills.json",
+        "data/partner_skills.json",
+    }:
         if not _is_number(row.get("Rating")):
             errors.append(f"{prefix}: Rating must be numeric")
         for field in ("Category", "TargetElementType"):
@@ -5535,16 +5718,6 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
             not isinstance(value, str) or not value for value in triggers
         ):
             errors.append(f"{prefix}: AddInvokeTriggerTypes must be list[str]")
-        description_sources = row.get("DescriptionSource")
-        if (
-            not isinstance(description_sources, dict)
-            or set(description_sources) != set(LOCALE_DIRECTORIES)
-            or any(
-                value not in {"explicit", "composed"}
-                for value in description_sources.values()
-            )
-        ):
-            errors.append(f"{prefix}: DescriptionSource metadata is invalid")
     elif path == "data/player_status_data.json":
         if row.get("category") not in {"stat", "effigy"}:
             errors.append(f"{prefix}: category is invalid")
@@ -5598,7 +5771,13 @@ def _field_type_errors(path: str, row_id: str, row: dict) -> list[str]:
     if (
         path in _ENTITY_SCHEMAS
         and (not isinstance(row.get("IconKey"), str) or not row["IconKey"])
-        and path not in ("data/pal_attacks.json", "data/pal_passives.json")
+        and path
+        not in (
+            "data/pal_attacks.json",
+            "data/pal_passives.json",
+            "data/passive_skills.json",
+            "data/partner_skills.json",
+        )
     ):
         errors.append(f"{prefix}: IconKey must be a nonempty string")
     return errors
@@ -6085,6 +6264,8 @@ def _schema_errors(candidate: DomainSnapshot) -> list[str]:
             "data/skin_data.json",
             "data/pal_attacks.json",
             "data/pal_passives.json",
+            "data/passive_skills.json",
+            "data/partner_skills.json",
         }
         if required is None:
             required = _PROGRESSION_SCHEMAS.get(path)

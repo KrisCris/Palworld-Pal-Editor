@@ -149,7 +149,7 @@ export default {
     Editor_Condenser_Rank: "ระดับ: ",
     Editor_Awakening: "ปลุกพลัง: ",
     Editor_Awakened: "ปลุกพลังแล้ว",
-    Editor_Passive_Skills: "สกิลติดตัว",
+    Editor_Passive_Skills: "สกิลติดตัว", Editor_Passive_Category_Pal: "สกิลติดตัวของ Pal", Editor_Passive_Category_Regular: "สกิลติดตัวทั่วไป", Editor_Passive_Category_Partner: "สกิลพาร์ทเนอร์",
     Editor_Select_Skill: "เพิ่มสกิล",
     Editor_Select_Search: "ค้นหาตัวเลือก",
     Editor_Select_No_Results: "ไม่พบตัวเลือกที่ตรงกัน",
