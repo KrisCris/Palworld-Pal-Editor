@@ -746,6 +746,15 @@ class ToolchainTests(unittest.TestCase):
             set(),
             "character exporter omitted scenario prefix roots",
         )
+        expected_partner_text = {
+            game_data.text_table_path(game_data.PARTNER_SKILL_APPEND_TEXT, locale)
+            for locale in game_data.LOCALE_DIRECTORIES
+        }
+        self.assertEqual(
+            expected_partner_text - requested["skills-profiles"],
+            set(),
+            "skills exporter omitted Partner Skill localization",
+        )
 
     def test_prefix_export_roots_are_not_rewritten_as_single_packages(self) -> None:
         roots = {
@@ -4858,6 +4867,7 @@ class CharacterEvidenceTests(unittest.TestCase):
             "DT_SkillNameText_Common",
             "DT_SkillDescText_Common",
             "DT_UI_Common_Text_Common",
+            game_data.PARTNER_SKILL_APPEND_TEXT,
             *game_data.CHARACTER_TEXT_TABLES.values(),
         }:
             for locale in game_data.LOCALE_DIRECTORIES:
@@ -7546,6 +7556,72 @@ class SkillDomainTests(unittest.TestCase):
             "Steel Guardian Mode",
         )
 
+    def test_hidden_placeholder_names_use_the_localized_effect_description(self) -> None:
+        rows = {
+            "ShotAttack_down2": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable",
+                EffectValue1=-20.0,
+            )
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+        for locale in LOCALES:
+            names[locale]["PASSIVE_ShotAttack_down2"] = self.text(
+                f"{game_data.LOCALE_DIRECTORIES[locale] or locale} Text"
+            )
+
+        projected, missing = game_data.build_non_pal_passive_records(
+            rows, names, descriptions, ui
+        )
+
+        self.assertEqual(
+            projected["ShotAttack_down2"]["I18n"]["en"]["Name"],
+            "en attack -20%",
+        )
+        self.assertEqual(
+            projected["ShotAttack_down2"]["I18n"]["zh-CN"]["Name"],
+            "zh-CN attack -20%",
+        )
+        self.assertIn(
+            "passive:ShotAttack_down2:en:Name:PASSIVE_ShotAttack_down2",
+            missing,
+        )
+
+    def test_partner_append_text_localizes_ambiguous_partner_effect_names(self) -> None:
+        rows = {
+            "LifeSteal_5": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable",
+                EffectType1="EPalPassiveSkillEffectType::LifeSteal",
+                EffectValue1=9.0,
+            )
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+        append_texts = {locale: {} for locale in LOCALES}
+        for locale in LOCALES:
+            del names[locale]["PASSIVE_LifeSteal_5"]
+            label = (
+                "（生命窃取效果提升：<Status_Up>特大</>）"
+                if locale == "zh-CN"
+                else "(Life Steal Up: <Status_Up>XL</>)"
+            )
+            append_texts[locale]["LifeSteal_Rank_5"] = self.text(label)
+
+        projected, _missing = game_data.build_non_pal_passive_records(
+            rows,
+            names,
+            descriptions,
+            ui,
+            partner_append_by_locale=append_texts,
+        )
+
+        self.assertEqual(
+            projected["LifeSteal_5"]["I18n"]["en"]["Name"],
+            "Life Steal Up: XL",
+        )
+        self.assertEqual(
+            projected["LifeSteal_5"]["I18n"]["zh-CN"]["Name"],
+            "生命窃取效果提升：特大",
+        )
+
     def test_partner_skill_assignments_join_parameter_rows_to_pal_tribes(self) -> None:
         assignments = game_data.build_partner_skill_assignments(
             {
@@ -7583,6 +7659,38 @@ class SkillDomainTests(unittest.TestCase):
                     1,
                 )
             },
+        )
+
+    def test_partner_skill_assignments_keep_one_owner_reused_across_ranks(self) -> None:
+        assignments = game_data.build_partner_skill_assignments(
+            {
+                "DrillPal": {
+                    "PassiveSkills": [
+                        {
+                            "SkillAndParametersArray": [
+                                {"SkillName": {"Key": "MiningPartnerSkill"}}
+                            ]
+                        },
+                        {
+                            "SkillAndParametersArray": [
+                                {"SkillName": {"Key": "MiningPartnerSkill"}}
+                            ]
+                        },
+                    ],
+                    "TextReferencePassiveSkills": [],
+                }
+            },
+            {
+                "DrillPal": {
+                    "Tribe": "EPalTribeID::DrillPal",
+                    "OverridePartnerSkillNameTextID": "None",
+                }
+            },
+        )
+
+        self.assertEqual(
+            assignments,
+            {"MiningPartnerSkill": ("PARTNERSKILL_DrillPal", 1)},
         )
 
     def test_passive_projection_includes_self_max_hp_buff(self) -> None:
@@ -8306,6 +8414,13 @@ class SkillDomainTests(unittest.TestCase):
                     root,
                     game_data.text_table_path("DT_UI_Common_Text_Common", locale),
                     ui[locale],
+                )
+                write_table(
+                    root,
+                    game_data.text_table_path(
+                        game_data.PARTNER_SKILL_APPEND_TEXT, locale
+                    ),
+                    {},
                 )
                 write_table(
                     root,

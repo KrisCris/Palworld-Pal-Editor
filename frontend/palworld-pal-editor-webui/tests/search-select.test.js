@@ -50,7 +50,8 @@ test("shared selector uses native disclosure, search, and option buttons", async
     assert.match(source, /option\.tooltip/);
     assert.match(source, /class="search-select__tooltip" :aria-hidden="!tooltip"/);
     assert.match(source, /<span v-if="tooltip" role="tooltip">/);
-    assert.match(source, /1200/);
+    assert.match(source, /function showTooltip\(option\)\s*\{[\s\S]*?tooltip\.value = option\.tooltip \|\| ''[\s\S]*?\}/);
+    assert.doesNotMatch(source, /tooltipTimer|setTimeout/);
 });
 
 test("skill options show their internal metadata beside the name before details", async () => {

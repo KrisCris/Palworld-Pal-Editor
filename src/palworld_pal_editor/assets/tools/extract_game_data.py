@@ -520,6 +520,10 @@ def export_skill_domain(
         game_data.text_table_path("DT_PalNameText_Common", locale)
         for locale in game_data.LOCALE_DIRECTORIES
     )
+    static_sources.update(
+        game_data.text_table_path(game_data.PARTNER_SKILL_APPEND_TEXT, locale)
+        for locale in game_data.LOCALE_DIRECTORIES
+    )
     prefixes = static_sources & game_data.CHARACTER_SCENARIO_PREFIX_SOURCES
     static_sources -= prefixes
     export_sources(

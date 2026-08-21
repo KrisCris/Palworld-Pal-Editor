@@ -58,6 +58,16 @@ const canSelectActiveSkill = skill => (
   !palStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
 );
 
+const showEquipMasteredAction = skill => (
+  !palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
+  && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)
+);
+
+const canEquipMasteredSkill = skill => (
+  showEquipMasteredAction(skill)
+  && canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])
+);
+
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
 };
@@ -631,7 +641,11 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="skill-section">
         <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
         <div class="skill-cards">
-          <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza" :key="skill"
+          <article v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza" :key="skill"
+            :class="['skill-card', {
+              'skill-card--actionable': showEquipMasteredAction(skill),
+              'skill-card--equipable': canEquipMasteredSkill(skill),
+            }]"
             :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
             <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
               :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
@@ -643,17 +657,17 @@ const portraitBorder = pal => pal.IsAwakening
               <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
             <div class="skill-card__actions">
-              <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
-                && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
-                class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+              <button v-if="showEquipMasteredAction(skill)"
+                type="button" class="editor-button editor-button--icon skill-card__equip"
+                @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
                 :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
                 :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
-              <button type="button" class="skill-card__remove"
-                @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
-                :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
-                :disabled="palStore.LOADING_FLAG">×</button>
             </div>
+            <button type="button" class="skill-card__remove"
+              @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
+              :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
+              :disabled="palStore.LOADING_FLAG">×</button>
           </article>
         </div>
         <div class="skill-add">
@@ -966,11 +980,24 @@ const portraitBorder = pal => pal.IsAwakening
   object-fit: contain;
 }
 
-.suitability-control__actions,
-.skill-card__actions {
+.suitability-control__actions {
   display: flex;
   margin-left: auto;
   gap: var(--editor-space-1);
+}
+
+.skill-card__actions {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: 3rem;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 170ms ease, opacity 120ms ease;
 }
 
 .skill-section {
@@ -998,6 +1025,36 @@ const portraitBorder = pal => pal.IsAwakening
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   background: var(--editor-color-surface-subtle);
+}
+
+.skill-card--actionable {
+  padding-right: var(--editor-space-2);
+  overflow: hidden;
+}
+
+.skill-card--equipable {
+  border-right-color: color-mix(in srgb, var(--editor-color-focus) 72%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--editor-color-focus) 5%, var(--editor-color-surface-subtle));
+  box-shadow: inset -2px 0 0 color-mix(in srgb, var(--editor-color-focus) 58%, transparent);
+}
+
+.skill-card--equipable:hover {
+  border-color: color-mix(in srgb, var(--editor-color-focus) 64%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--editor-color-focus) 9%, var(--editor-color-surface-subtle));
+}
+
+.skill-card--actionable:is(:hover, :focus-within) .skill-card__actions {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.skill-card--actionable:is(:hover, :focus-within) .skill-card__identity {
+  padding-right: 3rem;
+}
+
+.skill-card--actionable .skill-card__remove {
+  right: calc(3rem + .16rem);
 }
 
 .skill-card__remove {
@@ -1028,10 +1085,33 @@ const portraitBorder = pal => pal.IsAwakening
 .skill-card__remove:hover { color: #fca5a5; }
 .skill-card__remove:disabled { cursor: not-allowed; opacity: .35; }
 
+.skill-card__equip {
+  width: 100%;
+  min-height: 100%;
+  padding: var(--editor-space-3) var(--editor-space-2) var(--editor-space-2);
+  border: 0;
+  border-left: 1px solid var(--editor-color-border);
+  border-radius: 0 var(--editor-radius-sm) var(--editor-radius-sm) 0;
+  color: var(--editor-color-muted);
+  background: transparent;
+}
+
+.skill-card__equip:hover {
+  border-color: var(--editor-color-focus);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control-hover);
+}
+
+.skill-card__equip:disabled {
+  border-color: var(--editor-color-border);
+  background: transparent;
+}
+
 .skill-card__identity {
   display: grid;
   gap: 0;
   overflow: hidden;
+  transition: padding-right 170ms ease;
 }
 
 .skill-card__title {
@@ -1079,6 +1159,25 @@ const portraitBorder = pal => pal.IsAwakening
   .suitability-grid,
   .skill-cards {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none) {
+  .skill-card--actionable .skill-card__actions {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .skill-card--actionable .skill-card__identity {
+    padding-right: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card__actions,
+  .skill-card__identity {
+    transition: none;
   }
 }
 </style>

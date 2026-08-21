@@ -22,7 +22,6 @@ const open = ref(false)
 const popoverStyle = ref({})
 const query = ref('')
 const tooltip = ref('')
-let tooltipTimer
 const selected = computed(() => props.options.find(option => option.value === props.modelValue))
 const visibleOptions = computed(() => filterSearchOptions(props.options, query.value))
 
@@ -70,14 +69,11 @@ function onToggle() {
   else clearTooltip()
 }
 
-function queueTooltip(option) {
-  clearTooltip()
-  if (!option.tooltip) return
-  tooltipTimer = setTimeout(() => { tooltip.value = option.tooltip }, 1200)
+function showTooltip(option) {
+  tooltip.value = option.tooltip || ''
 }
 
 function clearTooltip() {
-  clearTimeout(tooltipTimer)
   tooltip.value = ''
 }
 
@@ -124,8 +120,8 @@ onBeforeUnmount(() => {
               class="search-select__group-label">{{ option.group }}</div>
             <button type="button" role="option"
               :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
-              @pointerenter="queueTooltip(option)" @pointerleave="clearTooltip"
-              @focus="queueTooltip(option)" @blur="clearTooltip">
+              @pointerenter="showTooltip(option)" @pointerleave="clearTooltip"
+              @focus="showTooltip(option)" @blur="clearTooltip">
               <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
               <img v-if="option.icon" :src="option.icon" alt="">
               <span class="search-select__copy">
