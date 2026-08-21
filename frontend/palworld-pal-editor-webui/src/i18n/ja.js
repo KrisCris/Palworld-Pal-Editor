@@ -304,7 +304,7 @@ export default {
     Message_Pal_Copied: "パルデータをクリップボードにコピーしました。",
     Message_Pal_Template_Saved: "パルテンプレートを保存しました。",
     Message_Pal_Template_Deleted: "パルテンプレートを削除しました。",
-    Message_CN_AntiScam: "警告：このソフトウェアは無料のオープンソースです。購入した場合は返金を求めてください。寄付ページまたは GitHub から作者を支援できます。",
+    Message_AntiScam: "警告：このソフトウェアは無料のオープンソースです。購入した場合は返金を求めてください。寄付ページまたは GitHub から作者を支援できます。",
     Operation_Select_Path: "セーブパスの選択",
     Operation_Update_Player: "プレイヤーの更新",
     Operation_Load_Player: "プレイヤーの読み込み",

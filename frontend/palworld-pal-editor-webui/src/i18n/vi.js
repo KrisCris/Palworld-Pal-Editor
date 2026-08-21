@@ -288,7 +288,7 @@ export default {
     Message_Pal_Copied: "Đã sao chép dữ liệu Pal vào bảng nhớ tạm.",
     Message_Pal_Template_Saved: "Đã lưu mẫu Pal.",
     Message_Pal_Template_Deleted: "Đã xóa mẫu Pal.",
-    Message_CN_AntiScam: "Cảnh báo: phần mềm này miễn phí và mã nguồn mở. Nếu đã trả tiền mua nó trên bất kỳ nền tảng nào, hãy yêu cầu hoàn tiền. Bạn có thể ủng hộ tác giả qua trang quyên góp hoặc GitHub.",
+    Message_AntiScam: "Cảnh báo: phần mềm này miễn phí và mã nguồn mở. Nếu đã trả tiền mua nó trên bất kỳ nền tảng nào, hãy yêu cầu hoàn tiền. Bạn có thể ủng hộ tác giả qua trang quyên góp hoặc GitHub.",
     Operation_Select_Path: "đang chọn đường dẫn save",
     Operation_Update_Player: "đang cập nhật người chơi",
     Operation_Load_Player: "đang tải người chơi",

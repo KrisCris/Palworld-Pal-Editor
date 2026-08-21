@@ -304,7 +304,7 @@ export default {
     Message_Pal_Copied: "Données du Pal copiées dans le presse-papiers.",
     Message_Pal_Template_Saved: "Modèle de Pal enregistré.",
     Message_Pal_Template_Deleted: "Modèle de Pal supprimé.",
-    Message_CN_AntiScam: "Attention : ce logiciel est gratuit et open source. Si vous l’avez acheté, demandez un remboursement. Vous pouvez soutenir l’auteur depuis la page de don ou GitHub.",
+    Message_AntiScam: "Attention : ce logiciel est gratuit et open source. Si vous l’avez acheté, demandez un remboursement. Vous pouvez soutenir l’auteur depuis la page de don ou GitHub.",
     Operation_Select_Path: "la sélection du chemin de sauvegarde",
     Operation_Update_Player: "la mise à jour du joueur",
     Operation_Load_Player: "le chargement du joueur",

@@ -134,6 +134,12 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
   }
 }
 
+@media (min-width: 761px) and (max-width: 1180px) {
+  .editor-canvas--basecamp {
+    overflow: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .editor-roster { animation: none; }
 }

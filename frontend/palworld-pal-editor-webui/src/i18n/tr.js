@@ -288,7 +288,7 @@ export default {
     Message_Pal_Copied: "Pal verisi panoya kopyalandı.",
     Message_Pal_Template_Saved: "Pal şablonu kaydedildi.",
     Message_Pal_Template_Deleted: "Pal şablonu silindi.",
-    Message_CN_AntiScam: "Uyarı: Bu yazılım ücretsiz ve açık kaynaklıdır. Herhangi bir platformda bunun için ödeme yaptıysanız geri ödeme isteyin. Bağış sayfasından veya GitHub üzerinden yazarı destekleyebilirsiniz.",
+    Message_AntiScam: "Uyarı: Bu yazılım ücretsiz ve açık kaynaklıdır. Herhangi bir platformda bunun için ödeme yaptıysanız geri ödeme isteyin. Bağış sayfasından veya GitHub üzerinden yazarı destekleyebilirsiniz.",
     Operation_Select_Path: "kayıt yolu seçiliyor",
     Operation_Update_Player: "oyuncu güncelleniyor",
     Operation_Load_Player: "oyuncu yükleniyor",

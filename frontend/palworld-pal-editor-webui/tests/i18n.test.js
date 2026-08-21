@@ -187,7 +187,7 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Message_Basecamp_Add_Unsupported",
         "Message_Save_Success",
         "Message_Pal_Copied",
-        "Message_CN_AntiScam",
+        "Message_AntiScam",
         "SupportDialog_Title",
         "SupportDialog_Intro",
         "SupportDialog_Financial_Title",

@@ -288,7 +288,7 @@ export default {
     Message_Pal_Copied: "Los datos del Pal se copiaron al portapapeles.",
     Message_Pal_Template_Saved: "Plantilla de Pal guardada.",
     Message_Pal_Template_Deleted: "Plantilla de Pal eliminada.",
-    Message_CN_AntiScam: "Advertencia: este software es gratuito y de código abierto. Si pagaste por él en cualquier plataforma, solicita un reembolso. Puedes apoyar al autor desde la página de donaciones o GitHub.",
+    Message_AntiScam: "Advertencia: este software es gratuito y de código abierto. Si pagaste por él en cualquier plataforma, solicita un reembolso. Puedes apoyar al autor desde la página de donaciones o GitHub.",
     Operation_Select_Path: "seleccionando una ubicación de partida",
     Operation_Update_Player: "actualizando al jugador",
     Operation_Load_Player: "cargando al jugador",

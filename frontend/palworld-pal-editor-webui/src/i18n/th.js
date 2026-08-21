@@ -288,7 +288,7 @@ export default {
     Message_Pal_Copied: "คัดลอกข้อมูล Pal ไปยังคลิปบอร์ดแล้ว",
     Message_Pal_Template_Saved: "บันทึกแม่แบบ Pal แล้ว",
     Message_Pal_Template_Deleted: "ลบแม่แบบ Pal แล้ว",
-    Message_CN_AntiScam: "คำเตือน: ซอฟต์แวร์นี้ฟรีและเป็นโอเพนซอร์ส หากคุณจ่ายเงินซื้อจากแพลตฟอร์มใด โปรดขอคืนเงิน คุณสามารถสนับสนุนผู้สร้างผ่านหน้าบริจาคหรือ GitHub",
+    Message_AntiScam: "คำเตือน: ซอฟต์แวร์นี้ฟรีและเป็นโอเพนซอร์ส หากคุณจ่ายเงินซื้อจากแพลตฟอร์มใด โปรดขอคืนเงิน คุณสามารถสนับสนุนผู้สร้างผ่านหน้าบริจาคหรือ GitHub",
     Operation_Select_Path: "กำลังเลือกพาธเซฟ",
     Operation_Update_Player: "กำลังอัปเดตผู้เล่น",
     Operation_Load_Player: "กำลังโหลดผู้เล่น",

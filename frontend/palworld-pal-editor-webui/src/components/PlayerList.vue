@@ -17,7 +17,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
     <header class="roster-header">
       <button class="roster-collapse-button" :title="toggleLabel()"
         :aria-label="toggleLabel()" @click="emit('toggle')">
-        <UiIcon :name="preview ? 'plus' : 'minus'" />
+        <UiIcon :name="preview ? 'panel' : 'minus'" />
       </button>
       <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
