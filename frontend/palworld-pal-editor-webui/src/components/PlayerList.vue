@@ -35,7 +35,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
         @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
         :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"
-        :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
+        :disabled="(palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID) || palStore.LOADING_FLAG">
         <span class="player-avatar">PAL</span>
         <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
       </button>

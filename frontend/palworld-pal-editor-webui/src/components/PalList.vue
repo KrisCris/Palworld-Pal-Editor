@@ -60,6 +60,7 @@ watch([
   () => palStore.LOADING_FLAG,
 ], async ([roster, loading], previous = []) => {
   if (roster !== previous[0]) attemptedAutoSelectRoster.value = null
+  if (roster === palStore.PAL_BASE_WORKER_BTN) return
   if (!roster || loading || palStore.SELECTED_PAL_ID || attemptedAutoSelectRoster.value === roster) return
   await nextTick()
   if (palStore.LOADING_FLAG || palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return

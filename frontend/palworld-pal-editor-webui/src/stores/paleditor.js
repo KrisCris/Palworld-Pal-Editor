@@ -530,6 +530,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_GLOBAL_STORAGE_BTN = ref("PAL_GLOBAL_STORAGE_BTN");
 
     const TECH_LV_DICT = ref({});
+    const BASE_CAMP_RESEARCH = ref({ CategoryOrder: [], Guilds: [] });
+    const SELECTED_RESEARCH_GUILD_ID = ref(null);
     const PASSIVE_SKILLS = ref({});
     const PASSIVE_SKILLS_LIST = ref([]);
     const ACTIVE_SKILLS = ref({});
@@ -1215,6 +1217,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_CONTAINERS.value = [];
         SPECIAL_ROSTERS.value = [];
         PAL_TRANSFER_CONFLICT.value = null;
+        BASE_CAMP_RESEARCH.value = { CategoryOrder: [], Guilds: [] };
+        SELECTED_RESEARCH_GUILD_ID.value = null;
 
         PAL_LIST_SEARCH_KEYWORD.value = "";
         PAL_LIST_EDITED_ONLY.value = false;
@@ -1572,6 +1576,58 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
+    async function fetchBaseCampResearch() {
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await GET("/api/save/basecamp/research");
+            if (response === false) return false;
+            if (response.status == 0) {
+                BASE_CAMP_RESEARCH.value = response.data ?? { CategoryOrder: [], Guilds: [] };
+                const guilds = BASE_CAMP_RESEARCH.value.Guilds ?? [];
+                if (!guilds.some(guild => guild.GuildId === SELECTED_RESEARCH_GUILD_ID.value)) {
+                    SELECTED_RESEARCH_GUILD_ID.value = guilds[0]?.GuildId ?? null;
+                }
+                return true;
+            }
+            if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_BaseCamp_Research", response);
+            }
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
+    }
+
+    async function completeBaseCampResearch(scope) {
+        const guildId = SELECTED_RESEARCH_GUILD_ID.value;
+        if (!guildId) return false;
+        const managesLoading = !LOADING_FLAG.value;
+        if (managesLoading) LOADING_FLAG.value = true;
+        try {
+            const response = await PATCH("/api/save/basecamp/research", {
+                GuildId: guildId,
+                ...scope,
+            });
+            if (response === false) return false;
+            if (response.status == 0) {
+                BASE_CAMP_RESEARCH.value = response.data.Research;
+                showToast("Message_BaseCamp_Research_Completed", "success", [response.data.Changed]);
+                return true;
+            }
+            if (response.status == 2) {
+                requireAuth("AuthView_Session_Expired");
+            } else {
+                reportOperationError("Operation_BaseCamp_Research", response);
+            }
+            return false;
+        } finally {
+            if (managesLoading) LOADING_FLAG.value = false;
+        }
+    }
+
     async function selectPlayer(playerUId, manual = false) {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
@@ -1609,6 +1665,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         // properly setup selected player flag
         if (playerUId == PAL_BASE_WORKER_BTN.value) {
             BASE_PAL_BTN_CLK_FLAG.value = true;
+            await fetchBaseCampResearch();
         } else if (playerUId == PAL_GLOBAL_STORAGE_BTN.value) {
             SELECTED_PLAYER_ID.value = playerUId;
             SHOW_PLAYER_EDIT_FLAG.value = false;
@@ -2315,6 +2372,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SKILL_TEMPLATES,
         PAL_CONTAINERS,
         PAL_TRANSFER_CONFLICT,
+        BASE_CAMP_RESEARCH,
+        SELECTED_RESEARCH_GUILD_ID,
 
         getTranslatedText,
         getTechName,
@@ -2335,6 +2394,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reset,
         updateI18n,
         loadSave,
+        fetchBaseCampResearch,
+        completeBaseCampResearch,
         selectPlayer,
         selectPal,
         updatePal,

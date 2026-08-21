@@ -28,6 +28,7 @@ from palworld_pal_editor.core.save_codec import (
 )
 from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
+from palworld_pal_editor.core.guild_lab_data import GuildLabData
 
 class PalIdentityConflict(ValueError):
     def __init__(self, candidates: list[PalRecordRef]):
@@ -53,6 +54,7 @@ class SaveManager:
     item_container_data: Optional[ItemContainerData]
     group_data: Optional[GroupData]
     camp_data: Optional[BaseCampData]
+    guild_lab_data: Optional[GuildLabData]
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -106,6 +108,14 @@ class SaveManager:
                 self.camp_data = BaseCampData(self.gvas_file)
             except Exception as e:
                 LOGGER.error(f"Error parsing base camp data: {e}")
+                return None
+
+            try:
+                self.guild_lab_data = GuildLabData(
+                    self.gvas_file, DataProvider.get_lab_research_data()
+                )
+            except Exception as e:
+                LOGGER.error(f"Error parsing guild laboratory data: {e}")
                 return None
             
             try:
@@ -585,6 +595,28 @@ class SaveManager:
 
     def get_players(self) -> list[PlayerEntity]:
         return self.player_mapping.values()
+
+    def get_lab_research(self) -> dict:
+        if getattr(self, "guild_lab_data", None) is None:
+            raise ValueError("Guild laboratory data is not loaded")
+        return self.guild_lab_data.snapshot(self.group_data, self.camp_data)
+
+    def complete_lab_research(
+        self,
+        guild_id: str,
+        *,
+        research_id: str | None = None,
+        category: str | None = None,
+        all_research: bool = False,
+    ) -> int:
+        if getattr(self, "guild_lab_data", None) is None:
+            raise ValueError("Guild laboratory data is not loaded")
+        return self.guild_lab_data.complete(
+            guild_id,
+            research_id=research_id,
+            category=category,
+            all_research=all_research,
+        )
     
     def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
         if guid is None: return

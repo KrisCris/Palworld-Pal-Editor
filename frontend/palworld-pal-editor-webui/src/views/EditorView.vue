@@ -2,6 +2,7 @@
 import PalEditor from '@/components/PalEditor.vue'
 import PalList from '@/components/PalList.vue'
 import PlayerEditor from '@/components/PlayerEditor.vue'
+import BaseCampEditor from '@/components/BaseCampEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
@@ -24,6 +25,7 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
     </aside>
     <main class="editor-canvas">
       <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG" />
+      <BaseCampEditor v-else-if="palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID" />
       <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA" />
       <p v-else class="editor-empty">{{ palStore.getTranslatedText('Editor_Select_Prompt') }}</p>
     </main>

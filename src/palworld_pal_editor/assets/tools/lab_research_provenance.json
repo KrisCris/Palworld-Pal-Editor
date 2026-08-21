@@ -1,0 +1,9 @@
+{
+  "game_build": "24575825",
+  "mapping_sha256": "241c45de9d5b55b246cd4b39d62b9209faf7758ce0637e1f7a545aa0f75f71f0",
+  "output_sha256": "99feef60e963e39b4a01ab1d404736f9d135170f41a392ba8cba10ea2dd31e11",
+  "row_count": 168,
+  "schema_version": 1,
+  "source": "Pal/Content/Pal/DataTable/Lab/DT_LabResearchDataTable",
+  "uex_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d"
+}

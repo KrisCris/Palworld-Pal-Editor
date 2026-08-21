@@ -109,11 +109,6 @@ MAIN_SKIP_PROPERTIES[".worldSaveData.FixedWeaponDestroySaveData"] = (
 MAIN_SKIP_PROPERTIES[".worldSaveData.OilrigSaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.SupplySaveData"] = (skip_decode, skip_encode)
 MAIN_SKIP_PROPERTIES[".worldSaveData.RandomizerSaveData"] = (skip_decode, skip_encode)
-MAIN_SKIP_PROPERTIES[".worldSaveData.GuildExtraSaveDataMap"] = (
-    skip_decode,
-    skip_encode,
-)
-
 PLAYER_SKIP_PROPERTIES = copy.deepcopy(PALWORLD_CUSTOM_PROPERTIES)
 PLAYER_SKIP_PROPERTIES[".SaveData.PlayerCharacterMakeData"] = (
     skip_decode,
