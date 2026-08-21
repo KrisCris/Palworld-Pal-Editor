@@ -545,7 +545,7 @@ test("a failed login request uses the dedicated backend error state", async () =
     assert.equal(store.LOADING_FLAG, false);
 });
 
-test("loaded-save hydration selects base camp again after reloading", async () => {
+test("loaded-save hydration opens base camp editing after reloading", async () => {
     const store = newStore();
     mockBackend({
         password: false,
@@ -558,15 +558,17 @@ test("loaded-save hydration selects base camp again after reloading", async () =
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
 });
 
-test("loaded-save hydration selects the first player when there is no base camp", async () => {
+test("loaded-save hydration opens player editing when there is no base camp", async () => {
     const store = newStore();
     mockBackend({
         password: false,
@@ -578,12 +580,14 @@ test("loaded-save hydration selects the first player when there is no base camp"
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
 });
 
 test("selected Pal data retains its game-derived family", async () => {
@@ -616,6 +620,7 @@ test("successful Pal edits are tracked only until the next save load", async () 
     });
 
     await store.bootstrap();
+    await store.selectPal("world:pal-1");
     await store.updatePal({ target: { name: "NickName", value: "Edited" } });
 
     assert.deepEqual([...store.EDITED_PAL_IDS], ["world:pal-1"]);
