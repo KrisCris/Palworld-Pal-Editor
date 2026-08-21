@@ -677,9 +677,31 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return showMessage({ severity, presentation: "toast", messageKey, args });
     }
 
+    function confirmMessage(messageKey, args = []) {
+        return new Promise(resolve => {
+            showMessage({
+                severity: "warning",
+                presentation: "dialog",
+                messageKey,
+                args,
+                confirmation: true,
+                resolve,
+            });
+        });
+    }
+
     function dismissMessage(id) {
         const index = MESSAGE_QUEUE.value.findIndex(message => message.id == id);
-        if (index >= 0) MESSAGE_QUEUE.value.splice(index, 1);
+        if (index < 0) return;
+        const [message] = MESSAGE_QUEUE.value.splice(index, 1);
+        if (message.confirmation) message.resolve(false);
+    }
+
+    function respondToMessage(id, confirmed) {
+        const index = MESSAGE_QUEUE.value.findIndex(message => message.id == id);
+        if (index < 0) return;
+        const [message] = MESSAGE_QUEUE.value.splice(index, 1);
+        if (message.confirmation) message.resolve(confirmed);
     }
 
     function getMessageText(message) {
@@ -1433,7 +1455,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             showMessage({
                 severity: "warning",
                 presentation: "dialog",
-                messageKey: "Message_CN_AntiScam",
+                messageKey: "Message_AntiScam",
             });
             CN_WARNING_ON_LOAD.value = false;
         }
@@ -2430,6 +2452,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         clearBackendError,
         showMessage,
         dismissMessage,
+        confirmMessage,
+        respondToMessage,
         reportOperationError,
         reportFrontendError,
         show_file_picker,

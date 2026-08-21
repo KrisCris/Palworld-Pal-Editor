@@ -141,13 +141,13 @@ async function completeResearch() {
 
 async function completeCategory() {
   if (!selectedCategory.value || selectedCategory.value.Completed === selectedCategory.value.Total) return
-  if (!window.confirm(translated('BaseCamp_Research_Confirm_Category'))) return
+  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_Category')) return
   await palStore.completeBaseCampResearch({ Category: selectedCategory.value.Category })
 }
 
 async function completeAll() {
   if (allCompleted.value) return
-  if (!window.confirm(translated('BaseCamp_Research_Confirm_All'))) return
+  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_All')) return
   await palStore.completeBaseCampResearch({ All: true })
 }
 
