@@ -2,7 +2,9 @@
   "Handcraft1": {
     "TextId": "NAME_HANDCRAFT1",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -29,7 +31,9 @@
   "Handcraft1_2": {
     "TextId": "NAME_HANDCRAFT2",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Handcraft1",
     "EffectType": "CraftSpeed",
@@ -60,7 +64,9 @@
   "Handcraft5": {
     "TextId": "NAME_HANDCRAFT20",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Handcraft1_2",
     "EffectType": "no",
@@ -87,7 +93,9 @@
   "Handcraft1_3": {
     "TextId": "NAME_HANDCRAFT3",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Handcraft5",
     "EffectType": "CraftSpeed",
@@ -114,7 +122,9 @@
   "Handcraft1_4": {
     "TextId": "NAME_HANDCRAFT4",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Handcraft1_3",
     "EffectType": "CraftSpeed",
@@ -145,7 +155,9 @@
   "Handcraft1_5": {
     "TextId": "NAME_HANDCRAFT5",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Handcraft1_4",
     "EffectType": "CraftSpeed",
@@ -176,7 +188,9 @@
   "Handcraft2": {
     "TextId": "NAME_HANDCRAFT6",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Handcraft1",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -207,7 +221,9 @@
   "Handcraft2_2": {
     "TextId": "NAME_HANDCRAFT7",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Handcraft2",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -238,7 +254,9 @@
   "Handcraft2_3": {
     "TextId": "NAME_HANDCRAFT8",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Handcraft2_2",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -269,7 +287,9 @@
   "Handcraft2_4": {
     "TextId": "NAME_HANDCRAFT9",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Handcraft2_3",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -300,7 +320,9 @@
   "Handcraft2_5": {
     "TextId": "NAME_HANDCRAFT10",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 2000000,
     "RequiredResearchId": "Handcraft2_4",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -331,7 +353,9 @@
   "Handcraft2_6": {
     "TextId": "NAME_HANDCRAFT11",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Handcraft2_5",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -362,7 +386,9 @@
   "Handcraft3": {
     "TextId": "NAME_HANDCRAFT12",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Handcraft1",
     "EffectType": "LabResearchSpeed",
@@ -393,7 +419,9 @@
   "Handcraft3_2": {
     "TextId": "NAME_HANDCRAFT13",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Handcraft3",
     "EffectType": "LabResearchSpeed",
@@ -424,7 +452,9 @@
   "Handcraft3_3": {
     "TextId": "NAME_HANDCRAFT14",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 2500000,
     "RequiredResearchId": "Handcraft3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -455,7 +485,9 @@
   "Handcraft3_4": {
     "TextId": "NAME_HANDCRAFT15",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Handcraft3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -486,7 +518,9 @@
   "Handcraft4": {
     "TextId": "NAME_HANDCRAFT16",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductExtraItemProbability_Sphere",
+    "IconKey": "effect-ProductExtraItemProbability_Sphere",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Handcraft1_2",
     "EffectType": "ProductExtraItemProbability",
@@ -517,7 +551,9 @@
   "Handcraft4_2": {
     "TextId": "NAME_HANDCRAFT17",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductExtraItemProbability_Bullet",
+    "IconKey": "effect-ProductExtraItemProbability_Bullet",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Handcraft4",
     "EffectType": "ProductExtraItemProbability",
@@ -548,7 +584,9 @@
   "Handcraft4_3": {
     "TextId": "NAME_HANDCRAFT18",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductExtraItemProbability_Sphere",
+    "IconKey": "effect-ProductExtraItemProbability_Sphere",
     "RequiredWorkAmount": 2500000,
     "RequiredResearchId": "Handcraft4_2",
     "EffectType": "ProductExtraItemProbability",
@@ -579,7 +617,9 @@
   "Handcraft4_4": {
     "TextId": "NAME_HANDCRAFT19",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "ProductExtraItemProbability_Bullet",
+    "IconKey": "effect-ProductExtraItemProbability_Bullet",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Handcraft4_3",
     "EffectType": "ProductExtraItemProbability",
@@ -610,7 +650,9 @@
   "Handcraft1_6": {
     "TextId": "NAME_HANDCRAFT21",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "CraftSpeed_Handcraft",
+    "IconKey": "effect-CraftSpeed_Handcraft",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "Handcraft1_5",
     "EffectType": "CraftSpeed",
@@ -641,7 +683,9 @@
   "Handcraft3_5": {
     "TextId": "NAME_HANDCRAFT22",
     "Category": "Handcraft",
+    "CategoryIconKey": "category-Handcraft",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "Handcraft3_4",
     "EffectType": "AttackRateBaseCampWorker",
@@ -672,7 +716,9 @@
   "EmitFlame1": {
     "TextId": "NAME_EMITFIRE1",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -695,7 +741,9 @@
   "EmitFlame1_2": {
     "TextId": "NAME_EMITFIRE2",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "EmitFlame1",
     "EffectType": "CraftSpeed",
@@ -726,7 +774,9 @@
   "EmitFlame5": {
     "TextId": "NAME_EMITFIRE18",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "EmitFlame1_2",
     "EffectType": "no",
@@ -757,7 +807,9 @@
   "EmitFlame1_3": {
     "TextId": "NAME_EMITFIRE3",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "EmitFlame5",
     "EffectType": "CraftSpeed",
@@ -788,7 +840,9 @@
   "EmitFlame1_4": {
     "TextId": "NAME_EMITFIRE4",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "EmitFlame1_3",
     "EffectType": "CraftSpeed",
@@ -819,7 +873,9 @@
   "EmitFlame1_5": {
     "TextId": "NAME_EMITFIRE5",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "EmitFlame1_4",
     "EffectType": "CraftSpeed",
@@ -850,7 +906,9 @@
   "EmitFlame2": {
     "TextId": "NAME_EMITFIRE6",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "EmitFlame1",
     "EffectType": "PalEggHatchingSpeed",
@@ -881,7 +939,9 @@
   "EmitFlame2_2": {
     "TextId": "NAME_EMITFIRE7",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "EmitFlame2",
     "EffectType": "PalEggHatchingSpeed",
@@ -912,7 +972,9 @@
   "EmitFlame2_3": {
     "TextId": "NAME_EMITFIRE8",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "EmitFlame2_2",
     "EffectType": "PalEggHatchingSpeed",
@@ -943,7 +1005,9 @@
   "EmitFlame2_4": {
     "TextId": "NAME_EMITFIRE9",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "EmitFlame2_3",
     "EffectType": "PalEggHatchingSpeed",
@@ -974,7 +1038,9 @@
   "EmitFlame3": {
     "TextId": "NAME_EMITFIRE10",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "EmitFlame1",
     "EffectType": "LabResearchSpeed",
@@ -1005,7 +1071,9 @@
   "EmitFlame3_2": {
     "TextId": "NAME_EMITFIRE11",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "EmitFlame3",
     "EffectType": "LabResearchSpeed",
@@ -1036,7 +1104,9 @@
   "EmitFlame3_3": {
     "TextId": "NAME_EMITFIRE12",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 2500000,
     "RequiredResearchId": "EmitFlame3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -1067,7 +1137,9 @@
   "EmitFlame3_4": {
     "TextId": "NAME_EMITFIRE13",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "EmitFlame3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -1098,7 +1170,9 @@
   "EmitFlame4": {
     "TextId": "NAME_EMITFIRE14",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "ProductExtraItemProbability_Food",
+    "IconKey": "effect-ProductExtraItemProbability_Food",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "EmitFlame1_2",
     "EffectType": "ProductExtraItemProbability",
@@ -1129,7 +1203,9 @@
   "EmitFlame4_2": {
     "TextId": "NAME_EMITFIRE15",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "ProductExtraItemProbability_Ingot",
+    "IconKey": "effect-ProductExtraItemProbability_Ingot",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "EmitFlame4",
     "EffectType": "ProductExtraItemProbability",
@@ -1160,7 +1236,9 @@
   "EmitFlame4_3": {
     "TextId": "NAME_EMITFIRE16",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "ProductExtraItemProbability_Food",
+    "IconKey": "effect-ProductExtraItemProbability_Food",
     "RequiredWorkAmount": 2500000,
     "RequiredResearchId": "EmitFlame4_2",
     "EffectType": "ProductExtraItemProbability",
@@ -1191,7 +1269,9 @@
   "EmitFlame4_4": {
     "TextId": "NAME_EMITFIRE17",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "ProductExtraItemProbability_Ingot",
+    "IconKey": "effect-ProductExtraItemProbability_Ingot",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "EmitFlame4_3",
     "EffectType": "ProductExtraItemProbability",
@@ -1222,7 +1302,9 @@
   "EmitFlame1_6": {
     "TextId": "NAME_EMITFIRE19",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "CraftSpeed_EmitFlame",
+    "IconKey": "effect-CraftSpeed_EmitFlame",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "EmitFlame1_5",
     "EffectType": "CraftSpeed",
@@ -1253,7 +1335,9 @@
   "EmitFlame3_5": {
     "TextId": "NAME_EMITFIRE20",
     "Category": "EmitFlame",
+    "CategoryIconKey": "category-EmitFlame",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "EmitFlame3_4",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -1284,7 +1368,9 @@
   "Watering1": {
     "TextId": "NAME_WATERING1",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -1307,7 +1393,9 @@
   "Watering1_2": {
     "TextId": "NAME_WATERING2",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Watering1",
     "EffectType": "CraftSpeed",
@@ -1334,7 +1422,9 @@
   "Watering5": {
     "TextId": "NAME_WATERING16",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Watering1_2",
     "EffectType": "no",
@@ -1361,7 +1451,9 @@
   "Watering1_3": {
     "TextId": "NAME_WATERING3",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Watering5",
     "EffectType": "CraftSpeed",
@@ -1392,7 +1484,9 @@
   "Watering1_4": {
     "TextId": "NAME_WATERING4",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Watering1_3",
     "EffectType": "CraftSpeed",
@@ -1423,7 +1517,9 @@
   "Watering1_5": {
     "TextId": "NAME_WATERING5",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Watering1_4",
     "EffectType": "CraftSpeed",
@@ -1454,7 +1550,9 @@
   "Watering2": {
     "TextId": "NAME_WATERING6",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "FarmCropGrowupSpeed",
+    "IconKey": "effect-FarmCropGrowupSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Watering1",
     "EffectType": "FarmCropGrowupSpeed",
@@ -1481,7 +1579,9 @@
   "Watering2_2": {
     "TextId": "NAME_WATERING7",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "FarmCropHarvestNumRate",
+    "IconKey": "effect-FarmCropHarvestNumRate",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Watering2",
     "EffectType": "FarmCropHarvestNumRate",
@@ -1512,7 +1612,9 @@
   "Watering2_3": {
     "TextId": "NAME_WATERING8",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "FarmCropGrowupSpeed",
+    "IconKey": "effect-FarmCropGrowupSpeed",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Watering2_2",
     "EffectType": "FarmCropGrowupSpeed",
@@ -1543,7 +1645,9 @@
   "Watering2_4": {
     "TextId": "NAME_WATERING9",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "FarmCropHarvestNumRate",
+    "IconKey": "effect-FarmCropHarvestNumRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Watering2_3",
     "EffectType": "FarmCropHarvestNumRate",
@@ -1574,7 +1678,9 @@
   "Watering3": {
     "TextId": "NAME_WATERING10",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Watering1",
     "EffectType": "LabResearchSpeed",
@@ -1601,7 +1707,9 @@
   "Watering3_2": {
     "TextId": "NAME_WATERING11",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Watering3",
     "EffectType": "LabResearchSpeed",
@@ -1632,7 +1740,9 @@
   "Watering3_3": {
     "TextId": "NAME_WATERING12",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Watering3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -1663,7 +1773,9 @@
   "Watering3_4": {
     "TextId": "NAME_WATERING13",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Watering3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -1694,7 +1806,9 @@
   "Watering4": {
     "TextId": "NAME_WATERING14",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "ProductExtraItemProbability_Ore",
+    "IconKey": "effect-ProductExtraItemProbability_Ore",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Watering1_2",
     "EffectType": "ProductExtraItemProbability",
@@ -1721,7 +1835,9 @@
   "Watering4_2": {
     "TextId": "NAME_WATERING15",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "ProductExtraItemProbability_Ore",
+    "IconKey": "effect-ProductExtraItemProbability_Ore",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Watering4",
     "EffectType": "ProductExtraItemProbability",
@@ -1752,7 +1868,9 @@
   "Watering1_6": {
     "TextId": "NAME_WATERING17",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "CraftSpeed_Watering",
+    "IconKey": "effect-CraftSpeed_Watering",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Watering1_5",
     "EffectType": "CraftSpeed",
@@ -1783,7 +1901,9 @@
   "Watering3_5": {
     "TextId": "NAME_WATERING18",
     "Category": "Watering",
+    "CategoryIconKey": "category-Watering",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Watering3_4",
     "EffectType": "AttackRateBaseCampWorker",
@@ -1814,7 +1934,9 @@
   "Seeding1": {
     "TextId": "NAME_SEEDING1",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -1841,7 +1963,9 @@
   "Seeding1_2": {
     "TextId": "NAME_SEEDING2",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Seeding1",
     "EffectType": "CraftSpeed",
@@ -1868,7 +1992,9 @@
   "Seeding4": {
     "TextId": "NAME_SEEDING16",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Seeding1_2",
     "EffectType": "no",
@@ -1899,7 +2025,9 @@
   "Seeding5": {
     "TextId": "NAME_SEEDING17",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Seeding4",
     "EffectType": "no",
@@ -1930,7 +2058,9 @@
   "Seeding1_3": {
     "TextId": "NAME_SEEDING3",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Seeding5",
     "EffectType": "CraftSpeed",
@@ -1961,7 +2091,9 @@
   "Seeding1_4": {
     "TextId": "NAME_SEEDING4",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Seeding1_3",
     "EffectType": "CraftSpeed",
@@ -1992,7 +2124,9 @@
   "Seeding1_5": {
     "TextId": "NAME_SEEDING5",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Seeding1_4",
     "EffectType": "CraftSpeed",
@@ -2023,7 +2157,9 @@
   "Seeding2": {
     "TextId": "NAME_SEEDING6",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropGrowupSpeed",
+    "IconKey": "effect-FarmCropGrowupSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Seeding1",
     "EffectType": "FarmCropGrowupSpeed",
@@ -2050,7 +2186,9 @@
   "Seeding2_2": {
     "TextId": "NAME_SEEDING7",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropHarvestNumRate",
+    "IconKey": "effect-FarmCropHarvestNumRate",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Seeding2",
     "EffectType": "FarmCropHarvestNumRate",
@@ -2077,7 +2215,9 @@
   "Seeding2_3": {
     "TextId": "NAME_SEEDING8",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropGrowupSpeed",
+    "IconKey": "effect-FarmCropGrowupSpeed",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Seeding2",
     "EffectType": "FarmCropGrowupSpeed",
@@ -2104,7 +2244,9 @@
   "Seeding2_4": {
     "TextId": "NAME_SEEDING9",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropGrowupSpeed",
+    "IconKey": "effect-FarmCropGrowupSpeed",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Seeding2_3",
     "EffectType": "FarmCropGrowupSpeed",
@@ -2135,7 +2277,9 @@
   "Seeding2_5": {
     "TextId": "NAME_SEEDING10",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropHarvestNumRate",
+    "IconKey": "effect-FarmCropHarvestNumRate",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Seeding2_2",
     "EffectType": "FarmCropHarvestNumRate",
@@ -2166,7 +2310,9 @@
   "Seeding2_6": {
     "TextId": "NAME_SEEDING11",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "FarmCropHarvestNumRate",
+    "IconKey": "effect-FarmCropHarvestNumRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Seeding2_5",
     "EffectType": "FarmCropHarvestNumRate",
@@ -2197,7 +2343,9 @@
   "Seeding3": {
     "TextId": "NAME_SEEDING12",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Seeding1",
     "EffectType": "LabResearchSpeed",
@@ -2224,7 +2372,9 @@
   "Seeding3_2": {
     "TextId": "NAME_SEEDING13",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Seeding3",
     "EffectType": "LabResearchSpeed",
@@ -2251,7 +2401,9 @@
   "Seeding3_3": {
     "TextId": "NAME_SEEDING14",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Seeding3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -2282,7 +2434,9 @@
   "Seeding3_4": {
     "TextId": "NAME_SEEDING15",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Seeding3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -2313,7 +2467,9 @@
   "Seeding1_6": {
     "TextId": "NAME_SEEDING18",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "CraftSpeed_Seeding",
+    "IconKey": "effect-CraftSpeed_Seeding",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Seeding1_5",
     "EffectType": "CraftSpeed",
@@ -2344,7 +2500,9 @@
   "Seeding3_5": {
     "TextId": "NAME_SEEDING19",
     "Category": "Seeding",
+    "CategoryIconKey": "category-Seeding",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Seeding3_4",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -2375,7 +2533,9 @@
   "GenerateEnergy1": {
     "TextId": "NAME_GEN_ENERGY1",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -2402,7 +2562,9 @@
   "GenerateEnergy1_2": {
     "TextId": "NAME_GEN_ENERGY2",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "GenerateEnergy1",
     "EffectType": "CraftSpeed",
@@ -2429,7 +2591,9 @@
   "GenerateEnergy1_3": {
     "TextId": "NAME_GEN_ENERGY3",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "GenerateEnergy1_2",
     "EffectType": "CraftSpeed",
@@ -2460,7 +2624,9 @@
   "GenerateEnergy5": {
     "TextId": "NAME_GEN_ENERGY16",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "GenerateEnergy1_3",
     "EffectType": "no",
@@ -2487,7 +2653,9 @@
   "GenerateEnergy1_4": {
     "TextId": "NAME_GEN_ENERGY4",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 2000000,
     "RequiredResearchId": "GenerateEnergy5",
     "EffectType": "CraftSpeed",
@@ -2518,7 +2686,9 @@
   "GenerateEnergy1_5": {
     "TextId": "NAME_GEN_ENERGY5",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "GenerateEnergy1_4",
     "EffectType": "CraftSpeed",
@@ -2549,7 +2719,9 @@
   "GenerateEnergy2": {
     "TextId": "NAME_GEN_ENERGY6",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "EnergyStorageRate",
+    "IconKey": "effect-EnergyStorageRate",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "GenerateEnergy1",
     "EffectType": "EnergyStorageRate",
@@ -2576,7 +2748,9 @@
   "GenerateEnergy2_2": {
     "TextId": "NAME_GEN_ENERGY7",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "EnergyStorageRate",
+    "IconKey": "effect-EnergyStorageRate",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "GenerateEnergy2",
     "EffectType": "EnergyStorageRate",
@@ -2607,7 +2781,9 @@
   "GenerateEnergy2_3": {
     "TextId": "NAME_GEN_ENERGY8",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "EnergyStorageRate",
+    "IconKey": "effect-EnergyStorageRate",
     "RequiredWorkAmount": 2000000,
     "RequiredResearchId": "GenerateEnergy2_2",
     "EffectType": "EnergyStorageRate",
@@ -2638,7 +2814,9 @@
   "GenerateEnergy3": {
     "TextId": "NAME_GEN_ENERGY9",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "GenerateEnergy1",
     "EffectType": "LabResearchSpeed",
@@ -2665,7 +2843,9 @@
   "GenerateEnergy3_2": {
     "TextId": "NAME_GEN_ENERGY10",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "GenerateEnergy3",
     "EffectType": "LabResearchSpeed",
@@ -2696,7 +2876,9 @@
   "GenerateEnergy3_3": {
     "TextId": "NAME_GEN_ENERGY11",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "GenerateEnergy3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -2727,7 +2909,9 @@
   "GenerateEnergy3_4": {
     "TextId": "NAME_GEN_ENERGY12",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "GenerateEnergy3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -2758,7 +2942,9 @@
   "GenerateEnergy4": {
     "TextId": "NAME_GEN_ENERGY13",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "ConsumeEnergyRate",
+    "IconKey": "effect-ConsumeEnergyRate",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "GenerateEnergy1_2",
     "EffectType": "ConsumeEnergyRate",
@@ -2789,7 +2975,9 @@
   "GenerateEnergy4_2": {
     "TextId": "NAME_GEN_ENERGY14",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "ConsumeEnergyRate",
+    "IconKey": "effect-ConsumeEnergyRate",
     "RequiredWorkAmount": 2000000,
     "RequiredResearchId": "GenerateEnergy4",
     "EffectType": "ConsumeEnergyRate",
@@ -2820,7 +3008,9 @@
   "GenerateEnergy4_3": {
     "TextId": "NAME_GEN_ENERGY15",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "ConsumeEnergyRate",
+    "IconKey": "effect-ConsumeEnergyRate",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "GenerateEnergy4_2",
     "EffectType": "ConsumeEnergyRate",
@@ -2851,7 +3041,9 @@
   "GenerateEnergy1_6": {
     "TextId": "NAME_GEN_ENERGY17",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "CraftSpeed_GenerateElectricity",
+    "IconKey": "effect-CraftSpeed_GenerateElectricity",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "GenerateEnergy1_5",
     "EffectType": "CraftSpeed",
@@ -2882,7 +3074,9 @@
   "GenerateEnergy3_5": {
     "TextId": "NAME_GEN_ENERGY18",
     "Category": "GenerateElectricity",
+    "CategoryIconKey": "category-GenerateElectricity",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "GenerateEnergy3_4",
     "EffectType": "AttackRateBaseCampWorker",
@@ -2913,7 +3107,9 @@
   "Deforest1": {
     "TextId": "NAME_DEFOREST1",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -2940,7 +3136,9 @@
   "Deforest1_2": {
     "TextId": "NAME_DEFOREST2",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Deforest1",
     "EffectType": "CraftSpeed",
@@ -2967,7 +3165,9 @@
   "Deforest4": {
     "TextId": "NAME_DEFOREST16",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Deforest1_2",
     "EffectType": "no",
@@ -2994,7 +3194,9 @@
   "Deforest1_3": {
     "TextId": "NAME_DEFOREST3",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Deforest4",
     "EffectType": "CraftSpeed",
@@ -3025,7 +3227,9 @@
   "Deforest1_4": {
     "TextId": "NAME_DEFOREST4",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Deforest1_3",
     "EffectType": "CraftSpeed",
@@ -3056,7 +3260,9 @@
   "Deforest1_5": {
     "TextId": "NAME_DEFOREST5",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Deforest1_4",
     "EffectType": "CraftSpeed",
@@ -3087,7 +3293,9 @@
   "Deforest2": {
     "TextId": "NAME_DEFOREST6",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionTimeCostRate",
+    "IconKey": "effect-ExpeditionTimeCostRate",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Deforest1",
     "EffectType": "ExpeditionTimeCostRate",
@@ -3114,7 +3322,9 @@
   "Deforest2_2": {
     "TextId": "NAME_DEFOREST7",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionRewardRate",
+    "IconKey": "effect-ExpeditionRewardRate",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Deforest2",
     "EffectType": "ExpeditionRewardRate",
@@ -3145,7 +3355,9 @@
   "Deforest2_3": {
     "TextId": "NAME_DEFOREST8",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionTimeCostRate",
+    "IconKey": "effect-ExpeditionTimeCostRate",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Deforest2",
     "EffectType": "ExpeditionTimeCostRate",
@@ -3176,7 +3388,9 @@
   "Deforest2_4": {
     "TextId": "NAME_DEFOREST9",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionRewardRate",
+    "IconKey": "effect-ExpeditionRewardRate",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Deforest2_2",
     "EffectType": "ExpeditionRewardRate",
@@ -3207,7 +3421,9 @@
   "Deforest2_5": {
     "TextId": "NAME_DEFOREST10",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionTimeCostRate",
+    "IconKey": "effect-ExpeditionTimeCostRate",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Deforest2_3",
     "EffectType": "ExpeditionTimeCostRate",
@@ -3238,7 +3454,9 @@
   "Deforest2_6": {
     "TextId": "NAME_DEFOREST11",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "ExpeditionRewardRate",
+    "IconKey": "effect-ExpeditionRewardRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Deforest2_4",
     "EffectType": "ExpeditionRewardRate",
@@ -3269,7 +3487,9 @@
   "Deforest3": {
     "TextId": "NAME_DEFOREST12",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Deforest1",
     "EffectType": "LabResearchSpeed",
@@ -3296,7 +3516,9 @@
   "Deforest3_2": {
     "TextId": "NAME_DEFOREST13",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Deforest3",
     "EffectType": "LabResearchSpeed",
@@ -3327,7 +3549,9 @@
   "Deforest3_3": {
     "TextId": "NAME_DEFOREST14",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Deforest3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -3358,7 +3582,9 @@
   "Deforest3_4": {
     "TextId": "NAME_DEFOREST15",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Deforest3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -3389,7 +3615,9 @@
   "Deforest1_6": {
     "TextId": "NAME_DEFOREST17",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "CraftSpeed_Deforest",
+    "IconKey": "effect-CraftSpeed_Deforest",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Deforest1_5",
     "EffectType": "CraftSpeed",
@@ -3420,7 +3648,9 @@
   "Deforest3_5": {
     "TextId": "NAME_DEFOREST18",
     "Category": "Deforest",
+    "CategoryIconKey": "category-Deforest",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Deforest3_4",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -3451,7 +3681,9 @@
   "Mining1": {
     "TextId": "NAME_MINING1",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -3474,7 +3706,9 @@
   "Mining1_2": {
     "TextId": "NAME_MINING2",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Mining1",
     "EffectType": "CraftSpeed",
@@ -3505,7 +3739,9 @@
   "Mining5": {
     "TextId": "NAME_MINING17",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Mining1_2",
     "EffectType": "no",
@@ -3536,7 +3772,9 @@
   "Mining1_3": {
     "TextId": "NAME_MINING3",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Mining5",
     "EffectType": "CraftSpeed",
@@ -3567,7 +3805,9 @@
   "Mining1_4": {
     "TextId": "NAME_MINING4",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Mining1_3",
     "EffectType": "CraftSpeed",
@@ -3598,7 +3838,9 @@
   "Mining1_5": {
     "TextId": "NAME_MINING5",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Mining1_4",
     "EffectType": "CraftSpeed",
@@ -3629,7 +3871,9 @@
   "Mining2": {
     "TextId": "NAME_MINING6",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "ExpeditionTimeCostRate",
+    "IconKey": "effect-ExpeditionTimeCostRate",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Mining1",
     "EffectType": "ExpeditionTimeCostRate",
@@ -3660,7 +3904,9 @@
   "Mining2_2": {
     "TextId": "NAME_MINING7",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "ExpeditionRewardRate",
+    "IconKey": "effect-ExpeditionRewardRate",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Mining2",
     "EffectType": "ExpeditionRewardRate",
@@ -3691,7 +3937,9 @@
   "Mining2_3": {
     "TextId": "NAME_MINING8",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "ExpeditionTimeCostRate",
+    "IconKey": "effect-ExpeditionTimeCostRate",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Mining2_2",
     "EffectType": "ExpeditionTimeCostRate",
@@ -3722,7 +3970,9 @@
   "Mining2_4": {
     "TextId": "NAME_MINING9",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "ExpeditionRewardRate",
+    "IconKey": "effect-ExpeditionRewardRate",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Mining2_3",
     "EffectType": "ExpeditionRewardRate",
@@ -3753,7 +4003,9 @@
   "Mining3": {
     "TextId": "NAME_MINING10",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Mining1",
     "EffectType": "LabResearchSpeed",
@@ -3780,7 +4032,9 @@
   "Mining3_2": {
     "TextId": "NAME_MINING11",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Mining3",
     "EffectType": "LabResearchSpeed",
@@ -3811,7 +4065,9 @@
   "Mining3_3": {
     "TextId": "NAME_MINING12",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Mining3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -3842,7 +4098,9 @@
   "Mining3_4": {
     "TextId": "NAME_MINING13",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Mining3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -3873,7 +4131,9 @@
   "Mining4": {
     "TextId": "NAME_MINING14",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "OilExtractionSpeedRate",
+    "IconKey": "effect-OilExtractionSpeedRate",
     "RequiredWorkAmount": 750000,
     "RequiredResearchId": "Mining1_3",
     "EffectType": "OilExtractionSpeedRate",
@@ -3904,7 +4164,9 @@
   "Mining4_2": {
     "TextId": "NAME_MINING15",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "OilExtractionSpeedRate",
+    "IconKey": "effect-OilExtractionSpeedRate",
     "RequiredWorkAmount": 1000000,
     "RequiredResearchId": "Mining4",
     "EffectType": "OilExtractionSpeedRate",
@@ -3935,7 +4197,9 @@
   "Mining4_3": {
     "TextId": "NAME_MINING16",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "OilExtractionSpeedRate",
+    "IconKey": "effect-OilExtractionSpeedRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Mining4_2",
     "EffectType": "OilExtractionSpeedRate",
@@ -3966,7 +4230,9 @@
   "Mining1_6": {
     "TextId": "NAME_MINING18",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "CraftSpeed_Mining",
+    "IconKey": "effect-CraftSpeed_Mining",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Mining1_5",
     "EffectType": "CraftSpeed",
@@ -3997,7 +4263,9 @@
   "Mining3_5": {
     "TextId": "NAME_MINING19",
     "Category": "Mining",
+    "CategoryIconKey": "category-Mining",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 3000000,
     "RequiredResearchId": "Mining3_4",
     "EffectType": "AttackRateBaseCampWorker",
@@ -4028,7 +4296,9 @@
   "Cool1": {
     "TextId": "NAME_COOL1",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "ItemCorruptionSpeedRate",
+    "IconKey": "effect-ItemCorruptionSpeedRate",
     "RequiredWorkAmount": 5000,
     "RequiredResearchId": null,
     "EffectType": "ItemCorruptionSpeedRate",
@@ -4051,7 +4321,9 @@
   "Cool1_2": {
     "TextId": "NAME_COOL2",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "CraftSpeed_Cool",
+    "IconKey": "effect-CraftSpeed_Cool",
     "RequiredWorkAmount": 15000,
     "RequiredResearchId": "Cool1",
     "EffectType": "CraftSpeed",
@@ -4078,7 +4350,9 @@
   "Cool5": {
     "TextId": "NAME_COOL17",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 15000,
     "RequiredResearchId": "Cool1_2",
     "EffectType": "no",
@@ -4105,7 +4379,9 @@
   "Cool1_3": {
     "TextId": "NAME_COOL3",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "CraftSpeed_Cool",
+    "IconKey": "effect-CraftSpeed_Cool",
     "RequiredWorkAmount": 30000,
     "RequiredResearchId": "Cool5",
     "EffectType": "CraftSpeed",
@@ -4136,7 +4412,9 @@
   "Cool1_4": {
     "TextId": "NAME_COOL4",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "CraftSpeed_Cool",
+    "IconKey": "effect-CraftSpeed_Cool",
     "RequiredWorkAmount": 75000,
     "RequiredResearchId": "Cool1_3",
     "EffectType": "CraftSpeed",
@@ -4167,7 +4445,9 @@
   "Cool1_5": {
     "TextId": "NAME_COOL5",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "CraftSpeed_Cool",
+    "IconKey": "effect-CraftSpeed_Cool",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Cool1_4",
     "EffectType": "CraftSpeed",
@@ -4198,7 +4478,9 @@
   "Cool2": {
     "TextId": "NAME_COOL6",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 15000,
     "RequiredResearchId": "Cool1",
     "EffectType": "PalEggHatchingSpeed",
@@ -4229,7 +4511,9 @@
   "Cool2_2": {
     "TextId": "NAME_COOL7",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 30000,
     "RequiredResearchId": "Cool2",
     "EffectType": "PalEggHatchingSpeed",
@@ -4260,7 +4544,9 @@
   "Cool2_3": {
     "TextId": "NAME_COOL8",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 75000,
     "RequiredResearchId": "Cool2_2",
     "EffectType": "PalEggHatchingSpeed",
@@ -4291,7 +4577,9 @@
   "Cool2_4": {
     "TextId": "NAME_COOL9",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "PalEggHatchingSpeed",
+    "IconKey": "effect-PalEggHatchingSpeed",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Cool2_3",
     "EffectType": "PalEggHatchingSpeed",
@@ -4322,7 +4610,9 @@
   "Cool3": {
     "TextId": "NAME_COOL10",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 15000,
     "RequiredResearchId": "Cool1",
     "EffectType": "LabResearchSpeed",
@@ -4349,7 +4639,9 @@
   "Cool3_2": {
     "TextId": "NAME_COOL11",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "LabResearchSpeed",
+    "IconKey": "effect-LabResearchSpeed",
     "RequiredWorkAmount": 30000,
     "RequiredResearchId": "Cool3",
     "EffectType": "LabResearchSpeed",
@@ -4380,7 +4672,9 @@
   "Cool3_3": {
     "TextId": "NAME_COOL12",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 100000,
     "RequiredResearchId": "Cool3_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -4411,7 +4705,9 @@
   "Cool3_4": {
     "TextId": "NAME_COOL13",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 150000,
     "RequiredResearchId": "Cool3_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -4442,7 +4738,9 @@
   "Cool4": {
     "TextId": "NAME_COOL14",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "ItemCorruptionSpeedRate",
+    "IconKey": "effect-ItemCorruptionSpeedRate",
     "RequiredWorkAmount": 15000,
     "RequiredResearchId": "Cool1_2",
     "EffectType": "ItemCorruptionSpeedRate",
@@ -4469,7 +4767,9 @@
   "Cool4_2": {
     "TextId": "NAME_COOL15",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "ItemCorruptionSpeedRate",
+    "IconKey": "effect-ItemCorruptionSpeedRate",
     "RequiredWorkAmount": 30000,
     "RequiredResearchId": "Cool4",
     "EffectType": "ItemCorruptionSpeedRate",
@@ -4500,7 +4800,9 @@
   "Cool4_3": {
     "TextId": "NAME_COOL16",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "ItemCorruptionSpeedRate",
+    "IconKey": "effect-ItemCorruptionSpeedRate",
     "RequiredWorkAmount": 75000,
     "RequiredResearchId": "Cool4_2",
     "EffectType": "ItemCorruptionSpeedRate",
@@ -4531,7 +4833,9 @@
   "Cool1_6": {
     "TextId": "NAME_COOL18",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "CraftSpeed_Cool",
+    "IconKey": "effect-CraftSpeed_Cool",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Cool1_5",
     "EffectType": "CraftSpeed",
@@ -4562,7 +4866,9 @@
   "Cool3_5": {
     "TextId": "NAME_COOL19",
     "Category": "Cool",
+    "CategoryIconKey": "category-Cool",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 300000,
     "RequiredResearchId": "Cool3_4",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -4593,7 +4899,9 @@
   "Medicine1": {
     "TextId": "NAME_MEDICINE1",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 50000,
     "RequiredResearchId": null,
     "EffectType": "CraftSpeed",
@@ -4620,7 +4928,9 @@
   "Medicine1_2": {
     "TextId": "NAME_MEDICINE2",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Medicine1",
     "EffectType": "CraftSpeed",
@@ -4647,7 +4957,9 @@
   "Medicine4": {
     "TextId": "NAME_MEDICINE13",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "TechnologyUnlock",
+    "IconKey": "effect-TechnologyUnlock",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Medicine1_2",
     "EffectType": "no",
@@ -4674,7 +4986,9 @@
   "Medicine1_3": {
     "TextId": "NAME_MEDICINE3",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Medicine4",
     "EffectType": "CraftSpeed",
@@ -4705,7 +5019,9 @@
   "Medicine1_4": {
     "TextId": "NAME_MEDICINE4",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Medicine1_3",
     "EffectType": "CraftSpeed",
@@ -4736,7 +5052,9 @@
   "Medicine1_5": {
     "TextId": "NAME_MEDICINE5",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Medicine1_4",
     "EffectType": "CraftSpeed",
@@ -4767,7 +5085,9 @@
   "Medicine2": {
     "TextId": "NAME_MEDICINE6",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 200000,
     "RequiredResearchId": "Medicine1",
     "EffectType": "LabResearchSpeed",
@@ -4794,7 +5114,9 @@
   "Medicine2_2": {
     "TextId": "NAME_MEDICINE7",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Medicine2",
     "EffectType": "LabResearchSpeed",
@@ -4825,7 +5147,9 @@
   "Medicine2_3": {
     "TextId": "NAME_MEDICINE8",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "DefenseRateBaseCampWorker",
+    "IconKey": "effect-DefenseRateBaseCampWorker",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Medicine2_2",
     "EffectType": "DefenseRateBaseCampWorker",
@@ -4856,7 +5180,9 @@
   "Medicine2_4": {
     "TextId": "NAME_MEDICINE9",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Medicine2_3",
     "EffectType": "AttackRateBaseCampWorker",
@@ -4887,7 +5213,9 @@
   "Medicine3": {
     "TextId": "NAME_MEDICINE10",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 500000,
     "RequiredResearchId": "Medicine1_2",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -4918,7 +5246,9 @@
   "Medicine3_2": {
     "TextId": "NAME_MEDICINE11",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 1500000,
     "RequiredResearchId": "Medicine3",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -4949,7 +5279,9 @@
   "Medicine3_3": {
     "TextId": "NAME_MEDICINE12",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "ProductItemConsumeMaterialNumRate",
+    "IconKey": "effect-ProductItemConsumeMaterialNumRate",
     "RequiredWorkAmount": 5000000,
     "RequiredResearchId": "Medicine3_2",
     "EffectType": "ProductItemConsumeMaterialNumRate",
@@ -4980,7 +5312,9 @@
   "Medicine1_6": {
     "TextId": "NAME_MEDICINE14",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "CraftSpeed_ProductMedicine",
+    "IconKey": "effect-CraftSpeed_ProductMedicine",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "Medicine1_5",
     "EffectType": "CraftSpeed",
@@ -5011,7 +5345,9 @@
   "Medicine2_5": {
     "TextId": "NAME_MEDICINE15",
     "Category": "ProductMedicine",
+    "CategoryIconKey": "category-ProductMedicine",
     "SubCategory": "AttackRateBaseCampWorker",
+    "IconKey": "effect-AttackRateBaseCampWorker",
     "RequiredWorkAmount": 10000000,
     "RequiredResearchId": "Medicine2_4",
     "EffectType": "AttackRateBaseCampWorker",

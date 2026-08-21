@@ -92,6 +92,7 @@ class GuildLabData:
         return {
             "ResearchId": research_id,
             "TextId": definition["TextId"],
+            "IconKey": definition["IconKey"],
             "Level": self._levels[research_id],
             "WorkAmount": amount,
             "RequiredWorkAmount": required,
@@ -148,6 +149,7 @@ class GuildLabData:
                 categories.append(
                     {
                         "Category": category,
+                        "IconKey": f"category-{category}",
                         "Completed": sum(row["Completed"] for row in research),
                         "Total": len(research),
                         "Research": research,

@@ -23,7 +23,9 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
     <aside v-if="!palsCollapsed" class="editor-roster editor-roster--pals">
       <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG" @toggle="emit('collapsePals')" />
     </aside>
-    <main class="editor-canvas">
+    <main class="editor-canvas" :class="{
+      'editor-canvas--basecamp': palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID,
+    }">
       <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG" />
       <BaseCampEditor v-else-if="palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID" />
       <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA" />
@@ -96,6 +98,10 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 .editor-canvas {
   position: relative;
   overflow: auto;
+}
+
+.editor-canvas--basecamp {
+  overflow: hidden;
 }
 
 @keyframes roster-rail-enter {
