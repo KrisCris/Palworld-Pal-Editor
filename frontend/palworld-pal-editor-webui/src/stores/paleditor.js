@@ -1112,17 +1112,33 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             // if on pal editor panel, refresh all translated texts (except for hardcoded ui)
             if (SAVE_LOADED_FLAG.value) {
-                const rosterRefreshes = Array.from(
-                    PLAYER_MAP.value.keys(),
-                    playerUId => fetchPlayerPal(playerUId),
-                );
-                rosterRefreshes.push(fetchPlayerPal(PAL_BASE_WORKER_BTN.value));
-                if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")) {
-                    rosterRefreshes.push(fetchPlayerPal(PAL_GLOBAL_STORAGE_BTN.value));
+                // Only the roster currently being viewed is refreshed eagerly. The
+                // cached pal lists of every other roster are invalidated instead, so
+                // they are re-fetched in the new language the next time they are
+                // shown (selectPlayer already loads a roster when its list is empty).
+                const activeRoster = GET_PAL_OWNER_API_ID();
+                const rosterRefreshes = [];
+                if (activeRoster) {
+                    rosterRefreshes.push(fetchPlayerPal(activeRoster));
+                }
+                for (const playerUId of PLAYER_MAP.value.keys()) {
+                    if (playerUId !== activeRoster) {
+                        PLAYER_MAP.value.get(playerUId).pals.clear();
+                    }
+                }
+                if (PAL_BASE_WORKER_BTN.value !== activeRoster) {
+                    BASE_PAL_MAP.value.clear();
+                }
+                if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")
+                    && PAL_GLOBAL_STORAGE_BTN.value !== activeRoster) {
+                    GLOBAL_PAL_MAP.value.clear();
                 }
                 const rosterResults = await Promise.all(rosterRefreshes);
                 refreshSucceeded = rosterResults.every(Boolean);
                 if (refreshSucceeded) refreshSucceeded = await fetchStaticData();
+                if (refreshSucceeded && BASE_CAMP_RESEARCH.value.Guilds?.length) {
+                    refreshSucceeded = await fetchBaseCampResearch();
+                }
             }
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");

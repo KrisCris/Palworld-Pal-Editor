@@ -652,7 +652,7 @@ test("fetch_config publishes backend locales and switches to the translated loca
     assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
 });
 
-test("language changes refresh translated Global Palbox Pal summaries before completing", async () => {
+test("language changes refresh only the active roster and re-fetch others lazily", async () => {
     const store = newStore();
     store.IS_LOCKED = false;
     store.SAVE_LOADED_FLAG = true;
@@ -660,6 +660,7 @@ test("language changes refresh translated Global Palbox Pal summaries before com
         ["player-1", { InstanceId: "player-1", pals: new Map() }],
     ]);
     store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+    store.SELECTED_PLAYER_ID = "player-1";
 
     const requestedRosters = [];
     axios.patch = async url => {
@@ -683,20 +684,25 @@ test("language changes refresh translated Global Palbox Pal summaries before com
     };
 
     assert.equal(await store.updateI18n(), true);
-    assert.deepEqual(requestedRosters, [
-        "player-1",
-        store.PAL_BASE_WORKER_BTN,
-        store.PAL_GLOBAL_STORAGE_BTN,
-    ]);
+    // Only the roster currently being viewed is refreshed eagerly; the other
+    // rosters' pal caches are invalidated instead of being fetched all at once.
+    assert.deepEqual(requestedRosters, ["player-1"]);
+
+    // A different roster re-fetches in the new language once it is selected.
     await store.selectPlayer(store.PAL_GLOBAL_STORAGE_BTN, true);
+    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
     assert.equal(store.PAL_MAP.get("gps:0").DisplayName, "Translated GPS Pal");
 });
 
-test("language changes fail when a required roster cannot be refreshed", async () => {
+test("language changes fail when the active roster cannot be refreshed", async () => {
     const store = newStore();
     store.IS_LOCKED = false;
     store.SAVE_LOADED_FLAG = true;
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
     store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+    store.SELECTED_PLAYER_ID = store.PAL_GLOBAL_STORAGE_BTN;
 
     let staticRequests = 0;
     axios.patch = async () => reply(null);
