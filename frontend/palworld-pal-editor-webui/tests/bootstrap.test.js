@@ -814,3 +814,24 @@ test("successful saves use a nonblocking success message", async () => {
     assert.equal(store.CURRENT_MESSAGE.severity, "success");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
 });
+
+test("deleting the last Pal falls through to the player editor instead of a blank canvas", async () => {
+    const store = newStore();
+    const player = { InstanceId: "player-1", NickName: "Player One", pals: new Map() };
+    store.PLAYER_MAP = new Map([["player-1", player]]);
+    store.ACTIVE_ROSTER = "player-1";
+    const pal = { RecordKey: "pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" };
+    player.pals.set("pal-1", pal);
+    store.PAL_MAP = player.pals;
+    store.SELECTED_PAL_ID = "pal-1";
+    store.SELECTED_PAL_DATA = pal;
+
+    axios.delete = async () => reply(null);
+
+    await store.delPal();
+
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SELECTED_PLAYER_ID, "player-1");
+    assert.equal(store.SELECTED_PLAYER_DATA.InstanceId, "player-1");
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
+});

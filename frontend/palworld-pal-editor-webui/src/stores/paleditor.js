@@ -1965,7 +1965,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // SELECTED_PAL_EL = null;
             SELECTED_PAL_DATA.value = null;
             // ADD_PAL_RESELECT_CTR.value++;
-            if (nextNode) {
+            // getNextElement can wrap back onto the pal that was just deleted
+            // (e.g. when it was the only one in the roster), so only reselect it
+            // if the candidate still exists; otherwise fall through to the player
+            // editor / base camp canvas.
+            if (nextNode && PAL_MAP.value.has(nextNode.key)) {
                 SELECTED_PAL_ID.value = nextNode.key;
             }
         } else if (response.status == 2) {
