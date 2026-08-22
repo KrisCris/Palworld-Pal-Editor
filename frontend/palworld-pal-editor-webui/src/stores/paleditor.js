@@ -554,8 +554,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SAVE_LOADED_FLAG = ref(false);
     const HAS_WORKING_PAL_FLAG = ref(false);
     const PREFER_BASE_PAL_LIST = ref(false);
-    const BASE_PAL_BTN_CLK_FLAG = ref(false);
-    const SHOW_PLAYER_EDIT_FLAG = ref(false);
+    const BASE_PAL_BTN_CLK_FLAG = computed(() => ACTIVE_ROSTER.value === PAL_BASE_WORKER_BTN.value);
+    const SHOW_PLAYER_EDIT_FLAG = computed(() => (
+        SELECTED_PLAYER_ID.value !== null && SELECTED_PAL_ID.value === null
+    ));
     // const ADD_PAL_RESELECT_CTR = ref(0);
     // const DEL_PAL_RESELECT_CTR = ref(0)
     const UPDATE_PAL_RESELECT_CTR = ref(0);
@@ -602,11 +604,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // display data
     const SELECTED_PAL_DATA = ref(new Map());
-    const SELECTED_PLAYER_DATA = ref(new Map());
     const PAL_MAP = ref(new Map());
 
-    // selected id
-    const SELECTED_PLAYER_ID = ref(null);
+    // Single source of truth for the active roster: a real player's InstanceId, or
+    // the PAL_BASE_WORKER_BTN / PAL_GLOBAL_STORAGE_BTN sentinel for the special
+    // pseudo-rosters (base camp / global palbox). Every other "selected" state is
+    // derived from this one ref.
+    const ACTIVE_ROSTER = ref(null);
+    const SELECTED_PLAYER_ID = computed(() => {
+        const roster = ACTIVE_ROSTER.value;
+        return (roster == null
+            || roster === PAL_BASE_WORKER_BTN.value
+            || roster === PAL_GLOBAL_STORAGE_BTN.value)
+            ? null
+            : roster;
+    });
+    const SELECTED_PLAYER_DATA = computed(() => (
+        SELECTED_PLAYER_ID.value == null
+            ? null
+            : PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value)
+    ));
     const SELECTED_PAL_ID = ref(null);
 
     // TODO Get rid of this...
@@ -1240,9 +1257,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         HAS_WORKING_PAL_FLAG.value = false;
         PREFER_BASE_PAL_LIST.value = false;
         SAVE_LOADED_FLAG.value = false;
-        BASE_PAL_BTN_CLK_FLAG.value = false;
+        ACTIVE_ROSTER.value = null;
         SELECTED_PAL_ID.value = null;
-        SELECTED_PLAYER_ID.value = null;
         PLAYER_INVENTORY.value = null;
 
         BASE_PAL_MAP.value = new Map();
@@ -1264,7 +1280,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         EDITED_PAL_IDS.value.clear();
         CREATED_PAL_IDS.value.clear();
         SHOW_UNREF_PAL_FLAG.value = false;
-        SHOW_PLAYER_EDIT_FLAG.value = false;
 
         // display data
         SELECTED_PAL_DATA.value = new Map();
@@ -1668,13 +1683,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
 
-        // clear selected playerId
-        SELECTED_PLAYER_ID.value = null;
-        SELECTED_PLAYER_DATA.value = null;
-        BASE_PAL_BTN_CLK_FLAG.value = false;
-        SHOW_PLAYER_EDIT_FLAG.value = false;
-
-        // clear pal selection
+        // clear current roster + pal selection
+        ACTIVE_ROSTER.value = null;
         SELECTED_PAL_ID.value = null;
         SELECTED_PAL_DATA.value = null;
 
@@ -1698,20 +1708,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 ? GLOBAL_PAL_MAP.value
                 : PLAYER_MAP.value.get(playerUId).pals;
 
-        // properly setup selected player flag
+        // single source of truth for the active roster; SELECTED_PLAYER_ID /
+        // SELECTED_PLAYER_DATA / BASE_PAL_BTN_CLK_FLAG / SHOW_PLAYER_EDIT_FLAG
+        // are all derived from ACTIVE_ROSTER.
+        ACTIVE_ROSTER.value = playerUId;
         if (playerUId == PAL_BASE_WORKER_BTN.value) {
-            BASE_PAL_BTN_CLK_FLAG.value = true;
             await fetchBaseCampResearch();
-        } else if (playerUId == PAL_GLOBAL_STORAGE_BTN.value) {
-            SELECTED_PLAYER_ID.value = playerUId;
-            SHOW_PLAYER_EDIT_FLAG.value = false;
-        } else {
-            SELECTED_PLAYER_ID.value = playerUId;
-            if (!manual) {
-                await fetchPlayerData(playerUId);
-            }
-            SHOW_PLAYER_EDIT_FLAG.value = true;
-            SELECTED_PLAYER_DATA.value = PLAYER_MAP.value.get(playerUId);
+        } else if (playerUId != PAL_GLOBAL_STORAGE_BTN.value && !manual) {
+            await fetchPlayerData(playerUId);
         }
 
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -1777,7 +1781,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             // Update selected pal id and pal data only after the full payload arrives.
             SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
             SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.RecordKey;
-            SHOW_PLAYER_EDIT_FLAG.value = false;
 
             // Scroll to selected pal
             // if (!isElementInViewport(SELECTED_PAL_EL)) {
@@ -1842,12 +1845,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function GET_PAL_OWNER_API_ID() {
-        if (SELECTED_PLAYER_ID.value == PAL_GLOBAL_STORAGE_BTN.value) {
-            return PAL_GLOBAL_STORAGE_BTN.value;
-        }
-        return BASE_PAL_BTN_CLK_FLAG.value
-            ? PAL_BASE_WORKER_BTN.value
-            : SELECTED_PLAYER_ID.value;
+        return ACTIVE_ROSTER.value;
     }
 
     async function dumpPalData() {
@@ -2117,7 +2115,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 ? PAL_GLOBAL_STORAGE_BTN.value
                 : target?.OwnerPlayerUId || SELECTED_PLAYER_ID.value;
             if (ownerList) await selectPlayer(ownerList, true);
-            SHOW_PLAYER_EDIT_FLAG.value = false;
             SELECTED_PAL_ID.value = pal_data.RecordKey;
             await selectPal(pal_data.RecordKey, true);
             if (!no_set_loading_flag) LOADING_FLAG.value = false;
@@ -2345,6 +2342,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SPECIAL_ROSTERS,
         PLAYER_MAP,
         PAL_MAP,
+        ACTIVE_ROSTER,
         SELECTED_PLAYER_ID,
         SELECTED_PLAYER_DATA,
         SELECTED_PAL_ID,

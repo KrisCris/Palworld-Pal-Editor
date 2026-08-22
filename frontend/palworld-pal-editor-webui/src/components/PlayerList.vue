@@ -26,8 +26,8 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
     <div class="roster-list overlay-scroll-area__viewport">
       <button v-if="globalRoster()" class="roster-row roster-row--global"
         @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
-        :aria-current="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
-        :disabled="palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
+        :aria-current="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
+        :disabled="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
         <span class="player-avatar">GPS</span>
         <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>

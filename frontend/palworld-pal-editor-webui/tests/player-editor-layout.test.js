@@ -91,7 +91,7 @@ test("technology lanes render a stable non-mutating partition", async () => {
     const pinia = createPinia();
     setActivePinia(pinia);
     const store = usePalEditorStore();
-    store.SELECTED_PLAYER_DATA = {
+    store.PLAYER_MAP = new Map([["player-1", {
         NickName: "Tester",
         Level: 1,
         Exp: 0,
@@ -110,7 +110,8 @@ test("technology lanes render a stable non-mutating partition", async () => {
         setStatusPoint: () => {},
         UnlockedRecipeTechnologyNames: [],
         toggleTech: () => {},
-    };
+    }]]);
+    store.ACTIVE_ROSTER = "player-1";
     const items = [
         { InternalName: "NormalOne", IconAccessKey: "n1", I18n: { Name: "Normal One", Type: "Normal" }, BossTechnology: false },
         { InternalName: "AncientOne", IconAccessKey: "a1", I18n: { Name: "Ancient One", Type: "Ancient" }, BossTechnology: true },

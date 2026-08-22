@@ -26,11 +26,12 @@ const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
 const attemptedAutoSelectRoster = ref(null)
-const activeSpecialRoster = computed(() => palStore.BASE_PAL_BTN_CLK_FLAG
-  ? palStore.PAL_BASE_WORKER_BTN
-  : palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN
-  ? palStore.PAL_GLOBAL_STORAGE_BTN
-  : null)
+const activeSpecialRoster = computed(() => {
+  const roster = palStore.ACTIVE_ROSTER
+  return (roster === palStore.PAL_BASE_WORKER_BTN || roster === palStore.PAL_GLOBAL_STORAGE_BTN)
+    ? roster
+    : null
+})
 const activePalFilterCount = computed(() => palStore.PAL_LIST_ATTRIBUTE_FILTERS.length
   + Number(palStore.PAL_LIST_EDITED_ONLY)
   + Number(palStore.PAL_LIST_CREATED_ONLY))

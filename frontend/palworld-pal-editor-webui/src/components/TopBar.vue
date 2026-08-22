@@ -48,7 +48,15 @@ const save = async () => {
 
 const playerCount = computed(() => palStore.PLAYER_MAP.size + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
 const palCount = computed(() => palStore.PAL_MAP.size)
-const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG)
+const hasPalRoster = computed(() => palStore.ACTIVE_ROSTER)
+// A pal requires "heal" exactly like the per-pal action in PalEditor: HasWorkerSick.
+const hasPalToHeal = computed(() => {
+  const palMaps = [palStore.PAL_MAP]
+  for (const player of palStore.PLAYER_MAP.values()) {
+    if (player.pals) palMaps.push(player.pals)
+  }
+  return palMaps.some(map => Array.from(map.values()).some(pal => pal.HasWorkerSick))
+})
 </script>
 
 <template>
@@ -124,7 +132,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
         </aside>
       </div>
       <div class="editor-context-actions">
-        <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
+        <button v-if="hasPalToHeal" class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
           :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
           <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
           {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}

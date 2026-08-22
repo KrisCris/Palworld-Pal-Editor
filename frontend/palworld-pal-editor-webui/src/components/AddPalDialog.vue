@@ -30,16 +30,19 @@ let previewFrame = 0
 
 const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
   .find(template => template.Id === templateId.value))
-const targetContainers = computed(() => palStore.PAL_CONTAINERS.filter(container => (
-  (palStore.SELECTED_PLAYER_ID === palStore.PAL_GLOBAL_STORAGE_BTN
-    ? container.StorageKind === 'global_palbox'
-    : palStore.BASE_PAL_BTN_CLK_FLAG
-      ? container.ContainerKind === 'base'
-      : (container.OwnerPlayerUId === palStore.SELECTED_PLAYER_ID
-        && ['party', 'storage'].includes(container.ContainerKind))
-        || (container.StorageKind === 'dps'
-          && container.StorageOwnerPlayerUid === palStore.SELECTED_PLAYER_ID))
-)))
+const targetContainers = computed(() => {
+  const roster = palStore.ACTIVE_ROSTER
+  return palStore.PAL_CONTAINERS.filter(container => (
+    roster === palStore.PAL_GLOBAL_STORAGE_BTN
+      ? container.StorageKind === 'global_palbox'
+      : roster === palStore.PAL_BASE_WORKER_BTN
+        ? container.ContainerKind === 'base'
+        : (container.OwnerPlayerUId === roster
+          && ['party', 'storage'].includes(container.ContainerKind))
+          || (container.StorageKind === 'dps'
+            && container.StorageOwnerPlayerUid === roster)
+  ))
+})
 const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
   || (mode.value === 'json' && palJson.value.trim())))

@@ -21,7 +21,7 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
       <PlayerList @toggle="emit('collapsePlayers')" />
     </aside>
     <aside v-if="!palsCollapsed" class="editor-roster editor-roster--pals">
-      <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG" @toggle="emit('collapsePals')" />
+      <PalList v-if="palStore.ACTIVE_ROSTER" @toggle="emit('collapsePals')" />
     </aside>
     <main class="editor-canvas" :class="{
       'editor-canvas--basecamp': palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID,

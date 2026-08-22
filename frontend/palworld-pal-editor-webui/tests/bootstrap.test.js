@@ -660,7 +660,7 @@ test("language changes refresh only the active roster and re-fetch others lazily
         ["player-1", { InstanceId: "player-1", pals: new Map() }],
     ]);
     store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
-    store.SELECTED_PLAYER_ID = "player-1";
+    store.ACTIVE_ROSTER = "player-1";
 
     const requestedRosters = [];
     axios.patch = async url => {
@@ -702,7 +702,7 @@ test("language changes fail when the active roster cannot be refreshed", async (
         ["player-1", { InstanceId: "player-1", pals: new Map() }],
     ]);
     store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
-    store.SELECTED_PLAYER_ID = store.PAL_GLOBAL_STORAGE_BTN;
+    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
 
     let staticRequests = 0;
     axios.patch = async () => reply(null);
