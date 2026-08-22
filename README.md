@@ -25,6 +25,8 @@
 
 ![Palworld Pal Editor](.github/assets/readme-pal-editor-en.webp)
 
+<a href="https://star-history.dera.page/#KrisCris/Palworld-Pal-Editor&type=Date"><img width="720" alt="Star History Chart" src="https://star-history.dera.page/svg?repos=KrisCris/Palworld-Pal-Editor&type=Date"></a>&nbsp;
+
 > [!CAUTION]
 > Back up your save before editing it. The editor creates backups, but you should keep your own copy as well.
 
