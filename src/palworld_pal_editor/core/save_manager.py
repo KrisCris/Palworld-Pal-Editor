@@ -1839,10 +1839,17 @@ class SaveManager:
         if world_record is None and not guid.startswith(("dps:", "gps:")):
             world_record = self.get_record(f"world:{guid}")
         popped_pal = None
-        if guid in self.baseworker_mapping:
-            popped_pal = self.baseworker_mapping.pop(guid)
-        elif guid in self._dangling_pals:
-            popped_pal = self._dangling_pals.pop(guid)
+        # baseworker/dangling pals are addressed by their "world:<InstanceId>"
+        # RecordKey but stored in maps keyed by the bare InstanceId, so strip the
+        # prefix before looking them up; player pals are handled by pop_pal below.
+        lookup_key = guid
+        prefix = "world:"
+        if lookup_key.startswith(prefix) and not guid.startswith(("dps:", "gps:")):
+            lookup_key = lookup_key[len(prefix):]
+        if lookup_key in self.baseworker_mapping:
+            popped_pal = self.baseworker_mapping.pop(lookup_key)
+        elif lookup_key in self._dangling_pals:
+            popped_pal = self._dangling_pals.pop(lookup_key)
         else:
             for player in self.get_players():
                 if popped_pal := player.pop_pal(guid):
