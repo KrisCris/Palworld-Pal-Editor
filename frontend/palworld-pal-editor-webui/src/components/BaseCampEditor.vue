@@ -116,24 +116,10 @@ const allCompleted = computed(() => categories.value.length > 0 && categories.va
 ))
 
 const translated = key => palStore.getTranslatedText(key)
-const categoryName = category => translated(`BaseCamp_Research_Category_${category}`)
 const categoryIcon = category => palStore.backendAssetUrl(`/image/lab/category-${category}`)
 const researchIcon = research => palStore.backendAssetUrl(`/image/lab/${research.IconKey}`)
-const effectName = effect => translated(`BaseCamp_Research_Effect_${effect}`)
-const itemTypeName = itemType => translated(`BaseCamp_Research_Item_${itemType}`)
 const formatNumber = value => new Intl.NumberFormat().format(value ?? 0)
-const signedValue = value => `${Number(value) > 0 ? '+' : ''}${Number(value)}%`
 const materialName = material => palStore.ITEM_STATIC_DATA[material.ItemId]?.Name ?? material.ItemId
-const researchEffect = research => {
-  if (!research) return ''
-  const option = research.EffectWorkSuitability !== 'None'
-    ? categoryName(research.EffectWorkSuitability)
-    : research.EffectItemType !== 'None'
-      ? itemTypeName(research.EffectItemType)
-      : ''
-  const value = research.EffectType === 'no' ? '' : signedValue(research.EffectValue)
-  return [effectName(research.EffectType), option, value].filter(Boolean).join(' · ')
-}
 
 const updateResearchScale = async () => {
   await nextTick()
@@ -250,7 +236,7 @@ onBeforeUnmount(() => {
               class="category-button" :class="{ 'category-button--active': category.Category === selectedCategory?.Category }"
               @click="selectCategory(category)">
               <img :src="categoryIcon(category.Category)" alt="">
-              <span>{{ categoryName(category.Category) }}</span>
+              <span>{{ category.CategoryName ?? category.Category }}</span>
               <strong>{{ category.Completed }}<small>/{{ category.Total }}</small></strong>
             </button>
           </div>
@@ -263,7 +249,7 @@ onBeforeUnmount(() => {
             <img :src="categoryIcon(selectedCategory.Category)" alt="">
             <div>
               <p>{{ translated('BaseCamp_Research_Research_Level') }}</p>
-              <h2>{{ categoryName(selectedCategory.Category) }}</h2>
+              <h2>{{ selectedCategory.CategoryName ?? selectedCategory.Category }}</h2>
             </div>
             <strong>{{ selectedCategory.Completed }}<small>/{{ selectedCategory.Total }}</small></strong>
           </div>
@@ -307,13 +293,13 @@ onBeforeUnmount(() => {
                 'research-node--completed': research.Completed,
                 'research-node--locked': !research.Available && !research.Completed,
               }" :style="{ left: `${research.left}px`, top: `${research.top}px` }"
-              :title="researchEffect(research)" @click="selectResearch(research)">
+              :title="research.EffectDescription" @click="selectResearch(research)">
               <span class="research-node__diamond">
                 <img :src="researchIcon(research)" alt="">
                 <span v-if="research.Completed" class="research-node__check">✓</span>
               </span>
-              <span class="research-node__effect">{{ effectName(research.EffectType) }}</span>
-              <small>{{ researchEffect(research) }}</small>
+              <span class="research-node__effect">{{ research.Name ?? research.EffectType }}</span>
+              <small>{{ research.EffectDescription }}</small>
             </button>
             </div>
           </div>
@@ -329,8 +315,8 @@ onBeforeUnmount(() => {
           <div class="effect-panel__badge" :class="{ 'effect-panel__badge--completed': selectedResearch.Completed }">
             <img :src="researchIcon(selectedResearch)" alt="">
           </div>
-          <h2>{{ effectName(selectedResearch.EffectType) }}</h2>
-          <p class="effect-panel__effect">{{ researchEffect(selectedResearch) }}</p>
+          <h2>{{ selectedResearch.Name ?? selectedResearch.EffectType }}</h2>
+          <p class="effect-panel__effect">{{ selectedResearch.EffectDescription }}</p>
 
           <div class="effect-panel__status">
             <span>{{ translated('BaseCamp_Research_Progress') }}</span>
@@ -422,6 +408,7 @@ onBeforeUnmount(() => {
 .effect-panel__badge--completed { border-color: var(--editor-color-focus); box-shadow: 0 0 1rem color-mix(in srgb, var(--editor-color-focus) 30%, transparent); }
 .effect-panel__badge--completed img { opacity: 1; }
 .effect-panel__effect { color: var(--editor-color-focus); font-weight: 700; }
+.effect-panel__content h2 { margin-top: .7rem; margin-bottom: -.75rem; }
 .effect-panel__status, .material-row { display: flex; justify-content: space-between; gap: .5rem; font-size: .8rem; }
 .progress-track { height: .45rem; overflow: hidden; border-radius: 999px; background: var(--editor-color-control); }
 .progress-track span { display: block; height: 100%; background: var(--editor-color-focus); }

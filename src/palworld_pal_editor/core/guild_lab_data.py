@@ -4,6 +4,7 @@ from typing import Optional
 
 from palworld_save_tools.gvas import GvasFile
 
+from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.basecamp_data import BaseCampData
 from palworld_pal_editor.core.group_data import GroupData
 from palworld_pal_editor.utils import LOGGER
@@ -25,8 +26,14 @@ CATEGORY_ORDER = (
 class GuildLabData:
     """A narrow mutable view over guild laboratory progress in Level.sav."""
 
-    def __init__(self, gvas_file: GvasFile, definitions: dict[str, dict]) -> None:
+    def __init__(
+        self,
+        gvas_file: GvasFile,
+        definitions: dict[str, dict],
+        labels: Optional[dict[str, dict]] = None,
+    ) -> None:
         self._definitions = definitions
+        self._labels = labels or {}
         self._definition_order = {
             research_id: index for index, research_id in enumerate(definitions)
         }
@@ -39,6 +46,20 @@ class GuildLabData:
             if entry.get("key") is not None
         }
         self._levels = self._build_levels()
+
+    def _locale(self) -> str:
+        selected = Config.i18n
+        return selected if selected in self._labels.get("category", {}) else "en"
+
+    def _localized(self, i18n: dict, field: str, fallback: str = "") -> str:
+        lang = self._locale()
+        row = (i18n or {}).get(lang) or (i18n or {}).get("en") or {}
+        return row.get(field) or fallback
+
+    def _category_name(self, category: str) -> str:
+        lang = self._locale()
+        row = self._labels.get("category", {}).get(lang) or {}
+        return row.get(category) or category
 
     def _build_levels(self) -> dict[str, int]:
         levels: dict[str, int] = {}
@@ -92,6 +113,12 @@ class GuildLabData:
         return {
             "ResearchId": research_id,
             "TextId": definition["TextId"],
+            "Name": self._localized(
+                definition.get("I18n"), "Name", definition["TextId"]
+            ),
+            "EffectDescription": self._localized(
+                definition.get("I18n"), "EffectDescription", ""
+            ),
             "IconKey": definition["IconKey"],
             "Level": self._levels[research_id],
             "WorkAmount": amount,
@@ -104,10 +131,23 @@ class GuildLabData:
             "EffectValue": definition["EffectValue"],
             "EffectWorkSuitability": definition["EffectWorkSuitability"],
             "EffectItemType": definition["EffectItemType"],
+            "EffectCategoryName": self._category_name(
+                definition["EffectWorkSuitability"]
+            ),
+            "EffectItemTypeName": self._localized_display_name(
+                definition["EffectItemType"], "item"
+            ),
             "EffectDescriptionTextId": definition["EffectDescriptionTextId"],
             "Essential": definition["Essential"],
             "Materials": definition["Materials"],
         }
+
+    def _localized_display_name(self, key: str, kind: str) -> str:
+        if key == "None" or not key:
+            return ""
+        lang = self._locale()
+        row = self._labels.get(kind, {}).get(lang) or {}
+        return row.get(key) or key
 
     def snapshot(self, group_data: GroupData, camp_data: BaseCampData) -> dict:
         group_names = {
@@ -149,6 +189,7 @@ class GuildLabData:
                 categories.append(
                     {
                         "Category": category,
+                        "CategoryName": self._category_name(category),
                         "IconKey": f"category-{category}",
                         "Completed": sum(row["Completed"] for row in research),
                         "Total": len(research),

@@ -83,6 +83,7 @@ PAL_FRIENDSHIP: dict[str, dict] = load_json("pal_friendship.json")
 PLAYER_STATUS_DATA: dict[str, dict] = load_json("player_status_data.json")
 TECH_DATA: dict[str, dict] = load_json("tech_data.json")
 LAB_RESEARCH_DATA: dict[str, dict] = load_json("lab_research.json")
+LAB_RESEARCH_LABELS: dict[str, dict] = load_json("lab_research_labels.json")
 SKIN_DATA: dict[str, dict] = load_json("skin_data.json")
 ITEM_DATA: dict[str, dict] = load_json("item_data.json")
 
@@ -504,6 +505,10 @@ class DataProvider:
     @staticmethod
     def get_lab_research_data() -> dict[str, dict]:
         return LAB_RESEARCH_DATA
+
+    @staticmethod
+    def get_lab_research_labels() -> dict[str, dict]:
+        return LAB_RESEARCH_LABELS
 
     @staticmethod
     def get_tech_i18n(key: str) -> dict | str | None:

@@ -112,7 +112,9 @@ class SaveManager:
 
             try:
                 self.guild_lab_data = GuildLabData(
-                    self.gvas_file, DataProvider.get_lab_research_data()
+                    self.gvas_file,
+                    DataProvider.get_lab_research_data(),
+                    DataProvider.get_lab_research_labels(),
                 )
             except Exception as e:
                 LOGGER.error(f"Error parsing guild laboratory data: {e}")

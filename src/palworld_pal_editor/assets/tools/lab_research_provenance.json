@@ -41,10 +41,12 @@
     "effect-TechnologyUnlock.png": "4b75d72de09060527fe84ff9023f32dd3cbfb485ca4f4292d74d004fc8db1bcc"
   },
   "icon_source": "Pal/Content/Pal/Blueprint/UI/UserInterface/IngameMenu/Research/WBP_ResearchEffectIcon",
+  "label_language_count": 17,
+  "labels_sha256": "45b2160da5f0004c631783dba4a503a87f08b0a114b81a21cce67d63302e2e89",
   "mapping_sha256": "241c45de9d5b55b246cd4b39d62b9209faf7758ce0637e1f7a545aa0f75f71f0",
-  "output_sha256": "ef0cff0877ee8de0fd2f14f0818e8f1f671e761462d09ba5a847270eb7e90390",
+  "output_sha256": "528450478a38185e99debe55cf887c3da273797c80bfb62d1dddd6a7b8e7719b",
   "row_count": 168,
-  "schema_version": 1,
+  "schema_version": 2,
   "source": "Pal/Content/Pal/DataTable/Lab/DT_LabResearchDataTable",
   "uex_revision": "e3e940c4337ee045dcce40c896e481b4e6ab7b9d"
 }
