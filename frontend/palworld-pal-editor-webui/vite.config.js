@@ -12,6 +12,17 @@ export default defineConfig({
       injectRegister: 'script',
       includeAssets: ['favicon.ico', 'icons/192.png', 'icons/512.png'],
       workbox: {
+        // The app shell must always be served fresh from the network so a rebuild
+        // is picked up immediately. We intentionally do NOT set navigateFallback
+        // (which would serve a precached index.html for every navigation), and we
+        // exclude index.html from the precache. Only versioned game images (keyed by
+        // their commit hash via ?v=) are cached long-term; everything else updates.
+        navigateFallback: null,
+        globIgnores: ['**/index.html'],
+        // Activate and take control immediately when a new service worker is
+        // detected, so a shipped update is picked up without a manual reload.
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => request.destination === 'image'

@@ -49,7 +49,9 @@ assert.match(html, new RegExp(`href=["']${base.replaceAll('/', '\\/')}manifest\\
 assert.match(html, new RegExp(`src=["']${base.replaceAll('/', '\\/')}registerSW\\.js["']`))
 assert.match(registerScript, new RegExp(`register\\(["']${base.replaceAll('/', '\\/')}sw\\.js["'],\\s*\\{\\s*scope:\\s*["']${base.replaceAll('/', '\\/')}["']`))
 
-assert.match(serviceWorker, /index\.html/)
+// The app shell must always be served fresh from the network; it must not be
+// precached and served for navigations.
+assert.doesNotMatch(serviceWorker, /createHandlerBoundToURL\(["']index\.html["']\)/i)
 assert.match(serviceWorker, /assets\//)
 assert.match(serviceWorker, /CacheFirst/)
 assert.match(serviceWorker, /\/image\//)
