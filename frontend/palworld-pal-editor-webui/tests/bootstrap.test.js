@@ -835,3 +835,96 @@ test("deleting the last Pal falls through to the player editor instead of a blan
     assert.equal(store.SELECTED_PLAYER_DATA.InstanceId, "player-1");
     assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
 });
+
+test("exporting a Pal to the Global Palbox auto-jumps to its new location and refreshes only affected rosters", async () => {
+    const store = newStore();
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    const targetStorageKey = "gps-global";
+    store.PAL_CONTAINERS = [
+        { StorageKey: targetStorageKey, StorageKind: "global_palbox", ContainerKind: "global" },
+        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
+    ];
+    store.ACTIVE_ROSTER = "player-1";
+    store.SELECTED_PAL_ID = "world:pal-1";
+    store.SELECTED_PAL_DATA = { StorageKind: "world", OwnerPlayerUId: "player-1", RecordKey: "world:pal-1" };
+
+    const requestedRosters = [];
+    axios.get = async url => {
+        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async (url, data) => {
+        if (url.endsWith("/api/pal/transfer")) {
+            return reply({ RecordKey: "gps:pal-1" });
+        }
+        if (url.endsWith("/api/player/player_pals")) {
+            requestedRosters.push(data.PlayerUId);
+            if (data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN) {
+                return reply([{ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
+            }
+            return reply([]);
+        }
+        if (url.endsWith("/api/pal/paldata")) {
+            return reply({ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "GPS Pal" });
+        }
+        throw new Error(`Unexpected POST ${url}`);
+    };
+
+    assert.equal(await store.movePal(targetStorageKey), true);
+    // Only the source roster and the Global Palbox are refreshed, not every player.
+    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
+    // Auto-jumped to the Global Palbox and selected the newly exported Pal.
+    assert.equal(store.ACTIVE_ROSTER, store.PAL_GLOBAL_STORAGE_BTN);
+    assert.equal(store.SELECTED_PAL_ID, "gps:pal-1");
+});
+
+test("resolving an update conflict auto-jumps to the updated Pal's new location", async () => {
+    const store = newStore();
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    store.PAL_CONTAINERS = [
+        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
+    ];
+    // Looking at the Global Palbox, updating a Pal into player-1's storage.
+    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
+    store.PAL_TRANSFER_CONFLICT = {
+        SourceRecordKey: "gps:0",
+        TargetStorageKey: "world-container:palbox",
+        LockedTarget: "world:pal-1",
+        Candidates: [{
+            RecordKey: "world:pal-1",
+            StorageKind: "world",
+            OwnerPlayerUId: "player-1",
+        }],
+    };
+
+    const requestedRosters = [];
+    axios.get = async url => {
+        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async (url, data) => {
+        if (url.endsWith("/api/pal/transfer")) return reply(null);
+        if (url.endsWith("/api/player/player_pals")) {
+            requestedRosters.push(data.PlayerUId);
+            if (data.PlayerUId === "player-1") {
+                return reply([{ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
+            }
+            return reply([]);
+        }
+        if (url.endsWith("/api/pal/paldata")) {
+            return reply({ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "Updated Pal" });
+        }
+        throw new Error(`Unexpected POST ${url}`);
+    };
+
+    assert.equal(await store.updateConflictingPal(), true);
+    // The affected rosters are refreshed (active + target), not every player.
+    assert.deepEqual(requestedRosters, [store.PAL_GLOBAL_STORAGE_BTN, "player-1"]);
+    // Auto-jumped to the player and selected the updated Pal.
+    assert.equal(store.ACTIVE_ROSTER, "player-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+});

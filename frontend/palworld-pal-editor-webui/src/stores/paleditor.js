@@ -1981,16 +1981,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (!no_set_loading_flag) LOADING_FLAG.value = false;
     }
 
-    async function refreshPalContainerState() {
+    async function refreshPalContainerState(rosterKeys) {
         await fetchPalContainers();
-        if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")) {
-            await fetchPlayerPal(PAL_GLOBAL_STORAGE_BTN.value);
-        }
-        for (const playerId of PLAYER_MAP.value.keys()) {
-            await fetchPlayerPal(playerId);
-        }
-        if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
-            await fetchPlayerPal(PAL_BASE_WORKER_BTN.value);
+        // Refresh only the rosters affected by the operation instead of every
+        // player's pal list. Rosters not passed stay cached and are re-fetched by
+        // selectPlayer the next time they are shown (it loads a roster when empty).
+        const rosters = new Set((rosterKeys || [GET_PAL_OWNER_API_ID()]).filter(Boolean));
+        for (const roster of rosters) {
+            await fetchPlayerPal(roster);
         }
     }
 
@@ -2027,12 +2025,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 return false;
             }
             EDITED_PAL_IDS.value.add(palId);
-            await refreshPalContainerState();
+            const sourceRoster = GET_PAL_OWNER_API_ID();
             const ownerList = target?.ContainerKind === "base"
                 ? PAL_BASE_WORKER_BTN.value
                 : target?.StorageKind === "dps"
                 ? SELECTED_PAL_DATA.value?.OwnerPlayerUId
+                : target?.StorageKind === "global_palbox"
+                ? PAL_GLOBAL_STORAGE_BTN.value
                 : target?.OwnerPlayerUId;
+            await refreshPalContainerState([sourceRoster, ownerList]);
             if (ownerList) {
                 await selectPlayer(ownerList, true);
                 await selectPal(response.data.RecordKey, true);
@@ -2062,8 +2063,20 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 return false;
             }
             EDITED_PAL_IDS.value.add(conflict.LockedTarget);
+            const conflictCandidate = conflict.Candidates?.find(
+                item => item.RecordKey === conflict.LockedTarget,
+            );
+            const conflictRoster = conflictCandidate
+                ? (conflictCandidate.StorageKind === "global_palbox"
+                    ? PAL_GLOBAL_STORAGE_BTN.value
+                    : conflictCandidate.OwnerPlayerUId || PAL_BASE_WORKER_BTN.value)
+                : null;
             PAL_TRANSFER_CONFLICT.value = null;
-            await refreshPalContainerState();
+            await refreshPalContainerState([GET_PAL_OWNER_API_ID(), conflictRoster]);
+            if (conflictRoster) {
+                await selectPlayer(conflictRoster, true);
+                await selectPal(conflict.LockedTarget, true);
+            }
             showToast("Message_Pal_Updated", "success");
             return true;
         } finally {
@@ -2112,12 +2125,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             const target = PAL_CONTAINERS.value.find(
                 container => container.StorageKey === options.TargetStorageKey
             );
-            await refreshPalContainerState();
             const ownerList = target?.ContainerKind === "base"
                 ? PAL_BASE_WORKER_BTN.value
                 : target?.StorageKind === "global_palbox"
                 ? PAL_GLOBAL_STORAGE_BTN.value
                 : target?.OwnerPlayerUId || SELECTED_PLAYER_ID.value;
+            await refreshPalContainerState([GET_PAL_OWNER_API_ID(), ownerList]);
             if (ownerList) await selectPlayer(ownerList, true);
             SELECTED_PAL_ID.value = pal_data.RecordKey;
             await selectPal(pal_data.RecordKey, true);
