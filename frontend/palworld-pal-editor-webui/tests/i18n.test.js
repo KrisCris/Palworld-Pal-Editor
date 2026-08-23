@@ -180,6 +180,7 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "AuthView_Session_Expired",
         "Message_Select_Skill",
         "Message_Passive_Limit",
+        "Message_Skill_Equip_Full",
         "Message_Invalid_Suitability",
         "Message_Select_Player",
         "Message_No_Player",

@@ -293,7 +293,7 @@ export default {
     Message_Unexpected_Frontend_Error: "フロントエンドの {{0}} で予期しないエラーが発生しました。",
     AuthView_Session_Expired: "セッションの有効期限が切れました。もう一度ログインしてください。",
     Message_Select_Skill: "先にスキルを選択してください。",
-    Message_Skill_Not_Assignable: "このスキルは NPC またはゲーム内部用のため、パルへ新しく追加できません。",
+    Message_Skill_Not_Assignable: "このスキルは NPC またはゲーム内部用のため、パルへ新しく追加できません。", Message_Skill_Equip_Full: "パルの装備中のアクティブスキル枠が満杯です。",
     Message_Passive_Limit: "パルに設定できるパッシブスキルは4つまでです。",
     Message_Invalid_Suitability: "このパルが持つ作業適性のみ変更できます。",
     Message_Select_Player: "先にプレイヤーを選択してください。",

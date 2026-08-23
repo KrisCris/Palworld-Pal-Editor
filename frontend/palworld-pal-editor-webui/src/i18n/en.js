@@ -426,7 +426,7 @@ export default {
     Message_Unexpected_Frontend_Error: "An unexpected frontend error occurred in {{0}}.",
     AuthView_Session_Expired: "Your session expired. Please sign in again.",
     Message_Select_Skill: "Select a skill first.",
-    Message_Skill_Not_Assignable: "This skill is used by NPCs or internal game logic and cannot be newly assigned to a Pal.",
+    Message_Skill_Not_Assignable: "This skill is used by NPCs or internal game logic and cannot be newly assigned to a Pal.", Message_Skill_Equip_Full: "The Pal's equipped active skill slots are full.",
     Message_Passive_Limit: "A Pal cannot have more than four passive skills.",
     Message_Invalid_Suitability: "You can only modify work suitabilities this Pal is capable of.",
     Message_Select_Player: "Select a player first.",

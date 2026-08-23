@@ -277,7 +277,7 @@ export default {
     Message_Unexpected_Frontend_Error: "Đã xảy ra lỗi giao diện không mong muốn trong {{0}}.",
     AuthView_Session_Expired: "Phiên đã hết hạn. Hãy đăng nhập lại.",
     Message_Select_Skill: "Hãy chọn kỹ năng trước.",
-    Message_Skill_Not_Assignable: "Kỹ năng này được NPC hoặc logic nội bộ của game sử dụng và không thể gán mới cho Pal.",
+    Message_Skill_Not_Assignable: "Kỹ năng này được NPC hoặc logic nội bộ của game sử dụng và không thể gán mới cho Pal.", Message_Skill_Equip_Full: "Các ô kỹ năng chủ động đang trang bị của Pal đã đầy.",
     Message_Passive_Limit: "Một Pal không thể có quá bốn kỹ năng bị động.",
     Message_Invalid_Suitability: "Bạn chỉ có thể sửa các độ phù hợp công việc mà Pal này có thể làm.",
     Message_Select_Player: "Hãy chọn người chơi trước.",

@@ -60,13 +60,22 @@ const canSelectActiveSkill = skill => (
 
 const showEquipMasteredAction = skill => (
   !palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
-  && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)
 );
 
 const canEquipMasteredSkill = skill => (
   showEquipMasteredAction(skill)
   && canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])
 );
+
+const activeSkillEquipTitle = skill => {
+  if (!canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])) {
+    return palStore.getTranslatedText('Message_Skill_Not_Assignable');
+  }
+  if (palStore.SELECTED_PAL_DATA.isEquipSkillFull()) {
+    return palStore.getTranslatedText('Message_Skill_Equip_Full');
+  }
+  return '';
+};
 
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
@@ -655,13 +664,12 @@ const portraitBorder = pal => pal.IsAwakening
               </div>
               <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
-            <div class="skill-card__actions">
-              <button v-if="showEquipMasteredAction(skill)"
+            <div v-if="showEquipMasteredAction(skill)" class="skill-card__actions" :title="activeSkillEquipTitle(skill)">
+              <button
                 type="button" class="editor-button editor-button--icon skill-card__equip"
                 @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
-                :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
+                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill]) || palStore.SELECTED_PAL_DATA.isEquipSkillFull()"><UiIcon name="plus" /></button>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
@@ -1094,21 +1102,23 @@ const portraitBorder = pal => pal.IsAwakening
   min-height: 100%;
   padding: var(--editor-space-3) var(--editor-space-2) var(--editor-space-2);
   border: 0;
-  border-left: 1px solid var(--editor-color-border);
+  border-left: 1px solid color-mix(in srgb, var(--editor-color-focus) 34%, transparent);
   border-radius: 0 var(--editor-radius-sm) var(--editor-radius-sm) 0;
-  color: var(--editor-color-muted);
-  background: transparent;
+  color: var(--editor-color-background);
+  background: color-mix(in srgb, var(--editor-color-focus) 72%, var(--editor-color-border));
 }
 
-.skill-card__equip:hover {
-  border-color: var(--editor-color-focus);
-  color: var(--editor-color-text);
-  background: var(--editor-color-control-hover);
+.skill-card__equip:hover,
+.skill-card__equip:focus-visible {
+  color: var(--editor-color-background);
+  background: color-mix(in srgb, var(--editor-color-focus) 86%, var(--editor-color-border));
 }
 
 .skill-card__equip:disabled {
   border-color: var(--editor-color-border);
-  background: transparent;
+  color: var(--editor-color-muted);
+  background: var(--editor-color-disabled);
+  cursor: not-allowed;
 }
 
 .skill-card__identity {

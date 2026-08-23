@@ -277,7 +277,7 @@ export default {
     Message_Unexpected_Frontend_Error: "Se produjo un error inesperado de interfaz en {{0}}.",
     AuthView_Session_Expired: "Tu sesión caducó. Vuelve a iniciar sesión.",
     Message_Select_Skill: "Primero selecciona una habilidad.",
-    Message_Skill_Not_Assignable: "Esta habilidad la usan NPC o la lógica interna del juego y no se puede asignar a un Pal.",
+    Message_Skill_Not_Assignable: "Esta habilidad la usan NPC o la lógica interna del juego y no se puede asignar a un Pal.", Message_Skill_Equip_Full: "Las ranuras de habilidades activas equipadas del Pal están llenas.",
     Message_Passive_Limit: "Un Pal no puede tener más de cuatro habilidades pasivas.",
     Message_Invalid_Suitability: "Solo puedes modificar las aptitudes de trabajo que este Pal puede tener.",
     Message_Select_Player: "Primero selecciona un jugador.",

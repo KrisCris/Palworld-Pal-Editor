@@ -426,7 +426,7 @@ export default {
     Message_Unexpected_Frontend_Error: "前端在 {{0}} 中发生了意外错误。",
     AuthView_Session_Expired: "登录状态已失效，请重新输入密码。",
     Message_Select_Skill: "请先选择一个技能。",
-    Message_Skill_Not_Assignable: "此技能仅供 NPC 或游戏内部逻辑使用，不能新添加给帕鲁。",
+    Message_Skill_Not_Assignable: "此技能仅供 NPC 或游戏内部逻辑使用，不能新添加给帕鲁。", Message_Skill_Equip_Full: "装备技能数量已满",
     Message_Passive_Limit: "一只帕鲁最多只能拥有四个被动技能。",
     Message_Invalid_Suitability: "只能修改该帕鲁本身具备的工作适应性。",
     Message_Select_Player: "请先选择一名玩家。",

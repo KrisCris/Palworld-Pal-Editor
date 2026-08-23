@@ -277,7 +277,7 @@ export default {
     Message_Unexpected_Frontend_Error: "เกิดข้อผิดพลาดส่วนหน้าโดยไม่คาดคิดใน {{0}}",
     AuthView_Session_Expired: "เซสชันหมดอายุแล้ว โปรดลงชื่อเข้าใช้อีกครั้ง",
     Message_Select_Skill: "เลือกสกิลก่อน",
-    Message_Skill_Not_Assignable: "สกิลนี้ใช้โดย NPC หรือตรรกะภายในเกม และไม่สามารถกำหนดให้ Pal ใหม่ได้",
+    Message_Skill_Not_Assignable: "สกิลนี้ใช้โดย NPC หรือตรรกะภายในเกม และไม่สามารถกำหนดให้ Pal ใหม่ได้", Message_Skill_Equip_Full: "ช่องสกิลแอคทีฟที่สวมใส่ของ Pal เต็มแล้ว",
     Message_Passive_Limit: "Pal มีสกิลติดตัวได้ไม่เกินสี่สกิล",
     Message_Invalid_Suitability: "แก้ไขได้เฉพาะความถนัดงานที่ Pal นี้ทำได้",
     Message_Select_Player: "เลือกผู้เล่นก่อน",

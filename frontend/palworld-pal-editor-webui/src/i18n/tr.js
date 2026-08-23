@@ -277,7 +277,7 @@ export default {
     Message_Unexpected_Frontend_Error: "{{0}} içinde beklenmeyen bir ön yüz hatası oluştu.",
     AuthView_Session_Expired: "Oturumunuz sona erdi. Lütfen yeniden giriş yapın.",
     Message_Select_Skill: "Önce bir beceri seçin.",
-    Message_Skill_Not_Assignable: "Bu beceri NPC’ler veya dahili oyun mantığı tarafından kullanılır ve yeni bir Pala atanamaz.",
+    Message_Skill_Not_Assignable: "Bu beceri NPC’ler veya dahili oyun mantığı tarafından kullanılır ve yeni bir Pala atanamaz.", Message_Skill_Equip_Full: "Pal'in donatılmış aktif beceri yuvaları dolu.",
     Message_Passive_Limit: "Bir Pal en fazla dört pasif beceriye sahip olabilir.",
     Message_Invalid_Suitability: "Yalnızca bu Pal'in yapabildiği çalışma yatkınlıklarını değiştirebilirsiniz.",
     Message_Select_Player: "Önce bir oyuncu seçin.",

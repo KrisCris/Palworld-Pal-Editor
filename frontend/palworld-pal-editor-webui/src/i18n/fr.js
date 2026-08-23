@@ -293,7 +293,7 @@ export default {
     Message_Unexpected_Frontend_Error: "Une erreur inattendue de l’interface s’est produite dans {{0}}.",
     AuthView_Session_Expired: "Votre session a expiré. Veuillez vous reconnecter.",
     Message_Select_Skill: "Sélectionnez d’abord une compétence.",
-    Message_Skill_Not_Assignable: "Cette compétence est réservée aux PNJ ou au fonctionnement interne du jeu et ne peut pas être nouvellement attribuée à un Pal.",
+    Message_Skill_Not_Assignable: "Cette compétence est réservée aux PNJ ou au fonctionnement interne du jeu et ne peut pas être nouvellement attribuée à un Pal.", Message_Skill_Equip_Full: "Les emplacements de compétences actives équipées du Pal sont pleins.",
     Message_Passive_Limit: "Un Pal ne peut pas avoir plus de quatre compétences passives.",
     Message_Invalid_Suitability: "Vous ne pouvez modifier que les aptitudes de travail que ce Pal possède.",
     Message_Select_Player: "Sélectionnez d’abord un joueur.",
