@@ -237,20 +237,25 @@ const portraitBorder = pal => pal.IsAwakening
         </div>
         <div class="editor-summary__actions">
           <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal"
-            :disabled="palStore.LOADING_FLAG">
-            <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
+            <UiIcon name="maximum" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
           </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
-            :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
-            {{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}
+            :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+            :aria-label="palStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
+            <UiIcon name="copy" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
+          </button>
+          <button id="move_btn" class="editor-button editor-button--secondary" @click="showMoveDialog = true"
+            :disabled="moveBlocked || palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Move_Pal')">
+            <UiIcon name="forward" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Move_Pal") }}</span>
           </button>
           <button id="dump_btn" class="editor-button editor-button--secondary" @click="palStore.dumpPalData"
-            :disabled="palStore.LOADING_FLAG">
-            {{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
+            <UiIcon name="export" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
           </button>
           <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal"
-            :disabled="palStore.LOADING_FLAG">
-            <UiIcon name="delete" /> {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
+            <UiIcon name="delete" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
           </button>
         </div>
       </header>
@@ -441,12 +446,6 @@ const portraitBorder = pal => pal.IsAwakening
             </small>
           </div>
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ ownerLabel }}</span></div>
-          <div class="pal-technical-move">
-            <button class="editor-button pal-location-move" @click="showMoveDialog = true"
-              :disabled="moveBlocked || palStore.LOADING_FLAG">
-              {{ palStore.getTranslatedText('Editor_Move_Pal') }}
-            </button>
-          </div>
         </div>
       </details>
 
@@ -767,7 +766,6 @@ const portraitBorder = pal => pal.IsAwakening
 }
 
 .pal-technical-location__value { min-width: 0; }
-.pal-location-move { justify-self: start; }
 
 @container pal-basic-info (max-width: 720px) {
   .editor-summary {
@@ -804,8 +802,14 @@ const portraitBorder = pal => pal.IsAwakening
     width: 100%;
   }
 
+  .editor-summary__actions .editor-button__label {
+    display: none;
+  }
+
   .editor-summary__actions .editor-button {
-    flex: 1;
+    flex: none;
+    width: var(--editor-control-height);
+    padding: 0;
   }
 
   .editor-field {
