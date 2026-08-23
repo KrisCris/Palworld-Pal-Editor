@@ -202,6 +202,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .overlay-scroll-area {
   position: relative;
+  isolation: isolate;
   width: 100%;
   height: 100%;
   min-width: 0;

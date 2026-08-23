@@ -106,6 +106,7 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 
 .editor-canvas {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
 }
 
