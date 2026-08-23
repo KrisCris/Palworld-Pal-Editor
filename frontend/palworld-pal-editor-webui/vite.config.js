@@ -84,6 +84,11 @@ export default defineConfig({
         target: 'http://127.0.0.1:58080/',
         changeOrigin: true
       }
+    },
+    // Ignore the editor/agent atomic-write temp folders (dot-named *.tmpdir)
+    // so the file watcher does not crash on an EBUSY lock while they exist.
+    watch: {
+      ignored: ['**/.*.tmpdir/**', '**/*.tmp']
     }
   }
 })

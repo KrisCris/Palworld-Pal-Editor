@@ -212,6 +212,7 @@ onBeforeUnmount(() => {
             :search-placeholder="translated('Editor_Select_Search')"
             :no-results="translated('Editor_Select_No_Results')"
             :aria-label="translated('BaseCamp_Research_Guild')"
+            :show-tooltip="false"
             :disabled="palStore.LOADING_FLAG" />
         </div>
         <div v-else-if="selectedGuild" class="guild-name">

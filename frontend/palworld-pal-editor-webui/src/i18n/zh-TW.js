@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "或者，你可以从以下链接下載：",
     Editor_Note_Ghost_Pal: "這隻帕魯可能已不受遊戲參照",
     Editor_Basic_Info: "基础信息",
-    Editor_Identity_Appearance: "檔案與外觀",
+    Editor_Identity_Appearance: "檔案",
     Editor_Growth: "成长",
     Editor_Save_Details: "存檔詳細資料",
     Editor_Btn_Friendship_Decrease: "降低信赖度",

@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
-    Editor_Identity_Appearance: "PROFILE & APPEARANCE",
+    Editor_Identity_Appearance: "PROFILE",
     Editor_Growth: "GROWTH",
     Editor_Save_Details: "SAVE DETAILS",
     Editor_Btn_Friendship_Decrease: "Decrease friendship",

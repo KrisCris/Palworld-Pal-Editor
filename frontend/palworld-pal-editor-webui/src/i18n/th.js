@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "หรือดาวน์โหลดได้จาก ",
     Editor_Note_Ghost_Pal: "PAL นี้น่าจะไม่มีการอ้างอิงในเกม",
     Editor_Basic_Info: "ข้อมูลพื้นฐาน",
-    Editor_Identity_Appearance: "โปรไฟล์และรูปลักษณ์",
+    Editor_Identity_Appearance: "โปรไฟล์",
     Editor_Growth: "การเติบโต",
     Editor_Save_Details: "รายละเอียดเซฟ",
     Editor_Btn_Friendship_Decrease: "ลดความสนิท",

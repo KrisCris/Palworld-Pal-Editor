@@ -100,7 +100,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
-    Editor_Identity_Appearance: "プロフィールと外見",
+    Editor_Identity_Appearance: "プロフィール",
     Editor_Growth: "成長",
     Editor_Save_Details: "セーブ詳細",
     Editor_Btn_Friendship_Decrease: "親密度を下げる",

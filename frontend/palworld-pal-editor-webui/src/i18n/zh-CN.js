@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
-    Editor_Identity_Appearance: "档案与外观",
+    Editor_Identity_Appearance: "档案",
     Editor_Growth: "成长",
     Editor_Save_Details: "存档技术信息",
     Editor_Btn_Friendship_Decrease: "降低信赖度",

@@ -14,6 +14,8 @@ const props = defineProps({
   disabled: Boolean,
   ariaLabel: { type: String, default: '' },
   placement: { type: String, default: 'bottom' },
+  closeOnSelect: { type: Boolean, default: true },
+  showTooltip: { type: Boolean, default: true },
 })
 const emit = defineEmits(['update:modelValue'])
 const disclosure = ref(null)
@@ -30,7 +32,11 @@ function choose(option) {
   clearTooltip()
   emit('update:modelValue', option.value)
   query.value = ''
-  disclosure.value.open = false
+  if (props.closeOnSelect) {
+    disclosure.value.open = false
+  } else if (option.tooltip) {
+    tooltip.value = option.tooltip
+  }
 }
 
 function close() {
@@ -93,6 +99,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePopoverPosition)
   window.removeEventListener('scroll', updatePopoverPosition, true)
 })
+
+defineExpose({ close })
 </script>
 
 <template>
@@ -136,9 +144,14 @@ onBeforeUnmount(() => {
           <p v-if="!visibleOptions.length" class="search-select__empty">{{ noResults }}</p>
         </div>
       </OverlayScrollArea>
-      <p class="search-select__tooltip" :aria-hidden="!tooltip">
-        <span v-if="tooltip" role="tooltip">{{ tooltip }}</span>
-      </p>
+      <div v-if="showTooltip || $slots.actions" class="search-select__footer">
+        <p v-if="showTooltip" class="search-select__tooltip" :aria-hidden="!tooltip">
+          <span v-if="tooltip" role="tooltip">{{ tooltip }}</span>
+        </p>
+        <div v-if="$slots.actions" class="search-select__actions">
+          <slot name="actions" />
+        </div>
+      </div>
     </div>
   </Teleport>
 </template>
@@ -236,6 +249,12 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
+.search-select__options button img {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
 .search-select__options button:hover,
 .search-select__options button[aria-selected='true'] { border-color: var(--editor-color-focus); color: var(--editor-color-background); background: var(--editor-color-primary); }
 .search-select__options button:hover .search-select__copy small,
@@ -255,16 +274,33 @@ onBeforeUnmount(() => {
 .search-select__copy small { color: var(--editor-color-muted); font-size: .7rem; }
 .search-select__copy .search-select__meta { min-width: 0; flex: 1; color: var(--editor-color-muted); font-size: .62rem; line-height: 1.1; opacity: .55; }
 .search-select__empty { margin: 0; padding: var(--editor-space-3); color: var(--editor-color-muted); text-align: center; }
+.search-select__footer {
+  display: flex;
+  align-items: stretch;
+  gap: var(--editor-space-2);
+  border-top: 1px solid var(--editor-color-border);
+}
 .search-select__tooltip {
+  display: flex;
+  flex: 1;
+  min-width: 0;
   min-height: calc(1.45em + 2 * var(--editor-space-2) + 1px);
   max-height: 6rem;
   margin: 0;
   padding: var(--editor-space-2);
   overflow-y: auto;
-  border-top: 1px solid var(--editor-color-border);
   color: var(--editor-color-text);
   font-size: .8rem;
   line-height: 1.45;
+}
+.search-select__tooltip span {
+  margin: auto 0;
+}
+.search-select__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-1);
+  padding: var(--editor-space-2);
 }
 
 .search-select summary:focus-visible,

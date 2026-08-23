@@ -99,7 +99,7 @@ export default {
 
     Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
-    Editor_Identity_Appearance: "PROFIL ET APPARENCE",
+    Editor_Identity_Appearance: "PROFIL",
     Editor_Growth: "PROGRESSION",
     Editor_Save_Details: "DÉTAILS DE SAUVEGARDE",
     Editor_Btn_Friendship_Decrease: "Réduire le niveau de confiance",

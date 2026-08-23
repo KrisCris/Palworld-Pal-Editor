@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "Alternatif olarak şuradan indirebilirsiniz: ",
     Editor_Note_Ghost_Pal: "BU PAL BÜYÜK OLASILIKLA OYUNDA BAŞVURULMUYOR",
     Editor_Basic_Info: "TEMEL BİLGİ",
-    Editor_Identity_Appearance: "PROFİL VE GÖRÜNÜM",
+    Editor_Identity_Appearance: "PROFİL",
     Editor_Growth: "GELİŞİM",
     Editor_Save_Details: "KAYIT AYRINTILARI",
     Editor_Btn_Friendship_Decrease: "Yakınlığı azalt",

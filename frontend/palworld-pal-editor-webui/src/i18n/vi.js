@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "Hoặc bạn có thể tải từ ",
     Editor_Note_Ghost_Pal: "PAL NÀY CÓ THỂ KHÔNG CÒN ĐƯỢC THAM CHIẾU TRONG GAME",
     Editor_Basic_Info: "THÔNG TIN CƠ BẢN",
-    Editor_Identity_Appearance: "HỒ SƠ & NGOẠI HÌNH",
+    Editor_Identity_Appearance: "HỒ SƠ",
     Editor_Growth: "PHÁT TRIỂN",
     Editor_Save_Details: "CHI TIẾT BẢN LƯU",
     Editor_Btn_Friendship_Decrease: "Giảm thân thiết",

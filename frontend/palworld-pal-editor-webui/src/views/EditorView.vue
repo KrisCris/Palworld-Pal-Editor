@@ -4,6 +4,7 @@ import PalList from '@/components/PalList.vue'
 import PlayerEditor from '@/components/PlayerEditor.vue'
 import BaseCampEditor from '@/components/BaseCampEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
+import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
@@ -26,9 +27,17 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
     <main class="editor-canvas" :class="{
       'editor-canvas--basecamp': palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID,
     }">
-      <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG" />
+      <OverlayScrollArea v-if="palStore.SHOW_PLAYER_EDIT_FLAG">
+        <div class="editor-canvas__viewport overlay-scroll-area__viewport">
+          <PlayerEditor />
+        </div>
+      </OverlayScrollArea>
       <BaseCampEditor v-else-if="palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID" />
-      <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA" />
+      <OverlayScrollArea v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA">
+        <div class="editor-canvas__viewport overlay-scroll-area__viewport">
+          <PalEditor />
+        </div>
+      </OverlayScrollArea>
       <p v-else class="editor-empty">{{ palStore.getTranslatedText('Editor_Select_Prompt') }}</p>
     </main>
   </div>
@@ -97,7 +106,12 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 
 .editor-canvas {
   position: relative;
-  overflow: auto;
+  overflow: hidden;
+}
+
+.editor-canvas__viewport {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .editor-canvas--basecamp {

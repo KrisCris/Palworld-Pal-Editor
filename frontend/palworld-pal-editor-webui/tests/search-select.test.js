@@ -68,6 +68,24 @@ test("passive skill options are grouped with category headers", async () => {
     assert.match(editorSource, /passiveSkillCategoryKey[\s\S]*Editor_Passive_Category_Partner/);
 });
 
+test("selector supports keep-open selection, an optional tooltip, and footer actions", async () => {
+    const source = await read("../src/components/modules/SearchSelect.vue");
+    const editorSource = await read("../src/components/PalEditor.vue");
+    const basecampSource = await read("../src/components/BaseCampEditor.vue");
+    assert.match(source, /closeOnSelect:\s*\{ type: Boolean, default: true \}/);
+    assert.match(source, /showTooltip:\s*\{ type: Boolean, default: true \}/);
+    assert.match(source, /if \(props\.closeOnSelect\)\s*\{/);
+    assert.match(source, /\$slots\.actions/);
+    assert.match(source, /<slot name="actions" \/>/);
+    assert.equal((editorSource.match(/:close-on-select="false"/g) || []).length, 3);
+    assert.match(editorSource, /ref="skinSelect"/);
+    assert.match(editorSource, /const applySkin/);
+    assert.match(source, /\.search-select__options button img\s*\{[\s\S]*?object-fit:\s*contain;/);
+    assert.doesNotMatch(source, /\.search-select__options button img\s*\{[\s\S]*?border-radius:\s*50%;/);
+    assert.doesNotMatch(source, /\.search-select__actions\s*\{[\s\S]*?border-left:/);
+    assert.match(basecampSource, /:show-tooltip="false"/);
+});
+
 test("Pal editor routes every ordinary dropdown through the searchable selector", async () => {
     const source = await read("../src/components/PalEditor.vue");
     const editorCss = await read("../src/assets/editor-ui.css");

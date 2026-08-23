@@ -92,7 +92,7 @@ export default {
     EntryView_Update_Link2: "También puedes descargarla desde ",
     Editor_Note_Ghost_Pal: "ES PROBABLE QUE ESTE PAL NO TENGA REFERENCIA EN EL JUEGO",
     Editor_Basic_Info: "INFORMACIÓN BÁSICA",
-    Editor_Identity_Appearance: "PERFIL Y APARIENCIA",
+    Editor_Identity_Appearance: "PERFIL",
     Editor_Growth: "CRECIMIENTO",
     Editor_Save_Details: "DETALLES DEL GUARDADO",
     Editor_Btn_Friendship_Decrease: "Reducir confianza",
