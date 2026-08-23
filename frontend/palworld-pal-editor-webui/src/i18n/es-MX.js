@@ -283,7 +283,6 @@ export default {
     Message_Select_Player: "Primero selecciona un jugador.",
     Message_No_Player: "No se encontró ningún jugador en este guardado.",
     Message_Select_Pal_Failed: "No se pudo seleccionar el Pal. Inténtalo de nuevo o recarga el guardado.",
-    Message_Basecamp_Add_Unsupported: "No se admite añadir Pals directamente a un campamento base.",
     Message_Save_Success: "Los cambios se guardaron correctamente en {{0}}.",
     Message_Pal_Copied: "Los datos del Pal se copiaron al portapapeles.",
     Message_Pal_Template_Saved: "Plantilla de Pal guardada.",

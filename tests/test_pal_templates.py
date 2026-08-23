@@ -55,6 +55,18 @@ class FakeManager:
         result.is_new_pal = True
         return result
 
+    def create_pal(self, roster_key, target_storage_key, pal_obj=None, pal_owner_uid=None):
+        self.added.append((roster_key, target_storage_key, pal_obj))
+        result = PalEntity(copy.deepcopy(pal_obj or self.pal._pal_obj))
+        result.is_new_pal = True
+        return PalRecordRef(
+            f"world:{result.InstanceId}",
+            target_storage_key,
+            "world",
+            0,
+            result,
+        )
+
 
 class PalTemplateApiTests(unittest.TestCase):
     def setUp(self):
@@ -100,13 +112,15 @@ class PalTemplateApiTests(unittest.TestCase):
             "/api/pal/add_pal",
             json={
                 "PlayerUId": str(PLAYER_ID),
+                "RosterKey": str(PLAYER_ID),
+                "TargetStorageKey": "world-container:test",
                 "Mode": "template",
                 "TemplateId": template_id,
             },
             headers=self.headers,
         ).get_json()
         self.assertEqual(0, created["status"])
-        self.assertIsInstance(self.manager.added[-1][1], dict)
+        self.assertIsInstance(self.manager.added[-1][2], dict)
 
         deleted = self.client.delete(
             f"/api/pal/templates/{template_id}", headers=self.headers
@@ -119,19 +133,23 @@ class PalTemplateApiTests(unittest.TestCase):
             "/api/pal/add_pal",
             json={
                 "PlayerUId": str(PLAYER_ID),
+                "RosterKey": str(PLAYER_ID),
+                "TargetStorageKey": "world-container:test",
                 "Mode": "json",
                 "PalJson": self.pal.dump_obj(),
             },
             headers=self.headers,
         ).get_json()
         self.assertEqual(0, imported["status"])
-        self.assertIsInstance(self.manager.added[-1][1], dict)
+        self.assertIsInstance(self.manager.added[-1][2], dict)
 
         calls = len(self.manager.added)
         invalid = self.client.post(
             "/api/pal/add_pal",
             json={
                 "PlayerUId": str(PLAYER_ID),
+                "RosterKey": str(PLAYER_ID),
+                "TargetStorageKey": "world-container:test",
                 "Mode": "json",
                 "PalJson": '{"not": "a pal"}',
             },
@@ -140,20 +158,44 @@ class PalTemplateApiTests(unittest.TestCase):
         self.assertEqual(1, invalid["status"])
         self.assertEqual(calls, len(self.manager.added))
 
-    def test_add_pal_forwards_an_explicit_target_container(self):
+    def test_add_pal_forwards_an_explicit_storage_target(self):
         created = self.client.post(
             "/api/pal/add_pal",
             json={
                 "PlayerUId": str(PLAYER_ID),
+                "RosterKey": str(PLAYER_ID),
+                "TargetStorageKey": "world-container:target",
                 "Mode": "json",
                 "PalJson": self.pal.dump_obj(),
-                "TargetContainerId": "base-container",
             },
             headers=self.headers,
         ).get_json()
 
         self.assertEqual(0, created["status"])
-        self.assertEqual("base-container", self.manager.added[-1][2])
+        self.assertEqual("world-container:target", self.manager.added[-1][1])
+
+    def test_base_worker_add_requires_a_storage_target(self):
+        rejected = self.client.post(
+            "/api/pal/add_pal",
+            json={"PlayerUId": "PAL_BASE_WORKER_BTN", "Mode": "default"},
+            headers=self.headers,
+        ).get_json()
+        self.assertEqual(1, rejected["status"])
+        self.assertIn("base container", (rejected["msg"] or "").lower())
+
+        created = self.client.post(
+            "/api/pal/add_pal",
+            json={
+                "PlayerUId": "PAL_BASE_WORKER_BTN",
+                "RosterKey": "PAL_BASE_WORKER_BTN",
+                "TargetStorageKey": "world-container:base",
+                "Mode": "default",
+            },
+            headers=self.headers,
+        ).get_json()
+        self.assertEqual(0, created["status"])
+        self.assertEqual("PAL_BASE_WORKER_BTN", self.manager.added[-1][0])
+        self.assertEqual("world-container:base", self.manager.added[-1][1])
 
     def test_template_names_and_import_sizes_are_bounded(self):
         invalid_name = self.client.post(

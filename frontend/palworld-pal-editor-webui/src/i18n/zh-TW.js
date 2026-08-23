@@ -285,7 +285,6 @@ export default {
     Message_Select_Player: "請先選擇一名玩家。",
     Message_No_Player: "该存檔中没有找到玩家。",
     Message_Select_Pal_Failed: "無法選擇该帕鲁，請重试或重新載入存檔。",
-    Message_Basecamp_Add_Unsupported: "不支持直接向基地添加帕鲁。",
     Message_Save_Success: "更改已成功保存到 {{0}}。",
     Message_Pal_Copied: "帕鲁数据已複製到剪貼板。",
     Message_Pal_Template_Saved: "帕鲁模板已保存。",

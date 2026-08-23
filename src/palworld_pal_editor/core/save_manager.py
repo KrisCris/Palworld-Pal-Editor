@@ -2075,11 +2075,11 @@ class SaveManager:
                 descriptor
                 for descriptor in self.creation_targets(roster_key)
                 if descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"party", "storage"}
+                and descriptor["ContainerKind"] in {"base", "party", "storage"}
                 and descriptor["Occupied"] < descriptor["Capacity"]
             ]
             if not targets:
-                raise ValueError("The player's Pal containers are full.")
+                raise ValueError("The target Pal containers are full.")
             clone = self.create_pal(
                 roster_key,
                 targets[0]["StorageKey"],

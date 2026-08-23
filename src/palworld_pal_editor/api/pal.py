@@ -30,70 +30,54 @@ def list_pal_creation_targets(roster_key):
     return reply(0, SaveManager().creation_targets(roster_key))
 
 
-@pal_blueprint.route("/move", methods=["POST"])
 @pal_blueprint.route("/transfer", methods=["POST"])
 @jwt_required()
 def move_pal():
     payload = request.json or {}
     source_record_key = payload.get("SourceRecordKey")
     target_storage_key = payload.get("TargetStorageKey")
-    if source_record_key or target_storage_key:
-        if not source_record_key or not target_storage_key:
-            return reply(
-                1,
-                None,
-                "SourceRecordKey and TargetStorageKey are required.",
-            )
-        try:
-            manager = SaveManager()
-            source = manager.get_record(source_record_key)
-            result = manager.transfer_pal(
-                source_record_key,
-                target_storage_key,
-                payload.get("Action", "move"),
-                payload.get("ExpectedTargetRecordKey"),
-            )
-            return reply(0, result)
-        except PalIdentityConflict as conflict:
-            locked = conflict.candidates[0] if len(conflict.candidates) == 1 else None
-            return reply(
-                1,
-                {
-                    "Code": "PAL_IDENTITY_CONFLICT",
-                    "Incoming": _pal_brief(source.pal) if source else None,
-                    "Candidates": [
-                        _record_location(manager, candidate)
-                        for candidate in conflict.candidates
-                    ],
-                    "LockedTarget": locked.record_key if locked else None,
-                    "Existing": _pal_brief(locked.pal) if locked else None,
-                    "FieldChanges": (
-                        _brief_field_changes(source.pal, locked.pal)
-                        if source and locked
-                        else {}
-                    ),
-                },
-                "This genetic identity already exists.",
-            )
-        except ValueError as error:
-            return reply(1, None, str(error))
-        except Exception:
-            LOGGER.error(f"Error transferring Pal: {traceback.format_exc()}")
-            return reply(1, None, "Error transferring Pal. No changes were kept.")
-
-    pal_guid = payload.get("PalGuid")
-    target_container_id = payload.get("TargetContainerId")
-    if not pal_guid or not target_container_id:
-        return reply(1, None, "PalGuid and TargetContainerId are required.")
+    if not source_record_key or not target_storage_key:
+        return reply(
+            1,
+            None,
+            "SourceRecordKey and TargetStorageKey are required.",
+        )
     try:
-        SaveManager().move_pal(pal_guid, target_container_id)
-        pal = SaveManager().get_pal(pal_guid)
-        return reply(0, _pal_data(pal) if pal else None)
+        manager = SaveManager()
+        source = manager.get_record(source_record_key)
+        result = manager.transfer_pal(
+            source_record_key,
+            target_storage_key,
+            payload.get("Action", "move"),
+            payload.get("ExpectedTargetRecordKey"),
+        )
+        return reply(0, result)
+    except PalIdentityConflict as conflict:
+        locked = conflict.candidates[0] if len(conflict.candidates) == 1 else None
+        return reply(
+            1,
+            {
+                "Code": "PAL_IDENTITY_CONFLICT",
+                "Incoming": _pal_brief(source.pal) if source else None,
+                "Candidates": [
+                    _record_location(manager, candidate)
+                    for candidate in conflict.candidates
+                ],
+                "LockedTarget": locked.record_key if locked else None,
+                "Existing": _pal_brief(locked.pal) if locked else None,
+                "FieldChanges": (
+                    _brief_field_changes(source.pal, locked.pal)
+                    if source and locked
+                    else {}
+                ),
+            },
+            "This genetic identity already exists.",
+        )
     except ValueError as error:
         return reply(1, None, str(error))
     except Exception:
-        LOGGER.error(f"Error moving Pal: {traceback.format_exc()}")
-        return reply(1, None, "Error moving Pal. No changes were kept.")
+        LOGGER.error(f"Error transferring Pal: {traceback.format_exc()}")
+        return reply(1, None, "Error transferring Pal. No changes were kept.")
 
 
 def _pal_templates() -> list[dict]:
@@ -518,9 +502,8 @@ def add_pal():
     PlayerUId = payload.get("PlayerUId")
     roster_key = payload.get("RosterKey")
     target_storage_key = payload.get("TargetStorageKey")
-    target_container_id = payload.get("TargetContainerId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_container_id:
-        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
+    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_storage_key:
+        LOGGER.warning("Base Pal creation requires an explicit target container.")
         return reply(1, None, "Choose a base container before adding a Pal.")
     try:
         mode = payload.get("Mode", "default")
@@ -539,24 +522,16 @@ def add_pal():
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
-        if roster_key or target_storage_key:
-            if not roster_key or not target_storage_key:
-                return reply(
-                    1,
-                    None,
-                    "RosterKey and TargetStorageKey are required.",
-                )
-            record = SaveManager().create_pal(
-                roster_key, target_storage_key, pal_obj
+        if not roster_key or not target_storage_key:
+            return reply(
+                1,
+                None,
+                "RosterKey and TargetStorageKey are required.",
             )
-            pal_entity = record.pal
-        else:
-            record = None
-            pal_entity = (
-                SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
-                if target_container_id
-                else SaveManager().add_pal(PlayerUId, pal_obj)
-            )
+        record = SaveManager().create_pal(
+            roster_key, target_storage_key, pal_obj
+        )
+        pal_entity = record.pal
         if not pal_entity:
             return reply(
                 1,
@@ -776,9 +751,6 @@ def delete_skill_template(template_id: str):
 def dupe_pal():
     payload = request.json or {}
     PlayerUId = payload.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
-        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
     try:
         record = SaveManager().duplicate_pal(payload.get("RecordKey"), PlayerUId)
     except ValueError as error:

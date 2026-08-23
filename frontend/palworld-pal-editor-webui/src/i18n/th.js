@@ -283,7 +283,6 @@ export default {
     Message_Select_Player: "เลือกผู้เล่นก่อน",
     Message_No_Player: "ไม่พบผู้เล่นในเซฟนี้",
     Message_Select_Pal_Failed: "เลือก Pal ไม่สำเร็จ ลองอีกครั้งหรือโหลดเซฟใหม่",
-    Message_Basecamp_Add_Unsupported: "ไม่รองรับการเพิ่ม Pal เข้าฐานโดยตรง",
     Message_Save_Success: "บันทึกการเปลี่ยนแปลงไปที่ {{0}} แล้ว",
     Message_Pal_Copied: "คัดลอกข้อมูล Pal ไปยังคลิปบอร์ดแล้ว",
     Message_Pal_Template_Saved: "บันทึกแม่แบบ Pal แล้ว",

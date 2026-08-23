@@ -283,7 +283,6 @@ export default {
     Message_Select_Player: "Önce bir oyuncu seçin.",
     Message_No_Player: "Bu kayıtta oyuncu bulunamadı.",
     Message_Select_Pal_Failed: "Pal seçilemedi. Tekrar deneyin veya kaydı yeniden yükleyin.",
-    Message_Basecamp_Add_Unsupported: "Pals'leri doğrudan üsse eklemek desteklenmez.",
     Message_Save_Success: "Değişiklikler {{0}} konumuna kaydedildi.",
     Message_Pal_Copied: "Pal verisi panoya kopyalandı.",
     Message_Pal_Template_Saved: "Pal şablonu kaydedildi.",

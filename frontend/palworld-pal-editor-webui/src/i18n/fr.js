@@ -299,7 +299,6 @@ export default {
     Message_Select_Player: "Sélectionnez d’abord un joueur.",
     Message_No_Player: "Aucun joueur n’a été trouvé dans cette sauvegarde.",
     Message_Select_Pal_Failed: "Impossible de sélectionner le Pal. Réessayez ou rechargez la sauvegarde.",
-    Message_Basecamp_Add_Unsupported: "L’ajout direct de Pals à un camp de base n’est pas pris en charge.",
     Message_Save_Success: "Modifications enregistrées dans {{0}}.",
     Message_Pal_Copied: "Données du Pal copiées dans le presse-papiers.",
     Message_Pal_Template_Saved: "Modèle de Pal enregistré.",

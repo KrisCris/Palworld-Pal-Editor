@@ -396,3 +396,44 @@ def test_save_transaction_restores_level_dps_and_global_on_replace_failure(
     assert manager.save(str(manager._file_path)) is False
     assert replace_count == 2
     assert {path: path.read_bytes() for path in original} == original
+
+
+def test_base_worker_creation_targets_and_create(tmp_path):
+    manager = open_copied_world(tmp_path)
+    base_targets = manager.creation_targets("PAL_BASE_WORKER_BTN")
+    assert base_targets
+    base_key = base_targets[0]["StorageKey"]
+
+    created = manager.create_pal("PAL_BASE_WORKER_BTN", base_key)
+
+    assert created.storage_kind == "world"
+    assert created.pal.OwnerPlayerUId is None
+    assert manager.baseworker_mapping[str(created.pal.InstanceId)] is created.pal
+    assert manager.get_record(created.record_key) is created
+
+    assert manager.save(str(manager._file_path)) is True
+    SaveManager._instance = None
+    reopened = SaveManager()
+    assert reopened.open(str(manager._file_path)) is not None
+    persisted = reopened.get_record(created.record_key)
+    assert persisted is not None
+    assert str(persisted.pal.InstanceId) == str(created.pal.InstanceId)
+
+
+def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
+    manager = open_copied_world(tmp_path)
+    base_records = [
+        record
+        for record in manager.records_for_roster("PAL_BASE_WORKER_BTN")
+        if manager.resolve_record_location(record)["LocationStatus"] == "ok"
+    ]
+    assert base_records
+    source = base_records[0]
+
+    clone = manager.duplicate_pal(source.record_key, "PAL_BASE_WORKER_BTN")
+
+    assert clone.pal.InstanceId != source.pal.InstanceId
+    assert clone.pal.OwnerPlayerUId is None
+    assert clone.storage_kind == "world"
+    assert manager.baseworker_mapping[str(clone.pal.InstanceId)] is clone.pal
+    assert manager.get_record(clone.record_key) is clone

@@ -283,7 +283,6 @@ export default {
     Message_Select_Player: "Hãy chọn người chơi trước.",
     Message_No_Player: "Không tìm thấy người chơi trong bản lưu này.",
     Message_Select_Pal_Failed: "Không chọn được Pal. Hãy thử lại hoặc tải lại bản lưu.",
-    Message_Basecamp_Add_Unsupported: "Không hỗ trợ thêm Pal trực tiếp vào căn cứ.",
     Message_Save_Success: "Đã lưu thay đổi vào {{0}}.",
     Message_Pal_Copied: "Đã sao chép dữ liệu Pal vào bảng nhớ tạm.",
     Message_Pal_Template_Saved: "Đã lưu mẫu Pal.",

@@ -299,7 +299,6 @@ export default {
     Message_Select_Player: "先にプレイヤーを選択してください。",
     Message_No_Player: "このセーブデータにプレイヤーが見つかりません。",
     Message_Select_Pal_Failed: "パルを選択できませんでした。再試行するかセーブを再読み込みしてください。",
-    Message_Basecamp_Add_Unsupported: "拠点へ直接パルを追加することはできません。",
     Message_Save_Success: "変更を {{0}} に保存しました。",
     Message_Pal_Copied: "パルデータをクリップボードにコピーしました。",
     Message_Pal_Template_Saved: "パルテンプレートを保存しました。",

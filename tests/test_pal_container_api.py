@@ -108,23 +108,17 @@ class PalContainerApiTests(unittest.TestCase):
         self.assertEqual("target", response["data"][0]["ContainerId"])
         self.assertEqual("Main Base", response["data"][0]["ContainerLabel"])
 
-    def test_move_endpoint_requires_ids_and_delegates_source_resolution(self):
+    def test_transfer_endpoint_requires_storage_qualified_keys(self):
         missing = self.client.post(
-            "/api/pal/move", json={"PalGuid": "pal"}, headers=self.headers
-        ).get_json()
-        moved = self.client.post(
-            "/api/pal/move",
-            json={"PalGuid": "pal", "TargetContainerId": "target"},
+            "/api/pal/transfer",
+            json={"SourceRecordKey": "world:pal"},
             headers=self.headers,
         ).get_json()
-
         self.assertEqual(1, missing["status"])
-        self.assertEqual(0, moved["status"])
-        self.assertEqual([("pal", "target")], self.manager.moves)
 
     def test_transfer_endpoint_uses_storage_qualified_keys(self):
         moved = self.client.post(
-            "/api/pal/move",
+            "/api/pal/transfer",
             json={
                 "SourceRecordKey": "world:pal",
                 "TargetStorageKey": "dps:owner",

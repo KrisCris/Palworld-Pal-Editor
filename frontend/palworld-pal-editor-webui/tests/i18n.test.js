@@ -185,7 +185,6 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "Message_Select_Player",
         "Message_No_Player",
         "Message_Select_Pal_Failed",
-        "Message_Basecamp_Add_Unsupported",
         "Message_Save_Success",
         "Message_Pal_Copied",
         "Message_AntiScam",

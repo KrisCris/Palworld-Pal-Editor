@@ -432,7 +432,6 @@ export default {
     Message_Select_Player: "Select a player first.",
     Message_No_Player: "No player was found in this gamesave.",
     Message_Select_Pal_Failed: "Failed to select the Pal. Try again or reload the save.",
-    Message_Basecamp_Add_Unsupported: "Adding Pals directly to a base camp is not supported.",
     Message_Save_Success: "Changes successfully saved to {{0}}.",
     Message_Pal_Copied: "Pal data copied to the clipboard.",
     Message_Pal_Template_Saved: "Pal template saved.",

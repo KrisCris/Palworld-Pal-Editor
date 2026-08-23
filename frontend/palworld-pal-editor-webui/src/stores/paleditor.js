@@ -2277,11 +2277,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let no_set_loading_flag = LOADING_FLAG.value;
         if (!no_set_loading_flag) LOADING_FLAG.value = true;
         const PlayerUId = GET_PAL_OWNER_API_ID();
-        if (PlayerUId == PAL_BASE_WORKER_BTN.value) {
-            showToast("Message_Basecamp_Add_Unsupported");
-            if (!no_set_loading_flag) LOADING_FLAG.value = false;
-            return;
-        }
         const response = await POST("/api/pal/dupe_pal", {
             PlayerUId: PlayerUId,
             RecordKey: SELECTED_PAL_ID.value,

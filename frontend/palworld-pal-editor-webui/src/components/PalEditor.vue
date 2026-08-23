@@ -270,7 +270,7 @@ const portraitBorder = pal => pal.IsAwakening
             <UiIcon name="maximum" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
           </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
-            :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG"
+            :disabled="palStore.LOADING_FLAG"
             :aria-label="palStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
             <UiIcon name="copy" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
           </button>
