@@ -7,9 +7,7 @@ from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.palsav import compress_gvas_to_sav, decompress_sav_to_gvas
 from palworld_save_tools.paltypes import PALWORLD_TYPE_HINTS
 
-from .pal_entity import PalEntity
 from .pal_objects import PalObjects, toUUID
-from .pal_record import PalRecord
 from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 
 
@@ -17,6 +15,13 @@ StorageKind = Literal["dps", "global_palbox"]
 
 
 class FixedPalStorage:
+    """One DPS or GPS save file: its GVAS, its fixed slot array, and its dirty flag.
+
+    What a slot *means* — record keys, Pal binding, PalRecord — belongs to the
+    matching adapter in ``pal_storage_adapters``; this class only reads and writes
+    the array.
+    """
+
     _EXPECTED_CLASS = {
         "dps": "/Script/Pal.PalDimensionPalStorageSaveGame",
         "global_palbox": "/Script/Pal.PalGlobalPalStorageSaveGame",
@@ -73,68 +78,40 @@ class FixedPalStorage:
 
     @property
     def capacity(self) -> int:
-        return len(self._entries)
+        return len(self.entries)
 
     @property
     def occupied(self) -> int:
-        return sum(self._occupied(entry) for entry in self._entries)
+        return sum(self.occupies(entry) for entry in self.entries)
 
     @property
-    def _entries(self) -> list[dict]:
+    def entries(self) -> list[dict]:
         return self.gvas_file.properties["SaveParameterArray"]["value"]["values"]
 
-    def record_key(self, slot_index: int) -> str:
-        if self.kind == "global_palbox":
-            return f"gps:{slot_index}"
-        return f"dps:{self.owner_uid}:{slot_index}"
-
-    def records(self) -> list[PalRecord]:
-        return [
-            self._record(slot_index, entry)
-            for slot_index, entry in enumerate(self._entries)
-            if self._occupied(entry)
-        ]
-
-    def get(self, record_key: str) -> PalRecord | None:
-        prefix = "gps:" if self.kind == "global_palbox" else f"dps:{self.owner_uid}:"
-        if not record_key.startswith(prefix):
-            return None
-        try:
-            slot_index = int(record_key.removeprefix(prefix))
-            entry = self._entries[slot_index]
-        except (IndexError, ValueError):
-            return None
-        if not self._occupied(entry):
-            return None
-        return self._record(slot_index, entry)
-
     def free_index(self) -> int:
-        for slot_index, entry in enumerate(self._entries):
-            if not self._occupied(entry):
+        for slot_index, entry in enumerate(self.entries):
+            if not self.occupies(entry):
                 return slot_index
         return -1
 
-    def allocate(
+    def write_free_slot(
         self,
         save_parameter: dict,
         instance_id: UUID | str,
         player_uid: UUID | str | None = None,
-    ) -> PalRecord:
+    ) -> int:
         slot_index = self.free_index()
         if slot_index < 0:
             raise ValueError(f"{self.storage_key} is full")
-        entry = self._entries[slot_index]
+        entry = self.entries[slot_index]
         entry.clear()
         entry["SaveParameter"] = copy.deepcopy(save_parameter)
         entry["InstanceId"] = self._instance_id(instance_id, player_uid)
         self.dirty = True
-        return self._record(slot_index, entry)
+        return slot_index
 
-    def clear(self, record_key: str) -> None:
-        record = self.get(record_key)
-        if record is None:
-            raise KeyError(record_key)
-        record.native_record["InstanceId"] = self._instance_id(
+    def clear_slot(self, slot_index: int) -> None:
+        self.entries[slot_index]["InstanceId"] = self._instance_id(
             PalObjects.EMPTY_UUID,
             PalObjects.EMPTY_UUID,
         )
@@ -144,30 +121,8 @@ class FixedPalStorage:
         raw_gvas = copy.deepcopy(self.gvas_file).write(PAL_STORAGE_CUSTOM_PROPERTIES)
         return compress_gvas_to_sav(raw_gvas, self.save_type)
 
-    def _record(self, slot_index: int, entry: dict) -> PalRecord:
-        pal_obj = {
-            "key": entry["InstanceId"]["value"],
-            "value": {
-                "RawData": {
-                    "value": {
-                        "group_id": PalObjects.EMPTY_UUID,
-                        "object": {"SaveParameter": entry["SaveParameter"]},
-                    }
-                }
-            },
-        }
-        return PalRecord(
-            record_key=self.record_key(slot_index),
-            storage_kind=self.kind,
-            storage_key=self.storage_key,
-            slot_index=slot_index,
-            native_record=entry,
-            pal=PalEntity(pal_obj),
-            storage_owner_uid=self.owner_uid,
-        )
-
     @staticmethod
-    def _occupied(entry: dict) -> bool:
+    def occupies(entry: dict) -> bool:
         instance_id = PalObjects.get_BaseType(
             entry.get("InstanceId", {}).get("value", {}).get("InstanceId")
         )

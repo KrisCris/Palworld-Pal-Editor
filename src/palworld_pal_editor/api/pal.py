@@ -7,6 +7,8 @@ from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
+from palworld_pal_editor.core.pal_objects import dumps
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
@@ -149,12 +151,12 @@ def _parse_pal_json(raw: str) -> dict:
     pal_obj = json.loads(raw)
     if not isinstance(pal_obj, dict):
         raise TypeError("Pal JSON must contain one Pal object.")
-    PalEntity(pal_obj)
+    WorldPalAdapter.entity(pal_obj)
     return pal_obj
 
 
 def _template_summary(template: dict) -> dict:
-    pal = PalEntity(_parse_pal_json(template["PalData"]))
+    pal = WorldPalAdapter.entity(_parse_pal_json(template["PalData"]))
     return {
         "Id": template["Id"],
         "Name": template["Name"],
@@ -316,7 +318,9 @@ def _pal_data(pal: PalEntity, pal_record=None):
         ),
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
         "OwnerPlayerUId": owner_uid,
-        "group_id": _guid_string_or_none(pal.group_id),
+        "group_id": (
+            _guid_string_or_none(pal_record.group_id) if pal_record else None
+        ),
         "ContainerId": location["RecordedContainerId"],
         "SlotIndex": location["RecordedSlotIndex"],
         "ActualContainerId": location["ActualContainerId"],
@@ -469,7 +473,7 @@ def dump_data():
     except ValueError as error:
         return reply(1, None, str(error))
     if record:
-        return reply(0, record.pal.dump_obj())
+        return reply(0, dumps(WorldPalAdapter.envelope(record)))
     return reply(1, None, "Selected Pal not found.")
 
 
@@ -563,12 +567,11 @@ def create_pal_template():
         return reply(1, None, str(error))
     if record is None:
         return reply(1, None, "Selected Pal not found.")
-    pal = record.pal
 
     template = {
         "Id": uuid.uuid4().hex,
         "Name": name,
-        "PalData": pal.dump_obj(),
+        "PalData": dumps(WorldPalAdapter.envelope(record)),
     }
     try:
         summary = _template_summary(template)

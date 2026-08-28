@@ -5,13 +5,13 @@ from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
-from fakes import pal_payload, record_location, world_record
+from fakes import pal_payload, record_location, world_pal, world_record
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
 
 
-def make_pal(character_id: str) -> PalEntity:
+def make_pal_obj(character_id: str) -> dict:
     pal_obj = PalObjects.PalSaveParameter(
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
@@ -24,7 +24,11 @@ def make_pal(character_id: str) -> PalEntity:
     ]["value"]
     PalObjects.set_BaseType(parameter["CharacterID"], character_id)
     parameter.pop("OwnerPlayerUId", None)
-    return PalEntity(pal_obj)
+    return pal_obj
+
+
+def make_pal(character_id: str) -> PalEntity:
+    return world_pal(make_pal_obj(character_id))
 
 
 class PalFamilyProviderTests(unittest.TestCase):
@@ -151,11 +155,11 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertTrue(payload["RegularlyObtainable"])
 
     def test_character_patch_and_refresh_keep_exact_variant(self):
-        pal = make_pal("SheepBall")
+        record = world_record(make_pal_obj("SheepBall"))
 
         class Manager:
             def get_unique_world_record(self, _instance_id):
-                return world_record(pal, storage_key="world-container:test")
+                return record
 
             def normalize_external_record(self, _record):
                 pass

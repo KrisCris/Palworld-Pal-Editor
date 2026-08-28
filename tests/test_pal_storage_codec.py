@@ -13,6 +13,7 @@ from palworld_pal_editor.core.save_codec import (
     RAW_PAL_STORAGE_ENTRY,
 )
 from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage_adapters import DpsPalAdapter
 
 
 OCCUPIED_DPS = Path(
@@ -68,31 +69,35 @@ def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
         "dps",
         "a18b721d-0000-0000-0000-000000000000",
     )
-    assert RAW_PAL_STORAGE_ENTRY in storage._entries[1]
+    assert RAW_PAL_STORAGE_ENTRY in storage.entries[1]
 
     new_instance_id = str(uuid.uuid4())
-    record = storage.allocate(
-        copy.deepcopy(storage._entries[0]["SaveParameter"]),
+    record = DpsPalAdapter(storage).allocate(
+        copy.deepcopy(storage.entries[0]["SaveParameter"]),
         new_instance_id,
     )
     assert record.slot_index == 1
-    assert RAW_PAL_STORAGE_ENTRY not in storage._entries[record.slot_index]
+    assert RAW_PAL_STORAGE_ENTRY not in storage.entries[record.slot_index]
     storage_path.write_bytes(storage.serialize())
 
-    reopened = FixedPalStorage.open(
-        storage_path,
-        "dps",
-        "a18b721d-0000-0000-0000-000000000000",
+    reopened = DpsPalAdapter(
+        FixedPalStorage.open(
+            storage_path,
+            "dps",
+            "a18b721d-0000-0000-0000-000000000000",
+        )
     )
     reopened_record = reopened.get(record.record_key)
     assert reopened_record is not None
     assert str(reopened_record.pal.InstanceId) == new_instance_id
 
     reopened.clear(record.record_key)
-    storage_path.write_bytes(reopened.serialize())
-    cleared = FixedPalStorage.open(
-        storage_path,
-        "dps",
-        "a18b721d-0000-0000-0000-000000000000",
+    storage_path.write_bytes(reopened.storage.serialize())
+    cleared = DpsPalAdapter(
+        FixedPalStorage.open(
+            storage_path,
+            "dps",
+            "a18b721d-0000-0000-0000-000000000000",
+        )
     )
     assert cleared.get(record.record_key) is None

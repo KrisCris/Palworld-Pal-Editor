@@ -5,7 +5,7 @@ from uuid import UUID
 
 from flask_jwt_extended import create_access_token
 
-from fakes import pal_payload, record_location, world_record
+from fakes import pal_payload, record_location, world_pal, world_record
 from palworld_pal_editor.api.pal import _pal_brief
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
@@ -15,7 +15,7 @@ from palworld_pal_editor.webui import app
 
 class PalIdentityTests(unittest.TestCase):
     @staticmethod
-    def make_pal(character_id: str) -> PalEntity:
+    def make_pal_obj(character_id: str) -> dict:
         pal_obj = PalObjects.PalSaveParameter(
             PalObjects.EMPTY_UUID,
             PalObjects.EMPTY_UUID,
@@ -28,7 +28,11 @@ class PalIdentityTests(unittest.TestCase):
         ]["value"]
         PalObjects.set_BaseType(parameter["CharacterID"], character_id)
         parameter.pop("OwnerPlayerUId", None)
-        return PalEntity(pal_obj)
+        return pal_obj
+
+    @classmethod
+    def make_pal(cls, character_id: str) -> PalEntity:
+        return world_pal(cls.make_pal_obj(character_id))
 
     def test_special_suffixes_resolve_without_replacing_internal_name(self):
         for character_id, raw_key, data_key, icon_key in (
@@ -154,7 +158,7 @@ class PalIdentityTests(unittest.TestCase):
             0,
             PalObjects.EMPTY_UUID,
         )
-        pal = PalEntity(pal_obj)
+        pal = world_pal(pal_obj)
 
         class Player:
             NickName = None
@@ -181,12 +185,11 @@ class PalIdentityTests(unittest.TestCase):
         self.assertTrue(payload["IsNewPal"])
 
     def test_pal_list_includes_awakened_and_new_state_before_selection(self):
-        pal = self.make_pal("SheepBall")
+        record = world_record(self.make_pal_obj("SheepBall"))
+        pal = record.pal
         pal.IsAwakening = True
         pal.IsImportedCharacter = True
         pal.is_new_pal = True
-
-        record = world_record(pal)
 
         class Manager:
             @staticmethod
@@ -223,7 +226,11 @@ class PalIdentityTests(unittest.TestCase):
     def test_pal_list_includes_verified_location_and_priority_fields(self):
         party_id = UUID("11111111-1111-1111-1111-111111111111")
         storage_id = UUID("22222222-2222-2222-2222-222222222222")
-        pal = self.make_pal("SheepBall")
+        record = world_record(
+            self.make_pal_obj("SheepBall"),
+            storage_key=f"world-container:{party_id}",
+        )
+        pal = record.pal
         pal.InstanceId = "33333333-3333-3333-3333-333333333333"
         pal.SlotId = (str(party_id), 4)
         pal.pal_param["FavoriteIndex"] = PalObjects.IntProperty(3)
@@ -237,8 +244,6 @@ class PalIdentityTests(unittest.TestCase):
                 return [pal]
 
         pal.set_owner_player_entity(Player())
-
-        record = world_record(pal, storage_key=f"world-container:{party_id}")
 
         class Manager:
             @staticmethod

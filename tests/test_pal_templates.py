@@ -8,8 +8,8 @@ from unittest.mock import patch
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_objects import PalObjects, dumps, toUUID
+from palworld_pal_editor.core.pal_record import PalRecord
 from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
 
@@ -17,7 +17,7 @@ PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
 PAL_ID = toUUID("22222222-2222-2222-2222-222222222222")
 
 
-def make_pal() -> PalEntity:
+def make_record() -> PalRecord:
     pal_obj = PalObjects.PalSaveParameter(
         PAL_ID,
         PLAYER_ID,
@@ -29,16 +29,16 @@ def make_pal() -> PalEntity:
         "value"
     ]
     PalObjects.set_BaseType(parameter["NickName"], "Template Lamball")
-    return PalEntity(pal_obj)
+    return world_record(pal_obj, storage_key="world-container:test")
 
 
 class FakeManager:
-    def __init__(self, pal):
-        self.pal = pal
+    def __init__(self, record):
+        self.record = record
         self.added = []
 
     def get_unique_world_record(self, _instance_id):
-        return world_record(self.pal, storage_key="world-container:test")
+        return self.record
 
     def get_player(self, _player_id):
         return type("Player", (), {"NickName": "Target"})()
@@ -48,23 +48,30 @@ class FakeManager:
 
     def add_pal(self, player_id, pal_obj=None, target_container_id=None):
         self.added.append((player_id, pal_obj, target_container_id))
-        result = PalEntity(copy.deepcopy(pal_obj or self.pal._pal_obj))
-        result.is_new_pal = True
+        result = world_record(
+            copy.deepcopy(pal_obj or self.record.native_record),
+            storage_key=f"world-container:{target_container_id}",
+        )
+        result.pal.is_new_pal = True
         return result
 
     def create_pal(self, roster_key, target_storage_key, pal_obj=None, pal_owner_uid=None):
         self.added.append((roster_key, target_storage_key, pal_obj))
-        result = PalEntity(copy.deepcopy(pal_obj or self.pal._pal_obj))
-        result.is_new_pal = True
-        return world_record(result, storage_key=target_storage_key)
+        result = world_record(
+            copy.deepcopy(pal_obj or self.record.native_record),
+            storage_key=target_storage_key,
+        )
+        result.pal.is_new_pal = True
+        return result
 
 
 class PalTemplateApiTests(unittest.TestCase):
     def setUp(self):
         self.previous_templates = getattr(Config, "palTemplates", None)
         Config.palTemplates = []
-        self.pal = make_pal()
-        self.manager = FakeManager(self.pal)
+        self.record = make_record()
+        self.pal = self.record.pal
+        self.manager = FakeManager(self.record)
         self.client = app.test_client()
         with app.app_context():
             token = create_access_token(identity="test")
@@ -127,7 +134,7 @@ class PalTemplateApiTests(unittest.TestCase):
                 "RosterKey": str(PLAYER_ID),
                 "TargetStorageKey": "world-container:test",
                 "Mode": "json",
-                "PalJson": self.pal.dump_obj(),
+                "PalJson": dumps(self.record.native_record),
             },
             headers=self.headers,
         ).get_json()
@@ -157,7 +164,7 @@ class PalTemplateApiTests(unittest.TestCase):
                 "RosterKey": str(PLAYER_ID),
                 "TargetStorageKey": "world-container:target",
                 "Mode": "json",
-                "PalJson": self.pal.dump_obj(),
+                "PalJson": dumps(self.record.native_record),
             },
             headers=self.headers,
         ).get_json()
@@ -209,9 +216,8 @@ class PalTemplateApiTests(unittest.TestCase):
         self.assertEqual([], self.manager.added)
 
     def test_invalid_and_failed_template_writes_do_not_leave_ghost_entries(self):
-        with patch.object(
-            self.pal,
-            "dump_obj",
+        with patch(
+            "palworld_pal_editor.api.pal.dumps",
             return_value="x" * (2 * 1024 * 1024 + 1),
         ):
             invalid = self.client.post(

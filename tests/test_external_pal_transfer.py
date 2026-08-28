@@ -56,8 +56,8 @@ def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
     manager = open_copied_world(tmp_path)
     lossy = manager.get_player(LOSSY_UID)
     mint = manager.get_player(MINT_UID)
-    lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]
-    mint_dps = manager._dps_storages[f"dps:{MINT_UID}"]
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
+    mint_dps = manager.storage_adapters[f"dps:{MINT_UID}"]
 
     # Mint's Pal is physically stored in Lossy's public DPS in the real fixture.
     source = next(
@@ -99,17 +99,17 @@ def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
     )
     world_instance_id = str(world_source.pal.InstanceId)
     world_owner = str(world_source.pal.OwnerPlayerUId)
-    source_group = manager.group_data.get_group(world_source.pal.group_id)
+    source_group = manager.group_data.get_group(world_source.group_id)
     moved = manager.transfer_pal(world_source.record_key, lossy_dps.storage_key, "move")
     dps_record = manager.get_record(moved["RecordKey"])
     assert str(dps_record.pal.OwnerPlayerUId) == world_owner
-    assert world_source.pal._pal_obj not in manager._entities_list
+    assert world_source.native_record not in manager._entities_list
     assert not source_group.has_pal(world_instance_id)
     assert locker_ids(manager)[-1] == world_instance_id
 
     deleted_slot = dps_record.slot_index
     assert manager.delete_pal(dps_record.record_key) is True
-    assert lossy_dps.free_index() == deleted_slot
+    assert lossy_dps.storage.free_index() == deleted_slot
     assert world_instance_id not in locker_ids(manager)
 
     target_keys = {
@@ -132,22 +132,22 @@ def test_full_dps_target_rejects_without_mutating_source_or_locker(
     tmp_path, monkeypatch
 ):
     manager = open_copied_world(tmp_path)
-    source_storage = manager._dps_storages[f"dps:{LOSSY_UID}"]
-    target_storage = manager._dps_storages[f"dps:{MINT_UID}"]
+    source_storage = manager.storage_adapters[f"dps:{LOSSY_UID}"]
+    target_storage = manager.storage_adapters[f"dps:{MINT_UID}"]
     source = source_storage.records()[0]
     source_snapshot = copy.deepcopy(source.native_record)
-    target_snapshot = copy.deepcopy(target_storage._entries)
+    target_snapshot = copy.deepcopy(target_storage.storage.entries)
     locker_snapshot = copy.deepcopy(manager._locker_entries())
     registry_snapshot = {
         record.record_key for record in manager.pal_repository.records()
     }
-    monkeypatch.setattr(target_storage, "free_index", lambda: -1)
+    monkeypatch.setattr(target_storage.storage, "free_index", lambda: -1)
 
     with pytest.raises(ValueError, match="full"):
         manager.transfer_pal(source.record_key, target_storage.storage_key, "move")
 
     assert source.native_record == source_snapshot
-    assert target_storage._entries == target_snapshot
+    assert target_storage.storage.entries == target_snapshot
     assert manager._locker_entries() == locker_snapshot
     assert {
         record.record_key for record in manager.pal_repository.records()
@@ -222,7 +222,7 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
         "record_key": world_source.record_key,
         "owner": world_source.pal.OwnerPlayerUId,
         "owners": copy.deepcopy(world_source.pal.pal_param.get("OldOwnerPlayerUIds")),
-        "group": world_source.pal.group_id,
+        "group": world_source.group_id,
         "slot": world_source.pal.SlotId,
         "expedition": copy.deepcopy(
             world_source.pal.pal_param.get(
@@ -246,7 +246,7 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
         updated_record.pal.pal_param.get("OldOwnerPlayerUIds")
         == destination_envelope["owners"]
     )
-    assert updated_record.pal.group_id == destination_envelope["group"]
+    assert updated_record.group_id == destination_envelope["group"]
     assert updated_record.pal.SlotId == destination_envelope["slot"]
     assert (
         updated_record.pal.pal_param.get(
@@ -282,7 +282,7 @@ def test_global_import_requires_an_owned_player_party_or_palbox(tmp_path):
 
 def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
     manager = open_copied_world(tmp_path, with_global=True)
-    lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
 
     dps_source = next(
         record
@@ -339,7 +339,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
 
 def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
     manager = open_copied_world(tmp_path, with_global=True)
-    lossy_dps = manager._dps_storages[f"dps:{LOSSY_UID}"]
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
     source = next(
         record
         for record in manager.records_for_roster(LOSSY_UID)

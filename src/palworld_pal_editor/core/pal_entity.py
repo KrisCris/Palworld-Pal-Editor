@@ -8,7 +8,6 @@ from palworld_pal_editor.core.pal_objects import (
     PalObjects,
     PalGender,
     PalSuitability,
-    get_nested_attr,
     dumps,
     toUUID,
 )
@@ -75,27 +74,26 @@ class PalEntity:
     MAX_SOUL_RANK = 20
     MAX_TALENT = 100
 
-    def __init__(self, pal_obj: dict) -> None:
-        self._pal_obj: dict = pal_obj
-
-        # The two stable parent dicts. Everything else is read through them on
-        # demand so that replacing a whole native property (e.g. overwriting
+    def __init__(self, pal_key: dict, save_parameter_owner: dict) -> None:
+        # The two stable parent dicts, handed over by the storage adapter that found
+        # them in its own native format: the identity struct's value, and the dict
+        # that owns the SaveParameter property. Everything else is read through them
+        # on demand so that replacing a whole native property (e.g. overwriting
         # SaveParameter from another source) stays visible to this entity.
-        self._pal_key: dict = self._pal_obj["key"]
-        self._save_parameter_owner: dict = self._pal_obj["value"]["RawData"]["value"][
-            "object"
-        ]
+        self._pal_key: dict = pal_key
+        self._save_parameter_owner: dict = save_parameter_owner
 
         if self.save_parameter["struct_type"] != "PalIndividualCharacterSaveParameter":
             raise Exception(
-                f"{self._pal_obj}'s save param is not PalIndividualCharacterSaveParameter"
+                f"{dumps(save_parameter_owner)}'s save param is not "
+                "PalIndividualCharacterSaveParameter"
             )
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
 
         if self.CharacterID is None:
-            raise Exception(f"No CharacterID, skipping {dumps(pal_obj)}")
+            raise Exception(f"No CharacterID, skipping {dumps(save_parameter_owner)}")
 
         if PalObjects.get_BaseType(self.pal_param.get("IsPlayer")):
             raise TypeError(
@@ -173,14 +171,6 @@ class PalEntity:
         ):
             return True
         return False
-
-    @property
-    def group_id(self) -> Optional[UUID]:
-        return get_nested_attr(self._pal_obj, ["value", "RawData", "value", "group_id"])
-
-    @group_id.setter
-    def group_id(self, id: UUID | str):
-        self._pal_obj["value"]["RawData"]["value"]["group_id"] = id
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
@@ -1449,12 +1439,6 @@ class PalEntity:
 
         for suitability in tuple(self.MinimumWorkSuitabilities or {}):
             self.set_WorkSuitability(suitability, MAX_WORK_SUITABILITY)
-
-    def print_obj(self):
-        print(self.dump_obj())
-
-    def dump_obj(self) -> str:
-        return dumps(self._pal_obj)
 
     def _set_soul_rank(self, property_name: str, rank: int):
         # valid option is rank = clamp(0, 20, rank)

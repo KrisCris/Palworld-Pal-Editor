@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_record import PalRecord
 from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
 
@@ -13,7 +14,7 @@ PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
 PAL_ID = toUUID("22222222-2222-2222-2222-222222222222")
 
 
-def make_pal(character_id: str = "SheepBall") -> PalEntity:
+def make_record(character_id: str = "SheepBall") -> PalRecord:
     pal_obj = PalObjects.PalSaveParameter(
         PAL_ID,
         PLAYER_ID,
@@ -26,7 +27,8 @@ def make_pal(character_id: str = "SheepBall") -> PalEntity:
     ]
     PalObjects.set_BaseType(parameter["CharacterID"], character_id)
     parameter.pop("OwnerPlayerUId", None)
-    pal = PalEntity(pal_obj)
+    record = world_record(pal_obj, storage_key="world-container:test")
+    pal = record.pal
     pal.Level = 5
     pal.FriendshipLevel = 1
     pal.Rank = 2
@@ -39,15 +41,15 @@ def make_pal(character_id: str = "SheepBall") -> PalEntity:
     pal.Talent_Melee = 17
     pal.Talent_Shot = 20
     pal.Talent_Defense = 30
-    return pal
+    return record
 
 
 class FakeManager:
-    def __init__(self, pal):
-        self.pal = pal
+    def __init__(self, record):
+        self.record = record
 
     def get_unique_world_record(self, _instance_id):
-        return world_record(self.pal, storage_key="world-container:test")
+        return self.record
 
     def get_player(self, _player_id):
         return type("Player", (), {"NickName": "Target"})()
@@ -61,7 +63,8 @@ class FakeManager:
 
 class PalMaximizeTests(unittest.TestCase):
     def setUp(self):
-        self.pal = make_pal()
+        self.record = make_record()
+        self.pal = self.record.pal
 
     def test_maximize_progression_uses_only_normal_gameplay_limits(self):
         original_character_id = self.pal.CharacterID
@@ -97,7 +100,7 @@ class PalMaximizeTests(unittest.TestCase):
         self.assertEqual(original_character_id, self.pal.CharacterID)
 
     def test_maximize_endpoint_returns_the_complete_updated_pal(self):
-        manager = FakeManager(self.pal)
+        manager = FakeManager(self.record)
         client = app.test_client()
         with app.app_context():
             token = create_access_token(identity="test")
@@ -128,7 +131,7 @@ class PalMaximizeTests(unittest.TestCase):
         )
 
     def test_maximize_endpoint_supports_base_workers(self):
-        manager = FakeManager(self.pal)
+        manager = FakeManager(self.record)
         client = app.test_client()
         with app.app_context():
             token = create_access_token(identity="test")
@@ -150,7 +153,7 @@ class PalMaximizeTests(unittest.TestCase):
         self.assertEqual(80, self.pal.Level)
 
     def test_maximize_does_not_add_pal_only_awakening_to_humans(self):
-        human = make_pal("SalesPerson_Wander")
+        human = make_record("SalesPerson_Wander").pal
         self.assertTrue(human.IsHuman)
 
         human.maximize_progression()

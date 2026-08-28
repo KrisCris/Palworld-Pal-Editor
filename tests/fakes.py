@@ -9,28 +9,35 @@ from unittest.mock import patch
 from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
-from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
+
+
+def world_pal(pal_obj: dict) -> PalEntity:
+    """A PalEntity bound to a World record, the way the load path binds one."""
+    return WorldPalAdapter.entity(pal_obj)
 
 
 def world_record(
-    pal: PalEntity,
+    pal_obj: dict,
     *,
     storage_key: str | None = "world-container:test",
     slot_index: int | None = 0,
+    pal: PalEntity | None = None,
 ) -> PalRecord:
     """A World PalRecord shaped exactly like the one SaveManager registers."""
-    return SaveManager._world_record(
-        pal,
+    return WorldPalAdapter.record(
+        pal_obj,
         storage_key=storage_key,
         slot_index=slot_index,
         storage_owner_uid=None,
+        pal=pal,
     )
 
 
-def record_location(record: PalRecord, *, container_kind: str = "world") -> dict:
+def pal_location(pal: PalEntity, *, container_kind: str = "world") -> dict:
     """The location a loaded session would report for a Pal that sits where it says."""
-    container_id = str(record.pal.ContainerId) if record.pal.ContainerId else None
-    slot_index = record.pal.SlotIndex
+    container_id = str(pal.ContainerId) if pal.ContainerId else None
+    slot_index = pal.SlotIndex
     return {
         "RecordedContainerId": container_id,
         "RecordedSlotIndex": slot_index,
@@ -44,6 +51,10 @@ def record_location(record: PalRecord, *, container_kind: str = "world") -> dict
     }
 
 
+def record_location(record: PalRecord, *, container_kind: str = "world") -> dict:
+    return pal_location(record.pal, container_kind=container_kind)
+
+
 class LocationManager:
     """Answers only the location questions the Pal DTO builder asks."""
 
@@ -51,7 +62,7 @@ class LocationManager:
         return record_location(record)
 
     def resolve_pal_location(self, pal: PalEntity) -> dict:
-        return record_location(world_record(pal))
+        return pal_location(pal)
 
     def get_player(self, _player_uid):
         return None

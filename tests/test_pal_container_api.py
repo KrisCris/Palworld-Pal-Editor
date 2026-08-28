@@ -1,13 +1,14 @@
-import copy
 import unittest
 from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.webui import app
-from palworld_pal_editor.core.pal_entity import PalEntity
+import copy
+
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
 from fakes import record_location, world_record
 
 
@@ -16,29 +17,36 @@ class FakeManager:
         self.moves = []
         self.transfers = []
         instance_id = toUUID("10000000-0000-0000-0000-000000000001")
-        world_pal = PalEntity(
-            PalObjects.PalSaveParameter(
-                instance_id,
-                PalObjects.EMPTY_UUID,
-                PalObjects.EMPTY_UUID,
-                0,
-                PalObjects.EMPTY_UUID,
-            )
+        world_obj = PalObjects.PalSaveParameter(
+            instance_id,
+            PalObjects.EMPTY_UUID,
+            PalObjects.EMPTY_UUID,
+            0,
+            PalObjects.EMPTY_UUID,
         )
-        world_pal.set_owner_player_uid(None)
-        world_pal.NickName = "World copy"
-        gps_pal = PalEntity(copy.deepcopy(world_pal._pal_obj))
-        gps_pal.NickName = "GPS copy"
-        self.records = {
-            f"world:{instance_id}": world_record(world_pal, storage_key="world-container:box"),
-            "gps:0": PalRecord(
-                record_key="gps:0",
-                storage_kind="global_palbox",
-                storage_key="global-palbox",
-                slot_index=0,
-                native_record={},
-                pal=gps_pal,
+        world_entry = world_record(world_obj, storage_key="world-container:box")
+        world_entry.pal.set_owner_player_uid(None)
+        world_entry.pal.NickName = "World copy"
+        gps_entry = {
+            "InstanceId": {
+                "value": {"InstanceId": PalObjects.Guid(instance_id)},
+            },
+            "SaveParameter": copy.deepcopy(
+                world_obj["value"]["RawData"]["value"]["object"]["SaveParameter"]
             ),
+        }
+        gps_record = PalRecord(
+            record_key="gps:0",
+            storage_kind="global_palbox",
+            storage_key="global-palbox",
+            slot_index=0,
+            native_record=gps_entry,
+            pal=GpsPalAdapter.entity(gps_entry),
+        )
+        gps_record.pal.NickName = "GPS copy"
+        self.records = {
+            f"world:{instance_id}": world_entry,
+            "gps:0": gps_record,
         }
 
     def get_container_registry(self):

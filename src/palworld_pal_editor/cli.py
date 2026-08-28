@@ -110,17 +110,16 @@ def batch_pal_delete(guid_list: list[str]):
     for guid in guid_list:
         delete_pal(guid, yes=True)
 
-def add_pal(player_uid: str) -> Optional[PalEntity]:
+def add_pal(player_uid: str) -> Optional[PalRecord]:
     return SaveManager().add_pal(player_uid)
 
-def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]:
-    player = SaveManager().get_player(player_uid)
-    pal_obj = player.get_pal(pal_guid)._pal_obj
-    if not pal_obj:
+def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]:
+    record = SaveManager().get_record(f"world:{pal_guid}")
+    if record is None:
         LOGGER.warning("Unable to find the target pal.")
         return
 
-    return SaveManager().add_pal(player_uid, pal_obj)
+    return SaveManager().add_pal(player_uid, record.native_record)
 
 
 def list_attacks():
@@ -200,8 +199,8 @@ def pal_help():
         - list_player_pals(player: PlayerEntity | str) -> list[PalEntity]
         - get_pal(guid: str) -> Optional[PalEntity]
 
-        - add_pal(player_uid: str) -> Optional[PalEntity]
-        - dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]
+        - add_pal(player_uid: str) -> Optional[PalRecord]
+        - dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]
         - delete_pal(guid: str)
         - batch_pal_delete(guid_list: list[str])
 

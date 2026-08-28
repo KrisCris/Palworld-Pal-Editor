@@ -6,6 +6,7 @@ from flask_jwt_extended import create_access_token
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_record import PalRecord
 from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
 
@@ -14,7 +15,7 @@ PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
 PAL_ID = toUUID("22222222-2222-2222-2222-222222222222")
 
 
-def make_pal() -> PalEntity:
+def make_record() -> PalRecord:
     pal_obj = PalObjects.PalSaveParameter(
         PAL_ID,
         PLAYER_ID,
@@ -22,19 +23,20 @@ def make_pal() -> PalEntity:
         0,
         PalObjects.EMPTY_UUID,
     )
-    pal = PalEntity(pal_obj)
+    record = world_record(pal_obj, storage_key="world-container:test")
+    pal = record.pal
     pal.PassiveSkillList.append("CraftSpeed_up1")
     pal.MasteredWaza.append("EPalWazaID::AirCanon")
     pal.EquipWaza.append("EPalWazaID::AirCanon")
-    return pal
+    return record
 
 
 class FakeManager:
-    def __init__(self, pal):
-        self.pal = pal
+    def __init__(self, record):
+        self.record = record
 
     def get_unique_world_record(self, _instance_id):
-        return world_record(self.pal, storage_key="world-container:test")
+        return self.record
 
     def get_player(self, _player_id):
         return type("Player", (), {"NickName": "Target"})()
@@ -50,8 +52,9 @@ class SkillTemplateApiTests(unittest.TestCase):
     def setUp(self):
         self.previous_templates = getattr(Config, "skillTemplates", None)
         Config.skillTemplates = []
-        self.pal = make_pal()
-        self.manager = FakeManager(self.pal)
+        self.record = make_record()
+        self.pal = self.record.pal
+        self.manager = FakeManager(self.record)
         self.client = app.test_client()
         with app.app_context():
             token = create_access_token(identity="test")

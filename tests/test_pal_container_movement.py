@@ -3,9 +3,9 @@ import unittest
 
 from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
-from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
 
@@ -182,11 +182,15 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
 
     source_player = FakePlayer(toUUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), GROUP_ID, "Source")
     target_player = FakePlayer(TARGET_PLAYER_ID, target_group, "Target")
-    pal = PalEntity(
+    pal_record = WorldPalAdapter.record(
         PalObjects.PalSaveParameter(
             PAL_ID, source_player.PlayerUId, source.ID, 1, GROUP_ID
-        )
+        ),
+        storage_key=WorldPalAdapter.storage_key(source.ID),
+        slot_index=1,
+        storage_owner_uid=str(source_player.PlayerUId),
     )
+    pal = pal_record.pal
     source_player.add_pal(pal)
 
     manager = object.__new__(SaveManager)
@@ -194,9 +198,15 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
     manager.players.register(source_player)
     manager.players.register(target_player)
     manager.pal_repository = PalRepository()
+    manager.pal_repository.register(pal_record)
     manager.baseworker_mapping = {}
     manager._dangling_pals = {}
     manager.container_data = FakeContainerData(source, target)
+    manager.world_adapter = WorldPalAdapter([], manager.container_data)
+    manager.storage_adapters = {}
+    manager._roster_record_keys = {}
+    manager._dps_storages = {}
+    manager._global_palbox = None
     manager._container_registry_cache = {
         str(source.ID): {
             "ContainerId": str(source.ID),
@@ -424,11 +434,12 @@ class SaveManagerMovementTests(unittest.TestCase):
             "MapObjectConcreteInstanceIdAssignedToExpedition"
         ] = PalObjects.Guid(CONTAINER_ID)
 
-        pal = manager.add_pal(
+        record = manager.add_pal(
             "PAL_BASE_WORKER_BTN", template, target_container_id=target.ID
         )
 
-        self.assertIsNotNone(pal)
+        self.assertIsNotNone(record)
+        pal = record.pal
         self.assertEqual((target.ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
         self.assertNotIn(
@@ -444,9 +455,10 @@ class SaveManagerMovementTests(unittest.TestCase):
         manager.group_data = FakeGroupData(FakeGroup())
         manager._entities_list = []
 
-        pal = manager.add_pal(player.PlayerUId)
+        record = manager.add_pal(player.PlayerUId)
 
-        self.assertIsNotNone(pal)
+        self.assertIsNotNone(record)
+        pal = record.pal
         self.assertEqual((party.ID, 0), pal.SlotId)
         self.assertTrue(party.has_pal(pal.InstanceId))
         self.assertFalse(storage.has_pal(pal.InstanceId))

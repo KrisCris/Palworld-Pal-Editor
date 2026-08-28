@@ -4,6 +4,7 @@ import unittest
 from palworld_pal_editor.core.group_data import PalGroup
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
 
@@ -100,6 +101,9 @@ def manager_fixture():
     manager.container_data = FakeContainerData(container)
     manager.group_data = FakeGroupData(group)
     manager._entities_list = []
+    manager.world_adapter = WorldPalAdapter(
+        manager._entities_list, manager.container_data
+    )
     SaveManager._instance = manager
     return manager, player, container, group
 
@@ -114,10 +118,10 @@ class PalCreationTests(unittest.TestCase):
     def test_default_pal_has_no_placeholder_nickname(self):
         manager, _, _, _ = manager_fixture()
 
-        pal = manager.add_pal(TARGET_PLAYER)
+        record = manager.add_pal(TARGET_PLAYER)
 
-        self.assertIsNone(pal.NickName)
-        self.assertTrue(pal.is_new_pal)
+        self.assertIsNone(record.pal.NickName)
+        self.assertTrue(record.pal.is_new_pal)
 
     def test_cloned_pal_keeps_traits_but_rewrites_save_identity(self):
         manager, _, _, _ = manager_fixture()
@@ -134,7 +138,8 @@ class PalCreationTests(unittest.TestCase):
         parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = PalObjects.Guid(SOURCE_CONTAINER)
         original = copy.deepcopy(source)
 
-        pal = manager.add_pal(TARGET_PLAYER, source)
+        record = manager.add_pal(TARGET_PLAYER, source)
+        pal = record.pal
 
         self.assertEqual("Keeper", pal.NickName)
         self.assertNotEqual(original["key"]["InstanceId"]["value"], pal.InstanceId)
@@ -142,7 +147,7 @@ class PalCreationTests(unittest.TestCase):
         self.assertEqual(TARGET_PLAYER, pal.OwnerPlayerUId)
         self.assertEqual([TARGET_PLAYER], pal.OldOwnerPlayerUIds)
         self.assertEqual((TARGET_CONTAINER, 7), pal.SlotId)
-        self.assertEqual(TARGET_GROUP, pal.group_id)
+        self.assertEqual(TARGET_GROUP, record.group_id)
         self.assertNotEqual(
             SOURCE_CONTAINER,
             PalObjects.get_PalContainerId(pal.pal_param["EquipItemContainerId"]),

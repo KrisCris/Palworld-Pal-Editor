@@ -24,9 +24,8 @@ def configure_app(monkeypatch):
     )
     monkeypatch.setattr(Config, "_password_hash", generate_password_hash("secret"))
 
-def select_pal(monkeypatch, pal):
+def select_pal(monkeypatch, record):
     manager = SaveManager()
-    record = world_record(pal)
     monkeypatch.setattr(manager, "get_unique_world_record", lambda _pal_id: record)
     monkeypatch.setattr(manager, "normalize_external_record", lambda _record: None)
     monkeypatch.setattr(manager, "get_player", lambda _player_id: None)
@@ -102,7 +101,7 @@ def test_heal_all_pals_does_not_require_a_selected_player(monkeypatch):
 def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch):
     configure_app(monkeypatch)
     updates = []
-    pal = PalEntity(PalObjects.PalSaveParameter(
+    record = world_record(PalObjects.PalSaveParameter(
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
@@ -110,10 +109,12 @@ def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch)
         PalObjects.EMPTY_UUID,
     ))
     monkeypatch.setattr(
-        pal, "set_WorkSuitability", lambda name, level: updates.append((name, level))
+        record.pal,
+        "set_WorkSuitability",
+        lambda name, level: updates.append((name, level)),
     )
 
-    select_pal(monkeypatch, pal)
+    select_pal(monkeypatch, record)
 
     with app.test_client() as client:
         token = login(client)
@@ -134,15 +135,16 @@ def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch)
 
 def test_priority_uses_the_generic_pal_patch(monkeypatch):
     configure_app(monkeypatch)
-    pal = PalEntity(PalObjects.PalSaveParameter(
+    record = world_record(PalObjects.PalSaveParameter(
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
         0,
         PalObjects.EMPTY_UUID,
     ))
+    pal = record.pal
 
-    select_pal(monkeypatch, pal)
+    select_pal(monkeypatch, record)
 
     with app.test_client() as client:
         token = login(client)
