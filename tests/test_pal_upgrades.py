@@ -20,9 +20,9 @@ class PalUpgradeTests(unittest.TestCase):
         if cls.manager.open(str(SAVE)) is None:
             raise AssertionError("1.0 fixture failed to load")
         cls.pals = [
-            pal
+            record.pal
             for player in cls.manager.get_players()
-            for pal in player._palbox.values()
+            for record in cls.manager.records_for_roster(player.PlayerUId)
         ] + list(cls.manager.baseworker_mapping.values())
 
     def test_level_80_assignment_preserves_existing_exp(self):

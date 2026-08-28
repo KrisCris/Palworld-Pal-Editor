@@ -11,6 +11,7 @@ from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_repository import PalRepository
 
 
 class PalIdentityTests(unittest.TestCase):
@@ -177,10 +178,9 @@ class PalIdentityTests(unittest.TestCase):
         json.dumps(payload)
 
     def test_api_marks_new_pals_until_the_save_is_written(self):
-        pal = self.make_pal("SheepBall")
-        pal.is_new_pal = True
+        record = world_record(self.make_pal_obj("SheepBall"))
 
-        payload = pal_payload(pal)
+        payload = pal_payload(record.pal, record=record, created=True)
 
         self.assertTrue(payload["IsNewPal"])
 
@@ -189,9 +189,12 @@ class PalIdentityTests(unittest.TestCase):
         pal = record.pal
         pal.IsAwakening = True
         pal.IsImportedCharacter = True
-        pal.is_new_pal = True
+        repository = PalRepository()
+        repository.register(record, created=True)
 
         class Manager:
+            pal_repository = repository
+
             @staticmethod
             def get_working_pals():
                 return [pal]
@@ -239,19 +242,17 @@ class PalIdentityTests(unittest.TestCase):
             OtomoCharacterContainerId = party_id
             PalStorageContainerId = storage_id
 
-            @staticmethod
-            def get_sorted_pals():
-                return [pal]
-
         pal.set_owner_player_entity(Player())
 
         class Manager:
+            pal_repository = PalRepository()
+
             @staticmethod
             def get_player(_player_id):
                 return Player()
 
             @staticmethod
-            def records_for_roster(_roster_key):
+            def sorted_records_for_roster(_roster_key):
                 return [record]
 
             @staticmethod

@@ -94,22 +94,24 @@ class FakePlayer:
         self.NickName = name
         self.OtomoCharacterContainerId = None
         self.PalStorageContainerId = None
-        self._palbox = {}
-        self._new_palbox = {}
 
-    def get_pal(self, pal_id, disable_warning=False):
-        return self._palbox.get(str(pal_id))
 
-    def add_pal(self, pal):
-        if str(pal.InstanceId) in self._palbox:
-            return False
-        self._palbox[str(pal.InstanceId)] = pal
-        pal.set_owner_player_entity(self)
-        return True
+def as_base_worker(manager, pal):
+    """Turn the fixture's owned Pal into an ownerless base worker."""
+    pal.set_owner_player_uid(None)
+    manager.baseworker_mapping[str(pal.InstanceId)] = pal
+    manager._roster_record_keys = {
+        "PAL_BASE_WORKER_BTN": ["world:" + str(pal.InstanceId)]
+    }
+    manager.pal_repository.reindex()
 
-    def pop_pal(self, pal_id):
-        self._new_palbox.pop(str(pal_id), None)
-        return self._palbox.pop(str(pal_id), None)
+
+def owns(manager, player, pal_id):
+    """Whether the repository files this Pal under this player."""
+    return any(
+        str(record.pal.InstanceId) == str(pal_id)
+        for record in manager.pal_repository.records_for_owner(player.PlayerUId)
+    )
 
 
 class FakeContainerData:
@@ -191,7 +193,7 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
         storage_owner_uid=str(source_player.PlayerUId),
     )
     pal = pal_record.pal
-    source_player.add_pal(pal)
+    pal.set_owner_player_entity(source_player)
 
     manager = object.__new__(SaveManager)
     manager.players = PlayerRepository()
@@ -204,7 +206,9 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
     manager.container_data = FakeContainerData(source, target)
     manager.world_adapter = WorldPalAdapter([], manager.container_data)
     manager.storage_adapters = {}
-    manager._roster_record_keys = {}
+    manager._roster_record_keys = {
+        str(source_player.PlayerUId): [pal_record.record_key]
+    }
     manager._dps_storages = {}
     manager._global_palbox = None
     manager._container_registry_cache = {
@@ -250,7 +254,11 @@ class SaveManagerMovementTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
-        self.assertIsNone(source_player.get_pal(PAL_ID))
+        self.assertFalse(owns(manager, source_player, PAL_ID))
+        self.assertEqual(
+            ["world:" + str(PAL_ID)],
+            manager._roster_record_keys["PAL_BASE_WORKER_BTN"],
+        )
         self.assertIs(pal, manager.baseworker_mapping[str(PAL_ID)])
         self.assertFalse(source.has_pal(PAL_ID))
         self.assertTrue(target.has_pal(PAL_ID))
@@ -290,8 +298,12 @@ class SaveManagerMovementTests(unittest.TestCase):
 
         self.assertEqual(TARGET_PLAYER_ID, pal.OwnerPlayerUId)
         self.assertEqual(TARGET_PLAYER_ID, pal.OldOwnerPlayerUIds[-1])
-        self.assertIsNone(source_player.get_pal(PAL_ID))
-        self.assertIs(pal, target_player.get_pal(PAL_ID))
+        self.assertFalse(owns(manager, source_player, PAL_ID))
+        self.assertTrue(owns(manager, target_player, PAL_ID))
+        self.assertEqual(
+            ["world:" + str(PAL_ID)],
+            manager._roster_record_keys[str(TARGET_PLAYER_ID)],
+        )
 
     def test_move_accepts_a_completely_empty_party_container_and_logs_the_route(self):
         manager, pal, source, target, _, _ = movement_manager("party")
@@ -331,19 +343,15 @@ class SaveManagerMovementTests(unittest.TestCase):
 
     def test_base_to_player_and_base_to_base_moves_keep_mappings_consistent(self):
         manager, pal, _, _, source_player, target_player = movement_manager("storage")
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
+        as_base_worker(manager, pal)
 
         self.assertTrue(manager.move_pal(PAL_ID, TARGET_CONTAINER_ID))
         self.assertEqual(TARGET_PLAYER_ID, pal.OwnerPlayerUId)
-        self.assertIs(pal, target_player.get_pal(PAL_ID))
+        self.assertTrue(owns(manager, target_player, PAL_ID))
         self.assertNotIn(str(PAL_ID), manager.baseworker_mapping)
 
         manager, pal, _, target, source_player, _ = movement_manager("base")
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
+        as_base_worker(manager, pal)
 
         self.assertTrue(manager.move_pal(PAL_ID, target.ID))
         self.assertIsNone(pal.OwnerPlayerUId)
@@ -363,7 +371,7 @@ class SaveManagerMovementTests(unittest.TestCase):
                     copy.deepcopy(source._slots_data),
                     copy.deepcopy(target._slots_data),
                     copy.deepcopy(pal.pal_param),
-                    dict(source_player._palbox),
+                    copy.deepcopy(manager._roster_record_keys),
                 )
 
                 with self.assertRaises(ValueError):
@@ -372,7 +380,7 @@ class SaveManagerMovementTests(unittest.TestCase):
                 self.assertEqual(before[0], source._slots_data)
                 self.assertEqual(before[1], target._slots_data)
                 self.assertEqual(before[2], pal.pal_param)
-                self.assertEqual(before[3], source_player._palbox)
+                self.assertEqual(before[3], manager._roster_record_keys)
 
     def test_40_slot_world_container_is_a_shared_viewing_cage(self):
         manager, _, source, target, source_player, _ = movement_manager()
@@ -397,15 +405,13 @@ class SaveManagerMovementTests(unittest.TestCase):
 
         self.assertTrue(manager.move_pal(PAL_ID, TARGET_CONTAINER_ID))
         self.assertEqual(source_player.PlayerUId, pal.OwnerPlayerUId)
-        self.assertIs(pal, source_player.get_pal(PAL_ID))
+        self.assertTrue(owns(manager, source_player, PAL_ID))
 
         manager, pal, source, target, source_player, _ = movement_manager("special")
         manager._container_registry_cache[str(target.ID)].update(
             {"Shared": True, "OwnerPlayerUId": None, "GroupId": None}
         )
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
+        as_base_worker(manager, pal)
         before = (
             copy.deepcopy(source._slots_data),
             copy.deepcopy(target._slots_data),

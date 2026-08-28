@@ -362,7 +362,7 @@ def _pal_data(pal: PalEntity, pal_record=None):
         "HasWorkerSick": pal.HasWorkerSick,
         "IsFaintedPal": pal.IsFaintedPal,
         "Is_Unref_Pal": pal.is_unreferenced_pal,
-        "IsNewPal": pal.is_new_pal,
+        "IsNewPal": SaveManager().pal_repository.is_created(pal_record),
         "in_owner_palbox": pal.in_owner_palbox,
         "IsHuman": pal.IsHuman,
         "IsBOSS": pal.IsBOSS or False,

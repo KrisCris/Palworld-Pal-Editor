@@ -9,6 +9,7 @@ from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
 from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_repository import PalRepository
 
 
 PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -34,6 +35,7 @@ def make_record() -> PalRecord:
 class FakeManager:
     def __init__(self, record):
         self.record = record
+        self.pal_repository = PalRepository()
 
     def get_unique_world_record(self, _instance_id):
         return self.record

@@ -9,6 +9,7 @@ import copy
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
+from palworld_pal_editor.core.pal_repository import PalRepository
 from fakes import record_location, world_record
 
 
@@ -16,6 +17,7 @@ class FakeManager:
     def __init__(self):
         self.moves = []
         self.transfers = []
+        self.pal_repository = PalRepository()
         instance_id = toUUID("10000000-0000-0000-0000-000000000001")
         world_obj = PalObjects.PalSaveParameter(
             instance_id,

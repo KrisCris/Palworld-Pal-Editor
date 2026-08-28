@@ -18,6 +18,11 @@ class PalRepository:
         self._by_owner: dict[str, set[str]] = {}
         self._by_storage: dict[str, dict[int, str]] = {}
         self._by_instance: dict[str, set[str]] = {}
+        # Pals created in this session that have not been settled into their owner's
+        # capture count / paldeck flags yet. It holds the repository's own PalRecord
+        # objects rather than copies, and PalRecord sets `eq=False`, so membership is
+        # object identity and survives a relocate rewriting the record's key.
+        self._created_records: set[PalRecord] = set()
 
     def __len__(self) -> int:
         return len(self._records)
@@ -27,17 +32,20 @@ class PalRepository:
 
     # --- registration -----------------------------------------------------
 
-    def register(self, record: PalRecord) -> PalRecord:
+    def register(self, record: PalRecord, *, created: bool = False) -> PalRecord:
         if record.record_key in self._records:
             raise ValueError(f"Duplicated Pal RecordKey: {record.record_key}")
         self._records[record.record_key] = record
         self._index(record)
+        if created:
+            self._created_records.add(record)
         return record
 
     def unregister(self, record: PalRecord | str) -> Optional[PalRecord]:
         record_key = record if isinstance(record, str) else record.record_key
         removed = self._records.pop(record_key, None)
         if removed is not None:
+            self._created_records.discard(removed)
             self.reindex()
         return removed
 
@@ -49,6 +57,35 @@ class PalRepository:
         """Restore the whole record set, e.g. when rolling a failed mutation back."""
         self._records = records
         self.reindex()
+
+    # --- created tracking -------------------------------------------------
+
+    def created_records(self) -> list[PalRecord]:
+        """This session's created Pals, in registration order."""
+        return [
+            record
+            for record in self._records.values()
+            if record in self._created_records
+        ]
+
+    def is_created(self, record: Optional[PalRecord]) -> bool:
+        return record is not None and record in self._created_records
+
+    def snapshot_created(self) -> set[PalRecord]:
+        """A shallow copy of the created set, for rolling a failed mutation back."""
+        return set(self._created_records)
+
+    def restore_created(self, created: set[PalRecord]) -> None:
+        self._created_records = set(created)
+
+    def clear_created(self) -> None:
+        """Forget this session's created Pals.
+
+        Only a save that wrote every one of its output files may call this: the whole
+        point of keeping the set until then is that a failed save can be retried
+        without having silently consumed the settlement.
+        """
+        self._created_records.clear()
 
     def reindex(self) -> None:
         """Rebuild every secondary index from ``_records``.

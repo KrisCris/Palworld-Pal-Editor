@@ -9,6 +9,7 @@ from fakes import pal_payload, record_location, world_pal, world_record
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_repository import PalRepository
 
 
 def make_pal_obj(character_id: str) -> dict:
@@ -158,6 +159,8 @@ class PalFamilyProviderTests(unittest.TestCase):
         record = world_record(make_pal_obj("SheepBall"))
 
         class Manager:
+            pal_repository = PalRepository()
+
             def get_unique_world_record(self, _instance_id):
                 return record
 

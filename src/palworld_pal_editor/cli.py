@@ -93,7 +93,10 @@ def list_player_pals(player: PlayerEntity | str) -> list[PalEntity]:
         player = players[0]
     elif isUUIDStr(player):
         player = get_player(player)
-    pals = player.get_sorted_pals()
+    pals = [
+        record.pal
+        for record in SaveManager().sorted_records_for_roster(player.PlayerUId)
+    ]
     for pal in pals:
         LOGGER.info(f" - {pal}")
     return pals

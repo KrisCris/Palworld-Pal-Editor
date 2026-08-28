@@ -104,6 +104,7 @@ def manager_fixture():
     manager.world_adapter = WorldPalAdapter(
         manager._entities_list, manager.container_data
     )
+    manager._roster_record_keys = {}
     SaveManager._instance = manager
     return manager, player, container, group
 
@@ -121,7 +122,7 @@ class PalCreationTests(unittest.TestCase):
         record = manager.add_pal(TARGET_PLAYER)
 
         self.assertIsNone(record.pal.NickName)
-        self.assertTrue(record.pal.is_new_pal)
+        self.assertTrue(manager.pal_repository.is_created(record))
 
     def test_cloned_pal_keeps_traits_but_rewrites_save_identity(self):
         manager, _, _, _ = manager_fixture()

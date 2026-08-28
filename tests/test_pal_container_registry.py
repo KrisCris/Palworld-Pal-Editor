@@ -54,7 +54,11 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
     def test_fixture_pals_have_one_matching_physical_slot(self):
         pals = [
             *self.manager.get_working_pals(),
-            *(pal for player in self.manager.get_players() for pal in player.get_pals()),
+            *(
+                record.pal
+                for player in self.manager.get_players()
+                for record in self.manager.records_for_roster(player.PlayerUId)
+            ),
         ]
 
         statuses = [self.manager.resolve_pal_location(pal)["LocationStatus"] for pal in pals]
@@ -116,9 +120,9 @@ class PalContainerRoundTripTests(unittest.TestCase):
                 < manager.container_data.get_container(player.OtomoCharacterContainerId).size
             )
             pal = next(
-                pal
-                for pal in player.get_pals()
-                if str(pal.ContainerId) == str(player.PalStorageContainerId)
+                record.pal
+                for record in manager.records_for_roster(player.PlayerUId)
+                if str(record.pal.ContainerId) == str(player.PalStorageContainerId)
             )
             pal_id = str(pal.InstanceId)
             player_id = str(player.PlayerUId)
@@ -135,7 +139,7 @@ class PalContainerRoundTripTests(unittest.TestCase):
                 SaveManager._instance = None
                 reloaded = SaveManager()
                 self.assertIsNotNone(reloaded.open(str(output)))
-                reloaded_pal = reloaded.get_player(player_id).get_pal(pal_id)
+                reloaded_pal = reloaded.get_pal(pal_id)
                 self.assertEqual(target_id, str(reloaded_pal.ContainerId))
                 self.assertEqual(expected_slot, reloaded_pal.SlotIndex)
                 location = reloaded.resolve_pal_location(reloaded_pal)

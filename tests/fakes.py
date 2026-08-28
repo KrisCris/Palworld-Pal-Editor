@@ -9,6 +9,7 @@ from unittest.mock import patch
 from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 
 
@@ -56,7 +57,14 @@ def record_location(record: PalRecord, *, container_kind: str = "world") -> dict
 
 
 class LocationManager:
-    """Answers only the location questions the Pal DTO builder asks."""
+    """Answers only the location and created-state questions the Pal DTO asks."""
+
+    def __init__(self, *, created: PalRecord | None = None) -> None:
+        # Empty unless a test says otherwise: a Pal outside a loaded session was not
+        # created in one, so `is_created` answers False with no special case in the DTO.
+        self.pal_repository = PalRepository()
+        if created is not None:
+            self.pal_repository.register(created, created=True)
 
     def resolve_record_location(self, record: PalRecord) -> dict:
         return record_location(record)
@@ -68,9 +76,13 @@ class LocationManager:
         return None
 
 
-def pal_payload(pal: PalEntity) -> dict:
+def pal_payload(
+    pal: PalEntity,
+    *,
+    record: PalRecord | None = None,
+    created: bool = False,
+) -> dict:
     """The Pal detail DTO for a Pal that is not part of a loaded session."""
-    with patch(
-        "palworld_pal_editor.api.pal.SaveManager", return_value=LocationManager()
-    ):
-        return _pal_data(pal)
+    manager = LocationManager(created=record if created else None)
+    with patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager):
+        return _pal_data(pal, record)

@@ -12,6 +12,7 @@ from palworld_pal_editor.core.pal_objects import PalObjects, dumps, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
 from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_repository import PalRepository
 
 PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
 PAL_ID = toUUID("22222222-2222-2222-2222-222222222222")
@@ -36,6 +37,7 @@ class FakeManager:
     def __init__(self, record):
         self.record = record
         self.added = []
+        self.pal_repository = PalRepository()
 
     def get_unique_world_record(self, _instance_id):
         return self.record
@@ -52,7 +54,7 @@ class FakeManager:
             copy.deepcopy(pal_obj or self.record.native_record),
             storage_key=f"world-container:{target_container_id}",
         )
-        result.pal.is_new_pal = True
+        self.pal_repository.register(result, created=True)
         return result
 
     def create_pal(self, roster_key, target_storage_key, pal_obj=None, pal_owner_uid=None):
@@ -61,7 +63,7 @@ class FakeManager:
             copy.deepcopy(pal_obj or self.record.native_record),
             storage_key=target_storage_key,
         )
-        result.pal.is_new_pal = True
+        self.pal_repository.register(result, created=True)
         return result
 
 

@@ -27,26 +27,24 @@ def get_player_pals():
     roster_key = request.json.get("RosterKey") or request.json.get("PlayerUId")
     manager = SaveManager()
 
-    def ordered_records(key, ordered_pals):
-        """The roster's records, in the display order the Pal list already uses."""
-        by_pal = {
-            id(record.pal): record for record in manager.records_for_roster(key)
-        }
-        return [
-            record
-            for pal in ordered_pals
-            if (record := by_pal.get(id(pal))) is not None
-        ]
-
     if roster_key == "PAL_GLOBAL_STORAGE_BTN":
         records = manager.records_for_roster(roster_key)
     elif roster_key == "PAL_BASE_WORKER_BTN":
-        records = ordered_records(roster_key, manager.get_working_pals())
+        # Base workers keep their own display order, which is a Pal list rather than
+        # a record list, so the roster's records are read back through it.
+        by_pal = {
+            id(record.pal): record
+            for record in manager.records_for_roster(roster_key)
+        }
+        records = [
+            record
+            for pal in manager.get_working_pals()
+            if (record := by_pal.get(id(pal))) is not None
+        ]
     else:
-        player_entity = manager.get_player(roster_key)
-        if not player_entity:
+        if not manager.get_player(roster_key):
             return reply(1, None, f"Player {roster_key} Not Found")
-        records = ordered_records(roster_key, player_entity.get_sorted_pals())
+        records = manager.sorted_records_for_roster(roster_key)
 
     def pal_to_summary(record):
         pal = record.pal
@@ -69,7 +67,7 @@ def get_player_pals():
             "IsAwakening": pal.IsAwakening,
             "IsImportedCharacter": pal.IsImportedCharacter,
             "IsHuman": pal.IsHuman,
-            "IsNewPal": pal.is_new_pal,
+            "IsNewPal": manager.pal_repository.is_created(record),
             "ContainerId": location["RecordedContainerId"],
             "SlotIndex": location["RecordedSlotIndex"],
             "ActualContainerId": location["ActualContainerId"],

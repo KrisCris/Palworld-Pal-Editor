@@ -105,7 +105,6 @@ class PalEntity:
         self._display_name_cache = {}
         self.owner_player_entity = None
         self.is_unreferenced_pal = False
-        self.is_new_pal = False
 
     def __str__(self) -> str:
         return f"{self.DisplayName} - {self.InstanceId}"

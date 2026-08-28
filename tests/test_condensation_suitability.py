@@ -80,9 +80,9 @@ class CondensationSuitabilityTests(unittest.TestCase):
         manager = SaveManager()
         self.assertIsNotNone(manager.open(str(SAVE)))
         pals = [
-            pal
+            record.pal
             for player in manager.get_players()
-            for pal in player._palbox.values()
+            for record in manager.records_for_roster(player.PlayerUId)
         ] + list(manager.baseworker_mapping.values())
         pal = next(
             item
