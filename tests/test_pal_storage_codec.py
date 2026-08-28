@@ -12,7 +12,7 @@ from palworld_pal_editor.core.save_codec import (
     PAL_STORAGE_CUSTOM_PROPERTIES,
     RAW_PAL_STORAGE_ENTRY,
 )
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import DpsPalAdapter
 
 
@@ -64,7 +64,7 @@ def test_sparse_codec_preserves_empty_slots_as_raw_bytes_and_round_trips():
 def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
     storage_path = tmp_path / OCCUPIED_DPS.name
     shutil.copy2(OCCUPIED_DPS, storage_path)
-    storage = FixedPalStorage.open(
+    storage = PalStorageSaveFile.open(
         storage_path,
         "dps",
         "a18b721d-0000-0000-0000-000000000000",
@@ -81,7 +81,7 @@ def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
     storage_path.write_bytes(storage.serialize())
 
     reopened = DpsPalAdapter(
-        FixedPalStorage.open(
+        PalStorageSaveFile.open(
             storage_path,
             "dps",
             "a18b721d-0000-0000-0000-000000000000",
@@ -94,7 +94,7 @@ def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
     reopened.clear(record.record_key)
     storage_path.write_bytes(reopened.storage.serialize())
     cleared = DpsPalAdapter(
-        FixedPalStorage.open(
+        PalStorageSaveFile.open(
             storage_path,
             "dps",
             "a18b721d-0000-0000-0000-000000000000",

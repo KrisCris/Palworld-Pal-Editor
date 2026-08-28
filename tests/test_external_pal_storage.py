@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import DpsPalAdapter
 from palworld_pal_editor.core.save_manager import SaveManager
 
@@ -26,7 +26,7 @@ WORLD_FIXTURE = Path(
 def copied_empty_dps(tmp_path: Path) -> DpsPalAdapter:
     path = tmp_path / "00000000000000000000000000000001_dps.sav"
     shutil.copy2(DPS_FIXTURE, path)
-    return DpsPalAdapter(FixedPalStorage.open(path, "dps", OWNER_UID))
+    return DpsPalAdapter(PalStorageSaveFile.open(path, "dps", OWNER_UID))
 
 
 def make_save_parameter(instance_id):
@@ -50,7 +50,7 @@ def copied_world(tmp_path: Path) -> Path:
 
 def write_synthetic_global(path: Path, instance_id) -> None:
     shutil.copy2(DPS_FIXTURE, path)
-    storage = FixedPalStorage.open(path, "dps", OWNER_UID)
+    storage = PalStorageSaveFile.open(path, "dps", OWNER_UID)
     storage.gvas_file.header.save_game_class_name = (
         "/Script/Pal.PalGlobalPalStorageSaveGame"
     )
@@ -72,7 +72,7 @@ def test_external_storage_uses_outer_index_and_round_trips(tmp_path):
 
     path = adapter.storage.path
     path.write_bytes(adapter.storage.serialize())
-    reloaded = DpsPalAdapter(FixedPalStorage.open(path, "dps", OWNER_UID))
+    reloaded = DpsPalAdapter(PalStorageSaveFile.open(path, "dps", OWNER_UID))
     reloaded_record = reloaded.get(record.record_key)
 
     assert reloaded_record is not None
@@ -106,7 +106,7 @@ def test_save_manager_discovers_qualified_dps_and_optional_global_records(tmp_pa
         assert manager.has_global_palbox is False
 
         dps_path = world / "Players/00000000000000000000000000000001_dps.sav"
-        dps = FixedPalStorage.open(dps_path, "dps", OWNER_UID)
+        dps = PalStorageSaveFile.open(dps_path, "dps", OWNER_UID)
         DpsPalAdapter(dps).allocate(
             make_save_parameter(INSTANCE_IDS[1]), INSTANCE_IDS[1]
         )

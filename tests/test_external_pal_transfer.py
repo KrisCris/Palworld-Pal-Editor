@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.save_manager import PalIdentityConflict, SaveManager
 
 
@@ -22,7 +22,7 @@ MINT_UID = "c8b99cc9-0000-0000-0000-000000000000"
 
 def write_empty_global(path: Path) -> None:
     shutil.copy2(EMPTY_DPS_FIXTURE, path)
-    storage = FixedPalStorage.open(path, "dps", LOSSY_UID)
+    storage = PalStorageSaveFile.open(path, "dps", LOSSY_UID)
     storage.gvas_file.header.save_game_class_name = (
         "/Script/Pal.PalGlobalPalStorageSaveGame"
     )

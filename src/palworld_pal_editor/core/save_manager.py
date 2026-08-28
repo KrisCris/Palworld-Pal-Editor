@@ -23,7 +23,7 @@ from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_repository import PalRepository
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import (
     DpsPalAdapter,
     GpsPalAdapter,
@@ -112,8 +112,8 @@ class SaveManager:
         # button key. It is the last compat layer over the repository and is
         # deleted in F3b; it is not a second Pal authority.
         self._roster_record_keys: dict[str, list[str]] = {}
-        self._dps_storages: dict[str, FixedPalStorage] = {}
-        self._global_palbox: FixedPalStorage | None = None
+        self._dps_storages: dict[str, PalStorageSaveFile] = {}
+        self._global_palbox: PalStorageSaveFile | None = None
 
         self._container_registry_cache = None
         self.load_warnings: list[str] = []
@@ -542,7 +542,7 @@ class SaveManager:
             owner_hex = dps_path.stem.removesuffix("_dps")
             try:
                 owner_uid = toUUID(str(uuid.UUID(owner_hex)))
-                storage = FixedPalStorage.open(dps_path, "dps", owner_uid)
+                storage = PalStorageSaveFile.open(dps_path, "dps", owner_uid)
                 self._dps_storages[storage.storage_key] = storage
                 adapter = DpsPalAdapter(storage)
                 self.storage_adapters[storage.storage_key] = adapter
@@ -561,7 +561,7 @@ class SaveManager:
         if not gps_path.exists():
             return
         try:
-            self._global_palbox = FixedPalStorage.open(
+            self._global_palbox = PalStorageSaveFile.open(
                 gps_path, "global_palbox"
             )
             adapter = GpsPalAdapter(self._global_palbox)
@@ -1026,7 +1026,7 @@ class SaveManager:
 
     def _snapshot_external_mutation(
         self,
-        external_slots: list[tuple[FixedPalStorage, int]],
+        external_slots: list[tuple[PalStorageSaveFile, int]],
         containers: list,
     ) -> dict:
         unique_storages = {storage.storage_key: storage for storage, _ in external_slots}

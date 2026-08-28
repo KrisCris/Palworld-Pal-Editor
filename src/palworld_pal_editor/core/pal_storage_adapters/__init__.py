@@ -6,11 +6,13 @@ owns identity, ownership, guild membership or conflict rules — those belong to
 operation layer.
 """
 
-from palworld_pal_editor.core.pal_storage_adapters.fixed import (
+from palworld_pal_editor.core.pal_storage_adapters.storage_pal_adapter import (
     DpsPalAdapter,
     GpsPalAdapter,
 )
-from palworld_pal_editor.core.pal_storage_adapters.world import WorldPalAdapter
+from palworld_pal_editor.core.pal_storage_adapters.world_pal_adapter import (
+    WorldPalAdapter,
+)
 
 # What `SaveManager.storage_adapters` maps a storageKey to. A union rather than a
 # base class or Protocol: the three formats share no method a caller invokes

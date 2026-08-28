@@ -14,8 +14,13 @@ from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 StorageKind = Literal["dps", "global_palbox"]
 
 
-class FixedPalStorage:
-    """One DPS or GPS save file: its GVAS, its fixed slot array, and its dirty flag.
+class PalStorageSaveFile:
+    """One DPS or GPS save file: its GVAS, its slot array, and its dirty flag.
+
+    The game preallocates ``SaveParameterArray`` and never changes its length, so a
+    slot is claimed and released in place rather than appended and removed — unlike
+    the World save, where adding a Pal appends to ``CharacterSaveParameterMap`` and
+    separately adds a slot to a ``PalContainer``.
 
     What a slot *means* — record keys, Pal binding, PalRecord — belongs to the
     matching adapter in ``pal_storage_adapters``; this class only reads and writes
@@ -52,7 +57,7 @@ class FixedPalStorage:
         path: Path,
         kind: StorageKind,
         owner_uid: UUID | str | None = None,
-    ) -> "FixedPalStorage":
+    ) -> "PalStorageSaveFile":
         path = Path(path)
         raw_gvas, save_type = decompress_sav_to_gvas(path.read_bytes())
         gvas_file = GvasFile.read(

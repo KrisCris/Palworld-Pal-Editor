@@ -4,13 +4,13 @@ from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 
 
-class FixedStoragePalAdapter:
-    """Reads and writes the Pals in one fixed-size SaveParameterArray save file.
+class StoragePalAdapter:
+    """Reads and writes the Pals in one PalStorage save file — a DPS or the GPS.
 
-    ``FixedPalStorage`` owns the file and the slot array; this owns what a slot
+    ``PalStorageSaveFile`` owns the file and the slot array; this owns what a slot
     *means* — the record key grammar, the two parent dicts a ``PalEntity`` binds to,
     and the ``PalRecord`` handed to the repository. DPS and GPS share that layout
     entirely; only the key grammar differs, which is what the subclasses carry.
@@ -18,7 +18,7 @@ class FixedStoragePalAdapter:
 
     kind: str
 
-    def __init__(self, storage: FixedPalStorage) -> None:
+    def __init__(self, storage: PalStorageSaveFile) -> None:
         self.storage = storage
 
     @property
@@ -99,7 +99,7 @@ class FixedStoragePalAdapter:
         )
 
 
-class DpsPalAdapter(FixedStoragePalAdapter):
+class DpsPalAdapter(StoragePalAdapter):
     """A single player's Dimension Pal Storage file."""
 
     kind = "dps"
@@ -109,7 +109,7 @@ class DpsPalAdapter(FixedStoragePalAdapter):
         return f"dps:{self.storage.owner_uid}:"
 
 
-class GpsPalAdapter(FixedStoragePalAdapter):
+class GpsPalAdapter(StoragePalAdapter):
     """The world's single Global Pal Storage file."""
 
     kind = "global_palbox"
