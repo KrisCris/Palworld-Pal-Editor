@@ -212,7 +212,7 @@ class SkillTemplateApiTests(unittest.TestCase):
             },
         ]
         for key in ("PassiveSkillList", "EquipWaza", "MasteredWaza"):
-            self.pal._pal_param.pop(key)
+            self.pal.pal_param.pop(key)
 
         for template_id in ("passive", "active"):
             response = self.client.post(

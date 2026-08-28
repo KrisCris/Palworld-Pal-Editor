@@ -165,7 +165,7 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert created.pal.SlotId == (PalObjects.EMPTY_UUID, -1)
     assert created.pal.IsImportedCharacter is True
     assert PalObjects.get_PalContainerId(
-        created.pal._pal_param["ItemContainerId"]
+        created.pal.pal_param["ItemContainerId"]
     ) == PalObjects.EMPTY_UUID
     assert PalObjects.get_BaseType(
         created.external_record["InstanceId"]["value"]["PlayerUId"]
@@ -217,11 +217,11 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     destination_envelope = {
         "record_key": world_source.record_key,
         "owner": world_source.pal.OwnerPlayerUId,
-        "owners": copy.deepcopy(world_source.pal._pal_param.get("OldOwnerPlayerUIds")),
+        "owners": copy.deepcopy(world_source.pal.pal_param.get("OldOwnerPlayerUIds")),
         "group": world_source.pal.group_id,
         "slot": world_source.pal.SlotId,
         "expedition": copy.deepcopy(
-            world_source.pal._pal_param.get(
+            world_source.pal.pal_param.get(
                 "MapObjectConcreteInstanceIdAssignedToExpedition"
             )
         ),
@@ -239,13 +239,13 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert updated_record.pal.NickName == "GPS update payload"
     assert updated_record.pal.OwnerPlayerUId == destination_envelope["owner"]
     assert (
-        updated_record.pal._pal_param.get("OldOwnerPlayerUIds")
+        updated_record.pal.pal_param.get("OldOwnerPlayerUIds")
         == destination_envelope["owners"]
     )
     assert updated_record.pal.group_id == destination_envelope["group"]
     assert updated_record.pal.SlotId == destination_envelope["slot"]
     assert (
-        updated_record.pal._pal_param.get(
+        updated_record.pal.pal_param.get(
             "MapObjectConcreteInstanceIdAssignedToExpedition"
         )
         == destination_envelope["expedition"]
@@ -346,11 +346,11 @@ def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
     exported = manager.transfer_pal(source.record_key, "global-palbox", "clone")
     gps_record = manager.get_record(exported["RecordKey"])
     duplicate = lossy_dps.allocate(
-        manager._save_parameter(gps_record.pal), gps_record.pal.InstanceId
+        gps_record.pal.save_parameter, gps_record.pal.InstanceId
     )
     manager._add_locker_id(duplicate.pal.InstanceId)
     manager._register_external_record(duplicate)
-    source_snapshot = copy.deepcopy(source.pal._pal_param)
+    source_snapshot = copy.deepcopy(source.pal.pal_param)
 
     with pytest.raises(PalIdentityConflict) as collision:
         manager.transfer_pal(
@@ -364,7 +364,7 @@ def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
         source.record_key,
         duplicate.record_key,
     }
-    assert source.pal._pal_param == source_snapshot
+    assert source.pal.pal_param == source_snapshot
 
 
 def test_save_transaction_restores_level_dps_and_global_on_replace_failure(

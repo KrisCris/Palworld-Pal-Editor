@@ -141,12 +141,12 @@ class PalCreationTests(unittest.TestCase):
         self.assertEqual(TARGET_GROUP, pal.group_id)
         self.assertNotEqual(
             SOURCE_CONTAINER,
-            PalObjects.get_PalContainerId(pal._pal_param["EquipItemContainerId"]),
+            PalObjects.get_PalContainerId(pal.pal_param["EquipItemContainerId"]),
         )
-        self.assertNotIn("MapObjectConcreteInstanceIdAssignedToExpedition", pal._pal_param)
+        self.assertNotIn("MapObjectConcreteInstanceIdAssignedToExpedition", pal.pal_param)
         self.assertEqual(
             TARGET_PLAYER,
-            PalObjects.get_BaseType(pal._pal_param["LastNickNameModifierPlayerUid"]),
+            PalObjects.get_BaseType(pal.pal_param["LastNickNameModifierPlayerUid"]),
         )
         self.assertEqual(original, source)
 

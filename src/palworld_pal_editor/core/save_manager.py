@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 import re
 import shutil
+import threading
 import traceback
 from typing import Literal, Optional
 import uuid
@@ -64,15 +65,57 @@ class SaveManager:
     def __init__(self):
         if not hasattr(self, "initialized"):
             self.initialized = True
-                
-    def open(self, file_path: str) -> Optional[GvasFile]:
-        self._file_path = Path(file_path).resolve()
+            self._lock = threading.RLock()
+            self.reset()
+
+    def reset(self) -> None:
+        """Drop every piece of state belonging to the currently loaded save.
+
+        open() calls this on entry and again on any failure exit, so a save that
+        fails to parse leaves an empty session instead of the half-read wreckage
+        of this attempt mixed with the previous save.
+        """
+        self._file_path = None
+        self._raw_gvas = None
+        self._save_type = None
+        self.gvas_file = None
+        self._entities_list = None
+
+        self.player_mapping = {}
+        self.baseworker_mapping = {}
+        self._dangling_pals = {}
+
+        self.container_data = None
+        self.item_container_data = None
+        self.group_data = None
+        self.camp_data = None
+        self.guild_lab_data = None
+
         self._record_mapping: dict[str, PalRecordRef] = {}
         self._records_by_instance: dict[str, list[PalRecordRef]] = {}
         self._roster_record_keys: dict[str, list[str]] = {}
         self._dps_storages: dict[str, FixedPalStorage] = {}
         self._global_palbox: FixedPalStorage | None = None
+
+        self._container_registry_cache = None
         self.load_warnings: list[str] = []
+
+    def open(self, file_path: str) -> Optional[GvasFile]:
+        with self._lock:
+            self.reset()
+            try:
+                gvas_file = self._open(file_path)
+            except Exception as e:
+                LOGGER.error(f"Error opening {file_path}: {e}")
+                LOGGER.debug(traceback.format_exc())
+                gvas_file = None
+
+            if gvas_file is None:
+                self.reset()
+            return gvas_file
+
+    def _open(self, file_path: str) -> Optional[GvasFile]:
+        self._file_path = Path(file_path).resolve()
 
         level_sav_path = self._file_path / "Level.sav"
 
@@ -147,6 +190,10 @@ class SaveManager:
         return self.gvas_file
 
     def save(self, file_path: str) -> bool:
+        with self._lock:
+            return self._save(file_path)
+
+    def _save(self, file_path: str) -> bool:
         if self.gvas_file is None:
             LOGGER.error("No gvas_file stored in save manager, aborting")
             return False
@@ -1004,12 +1051,6 @@ class SaveManager:
             if self._locker_instance_id(entry) != instance_id
         ]
 
-    @staticmethod
-    def _save_parameter(pal: PalEntity) -> dict:
-        return pal._pal_obj["value"]["RawData"]["value"]["object"][
-            "SaveParameter"
-        ]
-
     def _snapshot_external_mutation(
         self,
         external_slots: list[tuple[FixedPalStorage, int]],
@@ -1128,7 +1169,7 @@ class SaveManager:
             group_id,
         )
         pal_obj["value"]["RawData"]["value"]["object"]["SaveParameter"] = (
-            copy.deepcopy(self._save_parameter(source))
+            copy.deepcopy(source.save_parameter)
         )
         pal = PalEntity(pal_obj)
         pal.InstanceId = source.InstanceId
@@ -1157,7 +1198,7 @@ class SaveManager:
         *,
         preserve_provenance: bool,
     ) -> tuple[dict, dict]:
-        save_parameter = copy.deepcopy(self._save_parameter(source))
+        save_parameter = copy.deepcopy(source.save_parameter)
         parameter = save_parameter["value"]
         parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
         parameter["ItemContainerId"] = PalObjects.PalContainerId(
@@ -1198,8 +1239,8 @@ class SaveManager:
             save_parameter, _ = self._prepare_global_parameter(
                 record.pal, preserve_provenance=True
             )
-            record.pal._pal_param.clear()
-            record.pal._pal_param.update(save_parameter["value"])
+            record.pal.pal_param.clear()
+            record.pal.pal_param.update(save_parameter["value"])
             self._global_palbox.dirty = True
         elif record.storage_kind == "dps":
             self._add_locker_id(record.pal.InstanceId)
@@ -1295,19 +1336,19 @@ class SaveManager:
                     updated_parameter, _ = self._prepare_global_parameter(
                         source.pal, preserve_provenance=True
                     )
-                    destination.pal._pal_param.clear()
-                    destination.pal._pal_param.update(
+                    destination.pal.pal_param.clear()
+                    destination.pal.pal_param.update(
                         copy.deepcopy(updated_parameter["value"])
                     )
                 else:
                     incoming = copy.deepcopy(
-                        self._save_parameter(source.pal)["value"]
+                        source.pal.save_parameter["value"]
                     )
                     merged = self._restore_local_parameter_envelope(
-                        incoming, destination.pal._pal_param
+                        incoming, destination.pal.pal_param
                     )
-                    destination.pal._pal_param.clear()
-                    destination.pal._pal_param.update(merged)
+                    destination.pal.pal_param.clear()
+                    destination.pal.pal_param.update(merged)
                 destination.pal._display_name_cache = {}
                 if destination_storage is not None:
                     destination_storage.dirty = True
@@ -1345,7 +1386,7 @@ class SaveManager:
                 target_pal, target_group = self._make_world_pal(
                     source.pal, descriptor, target_container, target_slot
                 )
-                target_pal._pal_param.pop(
+                target_pal.pal_param.pop(
                     "MapObjectConcreteInstanceIdAssignedToExpedition", None
                 )
                 if not target_group.add_pal(target_pal.InstanceId):
@@ -1526,7 +1567,7 @@ class SaveManager:
         try:
             if target_storage is not None:
                 target_record = target_storage.allocate(
-                    self._save_parameter(source.pal),
+                    source.pal.save_parameter,
                     source.pal.InstanceId,
                 )
             else:
@@ -1704,7 +1745,7 @@ class SaveManager:
 
         source_snapshot = source_container.snapshot_slots()
         target_snapshot = target_container.snapshot_slots()
-        pal_param_snapshot = copy.deepcopy(pal_entity._pal_param)
+        pal_param_snapshot = copy.deepcopy(pal_entity.pal_param)
         owner_entity_snapshot = pal_entity.owner_player_entity
         player_palbox_snapshots = {
             str(player.PlayerUId): (
@@ -1763,8 +1804,8 @@ class SaveManager:
         except Exception as error:
             source_container.restore_slots(source_snapshot)
             target_container.restore_slots(target_snapshot)
-            pal_entity._pal_param.clear()
-            pal_entity._pal_param.update(pal_param_snapshot)
+            pal_entity.pal_param.clear()
+            pal_entity.pal_param.update(pal_param_snapshot)
             pal_entity.owner_player_entity = owner_entity_snapshot
             for player in self.get_players():
                 palbox, new_palbox = player_palbox_snapshots[str(player.PlayerUId)]
@@ -2027,11 +2068,11 @@ class SaveManager:
             pal.SlotId = (PalObjects.EMPTY_UUID, -1)
             pal.group_id = player.group_id
             pal.set_owner_player_uid(player.PlayerUId, player)
-            pal._pal_param.pop(
+            pal.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
             )
             record = storage.allocate(
-                self._save_parameter(pal), instance_id
+                pal.save_parameter, instance_id
             )
             record.pal.is_new_pal = True
             self._add_locker_id(instance_id)
@@ -2212,12 +2253,12 @@ class SaveManager:
                 pal_entity.group_id = group_id
                 # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
                 # so just assign a randomly for now.
-                pal_entity._pal_param["EquipItemContainerId"] = (
+                pal_entity.pal_param["EquipItemContainerId"] = (
                     PalObjects.PalContainerId(str(uuid.uuid4()))
                 )
 
             historical_uid = historical_player.PlayerUId
-            pal_entity._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+            pal_entity.pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
                 "StructProperty",
                 {
                     "prop_name": "OldOwnerPlayerUIds",
@@ -2227,14 +2268,14 @@ class SaveManager:
                     "id": PalObjects.EMPTY_UUID,
                 },
             )
-            pal_entity._pal_param["LastNickNameModifierPlayerUid"] = (
+            pal_entity.pal_param["LastNickNameModifierPlayerUid"] = (
                 PalObjects.Guid(historical_uid)
             )
             if owner_player is None:
                 pal_entity.set_owner_player_uid(None)
             else:
                 pal_entity.set_owner_player_uid(owner_player.PlayerUId, owner_player)
-            pal_entity._pal_param.pop(
+            pal_entity.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
             )
 

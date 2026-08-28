@@ -344,13 +344,13 @@ class SaveManagerMovementTests(unittest.TestCase):
                     "storage", target_group
                 )
                 if expedition:
-                    pal._pal_param["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
+                    pal.pal_param["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
                         PalObjects.Guid(CONTAINER_ID)
                     )
                 before = (
                     copy.deepcopy(source._slots_data),
                     copy.deepcopy(target._slots_data),
-                    copy.deepcopy(pal._pal_param),
+                    copy.deepcopy(pal.pal_param),
                     dict(source_player._palbox),
                 )
 
@@ -359,7 +359,7 @@ class SaveManagerMovementTests(unittest.TestCase):
 
                 self.assertEqual(before[0], source._slots_data)
                 self.assertEqual(before[1], target._slots_data)
-                self.assertEqual(before[2], pal._pal_param)
+                self.assertEqual(before[2], pal.pal_param)
                 self.assertEqual(before[3], source_player._palbox)
 
     def test_40_slot_world_container_is_a_shared_viewing_cage(self):
@@ -397,7 +397,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         before = (
             copy.deepcopy(source._slots_data),
             copy.deepcopy(target._slots_data),
-            copy.deepcopy(pal._pal_param),
+            copy.deepcopy(pal.pal_param),
         )
 
         with self.assertRaisesRegex(ValueError, "owner"):
@@ -405,7 +405,7 @@ class SaveManagerMovementTests(unittest.TestCase):
 
         self.assertEqual(before[0], source._slots_data)
         self.assertEqual(before[1], target._slots_data)
-        self.assertEqual(before[2], pal._pal_param)
+        self.assertEqual(before[2], pal.pal_param)
 
     def test_explicit_base_creation_uses_target_slot_and_clears_expedition(self):
         manager, _, _, target, _, _ = movement_manager()
@@ -430,7 +430,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         self.assertEqual((target.ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
         self.assertNotIn(
-            "MapObjectConcreteInstanceIdAssignedToExpedition", pal._pal_param
+            "MapObjectConcreteInstanceIdAssignedToExpedition", pal.pal_param
         )
         self.assertIs(pal, manager.baseworker_mapping[str(pal.InstanceId)])
 
