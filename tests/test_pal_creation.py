@@ -3,6 +3,8 @@ import unittest
 
 from palworld_pal_editor.core.group_data import PalGroup
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
 
 
@@ -92,7 +94,9 @@ def manager_fixture():
     player = FakePlayer()
     container = FakeContainer()
     group = FakeGroup()
-    manager.player_mapping = {str(TARGET_PLAYER): player}
+    manager.players = PlayerRepository()
+    manager.players.register(player)
+    manager.pal_repository = PalRepository()
     manager.container_data = FakeContainerData(container)
     manager.group_data = FakeGroupData(group)
     manager._entities_list = []

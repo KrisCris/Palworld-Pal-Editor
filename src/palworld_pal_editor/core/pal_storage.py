@@ -1,5 +1,4 @@
 import copy
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
@@ -10,21 +9,11 @@ from palworld_save_tools.paltypes import PALWORLD_TYPE_HINTS
 
 from .pal_entity import PalEntity
 from .pal_objects import PalObjects, toUUID
+from .pal_record import PalRecord
 from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 
 
 StorageKind = Literal["dps", "global_palbox"]
-
-
-@dataclass(slots=True)
-class PalRecordRef:
-    record_key: str
-    storage_key: str
-    storage_kind: Literal["world", "dps", "global_palbox"]
-    slot_index: int
-    pal: PalEntity
-    storage_owner_uid: str | None = None
-    external_record: dict | None = None
 
 
 class FixedPalStorage:
@@ -99,14 +88,14 @@ class FixedPalStorage:
             return f"gps:{slot_index}"
         return f"dps:{self.owner_uid}:{slot_index}"
 
-    def records(self) -> list[PalRecordRef]:
+    def records(self) -> list[PalRecord]:
         return [
             self._record(slot_index, entry)
             for slot_index, entry in enumerate(self._entries)
             if self._occupied(entry)
         ]
 
-    def get(self, record_key: str) -> PalRecordRef | None:
+    def get(self, record_key: str) -> PalRecord | None:
         prefix = "gps:" if self.kind == "global_palbox" else f"dps:{self.owner_uid}:"
         if not record_key.startswith(prefix):
             return None
@@ -130,7 +119,7 @@ class FixedPalStorage:
         save_parameter: dict,
         instance_id: UUID | str,
         player_uid: UUID | str | None = None,
-    ) -> PalRecordRef:
+    ) -> PalRecord:
         slot_index = self.free_index()
         if slot_index < 0:
             raise ValueError(f"{self.storage_key} is full")
@@ -143,9 +132,9 @@ class FixedPalStorage:
 
     def clear(self, record_key: str) -> None:
         record = self.get(record_key)
-        if record is None or record.external_record is None:
+        if record is None:
             raise KeyError(record_key)
-        record.external_record["InstanceId"] = self._instance_id(
+        record.native_record["InstanceId"] = self._instance_id(
             PalObjects.EMPTY_UUID,
             PalObjects.EMPTY_UUID,
         )
@@ -155,7 +144,7 @@ class FixedPalStorage:
         raw_gvas = copy.deepcopy(self.gvas_file).write(PAL_STORAGE_CUSTOM_PROPERTIES)
         return compress_gvas_to_sav(raw_gvas, self.save_type)
 
-    def _record(self, slot_index: int, entry: dict) -> PalRecordRef:
+    def _record(self, slot_index: int, entry: dict) -> PalRecord:
         pal_obj = {
             "key": entry["InstanceId"]["value"],
             "value": {
@@ -167,14 +156,14 @@ class FixedPalStorage:
                 }
             },
         }
-        return PalRecordRef(
+        return PalRecord(
             record_key=self.record_key(slot_index),
-            storage_key=self.storage_key,
             storage_kind=self.kind,
+            storage_key=self.storage_key,
             slot_index=slot_index,
+            native_record=entry,
             pal=PalEntity(pal_obj),
             storage_owner_uid=self.owner_uid,
-            external_record=entry,
         )
 
     @staticmethod

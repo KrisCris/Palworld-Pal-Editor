@@ -135,19 +135,23 @@ def test_full_dps_target_rejects_without_mutating_source_or_locker(
     source_storage = manager._dps_storages[f"dps:{LOSSY_UID}"]
     target_storage = manager._dps_storages[f"dps:{MINT_UID}"]
     source = source_storage.records()[0]
-    source_snapshot = copy.deepcopy(source.external_record)
+    source_snapshot = copy.deepcopy(source.native_record)
     target_snapshot = copy.deepcopy(target_storage._entries)
     locker_snapshot = copy.deepcopy(manager._locker_entries())
-    registry_snapshot = set(manager._record_mapping)
+    registry_snapshot = {
+        record.record_key for record in manager.pal_repository.records()
+    }
     monkeypatch.setattr(target_storage, "free_index", lambda: -1)
 
     with pytest.raises(ValueError, match="full"):
         manager.transfer_pal(source.record_key, target_storage.storage_key, "move")
 
-    assert source.external_record == source_snapshot
+    assert source.native_record == source_snapshot
     assert target_storage._entries == target_snapshot
     assert manager._locker_entries() == locker_snapshot
-    assert set(manager._record_mapping) == registry_snapshot
+    assert {
+        record.record_key for record in manager.pal_repository.records()
+    } == registry_snapshot
 
 
 def test_global_creation_export_import_and_update_keep_the_right_envelopes(
@@ -168,7 +172,7 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
         created.pal.pal_param["ItemContainerId"]
     ) == PalObjects.EMPTY_UUID
     assert PalObjects.get_BaseType(
-        created.external_record["InstanceId"]["value"]["PlayerUId"]
+        created.native_record["InstanceId"]["value"]["PlayerUId"]
     ) == PalObjects.EMPTY_UUID
     assert created_id not in locker_ids(manager)
 

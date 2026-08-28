@@ -3,7 +3,7 @@ import traceback
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.core import PalRecordRef, SaveManager
+from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.utils import LOGGER, DataProvider
@@ -21,92 +21,36 @@ def _guid_string_or_none(value):
     return text
 
 
-def _pal_location(manager, pal, party_container_id=None, storage_container_id=None):
-    resolver = getattr(manager, "resolve_pal_location", None)
-    if resolver is not None:
-        return resolver(pal)
-    return {
-        "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
-        "RecordedSlotIndex": pal.SlotIndex,
-        "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
-        "ActualSlotIndex": pal.SlotIndex,
-        "ActualLocations": [],
-        "LocationStatus": "ok",
-        "LocationAnomaly": None,
-        "ContainerKind": (
-            "party"
-            if pal.ContainerId == party_container_id
-            else "storage"
-            if pal.ContainerId == storage_container_id
-            else "other"
-        ),
-        "ContainerLabel": None,
-    }
-
-
 @player_blueprint.route("/player_pals", methods=["POST"])
 @jwt_required()
 def get_player_pals():
     roster_key = request.json.get("RosterKey") or request.json.get("PlayerUId")
     manager = SaveManager()
-    player_entity = None
 
-    def world_record(pal):
-        getter = getattr(manager, "get_record", None)
-        record = getter(f"world:{pal.InstanceId}") if getter else None
-        if record is not None:
-            return record
-        container_id = str(pal.ContainerId) if pal.ContainerId else None
-        return PalRecordRef(
-            record_key=f"world:{pal.InstanceId}",
-            storage_key=(
-                f"world-container:{container_id}" if container_id else "world-anomaly"
-            ),
-            storage_kind="world",
-            slot_index=pal.SlotIndex if pal.SlotIndex is not None else -1,
-            pal=pal,
-            storage_owner_uid=(
-                str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
-            ),
-        )
+    def ordered_records(key, ordered_pals):
+        """The roster's records, in the display order the Pal list already uses."""
+        by_pal = {
+            id(record.pal): record for record in manager.records_for_roster(key)
+        }
+        return [
+            record
+            for pal in ordered_pals
+            if (record := by_pal.get(id(pal))) is not None
+        ]
 
     if roster_key == "PAL_GLOBAL_STORAGE_BTN":
         records = manager.records_for_roster(roster_key)
     elif roster_key == "PAL_BASE_WORKER_BTN":
-        pals = manager.get_working_pals()
-        records = [world_record(pal) for pal in pals]
+        records = ordered_records(roster_key, manager.get_working_pals())
     else:
         player_entity = manager.get_player(roster_key)
         if not player_entity:
             return reply(1, None, f"Player {roster_key} Not Found")
-        pals = player_entity.get_sorted_pals()
-        roster_records = (
-            manager.records_for_roster(roster_key)
-            if hasattr(manager, "records_for_roster")
-            else []
-        )
-        records_by_pal = {id(record.pal): record for record in roster_records}
-        records = [
-            records_by_pal.get(id(pal)) or world_record(pal)
-            for pal in pals
-        ]
-
-    party_container_id = (
-        player_entity.OtomoCharacterContainerId if player_entity else None
-    )
-    storage_container_id = (
-        player_entity.PalStorageContainerId if player_entity else None
-    )
+        records = ordered_records(roster_key, player_entity.get_sorted_pals())
 
     def pal_to_summary(record):
         pal = record.pal
-        location = (
-            manager.resolve_record_location(record)
-            if hasattr(manager, "resolve_record_location")
-            else _pal_location(
-                manager, pal, party_container_id, storage_container_id
-            )
-        )
+        location = manager.resolve_record_location(record)
         return {
             "RecordKey": record.record_key,
             "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,

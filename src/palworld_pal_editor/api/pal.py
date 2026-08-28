@@ -301,24 +301,10 @@ def maximize_pal():
 def _pal_data(pal: PalEntity, pal_record=None):
     record = DataProvider.get_pal_record(pal.CharacterID) or {}
     manager = SaveManager()
-    record_resolver = getattr(manager, "resolve_record_location", None)
-    resolver = getattr(manager, "resolve_pal_location", None)
     location = (
-        record_resolver(pal_record)
-        if pal_record is not None and record_resolver
-        else resolver(pal)
-        if resolver and getattr(manager, "container_data", None)
-        else {
-        "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
-        "RecordedSlotIndex": pal.SlotIndex,
-        "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
-        "ActualSlotIndex": pal.SlotIndex,
-        "ActualLocations": [],
-        "LocationStatus": "ok",
-        "LocationAnomaly": None,
-        "ContainerKind": "other",
-        "ContainerLabel": None,
-        }
+        manager.resolve_record_location(pal_record)
+        if pal_record is not None
+        else manager.resolve_pal_location(pal)
     )
     owner_uid = _guid_string_or_none(pal.OwnerPlayerUId)
     return {
@@ -543,16 +529,7 @@ def add_pal():
     except Exception:
         LOGGER.error(f"Error adding Pal: {traceback.format_exc()}")
         return reply(1, None, "Error adding Pal. Check the logs for details.")
-    data = _pal_data(pal_entity)
-    if record is not None:
-        data.update(
-            {
-                "RecordKey": record.record_key,
-                "StorageKey": record.storage_key,
-                "StorageKind": record.storage_kind,
-            }
-        )
-    return reply(0, data)
+    return reply(0, _pal_data(pal_entity, record))
 
 
 @pal_blueprint.route("/templates", methods=["GET"])

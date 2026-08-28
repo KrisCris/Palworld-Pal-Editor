@@ -3,10 +3,9 @@ from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import PalRecordRef
+from fakes import pal_payload, record_location, world_record
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
@@ -143,7 +142,7 @@ class PalFamilyProviderTests(unittest.TestCase):
         )
 
     def test_selected_pal_payload_contains_exact_metadata(self):
-        payload = _pal_data(make_pal("BOSS_KingWhale_otomo"))
+        payload = pal_payload(make_pal("BOSS_KingWhale_otomo"))
         self.assertEqual("BOSS_KingWhale_otomo", payload["CharacterID"])
         self.assertEqual("KingWhale", payload["FamilyID"])
         self.assertEqual("boss", payload["VariantKind"])
@@ -156,12 +155,13 @@ class PalFamilyProviderTests(unittest.TestCase):
 
         class Manager:
             def get_unique_world_record(self, _instance_id):
-                return PalRecordRef(
-                    f"world:{pal.InstanceId}", "world-container:test", "world", 0, pal
-                )
+                return world_record(pal, storage_key="world-container:test")
 
             def normalize_external_record(self, _record):
                 pass
+
+            def resolve_record_location(self, record):
+                return record_location(record)
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():

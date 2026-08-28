@@ -10,7 +10,7 @@ from flask_jwt_extended import create_access_token
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_storage import PalRecordRef
+from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
 
 PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -38,16 +38,13 @@ class FakeManager:
         self.added = []
 
     def get_unique_world_record(self, _instance_id):
-        return PalRecordRef(
-            f"world:{self.pal.InstanceId}",
-            "world-container:test",
-            "world",
-            0,
-            self.pal,
-        )
+        return world_record(self.pal, storage_key="world-container:test")
 
     def get_player(self, _player_id):
         return type("Player", (), {"NickName": "Target"})()
+
+    def resolve_record_location(self, record):
+        return record_location(record)
 
     def add_pal(self, player_id, pal_obj=None, target_container_id=None):
         self.added.append((player_id, pal_obj, target_container_id))
@@ -59,13 +56,7 @@ class FakeManager:
         self.added.append((roster_key, target_storage_key, pal_obj))
         result = PalEntity(copy.deepcopy(pal_obj or self.pal._pal_obj))
         result.is_new_pal = True
-        return PalRecordRef(
-            f"world:{result.InstanceId}",
-            target_storage_key,
-            "world",
-            0,
-            result,
-        )
+        return world_record(result, storage_key=target_storage_key)
 
 
 class PalTemplateApiTests(unittest.TestCase):

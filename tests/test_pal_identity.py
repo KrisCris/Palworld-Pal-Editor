@@ -5,7 +5,8 @@ from uuid import UUID
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.api.pal import _pal_brief, _pal_data
+from fakes import pal_payload, record_location, world_record
+from palworld_pal_editor.api.pal import _pal_brief
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
@@ -142,7 +143,7 @@ class PalIdentityTests(unittest.TestCase):
         pal.NickName = ""
         self.assertEqual(base_name, pal.I18nName)
         self.assertEqual(base_name, pal.DisplayName)
-        self.assertEqual(base_name, _pal_data(pal)["I18nName"])
+        self.assertEqual(base_name, pal_payload(pal)["I18nName"])
 
     def test_owner_name_uuid_fallback_is_json_serializable(self):
         owner_id = UUID("23d87046-27f9-4399-9269-c7e9b4bac864")
@@ -166,7 +167,7 @@ class PalIdentityTests(unittest.TestCase):
             "palworld_pal_editor.core.save_manager.SaveManager",
             return_value=Manager(),
         ):
-            payload = _pal_data(pal)
+            payload = pal_payload(pal)
 
         self.assertEqual(str(owner_id), payload["OwnerName"])
         json.dumps(payload)
@@ -175,7 +176,7 @@ class PalIdentityTests(unittest.TestCase):
         pal = self.make_pal("SheepBall")
         pal.is_new_pal = True
 
-        payload = _pal_data(pal)
+        payload = pal_payload(pal)
 
         self.assertTrue(payload["IsNewPal"])
 
@@ -185,10 +186,20 @@ class PalIdentityTests(unittest.TestCase):
         pal.IsImportedCharacter = True
         pal.is_new_pal = True
 
+        record = world_record(pal)
+
         class Manager:
             @staticmethod
             def get_working_pals():
                 return [pal]
+
+            @staticmethod
+            def records_for_roster(_roster_key):
+                return [record]
+
+            @staticmethod
+            def resolve_record_location(rec):
+                return record_location(rec)
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():
@@ -227,10 +238,20 @@ class PalIdentityTests(unittest.TestCase):
 
         pal.set_owner_player_entity(Player())
 
+        record = world_record(pal, storage_key=f"world-container:{party_id}")
+
         class Manager:
             @staticmethod
             def get_player(_player_id):
                 return Player()
+
+            @staticmethod
+            def records_for_roster(_roster_key):
+                return [record]
+
+            @staticmethod
+            def resolve_record_location(rec):
+                return record_location(rec, container_kind="party")
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():
@@ -280,7 +301,7 @@ class PalIdentityTests(unittest.TestCase):
     def test_pal_detail_includes_priority(self):
         pal = self.make_pal("SheepBall")
         pal.pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
-        self.assertEqual(2, _pal_data(pal)["FavoriteIndex"])
+        self.assertEqual(2, pal_payload(pal)["FavoriteIndex"])
 
     def test_pal_conflict_brief_includes_portrait_status_flags(self):
         pal = self.make_pal("SheepBall")
@@ -301,14 +322,14 @@ class PalIdentityTests(unittest.TestCase):
         pal = self.make_pal("SheepBall")
 
         self.assertFalse(pal.IsImportedCharacter)
-        self.assertFalse(_pal_data(pal)["IsImportedCharacter"])
+        self.assertFalse(pal_payload(pal)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = True
         self.assertTrue(pal.IsImportedCharacter)
         self.assertEqual(
             "BoolProperty", pal.pal_param["bImportedCharacter"]["type"]
         )
-        self.assertTrue(_pal_data(pal)["IsImportedCharacter"])
+        self.assertTrue(pal_payload(pal)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = False
         self.assertFalse(pal.IsImportedCharacter)

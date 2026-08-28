@@ -5,6 +5,8 @@ from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
 
 
@@ -188,10 +190,10 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
     source_player.add_pal(pal)
 
     manager = object.__new__(SaveManager)
-    manager.player_mapping = {
-        str(source_player.PlayerUId): source_player,
-        str(target_player.PlayerUId): target_player,
-    }
+    manager.players = PlayerRepository()
+    manager.players.register(source_player)
+    manager.players.register(target_player)
+    manager.pal_repository = PalRepository()
     manager.baseworker_mapping = {}
     manager._dangling_pals = {}
     manager.container_data = FakeContainerData(source, target)

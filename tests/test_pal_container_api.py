@@ -7,7 +7,8 @@ from flask_jwt_extended import create_access_token
 from palworld_pal_editor.webui import app
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_storage import PalRecordRef
+from palworld_pal_editor.core.pal_record import PalRecord
+from fakes import record_location, world_record
 
 
 class FakeManager:
@@ -29,15 +30,14 @@ class FakeManager:
         gps_pal = PalEntity(copy.deepcopy(world_pal._pal_obj))
         gps_pal.NickName = "GPS copy"
         self.records = {
-            f"world:{instance_id}": PalRecordRef(
-                f"world:{instance_id}",
-                "world-container:box",
-                "world",
-                0,
-                world_pal,
-            ),
-            "gps:0": PalRecordRef(
-                "gps:0", "global-palbox", "global_palbox", 0, gps_pal
+            f"world:{instance_id}": world_record(world_pal, storage_key="world-container:box"),
+            "gps:0": PalRecord(
+                record_key="gps:0",
+                storage_kind="global_palbox",
+                storage_key="global-palbox",
+                slot_index=0,
+                native_record={},
+                pal=gps_pal,
             ),
         }
 
@@ -71,17 +71,7 @@ class FakeManager:
         return self.records.get(f"world:{instance_id}")
 
     def resolve_record_location(self, record):
-        return {
-            "RecordedContainerId": None,
-            "RecordedSlotIndex": record.pal.SlotIndex,
-            "ActualContainerId": None,
-            "ActualSlotIndex": record.slot_index,
-            "ActualLocations": [],
-            "LocationStatus": "ok",
-            "LocationAnomaly": None,
-            "ContainerKind": record.storage_kind,
-            "ContainerLabel": record.storage_key,
-        }
+        return record_location(record)
 
 
 class PalContainerApiTests(unittest.TestCase):

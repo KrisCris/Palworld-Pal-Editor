@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_storage import PalRecordRef
+from fakes import record_location, world_record
 from palworld_pal_editor.webui import app
 
 
@@ -47,19 +47,16 @@ class FakeManager:
         self.pal = pal
 
     def get_unique_world_record(self, _instance_id):
-        return PalRecordRef(
-            f"world:{self.pal.InstanceId}",
-            "world-container:test",
-            "world",
-            0,
-            self.pal,
-        )
+        return world_record(self.pal, storage_key="world-container:test")
 
     def get_player(self, _player_id):
         return type("Player", (), {"NickName": "Target"})()
 
     def normalize_external_record(self, _record):
         pass
+
+    def resolve_record_location(self, record):
+        return record_location(record)
 
 
 class PalMaximizeTests(unittest.TestCase):

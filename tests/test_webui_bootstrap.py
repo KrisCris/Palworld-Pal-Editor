@@ -2,9 +2,9 @@ from flask_jwt_extended import decode_token
 from werkzeug.security import generate_password_hash
 
 from palworld_pal_editor.config import Config
+from fakes import world_record
 from palworld_pal_editor.core import PalEntity, SaveManager
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import PalRecordRef
 from palworld_pal_editor.webui import app
 
 
@@ -26,7 +26,7 @@ def configure_app(monkeypatch):
 
 def select_pal(monkeypatch, pal):
     manager = SaveManager()
-    record = PalRecordRef("world:test", "world-container:test", "world", 0, pal)
+    record = world_record(pal)
     monkeypatch.setattr(manager, "get_unique_world_record", lambda _pal_id: record)
     monkeypatch.setattr(manager, "normalize_external_record", lambda _record: None)
     monkeypatch.setattr(manager, "get_player", lambda _player_id: None)
