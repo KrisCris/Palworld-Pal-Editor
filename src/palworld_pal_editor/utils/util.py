@@ -28,6 +28,10 @@ def get_path_context(path: Path) -> dict:
 
     return {
         "currentPath": str(current_path),
+        # So walking up needs no server-side cursor: the client asks for whatever
+        # this says. At a filesystem root it is the current path, which is how the
+        # picker knows there is nowhere further up to go.
+        "parentPath": str(current_path.parent),
         "children": children,
         "isPalDir": is_pal_dir
     }

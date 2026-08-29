@@ -6,3 +6,5 @@ from palworld_pal_editor.api.pals import pals_blueprint
 from palworld_pal_editor.api.players import players_blueprint
 from palworld_pal_editor.api.rosters import rosters_blueprint
 from palworld_pal_editor.api.session import session_blueprint
+from palworld_pal_editor.api.application import application_blueprint
+from palworld_pal_editor.api.research import research_blueprint

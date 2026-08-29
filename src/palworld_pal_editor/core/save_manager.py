@@ -743,7 +743,7 @@ class SaveManager:
         return self.players.all()
 
     def get_lab_research(self) -> dict:
-        if getattr(self, "guild_lab_data", None) is None:
+        if self.guild_lab_data is None:
             raise ValueError("Guild laboratory data is not loaded")
         return self.guild_lab_data.snapshot(self.group_data, self.camp_data)
 
@@ -755,7 +755,7 @@ class SaveManager:
         category: str | None = None,
         all_research: bool = False,
     ) -> int:
-        if getattr(self, "guild_lab_data", None) is None:
+        if self.guild_lab_data is None:
             raise ValueError("Guild laboratory data is not loaded")
         return self.guild_lab_data.complete(
             guild_id,

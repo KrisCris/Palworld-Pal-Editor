@@ -31,6 +31,8 @@ app.register_blueprint(session_blueprint, url_prefix='/api/session')
 app.register_blueprint(players_blueprint, url_prefix='/api/players')
 app.register_blueprint(rosters_blueprint, url_prefix='/api/rosters')
 app.register_blueprint(pals_blueprint, url_prefix='/api/pals')
+app.register_blueprint(application_blueprint, url_prefix='/api')
+app.register_blueprint(research_blueprint, url_prefix='/api/guild-research')
 
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)
