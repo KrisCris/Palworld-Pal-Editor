@@ -3,8 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useResearchStore } from '@/stores/research'
 
 const palStore = usePalEditorStore()
+const researchStore = useResearchStore()
 const selectedCategoryId = ref('Handcraft')
 const selectedResearchId = ref(null)
 const researchScroll = ref(null)
@@ -19,13 +21,13 @@ const graphMetrics = Object.freeze({
   railWidth: 68,
 })
 
-const guilds = computed(() => palStore.BASE_CAMP_RESEARCH?.Guilds ?? [])
+const guilds = computed(() => researchStore.research?.Guilds ?? [])
 const guildOptions = computed(() => guilds.value.map(guild => ({
   value: guild.GuildId,
   label: guild.GuildName,
 })))
 const selectedGuild = computed(() => guilds.value.find(
-  guild => guild.GuildId === palStore.SELECTED_RESEARCH_GUILD_ID,
+  guild => guild.GuildId === researchStore.selectedGuildId,
 ) ?? guilds.value[0] ?? null)
 const categories = computed(() => selectedGuild.value?.Categories ?? [])
 const selectedCategory = computed(() => categories.value.find(
@@ -150,19 +152,19 @@ function selectResearch(research) {
 
 async function completeResearch() {
   if (!selectedResearch.value || selectedResearch.value.Completed) return
-  await palStore.completeBaseCampResearch({ ResearchId: selectedResearch.value.ResearchId })
+  await palStore.completeBaseCampResearch({ researchId: selectedResearch.value.ResearchId })
 }
 
 async function completeCategory() {
   if (!selectedCategory.value || selectedCategory.value.Completed === selectedCategory.value.Total) return
   if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_Category')) return
-  await palStore.completeBaseCampResearch({ Category: selectedCategory.value.Category })
+  await palStore.completeBaseCampResearch({ category: selectedCategory.value.Category })
 }
 
 async function completeAll() {
   if (allCompleted.value) return
   if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_All')) return
-  await palStore.completeBaseCampResearch({ All: true })
+  await palStore.completeBaseCampResearch({ all: true })
 }
 
 watch(selectedGuild, guild => {
@@ -206,7 +208,7 @@ onBeforeUnmount(() => {
       <div class="lab-header__actions">
         <div v-if="guilds.length > 1" class="guild-select">
           <span>{{ translated('BaseCamp_Research_Guild') }}</span>
-          <SearchSelect v-model="palStore.SELECTED_RESEARCH_GUILD_ID"
+          <SearchSelect v-model="researchStore.selectedGuildId"
             :options="guildOptions"
             :placeholder="translated('BaseCamp_Research_Guild')"
             :search-placeholder="translated('Editor_Select_Search')"

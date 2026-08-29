@@ -12,6 +12,7 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppStore } = await import("../src/stores/app.js");
 const { GAME_LANGUAGES, UI_TRANSLATIONS } = await import("../src/i18n/index.js");
 const locales = await Promise.all([
     import("../src/i18n/en.js"),
@@ -68,7 +69,7 @@ test("startup translations are available synchronously without the backend", () 
 
     assert.equal(typeof store.getTranslatedText("BackendError_Title"), "string");
     assert.notEqual(store.getTranslatedText("BackendError_Title"), "I18N_MISSING");
-    assert.deepEqual(store.I18nList, {
+    assert.deepEqual(useAppStore().localeOptions, {
         en: "English",
         de: "Deutsch",
         es: "Español",
@@ -109,13 +110,13 @@ test("saved game-data locales use their complete frontend translation", () => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
 
-    assert.equal(store.I18n, "zh-TW");
+    assert.equal(useAppStore().locale, "zh-TW");
     assert.equal(store.getTranslatedText("BackendError_Title"), UI_TRANSLATIONS["zh-TW"].BackendError_Title);
 });
 
 test("the anti-scam warning is not restricted to Chinese", async () => {
     const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
-    assert.doesNotMatch(source, /I18n\.value\s*==={0,1}\s*["']zh-CN["']/);
+    assert.doesNotMatch(source, /app\.locale\s*==={0,1}\s*["']zh-CN["']/);
 });
 
 test("bootstrap, authentication, and error controls are translated in every locale", () => {

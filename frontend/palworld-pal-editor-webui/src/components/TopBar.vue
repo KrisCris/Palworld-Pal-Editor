@@ -5,12 +5,14 @@ import BackendServerSelector from './BackendServerSelector.vue'
 import PalList from './PalList.vue'
 import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { useRostersStore } from '@/stores/rosters'
 import { useSessionStore } from '@/stores/session'
 
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
@@ -41,17 +43,17 @@ watch(() => sessionStore.operationPending, newValue => {
   }, 250)
 })
 
-const donate = async () => {
-  if (await palStore.showDonate()) palStore.SHOW_DONATE_FLAG = true
+const donate = () => {
+  if (!appStore.donationPromptDismissed) palStore.SHOW_DONATE_FLAG = true
 }
 
-const show_cheats = async () => {
-  await donate()
+const show_cheats = () => {
+  donate()
   palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
 }
 
 const save = async () => {
-  if (await palStore.writeSave()) await donate()
+  if (await palStore.writeSave()) donate()
 }
 
 const playerCount = computed(() => playersStore.players.length + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
@@ -116,9 +118,9 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
         <BackendServerSelector v-if="sessionStore.appState !== 'editor'" />
         <label class="language-control">
           <UiIcon name="language" />
-          <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n"
+          <select id="languageSelect" v-model="appStore.locale" @change="palStore.updateI18n"
             :aria-label="palStore.getTranslatedText('TopBar_Language_Label')">
-            <option :value="key" v-for="translated, key in palStore.I18nList" :key="key">{{ translated }}</option>
+            <option :value="key" v-for="translated, key in appStore.localeOptions" :key="key">{{ translated }}</option>
           </select>
         </label>
       </div>

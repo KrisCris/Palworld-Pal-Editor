@@ -1,84 +1,14 @@
-import asyncio
-import os
 import traceback
-from pathlib import Path
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.config import (
-    NEXUS_URL,
-    PROGRAM_PATH,
-    Config,
-    get_new_version,
-    is_gh_build,
-    version_info,
-)
+from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
-from palworld_pal_editor.utils.util import get_path_context, reply
+from palworld_pal_editor.utils.util import reply
 
 save_blueprint = Blueprint("save", __name__)
-
-
-@save_blueprint.route("/fetch_config", methods=["GET"])
-def fetch_config():
-    return reply(
-        0,
-        {
-            "I18n": Config.i18n,
-            "I18nList": DataProvider.get_i18n_map(),
-            "Path": Config.path,
-            "HasPassword": bool(Config.password),
-            "VERSION": version_info(),
-            "IsOfficialBuild": is_gh_build(),
-        },
-    )
-
-
-@save_blueprint.route("/basecamp/research", methods=["GET"])
-@jwt_required()
-def get_basecamp_research():
-    try:
-        return reply(0, SaveManager().get_lab_research())
-    except ValueError as error:
-        return reply(1, msg=str(error))
-
-
-@save_blueprint.route("/basecamp/research", methods=["PATCH"])
-@jwt_required()
-def complete_basecamp_research():
-    payload = request.get_json(silent=True) or {}
-    if not isinstance(payload, dict):
-        return reply(1, msg="Request body must be an object")
-    guild_id = payload.get("GuildId")
-    research_id = payload.get("ResearchId")
-    category = payload.get("Category")
-    all_research = payload.get("All") is True
-    if not isinstance(guild_id, str) or not guild_id:
-        return reply(1, msg="GuildId is required")
-    if sum((research_id is not None, category is not None, all_research)) != 1:
-        return reply(1, msg="Select exactly one research completion scope")
-    if research_id is not None and not isinstance(research_id, str):
-        return reply(1, msg="ResearchId must be a string")
-    if category is not None and not isinstance(category, str):
-        return reply(1, msg="Category must be a string")
-    try:
-        changed = SaveManager().complete_lab_research(
-            guild_id,
-            research_id=research_id,
-            category=category,
-            all_research=all_research,
-        )
-        return reply(
-            0,
-            {
-                "Changed": changed,
-                "Research": SaveManager().get_lab_research(),
-            },
-        )
-    except ValueError as error:
-        return reply(1, msg=str(error))
 
 
 @save_blueprint.route("/save", methods=["POST"])
@@ -193,19 +123,6 @@ def get_item_data():
     return reply(0, {"dict": item_dict, "arr": item_arr})
 
 
-@save_blueprint.route("/i18n", methods=["PATCH"])
-# @jwt_required()
-def update_i18n():
-    i18n_code = request.json.get("I18n", None)
-    if DataProvider.is_valid_i18n(i18n_code):
-        Config.i18n = i18n_code
-        return reply(0)
-    LOGGER.warning(
-        f"I18n code {i18n_code} not available. Select from {DataProvider.get_i18n_options()}"
-    )
-    return reply(1, None, f"I18n code {i18n_code} not available.")
-
-
 @save_blueprint.route("/pal_data", methods=["GET"])
 @jwt_required()
 def get_pal_data():
@@ -283,97 +200,3 @@ def get_tech_data():
         tech_lv_dict[lv] = lv_arr
 
     return reply(0, {"techLvDict": tech_lv_dict})
-
-
-@save_blueprint.route("/path", methods=["GET"])
-@jwt_required()
-def get_path():
-    try:
-        current_path = Path(Config.path).resolve()
-        if not current_path.exists():
-            raise Exception(f"Path {current_path} not exist.")
-    except:
-        pal_local_path = (
-            Path(os.environ.get("LOCALAPPDATA", "/")) / "Pal" / "Saved" / "SaveGames"
-        )
-        if pal_local_path.exists():
-            current_path = pal_local_path
-        else:
-            current_path = PROGRAM_PATH
-
-    old_path = Config.path
-    Config.path = str(current_path)
-
-    try:
-        return reply(0, get_path_context(current_path))
-    except:
-        Config.path = old_path
-        LOGGER.error(traceback.format_exc())
-        return reply(1, msg=f"Error, cannot open path {current_path}.")
-
-
-@save_blueprint.route("path", methods=["POST"])
-@jwt_required()
-def update_path():
-    path = Path(request.json.get("path")).resolve()
-    if not path.exists():
-        return reply(1, msg="Path Not Found")
-
-    old_path = Config.path
-    Config.path = str(path)
-
-    try:
-        return reply(0, get_path_context(path))
-    except:
-        Config.path = old_path
-        LOGGER.error(traceback.format_exc())
-        return reply(1, msg=f"Error, cannot open path {path}.")
-
-
-@save_blueprint.route("path", methods=["PATCH"])
-@jwt_required()
-def path_back():
-    path = Path(Config.path).parent.resolve()
-    old_path = Config.path
-    Config.path = str(path)
-
-    try:
-        return reply(0, get_path_context(path))
-    except:
-        Config.path = old_path
-        LOGGER.error(traceback.format_exc())
-        return reply(1, msg=f"Error, cannot open path {path}.")
-
-
-@save_blueprint.route("donate", methods=["PATCH"])
-@jwt_required()
-def pop_up_donate():
-    Config.set_shown_donate_info()
-    return reply(0)
-
-
-@save_blueprint.route("donate", methods=["GET"])
-@jwt_required()
-def get_donate():
-    return reply(0, {"shouldShowDonate": not Config.shownDonateInfo.get(Config.i18n)})
-
-
-@save_blueprint.route("update", methods=["GET"])
-@jwt_required()
-def has_update():
-    try:
-        version = asyncio.run(get_new_version())
-    except RuntimeError:
-        loop = asyncio.get_event_loop()
-        version = loop.run_until_complete(get_new_version())
-    if version is not None:
-        return reply(
-            0,
-            {
-                "version": version[0],
-                "download_gh": version[1],
-                "download_nexus": NEXUS_URL,
-            },
-            msg="New version available.",
-        )
-    return reply(1, msg="Failed to get new version.")

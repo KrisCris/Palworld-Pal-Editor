@@ -77,14 +77,14 @@ def test_password_protected_backend_allows_public_get(monkeypatch):
     ("password", "expected"),
     [(None, False), ("", False), ("secret", True)],
 )
-def test_fetch_config_reports_only_nonempty_passwords(monkeypatch, password, expected):
+def test_app_config_reports_only_nonempty_passwords(monkeypatch, password, expected):
     monkeypatch.setattr(Config, "password", password)
 
     with app.test_client() as client:
-        response = client.get("/api/save/fetch_config")
+        response = client.get("/api/app-config")
 
     assert response.status_code == 200
-    assert response.get_json()["data"]["HasPassword"] is expected
+    assert response.get_json()["hasPassword"] is expected
 
 
 def test_empty_password_does_not_enable_public_cors(monkeypatch):

@@ -138,11 +138,6 @@ class Config:
         Config.save_to_file()
 
     @classmethod
-    def set_shown_donate_info(cls):
-        cls.shownDonateInfo[Config.i18n] = True
-        Config.save_to_file()
-
-    @classmethod
     def save_to_file(cls, file_path: str=CONFIG_PATH):
         """Save current configuration values to a JSON file using the to_dict method and pathlib."""
         config_data = cls.to_dict()

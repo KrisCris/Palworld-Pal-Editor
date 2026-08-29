@@ -3,13 +3,15 @@ import { onMounted } from 'vue'
 
 import PathPicker from '@/components/PathPicker.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useSessionStore } from '@/stores/session'
 
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const sessionStore = useSessionStore()
 
-onMounted(palStore.get_updates)
+onMounted(palStore.loadLatestRelease)
 </script>
 
 <template>
@@ -38,7 +40,7 @@ onMounted(palStore.get_updates)
             type="text"
             placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
           >
-          <button class="entry-path-button" type="button" @click="palStore.show_file_picker">
+          <button class="entry-path-button" type="button" @click="palStore.openFilePicker">
             <UiIcon name="folder" />
             {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
           </button>
@@ -109,17 +111,17 @@ onMounted(palStore.get_updates)
                 <UiIcon name="download" />
                 <span><strong>Nexus Mods</strong><small>{{ palStore.getTranslatedText('Entry_Download_Nexus_Description') }}</small></span>
               </a>
-              <a v-if="['zh-CN', 'zh-TW'].includes(palStore.I18n)" target="_blank" href="https://space.bilibili.com/12184831">
+              <a v-if="['zh-CN', 'zh-TW'].includes(appStore.locale)" target="_blank" href="https://space.bilibili.com/12184831">
                 <UiIcon name="video" />
                 <span><strong>_connlost Bilibili</strong><small>{{ palStore.getTranslatedText('Entry_Download_Bilibili_Description') }}</small></span>
               </a>
             </div>
 
-            <aside v-if="palStore.IS_OFFICIAL_BUILD && palStore.UPDATE_DATA.version" class="entry-update" role="status">
-              <strong>{{ palStore.getTranslatedText('EntryView_Update_Notice', [palStore.UPDATE_DATA.version]) }}</strong>
+            <aside v-if="appStore.isOfficialBuild && appStore.latestRelease.updateAvailable" class="entry-update" role="status">
+              <strong>{{ palStore.getTranslatedText('EntryView_Update_Notice', [appStore.latestRelease.version]) }}</strong>
               <span>
-                <a target="_blank" :href="palStore.UPDATE_DATA.download_nexus">Nexus Mods</a>
-                <a target="_blank" :href="palStore.UPDATE_DATA.download_gh">GitHub</a>
+                <a target="_blank" :href="appStore.latestRelease.nexusUrl">Nexus Mods</a>
+                <a target="_blank" :href="appStore.latestRelease.downloadUrl">GitHub</a>
               </span>
             </aside>
           </section>
@@ -156,8 +158,8 @@ onMounted(palStore.get_updates)
     </section>
 
     <footer class="entry-footer">
-      <span>VERSION: {{ palStore.VERSION }}</span>
-      <span v-if="!palStore.IS_OFFICIAL_BUILD" class="entry-warning">
+      <span>VERSION: {{ appStore.version }}</span>
+      <span v-if="!appStore.isOfficialBuild" class="entry-warning">
         <UiIcon name="warning" />
         {{ palStore.getTranslatedText('EntryView_Version_Warning') }}
       </span>

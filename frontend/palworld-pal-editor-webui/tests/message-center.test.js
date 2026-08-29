@@ -11,6 +11,7 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppStore } = await import("../src/stores/app.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 const messageCenterSource = await readFile(
     new URL("../src/components/MessageCenter.vue", import.meta.url),
@@ -120,9 +121,9 @@ test("operation errors retain backend diagnostics and translatable context", () 
     assert.equal(store.CURRENT_MESSAGE.code, "InvalidPal");
     assert.equal(store.CURRENT_MESSAGE.log, "invalid Pal state");
 
-    store.I18n = "en";
+    useAppStore().locale = "en";
     assert.equal(store.getMessageText(store.CURRENT_MESSAGE), "updating the Pal failed.");
-    store.I18n = "zh-CN";
+    useAppStore().locale = "zh-CN";
     assert.equal(store.getMessageText(store.CURRENT_MESSAGE), "更新帕鲁失败。");
 });
 

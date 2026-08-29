@@ -4,9 +4,11 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { moveRecentFocus } from './backend-server-selector-keys'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { normalizeBackendOrigin, readRecentBackends, writeStorage } from '@/services/backend-connection'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useSessionStore } from '@/stores/session'
 
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const sessionStore = useSessionStore()
 const open = ref(false)
@@ -103,7 +105,7 @@ onBeforeUnmount(() => {
           <strong>{{ currentOrigin }}</strong>
           <small>
             {{ text('BackendSelector_Current') }}
-            <template v-if="palStore.VERSION"> · Pal Editor {{ palStore.VERSION }}</template>
+            <template v-if="appStore.version"> · Pal Editor {{ appStore.version }}</template>
           </small>
         </span>
         <span class="backend-selector__current-label">{{ text('BackendSelector_Current') }}</span>

@@ -16,25 +16,42 @@ globalThis.window = { location: { origin: "http://frontend.test" } };
 globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppStore } = await import("../src/stores/app.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 const { usePalsStore } = await import("../src/stores/pals.js");
 const { usePlayersStore } = await import("../src/stores/players.js");
+const { useResearchStore } = await import("../src/stores/research.js");
 const { useRostersStore } = await import("../src/stores/rosters.js");
+let appState;
 let session;
 let pals;
 let players;
+let research;
 let rosters;
 
 const reply = data => ({ data: { status: 0, data } });
+// What `GET /api/app-config` answers, for the tests that mock axios themselves
+// rather than going through `mockBackend`.
+const appConfigFor = defaultSavePath => ({
+    i18n: "en",
+    i18nOptions: { en: "English" },
+    defaultSavePath,
+    hasPassword: true,
+    version: "test",
+    isOfficialBuild: false,
+    donationPromptDismissed: false,
+});
 // REST resources answer with the resource itself, not the old envelope.
 const resource = body => ({ data: body });
 
 function newStore({ preserveStorage = false } = {}) {
     if (!preserveStorage) values.clear();
     setActivePinia(createPinia());
+    appState = useAppStore();
     session = useSessionStore();
     pals = usePalsStore();
     players = usePlayersStore();
+    research = useResearchStore();
     rosters = useRostersStore();
     return usePalEditorStore();
 }
@@ -106,16 +123,25 @@ function mockBackend({
     ];
     const rows = palRows.map(pal => summary(pal));
 
+    const appConfig = {
+        i18n: locale,
+        i18nOptions: locales,
+        defaultSavePath: "C:/save",
+        hasPassword: password,
+        version: "test",
+        isOfficialBuild: false,
+        donationPromptDismissed: false,
+    };
+
     axios.get = async url => {
         calls.push(["GET", url]);
-        if (url.endsWith("fetch_config")) {
-            return reply({
-                I18n: locale,
-                I18nList: locales,
-                Path: "C:/save",
-                HasPassword: password,
-                VERSION: "test",
-                IsOfficialBuild: false,
+        if (url.endsWith("/api/app-config")) return resource(appConfig);
+        if (url.endsWith("/api/releases/latest")) {
+            return resource({
+                updateAvailable: false,
+                version: null,
+                downloadUrl: null,
+                nexusUrl: "https://nexus.test",
             });
         }
         if (url.endsWith("/auth")) return reply(null);
@@ -145,13 +171,14 @@ function mockBackend({
         if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
         if (url.endsWith("skin_data")) return reply({ arr: [] });
         // Selecting the base roster opens the research page with it.
-        if (url.endsWith("basecamp/research")) {
-            return reply({ CategoryOrder: [], Guilds: [] });
+        if (url.endsWith("/api/guild-research")) {
+            return resource({ CategoryOrder: [], Guilds: [] });
         }
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.patch = async url => {
         calls.push(["PATCH", url]);
+        if (url.endsWith("/api/app-config")) return resource(appConfig);
         return reply(null);
     };
     axios.put = async (url, body) => {
@@ -174,7 +201,7 @@ test("connectBackend promotes a reachable candidate and routes its asset URLs", 
     const calls = mockBackend({ password: true });
 
     assert.equal(await store.connectBackend("10.0.0.2:58081"), true);
-    assert.equal(calls[0][1], "http://10.0.0.2:58081/api/save/fetch_config");
+    assert.equal(calls[0][1], "http://10.0.0.2:58081/api/app-config");
     assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
     assert.equal(store.BACKEND_CONNECTED, true);
     assert.deepEqual(store.BACKEND_RECENT, ["http://10.0.0.2:58081"]);
@@ -317,9 +344,7 @@ test("a failed probe preserves the active backend's ephemeral token", async () =
     assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
 
     axios.get = async (url, config) => {
-        if (url.endsWith("fetch_config")) return reply({
-            I18n: "en", I18nList: { en: "English" }, Path: "C:/save", HasPassword: true,
-        });
+        if (url.endsWith("/api/app-config")) return resource(appConfigFor("C:/save"));
         if (url.endsWith("/auth")) {
             assert.equal(config.headers.Authorization, "Bearer token");
             return reply(null);
@@ -342,13 +367,15 @@ test("candidate auth failures preserve the active backend token", async () => {
     localStorage.setItem(backendStorageKey("PAL_AUTH_TOKEN", originA), "token-a");
     const store = newStore({ preserveStorage: true });
     axios.get = async (url, config) => {
-        if (url === `${originB}/api/save/fetch_config`) {
-            assert.equal(config.headers.Authorization, "Bearer ");
-            return { data: { status: 2, msg: "auth required" } };
+        if (url === `${originB}/api/app-config`) {
+            // The probe carries no headers at all: it only asks whether there is
+            // a Pal Editor there, and the answer says there is not.
+            assert.equal(config.headers, undefined);
+            return resource({});
         }
-        if (url === `${originA}/api/save/fetch_config`) return reply({
-            I18n: "en", I18nList: { en: "English" }, Path: "C:/save-a", HasPassword: true,
-        });
+        if (url === `${originA}/api/app-config`) {
+            return resource(appConfigFor("C:/save-a"));
+        }
         if (url === `${originA}/api/auth/auth`) {
             assert.equal(config.headers.Authorization, "Bearer token-a");
             return reply(null);
@@ -374,7 +401,7 @@ test("normalizes persisted origins and bootstrap candidates", async () => {
     assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.2:58081");
     await store.bootstrap("http://frontend.test/");
-    assert.equal(calls[0][1], "/api/save/fetch_config");
+    assert.equal(calls[0][1], "/api/app-config");
     assert.equal(store.BACKEND_ORIGIN, "");
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "");
 });
@@ -391,9 +418,9 @@ test("backend credentials and paths are scoped to the selected origin", async ()
 
     let expectedToken = "token-a";
     axios.get = async (url, config) => {
-        if (url.endsWith("fetch_config")) return reply({
-            I18n: "en", I18nList: { en: "English" }, Path: "C:/configured", HasPassword: true,
-        });
+        if (url.endsWith("/api/app-config")) {
+            return resource(appConfigFor("C:/configured"));
+        }
         if (url.endsWith("/auth")) {
             assert.equal(config.headers.Authorization, `Bearer ${expectedToken}`);
             return reply(null);
@@ -421,13 +448,8 @@ test("legacy credentials and paths stay in same-origin mode", async () => {
     localStorage.setItem("PAL_AUTH_TOKEN", "legacy-token");
     localStorage.setItem("PAL_GAME_SAVE_PATH", "C:/legacy-save");
     axios.get = async (url, config) => {
-        if (url.endsWith("fetch_config")) {
-            if (url.startsWith("http://10.0.0.2:58081")) {
-                assert.equal(config.headers.Authorization, "Bearer ");
-            }
-            return reply({
-            I18n: "en", I18nList: { en: "English" }, Path: "C:/configured", HasPassword: true,
-            });
+        if (url.endsWith("/api/app-config")) {
+            return resource(appConfigFor("C:/configured"));
         }
         if (url.endsWith("/auth")) {
             assert.equal(config.headers.Authorization, "Bearer legacy-token");
@@ -467,7 +489,7 @@ test("bootstrap asks for a password when no remembered token exists", async () =
     await store.bootstrap();
 
     assert.equal(session.appState, "auth-required");
-    assert.deepEqual(calls, [["GET", "/api/save/fetch_config"]]);
+    assert.deepEqual(calls, [["GET", "/api/app-config"]]);
 });
 
 test("bootstrap resumes an already loaded backend save with a remembered token", async () => {
@@ -534,7 +556,7 @@ test("runtime failures preserve editor state", async () => {
         error.request = {};
         throw error;
     };
-    await store.get_updates();
+    await store.loadLatestRelease();
     assert.equal(session.appState, "editor");
     assert.equal(session.editorOpen, true);
 });
@@ -570,8 +592,7 @@ test("a failed path-picker request does not clear the current save path", async 
         throw error;
     };
     axios.get = fail;
-    axios.post = fail;
-    await store.show_file_picker();
+    await store.openFilePicker();
 
     assert.equal(session.savePath, "C:/save");
     assert.equal(session.appState, "entry");
@@ -749,7 +770,7 @@ test("successful Pal edits are tracked only until the next save load", async () 
     assert.equal(rosters.createdOnly, false);
 });
 
-test("fetch_config publishes backend locales and switches to the translated locale", async () => {
+test("the app config publishes backend locales and switches to the translated locale", async () => {
     const store = newStore();
     const locales = {
         en: "English",
@@ -760,8 +781,8 @@ test("fetch_config publishes backend locales and switches to the translated loca
 
     await store.bootstrap();
 
-    assert.deepEqual(store.I18nList, locales);
-    assert.equal(store.I18n, "de");
+    assert.deepEqual(appState.localeOptions, locales);
+    assert.equal(appState.locale, "de");
     assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
 });
 
@@ -779,8 +800,8 @@ test("language changes refresh only the active roster and re-fetch others lazily
 
     const requestedRosters = [];
     axios.patch = async url => {
-        assert.equal(url, "/api/save/i18n");
-        return reply(null);
+        assert.equal(url, "/api/app-config");
+        return resource(appConfigFor("C:/save"));
     };
     axios.get = async url => {
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
@@ -928,21 +949,26 @@ test("one gate covers the whole app and is released even when an operation fails
         throw new TypeError("broken request adapter");
     };
 
-    await store.get_updates();
+    await store.loadLatestRelease();
 
     assert.equal(pendingDuringRequest, true);
     // Released by `finally`, so a failure cannot leave the app inert forever.
     assert.equal(session.operationPending, false);
 });
 
-test("donation failures do not open the donation panel", async () => {
+test("a failed donation dismissal is reported as an operation error", async () => {
+    // Whether the panel opens is now a field of the app config, not a request of
+    // its own -- what can still fail is remembering that it was dismissed.
     const store = newStore();
-    axios.get = async () => ({
-        data: { status: 1, msg: "donation unavailable" },
-    });
+    axios.patch = async () => {
+        const error = new Error("Network Error");
+        error.request = {};
+        throw error;
+    };
 
-    assert.equal(await store.showDonate(), false);
-    assert.equal(store.CURRENT_MESSAGE.args[0].translationKey, "Operation_Donation");
+    await store.shownDonate();
+
+    assert.equal(store.BACKEND_ERROR.kind, "connection");
 });
 
 test("successful saves use a nonblocking success message", async () => {

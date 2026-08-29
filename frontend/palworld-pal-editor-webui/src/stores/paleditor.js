@@ -14,11 +14,12 @@ import {
 } from "../services/backend-connection.js";
 import {
     DEFAULT_UI_TRANSLATION,
-    GAME_LANGUAGES,
     UI_TRANSLATIONS,
 } from "../i18n/index.js";
 import { setBackendContext } from "../api/http.js";
+import { useAppStore } from "./app.js";
 import { usePalsStore } from "./pals.js";
+import { useResearchStore } from "./research.js";
 import { usePlayersStore } from "./players.js";
 import {
     BASE_ROSTER_KEY,
@@ -156,7 +157,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // `stores/session`, and its Pals, players and rosters in the three stores
     // below -- this store reads them, and nothing reads back into it.
     const session = useSessionStore();
+    const app = useAppStore();
     const pals = usePalsStore();
+    const research = useResearchStore();
     const players = usePlayersStore();
     const rosters = useRostersStore();
 
@@ -179,8 +182,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_SUITABILITY_LEVEL = 10;
 
     const TECH_LV_DICT = ref({});
-    const BASE_CAMP_RESEARCH = ref({ CategoryOrder: [], Guilds: [] });
-    const SELECTED_RESEARCH_GUILD_ID = ref(null);
     const PASSIVE_SKILLS = ref({});
     const PASSIVE_SKILLS_LIST = ref([]);
     const ACTIVE_SKILLS = ref({});
@@ -194,14 +195,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const SKILL_TEMPLATES = ref([]);
     const PAL_CONTAINERS = ref([]);
     const PAL_TRANSFER_CONFLICT = ref(null);
-    const I18nList = ref(GAME_LANGUAGES);
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
     const UPDATE_PAL_RESELECT_CTR = ref(0);
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
-    const IS_PAL_SAVE_PATH = ref(false);
 
     // A base camp is worth listing even when nobody works in it yet, so the base
     // roster button follows the containers as well as the roster listing.
@@ -212,11 +211,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_ACTIVE_SELECTED_ITEM = ref("");
 
     // Configs
-    const VERSION = ref("0.0.0");
-    const UPDATE_DATA = ref({});
-    const IS_OFFICIAL_BUILD = ref(false);
-    const savedI18n = localStorage.getItem("PAL_I18n");
-    const I18n = ref(GAME_LANGUAGES[savedI18n] ? savedI18n : "en");
     const BACKEND_ORIGIN_KEY = "PAL_BACKEND_ORIGIN";
     const normalizeStoredBackendOrigin = origin => {
         try { return normalizeBackendOrigin(origin || "", window.location.origin); }
@@ -232,13 +226,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const BACKEND_REQUEST_ORIGIN = ref(BACKEND_ORIGIN.value);
     const BACKEND_RECENT = ref(readRecentBackends(localStorage));
     const BACKEND_CONNECTED = ref(false);
-    const backendAssetUrl = path => versionedBackendAssetUrl(BACKEND_ORIGIN.value, path, VERSION.value);
+    const backendAssetUrl = path => versionedBackendAssetUrl(BACKEND_ORIGIN.value, path, app.version);
     const storageKey = name => backendStorageKey(name, BACKEND_ORIGIN.value);
-    const HAS_PASSWORD = ref(false);
-    const PATH_CONTEXT = ref(new Map());
-
-    const SHOW_FILE_PICKER = ref(false);
-    const PAL_FILE_PICKER_PATH = ref(session.recallSavePath(localStorage, BACKEND_ORIGIN.value));
+    // Reading the remembered path is what puts it back on `session`; the picker
+    // opens on it, which is why the answer is kept.
+    app.pickerPath = session.recallSavePath(localStorage, BACKEND_ORIGIN.value);
 
     const CN_WARNING_ON_LOAD = ref(true);
 
@@ -252,8 +244,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         setBackendContext({ token });
     }
     setBackendContext({ origin: BACKEND_REQUEST_ORIGIN.value, token: auth_token });
-    watch(BACKEND_REQUEST_ORIGIN, origin => setBackendContext({ origin }));
-    let configuredSavePath = "";
+    // Synchronous because `bootstrap` sends its first request in the same tick
+    // as it points the app at a new backend; a deferred watcher would publish the
+    // origin after that request had already gone to the old one.
+    watch(
+        BACKEND_REQUEST_ORIGIN,
+        origin => setBackendContext({ origin }),
+        { flush: "sync" },
+    );
     const IS_LOCKED = ref(true);
     const BACKEND_ERROR = ref(null);
     const AUTH_MESSAGE_KEY = ref("");
@@ -351,8 +349,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return;
         }
         if (error.isConnectionFailure) {
-            BACKEND_CONNECTED.value = false;
-            setBackendError({ kind: "connection", message: error.message });
+            setConnectionError(error);
             return;
         }
         // The request was never sent, so this is our bug and is reported with the
@@ -377,7 +374,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     function reportStartupFailure(error) {
         if (error.isAborted) return;
         if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
+        else if (error.isConnectionFailure) setConnectionError(error);
         else setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
+    }
+
+    // A backend that never answered is the failure the error screen has its own
+    // shape for: the fix is choosing a different backend, not retrying this one.
+    function setConnectionError(error) {
+        BACKEND_CONNECTED.value = false;
+        setBackendError({ kind: "connection", message: error.message });
     }
 
     function setBackendError(error) {
@@ -520,39 +525,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             PAL_TEMPLATES.value = [];
             SKILL_TEMPLATES.value = [];
             setAuthToken(readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
-            PAL_FILE_PICKER_PATH.value = session.recallSavePath(localStorage, origin);
+            app.pickerPath = session.recallSavePath(localStorage, origin);
         }
     }
 
-    async function fetch_config(origin = BACKEND_REQUEST_ORIGIN.value) {
-
-        const response = await GET("/api/save/fetch_config");
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            promoteBackend(origin);
-            BACKEND_CONNECTED.value = true;
-            if (response.data.I18nList) {
-                I18nList.value = response.data.I18nList;
-            }
-            if (!localStorage.getItem("PAL_I18n") && I18nList.value[response.data.I18n]) {
-                I18n.value = response.data.I18n;
-            }
-            if (!session.savePath) {
-                session.savePath = response.data.Path;
-            }
-            configuredSavePath = response.data.Path;
-            HAS_PASSWORD.value = response.data.HasPassword;
-            VERSION.value = response.data.VERSION;
-            IS_OFFICIAL_BUILD.value = response.data.IsOfficialBuild;
-        } else if (response.status == 2) {
-            if (origin === BACKEND_ORIGIN.value) requireAuth();
-            else setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
+    // The first call the app makes and the only one that needs no token: it is
+    // how the client learns whether it has to authenticate at all.
+    async function loadAppConfig(origin = BACKEND_REQUEST_ORIGIN.value) {
+        try {
+            await app.loadConfig();
+        } catch (error) {
+            reportStartupFailure(error);
+            return false;
         }
-
-        return response.status == 0;
+        promoteBackend(origin);
+        BACKEND_CONNECTED.value = true;
+        // Only if this client has not already chosen one: the backend's path is
+        // whatever it was last configured with, not what this browser last used.
+        if (!session.savePath) session.savePath = app.defaultSavePath;
+        return true;
     }
 
     async function resumeBackendSave() {
@@ -564,9 +555,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return false;
         }
         if (loaded) {
-            if (configuredSavePath) {
-                session.savePath = configuredSavePath;
-                session.writeBackPath = configuredSavePath;
+            if (app.defaultSavePath) {
+                session.savePath = app.defaultSavePath;
+                session.writeBackPath = app.defaultSavePath;
             }
             return await hydrateLoadedSave();
         }
@@ -586,11 +577,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (candidate !== BACKEND_ORIGIN.value) setAuthToken("");
         else setAuthToken(auth_token || readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
 
-        if (!await fetch_config(BACKEND_CANDIDATE.value)) {
+        if (!await loadAppConfig(BACKEND_CANDIDATE.value)) {
             BACKEND_REQUEST_ORIGIN.value = BACKEND_ORIGIN.value;
             return false;
         }
-        if (HAS_PASSWORD.value) {
+        if (app.hasPassword) {
             if (!auth_token) {
                 session.appState = "auth-required";
                 return true;
@@ -610,8 +601,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const wasConnected = BACKEND_CONNECTED.value;
         candidate = normalizeBackendOrigin(candidate, window.location.origin);
         try {
-            const probe = await axios.get(backendUrl(candidate, "/api/save/fetch_config"), { timeout: 5000 });
-            if (probe.data?.status !== 0) {
+            const probe = await axios.get(backendUrl(candidate, "/api/app-config"), { timeout: 5000 });
+            // Something answered; `version` is what says it was a Pal Editor.
+            if (!probe.data?.version) {
                 return false;
             }
         } catch {
@@ -630,97 +622,64 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return BACKEND_ORIGIN.value === candidate;
     }
 
-    async function get_updates() {
-        const response = await GET("/api/save/update");
-        if (response === false) return;
-
-        if (response.status == 0) {
-            return UPDATE_DATA.value = response.data;
+    // The entry screen asks on mount. Whether a newer build exists is not worth
+    // interrupting anyone over, so a failure here stays where it happened -- the
+    // notice simply does not appear, exactly as when there is no update.
+    async function loadLatestRelease() {
+        try {
+            await app.loadLatestRelease();
+        } catch {
+            // Deliberately nothing: see above.
         }
     }
 
-    function update_path_picker_result(data) {
-        IS_PAL_SAVE_PATH.value = data.isPalDir;
-        PAL_FILE_PICKER_PATH.value = data.currentPath;
-        PATH_CONTEXT.value = new Map(Object.entries(data.children));
-        SHOW_FILE_PICKER.value = true;
+    // `path` omitted opens wherever the backend keeps saves.
+    async function browseSavePath(path) {
+        try {
+            await app.browse(path);
+        } catch (error) {
+            reportApiFailure(error, "Operation_Select_Path");
+        }
     }
 
-    async function show_file_picker() {
-
-        let response = undefined;
-        if (session.savePath) {
-            response = await POST("/api/save/path", {
-                path: session.savePath,
-            });
-            if (response === false) return;
-            if (response.status != 0) {
+    async function openFilePicker() {
+        try {
+            await app.browse(session.savePath || undefined);
+        } catch (error) {
+            // A remembered path whose directory is gone is not worth a dialog:
+            // forget it and open where the backend would have.
+            if (error.code === "PATH_NOT_FOUND") {
                 session.forgetSavePath(localStorage, BACKEND_ORIGIN.value);
-                response = await GET("/api/save/path");
+                await browseSavePath();
+                return;
             }
-        } else {
-            response = await GET("/api/save/path");
+            reportApiFailure(error, "Operation_Select_Path");
         }
-
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            update_path_picker_result(response.data);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Select_Path", response);
-        }
-
     }
 
-    async function path_back() {
-
-        const response = await PATCH("/api/save/path");
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            update_path_picker_result(response.data);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Select_Path", response);
-        }
-
+    // The backend answers a filesystem root with itself, so this stops there
+    // rather than looping.
+    function browseParentPath() {
+        return browseSavePath(app.pickerParentPath);
     }
 
-    async function update_picker_result(path) {
-
-        const response = await POST("/api/save/path", {
-            path: path,
-        });
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            update_path_picker_result(response.data);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Select_Path", response);
-        }
-
-    }
-
+    // `app.locale` is already the new value -- the language select writes it and
+    // the app store persists it. This is the cascade that follows: tell the
+    // backend, then re-read everything the backend translates.
     async function updateI18n() {
-        localStorage.setItem("PAL_I18n", I18n.value);
         if (IS_LOCKED.value || BACKEND_ERROR.value) return true;
 
         sorryandfuckyou();
 
-        const response = await PATCH("/api/save/i18n", { I18n: I18n.value });
-        if (response === false) {
+        try {
+            await app.pushLocale();
+        } catch (error) {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
             return false;
         }
 
-        let refreshSucceeded = response.status == 0;
-        if (response.status == 0) {
+        let refreshSucceeded = true;
+        {
             // if on pal editor panel, refresh all translated texts (except for hardcoded ui)
             if (session.editorOpen) {
                 // Only the roster currently being viewed is refreshed eagerly. Every
@@ -736,16 +695,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                     return false;
                 }
                 refreshSucceeded = await fetchStaticData();
-                if (refreshSucceeded && BASE_CAMP_RESEARCH.value.Guilds?.length) {
+                if (refreshSucceeded && research.research.Guilds?.length) {
                     refreshSucceeded = await fetchBaseCampResearch();
                 }
             }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
         }
-        return response.status == 0 && refreshSucceeded;
+        return refreshSucceeded;
     }
 
     async function fetchStaticData() {
@@ -842,8 +797,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SKILL_TEMPLATES.value = [];
         PAL_CONTAINERS.value = [];
         PAL_TRANSFER_CONFLICT.value = null;
-        BASE_CAMP_RESEARCH.value = { CategoryOrder: [], Guilds: [] };
-        SELECTED_RESEARCH_GUILD_ID.value = null;
+        research.clear();
 
         if (updateAppState) {
             session.appState = IS_LOCKED.value ? "auth-required" : "entry";
@@ -851,7 +805,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function getTranslatedText(translationKey, args = []) {
-        let translation = UI_TRANSLATIONS[I18n.value]?.[translationKey]
+        let translation = UI_TRANSLATIONS[app.locale]?.[translationKey]
             ?? DEFAULT_UI_TRANSLATION[translationKey];
         if (!translation) {
             console.warn(`Translation key "${translationKey}" not found.`);
@@ -1084,43 +1038,24 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function fetchBaseCampResearch() {
-        const response = await GET("/api/save/basecamp/research");
-        if (response === false) return false;
-        if (response.status == 0) {
-            BASE_CAMP_RESEARCH.value = response.data ?? { CategoryOrder: [], Guilds: [] };
-            const guilds = BASE_CAMP_RESEARCH.value.Guilds ?? [];
-            if (!guilds.some(guild => guild.GuildId === SELECTED_RESEARCH_GUILD_ID.value)) {
-                SELECTED_RESEARCH_GUILD_ID.value = guilds[0]?.GuildId ?? null;
-            }
-            return true;
+        try {
+            return await research.load();
+        } catch (error) {
+            reportApiFailure(error, "Operation_BaseCamp_Research");
+            return false;
         }
-        if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_BaseCamp_Research", response);
-        }
-        return false;
     }
 
     async function completeBaseCampResearch(scope) {
-        const guildId = SELECTED_RESEARCH_GUILD_ID.value;
-        if (!guildId) return false;
-        const response = await PATCH("/api/save/basecamp/research", {
-            GuildId: guildId,
-            ...scope,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            BASE_CAMP_RESEARCH.value = response.data.Research;
-            showToast("Message_BaseCamp_Research_Completed", "success", [response.data.Changed]);
+        try {
+            const changed = await research.complete(scope);
+            if (changed === null) return false;
+            showToast("Message_BaseCamp_Research_Completed", "success", [changed]);
             return true;
+        } catch (error) {
+            reportApiFailure(error, "Operation_BaseCamp_Research");
+            return false;
         }
-        if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_BaseCamp_Research", response);
-        }
-        return false;
     }
 
     // ---- selection -----------------------------------------------------------
@@ -1725,23 +1660,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             .filter(Boolean);
     }
 
+    // The prompt is dismissed per language, so the answer arrives with the app
+    // config and is refreshed whenever the language changes.
     async function shownDonate() {
-        await PATCH("/api/save/donate");
-    }
-
-    async function showDonate() {
-        const response = await GET("/api/save/donate");
-        if (response === false) return;
-        let res = false;
-        if (response.status == 0) {
-            res = response.data?.shouldShowDonate == true;
-            IS_LOCKED.value = false;
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Donation", response);
+        try {
+            await app.dismissDonationPrompt();
+        } catch (error) {
+            reportApiFailure(error, "Operation_Donation");
         }
-        return res;
     }
 
     return {
@@ -1760,7 +1686,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         HAS_WORKING_PAL_FLAG,
 
         IS_LOCKED,
-        HAS_PASSWORD,
+
         BACKEND_ERROR,
         BACKEND_ORIGIN,
         BACKEND_CANDIDATE,
@@ -1770,16 +1696,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         MESSAGE_QUEUE,
         CURRENT_MESSAGE,
 
-        PATH_CONTEXT,
-        SHOW_FILE_PICKER,
-        PAL_FILE_PICKER_PATH,
-        IS_PAL_SAVE_PATH,
 
-        VERSION,
-        UPDATE_DATA,
-        IS_OFFICIAL_BUILD,
-        I18n,
-        I18nList,
         PAL_STATIC_DATA,
         PAL_STATIC_DATA_LIST,
         ITEM_STATIC_DATA,
@@ -1794,8 +1711,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SKILL_TEMPLATES,
         PAL_CONTAINERS,
         PAL_TRANSFER_CONFLICT,
-        BASE_CAMP_RESEARCH,
-        SELECTED_RESEARCH_GUILD_ID,
 
         getTranslatedText,
         getTechName,
@@ -1832,6 +1747,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             applySkillTemplate,
             auth,
             bootstrap,
+            browseParentPath,
+            browseSavePath,
             changeSpecies,
             completeBaseCampResearch,
             connectBackend,
@@ -1844,22 +1761,21 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             fetchPalContainers,
             fetchPalTemplates,
             fetchSkillTemplates,
-            fetch_config,
             friendshipDown,
             friendshipUp,
-            get_updates,
             jumpToConflictingPal,
+            loadLatestRelease,
             loadPlayerInventory,
             loadSave,
             maxFriendship,
             maxSuitabilities,
             maximizePal,
             movePal,
+            openFilePicker,
             palLevelDown,
             palLevelUp,
             palMaxLevel,
             patchInventorySlot,
-            path_back,
             playerLevelDown,
             playerLevelUp,
             playerMaxLevel,
@@ -1872,8 +1788,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             selectPal,
             selectPlayer,
             setStatusPoint,
-            showDonate,
-            show_file_picker,
             shownDonate,
             suitabilityDown,
             suitabilityUp,
@@ -1887,7 +1801,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             updateI18n,
             updatePal,
             updatePlayer,
-            update_picker_result,
             writeSave,
         }),
     };

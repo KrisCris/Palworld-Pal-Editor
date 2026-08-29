@@ -9,8 +9,10 @@ import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useAppStore } from '@/stores/app'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 // The Pal this page edits. It is the object in the Pal cache, so the `v-model`
@@ -301,7 +303,7 @@ const portraitBorder = pal => pal.IsAwakening
               v-model="speciesSelection"
               :rows="palStore.PAL_STATIC_DATA_LIST"
               :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
-              :locale="palStore.I18n"
+              :locale="appStore.locale"
               @apply="palStore.changeSpecies"
             />
           </div>

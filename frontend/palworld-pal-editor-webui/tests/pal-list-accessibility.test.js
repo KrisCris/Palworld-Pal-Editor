@@ -189,15 +189,14 @@ test("every Pal stays visible and DPS metadata is marked as away from nearby con
 });
 
 test("Global Palbox roster label follows frontend locale without backend translation data", async () => {
-  const [{ default: PlayerList }, { usePalEditorStore }, { useRostersStore }] = await Promise.all([
+  const [{ default: PlayerList }, { useAppStore }, { useRostersStore }] = await Promise.all([
     loadVueModule("/src/components/PlayerList.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/app.js"),
     loadVueModule("/src/stores/rosters.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
-  store.I18n = "zh-CN";
+  useAppStore().locale = "zh-CN";
   useRostersStore().rosters = [{
     rosterKey: "global-palbox",
     kind: "global_palbox",
