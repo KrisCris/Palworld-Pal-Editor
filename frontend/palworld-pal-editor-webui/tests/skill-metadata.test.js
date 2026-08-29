@@ -12,6 +12,7 @@ import {
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
+import { usePalsStore } from "../src/stores/pals.js";
 import { useSessionStore } from "../src/stores/session.js";
 
 test("boss toggles require both a base and boss family member", () => {
@@ -144,6 +145,14 @@ test("skill metadata labels and non-assignable warning exist in every UI locale"
     }
 });
 
+function selectPal(pal) {
+    const pals = usePalsStore();
+    pals.applyDetail({ recordKey: "world:selected", EquipWaza: [], MasteredWaza: [], ...pal });
+    pals.selectedRecordKey = "world:selected";
+    // Every successful edit re-reads the Pal it changed.
+    axios.get = async () => ({ data: { recordKey: "world:selected", ...pal } });
+}
+
 test("public updatePal blocks non-assignable skill additions before loading or PATCH", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
@@ -155,7 +164,7 @@ test("public updatePal blocks non-assignable skill additions before loading or P
             Assignable: false,
         },
     };
-    store.SELECTED_PAL_DATA = { IsHuman: false };
+    selectPal({ IsHuman: false });
 
     const patchCalls = [];
     const originalPatch = axios.patch;
@@ -187,7 +196,7 @@ test("public updatePal allows known non-assignable skills in cheat mode", async 
             Assignable: false,
         },
     };
-    store.SELECTED_PAL_DATA = { IsHuman: false };
+    selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
 
     const patchCalls = [];
@@ -215,7 +224,7 @@ test("public updatePal rejects unknown skills in cheat mode", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     store.ACTIVE_SKILLS = {};
-    store.SELECTED_PAL_DATA = { IsHuman: false };
+    selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
 
     const patchCalls = [];
@@ -246,7 +255,7 @@ test("public updatePal allows human-only skills for a selected human", async t =
             AssignableToHumans: true,
         },
     };
-    store.SELECTED_PAL_DATA = { IsHuman: true };
+    selectPal({ IsHuman: true });
 
     const patchCalls = [];
     const originalPatch = axios.patch;

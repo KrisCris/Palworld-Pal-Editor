@@ -2,7 +2,7 @@ import copy
 from pathlib import Path
 import unittest
 
-from palworld_pal_editor.api.player import player_to_dict
+from palworld_pal_editor.api.players import player_resource as player_to_dict
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.save_manager import SaveManager

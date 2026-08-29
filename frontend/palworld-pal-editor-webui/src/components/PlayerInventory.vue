@@ -4,8 +4,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import InventoryItemSlot from '@/components/InventoryItemSlot.vue'
 import ItemSelectDialog from '@/components/ItemSelectDialog.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePlayersStore } from '@/stores/players'
+import { useRostersStore } from '@/stores/rosters'
 
 const palStore = usePalEditorStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
 const bagTab = ref('common')
 const editing = ref(null)
 const inventoryEditor = ref(null)
@@ -21,9 +25,9 @@ let observedLayoutWidth = 0
 const armorLabels = ['Inventory_Head', 'Inventory_Body', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Shield', 'Inventory_Glider', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Sphere_Module']
 const armorGroups = ['Head', 'Body', 'Accessory', 'Accessory', 'Shield', 'Glider', 'Accessory', 'Accessory', 'SphereModule']
 
-watch(() => palStore.SELECTED_PLAYER_ID, () => palStore.loadPlayerInventory(), { immediate: true })
+watch(() => rostersStore.activePlayerUid, () => palStore.loadPlayerInventory(), { immediate: true })
 
-const containers = computed(() => palStore.PLAYER_INVENTORY?.containers || {})
+const containers = computed(() => playersStore.inventory?.containers || {})
 const currentBag = computed(() => containers.value[bagTab.value])
 const armorSlots = computed(() => containers.value.armor?.slots || [])
 const primaryArmorSlots = computed(() => armorSlots.value.filter(slot => [0, 1, 4, 5, 8].includes(slot.slot_index)))
@@ -126,10 +130,10 @@ onBeforeUnmount(() => {
       <section class="inventory-panel equipment-panel">
         <header class="panel-heading">
           <h2>{{ palStore.getTranslatedText('Inventory_Equipment') }}</h2>
-          <span v-if="palStore.PLAYER_INVENTORY?.warnings?.length" class="warning-chip" :title="palStore.PLAYER_INVENTORY.warnings.join('\n')">!</span>
+          <span v-if="playersStore.inventory?.warnings?.length" class="warning-chip" :title="playersStore.inventory.warnings.join('\n')">!</span>
         </header>
 
-        <div v-if="!palStore.PLAYER_INVENTORY" class="inventory-loading">{{ palStore.getTranslatedText('Inventory_Loading') }}</div>
+        <div v-if="!playersStore.inventory" class="inventory-loading">{{ palStore.getTranslatedText('Inventory_Loading') }}</div>
         <div v-else class="equipment-layout">
           <section class="equipment-group weapons-group">
             <h3>{{ palStore.getTranslatedText('Inventory_Weapons') }}</h3>

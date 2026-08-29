@@ -3,117 +3,12 @@ import traceback
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.api.pals import guid_string_or_none as _guid_string_or_none
-from palworld_pal_editor.api.players import player_resource as player_to_dict
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.utils import LOGGER, DataProvider
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
 
-
-
-@player_blueprint.route("/player_pals", methods=["POST"])
-@jwt_required()
-def get_player_pals():
-    roster_key = request.json.get("RosterKey") or request.json.get("PlayerUId")
-    manager = SaveManager()
-
-    if roster_key in ("PAL_GLOBAL_STORAGE_BTN", "PAL_BASE_WORKER_BTN"):
-        # Both come back in the order their own list displays: slot order for the
-        # Global Palbox, base-worker order for the camps.
-        records = manager.records_for_roster(roster_key)
-    else:
-        if not manager.get_player(roster_key):
-            return reply(1, None, f"Player {roster_key} Not Found")
-        records = manager.sorted_records_for_roster(roster_key)
-
-    def pal_to_summary(record):
-        pal = record.pal
-        location = manager.resolve_record_location(record)
-        return {
-            "RecordKey": record.record_key,
-            "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
-            "StorageKey": record.storage_key,
-            "StorageKind": record.storage_kind,
-            "StorageOwnerPlayerUid": record.storage_owner_uid,
-            "OwnerPlayerUid": _guid_string_or_none(pal.OwnerPlayerUId),
-            "IconAccessKey": pal.IconAccessKey or None,
-            "DataAccessKey": pal.DataAccessKey or None,
-            "I18nName": pal.I18nName or None,
-            "DisplayName": pal.DisplayName or None,
-            "Gender": pal.Gender.value if pal.Gender else None,
-            "IsTower": pal.IsTower or False,
-            "IsBOSS": pal.IsBOSS or False,
-            "IsRarePal": pal.IsRarePal or False,
-            "IsAwakening": pal.IsAwakening,
-            "IsImportedCharacter": pal.IsImportedCharacter,
-            "IsHuman": pal.IsHuman,
-            "IsNewPal": manager.pal_repository.is_created(record),
-            "ContainerId": location["ContainerId"],
-            "SlotIndex": location["SlotIndex"],
-            "ContainerKind": location["ContainerKind"],
-            "ContainerLabel": location["ContainerLabel"],
-            "FavoriteIndex": pal.FavoriteIndex,
-            "IsExpeditionPal": pal.IsExpeditionPal,
-            "in_owner_palbox": pal.in_owner_palbox,
-        }
-
-    return reply(
-        0,
-        [pal_to_summary(record) for record in records if record is not None],
-    )
-
-
-@player_blueprint.route("/players_data", methods=["GET"])
-@jwt_required()
-def get_player_list():
-    workingpals = SaveManager().get_working_pals()
-    players = SaveManager().get_players()
-    if not players:
-        return reply(1, None, "No Player Found")
-    return reply(
-        0,
-        {
-            "players": [
-                player_to_dict(player) for player in SaveManager().get_players()
-            ],
-            "hasWorkingPal": (True if len(workingpals) else False),
-            "containers": SaveManager().get_container_registry(),
-            "specialRosters": (
-                [
-                    {
-                        "RosterKey": "PAL_GLOBAL_STORAGE_BTN",
-                        "Kind": "global_palbox",
-                        "Label": (
-                            DataProvider.get_tech_name("GlobalPalStorage")
-                            or "Global Palbox"
-                        ),
-                    }
-                ]
-                if SaveManager().has_global_palbox
-                else []
-            ),
-            "warnings": list(getattr(SaveManager(), "load_warnings", [])),
-        },
-    )
-
-
-@player_blueprint.route("/player_data", methods=["POST"])
-@jwt_required()
-def get_player_data():
-    PlayerUId = request.json.get("PlayerUId")
-
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        LOGGER.warning(f"PAL_BASE_WORKER_BTN is not a real player")
-        return reply(1, None, f"PAL_BASE_WORKER_BTN is not a real player")
-
-    player_entity = SaveManager().get_player(PlayerUId)
-    if not player_entity:
-        LOGGER.warning(f"Player {PlayerUId} not exist")
-        return reply(1, None, f"Player {PlayerUId} not exist")
-
-    return reply(0, player_to_dict(player_entity))
 
 
 @player_blueprint.route("/inventory", methods=["POST"])

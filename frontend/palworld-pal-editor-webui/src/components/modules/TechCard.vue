@@ -1,5 +1,5 @@
 <script>
-export const toggleTechnology = (player, item, isLocked) => player.toggleTech(item.InternalName, isLocked)
+export const toggleTechnology = (store, item, isLocked) => store.toggleTech(item.InternalName, isLocked)
 export const hasUnlockedTechnology = (names, internalName) => names.some(
   name => name.toLowerCase() === internalName.toLowerCase(),
 )
@@ -10,11 +10,13 @@ import { computed } from 'vue'
 
 import UiIcon from './UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePlayersStore } from '@/stores/players'
 
 const palStore = usePalEditorStore()
+const playersStore = usePlayersStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const isLocked = computed(() => !hasUnlockedTechnology(
-  palStore.SELECTED_PLAYER_DATA.UnlockedRecipeTechnologyNames,
+  playersStore.selectedPlayer.UnlockedRecipeTechnologyNames,
   props.item.InternalName,
 ))
 const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
@@ -22,7 +24,7 @@ const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Ed
 const bgStyle = computed(() => ({
   backgroundImage: `url('${palStore.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
 }))
-const toggleLock = () => toggleTechnology(palStore.SELECTED_PLAYER_DATA, props.item, isLocked.value)
+const toggleLock = () => toggleTechnology(palStore, props.item, isLocked.value)
 </script>
 
 <template>

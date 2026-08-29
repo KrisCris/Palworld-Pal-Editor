@@ -12,10 +12,10 @@ import {
 } from "../src/components/modules/pal-list-order.js";
 
 const pals = [
-  { InstanceId: "storage-2", ContainerKind: "storage", SlotIndex: 2, FavoriteIndex: 1, Paldeck: "002" },
-  { InstanceId: "party-4", ContainerKind: "party", SlotIndex: 4, FavoriteIndex: 2, Paldeck: "004" },
-  { InstanceId: "party-0", ContainerKind: "party", SlotIndex: 0, FavoriteIndex: 3, Paldeck: "003" },
-  { InstanceId: "storage-0", ContainerKind: "storage", SlotIndex: 0, FavoriteIndex: 0, Paldeck: "001" },
+  { InstanceId: "storage-2", containerKind: "storage", SlotIndex: 2, FavoriteIndex: 1, Paldeck: "002" },
+  { InstanceId: "party-4", containerKind: "party", SlotIndex: 4, FavoriteIndex: 2, Paldeck: "004" },
+  { InstanceId: "party-0", containerKind: "party", SlotIndex: 0, FavoriteIndex: 3, Paldeck: "003" },
+  { InstanceId: "storage-0", containerKind: "storage", SlotIndex: 0, FavoriteIndex: 0, Paldeck: "001" },
 ];
 
 test("Pal list sorting follows the explicitly selected mode", () => {
@@ -35,9 +35,9 @@ test("Pal list sorting follows the explicitly selected mode", () => {
 
 test("location sorting groups base-camp Pals by container before slot", () => {
   const baseCampPals = [
-    { InstanceId: "container-b-slot-0", ContainerKind: "other", ContainerId: "bbbb", SlotIndex: 0 },
-    { InstanceId: "container-a-slot-5", ContainerKind: "other", ContainerId: "aaaa", SlotIndex: 5 },
-    { InstanceId: "container-a-slot-1", ContainerKind: "other", ContainerId: "aaaa", SlotIndex: 1 },
+    { InstanceId: "container-b-slot-0", containerKind: "other", ContainerId: "bbbb", SlotIndex: 0 },
+    { InstanceId: "container-a-slot-5", containerKind: "other", ContainerId: "aaaa", SlotIndex: 5 },
+    { InstanceId: "container-a-slot-1", containerKind: "other", ContainerId: "aaaa", SlotIndex: 1 },
   ];
 
   assert.deepEqual(
@@ -50,10 +50,10 @@ test("location groups use labels and place uncontained Pals last", () => {
   // A Pal whose record occupies no container arrives with neither a container id
   // nor a kind -- there is no anomaly flag to group it by any more.
   const rows = [
-    { InstanceId: "bad", ContainerKind: null, ContainerId: null },
-    { InstanceId: "box", ContainerKind: "storage", ContainerId: "box", ContainerLabel: "Alice · Palbox", SlotIndex: 2 },
-    { InstanceId: "party", ContainerKind: "party", ContainerId: "party", ContainerLabel: "Alice · Party", SlotIndex: 1 },
-    { InstanceId: "cage", ContainerKind: "special", ContainerId: "cage", ContainerLabel: "Alice · Viewing cage", SlotIndex: 0 },
+    { InstanceId: "bad", containerKind: null, ContainerId: null },
+    { InstanceId: "box", containerKind: "storage", ContainerId: "box", containerLabel: "Alice · Palbox", SlotIndex: 2 },
+    { InstanceId: "party", containerKind: "party", ContainerId: "party", containerLabel: "Alice · Party", SlotIndex: 1 },
+    { InstanceId: "cage", containerKind: "special", ContainerId: "cage", containerLabel: "Alice · Viewing cage", SlotIndex: 0 },
   ];
 
   const groups = groupPalList(sortPalList(rows, "location"), "location");
@@ -111,28 +111,29 @@ test("Pal attribute filters combine priority and origin tags with union semantic
   );
 });
 
-test("Editor-created Pals can be filtered explicitly without changing sort order", () => {
-  const created = new Set(["storage-2"]);
-  assert.deepEqual(pals.filter(pal => isCreatedPal(pal, created)).map(pal => pal.InstanceId), ["storage-2"]);
-  assert.equal(isCreatedPal({ InstanceId: "new", IsNewPal: true }, new Set()), true);
+test("created Pals are the ones the backend says it created", () => {
+  // There is no frontend set of created keys any more: `changeState` is the
+  // backend's own answer, so a Pal created before this browser tab opened still
+  // says so.
+  assert.equal(isCreatedPal({ recordKey: "new", changeState: "created" }), true);
+  assert.equal(isCreatedPal({ recordKey: "old", changeState: "unchanged" }), false);
 });
 
 test("Edited session filtering includes created Pals but created filtering stays specific", () => {
   const edited = new Set(["edited"]);
-  const created = new Set(["created"]);
-  const unchangedPal = { InstanceId: "unchanged" };
-  const editedPal = { InstanceId: "edited" };
-  const createdPal = { InstanceId: "created" };
+  const unchangedPal = { recordKey: "unchanged" };
+  const editedPal = { recordKey: "edited" };
+  const createdPal = { recordKey: "created", changeState: "created" };
 
-  assert.equal(isEditedPal(editedPal, edited, created), true);
-  assert.equal(isEditedPal(createdPal, edited, created), true);
-  assert.equal(isEditedPal(unchangedPal, edited, created), false);
+  assert.equal(isEditedPal(editedPal, edited), true);
+  assert.equal(isEditedPal(createdPal, edited), true);
+  assert.equal(isEditedPal(unchangedPal, edited), false);
 
-  assert.equal(matchesPalSessionFilter(unchangedPal, false, false, edited, created), true);
-  assert.equal(matchesPalSessionFilter(editedPal, true, false, edited, created), true);
-  assert.equal(matchesPalSessionFilter(createdPal, true, false, edited, created), true);
-  assert.equal(matchesPalSessionFilter(editedPal, false, true, edited, created), false);
-  assert.equal(matchesPalSessionFilter(createdPal, false, true, edited, created), true);
-  assert.equal(matchesPalSessionFilter(editedPal, true, true, edited, created), false);
-  assert.equal(matchesPalSessionFilter(createdPal, true, true, edited, created), true);
+  assert.equal(matchesPalSessionFilter(unchangedPal, false, false, edited), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, false, edited), true);
+  assert.equal(matchesPalSessionFilter(createdPal, true, false, edited), true);
+  assert.equal(matchesPalSessionFilter(editedPal, false, true, edited), false);
+  assert.equal(matchesPalSessionFilter(createdPal, false, true, edited), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, true, edited), false);
+  assert.equal(matchesPalSessionFilter(createdPal, true, true, edited), true);
 });

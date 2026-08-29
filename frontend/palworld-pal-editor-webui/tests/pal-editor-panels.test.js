@@ -31,9 +31,9 @@ test("range controls preserve limits and update from keyboard-friendly change ev
 
 test("all Pal edit contracts and validity rules remain available", () => {
   for (const handler of [
-    "toggleAwakening", "suitDown", "suitUp", "pop_PassiveSkillList",
-    "add_PassiveSkillList", "pop_EquipWaza", "add_EquipWaza",
-    "pop_MasteredWaza", "add_MasteredWaza",
+    "toggleAwakening", "suitabilityDown", "suitabilityUp", "removePassiveSkill",
+    "addPassiveSkill", "removeEquipWaza", "addEquipWaza",
+    "removeMasteredWaza", "addMasteredWaza",
   ]) assert.match(source, new RegExp(handler), handler);
 
   assert.match(source, /key != 'EPalWorkSuitability::OilExtraction'/);

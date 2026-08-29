@@ -47,9 +47,9 @@ export function buildContainerMoveGroups(containers, players, selectedPlayerId) 
 }
 
 export function containerMoveDisabledReason(container, pal) {
-  if ((container.StorageKey && container.StorageKey === pal.StorageKey)
+  if ((container.StorageKey && container.StorageKey === pal.storageKey)
     || (!container.StorageKey && container.ContainerId === pal.ContainerId)) return "current";
-  if (pal.StorageKind === "global_palbox") {
+  if (pal.storageKind === "global_palbox") {
     const ownedPlayerContainer = container.StorageKind === "world"
       && ["party", "storage"].includes(container.ContainerKind)
       && container.OwnerPlayerUId;
@@ -63,6 +63,6 @@ export function containerMoveDisabledReason(container, pal) {
   if (!container.MovableInto) return "unsafe";
   if (container.Occupied >= container.Size) return "full";
   if (container.Shared) return pal.OwnerPlayerUId ? null : "owner_required";
-  if (container.GroupId !== pal.group_id) return "different_guild";
+  if (container.GroupId !== pal.groupId) return "different_guild";
   return null;
 }

@@ -11,7 +11,7 @@ const locationOrder = Object.freeze({
   unknown: 4,
 });
 
-// A Pal whose record occupies no container has no ContainerKind at all; it sorts
+// A Pal whose record occupies no container has no containerKind at all; it sorts
 // with the unknown containers, at the end.
 const kindOrder = kind => locationOrder[kind] ?? locationOrder.unknown;
 
@@ -33,24 +33,23 @@ export const matchesPalAttributeFilters = (pal, filters) => (
   !filters?.length || filters.some(filter => palAttributeFilterMatches[filter]?.(pal))
 );
 
-export const isCreatedPal = (pal, createdIds) => Boolean(
-  pal?.IsNewPal || createdIds.has(pal?.RecordKey) || createdIds.has(pal?.InstanceId),
-);
+// `changeState` is the backend's own answer, and the only one for "created".
+// "Modified" has no backend writer until S2a, so an edit that succeeded during
+// this session is remembered by `stores/pals` and passed in here.
+export const isCreatedPal = pal => pal?.changeState === "created";
 
-export const isEditedPal = (pal, editedIds, createdIds) => Boolean(
-  editedIds.has(pal?.RecordKey) || editedIds.has(pal?.InstanceId)
-  || isCreatedPal(pal, createdIds),
+export const isEditedPal = (pal, editedRecordKeys) => Boolean(
+  pal && (isCreatedPal(pal) || editedRecordKeys.has(pal.recordKey)),
 );
 
 export const matchesPalSessionFilter = (
   pal,
   editedOnly,
   createdOnly,
-  editedIds,
-  createdIds,
+  editedRecordKeys,
 ) => createdOnly
-  ? isCreatedPal(pal, createdIds)
-  : !editedOnly || isEditedPal(pal, editedIds, createdIds);
+  ? isCreatedPal(pal)
+  : !editedOnly || isEditedPal(pal, editedRecordKeys);
 
 export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Paldeck) {
   return [...pals].sort((left, right) => {
@@ -60,10 +59,10 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
     }
 
     if (mode !== "paldeck") {
-      const location = kindOrder(left.ContainerKind) - kindOrder(right.ContainerKind);
+      const location = kindOrder(left.containerKind) - kindOrder(right.containerKind);
       if (location) return location;
-      const leftStorageKey = left.StorageKey || left.ContainerId;
-      const rightStorageKey = right.StorageKey || right.ContainerId;
+      const leftStorageKey = left.storageKey || left.ContainerId;
+      const rightStorageKey = right.storageKey || right.ContainerId;
       const missingContainer = Number(!leftStorageKey) - Number(!rightStorageKey);
       if (missingContainer) return missingContainer;
       const container = textOrder(leftStorageKey, rightStorageKey);
@@ -91,13 +90,13 @@ export function groupPalList(pals, mode = "paldeck") {
 
   const groups = [];
   for (const pal of pals) {
-    const storageKey = pal.StorageKey || pal.ContainerId;
+    const storageKey = pal.storageKey || pal.ContainerId;
     const key = storageKey || "unknown";
     let group = groups.at(-1);
     if (!group || group.key !== key) {
       group = {
         key,
-        label: pal.ContainerLabel || `Container ${storageKey || "unknown"}`,
+        label: pal.containerLabel || `Container ${storageKey || "unknown"}`,
         pals: [],
       };
       groups.push(group);

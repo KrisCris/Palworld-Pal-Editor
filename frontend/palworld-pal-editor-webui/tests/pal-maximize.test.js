@@ -27,8 +27,9 @@ test("Pal summary uses formal attribute and profile terminology", () => {
 test("maximize action atomically refreshes and marks the selected Pal", () => {
   assert.match(storeSource, /async function maximizePal\(\)/);
   assert.match(storeSource, /POST\("\/api\/pal\/maximize"/);
-  assert.match(storeSource, /new PalData\(\{[\s\S]*\.\.\.response\.data[\s\S]*\}\)/);
-  assert.match(storeSource, /EDITED_PAL_IDS\.value\.add\(SELECTED_PAL_ID\.value\)/);
+  // The write answers in the pre-REST DTO, so the Pal is re-read through the
+  // resource that owns it rather than merged into the cache by hand.
+  assert.match(storeSource, /await refreshPal\(recordKey\);\s*\n\s*pals\.markEdited\(recordKey\)/);
   assert.match(storeSource, /Message_Pal_Maximized/);
   assert.match(storeSource, /Operation_Maximize_Pal/);
   assert.match(storeSource, /\n\s*maximizePal,/);

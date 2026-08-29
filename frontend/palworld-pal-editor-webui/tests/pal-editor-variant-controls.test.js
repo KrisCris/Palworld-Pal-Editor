@@ -20,17 +20,23 @@ function button(html, name) {
 }
 
 async function renderPalEditorFixture() {
-  const [{ default: PalEditor }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: PalEditor }, { usePalEditorStore }, { usePalsStore }] = await Promise.all([
     loadVueModule("/src/components/PalEditor.vue"),
     loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/pals.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
   const store = usePalEditorStore();
+  const pals = usePalsStore();
   store.PAL_STATIC_DATA = { TestPal: { I18n: "Test Pal", Elements: [], Paldeck: 1 } };
-  store.SELECTED_PAL_DATA = {
+  // The editor reads whatever is in the Pal cache under the selected key; there
+  // is no separate copy to hand it.
+  pals.applyDetail({
+    recordKey: "world:test-pal",
+    CharacterID: "TestPal",
     DataAccessKey: "TestPal",
-    DataAccessKeyOG: "TestPal",
+    Paldeck: "001",
     EquipWaza: [],
     FriendshipLevel: 0,
     HasBaseVariant: true,
@@ -45,11 +51,8 @@ async function renderPalEditorFixture() {
     PassiveSkillList: [],
     Suitabilities: {},
     SuitabilityMinimums: {},
-    isEquipSkillFull: () => false,
-    isEquippedPassiveSkill: () => false,
-    isEquippedSkill: () => false,
-    isMasteredSkill: () => false,
-  };
+  });
+  pals.selectedRecordKey = "world:test-pal";
 
   return renderVue(PalEditor, { pinia });
 }

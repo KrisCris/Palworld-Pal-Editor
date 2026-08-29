@@ -1,3 +1,4 @@
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,7 @@ from fakes import record_location, world_record
 
 class FakeManager:
     def __init__(self):
+        self.session_lock = threading.RLock()
         self.moves = []
         self.transfers = []
         self.pal_repository = PalRepository()
@@ -74,6 +76,9 @@ class FakeManager:
     def get_pal(self, _pal_id):
         return None
 
+    def get_player(self, _player_uid):
+        return None
+
     def get_record(self, record_key):
         return self.records.get(record_key)
 
@@ -91,13 +96,19 @@ class PalContainerApiTests(unittest.TestCase):
         with app.app_context():
             token = create_access_token(identity="test")
         self.headers = {"Authorization": f"Bearer {token}"}
-        self.patch = patch(
-            "palworld_pal_editor.api.pal.SaveManager", return_value=self.manager
-        )
-        self.patch.start()
+        self.patches = [
+            patch(f"{module}.SaveManager", return_value=self.manager)
+            for module in (
+                "palworld_pal_editor.api.pal",
+                "palworld_pal_editor.api.pals",
+            )
+        ]
+        for started in self.patches:
+            started.start()
 
     def tearDown(self):
-        self.patch.stop()
+        for started in self.patches:
+            started.stop()
 
     def test_container_registry_endpoint_returns_normalized_descriptors(self):
         response = self.client.get(
@@ -134,21 +145,23 @@ class PalContainerApiTests(unittest.TestCase):
             self.manager.transfers,
         )
 
-    def test_paldata_selects_record_key_when_instance_id_is_shared(self):
-        gps = self.client.post(
-            "/api/pal/paldata",
-            json={"RecordKey": "gps:0"},
-            headers=self.headers,
+    def test_pal_detail_selects_record_key_when_instance_id_is_shared(self):
+        """The premise the whole design rests on: an Instance ID is not an address.
+
+        Both of these Pals carry the same `InstanceId` -- one in the World, one in
+        the Global Palbox -- so only the record key can say which one is meant.
+        """
+        gps = self.client.get(
+            "/api/pals/gps:0", headers=self.headers
         ).get_json()
-        world = self.client.post(
-            "/api/pal/paldata",
-            json={"RecordKey": next(iter(self.manager.records))},
-            headers=self.headers,
+        world_key = next(iter(self.manager.records))
+        world = self.client.get(
+            f"/api/pals/{world_key}", headers=self.headers
         ).get_json()
 
-        self.assertEqual("GPS copy", gps["data"]["NickName"])
-        self.assertEqual("World copy", world["data"]["NickName"])
-        self.assertEqual("gps:0", gps["data"]["RecordKey"])
+        self.assertEqual("GPS copy", gps["NickName"])
+        self.assertEqual("World copy", world["NickName"])
+        self.assertEqual("gps:0", gps["recordKey"])
 
 
 if __name__ == "__main__":

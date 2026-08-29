@@ -1,3 +1,4 @@
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -160,9 +161,16 @@ class PalFamilyProviderTests(unittest.TestCase):
 
         class Manager:
             pal_repository = PalRepository()
+            session_lock = threading.RLock()
 
             def get_unique_world_record(self, _instance_id):
                 return record
+
+            def get_record(self, _record_key):
+                return record
+
+            def get_player(self, _player_uid):
+                return None
 
             def normalize_external_record(self, _record):
                 pass
@@ -174,8 +182,10 @@ class PalFamilyProviderTests(unittest.TestCase):
         with app.app_context():
             token = create_access_token(identity="test", expires_delta=False)
         headers = {"Authorization": f"Bearer {token}"}
+        manager = Manager()
         with (
-            patch("palworld_pal_editor.api.pal.SaveManager", return_value=Manager()),
+            patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager),
+            patch("palworld_pal_editor.api.pals.SaveManager", return_value=manager),
             app.test_client() as client,
         ):
             patched = client.patch(
@@ -188,19 +198,14 @@ class PalFamilyProviderTests(unittest.TestCase):
                     "value": "BOSS_KingWhale_otomo",
                 },
             )
-            refreshed = client.post(
-                "/api/pal/paldata",
-                headers=headers,
-                json={
-                    "InstanceId": str(PalObjects.EMPTY_UUID),
-                    "PlayerUId": "player",
-                },
+            refreshed = client.get(
+                f"/api/pals/{record.record_key}", headers=headers
             )
 
         self.assertEqual(0, patched.get_json()["status"])
         self.assertEqual(
             "BOSS_KingWhale_otomo",
-            refreshed.get_json()["data"]["CharacterID"],
+            refreshed.get_json()["CharacterID"],
         )
 
 

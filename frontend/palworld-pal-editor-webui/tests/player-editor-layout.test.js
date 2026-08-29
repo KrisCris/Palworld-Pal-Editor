@@ -84,14 +84,16 @@ test("technology levels partition normal and ancient lanes without mutating stor
 });
 
 test("technology lanes render a stable non-mutating partition", async () => {
-    const [{ default: PlayerEditor }, { usePalEditorStore }] = await Promise.all([
+    const [{ default: PlayerEditor }, { usePalEditorStore }, { usePlayersStore }, { useRostersStore }] = await Promise.all([
         loadVueModule("/src/components/PlayerEditor.vue"),
         loadVueModule("/src/stores/paleditor.js"),
+        loadVueModule("/src/stores/players.js"),
+        loadVueModule("/src/stores/rosters.js"),
     ]);
     const pinia = createPinia();
     setActivePinia(pinia);
     const store = usePalEditorStore();
-    store.PLAYER_MAP = new Map([["player-1", {
+    usePlayersStore().playersByUid = new Map([["player-1", {
         NickName: "Tester",
         Level: 1,
         Exp: 0,
@@ -107,11 +109,9 @@ test("technology lanes render a stable non-mutating partition", async () => {
         StatusPointMetadata: {
             "最大HP": { category: "stat", icon: "stat-health", unit: "flat", values: Array.from({ length: 51 }, (_, rank) => rank * 100) },
         },
-        setStatusPoint: () => {},
         UnlockedRecipeTechnologyNames: [],
-        toggleTech: () => {},
     }]]);
-    store.ACTIVE_ROSTER = "player-1";
+    useRostersStore().activeRosterKey = "player:player-1";
     const items = [
         { InternalName: "NormalOne", IconAccessKey: "n1", I18n: { Name: "Normal One", Type: "Normal" }, BossTechnology: false },
         { InternalName: "AncientOne", IconAccessKey: "a1", I18n: { Name: "Ancient One", Type: "Ancient" }, BossTechnology: true },
@@ -140,22 +140,22 @@ test("player controls preserve every update contract", async () => {
         assert.match(source, new RegExp(`name="${field}"`), field);
     }
     for (const handler of [
-        "palStore.updatePlayer", "levelDown", "levelUp", "maxLevel",
+        "palStore.updatePlayer", "playerLevelDown", "playerLevelUp", "playerMaxLevel",
         "setStatusPoint(name)", "unlock_all_techs",
     ]) assert.match(source, new RegExp(handler.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), handler);
     assert.match(source, /<SegmentedRange/);
     assert.doesNotMatch(source, /<input[^>]+type="range"/);
     assert.match(source, /StatusPointTotalMaximums\[name\]/);
     assert.match(source, /StatusPointTotals\[name\]/);
-    assert.match(source, /@change="palStore\.SELECTED_PLAYER_DATA\.setStatusPoint\(name\)"/);
+    assert.match(source, /@change="palStore\.setStatusPoint\(name\)"/);
     assert.match(source, /:aria-label="fieldActionLabel/);
 });
 
 test("status sliders dispatch stat totals separately from effigy ranks", async () => {
     const source = await read("../src/stores/paleditor.js");
-    assert.match(source, /this\.ExStatusPoints = obj\.ExStatusPoints \|\| \{\}/);
     assert.match(source, /category === "stat"[\s\S]*\? "set_TotalStatusPoint"[\s\S]*: "set_StatusPoint"/);
-    assert.match(source, /Math\.min\(Math\.max\(Math\.trunc\(points\), minimum\), maximum\)/);
+    assert.match(source, /Math\.max\(Math\.trunc\(points\), player\.StatusPointMinimums\[name\] \?\? 0\)/);
+    assert.match(source, /player\.StatusPointTotalMaximums\[name\] \?\? 0/);
 });
 
 test("stat source labels are translated in every UI locale", () => {

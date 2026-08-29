@@ -5,9 +5,20 @@ import PlayerEditor from '@/components/PlayerEditor.vue'
 import BaseCampEditor from '@/components/BaseCampEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
+import { computed } from 'vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
 const palStore = usePalEditorStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
+// The base camp has no player page, so its canvas is the research editor until a
+// worker is picked out of the list.
+const baseCampOpen = computed(() => rostersStore.activeRosterKey === BASE_ROSTER_KEY
+  && !palsStore.selectedRecordKey)
 defineProps({ playersCollapsed: Boolean, palsCollapsed: Boolean })
 const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 </script>
@@ -22,18 +33,16 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
       <PlayerList @toggle="emit('collapsePlayers')" />
     </aside>
     <aside v-if="!palsCollapsed" class="editor-roster editor-roster--pals">
-      <PalList v-if="palStore.ACTIVE_ROSTER" @toggle="emit('collapsePals')" />
+      <PalList v-if="rostersStore.activeRosterKey" @toggle="emit('collapsePals')" />
     </aside>
-    <main class="editor-canvas" :class="{
-      'editor-canvas--basecamp': palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID,
-    }">
-      <OverlayScrollArea v-if="palStore.SHOW_PLAYER_EDIT_FLAG">
+    <main class="editor-canvas" :class="{ 'editor-canvas--basecamp': baseCampOpen }">
+      <OverlayScrollArea v-if="playersStore.showPlayerEditor">
         <div class="editor-canvas__viewport overlay-scroll-area__viewport">
           <PlayerEditor />
         </div>
       </OverlayScrollArea>
-      <BaseCampEditor v-else-if="palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID" />
-      <OverlayScrollArea v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA">
+      <BaseCampEditor v-else-if="baseCampOpen" />
+      <OverlayScrollArea v-else-if="palsStore.selectedPalLoaded">
         <div class="editor-canvas__viewport overlay-scroll-area__viewport">
           <PalEditor />
         </div>

@@ -17,7 +17,13 @@ globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
 const { useSessionStore } = await import("../src/stores/session.js");
+const { usePalsStore } = await import("../src/stores/pals.js");
+const { usePlayersStore } = await import("../src/stores/players.js");
+const { useRostersStore } = await import("../src/stores/rosters.js");
 let session;
+let pals;
+let players;
+let rosters;
 
 const reply = data => ({ data: { status: 0, data } });
 // REST resources answer with the resource itself, not the old envelope.
@@ -27,19 +33,79 @@ function newStore({ preserveStorage = false } = {}) {
     if (!preserveStorage) values.clear();
     setActivePinia(createPinia());
     session = useSessionStore();
+    pals = usePalsStore();
+    players = usePlayersStore();
+    rosters = useRostersStore();
     return usePalEditorStore();
 }
+
+// A `PalSummary` with only the fields a test cares about spelled out. The rest
+// are the shape the backend always sends, so a store that reads one of them by a
+// name the API does not use fails here rather than in the browser.
+const summary = (overrides = {}) => ({
+    recordKey: `world:${overrides.InstanceId ?? "pal"}`,
+    InstanceId: overrides.InstanceId ?? "pal",
+    CharacterID: "SheepBall",
+    DisplayName: "Sheepball",
+    DataAccessKey: "SheepBall",
+    Paldeck: "001",
+    storageKey: "world-container:palbox",
+    storageKind: "world",
+    storageOwnerPlayerUid: null,
+    containerKind: "storage",
+    containerLabel: null,
+    ContainerId: "palbox",
+    SlotIndex: 0,
+    FavoriteIndex: 0,
+    isAway: false,
+    changeState: "unchanged",
+    ...overrides,
+});
+
+const detail = (overrides = {}) => ({
+    ...summary(overrides),
+    groupId: null,
+    EquipWaza: [],
+    MasteredWaza: [],
+    PassiveSkillList: [],
+    Suitabilities: {},
+    SuitabilityMinimums: {},
+    ...overrides,
+});
 
 function mockBackend({
     password = true,
     loaded = false,
     hasWorkingPal = false,
-    players = [],
-    pals = [],
+    globalPalbox = false,
+    players: playerRows = [],
+    pals: palRows = [],
+    containers = [],
     locale = "en",
     locales = { en: "English" },
 } = {}) {
     const calls = [];
+    const rosterEntries = [
+        ...playerRows.map(player => ({
+            rosterKey: `player:${player.InstanceId}`,
+            kind: "player",
+            label: player.NickName ?? "",
+            playerUid: player.InstanceId,
+        })),
+        ...(hasWorkingPal
+            ? [{ rosterKey: "base-workers", kind: "base", label: null, playerUid: null }]
+            : []),
+        ...(globalPalbox
+            ? [{
+                rosterKey: "global-palbox",
+                kind: "global_palbox",
+                label: "Global Palbox",
+                playerUid: null,
+            }]
+            : []),
+    ];
+    const rows = palRows.map(pal => summary(pal));
+
     axios.get = async url => {
         calls.push(["GET", url]);
         if (url.endsWith("fetch_config")) {
@@ -56,14 +122,32 @@ function mockBackend({
         if (url.endsWith("/api/session")) {
             return resource({ loaded, path: loaded ? "C:/save" : null, warnings: [] });
         }
-        if (url.endsWith("players_data")) {
-            return reply({ hasWorkingPal, players });
+        if (url.endsWith("/api/rosters")) return resource(rosterEntries);
+        if (url.endsWith("/api/players")) return resource(playerRows);
+        if (url.endsWith("/api/pal/containers")) return reply(containers);
+        const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
+        if (rosterPals) return resource(rows);
+        const player = url.match(/\/api\/players\/(.+)$/);
+        if (player) {
+            const uid = decodeURIComponent(player[1]);
+            return resource(playerRows.find(row => row.InstanceId === uid));
+        }
+        const pal = url.match(/\/api\/pals\/(.+)$/);
+        if (pal) {
+            const recordKey = decodeURIComponent(pal[1]);
+            return resource(detail(
+                rows.find(row => row.recordKey === recordKey) ?? { recordKey },
+            ));
         }
         if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
             return reply({ dict: {}, arr: [] });
         }
         if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
         if (url.endsWith("skin_data")) return reply({ arr: [] });
+        // Selecting the base roster opens the research page with it.
+        if (url.endsWith("basecamp/research")) {
+            return reply({ CategoryOrder: [], Guilds: [] });
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.patch = async url => {
@@ -77,24 +161,9 @@ function mockBackend({
         }
         throw new Error(`Unexpected PUT ${url}`);
     };
-    axios.post = async (url, data) => {
+    axios.post = async url => {
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
-        if (url.endsWith("/player_pals")) return reply(pals.map(pal => ({
-            ...pal,
-            RecordKey: pal.RecordKey || `world:${pal.InstanceId}`,
-        })));
-        if (url.endsWith("/paldata")) {
-            const selected = data.RecordKey || data.InstanceId;
-            const pal = pals.find(row => (
-                (row.RecordKey || `world:${row.InstanceId}`) === selected
-                || row.InstanceId === selected
-            ));
-            return reply(pal && { ...pal, RecordKey: pal.RecordKey || `world:${pal.InstanceId}` });
-        }
-        if (url.endsWith("/player_data")) {
-            return reply(players.find(player => player.InstanceId === data.PlayerUId));
-        }
         throw new Error(`Unexpected POST ${url}`);
     };
     return calls;
@@ -147,29 +216,64 @@ test("a persisted backend is disconnected until its initial probe succeeds", asy
     assert.equal(store.BACKEND_CONNECTED, false);
 });
 
-test("loading Pal details preserves list-only location and priority metadata", async () => {
+test("one Pal is one entry: a roster refresh moves it without leaving a copy behind", async () => {
+    // The bug the single cache exists to stop. The old store kept the Pal in the
+    // roster it was viewed from and in the roster it moved to, and whichever copy
+    // the editor happened to hold went on reporting the old container.
     const store = newStore();
-    const id = "party-pal";
-    const summary = {
-        InstanceId: id,
-        ContainerKind: "party",
-        SlotIndex: 0,
-        FavoriteIndex: 3,
-    };
-    mockBackend({ pals: [{ InstanceId: id, SlotIndex: 0 }] });
-    store.PLAYER_MAP = new Map([["player", { pals: new Map([[id, summary]]) }]]);
+    mockBackend({
+        password: false,
+        loaded: true,
+        players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{ InstanceId: "pal-1" }],
+    });
+    await store.bootstrap();
+    await store.selectPal("world:pal-1");
+    assert.equal(pals.selectedPal.containerKind, "storage");
+    assert.equal(pals.palsByRecordKey.size, 1);
 
-    await store.selectPlayer("player", true);
-    await store.selectPal(id);
+    axios.get = async url => (url.match(/\/api\/rosters\/([^/]+)\/pals$/)
+        ? resource([summary({
+            InstanceId: "pal-1",
+            storageKey: "world-container:party",
+            containerKind: "party",
+        })])
+        : resource(null));
+    await rosters.loadRosterPals("player:player-1");
 
-    assert.equal(store.PAL_MAP.get(id).ContainerKind, "party");
-    assert.equal(store.PAL_MAP.get(id).FavoriteIndex, 3);
+    assert.equal(pals.palsByRecordKey.size, 1);
+    // The row moved, and so did the page reading it: there is nowhere for a stale
+    // copy to survive.
+    assert.equal(pals.summary("world:pal-1").containerKind, "party");
+    assert.equal(pals.selectedPal.containerKind, "party");
+});
+
+test("a roster refresh keeps the detail the editor is showing", async () => {
+    const store = newStore();
+    mockBackend({
+        password: false,
+        loaded: true,
+        players: [{ InstanceId: "player-1", NickName: "Player One" }],
+        pals: [{ InstanceId: "pal-1" }],
+    });
+    await store.bootstrap();
+    await store.selectPal("world:pal-1");
+    pals.selectedPal.PassiveSkillList.push("Legend");
+
+    await rosters.loadRosterPals("player:player-1");
+
+    assert.equal(pals.selectedPalLoaded, true);
+    assert.deepEqual(pals.selectedPal.PassiveSkillList, ["Legend"]);
 });
 
 test("GPS conflicts lock updates to the matching Pal's actual container", async () => {
     const store = newStore();
-    store.SELECTED_PAL_ID = "gps:0";
-    store.SELECTED_PAL_DATA = { StorageKind: "global_palbox" };
+    pals.applyDetail(detail({
+        InstanceId: "gps-pal",
+        recordKey: "gps:0",
+        storageKind: "global_palbox",
+    }));
+    pals.selectedRecordKey = "gps:0";
     store.PAL_CONTAINERS = [{
         StorageKey: "world-container:palbox",
         StorageKind: "world",
@@ -437,33 +541,20 @@ test("runtime failures preserve editor state", async () => {
 
 test("a failed Pal detail request preserves the current complete selection", async () => {
     const store = newStore();
-    const currentPal = {
-        InstanceId: "pal-current",
-        CharacterID: "SheepBall",
-        EquipWaza: [],
-        MasteredWaza: [],
-        PassiveSkillList: [],
-    };
-    const nextSummary = {
-        InstanceId: "pal-next",
-        CharacterID: "ChickenPal",
-    };
-    store.PAL_MAP = new Map([
-        [currentPal.InstanceId, currentPal],
-        [nextSummary.InstanceId, nextSummary],
-    ]);
-    store.SELECTED_PAL_ID = currentPal.InstanceId;
-    store.SELECTED_PAL_DATA = currentPal;
-    axios.post = async () => {
+    const current = detail({ InstanceId: "pal-current" });
+    pals.applyDetail(current);
+    pals.upsertSummaries([summary({ InstanceId: "pal-next" })]);
+    pals.selectedRecordKey = current.recordKey;
+    axios.get = async () => {
         const error = new Error("Network Error");
         error.request = {};
         throw error;
     };
 
-    assert.equal(await store.selectPal(nextSummary.InstanceId), false);
+    assert.equal(await store.selectPal("world:pal-next"), false);
     assert.equal(store.BACKEND_ERROR.kind, "connection");
-    assert.equal(store.SELECTED_PAL_ID, currentPal.InstanceId);
-    assert.deepEqual(store.SELECTED_PAL_DATA, currentPal);
+    assert.equal(pals.selectedRecordKey, current.recordKey);
+    assert.equal(pals.selectedPal.InstanceId, "pal-current");
     assert.equal(session.operationPending, false);
 });
 
@@ -516,9 +607,9 @@ test("startup stays connecting until loaded-save hydration completes", async () 
     mockBackend({ password: false, loaded: true });
     const backendGet = axios.get;
     let releasePlayers;
-    axios.get = url => url.endsWith("players_data")
-        ? new Promise(resolve => { releasePlayers = () => resolve(reply({ hasWorkingPal: false, players: [] })); })
-        : backendGet(url);
+    axios.get = (url, config) => url.endsWith("/api/players")
+        ? new Promise(resolve => { releasePlayers = () => resolve(resource([])); })
+        : backendGet(url, config);
 
     const boot = store.bootstrap();
     while (!releasePlayers) await new Promise(resolve => setTimeout(resolve, 0));
@@ -534,17 +625,17 @@ test("mid-hydration authentication failure unlocks the password form", async () 
     const store = newStore();
     mockBackend({ password: false, loaded: true });
     const backendGet = axios.get;
-    axios.get = async url => {
-        if (url.endsWith("players_data")) {
+    axios.get = async (url, config) => {
+        if (url.endsWith("/api/players")) {
             const error = new Error("Unauthorized");
             error.response = {
                 status: 401,
                 statusText: "Unauthorized",
-                data: { status: 2, msg: "Token expired" },
+                data: { msg: "Token expired" },
             };
             throw error;
         }
-        return backendGet(url);
+        return backendGet(url, config);
     };
 
     await store.bootstrap();
@@ -576,20 +667,20 @@ test("loaded-save hydration opens base camp editing after reloading", async () =
         loaded: true,
         hasWorkingPal: true,
         players: [{ InstanceId: "player-1", NickName: "Player One" }],
-        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
+        pals: [{ InstanceId: "pal-1" }],
     });
 
     await store.bootstrap();
-    assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
-    assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, null);
-    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
+    assert.equal(rosters.activeRosterKey, "base-workers");
+    assert.equal(rosters.activePlayerUid, null);
+    assert.equal(pals.selectedRecordKey, null);
+    assert.equal(players.showPlayerEditor, false);
 
     await store.loadSave();
-    assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
-    assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, null);
-    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
+    assert.equal(rosters.activeRosterKey, "base-workers");
+    assert.equal(rosters.activePlayerUid, null);
+    assert.equal(pals.selectedRecordKey, null);
+    assert.equal(players.showPlayerEditor, false);
 });
 
 test("loaded-save hydration opens player editing when there is no base camp", async () => {
@@ -598,20 +689,20 @@ test("loaded-save hydration opens player editing when there is no base camp", as
         password: false,
         loaded: true,
         players: [{ InstanceId: "player-1", NickName: "Player One" }],
-        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
+        pals: [{ InstanceId: "pal-1" }],
     });
 
     await store.bootstrap();
-    assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
-    assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, null);
-    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
+    assert.equal(rosters.activeRosterKey, "player:player-1");
+    assert.equal(rosters.activePlayerUid, "player-1");
+    assert.equal(pals.selectedRecordKey, null);
+    assert.equal(players.showPlayerEditor, true);
 
     await store.loadSave();
-    assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
-    assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, null);
-    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
+    assert.equal(rosters.activeRosterKey, "player:player-1");
+    assert.equal(rosters.activePlayerUid, "player-1");
+    assert.equal(pals.selectedRecordKey, null);
+    assert.equal(players.showPlayerEditor, true);
 });
 
 test("selected Pal data retains its game-derived family", async () => {
@@ -631,7 +722,7 @@ test("selected Pal data retains its game-derived family", async () => {
     await store.bootstrap();
     await store.selectPal("world:pal-1");
 
-    assert.equal(store.SELECTED_PAL_DATA.FamilyID, "Anubis");
+    assert.equal(pals.selectedPal.FamilyID, "Anubis");
 });
 
 test("successful Pal edits are tracked only until the next save load", async () => {
@@ -640,24 +731,22 @@ test("successful Pal edits are tracked only until the next save load", async () 
         password: false,
         loaded: true,
         players: [{ InstanceId: "player-1", NickName: "Player One" }],
-        pals: [{ InstanceId: "pal-1", CharacterID: "SheepBall" }],
+        pals: [{ InstanceId: "pal-1" }],
     });
 
     await store.bootstrap();
     await store.selectPal("world:pal-1");
     await store.updatePal({ target: { name: "NickName", value: "Edited" } });
 
-    assert.deepEqual([...store.EDITED_PAL_IDS], ["world:pal-1"]);
-    store.CREATED_PAL_IDS.add("world:pal-1");
-    store.PAL_LIST_EDITED_ONLY = true;
-    store.PAL_LIST_CREATED_ONLY = true;
+    assert.deepEqual([...pals.editedRecordKeys], ["world:pal-1"]);
+    rosters.editedOnly = true;
+    rosters.createdOnly = true;
 
     await store.loadSave();
 
-    assert.deepEqual([...store.EDITED_PAL_IDS], []);
-    assert.deepEqual([...store.CREATED_PAL_IDS], []);
-    assert.equal(store.PAL_LIST_EDITED_ONLY, false);
-    assert.equal(store.PAL_LIST_CREATED_ONLY, false);
+    assert.deepEqual([...pals.editedRecordKeys], []);
+    assert.equal(rosters.editedOnly, false);
+    assert.equal(rosters.createdOnly, false);
 });
 
 test("fetch_config publishes backend locales and switches to the translated locale", async () => {
@@ -680,25 +769,32 @@ test("language changes refresh only the active roster and re-fetch others lazily
     const store = newStore();
     store.IS_LOCKED = false;
     session.appState = "editor";
-    store.PLAYER_MAP = new Map([
-        ["player-1", { InstanceId: "player-1", pals: new Map() }],
-    ]);
-    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
-    store.ACTIVE_ROSTER = "player-1";
+    rosters.rosters = [
+        { rosterKey: "player:player-1", kind: "player", label: "One", playerUid: "player-1" },
+        { rosterKey: "global-palbox", kind: "global_palbox", label: "GPS", playerUid: null },
+    ];
+    rosters.recordKeysByRoster.set("player:player-1", []);
+    rosters.recordKeysByRoster.set("global-palbox", []);
+    rosters.activeRosterKey = "player:player-1";
 
     const requestedRosters = [];
     axios.patch = async url => {
         assert.equal(url, "/api/save/i18n");
         return reply(null);
     };
-    axios.post = async (url, data) => {
-        assert.equal(url, "/api/player/player_pals");
-        requestedRosters.push(data.PlayerUId);
-        return reply(data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
-            ? [{ InstanceId: "gps-pal", RecordKey: "gps:0", DisplayName: "Translated GPS Pal" }]
-            : []);
-    };
     axios.get = async url => {
+        const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
+        if (rosterPals) {
+            const rosterKey = decodeURIComponent(rosterPals[1]);
+            requestedRosters.push(rosterKey);
+            return resource(rosterKey === "global-palbox"
+                ? [summary({
+                    InstanceId: "gps-pal",
+                    recordKey: "gps:0",
+                    DisplayName: "Translated GPS Pal",
+                })]
+                : []);
+        }
         if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
             return reply({ dict: {}, arr: [] });
         }
@@ -708,35 +804,35 @@ test("language changes refresh only the active roster and re-fetch others lazily
     };
 
     assert.equal(await store.updateI18n(), true);
-    // Only the roster currently being viewed is refreshed eagerly; the other
-    // rosters' pal caches are invalidated instead of being fetched all at once.
-    assert.deepEqual(requestedRosters, ["player-1"]);
+    // Only the roster currently being viewed is refreshed eagerly; every other
+    // roster's keys are dropped instead of being fetched all at once.
+    assert.deepEqual(requestedRosters, ["player:player-1"]);
 
     // A different roster re-fetches in the new language once it is selected.
-    await store.selectPlayer(store.PAL_GLOBAL_STORAGE_BTN, true);
-    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
-    assert.equal(store.PAL_MAP.get("gps:0").DisplayName, "Translated GPS Pal");
+    await store.selectPlayer("global-palbox");
+    assert.deepEqual(requestedRosters, ["player:player-1", "global-palbox"]);
+    assert.equal(pals.summary("gps:0").DisplayName, "Translated GPS Pal");
 });
 
 test("language changes fail when the active roster cannot be refreshed", async () => {
     const store = newStore();
     store.IS_LOCKED = false;
     session.appState = "editor";
-    store.PLAYER_MAP = new Map([
-        ["player-1", { InstanceId: "player-1", pals: new Map() }],
-    ]);
-    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
-    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
+    rosters.activeRosterKey = "global-palbox";
+    rosters.recordKeysByRoster.set("global-palbox", []);
 
     let staticRequests = 0;
     axios.patch = async () => reply(null);
-    axios.post = async (url, data) => {
-        assert.equal(url, "/api/player/player_pals");
-        return data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
-            ? { data: { status: 1, msg: "GPS refresh failed" } }
-            : reply([]);
-    };
-    axios.get = async () => {
+    axios.get = async url => {
+        if (url.match(/\/api\/rosters\/([^/]+)\/pals$/)) {
+            const error = new Error("Server Error");
+            error.response = {
+                status: 500,
+                statusText: "Server Error",
+                data: { error: { code: "UNEXPECTED_ERROR", message: "GPS refresh failed" } },
+            };
+            throw error;
+        }
         staticRequests += 1;
         return reply({ dict: {}, arr: [] });
     };
@@ -758,7 +854,7 @@ test("healing all pals does not try to reselect a missing pal", async t => {
     t.after(() => { globalThis.alert = () => {}; });
 
     await store.bootstrap();
-    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(pals.selectedRecordKey, null);
     await store.updatePal({ target: { name: "heal_all_pals", value: "" } });
 
     assert.ok(calls.some(call => call[0] === "PATCH" && call[1] === "/api/pal/paldata"));
@@ -867,79 +963,78 @@ test("successful saves use a nonblocking success message", async () => {
 
 test("deleting the last Pal falls through to the player editor instead of a blank canvas", async () => {
     const store = newStore();
-    const player = { InstanceId: "player-1", NickName: "Player One", pals: new Map() };
-    store.PLAYER_MAP = new Map([["player-1", player]]);
-    store.ACTIVE_ROSTER = "player-1";
-    const pal = { RecordKey: "pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" };
-    player.pals.set("pal-1", pal);
-    store.PAL_MAP = player.pals;
-    store.SELECTED_PAL_ID = "pal-1";
-    store.SELECTED_PAL_DATA = pal;
+    players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
+    rosters.activeRosterKey = "player:player-1";
+    rosters.recordKeysByRoster.set("player:player-1", ["world:pal-1"]);
+    pals.applyDetail(detail({ InstanceId: "pal-1" }));
+    pals.selectedRecordKey = "world:pal-1";
 
     axios.delete = async () => reply(null);
+    axios.get = async url => {
+        if (url.endsWith("/api/pal/containers")) return reply([]);
+        if (url.match(/\/api\/rosters\/([^/]+)\/pals$/)) return resource([]);
+        throw new Error(`Unexpected GET ${url}`);
+    };
 
     await store.delPal();
 
-    assert.equal(store.SELECTED_PAL_ID, null);
-    assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PLAYER_DATA.InstanceId, "player-1");
-    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
+    assert.equal(pals.selectedRecordKey, null);
+    assert.equal(rosters.activePlayerUid, "player-1");
+    assert.equal(players.selectedPlayer.InstanceId, "player-1");
+    assert.equal(players.showPlayerEditor, true);
 });
 
 test("exporting a Pal to the Global Palbox auto-jumps to its new location and refreshes only affected rosters", async () => {
     const store = newStore();
-    store.PLAYER_MAP = new Map([
-        ["player-1", { InstanceId: "player-1", pals: new Map() }],
-    ]);
+    players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
     const targetStorageKey = "gps-global";
     store.PAL_CONTAINERS = [
         { StorageKey: targetStorageKey, StorageKind: "global_palbox", ContainerKind: "global" },
         { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
     ];
-    store.ACTIVE_ROSTER = "player-1";
-    store.SELECTED_PAL_ID = "world:pal-1";
-    store.SELECTED_PAL_DATA = { StorageKind: "world", OwnerPlayerUId: "player-1", RecordKey: "world:pal-1" };
+    rosters.activeRosterKey = "player:player-1";
+    rosters.recordKeysByRoster.set("player:player-1", ["world:pal-1"]);
+    pals.applyDetail(detail({ InstanceId: "pal-1", OwnerPlayerUId: "player-1" }));
+    pals.selectedRecordKey = "world:pal-1";
 
     const requestedRosters = [];
     axios.get = async url => {
         if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
+        if (rosterPals) {
+            const rosterKey = decodeURIComponent(rosterPals[1]);
+            requestedRosters.push(rosterKey);
+            return resource(rosterKey === "global-palbox"
+                ? [summary({ InstanceId: "pal-1", recordKey: "gps:pal-1" })]
+                : []);
+        }
+        if (url.match(/\/api\/pals\/(.+)$/)) {
+            return resource(detail({ InstanceId: "pal-1", recordKey: "gps:pal-1" }));
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
-    axios.post = async (url, data) => {
-        if (url.endsWith("/api/pal/transfer")) {
-            return reply({ RecordKey: "gps:pal-1" });
-        }
-        if (url.endsWith("/api/player/player_pals")) {
-            requestedRosters.push(data.PlayerUId);
-            if (data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN) {
-                return reply([{ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
-            }
-            return reply([]);
-        }
-        if (url.endsWith("/api/pal/paldata")) {
-            return reply({ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "GPS Pal" });
-        }
+    axios.post = async url => {
+        if (url.endsWith("/api/pal/transfer")) return reply({ RecordKey: "gps:pal-1" });
         throw new Error(`Unexpected POST ${url}`);
     };
 
     assert.equal(await store.movePal(targetStorageKey), true);
     // Only the source roster and the Global Palbox are refreshed, not every player.
-    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
+    assert.deepEqual(requestedRosters, ["player:player-1", "global-palbox"]);
     // Auto-jumped to the Global Palbox and selected the newly exported Pal.
-    assert.equal(store.ACTIVE_ROSTER, store.PAL_GLOBAL_STORAGE_BTN);
-    assert.equal(store.SELECTED_PAL_ID, "gps:pal-1");
+    assert.equal(rosters.activeRosterKey, "global-palbox");
+    assert.equal(pals.selectedRecordKey, "gps:pal-1");
 });
 
 test("resolving an update conflict auto-jumps to the updated Pal's new location", async () => {
     const store = newStore();
-    store.PLAYER_MAP = new Map([
-        ["player-1", { InstanceId: "player-1", pals: new Map() }],
-    ]);
+    players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
     store.PAL_CONTAINERS = [
         { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
     ];
     // Looking at the Global Palbox, updating a Pal into player-1's storage.
-    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
+    rosters.activeRosterKey = "global-palbox";
+    rosters.recordKeysByRoster.set("global-palbox", []);
     store.PAL_TRANSFER_CONFLICT = {
         SourceRecordKey: "gps:0",
         TargetStorageKey: "world-container:palbox",
@@ -954,27 +1049,26 @@ test("resolving an update conflict auto-jumps to the updated Pal's new location"
     const requestedRosters = [];
     axios.get = async url => {
         if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
+        if (rosterPals) {
+            const rosterKey = decodeURIComponent(rosterPals[1]);
+            requestedRosters.push(rosterKey);
+            return resource(rosterKey === "player:player-1"
+                ? [summary({ InstanceId: "pal-1" })]
+                : []);
+        }
+        if (url.match(/\/api\/pals\/(.+)$/)) return resource(detail({ InstanceId: "pal-1" }));
         throw new Error(`Unexpected GET ${url}`);
     };
-    axios.post = async (url, data) => {
+    axios.post = async url => {
         if (url.endsWith("/api/pal/transfer")) return reply(null);
-        if (url.endsWith("/api/player/player_pals")) {
-            requestedRosters.push(data.PlayerUId);
-            if (data.PlayerUId === "player-1") {
-                return reply([{ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
-            }
-            return reply([]);
-        }
-        if (url.endsWith("/api/pal/paldata")) {
-            return reply({ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "Updated Pal" });
-        }
         throw new Error(`Unexpected POST ${url}`);
     };
 
     assert.equal(await store.updateConflictingPal(), true);
     // The affected rosters are refreshed (active + target), not every player.
-    assert.deepEqual(requestedRosters, [store.PAL_GLOBAL_STORAGE_BTN, "player-1"]);
+    assert.deepEqual(requestedRosters, ["global-palbox", "player:player-1"]);
     // Auto-jumped to the player and selected the updated Pal.
-    assert.equal(store.ACTIVE_ROSTER, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
+    assert.equal(rosters.activeRosterKey, "player:player-1");
+    assert.equal(pals.selectedRecordKey, "world:pal-1");
 });

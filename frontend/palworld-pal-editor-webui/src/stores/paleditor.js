@@ -1,4 +1,4 @@
-import { ref, computed, reactive, nextTick, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import {
@@ -18,6 +18,15 @@ import {
     UI_TRANSLATIONS,
 } from "../i18n/index.js";
 import { setBackendContext } from "../api/http.js";
+import { usePalsStore } from "./pals.js";
+import { usePlayersStore } from "./players.js";
+import {
+    BASE_ROSTER_KEY,
+    GLOBAL_PALBOX_ROSTER_KEY,
+    legacyRosterId,
+    playerRosterKey,
+    useRostersStore,
+} from "./rosters.js";
 import { useSessionStore } from "./session.js";
 
 export const backendErrorDetails = error => {
@@ -80,7 +89,7 @@ export const maximumSuitabilities = (minimums, max) => Object.fromEntries(
 
 export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
     const target = selectedPal?.FamilyID
-        || selectedPal?.DataAccessKeyOG
+        || selectedPal?.DataAccessKey
         || selectedPal?.CharacterID;
     return (skins ?? []).filter(skin =>
         skin?.TargetPalName === target
@@ -141,10 +150,15 @@ export function specialTypeKeys(pal = {}) {
 }
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    // What save is open, which screen the app is on and whether an operation is
-    // running all live in one store now. This one keeps the Pal and player data
-    // until S1c-b moves that too.
+    // What is left here after S1c: the app shell. Messages, auth, the backend
+    // connection, the static catalogs, templates, containers and the write
+    // operations that still speak the pre-REST routes. The save itself lives in
+    // `stores/session`, and its Pals, players and rosters in the three stores
+    // below -- this store reads them, and nothing reads back into it.
     const session = useSessionStore();
+    const pals = usePalsStore();
+    const players = usePlayersStore();
+    const rosters = useRostersStore();
 
     // Spec §8.8: every operation the UI can start holds the interaction gate for
     // as long as it runs, so nothing can begin a second one or edit what the
@@ -163,384 +177,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 10;
-    class Player {
-        constructor(obj) {
-            this.InstanceId = obj.InstanceId;
-            this.GroupId = obj.GroupId;
-            this.NickName = obj.NickName;
-            this.Level = obj.Level;
-            this.Exp = obj.Exp;
-            this.UnusedStatusPoint = obj.UnusedStatusPoint;
-            this.StatusPoints = obj.StatusPoints || {};
-            this.ExStatusPoints = obj.ExStatusPoints || {};
-            this.StatusPointTotals = obj.StatusPointTotals || this.StatusPoints;
-            this.StatusPointMinimums = obj.StatusPointMinimums || {};
-            this.StatusPointMaximums = obj.StatusPointMaximums || {};
-            this.StatusPointTotalMaximums = obj.StatusPointTotalMaximums || this.StatusPointMaximums;
-            this.StatusPointMetadata = obj.StatusPointMetadata || {};
-            this.HasViewingCage = obj.HasViewingCage;
-            this.OtomoCharacterContainerId = obj.OtomoCharacterContainerId;
-            this.PalStorageContainerId = obj.PalStorageContainerId;
-            this.pals = new Map();
-            this.UnlockedRecipeTechnologyNames = obj.UnlockedRecipeTechnologyNames;
-            this.TechnologyPoint = obj.TechnologyPoint;
-            this.bossTechnologyPoint = obj.bossTechnologyPoint;
-        }
-
-        setStatusPoint(name) {
-            let points = Number(this.StatusPointTotals[name]);
-            if (!Number.isFinite(points)) points = 0;
-            const minimum = this.StatusPointMinimums[name] ?? 0;
-            const maximum = this.StatusPointTotalMaximums[name] ?? 0;
-            points = Math.min(Math.max(Math.trunc(points), minimum), maximum);
-            this.StatusPointTotals[name] = points;
-            updatePlayer({
-                target: {
-                    name: this.StatusPointMetadata[name]?.category === "stat"
-                        ? "set_TotalStatusPoint"
-                        : "set_StatusPoint",
-                    value: { name: name, points: points },
-                },
-            });
-        }
-
-        levelDown() {
-            if (this.Level > 1) {
-                this.Level -= 1;
-                updatePlayer({ target: { name: "Level", value: this.Level } });
-            }
-        }
-
-        levelUp() {
-            if (
-                this.Level < MAX_LEVEL ||
-                (!HIDE_INVALID_OPTIONS.value && this.Level < MAX_INVALID_LEVEL)
-            ) {
-                this.Level += 1;
-                updatePlayer({ target: { name: "Level", value: this.Level } });
-            }
-        }
-
-        maxLevel() {
-            this.Level = HIDE_INVALID_OPTIONS.value
-                ? MAX_LEVEL
-                : MAX_INVALID_LEVEL;
-            updatePlayer({ target: { name: "Level", value: this.Level } });
-        }
-
-        toggleTech(tech, status) {
-            updatePlayer({
-                target: {
-                    name: "toggle_UnlockedRecipeTechnologyNames",
-                    value: {
-                        tech: tech,
-                        status: status,
-                    },
-                },
-            });
-        }
-    }
-
-    class PalData {
-        constructor(obj) {
-            this.RecordKey = obj.RecordKey || `world:${obj.InstanceId}`;
-            this.StorageKey = obj.StorageKey;
-            this.StorageKind = obj.StorageKind || "world";
-            this.StorageOwnerPlayerUid = obj.StorageOwnerPlayerUid;
-            this.InstanceId = obj.InstanceId;
-            this.OwnerPlayerUId = obj.OwnerPlayerUId;
-            this.group_id = obj.group_id;
-            this.ContainerId = obj.ContainerId;
-            this.SlotIndex = obj.SlotIndex;
-            this.ContainerKind = obj.ContainerKind;
-            this.ContainerLabel = obj.ContainerLabel;
-            this.FavoriteIndex = obj.FavoriteIndex ?? 0;
-            this.IsImportedCharacter = obj.IsImportedCharacter ?? false;
-            this.OwnerName = obj.OwnerName;
-            this.CharacterID = obj.CharacterID;
-            this.FamilyID = obj.FamilyID;
-            this.IconAccessKey = obj.IconAccessKey;
-            this.IconKey = obj.IconKey;
-            this.DataAccessKey = obj.DataAccessKey;
-            this.DataAccessKeyOG = obj.DataAccessKey;
-            this.SelectionKey = PAL_STATIC_DATA.value[obj.CharacterID]
-                ? obj.CharacterID
-                : obj.DataAccessKey;
-            this.I18nName = obj.I18nName;
-            this.DisplayName = obj.DisplayName;
-            this.NickName = obj.NickName;
-            this.SkinName = obj.SkinName;
-            this.Gender = obj.Gender;
-            this.Level = obj.Level;
-            this.FriendshipLevel = obj.FriendshipLevel;
-
-            this.HasBaseVariant = obj.HasBaseVariant;
-            this.HasBossVariant = obj.HasBossVariant;
-            this.HasTowerVariant = obj.HasTowerVariant;
-            this.HasWorkerSick = obj.HasWorkerSick;
-            this.IsFaintedPal = obj.IsFaintedPal;
-            this.IsNewPal = obj.IsNewPal;
-            this.in_owner_palbox = obj.in_owner_palbox;
-
-            this.IsHuman = obj.IsHuman;
-            this.IsBOSS = obj.IsBOSS;
-            this.IsRarePal = obj.IsRarePal;
-            this.IsTower = obj.IsTower;
-            this.IsRAID = obj.IsRAID;
-            this.IsPREDATOR = obj.IsPREDATOR;
-            this.IsOilrig = obj.IsOilrig;
-            this.IsExpeditionPal = obj.IsExpeditionPal;
-
-            this.ComputedMaxHP = obj.ComputedMaxHP;
-            this.ComputedAttack = obj.ComputedAttack;
-            this.ComputedDefense = obj.ComputedDefense;
-            this.ComputedCraftSpeed = obj.ComputedCraftSpeed;
-
-            this.Rank = obj.Rank;
-            this.IsAwakening = obj.IsAwakening;
-            this.Rank_HP = obj.Rank_HP;
-            this.Rank_Attack = obj.Rank_Attack;
-            this.Rank_Defence = obj.Rank_Defence;
-            this.Rank_CraftSpeed = obj.Rank_CraftSpeed;
-
-            this.Talent_HP = obj.Talent_HP;
-            this.Talent_Melee = obj.Talent_Melee;
-            this.Talent_Shot = obj.Talent_Shot;
-            this.Talent_Defense = obj.Talent_Defense;
-
-            this.PassiveSkillList = obj.PassiveSkillList;
-            this.EquipWaza = obj.EquipWaza;
-            this.MasteredWaza = obj.MasteredWaza;
-            this.Suitabilities = obj.Suitabilities;
-            this.SuitabilityMinimums = obj.SuitabilityMinimums;
-        }
-
-        getRank() {
-            return this.Rank - 1;
-        }
-
-        swapRare() {
-            this.IsRarePal = !this.IsRarePal;
-            updatePal({ target: { name: "IsRarePal", value: this.IsRarePal } });
-        }
-
-        swapBoss() {
-            this.IsBOSS = !this.IsBOSS;
-            updatePal({ target: { name: "IsBOSS", value: this.IsBOSS } });
-        }
-
-        toggleAwakening() {
-            this.IsAwakening = !this.IsAwakening;
-            updatePal({ target: { name: "IsAwakening", value: this.IsAwakening } });
-        }
-
-        levelDown() {
-            if (this.Level > 1) {
-                this.Level -= 1;
-                updatePal({ target: { name: "Level", value: this.Level } });
-            }
-        }
-
-        levelUp() {
-            if (
-                this.Level < MAX_LEVEL ||
-                (!HIDE_INVALID_OPTIONS.value && this.Level < MAX_INVALID_LEVEL)
-            ) {
-                this.Level += 1;
-                updatePal({ target: { name: "Level", value: this.Level } });
-            }
-        }
-
-        maxLevel() {
-            this.Level = HIDE_INVALID_OPTIONS.value
-                ? MAX_LEVEL
-                : MAX_INVALID_LEVEL;
-            updatePal({ target: { name: "Level", value: this.Level } });
-        }
-
-        friendshipLevelDown() {
-            if (this.FriendshipLevel > -3) {
-                this.FriendshipLevel -= 1;
-                updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
-            }
-        }
-
-        friendshipLevelUp() {
-            if (this.FriendshipLevel < MAX_FRIENDSHIP_LEVEL) {
-                this.FriendshipLevel += 1;
-                updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
-            }
-        }
-
-        maxFriendshipLevel() {
-            this.FriendshipLevel = MAX_FRIENDSHIP_LEVEL;
-            updatePal({ target: { name: "FriendshipLevel", value: this.FriendshipLevel } });
-        }
-
-        swapGender() {
-            let gender = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
-            if (this.Gender == "EPalGenderType::Female") {
-                gender = "EPalGenderType::Male";
-            }
-            if (this.Gender == "EPalGenderType::Male") {
-                gender = "EPalGenderType::Female";
-            }
-            updatePal({ target: { name: "Gender", value: gender } });
-        }
-
-        pop_PassiveSkillList(e) {
-            const skill = e.target.name;
-            updatePal({
-                target: {
-                    name: "pop_PassiveSkillList",
-                    value: skill,
-                },
-            });
-        }
-
-        add_PassiveSkillList() {
-            const skill = PAL_PASSIVE_SELECTED_ITEM.value;
-            if (!PASSIVE_SKILLS.value[skill]) {
-                showToast("Message_Select_Skill");
-                return;
-            }
-            if (
-                HIDE_INVALID_OPTIONS.value &&
-                this.PassiveSkillList.length >= 4
-            ) {
-                showToast("Message_Passive_Limit");
-                return;
-            }
-            updatePal({
-                target: {
-                    name: "add_PassiveSkillList",
-                    value: skill,
-                },
-            });
-        }
-
-        isEquippedPassiveSkill(skill) {
-            return this.PassiveSkillList.includes(skill);
-        }
-
-        isEquippedSkill(skill) {
-            return this.EquipWaza.includes(skill);
-        }
-
-        isMasteredSkill(skill) {
-            return this.MasteredWaza.includes(skill);
-        }
-
-        isEquipSkillFull() {
-            return this.EquipWaza.length >= 3;
-        }
-
-        pop_EquipWaza(e) {
-            const skill = e.target.name;
-            updatePal({
-                target: {
-                    name: "pop_EquipWaza",
-                    value: skill,
-                },
-            });
-        }
-
-        add_EquipWaza(e) {
-            const skill = e.target.name;
-            updatePal({
-                target: {
-                    name: "add_EquipWaza",
-                    value: skill,
-                },
-            });
-        }
-
-        pop_MasteredWaza(e) {
-            const skill = e.target.name;
-            updatePal({
-                target: {
-                    name: "pop_MasteredWaza",
-                    value: skill,
-                },
-            });
-        }
-
-        add_MasteredWaza() {
-            const skill = PAL_ACTIVE_SELECTED_ITEM.value;
-            if (!ACTIVE_SKILLS.value[skill]) {
-                showToast("Message_Select_Skill");
-                return;
-            }
-            updatePal({
-                target: {
-                    name: "add_MasteredWaza",
-                    value: skill,
-                },
-            });
-        }
-
-        suitUp(e) {
-            try {
-                const name = e.target.name;
-                const value = SELECTED_PAL_DATA.value.Suitabilities[name] + 1;
-                this.set_Suitability(name, value);
-            } catch (error) {
-                console.log(error);
-                return;
-            }
-        }
-
-        suitDown(e) {
-            try {
-                const name = e.target.name;
-                const value = SELECTED_PAL_DATA.value.Suitabilities[name] - 1;
-                this.set_Suitability(name, value);
-            } catch (error) {
-                console.log(error);
-                return;
-            }
-        }
-
-        set_Suitability(name, value) {
-            const min = this.SuitabilityMinimums[name] || 0;
-            const max = MAX_SUITABILITY_LEVEL;
-            if (HIDE_INVALID_OPTIONS.value && min == 0 && value != 0) {
-                showToast("Message_Invalid_Suitability");
-                return;
-            }
-            value = Math.min(Math.max(value, min), max);
-            if (value == SELECTED_PAL_DATA.value.Suitabilities[name]) {
-                return;
-            }
-            updatePal({
-                target: {
-                    name: "set_Suitability",
-                    value: { name: name, level: value },
-                },
-            });
-        }
-
-        maxSuitabilities() {
-            const values = maximumSuitabilities(
-                this.SuitabilityMinimums,
-                MAX_SUITABILITY_LEVEL,
-            );
-            if (!Object.keys(values).length) return;
-            updatePal({ target: { name: "set_Suitabilities", value: values } });
-        }
-
-        changeSpecie(characterId = this.SelectionKey) {
-            updatePal({
-                target: {
-                    name: "CharacterID",
-                    value: characterId,
-                },
-            });
-        }
-    }
-
-    const PAL_BASE_WORKER_BTN = ref("PAL_BASE_WORKER_BTN");
-    const PAL_GLOBAL_STORAGE_BTN = ref("PAL_GLOBAL_STORAGE_BTN");
 
     const TECH_LV_DICT = ref({});
     const BASE_CAMP_RESEARCH = ref({ CategoryOrder: [], Guilds: [] });
@@ -553,7 +189,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_STATIC_DATA_LIST = ref([]);
     const ITEM_STATIC_DATA = ref({});
     const ITEM_STATIC_DATA_LIST = ref([]);
-    const PLAYER_INVENTORY = ref(null);
     const SKIN_DATA_LIST = ref([]);
     const PAL_TEMPLATES = ref([]);
     const SKILL_TEMPLATES = ref([]);
@@ -563,81 +198,18 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
-    const HAS_WORKING_PAL_FLAG = ref(false);
-    const PREFER_BASE_PAL_LIST = ref(false);
-    const BASE_PAL_BTN_CLK_FLAG = computed(() => ACTIVE_ROSTER.value === PAL_BASE_WORKER_BTN.value);
-    const SHOW_PLAYER_EDIT_FLAG = computed(() => (
-        SELECTED_PLAYER_ID.value !== null && SELECTED_PAL_ID.value === null
-    ));
-    // const ADD_PAL_RESELECT_CTR = ref(0);
-    // const DEL_PAL_RESELECT_CTR = ref(0)
     const UPDATE_PAL_RESELECT_CTR = ref(0);
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
-
-    const PAL_LIST_PREFERENCES_KEY = "PAL_LIST_PREFERENCES";
-    const PAL_LIST_SORT_VALUES = new Set(["paldeck", "location", "priority"]);
-    const PAL_LIST_ATTRIBUTE_VALUES = new Set([
-        "priority-1", "priority-2", "priority-3", "alpha", "lucky", "dna", "human",
-    ]);
-    let savedPalListPreferences = {};
-    try {
-        savedPalListPreferences = JSON.parse(
-            readStorage(localStorage, PAL_LIST_PREFERENCES_KEY) || "{}"
-        );
-    } catch {
-        savedPalListPreferences = {};
-    }
-    const PAL_LIST_SEARCH_KEYWORD = ref("");
-    const PAL_LIST_SORT = ref(PAL_LIST_SORT_VALUES.has(savedPalListPreferences.sort)
-        ? savedPalListPreferences.sort : "paldeck");
-    const PAL_LIST_ATTRIBUTE_FILTERS = ref(Array.isArray(savedPalListPreferences.attributes)
-        ? [...new Set(savedPalListPreferences.attributes.filter(value => PAL_LIST_ATTRIBUTE_VALUES.has(value)))]
-        : []);
-    const PAL_LIST_EDITED_ONLY = ref(false);
-    const PAL_LIST_CREATED_ONLY = ref(false);
-    const EDITED_PAL_IDS = ref(new Set());
-    const CREATED_PAL_IDS = ref(new Set());
-    watch([PAL_LIST_SORT, PAL_LIST_ATTRIBUTE_FILTERS], ([sort, attributes]) => {
-        writeStorage(localStorage, PAL_LIST_PREFERENCES_KEY, JSON.stringify({ sort, attributes }));
-    }, { deep: true });
-
     const IS_PAL_SAVE_PATH = ref(false);
 
-    // data
-    const BASE_PAL_MAP = ref(new Map());
-    const GLOBAL_PAL_MAP = ref(new Map());
-    const SPECIAL_ROSTERS = ref([]);
-    const PLAYER_MAP = ref(new Map());
+    // A base camp is worth listing even when nobody works in it yet, so the base
+    // roster button follows the containers as well as the roster listing.
+    const HAS_WORKING_PAL_FLAG = computed(() => rosters.hasBaseRoster
+        || PAL_CONTAINERS.value.some(container => container.ContainerKind === "base"));
+
     const PAL_PASSIVE_SELECTED_ITEM = ref("");
     const PAL_ACTIVE_SELECTED_ITEM = ref("");
-
-    // display data
-    const SELECTED_PAL_DATA = ref(new Map());
-    const PAL_MAP = ref(new Map());
-
-    // Single source of truth for the active roster: a real player's InstanceId, or
-    // the PAL_BASE_WORKER_BTN / PAL_GLOBAL_STORAGE_BTN sentinel for the special
-    // pseudo-rosters (base camp / global palbox). Every other "selected" state is
-    // derived from this one ref.
-    const ACTIVE_ROSTER = ref(null);
-    const SELECTED_PLAYER_ID = computed(() => {
-        const roster = ACTIVE_ROSTER.value;
-        return (roster == null
-            || roster === PAL_BASE_WORKER_BTN.value
-            || roster === PAL_GLOBAL_STORAGE_BTN.value)
-            ? null
-            : roster;
-    });
-    const SELECTED_PLAYER_DATA = computed(() => (
-        SELECTED_PLAYER_ID.value == null
-            ? null
-            : PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value)
-    ));
-    const SELECTED_PAL_ID = ref(null);
-
-    // TODO Get rid of this...
-    // let SELECTED_PAL_EL = null;
 
     // Configs
     const VERSION = ref("0.0.0");
@@ -797,6 +369,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             code: error.code,
             log: error.details?.traceback || error.message,
         });
+    }
+
+    // A read that fails while the save is being opened is a failure to start, so
+    // it belongs on the backend error screen rather than in a toast over an app
+    // that never finished loading.
+    function reportStartupFailure(error) {
+        if (error.isAborted) return;
+        if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
+        else setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
     }
 
     function setBackendError(error) {
@@ -979,10 +560,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         try {
             loaded = await session.refreshSession();
         } catch (error) {
-            // A failure here is a failure to start, so it belongs on the backend
-            // error screen and not in a toast over an app that never loaded.
-            if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
-            else setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
+            reportStartupFailure(error);
             return false;
         }
         if (loaded) {
@@ -1145,30 +723,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response.status == 0) {
             // if on pal editor panel, refresh all translated texts (except for hardcoded ui)
             if (session.editorOpen) {
-                // Only the roster currently being viewed is refreshed eagerly. The
-                // cached pal lists of every other roster are invalidated instead, so
-                // they are re-fetched in the new language the next time they are
-                // shown (selectPlayer already loads a roster when its list is empty).
-                const activeRoster = GET_PAL_OWNER_API_ID();
-                const rosterRefreshes = [];
-                if (activeRoster) {
-                    rosterRefreshes.push(fetchPlayerPal(activeRoster));
+                // Only the roster currently being viewed is refreshed eagerly. Every
+                // other cached list is dropped instead, so it is re-read in the new
+                // language the next time it is shown.
+                const activeRoster = rosters.activeRosterKey;
+                rosters.invalidateAllExcept(activeRoster);
+                try {
+                    if (activeRoster) await rosters.loadRosterPals(activeRoster);
+                    if (pals.selectedRecordKey) await pals.loadDetail(pals.selectedRecordKey);
+                } catch (error) {
+                    reportStartupFailure(error);
+                    return false;
                 }
-                for (const playerUId of PLAYER_MAP.value.keys()) {
-                    if (playerUId !== activeRoster) {
-                        PLAYER_MAP.value.get(playerUId).pals.clear();
-                    }
-                }
-                if (PAL_BASE_WORKER_BTN.value !== activeRoster) {
-                    BASE_PAL_MAP.value.clear();
-                }
-                if (SPECIAL_ROSTERS.value.some(roster => roster.Kind === "global_palbox")
-                    && PAL_GLOBAL_STORAGE_BTN.value !== activeRoster) {
-                    GLOBAL_PAL_MAP.value.clear();
-                }
-                const rosterResults = await Promise.all(rosterRefreshes);
-                refreshSucceeded = rosterResults.every(Boolean);
-                if (refreshSucceeded) refreshSucceeded = await fetchStaticData();
+                refreshSucceeded = await fetchStaticData();
                 if (refreshSucceeded && BASE_CAMP_RESEARCH.value.Guilds?.length) {
                     refreshSucceeded = await fetchBaseCampResearch();
                 }
@@ -1265,36 +832,19 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function reset(updateAppState = true) {
-        HAS_WORKING_PAL_FLAG.value = false;
-        PREFER_BASE_PAL_LIST.value = false;
-        ACTIVE_ROSTER.value = null;
-        SELECTED_PAL_ID.value = null;
-        PLAYER_INVENTORY.value = null;
+        rosters.clear();
+        pals.clear();
+        players.clear();
 
-        BASE_PAL_MAP.value = new Map();
-        GLOBAL_PAL_MAP.value = new Map();
-        PLAYER_MAP.value = new Map();
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
         PAL_TEMPLATES.value = [];
         SKILL_TEMPLATES.value = [];
         PAL_CONTAINERS.value = [];
-        SPECIAL_ROSTERS.value = [];
         PAL_TRANSFER_CONFLICT.value = null;
         BASE_CAMP_RESEARCH.value = { CategoryOrder: [], Guilds: [] };
         SELECTED_RESEARCH_GUILD_ID.value = null;
 
-        PAL_LIST_SEARCH_KEYWORD.value = "";
-        PAL_LIST_EDITED_ONLY.value = false;
-        PAL_LIST_CREATED_ONLY.value = false;
-        EDITED_PAL_IDS.value.clear();
-        CREATED_PAL_IDS.value.clear();
-
-        // display data
-        SELECTED_PAL_DATA.value = new Map();
-        PAL_MAP.value = new Map();
-
-        PLAYER_MAP.value.clear();
         if (updateAppState) {
             session.appState = IS_LOCKED.value ? "auth-required" : "entry";
         }
@@ -1321,32 +871,34 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return "";
     }
 
+    // ---- players -------------------------------------------------------------
+    // `PATCH /api/players/{uid}` and the inventory sub-resources are specified in
+    // §8.2 but built by no task in this plan, so these three still speak the
+    // pre-REST routes and stay here rather than in `stores/players`.
+
     async function updatePlayer(e) {
+        const key = e.target.name;
+        const value = e.target.value;
+        const playerUid = rosters.activePlayerUid;
 
-        // sometimes we manually construct a "e" target in a very hacked way
-        let key = e.target.name;
-        let value = e.target.value;
-
-        if (SELECTED_PLAYER_ID.value == null) {
+        if (playerUid == null) {
             showToast("Message_Select_Player");
             return;
         }
 
-        console.log(
-            `Modify: Player: ${SELECTED_PLAYER_ID.value}, Target ${
-                PLAYER_MAP.value.get(SELECTED_PLAYER_ID.value).NickName
-            } key=${key}, value=${value}`
-        );
-
         const response = await PATCH("/api/player/player_data", {
             key: key,
             value: value,
-            PlayerUId: SELECTED_PLAYER_ID.value,
+            PlayerUId: playerUid,
         });
         if (response === false) return;
 
         if (response.status == 0) {
-            await loadPlayer(SELECTED_PLAYER_ID.value);
+            try {
+                await players.refreshPlayer(playerUid);
+            } catch (error) {
+                reportApiFailure(error, "Operation_Load_Player");
+            }
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
         } else {
@@ -1354,14 +906,62 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    function playerLevelDown() {
+        const player = players.selectedPlayer;
+        if (!player || player.Level <= 1) return;
+        return updatePlayer({ target: { name: "Level", value: player.Level - 1 } });
+    }
+
+    function playerLevelUp() {
+        const player = players.selectedPlayer;
+        const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        if (!player || player.Level >= ceiling) return;
+        return updatePlayer({ target: { name: "Level", value: player.Level + 1 } });
+    }
+
+    function playerMaxLevel() {
+        const value = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        return updatePlayer({ target: { name: "Level", value } });
+    }
+
+    function setStatusPoint(name) {
+        const player = players.selectedPlayer;
+        if (!player) return;
+        let points = Number(player.StatusPointTotals[name]);
+        if (!Number.isFinite(points)) points = 0;
+        points = Math.min(
+            Math.max(Math.trunc(points), player.StatusPointMinimums[name] ?? 0),
+            player.StatusPointTotalMaximums[name] ?? 0,
+        );
+        player.StatusPointTotals[name] = points;
+        return updatePlayer({
+            target: {
+                name: player.StatusPointMetadata[name]?.category === "stat"
+                    ? "set_TotalStatusPoint"
+                    : "set_StatusPoint",
+                value: { name, points },
+            },
+        });
+    }
+
+    function toggleTech(tech, status) {
+        return updatePlayer({
+            target: {
+                name: "toggle_UnlockedRecipeTechnologyNames",
+                value: { tech, status },
+            },
+        });
+    }
+
     async function loadPlayerInventory() {
-        if (!SELECTED_PLAYER_ID.value) return false;
+        const playerUid = rosters.activePlayerUid;
+        if (!playerUid) return false;
         const response = await POST("/api/player/inventory", {
-            PlayerUId: SELECTED_PLAYER_ID.value,
+            PlayerUId: playerUid,
         });
         if (response === false) return false;
         if (response.status == 0) {
-            PLAYER_INVENTORY.value = response.data;
+            players.inventory = response.data;
             return true;
         }
         if (response.status == 2) requireAuth("AuthView_Session_Expired");
@@ -1370,9 +970,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
-        if (!SELECTED_PLAYER_ID.value) return false;
+        const playerUid = rosters.activePlayerUid;
+        if (!playerUid) return false;
         const response = await PATCH("/api/player/inventory_slot", {
-            PlayerUId: SELECTED_PLAYER_ID.value,
+            PlayerUId: playerUid,
             ContainerKind: containerKind,
             SlotIndex: slotIndex,
             ItemId: itemId,
@@ -1388,76 +989,34 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return false;
     }
 
-    async function loadPlayer(playerUId, updatePal = false) {
+    // ---- loading -------------------------------------------------------------
 
-        if (SELECTED_PLAYER_ID.value == null) {
-            showToast("Message_Select_Player");
-            return;
-        }
-
-        const response = await POST("/api/player/player_data", {
-            PlayerUId: playerUId,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            const player_obj = new Player(response.data);
-            if (!updatePal && PLAYER_MAP.value.has(playerUId)) {
-                player_obj.pals = PLAYER_MAP.value.get(playerUId).pals;
-            }
-
-            PLAYER_MAP.value.set(playerUId, player_obj);
-
-            const pal_id_bk = SELECTED_PAL_ID.value;
-            // const pal_data_bk = SELECTED_PAL_DATA.value;
-            await selectPlayer(playerUId, true);
-
-            // player id and pal data never changed so this is safe
-            // if (!updatePal) await selectPal({ target: SELECTED_PAL_EL });
-            if (!updatePal && pal_id_bk) await selectPal(pal_id_bk, true);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Player", response);
-        }
-
-    }
-
-    async function loadPlayers() {
-
-        const response = await GET("/api/player/players_data", {
-            ReadPath: session.savePath,
-        });
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            PAL_CONTAINERS.value = response.data.containers || [];
-            SPECIAL_ROSTERS.value = response.data.specialRosters || [];
-            if (response.data.hasWorkingPal) {
-                HAS_WORKING_PAL_FLAG.value = true;
-                PREFER_BASE_PAL_LIST.value = true;
-            }
-            if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
-                HAS_WORKING_PAL_FLAG.value = true;
-            }
-
-            for (let player of response.data.players) {
-                let p = new Player(player);
-                PLAYER_MAP.value.set(p.InstanceId, p);
-                // console.log(`Found player: ${p.NickName} - ${p.InstanceId}`);
-            }
-
-            if (PLAYER_MAP.value.size <= 0 && !HAS_WORKING_PAL_FLAG.value) {
-                showToast("Message_No_Player");
-            }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
+    async function loadSaveData() {
+        try {
+            if (!await rosters.loadRosters()) return false;
+            if (!await players.loadPlayers()) return false;
+        } catch (error) {
+            reportStartupFailure(error);
             return false;
         }
 
+        // Containers are still the pre-REST registry; `GET /api/storages` and
+        // `stores/storages` are S4's.
+        const containers = await GET("/api/pal/containers");
+        if (containers === false) return false;
+        if (containers.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+            return false;
+        }
+        if (containers.status != 0) {
+            setBackendError(getTranslatedText("BackendError_Request_Failed", [containers.msg]));
+            return false;
+        }
+        PAL_CONTAINERS.value = containers.data || [];
+
+        if (!players.players.length && !HAS_WORKING_PAL_FLAG.value) {
+            showToast("Message_No_Player");
+        }
         return true;
     }
 
@@ -1466,9 +1025,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return false;
         if (response.status == 0) {
             PAL_CONTAINERS.value = response.data || [];
-            if (PAL_CONTAINERS.value.some(container => container.ContainerKind === "base")) {
-                HAS_WORKING_PAL_FLAG.value = true;
-            }
             return true;
         }
         if (response.status == 2) requireAuth("AuthView_Session_Expired");
@@ -1491,8 +1047,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         try {
             await session.loadSave(session.savePath);
         } catch (error) {
-            if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
-            else setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
+            reportStartupFailure(error);
             return;
         }
         // Only a save that opened is worth offering again next launch.
@@ -1504,13 +1059,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function hydrateLoadedSave() {
         reset(false);
         if (!await updateI18n()) return false;
-        if (!await loadPlayers()) return false;
+        if (!await loadSaveData()) return false;
         if (!await fetchStaticData()) return false;
-        const defaultPlayer = PREFER_BASE_PAL_LIST.value
-            ? PAL_BASE_WORKER_BTN.value
-            : PLAYER_MAP.value.keys().next().value
-                ?? (HAS_WORKING_PAL_FLAG.value ? PAL_BASE_WORKER_BTN.value : undefined);
-        if (defaultPlayer !== undefined) await selectPlayer(defaultPlayer);
+        const firstPlayer = rosters.rosters.find(roster => roster.kind === "player");
+        const defaultRoster = rosters.hasBaseRoster
+            ? BASE_ROSTER_KEY
+            : firstPlayer?.rosterKey
+                ?? (HAS_WORKING_PAL_FLAG.value ? BASE_ROSTER_KEY : undefined);
+        if (defaultRoster !== undefined) await selectPlayer(defaultRoster);
         IS_LOCKED.value = false;
         session.appState = "editor";
         return true;
@@ -1525,69 +1081,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         showToast("Message_Save_Success", "success", [session.writeBackPath]);
         return true;
-    }
-
-    async function fetchPlayerPal(playerUId) {
-        const response = await POST("/api/player/player_pals", {
-            PlayerUId: playerUId,
-        });
-        if (response === false) {
-            return false;
-        }
-
-        let success = false;
-        if (response.status == 0) {
-            // get old map
-            let map =
-                playerUId == PAL_BASE_WORKER_BTN.value
-                    ? BASE_PAL_MAP.value
-                    : playerUId == PAL_GLOBAL_STORAGE_BTN.value
-                    ? GLOBAL_PAL_MAP.value
-                    : PLAYER_MAP.value.get(playerUId).pals;
-            // clear old map
-            map.clear();
-            // insert new data
-            for (let pal of response.data) {
-                let pal_data = new PalData(pal);
-                if (pal_data.IsNewPal) CREATED_PAL_IDS.value.add(pal_data.RecordKey);
-                map.set(pal_data.RecordKey, pal_data);
-                // console.log(
-                //   `Pal Loaded: ${pal_data.DisplayName} - ${pal_data.InstanceId}`
-                // );
-            }
-            success = true;
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Pals", response);
-        }
-        return success;
-    }
-
-    async function fetchPlayerData(playerUId) {
-
-        if (SELECTED_PLAYER_ID.value == null) {
-            showToast("Message_Select_Player");
-            return;
-        }
-
-        const response = await POST("/api/player/player_data", {
-            PlayerUId: playerUId,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            const player_obj = new Player(response.data);
-            if (PLAYER_MAP.value.has(playerUId)) {
-                player_obj.pals = PLAYER_MAP.value.get(playerUId).pals;
-            }
-            PLAYER_MAP.value.set(playerUId, player_obj);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Player_Data", response);
-        }
-
     }
 
     async function fetchBaseCampResearch() {
@@ -1630,110 +1123,41 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return false;
     }
 
-    async function selectPlayer(playerUId, manual = false) {
+    // ---- selection -----------------------------------------------------------
 
-        // clear current roster + pal selection
-        ACTIVE_ROSTER.value = null;
-        SELECTED_PAL_ID.value = null;
-        SELECTED_PAL_DATA.value = null;
-
-        // if data not present
-        // need to change this in the future, so the pal list properly refreshes (for add / del pal)
-        if (
-            (playerUId == PAL_BASE_WORKER_BTN.value &&
-                BASE_PAL_MAP.value.size == 0) ||
-            (playerUId == PAL_GLOBAL_STORAGE_BTN.value && GLOBAL_PAL_MAP.value.size == 0) ||
-            (playerUId != PAL_BASE_WORKER_BTN.value && playerUId != PAL_GLOBAL_STORAGE_BTN.value &&
-                PLAYER_MAP.value.get(playerUId).pals.size == 0)
-        ) {
-            await fetchPlayerPal(playerUId);
+    async function selectPlayer(rosterKey) {
+        try {
+            if (!await rosters.selectRoster(rosterKey)) return false;
+        } catch (error) {
+            reportApiFailure(error, "Operation_Load_Pals");
+            return false;
         }
-
-        // set the pal_map
-        PAL_MAP.value =
-            playerUId == PAL_BASE_WORKER_BTN.value
-                ? BASE_PAL_MAP.value
-                : playerUId == PAL_GLOBAL_STORAGE_BTN.value
-                ? GLOBAL_PAL_MAP.value
-                : PLAYER_MAP.value.get(playerUId).pals;
-
-        // single source of truth for the active roster; SELECTED_PLAYER_ID /
-        // SELECTED_PLAYER_DATA / BASE_PAL_BTN_CLK_FLAG / SHOW_PLAYER_EDIT_FLAG
-        // are all derived from ACTIVE_ROSTER.
-        ACTIVE_ROSTER.value = playerUId;
-        if (playerUId == PAL_BASE_WORKER_BTN.value) {
-            await fetchBaseCampResearch();
-        } else if (playerUId != PAL_GLOBAL_STORAGE_BTN.value && !manual) {
-            await fetchPlayerData(playerUId);
-        }
-
+        if (rosterKey === BASE_ROSTER_KEY) await fetchBaseCampResearch();
+        return true;
     }
 
-    async function fetchPalData(player, pal) {
-
-        const response = await POST("/api/pal/paldata", {
-            RecordKey: pal,
-        });
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            // construct new pal
-            let pal_data = new PalData({
-                ...PAL_MAP.value.get(response.data.RecordKey),
-                ...response.data,
-            });
-            // update the pal from the correct pal container
-            if (player == PAL_BASE_WORKER_BTN.value) {
-                BASE_PAL_MAP.value.set(pal_data.RecordKey, pal_data);
-            } else if (player == PAL_GLOBAL_STORAGE_BTN.value) {
-                GLOBAL_PAL_MAP.value.set(pal_data.RecordKey, pal_data);
-            } else {
-                PLAYER_MAP.value
-                    .get(player)
-                    .pals.set(pal_data.RecordKey, pal_data);
-            }
-            return true;
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Load_Pal", response);
+    async function selectPal(recordKey) {
+        try {
+            if (await pals.select(recordKey)) return true;
+        } catch (error) {
+            reportApiFailure(error, "Operation_Load_Pal");
+            return false;
         }
+        showToast("Message_Select_Pal_Failed");
         return false;
     }
 
-    async function selectPal(palId, manual = false) {
-
-        // set selected pal, and print out debug info
-        const palData = PAL_MAP.value.get(palId);
-        if (palData == null) {
-            showToast("Message_Select_Pal_Failed");
-            return false;
-        }
-        // console.log(`Pal ${palData.DisplayName} - ${palData.InstanceId} selected.`);
-
-        if (!await fetchPalData(
-            // get player id, or BASE INDICATION STR
-            GET_PAL_OWNER_API_ID(),
-            palId
-        )) return false;
-
-        // Update selected pal id and pal data only after the full payload arrives.
-        SELECTED_PAL_DATA.value = PAL_MAP.value.get(palId);
-        SELECTED_PAL_ID.value = SELECTED_PAL_DATA.value.RecordKey;
-
-        // Scroll to selected pal
-        // if (!isElementInViewport(SELECTED_PAL_EL)) {
-        //   SELECTED_PAL_EL.scrollIntoView({ behavior: "smooth" });
-        // }
-        return true;
-    }
+    // ---- Pal edits -----------------------------------------------------------
+    // Everything below still posts the generic `{key, value}` action to
+    // `PATCH /api/pal/paldata`. S2a builds the typed replacements and S2b moves
+    // these into `stores/pals` as it deletes the route.
 
     const updatePal = (...args) => session.runOperation(() => applyPalEdit(...args));
 
     async function applyPalEdit(e) {
-        // sometimes we manually construct a "e" target in a very hacked way
-        let key = e.target.name;
-        let value = e.target.value;
+        const key = e.target.name;
+        const value = e.target.value;
+        const recordKey = pals.selectedRecordKey;
         const addingActiveSkill = key === "add_MasteredWaza" || key === "add_EquipWaza";
         const activeSkill = ACTIVE_SKILLS.value[value];
         if (
@@ -1742,7 +1166,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 !activeSkill
                 || (
                     HIDE_INVALID_OPTIONS.value
-                    && !isSkillAssignable(activeSkill, SELECTED_PAL_DATA.value?.IsHuman)
+                    && !isSkillAssignable(activeSkill, pals.selectedPal?.IsHuman)
                 )
             )
         ) {
@@ -1750,26 +1174,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return;
         }
 
-
-        // console.log(
-        //   `Modify: PalOwner: ${GET_PAL_OWNER_API_ID()}, Target ${
-        //     SELECTED_PAL_DATA.value.DisplayName
-        //   } key=${key}, value=${value}`
-        // );
-
         const response = await PATCH("/api/pal/paldata", {
             key: key,
             value: value,
-            RecordKey: SELECTED_PAL_ID.value,
+            RecordKey: recordKey,
         });
         if (response === false) return;
 
         if (response.status == 0) {
-            if (SELECTED_PAL_ID.value) EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
-            // A hack way to trigger vue re-rendering.
-            // The object is simply too nested that I can't figure out how to have vue properly refresh.
-            if (SELECTED_PAL_ID.value) {
-                await selectPal(SELECTED_PAL_ID.value, true);
+            pals.markEdited(recordKey);
+            if (recordKey) {
+                await refreshPal(recordKey);
                 UPDATE_PAL_RESELECT_CTR.value++;
             }
         } else if (response.status == 2) {
@@ -1779,14 +1194,161 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
-    function GET_PAL_OWNER_API_ID() {
-        return ACTIVE_ROSTER.value;
+    // A write answers in the pre-REST DTO, which spells its fields differently
+    // from `PalSummary`/`PalDetail`. Rather than teach the cache two vocabularies,
+    // the Pal is re-read through the resource that owns it.
+    async function refreshPal(recordKey) {
+        try {
+            return await pals.loadDetail(recordKey);
+        } catch (error) {
+            reportApiFailure(error, "Operation_Load_Pal");
+            return false;
+        }
+    }
+
+    const editedPal = () => pals.selectedPal;
+
+    function swapRare() {
+        return updatePal({ target: { name: "IsRarePal", value: !editedPal().IsRarePal } });
+    }
+
+    function swapBoss() {
+        return updatePal({ target: { name: "IsBOSS", value: !editedPal().IsBOSS } });
+    }
+
+    function toggleAwakening() {
+        return updatePal({ target: { name: "IsAwakening", value: !editedPal().IsAwakening } });
+    }
+
+    function palLevelDown() {
+        const pal = editedPal();
+        if (pal.Level <= 1) return;
+        return updatePal({ target: { name: "Level", value: pal.Level - 1 } });
+    }
+
+    function palLevelUp() {
+        const pal = editedPal();
+        const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        if (pal.Level >= ceiling) return;
+        return updatePal({ target: { name: "Level", value: pal.Level + 1 } });
+    }
+
+    function palMaxLevel() {
+        const value = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        return updatePal({ target: { name: "Level", value } });
+    }
+
+    function friendshipDown() {
+        const pal = editedPal();
+        if (pal.FriendshipLevel <= -3) return;
+        return updatePal({
+            target: { name: "FriendshipLevel", value: pal.FriendshipLevel - 1 },
+        });
+    }
+
+    function friendshipUp() {
+        const pal = editedPal();
+        if (pal.FriendshipLevel >= MAX_FRIENDSHIP_LEVEL) return;
+        return updatePal({
+            target: { name: "FriendshipLevel", value: pal.FriendshipLevel + 1 },
+        });
+    }
+
+    function maxFriendship() {
+        return updatePal({
+            target: { name: "FriendshipLevel", value: MAX_FRIENDSHIP_LEVEL },
+        });
+    }
+
+    function swapGender() {
+        const gender = editedPal().Gender;
+        let next = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
+        if (gender == "EPalGenderType::Female") next = "EPalGenderType::Male";
+        if (gender == "EPalGenderType::Male") next = "EPalGenderType::Female";
+        return updatePal({ target: { name: "Gender", value: next } });
+    }
+
+    function removePassiveSkill(e) {
+        return updatePal({
+            target: { name: "pop_PassiveSkillList", value: e.target.name },
+        });
+    }
+
+    function addPassiveSkill() {
+        const skill = PAL_PASSIVE_SELECTED_ITEM.value;
+        if (!PASSIVE_SKILLS.value[skill]) {
+            showToast("Message_Select_Skill");
+            return;
+        }
+        if (HIDE_INVALID_OPTIONS.value && editedPal().PassiveSkillList.length >= 4) {
+            showToast("Message_Passive_Limit");
+            return;
+        }
+        return updatePal({ target: { name: "add_PassiveSkillList", value: skill } });
+    }
+
+    function removeEquipWaza(e) {
+        return updatePal({ target: { name: "pop_EquipWaza", value: e.target.name } });
+    }
+
+    function addEquipWaza(e) {
+        return updatePal({ target: { name: "add_EquipWaza", value: e.target.name } });
+    }
+
+    function removeMasteredWaza(e) {
+        return updatePal({ target: { name: "pop_MasteredWaza", value: e.target.name } });
+    }
+
+    function addMasteredWaza() {
+        const skill = PAL_ACTIVE_SELECTED_ITEM.value;
+        if (!ACTIVE_SKILLS.value[skill]) {
+            showToast("Message_Select_Skill");
+            return;
+        }
+        return updatePal({ target: { name: "add_MasteredWaza", value: skill } });
+    }
+
+    function setSuitability(name, value) {
+        const pal = editedPal();
+        const min = pal.SuitabilityMinimums[name] || 0;
+        if (HIDE_INVALID_OPTIONS.value && min == 0 && value != 0) {
+            showToast("Message_Invalid_Suitability");
+            return;
+        }
+        value = Math.min(Math.max(value, min), MAX_SUITABILITY_LEVEL);
+        if (value == pal.Suitabilities[name]) return;
+        return updatePal({
+            target: { name: "set_Suitability", value: { name, level: value } },
+        });
+    }
+
+    function suitabilityUp(e) {
+        const name = e.target.name;
+        return setSuitability(name, editedPal().Suitabilities[name] + 1);
+    }
+
+    function suitabilityDown(e) {
+        const name = e.target.name;
+        return setSuitability(name, editedPal().Suitabilities[name] - 1);
+    }
+
+    function maxSuitabilities() {
+        const values = maximumSuitabilities(
+            editedPal().SuitabilityMinimums,
+            MAX_SUITABILITY_LEVEL,
+        );
+        if (!Object.keys(values).length) return;
+        return updatePal({ target: { name: "set_Suitabilities", value: values } });
+    }
+
+    function changeSpecies(characterId) {
+        return updatePal({ target: { name: "CharacterID", value: characterId } });
     }
 
     async function dumpPalData() {
         try {
             const response = await POST("/api/pal/dump_data", {
-                RecordKey: SELECTED_PAL_ID.value,
+                RecordKey: pals.selectedRecordKey,
             });
 
             if (response === false) return;
@@ -1804,20 +1366,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function maximizePal() {
-        if (!SELECTED_PAL_ID.value) return false;
+        const recordKey = pals.selectedRecordKey;
+        if (!recordKey) return false;
         try {
-            const response = await POST("/api/pal/maximize", {
-                RecordKey: SELECTED_PAL_ID.value,
-            });
+            const response = await POST("/api/pal/maximize", { RecordKey: recordKey });
             if (response === false) return false;
             if (response.status == 0) {
-                const palData = new PalData({
-                    ...SELECTED_PAL_DATA.value,
-                    ...response.data,
-                });
-                PAL_MAP.value.set(palData.RecordKey, palData);
-                SELECTED_PAL_DATA.value = palData;
-                EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+                await refreshPal(recordKey);
+                pals.markEdited(recordKey);
                 UPDATE_PAL_RESELECT_CTR.value++;
                 showToast("Message_Pal_Maximized", "success");
                 return true;
@@ -1834,92 +1390,73 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
-    function isFilteredPal(pal) {
-        if (
-            PAL_LIST_SEARCH_KEYWORD.value &&
-            !pal.DisplayName.toLowerCase().includes(
-                PAL_LIST_SEARCH_KEYWORD.value.toLowerCase()
-            )
-        ) {
-            return true;
-        }
+    // ---- Pal creation, deletion and transfer ---------------------------------
 
-        return false;
-    }
-
-    function getNextElement(map, currKey) {
-        let found = false;
-        let firstElement = null;
-        let isFirstElement = true;
-        for (let [key, value] of map) {
-            if (isFirstElement) {
-                firstElement = { key, value }; // Store the first element
-                isFirstElement = false || isFilteredPal(value);
-            }
-            if (found) {
-                if (isFilteredPal(value)) continue;
-                return { key, value };
-            }
-            if (key == currKey) {
-                found = true;
-            }
-        }
-        return firstElement;
+    // The row the list would land on once the current one is gone: the next Pal
+    // the filters still show, or the first if there is none after it.
+    function nextVisibleRecordKey(recordKey) {
+        const visible = rosters.activeRecordKeys.filter(
+            key => rosters.matchesSearch(pals.summary(key)),
+        );
+        const index = visible.indexOf(recordKey);
+        return visible.find((key, position) => position > index && key !== recordKey)
+            ?? visible.find(key => key !== recordKey)
+            ?? null;
     }
 
     async function delPal() {
-
-        const response = await DELETE(`/api/pal/pal/${encodeURIComponent(SELECTED_PAL_ID.value)}`);
+        const recordKey = pals.selectedRecordKey;
+        const successor = nextVisibleRecordKey(recordKey);
+        const response = await DELETE(`/api/pal/pal/${encodeURIComponent(recordKey)}`);
 
         if (response === false) return;
 
         if (response.status == 0) {
-            const nextNode = getNextElement(
-                PAL_MAP.value,
-                SELECTED_PAL_ID.value
-            );
-            PAL_MAP.value.delete(SELECTED_PAL_DATA.value.RecordKey);
-            SELECTED_PAL_ID.value = null;
-            // SELECTED_PAL_EL = null;
-            SELECTED_PAL_DATA.value = null;
-            // ADD_PAL_RESELECT_CTR.value++;
-            // getNextElement can wrap back onto the pal that was just deleted
-            // (e.g. when it was the only one in the roster), so only reselect it
-            // if the candidate still exists; otherwise fall through to the player
-            // editor / base camp canvas.
-            if (nextNode && PAL_MAP.value.has(nextNode.key)) {
-                SELECTED_PAL_ID.value = nextNode.key;
-            }
+            pals.forget(recordKey);
+            await refreshRosters([rosters.activeRosterKey]);
+            if (successor && pals.summary(successor)) await selectPal(successor);
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
         } else {
             reportOperationError("Operation_Delete_Pal", response);
         }
-
     }
 
-    async function refreshPalContainerState(rosterKeys) {
+    // Refresh only the rosters an operation touched. Everything else keeps its
+    // keys and is re-read by `selectPlayer` the next time it is opened.
+    async function refreshRosters(rosterKeys) {
         await fetchPalContainers();
-        // Refresh only the rosters affected by the operation instead of every
-        // player's pal list. Rosters not passed stay cached and are re-fetched by
-        // selectPlayer the next time they are shown (it loads a roster when empty).
-        const rosters = new Set((rosterKeys || [GET_PAL_OWNER_API_ID()]).filter(Boolean));
-        for (const roster of rosters) {
-            await fetchPlayerPal(roster);
+        const affected = new Set((rosterKeys || [rosters.activeRosterKey]).filter(Boolean));
+        try {
+            for (const rosterKey of affected) await rosters.loadRosterPals(rosterKey);
+        } catch (error) {
+            reportApiFailure(error, "Operation_Load_Pals");
+            return false;
         }
+        return true;
+    }
+
+    // Which list a Pal ends up in once it reaches this container. A base camp and
+    // the Global Palbox are places; everywhere else the list is a player's, and
+    // which player that is depends on the operation.
+    function rosterKeyForContainer(container, ownerUid) {
+        if (container?.ContainerKind === "base") return BASE_ROSTER_KEY;
+        if (container?.StorageKind === "global_palbox") return GLOBAL_PALBOX_ROSTER_KEY;
+        return ownerUid ? playerRosterKey(ownerUid) : null;
     }
 
     async function movePal(targetContainerId) {
-        if (!SELECTED_PAL_ID.value || !targetContainerId) return false;
-        const palId = SELECTED_PAL_ID.value;
+        const recordKey = pals.selectedRecordKey;
+        if (!recordKey || !targetContainerId) return false;
+        const pal = pals.selectedPal;
         const target = PAL_CONTAINERS.value.find(
             container => container.StorageKey === targetContainerId || container.ContainerId === targetContainerId
         );
         PAL_TRANSFER_CONFLICT.value = null;
         const response = await POST("/api/pal/transfer", {
-            SourceRecordKey: palId,
+            SourceRecordKey: recordKey,
             TargetStorageKey: target?.StorageKey || targetContainerId,
-            Action: target?.StorageKind === "global_palbox" || SELECTED_PAL_DATA.value?.StorageKind === "global_palbox" ? "clone" : "move",
+            Action: target?.StorageKind === "global_palbox" || pal?.storageKind === "global_palbox" ? "clone" : "move",
         });
         if (response === false) return false;
         if (response.status != 0) {
@@ -1930,7 +1467,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 );
                 PAL_TRANSFER_CONFLICT.value = {
                     ...response.data,
-                    SourceRecordKey: palId,
+                    SourceRecordKey: recordKey,
                     TargetStorageKey: lockedTarget?.StorageKey
                         || target?.StorageKey
                         || targetContainerId,
@@ -1939,22 +1476,30 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             else reportOperationError("Operation_Move_Pal", response);
             return false;
         }
-        EDITED_PAL_IDS.value.add(palId);
-        const sourceRoster = GET_PAL_OWNER_API_ID();
-        const ownerList = target?.ContainerKind === "base"
-            ? PAL_BASE_WORKER_BTN.value
-            : target?.StorageKind === "dps"
-            ? SELECTED_PAL_DATA.value?.OwnerPlayerUId
-            : target?.StorageKind === "global_palbox"
-            ? PAL_GLOBAL_STORAGE_BTN.value
-            : target?.OwnerPlayerUId;
-        await refreshPalContainerState([sourceRoster, ownerList]);
-        if (ownerList) {
-            await selectPlayer(ownerList, true);
-            await selectPal(response.data.RecordKey, true);
+        pals.markEdited(recordKey);
+        const sourceRoster = rosters.activeRosterKey;
+        // A DPS holds Pals its owner never owned, and the backend files those by
+        // the Pal's owner, not the storage's.
+        const targetRoster = rosterKeyForContainer(target, target?.StorageKind === "dps"
+            ? pal?.OwnerPlayerUId
+            : target?.OwnerPlayerUId);
+        await refreshRosters([sourceRoster, targetRoster]);
+        if (targetRoster) {
+            await selectPlayer(targetRoster);
+            await selectPal(response.data.RecordKey);
         }
         showToast("Message_Pal_Moved", "success");
         return true;
+    }
+
+    // The roster a conflict candidate is sitting in. Candidates come from the
+    // pre-REST transfer route, so they still spell their fields its way.
+    function candidateRosterKey(candidate) {
+        if (!candidate) return null;
+        if (candidate.StorageKind === "global_palbox") return GLOBAL_PALBOX_ROSTER_KEY;
+        return candidate.OwnerPlayerUId
+            ? playerRosterKey(candidate.OwnerPlayerUId)
+            : BASE_ROSTER_KEY;
     }
 
     async function updateConflictingPal() {
@@ -1972,20 +1517,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             else reportOperationError("Operation_Move_Pal", response);
             return false;
         }
-        EDITED_PAL_IDS.value.add(conflict.LockedTarget);
-        const conflictCandidate = conflict.Candidates?.find(
+        pals.markEdited(conflict.LockedTarget);
+        const conflictRoster = candidateRosterKey(conflict.Candidates?.find(
             item => item.RecordKey === conflict.LockedTarget,
-        );
-        const conflictRoster = conflictCandidate
-            ? (conflictCandidate.StorageKind === "global_palbox"
-                ? PAL_GLOBAL_STORAGE_BTN.value
-                : conflictCandidate.OwnerPlayerUId || PAL_BASE_WORKER_BTN.value)
-            : null;
+        ));
         PAL_TRANSFER_CONFLICT.value = null;
-        await refreshPalContainerState([GET_PAL_OWNER_API_ID(), conflictRoster]);
+        await refreshRosters([rosters.activeRosterKey, conflictRoster]);
         if (conflictRoster) {
-            await selectPlayer(conflictRoster, true);
-            await selectPal(conflict.LockedTarget, true);
+            await selectPlayer(conflictRoster);
+            await selectPal(conflict.LockedTarget);
         }
         showToast("Message_Pal_Updated", "success");
         return true;
@@ -1997,12 +1537,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             item => item.RecordKey === conflict.LockedTarget,
         );
         if (!candidate) return false;
-        const rosterKey = candidate.StorageKind === "global_palbox"
-            ? PAL_GLOBAL_STORAGE_BTN.value
-            : candidate.OwnerPlayerUId || PAL_BASE_WORKER_BTN.value;
+        const rosterKey = candidateRosterKey(candidate);
         PAL_TRANSFER_CONFLICT.value = null;
-        await selectPlayer(rosterKey, true);
-        await selectPal(candidate.RecordKey, true);
+        await selectPlayer(rosterKey);
+        await selectPal(candidate.RecordKey);
         return true;
     }
 
@@ -2011,10 +1549,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function addPal(options = {}) {
-        const PlayerUId = GET_PAL_OWNER_API_ID();
+        const rosterId = legacyRosterId(rosters.activeRosterKey);
         const response = await POST("/api/pal/add_pal", {
-            PlayerUId: PlayerUId,
-            RosterKey: PlayerUId,
+            PlayerUId: rosterId,
+            RosterKey: rosterId,
             TargetStorageKey: options.TargetStorageKey,
             ...options,
         });
@@ -2024,20 +1562,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
 
         if (response.status == 0) {
-            const pal_data = new PalData(response.data);
-            CREATED_PAL_IDS.value.add(pal_data.RecordKey);
             const target = PAL_CONTAINERS.value.find(
                 container => container.StorageKey === options.TargetStorageKey
             );
-            const ownerList = target?.ContainerKind === "base"
-                ? PAL_BASE_WORKER_BTN.value
-                : target?.StorageKind === "global_palbox"
-                ? PAL_GLOBAL_STORAGE_BTN.value
-                : target?.OwnerPlayerUId || SELECTED_PLAYER_ID.value;
-            await refreshPalContainerState([GET_PAL_OWNER_API_ID(), ownerList]);
-            if (ownerList) await selectPlayer(ownerList, true);
-            SELECTED_PAL_ID.value = pal_data.RecordKey;
-            await selectPal(pal_data.RecordKey, true);
+            const targetRoster = rosterKeyForContainer(
+                target,
+                target?.OwnerPlayerUId || rosters.activePlayerUid,
+            );
+            await refreshRosters([rosters.activeRosterKey, targetRoster]);
+            if (targetRoster) await selectPlayer(targetRoster);
+            await selectPal(response.data.RecordKey);
             return true;
         } else if (response.status == 2) {
             requireAuth("AuthView_Session_Expired");
@@ -2047,6 +1581,26 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         return false;
     }
+
+    async function dupePal() {
+        const response = await POST("/api/pal/dupe_pal", {
+            PlayerUId: legacyRosterId(rosters.activeRosterKey),
+            RecordKey: pals.selectedRecordKey,
+        });
+
+        if (response === false) return;
+
+        if (response.status == 0) {
+            await refreshRosters([rosters.activeRosterKey]);
+            await selectPal(response.data.RecordKey);
+        } else if (response.status == 2) {
+            requireAuth("AuthView_Session_Expired");
+        } else {
+            reportOperationError("Operation_Duplicate_Pal", response);
+        }
+    }
+
+    // ---- templates -----------------------------------------------------------
 
     async function fetchPalTemplates() {
         const response = await GET("/api/pal/templates");
@@ -2060,9 +1614,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function savePalTemplate(name) {
-        if (!SELECTED_PAL_ID.value) return false;
+        if (!pals.selectedRecordKey) return false;
         const response = await POST("/api/pal/templates", {
-            RecordKey: SELECTED_PAL_ID.value,
+            RecordKey: pals.selectedRecordKey,
             Name: name,
         });
         if (response === false) return false;
@@ -2101,9 +1655,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function saveSkillTemplate(type, name) {
-        if (!SELECTED_PAL_ID.value) return false;
+        if (!pals.selectedRecordKey) return false;
         const response = await POST("/api/pal/skill_templates", {
-            RecordKey: SELECTED_PAL_ID.value,
+            RecordKey: pals.selectedRecordKey,
             Type: type,
             Name: name,
         });
@@ -2135,25 +1689,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function applySkillTemplate(templateId) {
-        if (!SELECTED_PAL_ID.value) return false;
+        const recordKey = pals.selectedRecordKey;
+        if (!recordKey) return false;
         const response = await POST(`/api/pal/skill_templates/${templateId}/apply`, {
-            RecordKey: SELECTED_PAL_ID.value,
+            RecordKey: recordKey,
         });
         if (response === false) return false;
         if (response.status == 0) {
-            if (response.data.Type === "passive") {
-                SELECTED_PAL_DATA.value.PassiveSkillList = [
-                    ...(response.data.PassiveSkillList || []),
-                ];
-            } else {
-                SELECTED_PAL_DATA.value.EquipWaza = [
-                    ...(response.data.EquipWaza || []),
-                ];
-                SELECTED_PAL_DATA.value.MasteredWaza = [
-                    ...(response.data.MasteredWaza || []),
-                ];
-            }
-            EDITED_PAL_IDS.value.add(SELECTED_PAL_ID.value);
+            await refreshPal(recordKey);
+            pals.markEdited(recordKey);
             showToast("Message_Skill_Template_Applied", "success");
             return true;
         }
@@ -2173,39 +1717,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         reportOperationError("Operation_Delete_Skill_Template", response);
         return false;
-    }
-
-    async function dupePal() {
-        const PlayerUId = GET_PAL_OWNER_API_ID();
-        const response = await POST("/api/pal/dupe_pal", {
-            PlayerUId: PlayerUId,
-            RecordKey: SELECTED_PAL_ID.value,
-        });
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            const pal_data = new PalData(response.data);
-            CREATED_PAL_IDS.value.add(pal_data.RecordKey);
-            const temp_map = new Map();
-            PAL_MAP.value.forEach((v, k) => temp_map.set(k, v));
-            PAL_MAP.value.clear();
-            temp_map.forEach((v, k) => {
-                PAL_MAP.value.set(k, v);
-                if (v == SELECTED_PAL_DATA.value) {
-                    PAL_MAP.value.set(pal_data.RecordKey, pal_data);
-                }
-            });
-            // PAL_RESELECT_CTR.value++
-            SELECTED_PAL_ID.value = pal_data.RecordKey;
-            SELECTED_PAL_DATA.value = pal_data;
-            await fetchPalContainers();
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Duplicate_Pal", response);
-        }
-
     }
 
     function palElementKeys(DataAccessKey) {
@@ -2242,29 +1753,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         PAL_PASSIVE_SELECTED_ITEM,
         PAL_ACTIVE_SELECTED_ITEM,
-        PAL_BASE_WORKER_BTN,
-        PAL_GLOBAL_STORAGE_BTN,
-        SPECIAL_ROSTERS,
-        PLAYER_MAP,
-        PAL_MAP,
-        ACTIVE_ROSTER,
-        SELECTED_PLAYER_ID,
-        SELECTED_PLAYER_DATA,
-        SELECTED_PAL_ID,
-        SELECTED_PAL_DATA,
         SHOW_DONATE_FLAG,
-        // ADD_PAL_RESELECT_CTR,
         UPDATE_PAL_RESELECT_CTR,
         HIDE_INVALID_OPTIONS,
         PAL_SAVE_DETAILS_OPEN,
-
-        PAL_LIST_SEARCH_KEYWORD,
-        PAL_LIST_SORT,
-        PAL_LIST_ATTRIBUTE_FILTERS,
-        PAL_LIST_EDITED_ONLY,
-        PAL_LIST_CREATED_ONLY,
-        EDITED_PAL_IDS,
-        CREATED_PAL_IDS,
+        HAS_WORKING_PAL_FLAG,
 
         IS_LOCKED,
         HAS_PASSWORD,
@@ -2282,9 +1775,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_FILE_PICKER_PATH,
         IS_PAL_SAVE_PATH,
 
-        SHOW_PLAYER_EDIT_FLAG,
-        HAS_WORKING_PAL_FLAG,
-        BASE_PAL_BTN_CLK_FLAG,
         VERSION,
         UPDATE_DATA,
         IS_OFFICIAL_BUILD,
@@ -2294,7 +1784,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_STATIC_DATA_LIST,
         ITEM_STATIC_DATA,
         ITEM_STATIC_DATA_LIST,
-        PLAYER_INVENTORY,
         SKIN_DATA_LIST,
         PASSIVE_SKILLS,
         PASSIVE_SKILLS_LIST,
@@ -2311,8 +1800,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         getTranslatedText,
         getTechName,
         getMessageText,
-
-        isFilteredPal,
 
         elementIconKey,
         palElementKeys,
@@ -2338,11 +1825,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportFrontendError,
 
         ...gated({
+            addEquipWaza,
+            addMasteredWaza,
             addPal,
-            get_updates,
+            addPassiveSkill,
             applySkillTemplate,
             auth,
             bootstrap,
+            changeSpecies,
             completeBaseCampResearch,
             connectBackend,
             delPal,
@@ -2355,21 +1845,43 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             fetchPalTemplates,
             fetchSkillTemplates,
             fetch_config,
+            friendshipDown,
+            friendshipUp,
+            get_updates,
             jumpToConflictingPal,
             loadPlayerInventory,
             loadSave,
+            maxFriendship,
+            maxSuitabilities,
             maximizePal,
             movePal,
+            palLevelDown,
+            palLevelUp,
+            palMaxLevel,
             patchInventorySlot,
             path_back,
+            playerLevelDown,
+            playerLevelUp,
+            playerMaxLevel,
+            removeEquipWaza,
+            removeMasteredWaza,
+            removePassiveSkill,
             renameSkillTemplate,
             savePalTemplate,
             saveSkillTemplate,
             selectPal,
             selectPlayer,
+            setStatusPoint,
             showDonate,
             show_file_picker,
             shownDonate,
+            suitabilityDown,
+            suitabilityUp,
+            swapBoss,
+            swapGender,
+            swapRare,
+            toggleAwakening,
+            toggleTech,
             unlock,
             updateConflictingPal,
             updateI18n,

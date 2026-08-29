@@ -9,9 +9,16 @@ import {
 } from "@/components/modules/pal-container-move";
 import { formatContainerLabel } from "@/components/modules/pal-container-label";
 import { usePalEditorStore } from "@/stores/paleditor";
+import { usePalsStore } from "@/stores/pals";
+import { usePlayersStore } from "@/stores/players";
+import { useRostersStore } from "@/stores/rosters";
 
 const emit = defineEmits(["close"]);
 const palStore = usePalEditorStore();
+const palsStore = usePalsStore();
+const playersStore = usePlayersStore();
+const rostersStore = useRostersStore();
+const pal = computed(() => palsStore.selectedPal);
 const dialog = ref(null);
 const updateAction = ref(null);
 const preview = ref(null);
@@ -23,8 +30,8 @@ let previewFrame = 0;
 
 const groups = computed(() => buildContainerMoveGroups(
   palStore.PAL_CONTAINERS,
-  [...palStore.PLAYER_MAP.values()],
-  palStore.SELECTED_PLAYER_ID,
+  playersStore.players,
+  rostersStore.activePlayerUid,
 ));
 const activeGroup = computed(() => (
   groups.value.find(group => group.key === activeGroupKey.value) ?? groups.value[0]
@@ -44,10 +51,7 @@ const containerLabel = container => formatContainerLabel(
   container,
   palStore.getTranslatedText,
 );
-const disabledReason = container => containerMoveDisabledReason(
-  container,
-  palStore.SELECTED_PAL_DATA,
-);
+const disabledReason = container => containerMoveDisabledReason(container, pal.value);
 const pendingContainer = computed(() => palStore.PAL_CONTAINERS.find(
   container => container.StorageKey === pendingContainerId.value,
 ));
@@ -65,7 +69,7 @@ const lockedTargetLabel = computed(() => lockedTargetContainer.value
     item => item.RecordKey === conflict.value?.LockedTarget,
   )?.ContainerLabel || '');
 const isGlobalTransfer = computed(() => (
-  palStore.SELECTED_PAL_DATA?.StorageKind === "global_palbox"
+  pal.value?.storageKind === "global_palbox"
   || pendingContainer.value?.StorageKind === "global_palbox"
 ));
 const previewStyle = computed(() => ({
@@ -121,7 +125,7 @@ function closeDialog(clearConflict = true) {
 onMounted(async () => {
   palStore.clearPalTransferConflict();
   const current = palStore.PAL_CONTAINERS.find(
-    container => container.StorageKey === palStore.SELECTED_PAL_DATA.StorageKey,
+    container => container.StorageKey === pal.value.storageKey,
   );
   activeGroupKey.value = current?.StorageKind === "global_palbox"
     ? groups.value.find(group => group.kind === "player")?.key || "global_palbox"

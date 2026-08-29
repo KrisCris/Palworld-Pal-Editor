@@ -6,9 +6,15 @@ import PalList from './PalList.vue'
 import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { useRostersStore } from '@/stores/rosters'
 import { useSessionStore } from '@/stores/session'
 
 const palStore = usePalEditorStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
 const sessionStore = useSessionStore()
 defineProps({ playersCollapsed: Boolean, palsCollapsed: Boolean })
 const emit = defineEmits(['restorePlayers', 'restorePals'])
@@ -48,17 +54,11 @@ const save = async () => {
   if (await palStore.writeSave()) await donate()
 }
 
-const playerCount = computed(() => palStore.PLAYER_MAP.size + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
-const palCount = computed(() => palStore.PAL_MAP.size)
-const hasPalRoster = computed(() => palStore.ACTIVE_ROSTER)
+const playerCount = computed(() => playersStore.players.length + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
+const palCount = computed(() => rostersStore.activeRecordKeys.length)
+const hasPalRoster = computed(() => rostersStore.activeRosterKey)
 // A pal requires "heal" exactly like the per-pal action in PalEditor: HasWorkerSick.
-const hasPalToHeal = computed(() => {
-  const palMaps = [palStore.PAL_MAP]
-  for (const player of palStore.PLAYER_MAP.values()) {
-    if (player.pals) palMaps.push(player.pals)
-  }
-  return palMaps.some(map => Array.from(map.values()).some(pal => pal.HasWorkerSick))
-})
+const hasPalToHeal = computed(() => palsStore.hasSickPal)
 </script>
 
 <template>

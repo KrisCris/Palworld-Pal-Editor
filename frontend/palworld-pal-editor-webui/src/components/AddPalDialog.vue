@@ -6,9 +6,15 @@ import PalPortrait from '@/components/modules/PalPortrait.vue'
 import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
 const containerLabel = container => formatContainerLabel(
   container,
   palStore.getTranslatedText,
@@ -31,16 +37,17 @@ let previewFrame = 0
 const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
   .find(template => template.Id === templateId.value))
 const targetContainers = computed(() => {
-  const roster = palStore.ACTIVE_ROSTER
+  const roster = rostersStore.activeRosterKey
+  const playerUid = rostersStore.activePlayerUid
   return palStore.PAL_CONTAINERS.filter(container => (
-    roster === palStore.PAL_GLOBAL_STORAGE_BTN
+    roster === GLOBAL_PALBOX_ROSTER_KEY
       ? container.StorageKind === 'global_palbox'
-      : roster === palStore.PAL_BASE_WORKER_BTN
+      : roster === BASE_ROSTER_KEY
         ? container.ContainerKind === 'base'
-        : (container.OwnerPlayerUId === roster
+        : (container.OwnerPlayerUId === playerUid
           && ['party', 'storage'].includes(container.ContainerKind))
           || (container.StorageKind === 'dps'
-            && container.StorageOwnerPlayerUid === roster)
+            && container.StorageOwnerPlayerUid === playerUid)
   ))
 })
 const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
@@ -173,10 +180,10 @@ onMounted(async () => {
   appContent?.setAttribute('aria-hidden', 'true')
   await palStore.fetchPalTemplates()
   await palStore.fetchPalContainers()
-  targetContainerId.value = palStore.BASE_PAL_BTN_CLK_FLAG
+  targetContainerId.value = rostersStore.activeRosterKey === BASE_ROSTER_KEY
     ? targetContainers.value.find(container => container.ContainerKind === 'base')?.StorageKey || ''
     : targetContainers.value.find(
-      container => container.ContainerId === palStore.SELECTED_PLAYER_DATA?.PalStorageContainerId
+      container => container.ContainerId === playersStore.selectedPlayer?.PalStorageContainerId
     )?.StorageKey || targetContainers.value[0]?.StorageKey || ''
   await nextTick()
   dialog.value?.focus()
@@ -270,7 +277,7 @@ async function deleteTemplate(id) {
             </div>
             <input v-model="templateName" maxlength="64"
               :placeholder="palStore.getTranslatedText('AddPal_Template_Name')">
-            <button class="secondary-button" :disabled="!templateName.trim() || !palStore.SELECTED_PAL_ID"
+            <button class="secondary-button" :disabled="!templateName.trim() || !palsStore.selectedRecordKey"
               @click="saveTemplate">{{ palStore.getTranslatedText('AddPal_Save') }}</button>
           </div>
 

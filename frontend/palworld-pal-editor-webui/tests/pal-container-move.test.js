@@ -52,7 +52,7 @@ test("disabled target reasons are stable and shared cages accept owned Pals", ()
   const pal = {
     ContainerId: "current",
     OwnerPlayerUId: "player-a",
-    group_id: "guild-a",
+    groupId: "guild-a",
   };
 
   assert.equal(containerMoveDisabledReason(container("current", "storage"), pal), "current");
@@ -70,7 +70,7 @@ test("disabled target reasons are stable and shared cages accept owned Pals", ()
   assert.equal(
     containerMoveDisabledReason(
       container("dps:player-a", "dps", { StorageKind: "dps", OwnerPlayerUId: "player-a" }),
-      { ...pal, StorageKind: "global_palbox" },
+      { ...pal, storageKind: "global_palbox" },
     ),
     "gps_player_required",
   );

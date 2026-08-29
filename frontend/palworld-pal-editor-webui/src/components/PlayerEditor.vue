@@ -33,27 +33,30 @@ import NumberStepper from '@/components/modules/NumberStepper.vue'
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePlayersStore } from '@/stores/players'
 
 const palStore = usePalEditorStore()
+const playersStore = usePlayersStore()
+const player = computed(() => playersStore.selectedPlayer)
 const activeTab = ref('character')
-const playerName = () => palStore.SELECTED_PLAYER_DATA.NickName || palStore.getTranslatedText('PlayerList_Unknown')
+const playerName = () => player.value.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = () => playerName().trim().charAt(0).toUpperCase() || '?'
-const isMaxLv = () => palStore.SELECTED_PLAYER_DATA.Level >= (
+const isMaxLv = () => player.value.Level >= (
   palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL
 )
-const isMinLv = () => palStore.SELECTED_PLAYER_DATA.Level <= 1
+const isMinLv = () => player.value.Level <= 1
 const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(key)}`
-const statusEntries = category => Object.entries(palStore.SELECTED_PLAYER_DATA.StatusPointMetadata || {})
+const statusEntries = category => Object.entries(player.value.StatusPointMetadata || {})
   .filter(([, metadata]) => metadata.category === category)
 const playerStats = computed(() => statusEntries('stat'))
 const effigyAbilities = computed(() => statusEntries('effigy'))
 const statAllocation = name => previewStatAllocation(
-  palStore.SELECTED_PLAYER_DATA,
+  player.value,
   name,
-  palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name],
+  player.value.StatusPointTotals[name],
 )
 const statusEffect = (name, metadata) => {
-  const rank = palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] || 0
+  const rank = player.value.StatusPointTotals[name] || 0
   const value = metadata.values?.[rank] ?? rank
   return `+${Number.isInteger(value) ? value : Number(value).toFixed(1)}${metadata.unit === 'percent' ? '%' : ''}`
 }
@@ -73,8 +76,8 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
         <small>{{ palStore.getTranslatedText('PlayerEditor_Title') }}</small>
         <h1>{{ playerName() }}</h1>
         <div class="player-summary__meta">
-          <span>Lv. {{ palStore.SELECTED_PLAYER_DATA.Level }}</span>
-          <span>{{ palStore.getTranslatedText('Editor_Exp') }} {{ palStore.SELECTED_PLAYER_DATA.Exp }}</span>
+          <span>Lv. {{ player.Level }}</span>
+          <span>{{ palStore.getTranslatedText('Editor_Exp') }} {{ player.Exp }}</span>
         </div>
       </div>
     </header>
@@ -96,9 +99,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
           <div class="player-field">
             <label for="player-name">{{ palStore.getTranslatedText('Editor_Nickname') }}</label>
             <div class="player-control">
-              <input id="player-name" type="text" name="NickName" v-model="palStore.SELECTED_PLAYER_DATA.NickName">
+              <input id="player-name" type="text" name="NickName" v-model="player.NickName">
               <button type="button" @click="palStore.updatePlayer" name="NickName"
-                :value="palStore.SELECTED_PLAYER_DATA.NickName"
+                :value="player.NickName"
                 :aria-label="fieldActionLabel('Editor_Nickname')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -108,9 +111,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
             <div class="player-control">
               <NumberStepper id="technology-points" name="TechnologyPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_TechPoint')"
-                v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" />
+                v-model="player.TechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="TechnologyPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint"
+                :value="player.TechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_TechPoint')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -120,9 +123,9 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
             <div class="player-control">
               <NumberStepper id="boss-technology-points" name="bossTechnologyPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_BossTechPoint')"
-                v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" />
+                v-model="player.bossTechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="bossTechnologyPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint"
+                :value="player.bossTechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_BossTechPoint')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -132,23 +135,23 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
             <div class="player-control">
               <NumberStepper id="unused-status-points" name="UnusedStatusPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_UnusedStatusPoints')"
-                v-model="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint" />
+                v-model="player.UnusedStatusPoint" />
               <button type="button" @click="palStore.updatePlayer" name="UnusedStatusPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint"
+                :value="player.UnusedStatusPoint"
                 :aria-label="fieldActionLabel('Editor_UnusedStatusPoints')"><UiIcon name="check" /></button>
             </div>
           </div>
 
           <div class="player-field player-field--level">
-            <span>Lv. {{ palStore.SELECTED_PLAYER_DATA.Level }}</span>
+            <span>Lv. {{ player.Level }}</span>
             <div class="level-controls">
-              <button type="button" @click="palStore.SELECTED_PLAYER_DATA.levelDown" name="Level"
+              <button type="button" @click="palStore.playerLevelDown" name="Level"
                 :disabled="isMinLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"><UiIcon name="minus" /></button>
-              <button type="button" @click="palStore.SELECTED_PLAYER_DATA.levelUp" name="Level"
+              <button type="button" @click="palStore.playerLevelUp" name="Level"
                 :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"><UiIcon name="plus" /></button>
-              <button type="button" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
+              <button type="button" @click="palStore.playerMaxLevel" name="Level"
                 :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"><UiIcon name="maximum" /></button>
             </div>
@@ -156,7 +159,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
         </div>
       </section>
 
-      <section class="player-panel player-stats" v-if="palStore.SELECTED_PLAYER_DATA.StatusPointMetadata">
+      <section class="player-panel player-stats" v-if="player.StatusPointMetadata">
         <header class="status-panel__header">
           <h2>{{ palStore.getTranslatedText('Editor_PlayerStats') }}</h2>
           <div class="status-legend">
@@ -172,20 +175,20 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
                 {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
               </span>
               <strong class="status-allocation">
-                {{ statAllocation(name).total }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}
+                {{ statAllocation(name).total }} / {{ player.StatusPointTotalMaximums[name] }}
                 (<span class="status-allocation__stat">{{ statAllocation(name).stat }}</span>+<span class="status-allocation__item">{{ statAllocation(name).item }}</span>)
               </strong>
             </header>
             <SegmentedRange :name="`status-${name}`" :min="0"
-              :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
+              :max="player.StatusPointTotalMaximums[name]"
               :segments="[
                 { role: 'item', value: statAllocation(name).item },
                 { role: 'primary', value: statAllocation(name).stat },
               ]"
               :thumb-role="statAllocation(name).stat ? 'primary' : 'item'"
-              v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
+              v-model="player.StatusPointTotals[name]"
               :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
-              @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
+              @change="palStore.setStatusPoint(name)" />
             <footer>
               <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
               <strong>{{ statusEffect(name, metadata) }}</strong>
@@ -204,13 +207,13 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
               <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
               {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
             </span>
-            <strong>{{ palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name] }} / {{ palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name] }}</strong>
+            <strong>{{ player.StatusPointTotals[name] }} / {{ player.StatusPointTotalMaximums[name] }}</strong>
           </header>
           <SegmentedRange :name="`status-${name}`" :min="0"
-            :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
-            v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
+            :max="player.StatusPointTotalMaximums[name]"
+            v-model="player.StatusPointTotals[name]"
             :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
-            @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
+            @change="palStore.setStatusPoint(name)" />
           <footer>
             <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
             <strong>{{ statusEffect(name, metadata) }}</strong>

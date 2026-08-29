@@ -268,20 +268,6 @@ def patch_paldata():
     return reply(0, _pal_data(pal_entity, record))
 
 
-# Get Pal Data
-@pal_blueprint.route("/paldata", methods=["POST"])
-@jwt_required()
-def paldata():
-    payload = request.json or {}
-    try:
-        record = _selected_record(payload)
-    except ValueError as error:
-        return reply(1, None, str(error))
-    if record:
-        return reply(0, _pal_data(record.pal, record))
-    return reply(1, None, "Selected Pal not found.")
-
-
 @pal_blueprint.route("/maximize", methods=["POST"])
 @jwt_required()
 def maximize_pal():

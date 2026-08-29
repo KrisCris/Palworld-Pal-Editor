@@ -106,15 +106,15 @@ test("Pal basic info composes by container size instead of viewport size", () =>
 
 test("Pal summary uses Paldeck identity without duplicate or N/A tags", () => {
   const panel = basicPanel();
-  assert.match(source, /import \{ paldeckForRow \}/);
+  assert.match(source, /currentPaldeck = \(\) => pal\.value\.Paldeck/);
   assert.match(source, /import PalPortrait from/);
   assert.match(panel, /<PalPortrait[^>]*size="5\.5rem"/s);
-  assert.match(panel, /<template #top-left>[\s\S]*?v-if="palStore\.SELECTED_PAL_DATA\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
-  assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
-  assert.match(panel, /v-(?:else-)?if="palStore\.SELECTED_PAL_DATA\.IsBOSS && palStore\.SELECTED_PAL_DATA\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+  assert.match(panel, /v-(?:else-)?if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
   assert.match(panel, /PAL \$\{currentPaldeck\(\)\}/);
   assert.doesNotMatch(panel.match(/<h2[\s\S]*?<\/h2>/)?.[0] || "", /displayPalElement/);
-  assert.match(panel, /specialTypeKeys\(palStore\.SELECTED_PAL_DATA\)\.length/);
+  assert.match(panel, /specialTypeKeys\(pal\)\.length/);
   assert.doesNotMatch(panel, /displaySpecialType|displayPalElement/);
 });
 
@@ -139,7 +139,7 @@ test("Pal priority is editable as an accessible four-state segmented control", (
   assert.match(panel, /PalList_Sort_Priority/);
   assert.match(panel, /class="pal-priority-control"/);
   assert.match(panel, /v-for="priority in \[0, 1, 2, 3\]"/);
-  assert.match(panel, /:aria-pressed="palStore\.SELECTED_PAL_DATA\.FavoriteIndex === priority"/);
+  assert.match(panel, /:aria-pressed="pal\.FavoriteIndex === priority"/);
   assert.match(panel, /updateRange\('FavoriteIndex', priority\)/);
   assert.match(panel, /image\/ui\/priority-/);
   assert.match(panel, /#top-right/);
