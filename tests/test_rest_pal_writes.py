@@ -10,6 +10,9 @@ broke or could not state:
   replacing the mastered list never leaves an unmastered skill equipped;
 - healing everything reaches the Pals that do not live in the world save.
 
+`test_webui_bootstrap.py`'s heal-all, batch-suitability and `FavoriteIndex` cases
+are here now: S2b deleted the route they asked, and the rules they held are real.
+
 The fixture save is opened once and mutated in memory only; nothing is written
 back to disk.
 """
@@ -60,6 +63,14 @@ class PalWriteTests(unittest.TestCase):
     def record(self, offset: int = 0):
         """A different Pal per test, so one test's edits are not another's subject."""
         return self.manager.pal_repository.records()[offset]
+
+    def global_record(self):
+        """A Pal in the Global Palbox: nobody owns it and it is not in the world save."""
+        return next(
+            record
+            for record in self.manager.pal_repository.records()
+            if record.storage_kind == "global_palbox"
+        )
 
     def patch(self, record, body: dict):
         return self.client.patch(
@@ -113,20 +124,27 @@ class PalWriteTests(unittest.TestCase):
 
         self.assertEqual("created", result["resultRecord"]["changeState"])
 
-    def test_suitabilities_are_written_as_a_partial_map(self):
+    def test_suitabilities_are_written_as_one_partial_map(self):
+        # "Max every suitability" is one request, not one per work type.
         record = self.record(3)
-        name = next(iter(record.pal.MinimumWorkSuitabilities))
-        untouched = {
-            suit: level
-            for suit, level in record.pal.WorkSuitabilities.items()
-            if suit != name
-        }
+        names = list(record.pal.MinimumWorkSuitabilities)[:2]
+        self.assertEqual(2, len(names))
 
-        result = self.patch(record, {"Suitabilities": {name: 4}}).get_json()
+        result = self.patch(
+            record, {"Suitabilities": {name: 4 for name in names}}
+        ).get_json()
 
-        self.assertEqual(4, result["resultRecord"]["Suitabilities"][name])
-        for suit, level in untouched.items():
-            self.assertEqual(level, record.pal.WorkSuitabilities[suit])
+        for name in names:
+            self.assertEqual(4, result["resultRecord"]["Suitabilities"][name])
+
+    def test_the_pal_list_priority_is_a_writable_field(self):
+        # `FavoriteIndex` is the Pal list's priority badge, and the only editor
+        # control whose value is neither a number the UI computed nor a toggle.
+        record = self.record(9)
+        result = self.patch(record, {"FavoriteIndex": 3}).get_json()
+
+        self.assertEqual(3, result["resultRecord"]["FavoriteIndex"])
+        self.assertEqual(3, record.pal.FavoriteIndex)
 
     def test_a_skill_list_the_game_cannot_resolve_is_refused(self):
         record = self.record(4)
@@ -161,19 +179,37 @@ class PalWriteTests(unittest.TestCase):
         self.assertEqual([], result["resultRecord"]["MasteredWaza"])
         self.assertEqual([], result["resultRecord"]["EquipWaza"])
 
-    def test_maximization_raises_every_normal_upgrade_at_once(self):
-        record = self.record(7)
-        pal = record.pal
-        result = self.client.post(
+    def maximize(self, record):
+        return self.client.post(
             f"/api/pals/{record.record_key}/maximization", headers=self.headers
         )
 
-        self.assertEqual(200, result.status_code)
-        detail = result.get_json()["resultRecord"]
+    def test_maximization_raises_every_normal_upgrade_at_once(self):
+        record = self.record(7)
+        pal = record.pal
+        response = self.maximize(record)
+
+        self.assertEqual(200, response.status_code)
+        detail = response.get_json()["resultRecord"]
         self.assertEqual(pal.MAX_LEVEL, detail["Level"])
+        self.assertEqual(pal.MAX_FRIENDSHIP_LEVEL, detail["FriendshipLevel"])
         self.assertEqual(pal.MAX_CONDENSATION_RANK, detail["Rank"])
+        self.assertEqual(pal.MAX_SOUL_RANK, detail["Rank_CraftSpeed"])
         self.assertEqual(pal.MAX_TALENT, detail["Talent_HP"])
+        self.assertTrue(detail["IsAwakening"])
+        self.assertTrue(all(level == 10 for level in detail["Suitabilities"].values()))
         self.assertEqual("modified", detail["changeState"])
+
+    def test_a_pal_nobody_owns_can_be_maximized(self):
+        # A record key is a record key: the route this replaces had to be told
+        # which roster the Pal belonged to, and refused one it did not recognise.
+        record = self.global_record()
+
+        response = self.maximize(record)
+
+        self.assertEqual(200, response.status_code)
+        self.assertIsNone(response.get_json()["resultRecord"]["OwnerPlayerUId"])
+        self.assertEqual(record.pal.MAX_LEVEL, record.pal.Level)
 
     def test_healing_one_pal_clears_its_sickness_and_its_faint(self):
         record = self.record(8)
@@ -193,13 +229,10 @@ class PalWriteTests(unittest.TestCase):
         self.assertFalse(detail["IsFaintedPal"])
 
     def test_healing_everything_reaches_the_pals_outside_the_world_save(self):
-        # A Global Palbox Pal is a copy that only reaches disk if its storage is
-        # marked dirty, so a heal that skips that normalization is silently undone.
-        global_record = next(
-            record
-            for record in self.manager.pal_repository.records()
-            if record.storage_kind == "global_palbox"
-        )
+        # Nothing has to be selected first -- there is no roster or player in the
+        # request. A Global Palbox Pal is also a copy that only reaches disk if its
+        # storage is dirty, so a heal that skips normalization is silently undone.
+        global_record = self.global_record()
         global_record.pal.SanityValue = 10.0
         self.manager._global_palbox.dirty = False
 

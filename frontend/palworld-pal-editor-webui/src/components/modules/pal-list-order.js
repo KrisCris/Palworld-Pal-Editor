@@ -33,23 +33,17 @@ export const matchesPalAttributeFilters = (pal, filters) => (
   !filters?.length || filters.some(filter => palAttributeFilterMatches[filter]?.(pal))
 );
 
-// `changeState` is the backend's own answer, and the only one for "created".
-// "Modified" has no backend writer until S2a, so an edit that succeeded during
-// this session is remembered by `stores/pals` and passed in here.
+// `changeState` is the backend's own answer and the only authority for both of
+// these: anything it does not call `unchanged` has been touched this session.
 export const isCreatedPal = pal => pal?.changeState === "created";
 
-export const isEditedPal = (pal, editedRecordKeys) => Boolean(
-  pal && (isCreatedPal(pal) || editedRecordKeys.has(pal.recordKey)),
+export const isEditedPal = pal => Boolean(
+  pal?.changeState && pal.changeState !== "unchanged",
 );
 
-export const matchesPalSessionFilter = (
-  pal,
-  editedOnly,
-  createdOnly,
-  editedRecordKeys,
-) => createdOnly
-  ? isCreatedPal(pal)
-  : !editedOnly || isEditedPal(pal, editedRecordKeys);
+export const matchesPalSessionFilter = (pal, editedOnly, createdOnly) => (
+  createdOnly ? isCreatedPal(pal) : !editedOnly || isEditedPal(pal)
+);
 
 export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Paldeck) {
   return [...pals].sort((left, right) => {

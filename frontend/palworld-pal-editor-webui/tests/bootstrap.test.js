@@ -100,6 +100,22 @@ const detail = (overrides = {}) => ({
     ...overrides,
 });
 
+// The one shape every Pal write answers with (spec §8.3). A write that changed a
+// Pal carries it back as a full detail, which is why nothing re-reads it.
+const operation = (record, extra = {}) => ({
+    resultRecord: record ? detail({ changeState: "modified", ...record }) : null,
+    deletedRecordKeys: [],
+    affectedRosterKeys: [],
+    affectedStorageKeys: [],
+    ...extra,
+});
+
+const SKILL_FIELDS = {
+    passive: "PassiveSkillList",
+    equipped: "EquipWaza",
+    mastered: "MasteredWaza",
+};
+
 function mockBackend({
     password = true,
     loaded = false,
@@ -182,9 +198,13 @@ function mockBackend({
         }
         throw new Error(`Unexpected GET ${url}`);
     };
-    axios.patch = async url => {
+    axios.patch = async (url, body) => {
         calls.push(["PATCH", url]);
         if (url.endsWith("/api/app-config")) return resource(appConfig);
+        const pal = url.match(/\/api\/pals\/([^/]+)$/);
+        if (pal) {
+            return resource(operation({ recordKey: decodeURIComponent(pal[1]), ...body }));
+        }
         return reply(null);
     };
     axios.put = async (url, body) => {
@@ -192,11 +212,29 @@ function mockBackend({
         if (url.endsWith("/api/session")) {
             return resource({ loaded: true, path: body?.path ?? "C:/save", warnings: [] });
         }
+        const skills = url.match(/\/api\/pals\/([^/]+)\/skills\/(\w+)$/);
+        if (skills) {
+            return resource(operation({
+                recordKey: decodeURIComponent(skills[1]),
+                [SKILL_FIELDS[skills[2]]]: body.skills,
+            }));
+        }
         throw new Error(`Unexpected PUT ${url}`);
     };
-    axios.post = async url => {
+    axios.post = async (url, body) => {
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
+        if (url.endsWith("/api/pal-heals")) {
+            return resource(body.scope === "all"
+                ? operation(null, {
+                    affectedRosterKeys: rosterEntries.map(entry => entry.rosterKey),
+                })
+                : operation({ recordKey: body.recordKey }));
+        }
+        const maximize = url.match(/\/api\/pals\/([^/]+)\/maximization$/);
+        if (maximize) {
+            return resource(operation({ recordKey: decodeURIComponent(maximize[1]) }));
+        }
         throw new Error(`Unexpected POST ${url}`);
     };
     return calls;
@@ -755,7 +793,7 @@ test("selected Pal data retains its game-derived family", async () => {
     assert.equal(pals.selectedPal.FamilyID, "Anubis");
 });
 
-test("successful Pal edits are tracked only until the next save load", async () => {
+test("an edit marks the Pal it changed, and a save load forgets the marks", async () => {
     const store = newStore();
     mockBackend({
         password: false,
@@ -768,13 +806,16 @@ test("successful Pal edits are tracked only until the next save load", async () 
     await store.selectPal("world:pal-1");
     await store.updatePal({ target: { name: "NickName", value: "Edited" } });
 
-    assert.deepEqual([...pals.editedRecordKeys], ["world:pal-1"]);
+    // `changeState` is the backend's answer and the only edited marker there is.
+    assert.equal(pals.selectedPal.changeState, "modified");
     rosters.editedOnly = true;
     rosters.createdOnly = true;
 
     await store.loadSave();
 
-    assert.deepEqual([...pals.editedRecordKeys], []);
+    // A reload is a new session, so the backend calls the same Pal unchanged and
+    // nothing on this side remembers otherwise.
+    assert.equal(pals.summary("world:pal-1").changeState, "unchanged");
     assert.equal(rosters.editedOnly, false);
     assert.equal(rosters.createdOnly, false);
 });
@@ -881,9 +922,14 @@ test("healing all pals does not try to reselect a missing pal", async t => {
 
     await store.bootstrap();
     assert.equal(pals.selectedRecordKey, null);
-    await store.updatePal({ target: { name: "heal_all_pals", value: "" } });
+    await store.healAllPals();
 
-    assert.ok(calls.some(call => call[0] === "PATCH" && call[1] === "/api/pal/paldata"));
+    // No Pal and no roster in the request: healing everything asks for nothing to
+    // be selected first, and the reply names the lists to redraw.
+    assert.deepEqual(
+        calls.filter(call => call[1].endsWith("/api/pal-heals")),
+        [["POST", "/api/pal-heals"]],
+    );
     assert.deepEqual(alerts, []);
 });
 

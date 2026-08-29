@@ -20,7 +20,7 @@ def save():
         return reply(1, msg=f"Path not available? {path}")
     except Exception as e:
         stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error in patch_paldata {stack_trace}")
+        LOGGER.error(f"Error saving to {path}: {stack_trace}")
         return reply(
             1, msg=f"Error occored during saving, check debug console. {stack_trace}"
         )

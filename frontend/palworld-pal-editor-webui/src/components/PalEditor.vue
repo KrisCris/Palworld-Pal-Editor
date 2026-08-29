@@ -474,12 +474,12 @@ const portraitBorder = pal => pal.IsAwakening
       <PalContainerMoveDialog v-if="showMoveDialog" @close="showMoveDialog = false" />
 
       <div class="pal-health-actions" v-if="pal.HasWorkerSick || pal.IsFaintedPal">
-        <button class="editor-button editor-button--primary" v-if="pal.HasWorkerSick"
-          @click="palStore.updatePal" name="HasWorkerSick">
+        <button type="button" class="editor-button editor-button--primary" v-if="pal.HasWorkerSick"
+          @click="palStore.healPal">
           <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
         </button>
-        <button class="editor-button editor-button--primary" v-if="pal.IsFaintedPal"
-          @click="palStore.updatePal" name="IsFaintedPal">
+        <button type="button" class="editor-button editor-button--primary" v-if="pal.IsFaintedPal"
+          @click="palStore.healPal">
           <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/revive')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
         </button>
       </div>
@@ -616,7 +616,7 @@ const portraitBorder = pal => pal.IsAwakening
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
-                @click="addPassiveSkill" name="add_PassiveSkillList"
+                @click="addPassiveSkill"
                 :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
                 :disabled="!palStore.PAL_PASSIVE_SELECTED_ITEM
                   || pal.PassiveSkillList.includes(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
@@ -690,7 +690,7 @@ const portraitBorder = pal => pal.IsAwakening
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
-                @click="addActiveSkill" name="add_MasteredWaza"
+                @click="addActiveSkill"
                 :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
                 :disabled="!palStore.PAL_ACTIVE_SELECTED_ITEM
                   || pal.MasteredWaza.includes(palStore.PAL_ACTIVE_SELECTED_ITEM)

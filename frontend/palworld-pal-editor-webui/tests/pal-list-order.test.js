@@ -120,20 +120,19 @@ test("created Pals are the ones the backend says it created", () => {
 });
 
 test("Edited session filtering includes created Pals but created filtering stays specific", () => {
-  const edited = new Set(["edited"]);
-  const unchangedPal = { recordKey: "unchanged" };
-  const editedPal = { recordKey: "edited" };
+  const unchangedPal = { recordKey: "unchanged", changeState: "unchanged" };
+  const editedPal = { recordKey: "edited", changeState: "modified" };
   const createdPal = { recordKey: "created", changeState: "created" };
 
-  assert.equal(isEditedPal(editedPal, edited), true);
-  assert.equal(isEditedPal(createdPal, edited), true);
-  assert.equal(isEditedPal(unchangedPal, edited), false);
+  assert.equal(isEditedPal(editedPal), true);
+  assert.equal(isEditedPal(createdPal), true);
+  assert.equal(isEditedPal(unchangedPal), false);
 
-  assert.equal(matchesPalSessionFilter(unchangedPal, false, false, edited), true);
-  assert.equal(matchesPalSessionFilter(editedPal, true, false, edited), true);
-  assert.equal(matchesPalSessionFilter(createdPal, true, false, edited), true);
-  assert.equal(matchesPalSessionFilter(editedPal, false, true, edited), false);
-  assert.equal(matchesPalSessionFilter(createdPal, false, true, edited), true);
-  assert.equal(matchesPalSessionFilter(editedPal, true, true, edited), false);
-  assert.equal(matchesPalSessionFilter(createdPal, true, true, edited), true);
+  assert.equal(matchesPalSessionFilter(unchangedPal, false, false), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, false), true);
+  assert.equal(matchesPalSessionFilter(createdPal, true, false), true);
+  assert.equal(matchesPalSessionFilter(editedPal, false, true), false);
+  assert.equal(matchesPalSessionFilter(createdPal, false, true), true);
+  assert.equal(matchesPalSessionFilter(editedPal, true, true), false);
+  assert.equal(matchesPalSessionFilter(createdPal, true, true), true);
 });

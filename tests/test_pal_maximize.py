@@ -1,14 +1,9 @@
 import unittest
-from unittest.mock import patch
-
-from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
-from fakes import record_location, world_record
-from palworld_pal_editor.webui import app
-from palworld_pal_editor.core.pal_repository import PalRepository
+from fakes import world_record
 
 
 PLAYER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -45,25 +40,11 @@ def make_record(character_id: str = "SheepBall") -> PalRecord:
     return record
 
 
-class FakeManager:
-    def __init__(self, record):
-        self.record = record
-        self.pal_repository = PalRepository()
-
-    def get_unique_world_record(self, _instance_id):
-        return self.record
-
-    def get_player(self, _player_id):
-        return type("Player", (), {"NickName": "Target"})()
-
-    def normalize_external_record(self, _record):
-        pass
-
-    def resolve_record_location(self, record):
-        return record_location(record)
-
-
 class PalMaximizeTests(unittest.TestCase):
+    """What maximizing means to a Pal. The resource that offers it is covered by
+    `test_rest_pal_writes.py`, on a real save rather than a fake manager."""
+
+
     def setUp(self):
         self.record = make_record()
         self.pal = self.record.pal
@@ -100,59 +81,6 @@ class PalMaximizeTests(unittest.TestCase):
             all(value == 10 for value in (self.pal.WorkSuitabilities or {}).values())
         )
         self.assertEqual(original_character_id, self.pal.CharacterID)
-
-    def test_maximize_endpoint_returns_the_complete_updated_pal(self):
-        manager = FakeManager(self.record)
-        client = app.test_client()
-        with app.app_context():
-            token = create_access_token(identity="test")
-        headers = {"Authorization": f"Bearer {token}"}
-
-        with (
-            patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager),
-            patch(
-                "palworld_pal_editor.core.save_manager.SaveManager",
-                return_value=manager,
-            ),
-        ):
-            response = client.post(
-                "/api/pal/maximize",
-                json={"PlayerUId": str(PLAYER_ID), "PalGuid": str(PAL_ID)},
-                headers=headers,
-            ).get_json()
-
-        self.assertEqual(0, response["status"])
-        self.assertEqual(80, response["data"]["Level"])
-        self.assertEqual(10, response["data"]["FriendshipLevel"])
-        self.assertEqual(5, response["data"]["Rank"])
-        self.assertEqual(20, response["data"]["Rank_CraftSpeed"])
-        self.assertEqual(100, response["data"]["Talent_HP"])
-        self.assertTrue(response["data"]["IsAwakening"])
-        self.assertTrue(
-            all(value == 10 for value in response["data"]["Suitabilities"].values())
-        )
-
-    def test_maximize_endpoint_supports_base_workers(self):
-        manager = FakeManager(self.record)
-        client = app.test_client()
-        with app.app_context():
-            token = create_access_token(identity="test")
-
-        with (
-            patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager),
-            patch(
-                "palworld_pal_editor.core.save_manager.SaveManager",
-                return_value=manager,
-            ),
-        ):
-            response = client.post(
-                "/api/pal/maximize",
-                json={"PlayerUId": "PAL_BASE_WORKER_BTN", "PalGuid": str(PAL_ID)},
-                headers={"Authorization": f"Bearer {token}"},
-            ).get_json()
-
-        self.assertEqual(0, response["status"])
-        self.assertEqual(80, self.pal.Level)
 
     def test_maximize_does_not_add_pal_only_awakening_to_humans(self):
         human = make_record("SalesPerson_Wander").pal

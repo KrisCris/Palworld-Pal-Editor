@@ -180,25 +180,19 @@ class PalFamilyProviderTests(unittest.TestCase):
         headers = {"Authorization": f"Bearer {token}"}
         manager = Manager()
         with (
-            patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager),
             patch("palworld_pal_editor.api.pals.SaveManager", return_value=manager),
             app.test_client() as client,
         ):
             patched = client.patch(
-                "/api/pal/paldata",
+                f"/api/pals/{record.record_key}",
                 headers=headers,
-                json={
-                    "PalGuid": str(PalObjects.EMPTY_UUID),
-                    "PlayerUId": "player",
-                    "key": "CharacterID",
-                    "value": "BOSS_KingWhale_otomo",
-                },
+                json={"CharacterID": "BOSS_KingWhale_otomo"},
             )
             refreshed = client.get(
                 f"/api/pals/{record.record_key}", headers=headers
             )
 
-        self.assertEqual(0, patched.get_json()["status"])
+        self.assertEqual(200, patched.status_code)
         self.assertEqual(
             "BOSS_KingWhale_otomo",
             refreshed.get_json()["CharacterID"],

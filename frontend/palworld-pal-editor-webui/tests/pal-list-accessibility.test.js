@@ -58,8 +58,10 @@ async function showRoster(rows = pals, { edited = [] } = {}) {
   const palsStore = usePalsStore();
   const rostersStore = useRostersStore();
   useCatalogsStore().pals = [{ InternalName: "TestPal", Paldeck: 1 }];
-  palsStore.upsertSummaries(rows);
-  for (const recordKey of edited) palsStore.markEdited(recordKey);
+  // "Edited this session" is `changeState`, which the backend sets on every write.
+  palsStore.upsertSummaries(rows.map(row => (
+    edited.includes(row.recordKey) ? { ...row, changeState: "modified" } : row
+  )));
   rostersStore.recordKeysByRoster.set("player:player-1", rows.map(row => row.recordKey));
   rostersStore.activeRosterKey = "player:player-1";
   return { pinia, store, palsStore, rostersStore, PalList };

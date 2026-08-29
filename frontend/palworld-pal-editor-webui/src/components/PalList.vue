@@ -111,7 +111,6 @@ const visiblePals = computed(() => sortPalList(
       pal,
       rostersStore.editedOnly,
       rostersStore.createdOnly,
-      palsStore.editedRecordKeys,
     )),
   rostersStore.sortMode,
 ))
@@ -164,7 +163,7 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   : pal.IsRarePal ? 'Lucky' : 'Ordinary'}`)
 
 const palWasCreated = pal => isCreatedPal(pal)
-const palWasEdited = pal => isEditedPal(pal, palsStore.editedRecordKeys)
+const palWasEdited = pal => isEditedPal(pal)
 </script>
 
 <template>

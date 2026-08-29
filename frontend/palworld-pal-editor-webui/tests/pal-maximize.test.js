@@ -24,13 +24,11 @@ test("Pal summary uses formal attribute and profile terminology", () => {
   assert.equal(zhCN.Editor_Identity_Appearance, "档案");
 });
 
-test("maximize action atomically refreshes and marks the selected Pal", () => {
+test("maximize is one operation resource and reports its own success", () => {
   assert.match(storeSource, /async function maximizePal\(\)/);
-  assert.match(storeSource, /POST\("\/api\/pal\/maximize"/);
-  // The write answers in the pre-REST DTO, so the Pal is re-read through the
-  // resource that owns it rather than merged into the cache by hand.
-  assert.match(storeSource, /await refreshPal\(recordKey\);\s*\n\s*pals\.markEdited\(recordKey\)/);
+  // The resource answers with the maximized Pal, so nothing re-reads it and
+  // nothing marks it edited by hand.
+  assert.match(storeSource, /runPalWrite\(\(\) => pals\.maximize\(\), "Operation_Maximize_Pal"\)/);
   assert.match(storeSource, /Message_Pal_Maximized/);
-  assert.match(storeSource, /Operation_Maximize_Pal/);
   assert.match(storeSource, /\n\s*maximizePal,/);
 });

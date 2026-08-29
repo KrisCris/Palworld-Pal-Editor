@@ -54,6 +54,10 @@ def move_pal():
             payload.get("Action", "move"),
             payload.get("ExpectedTargetRecordKey"),
         )
+        # The Pal list's edited marker is `changeState` alone since S2b, so a move
+        # that does not register itself is a move that leaves no mark. S4a takes
+        # this over when the transfer becomes an operation resource.
+        manager.pal_repository.mark_modified(manager.get_record(result["RecordKey"]))
         return reply(0, result)
     except PalIdentityConflict as conflict:
         locked = conflict.candidates[0] if len(conflict.candidates) == 1 else None
@@ -102,11 +106,6 @@ def _selected_record(payload: dict):
     return manager.get_unique_world_record(
         payload.get("PalGuid") or payload.get("InstanceId")
     )
-
-
-def _selected_pal(payload: dict) -> PalEntity | None:
-    record = _selected_record(payload)
-    return record.pal if record else None
 
 
 def _skill_template_summary(template: dict) -> dict:
@@ -185,105 +184,6 @@ def _template_summary(template: dict) -> dict:
         "MasteredWaza": pal.MasteredWaza or [],
         "Suitabilities": pal.WorkSuitabilities or {},
     }
-
-
-# Update Pal Data
-@pal_blueprint.route("/paldata", methods=["PATCH"])
-@jwt_required()
-def patch_paldata():
-    payload = request.json or {}
-    key = payload.get("key")
-    value = payload.get("value")
-    if key == "heal_all_pals":
-        SaveManager().heal_all_pals()
-        return reply(0)
-    try:
-        record = _selected_record(payload)
-        if record is None:
-            return reply(1, None, "Selected Pal not found.")
-        pal_entity = record.pal
-        match key:
-            case "HasWorkerSick":
-                pal_entity.heal_pal()
-            case "IsFaintedPal":
-                pal_entity.heal_pal()
-            case "set_Suitability":
-                pal_entity.set_WorkSuitability(value.get("name"), value.get("level"))
-            case "set_Suitabilities":
-                if not isinstance(value, dict) or any(
-                    not isinstance(name, str)
-                    or not isinstance(level, int)
-                    or isinstance(level, bool)
-                    for name, level in value.items()
-                ):
-                    return reply(1, None, "Invalid work suitability values.")
-                for name, level in value.items():
-                    pal_entity.set_WorkSuitability(name, level)
-            case "pop_PassiveSkillList":
-                pal_entity.pop_PassiveSkillList(item=value)
-            case "pop_MasteredWaza":
-                pal_entity.pop_MasteredWaza(item=value)
-            case "pop_EquipWaza":
-                pal_entity.pop_EquipWaza(item=value)
-            case "add_PassiveSkillList":
-                if not pal_entity.add_PassiveSkillList(value, True):
-                    return reply(
-                        1,
-                        None,
-                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
-                    )
-            case "add_MasteredWaza":
-                if not pal_entity.add_MasteredWaza(value):
-                    return reply(
-                        1,
-                        None,
-                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
-                    )
-            case "add_EquipWaza":
-                if not pal_entity.add_EquipWaza(value, True):
-                    return reply(
-                        1,
-                        None,
-                        f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
-                    )
-            case "in_owner_palbox":
-                if record.storage_kind != "world" or pal_entity.OwnerPlayerUId is None:
-                    return reply(1, None, f"Moving pal to basecamp is unsupported.")
-                player = SaveManager().get_player(pal_entity.OwnerPlayerUId)
-                if not SaveManager().move_pal(
-                    pal_entity.InstanceId,
-                    [player.OtomoCharacterContainerId, player.PalStorageContainerId],
-                ):
-                    return reply(1, None, f"No enough slot in pal container.")
-            case _:
-                field = getattr(type(pal_entity), key, None)
-                if not isinstance(field, property) or field.fset is None:
-                    return reply(1, None, f"Unsupported Pal field: {key}")
-                setattr(pal_entity, key, value)
-        SaveManager().normalize_external_record(record)
-    except Exception as e:
-        stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error in patch_paldata {stack_trace}")
-        return reply(1, None, f"Error in patch_paldata {stack_trace}")
-    return reply(0, _pal_data(pal_entity, record))
-
-
-@pal_blueprint.route("/maximize", methods=["POST"])
-@jwt_required()
-def maximize_pal():
-    payload = request.json or {}
-    try:
-        record = _selected_record(payload)
-        if record is None:
-            return reply(1, None, "Failed to find the selected Pal.")
-        pal = record.pal
-        pal.maximize_progression()
-        SaveManager().normalize_external_record(record)
-    except (KeyError, TypeError, ValueError):
-        stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error maximizing Pal progression {stack_trace}")
-        return reply(1, None, f"Error maximizing Pal progression {stack_trace}")
-    return reply(0, _pal_data(pal, record))
 
 
 # Just some dumb shit
@@ -679,6 +579,7 @@ def apply_skill_template(template_id: str):
         pal = record.pal
         _replace_skill_group(pal, template)
         SaveManager().normalize_external_record(record)
+        SaveManager().pal_repository.mark_modified(record)
     except (AttributeError, TypeError, ValueError) as error:
         return reply(1, None, str(error))
     summary = _skill_template_summary(template)

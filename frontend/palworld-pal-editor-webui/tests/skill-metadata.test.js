@@ -146,15 +146,43 @@ test("skill metadata labels and non-assignable warning exist in every UI locale"
     }
 });
 
+// Spec §8.3's operation result. These cases are about what the store sends, so
+// the record it answers with is the one already in the cache.
+const operation = () => ({
+    resultRecord: null,
+    deletedRecordKeys: [],
+    affectedRosterKeys: [],
+    affectedStorageKeys: [],
+});
+
 function selectPal(pal) {
     const pals = usePalsStore();
     pals.applyDetail({ recordKey: "world:selected", EquipWaza: [], MasteredWaza: [], ...pal });
     pals.selectedRecordKey = "world:selected";
-    // Every successful edit re-reads the Pal it changed.
-    axios.get = async () => ({ data: { recordKey: "world:selected", ...pal } });
 }
 
-test("public updatePal blocks non-assignable skill additions before loading or PATCH", async t => {
+// The two ways the editor adds an active skill: the dropdown under the mastered
+// list, and the pick list beside the equipped slots.
+function learnSkill(store, skill) {
+    store.PAL_ACTIVE_SELECTED_ITEM = skill;
+    return store.addMasteredWaza();
+}
+
+const equipSkill = (store, skill) => store.addEquipWaza({ target: { name: skill } });
+
+// Every skill write is a PUT of the whole list; these record what was sent.
+function recordSkillWrites(t) {
+    const writes = [];
+    const originalPut = axios.put;
+    axios.put = async (url, body) => {
+        writes.push([url, body.skills]);
+        return { data: operation() };
+    };
+    t.after(() => { axios.put = originalPut; });
+    return writes;
+}
+
+test("adding a non-assignable skill is refused before any request", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
@@ -164,26 +192,16 @@ test("public updatePal blocks non-assignable skill additions before loading or P
         Assignable: false,
     }];
     selectPal({ IsHuman: false });
+    const writes = recordSkillWrites(t);
 
-    const patchCalls = [];
-    const originalPatch = axios.patch;
-    axios.patch = async (...args) => {
-        patchCalls.push(args);
-        return { data: { status: 0, data: null, msg: null } };
-    };
-    t.after(() => {
-        axios.patch = originalPatch;
-    });
+    await learnSkill(store, humanPunch);
+    await equipSkill(store, humanPunch);
 
-    for (const name of ["add_MasteredWaza", "add_EquipWaza"]) {
-        await store.updatePal({ target: { name, value: humanPunch } });
-    }
-
-    assert.deepEqual(patchCalls, []);
+    assert.deepEqual(writes, []);
     assert.equal(useSessionStore().operationPending, false);
 });
 
-test("public updatePal allows known non-assignable skills in cheat mode", async t => {
+test("cheat mode allows a known skill the game would not assign", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const skillId = "EPalWazaID::Cheat_Test";
@@ -195,52 +213,36 @@ test("public updatePal allows known non-assignable skills in cheat mode", async 
     }];
     selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
+    const writes = recordSkillWrites(t);
 
-    const patchCalls = [];
-    const originalPatch = axios.patch;
-    axios.patch = async (url, payload) => {
-        patchCalls.push([url, payload]);
-        return { data: { status: 0, data: null, msg: null } };
-    };
-    t.after(() => { axios.patch = originalPatch; });
+    await learnSkill(store, skillId);
+    await equipSkill(store, skillId);
 
-    for (const name of ["add_MasteredWaza", "add_EquipWaza"]) {
-        await store.updatePal({ target: { name, value: skillId } });
-    }
-
-    assert.deepEqual(
-        patchCalls.map(([, payload]) => [payload.key, payload.value]),
-        [
-            ["add_MasteredWaza", skillId],
-            ["add_EquipWaza", skillId],
-        ],
-    );
+    // Learning a move with an active slot free equips it too, so both go to the
+    // equipped list -- which is also what learns them.
+    assert.deepEqual(writes.map(([url]) => url.split("/skills/")[1]), [
+        "equipped",
+        "equipped",
+    ]);
+    assert.deepEqual(writes[0][1], [skillId]);
 });
 
-test("public updatePal rejects unknown skills in cheat mode", async t => {
+test("a skill no catalog knows is refused even in cheat mode", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     useCatalogsStore().activeSkills = [];
     selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
+    const writes = recordSkillWrites(t);
 
-    const patchCalls = [];
-    const originalPatch = axios.patch;
-    axios.patch = async (...args) => {
-        patchCalls.push(args);
-        return { data: { status: 0, data: null, msg: null } };
-    };
-    t.after(() => { axios.patch = originalPatch; });
+    await learnSkill(store, "EPalWazaID::Unknown");
+    await equipSkill(store, "EPalWazaID::Unknown");
 
-    await store.updatePal({
-        target: { name: "add_MasteredWaza", value: "EPalWazaID::Unknown" },
-    });
-
-    assert.deepEqual(patchCalls, []);
+    assert.deepEqual(writes, []);
     assert.equal(useSessionStore().operationPending, false);
 });
 
-test("public updatePal allows human-only skills for a selected human", async t => {
+test("a human-only skill is assignable to a selected human", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
@@ -251,58 +253,50 @@ test("public updatePal allows human-only skills for a selected human", async t =
         AssignableToHumans: true,
     }];
     selectPal({ IsHuman: true });
+    const writes = recordSkillWrites(t);
 
-    const patchCalls = [];
-    const originalPatch = axios.patch;
-    axios.patch = async (url, payload) => {
-        patchCalls.push([url, payload]);
-        return { data: { status: 0, data: null, msg: null } };
-    };
-    t.after(() => { axios.patch = originalPatch; });
+    await learnSkill(store, humanPunch);
 
-    await store.updatePal({
-        target: { name: "add_MasteredWaza", value: humanPunch },
-    });
-
-    assert.equal(patchCalls.length, 1);
-    assert.equal(patchCalls[0][1].value, humanPunch);
+    assert.equal(writes.length, 1);
+    assert.deepEqual(writes[0][1], [humanPunch]);
 });
 
-test("public updatePal still sends removals and unrelated updates", async t => {
+test("removing a skill submits the list without it, and a field edit is a patch", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
-    useCatalogsStore().activeSkills = [{
-        InternalName: humanPunch,
-        Invalid: false,
-        Assignable: false,
-    }];
-
-    const patchCalls = [];
+    const kept = "EPalWazaID::FireBall";
+    useCatalogsStore().activeSkills = [
+        { InternalName: humanPunch, Invalid: false, Assignable: false },
+        { InternalName: kept, Invalid: false, Assignable: true },
+    ];
+    selectPal({
+        IsHuman: false,
+        EquipWaza: [humanPunch, kept],
+        MasteredWaza: [humanPunch, kept],
+    });
+    const writes = recordSkillWrites(t);
+    const patches = [];
     const originalPatch = axios.patch;
-    axios.patch = async (url, payload) => {
-        patchCalls.push([url, payload]);
-        return { data: { status: 0, data: null, msg: null } };
+    axios.patch = async (url, body) => {
+        patches.push([url, body]);
+        return { data: operation() };
     };
     t.after(() => { axios.patch = originalPatch; });
 
-    for (const target of [
-        { name: "pop_MasteredWaza", value: humanPunch },
-        { name: "pop_EquipWaza", value: humanPunch },
-        { name: "NickName", value: "ordinary update" },
-        { name: "unknown_operation", value: "unchanged passthrough" },
-    ]) {
-        await store.updatePal({ target });
-    }
+    await store.removeMasteredWaza({ target: { name: humanPunch } });
+    await store.removeEquipWaza({ target: { name: humanPunch } });
+    await store.updatePal({ target: { name: "NickName", value: "ordinary update" } });
 
-    assert.deepEqual(
-        patchCalls.map(([url, payload]) => [url, payload.key, payload.value]),
-        [
-            ["/api/pal/paldata", "pop_MasteredWaza", humanPunch],
-            ["/api/pal/paldata", "pop_EquipWaza", humanPunch],
-            ["/api/pal/paldata", "NickName", "ordinary update"],
-            ["/api/pal/paldata", "unknown_operation", "unchanged passthrough"],
-        ],
-    );
-    assert.equal(useSessionStore().operationPending, false);
+    // A removal is the remaining list, not the skill being taken away. There is
+    // no generic action name left to pass through: a field the allowlist does not
+    // name is now the backend's 400, not something the store decides.
+    assert.deepEqual(writes, [
+        ["/api/pals/world%3Aselected/skills/mastered", [kept]],
+        ["/api/pals/world%3Aselected/skills/equipped", [kept]],
+    ]);
+    assert.deepEqual(patches, [
+        ["/api/pals/world%3Aselected", { NickName: "ordinary update" }],
+    ]);
 });
+

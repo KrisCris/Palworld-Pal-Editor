@@ -15,7 +15,13 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
-import { getPal } from "../api/pals.js";
+import {
+    getPal,
+    healPals,
+    maximizePal,
+    patchPal,
+    putPalSkills,
+} from "../api/pals.js";
 import { useSessionStore } from "./session.js";
 
 export const usePalsStore = defineStore("pals", () => {
@@ -23,11 +29,6 @@ export const usePalsStore = defineStore("pals", () => {
 
     const palsByRecordKey = ref(new Map());
     const selectedRecordKey = ref(null);
-    // `changeState` is the backend's answer for `created`; it cannot yet say
-    // `modified`, because no route registers one until S2a. Until it can, an edit
-    // that succeeded is remembered here, which is what the Pal list's edited
-    // marker and filter have always read.
-    const editedRecordKeys = ref(new Set());
 
     const entry = recordKey => palsByRecordKey.value.get(recordKey) ?? null;
     const summary = recordKey => entry(recordKey)?.summary ?? null;
@@ -93,13 +94,49 @@ export const usePalsStore = defineStore("pals", () => {
         if (selectedRecordKey.value === recordKey) selectedRecordKey.value = null;
     }
 
-    function markEdited(recordKey) {
-        if (recordKey) editedRecordKeys.value.add(recordKey);
+    // Every write answers with the operation result, and the Pal it carries is
+    // the new authority for that record -- including its `changeState`, which is
+    // how the list's edited marker learns an edit happened.
+    function applyOperation(result) {
+        if (result.resultRecord) applyDetail(result.resultRecord);
+        return result;
+    }
+
+    // The five writes below return `null` when no Pal is open. Every editor
+    // control is rendered only while one is, so that is a guard, not a message:
+    // this store still reports nothing.
+    async function update(patch) {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return applyOperation(await patchPal(recordKey, patch));
+    }
+
+    async function replaceSkills(group, skills) {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return applyOperation(await putPalSkills(recordKey, group, skills));
+    }
+
+    async function maximize() {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return applyOperation(await maximizePal(recordKey));
+    }
+
+    async function heal() {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return applyOperation(await healPals({ scope: "record", recordKey }));
+    }
+
+    // The only write with no single record to answer for: it names the rosters
+    // whose rows changed instead, and the caller decides what to re-read.
+    async function healAll() {
+        return applyOperation(await healPals({ scope: "all" }));
     }
 
     // Every Pal whose detail has been read and reports base-camp illness. The
-    // heal-all button has always asked only about Pals already loaded; `S2a`'s
-    // `/api/pal-heals` is where that question gets a real answer.
+    // heal-all button has always asked only about Pals already loaded.
     const hasSickPal = computed(() => [...palsByRecordKey.value.values()].some(
         item => item.detail?.HasWorkerSick,
     ));
@@ -107,13 +144,11 @@ export const usePalsStore = defineStore("pals", () => {
     function clear() {
         palsByRecordKey.value = new Map();
         selectedRecordKey.value = null;
-        editedRecordKeys.value = new Set();
     }
 
     return {
         palsByRecordKey,
         selectedRecordKey,
-        editedRecordKeys,
         selectedPal,
         selectedPalLoaded,
         hasSickPal,
@@ -124,7 +159,11 @@ export const usePalsStore = defineStore("pals", () => {
         select,
         clearSelection,
         forget,
-        markEdited,
+        update,
+        replaceSkills,
+        maximize,
+        heal,
+        healAll,
         clear,
     };
 });

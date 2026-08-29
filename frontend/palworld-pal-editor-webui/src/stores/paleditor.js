@@ -182,6 +182,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_INVALID_LEVEL = 100;
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 10;
+    const MAX_EQUIP_WAZA = 3;
 
     const PAL_TEMPLATES = ref([]);
     const SKILL_TEMPLATES = ref([]);
@@ -992,55 +993,45 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     // ---- Pal edits -----------------------------------------------------------
-    // Everything below still posts the generic `{key, value}` action to
-    // `PATCH /api/pal/paldata`. S2a builds the typed replacements and S2b moves
-    // these into `stores/pals` as it deletes the route.
+    // The store owns the Pal and the writes; what stays here is the DOM events
+    // the existing controls fire, the catalog questions the UI asks before
+    // sending, and the reporting.
 
-    const updatePal = (...args) => session.runOperation(() => applyPalEdit(...args));
+    // Called straight from `@click`/`@change`, whose `name` is the field to write
+    // and whose `value` is what to write into it. Whether that name may be
+    // written is the backend allowlist's answer, not a method lookup. The
+    // operation gate is `gated()`, applied to the whole exported surface.
+    function updatePal(e) {
+        return applyPalPatch({ [e.target.name]: e.target.value });
+    }
 
-    async function applyPalEdit(e) {
-        const key = e.target.name;
-        const value = e.target.value;
-        const recordKey = pals.selectedRecordKey;
-        const addingActiveSkill = key === "add_MasteredWaza" || key === "add_EquipWaza";
-        const activeSkill = catalogs.activeSkillsByName[value];
-        if (
-            addingActiveSkill
-            && (
-                !activeSkill
-                || (
-                    HIDE_INVALID_OPTIONS.value
-                    && !isSkillAssignable(activeSkill, pals.selectedPal?.IsHuman)
-                )
-            )
-        ) {
-            showToast("Message_Skill_Not_Assignable");
-            return;
-        }
+    function applyPalPatch(patch) {
+        return runPalWrite(() => pals.update(patch), "Operation_Update_Pal");
+    }
 
-        const response = await PATCH("/api/pal/paldata", {
-            key: key,
-            value: value,
-            RecordKey: recordKey,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            pals.markEdited(recordKey);
-            if (recordKey) {
-                await refreshPal(recordKey);
-                UPDATE_PAL_RESELECT_CTR.value++;
-            }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Update_Pal", response);
+    // Every Pal write answers with the Pal it changed, so none of them re-reads
+    // it afterwards. `null` means no Pal is open, which these controls cannot
+    // reach: they are rendered only while one is.
+    async function runPalWrite(write, operation) {
+        try {
+            if (await write() === null) return false;
+            UPDATE_PAL_RESELECT_CTR.value++;
+            return true;
+        } catch (error) {
+            reportApiFailure(error, operation);
+            return false;
         }
     }
 
-    // A write answers in the pre-REST DTO, which spells its fields differently
-    // from `PalSummary`/`PalDetail`. Rather than teach the cache two vocabularies,
-    // the Pal is re-read through the resource that owns it.
+    // A skill group is submitted whole. These build the list the Pal should end
+    // up with; the backend refuses one the game cannot resolve.
+    function replaceSkills(group, skills) {
+        return runPalWrite(
+            () => pals.replaceSkills(group, skills),
+            "Operation_Update_Pal",
+        );
+    }
+
     async function refreshPal(recordKey) {
         try {
             return await pals.loadDetail(recordKey);
@@ -1053,55 +1044,50 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const editedPal = () => pals.selectedPal;
 
     function swapRare() {
-        return updatePal({ target: { name: "IsRarePal", value: !editedPal().IsRarePal } });
+        return applyPalPatch({ IsRarePal: !editedPal().IsRarePal });
     }
 
     function swapBoss() {
-        return updatePal({ target: { name: "IsBOSS", value: !editedPal().IsBOSS } });
+        return applyPalPatch({ IsBOSS: !editedPal().IsBOSS });
     }
 
     function toggleAwakening() {
-        return updatePal({ target: { name: "IsAwakening", value: !editedPal().IsAwakening } });
+        return applyPalPatch({ IsAwakening: !editedPal().IsAwakening });
     }
 
     function palLevelDown() {
         const pal = editedPal();
         if (pal.Level <= 1) return;
-        return updatePal({ target: { name: "Level", value: pal.Level - 1 } });
+        return applyPalPatch({ Level: pal.Level - 1 });
     }
 
     function palLevelUp() {
         const pal = editedPal();
         const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
         if (pal.Level >= ceiling) return;
-        return updatePal({ target: { name: "Level", value: pal.Level + 1 } });
+        return applyPalPatch({ Level: pal.Level + 1 });
     }
 
     function palMaxLevel() {
-        const value = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
-        return updatePal({ target: { name: "Level", value } });
+        return applyPalPatch({
+            Level: HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL,
+        });
     }
 
     function friendshipDown() {
         const pal = editedPal();
         if (pal.FriendshipLevel <= -3) return;
-        return updatePal({
-            target: { name: "FriendshipLevel", value: pal.FriendshipLevel - 1 },
-        });
+        return applyPalPatch({ FriendshipLevel: pal.FriendshipLevel - 1 });
     }
 
     function friendshipUp() {
         const pal = editedPal();
         if (pal.FriendshipLevel >= MAX_FRIENDSHIP_LEVEL) return;
-        return updatePal({
-            target: { name: "FriendshipLevel", value: pal.FriendshipLevel + 1 },
-        });
+        return applyPalPatch({ FriendshipLevel: pal.FriendshipLevel + 1 });
     }
 
     function maxFriendship() {
-        return updatePal({
-            target: { name: "FriendshipLevel", value: MAX_FRIENDSHIP_LEVEL },
-        });
+        return applyPalPatch({ FriendshipLevel: MAX_FRIENDSHIP_LEVEL });
     }
 
     function swapGender() {
@@ -1109,13 +1095,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         let next = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
         if (gender == "EPalGenderType::Female") next = "EPalGenderType::Male";
         if (gender == "EPalGenderType::Male") next = "EPalGenderType::Female";
-        return updatePal({ target: { name: "Gender", value: next } });
+        return applyPalPatch({ Gender: next });
+    }
+
+    // A skill the game has no entry for is one the backend would refuse, and one
+    // the UI cannot draw either -- so the dropdown selections are checked here
+    // before a request is worth making. The `Invalid`/human rules are the same
+    // check the skill picker already greys the option out with.
+    function assignableActiveSkill(skill) {
+        const active = catalogs.activeSkillsByName[skill];
+        if (!active) return false;
+        return !HIDE_INVALID_OPTIONS.value
+            || isSkillAssignable(active, pals.selectedPal?.IsHuman);
     }
 
     function removePassiveSkill(e) {
-        return updatePal({
-            target: { name: "pop_PassiveSkillList", value: e.target.name },
-        });
+        return replaceSkills(
+            "passive",
+            editedPal().PassiveSkillList.filter(skill => skill !== e.target.name),
+        );
     }
 
     function addPassiveSkill() {
@@ -1128,19 +1126,30 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             showToast("Message_Passive_Limit");
             return;
         }
-        return updatePal({ target: { name: "add_PassiveSkillList", value: skill } });
+        return replaceSkills("passive", [...editedPal().PassiveSkillList, skill]);
     }
 
     function removeEquipWaza(e) {
-        return updatePal({ target: { name: "pop_EquipWaza", value: e.target.name } });
+        return replaceSkills(
+            "equipped",
+            editedPal().EquipWaza.filter(waza => waza !== e.target.name),
+        );
     }
 
     function addEquipWaza(e) {
-        return updatePal({ target: { name: "add_EquipWaza", value: e.target.name } });
+        if (!assignableActiveSkill(e.target.name)) {
+            showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+        // Equipping a move also learns it, so this one list says both.
+        return replaceSkills("equipped", [...editedPal().EquipWaza, e.target.name]);
     }
 
     function removeMasteredWaza(e) {
-        return updatePal({ target: { name: "pop_MasteredWaza", value: e.target.name } });
+        return replaceSkills(
+            "mastered",
+            editedPal().MasteredWaza.filter(waza => waza !== e.target.name),
+        );
     }
 
     function addMasteredWaza() {
@@ -1149,7 +1158,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             showToast("Message_Select_Skill");
             return;
         }
-        return updatePal({ target: { name: "add_MasteredWaza", value: skill } });
+        if (!assignableActiveSkill(skill)) {
+            showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+        const pal = editedPal();
+        // Learning a move with an active slot free has always equipped it too,
+        // and equipping is what learns it -- so the equipped list carries both.
+        if (pal.EquipWaza.length < MAX_EQUIP_WAZA) {
+            return replaceSkills("equipped", [...pal.EquipWaza, skill]);
+        }
+        return replaceSkills("mastered", [...pal.MasteredWaza, skill]);
     }
 
     function setSuitability(name, value) {
@@ -1161,9 +1180,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         value = Math.min(Math.max(value, min), MAX_SUITABILITY_LEVEL);
         if (value == pal.Suitabilities[name]) return;
-        return updatePal({
-            target: { name: "set_Suitability", value: { name, level: value } },
-        });
+        return applyPalPatch({ Suitabilities: { [name]: value } });
     }
 
     function suitabilityUp(e) {
@@ -1182,11 +1199,36 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             MAX_SUITABILITY_LEVEL,
         );
         if (!Object.keys(values).length) return;
-        return updatePal({ target: { name: "set_Suitabilities", value: values } });
+        return applyPalPatch({ Suitabilities: values });
     }
 
     function changeSpecies(characterId) {
-        return updatePal({ target: { name: "CharacterID", value: characterId } });
+        return applyPalPatch({ CharacterID: characterId });
+    }
+
+    // The three buttons the editor and the top bar show are one operation: curing
+    // an illness and reviving a fainted Pal already ran the same code.
+    function healPal() {
+        return runPalWrite(() => pals.heal(), "Operation_Update_Pal");
+    }
+
+    async function healAllPals() {
+        let result;
+        try {
+            result = await pals.healAll();
+        } catch (error) {
+            reportApiFailure(error, "Operation_Update_Pal");
+            return false;
+        }
+        // No record answers for a heal that touched every list, so the reply names
+        // the rosters instead. Only the open one is on screen; the rest are
+        // dropped and re-read whenever they are next opened.
+        for (const rosterKey of result.affectedRosterKeys) {
+            if (rosterKey !== rosters.activeRosterKey) rosters.invalidate(rosterKey);
+        }
+        await refreshRosters([rosters.activeRosterKey]);
+        if (pals.selectedRecordKey) await refreshPal(pals.selectedRecordKey);
+        return true;
     }
 
     async function dumpPalData() {
@@ -1210,28 +1252,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function maximizePal() {
-        const recordKey = pals.selectedRecordKey;
-        if (!recordKey) return false;
-        try {
-            const response = await POST("/api/pal/maximize", { RecordKey: recordKey });
-            if (response === false) return false;
-            if (response.status == 0) {
-                await refreshPal(recordKey);
-                pals.markEdited(recordKey);
-                UPDATE_PAL_RESELECT_CTR.value++;
-                showToast("Message_Pal_Maximized", "success");
-                return true;
-            }
-            if (response.status == 2) {
-                requireAuth("AuthView_Session_Expired");
-            } else {
-                reportOperationError("Operation_Maximize_Pal", response);
-            }
-            return false;
-        } catch (error) {
-            reportFrontendError(error, getTranslatedText("Operation_Maximize_Pal"));
+        if (!await runPalWrite(() => pals.maximize(), "Operation_Maximize_Pal")) {
             return false;
         }
+        showToast("Message_Pal_Maximized", "success");
+        return true;
     }
 
     // ---- Pal creation, deletion and transfer ---------------------------------
@@ -1320,7 +1345,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             else reportOperationError("Operation_Move_Pal", response);
             return false;
         }
-        pals.markEdited(recordKey);
         const sourceRoster = rosters.activeRosterKey;
         // A DPS holds Pals its owner never owned, and the backend files those by
         // the Pal's owner, not the storage's.
@@ -1361,7 +1385,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             else reportOperationError("Operation_Move_Pal", response);
             return false;
         }
-        pals.markEdited(conflict.LockedTarget);
         const conflictRoster = candidateRosterKey(conflict.Candidates?.find(
             item => item.RecordKey === conflict.LockedTarget,
         ));
@@ -1541,7 +1564,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (response === false) return false;
         if (response.status == 0) {
             await refreshPal(recordKey);
-            pals.markEdited(recordKey);
             showToast("Message_Skill_Template_Applied", "success");
             return true;
         }
@@ -1661,6 +1683,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             fetchSkillTemplates,
             friendshipDown,
             friendshipUp,
+            healAllPals,
+            healPal,
             jumpToConflictingPal,
             loadLatestRelease,
             loadPlayerInventory,

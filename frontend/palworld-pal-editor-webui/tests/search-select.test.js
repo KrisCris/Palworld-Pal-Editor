@@ -107,7 +107,9 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space: nowrap;/);
     assert.doesNotMatch(source, /class="skill-warning"/);
     assert.match(editorCss, /\.editor-surface:has\(\.search-select\[open\]\)/);
-    for (const handler of ["add_PassiveSkillList", "add_MasteredWaza"]) assert.match(source, new RegExp(handler));
+    // Both pickers keep an add button in the slot. Their names used to be RPC
+    // action names; they are the store actions now.
+    for (const handler of ["addPassiveSkill", "addActiveSkill"]) assert.match(source, new RegExp(`@click="${handler}"`));
     assert.equal((source.match(/class="skill-card__title"/g) || []).length, 3);
     assert.equal((source.match(/<small v-if="!palStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
     for (const locale of [en, fr, ja, zhCN]) {
