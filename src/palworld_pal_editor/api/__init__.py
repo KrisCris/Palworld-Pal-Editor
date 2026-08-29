@@ -8,3 +8,4 @@ from palworld_pal_editor.api.session import session_blueprint
 from palworld_pal_editor.api.application import application_blueprint
 from palworld_pal_editor.api.research import research_blueprint
 from palworld_pal_editor.api.catalogs import catalogs_blueprint
+from palworld_pal_editor.api.pal_heals import pal_heals_blueprint

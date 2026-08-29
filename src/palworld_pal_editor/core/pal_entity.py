@@ -1044,6 +1044,23 @@ class PalEntity:
         )
         LOGGER.info(f"{self} | EquipWaza: {old_equipped} -> {equipped}")
 
+    @LOGGER.change_logger("MasteredWaza")
+    def replace_MasteredWaza(self, mastered: list[str]) -> None:
+        """Learn exactly this list, and unequip whatever is no longer on it.
+
+        `pop_MasteredWaza` already refuses to leave an equipped skill unlearned;
+        replacing the whole list has to keep the same invariant, or the save ends
+        up with a Pal whose active slots hold skills it has not mastered.
+        """
+        old_mastered = list(self.MasteredWaza or [])
+        self.pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+            "EnumProperty", {"values": list(mastered)}
+        )
+        for waza in list(self.EquipWaza or []):
+            if waza not in mastered:
+                self.pop_EquipWaza(item=waza)
+        LOGGER.info(f"{self} | MasteredWaza: {old_mastered} -> {mastered}")
+
     @property
     def AddedWorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:
         return PalObjects.get_WorkSuitabilities(

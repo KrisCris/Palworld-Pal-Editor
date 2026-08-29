@@ -10,7 +10,7 @@ the editor invents to say where a Pal is and what has happened to it are camelCa
 (`recordKey`, `storageKey`, `containerLabel`, `changeState`).
 """
 
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
@@ -51,12 +51,10 @@ def _is_away(manager: SaveManager, record: PalRecord) -> bool:
 
 
 def _change_state(manager: SaveManager, record: PalRecord) -> str:
-    """`unchanged | created | modified`, with created winning over modified.
-
-    Nothing reports `modified` yet: no route registers one. S2a's PATCH, skills and
-    maximize are the operations that will, and they add the writer here.
-    """
-    return "created" if manager.pal_repository.is_created(record) else "unchanged"
+    """`unchanged | created | modified`, with created winning over modified."""
+    if manager.pal_repository.is_created(record):
+        return "created"
+    return "modified" if manager.pal_repository.is_modified(record) else "unchanged"
 
 
 def pal_summary(manager: SaveManager, record: PalRecord) -> dict:
@@ -164,9 +162,168 @@ def require_record(record_key: str) -> PalRecord:
     return record
 
 
+def operation_result(
+    manager: SaveManager,
+    record: PalRecord | None = None,
+    *,
+    affected_roster_keys=(),
+) -> dict:
+    """The one shape every Pal-changing response uses (spec §8.3).
+
+    All four keys are always present, so the client reads one shape and never has
+    to guess what an operation did. The two this task can never fill are constants
+    rather than parameters: nothing here deletes a record or moves one between
+    storages, and S3b and S4a add the arguments alongside their first callers.
+    """
+    return {
+        "resultRecord": pal_detail(manager, record) if record is not None else None,
+        "deletedRecordKeys": [],
+        "affectedRosterKeys": list(affected_roster_keys),
+        "affectedStorageKeys": [],
+    }
+
+
+def commit_pal_edit(manager: SaveManager, record: PalRecord) -> dict:
+    """What every successful single-Pal edit owes the session, in one place.
+
+    A Global Palbox or DPS Pal is a copy that has to be written back before the
+    session is saved, and a changed Pal is one the change-set marks have to know
+    about. Forgetting either is silent, which is why no route does it by hand.
+    """
+    manager.normalize_external_record(record)
+    manager.pal_repository.mark_modified(record)
+    return operation_result(manager, record)
+
+
+# Each of these is a `PalEntity` property whose setter already coerces and
+# range-checks what it is handed, which is why nothing is validated again below:
+# the save file's rules live next to the save file. Being settable is not what
+# makes a field writable -- being named here is.
+PAL_SCALAR_FIELDS = (
+    "CharacterID",
+    "NickName",
+    "SkinName",
+    "Gender",
+    "Level",
+    "FriendshipLevel",
+    "Rank",
+    "Rank_HP",
+    "Rank_Attack",
+    "Rank_Defence",
+    "Rank_CraftSpeed",
+    "Talent_HP",
+    "Talent_Melee",
+    "Talent_Shot",
+    "Talent_Defense",
+    "FavoriteIndex",
+    "IsRarePal",
+    "IsBOSS",
+    "IsAwakening",
+    "IsImportedCharacter",
+)
+
+
+def _set_suitabilities(pal: PalEntity, value) -> None:
+    """A partial `{name: level}` map, the shape a player's status points take too."""
+    for name, level in value.items():
+        pal.set_WorkSuitability(name, level)
+
+
+PAL_WRITERS = {"Suitabilities": _set_suitabilities}
+WRITABLE_PAL_FIELDS = frozenset(PAL_SCALAR_FIELDS) | set(PAL_WRITERS)
+
+# The three skill lists, each with the catalog that says a name is real and the
+# entity method that swaps the whole list for a new one. The methods are named
+# here rather than resolved from the URL: spec §8.3 rules out reading an action
+# name out of a request and looking it up on the entity.
+SKILL_GROUPS = {
+    "passive": (DataProvider.has_passive_skill, PalEntity.replace_PassiveSkillList),
+    "equipped": (DataProvider.has_attack, PalEntity.replace_EquipWaza),
+    "mastered": (DataProvider.has_attack, PalEntity.replace_MasteredWaza),
+}
+
+
 @pals_blueprint.route("/<record_key>", methods=["GET"])
 @jwt_required()
 def get_pal(record_key: str):
     manager = SaveManager()
     with manager.session_lock:
         return pal_detail(manager, require_record(record_key))
+
+
+@pals_blueprint.route("/<record_key>", methods=["PATCH"])
+@jwt_required()
+def patch_pal(record_key: str):
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        raise ApiError("PAL_PATCH_INVALID", "Request body must be an object")
+    unwritable = set(payload) - WRITABLE_PAL_FIELDS
+    if unwritable:
+        raise ApiError(
+            "PAL_FIELD_UNKNOWN",
+            f"Not an editable Pal field: {', '.join(sorted(unwritable))}",
+            details={"writable": sorted(WRITABLE_PAL_FIELDS)},
+        )
+
+    manager = SaveManager()
+    with manager.session_lock:
+        record = require_record(record_key)
+        try:
+            for field in PAL_SCALAR_FIELDS:
+                if field in payload:
+                    setattr(record.pal, field, payload[field])
+            for field, write in PAL_WRITERS.items():
+                if field in payload:
+                    write(record.pal, payload[field])
+        except (TypeError, ValueError, AttributeError) as error:
+            raise ApiError("PAL_VALUE_INVALID", str(error))
+        return commit_pal_edit(manager, record)
+
+
+@pals_blueprint.route("/<record_key>/skills/<group>", methods=["PUT"])
+@jwt_required()
+def put_pal_skills(record_key: str, group: str):
+    """The list the Pal should end up with, not one add or one removal.
+
+    The count limits the UI enforces are not repeated here: the RPCs this replaces
+    passed `force=True` every time, so the backend has never been what stops a
+    fifth passive. What it does stop is a name the game has no skill for, which is
+    a Pal the game cannot load.
+    """
+    if group not in SKILL_GROUPS:
+        raise ApiError(
+            "SKILL_GROUP_UNKNOWN", f"No skill group named {group}", status=404
+        )
+    payload = request.get_json(silent=True)
+    skills = payload.get("skills") if isinstance(payload, dict) else None
+    if not isinstance(skills, list):
+        raise ApiError("SKILL_LIST_INVALID", 'Request body must be {"skills": [...]}')
+
+    is_known, replace = SKILL_GROUPS[group]
+    unknown = [
+        skill for skill in skills if not isinstance(skill, str) or not is_known(skill)
+    ]
+    if unknown:
+        raise ApiError(
+            "SKILL_UNKNOWN",
+            f"Not a {group} skill this game has: {', '.join(map(str, unknown))}",
+        )
+    if len(skills) != len(set(skills)):
+        raise ApiError("SKILL_LIST_INVALID", "A skill cannot be listed twice")
+
+    manager = SaveManager()
+    with manager.session_lock:
+        record = require_record(record_key)
+        replace(record.pal, skills)
+        return commit_pal_edit(manager, record)
+
+
+@pals_blueprint.route("/<record_key>/maximization", methods=["POST"])
+@jwt_required()
+def maximize_pal(record_key: str):
+    """Every normal upgrade at once. It takes no body: there is nothing to choose."""
+    manager = SaveManager()
+    with manager.session_lock:
+        record = require_record(record_key)
+        record.pal.maximize_progression()
+        return commit_pal_edit(manager, record)

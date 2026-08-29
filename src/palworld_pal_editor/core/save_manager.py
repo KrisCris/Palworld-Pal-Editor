@@ -360,9 +360,11 @@ class SaveManager:
                     backup.unlink(missing_ok=True)
         for storage in dirty_storages:
             storage.dirty = False
-        # Every output file is on disk, so the settlement they contain is durable and
-        # the created set may finally be consumed.
+        # Every output file is on disk, so the settlement they contain is durable,
+        # the created set may finally be consumed, and every Pal on screen is once
+        # again what the save says it is.
         self.pal_repository.clear_created()
+        self.pal_repository.clear_modified()
         return True
 
     def _settle_created_records(self) -> dict[str, dict]:
@@ -2089,6 +2091,11 @@ class SaveManager:
         # plus the Global Palbox, which the old palbox-shaped scan could not reach.
         for record in self.pal_repository.records():
             record.pal.heal_pal()
+            # Global Palbox and DPS Pals live outside the world save, so a heal that
+            # skips this is discarded when the session is written -- the same
+            # normalization every single-Pal edit does, owed to every Pal here too.
+            self.normalize_external_record(record)
+            self.pal_repository.mark_modified(record)
     
     def add_pal(
         self,

@@ -23,6 +23,11 @@ class PalRepository:
         # objects rather than copies, and PalRecord sets `eq=False`, so membership is
         # object identity and survives a relocate rewriting the record's key.
         self._created_records: set[PalRecord] = set()
+        # Pals this session has edited. Same identity-based membership as
+        # `_created_records`, and deliberately a second set rather than one state
+        # field: a Pal created and then edited is still `created`, which one field
+        # could only say by making every writer spell out the precedence.
+        self._modified_records: set[PalRecord] = set()
 
     def __len__(self) -> int:
         return len(self._records)
@@ -46,6 +51,7 @@ class PalRepository:
         removed = self._records.pop(record_key, None)
         if removed is not None:
             self._created_records.discard(removed)
+            self._modified_records.discard(removed)
             self.reindex()
         return removed
 
@@ -86,6 +92,18 @@ class PalRepository:
         without having silently consumed the settlement.
         """
         self._created_records.clear()
+
+    # --- modified tracking ------------------------------------------------
+
+    def mark_modified(self, record: PalRecord) -> None:
+        self._modified_records.add(record)
+
+    def is_modified(self, record: Optional[PalRecord]) -> bool:
+        return record is not None and record in self._modified_records
+
+    def clear_modified(self) -> None:
+        """Forget this session's edits, once a save has written them out."""
+        self._modified_records.clear()
 
     def reindex(self) -> None:
         """Rebuild every secondary index from ``_records``.
