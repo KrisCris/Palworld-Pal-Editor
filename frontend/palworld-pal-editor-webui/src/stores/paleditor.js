@@ -18,6 +18,7 @@ import {
 } from "../i18n/index.js";
 import { setBackendContext } from "../api/http.js";
 import { useAppStore } from "./app.js";
+import { useCatalogsStore } from "./catalogs.js";
 import { usePalsStore } from "./pals.js";
 import { useResearchStore } from "./research.js";
 import { usePlayersStore } from "./players.js";
@@ -158,6 +159,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // below -- this store reads them, and nothing reads back into it.
     const session = useSessionStore();
     const app = useAppStore();
+    const catalogs = useCatalogsStore();
     const pals = usePalsStore();
     const research = useResearchStore();
     const players = usePlayersStore();
@@ -181,16 +183,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_SOULS_LEVEL = 20;
     const MAX_SUITABILITY_LEVEL = 10;
 
-    const TECH_LV_DICT = ref({});
-    const PASSIVE_SKILLS = ref({});
-    const PASSIVE_SKILLS_LIST = ref([]);
-    const ACTIVE_SKILLS = ref({});
-    const ACTIVE_SKILLS_LIST = ref([]);
-    const PAL_STATIC_DATA = ref({});
-    const PAL_STATIC_DATA_LIST = ref([]);
-    const ITEM_STATIC_DATA = ref({});
-    const ITEM_STATIC_DATA_LIST = ref([]);
-    const SKIN_DATA_LIST = ref([]);
     const PAL_TEMPLATES = ref([]);
     const SKILL_TEMPLATES = ref([]);
     const PAL_CONTAINERS = ref([]);
@@ -703,87 +695,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return refreshSucceeded;
     }
 
+    // Six sequential requests before this task, each with its own copy of the
+    // same three-branch status ladder. The catalogs are what they answer with;
+    // reporting the failure is what stays here.
     async function fetchStaticData() {
-        const passive_skills_raw = await GET("/api/save/passive_skills");
-        if (passive_skills_raw === false) return false;
-
-        if (passive_skills_raw.status == 0) {
-            PASSIVE_SKILLS.value = passive_skills_raw.data.dict;
-            PASSIVE_SKILLS_LIST.value = passive_skills_raw.data.arr;
-        } else if (passive_skills_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [passive_skills_raw.msg]));
+        try {
+            await catalogs.load();
+            return true;
+        } catch (error) {
+            reportStartupFailure(error);
             return false;
         }
-
-        const active_skills_raw = await GET("/api/save/active_skills");
-        if (active_skills_raw === false) return false;
-
-        if (active_skills_raw.status == 0) {
-            ACTIVE_SKILLS.value = active_skills_raw.data.dict;
-            ACTIVE_SKILLS_LIST.value = active_skills_raw.data.arr;
-        } else if (active_skills_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [active_skills_raw.msg]));
-            return false;
-        }
-
-        const pal_data_raw = await GET("/api/save/pal_data");
-        if (pal_data_raw === false) return false;
-
-        if (pal_data_raw.status == 0) {
-            PAL_STATIC_DATA.value = pal_data_raw.data.dict;
-            PAL_STATIC_DATA_LIST.value = pal_data_raw.data.arr;
-        } else if (pal_data_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [pal_data_raw.msg]));
-            return false;
-        }
-
-        const item_data_raw = await GET("/api/save/item_data");
-        if (item_data_raw === false) return false;
-        if (item_data_raw.status == 0) {
-            ITEM_STATIC_DATA.value = item_data_raw.data.dict;
-            ITEM_STATIC_DATA_LIST.value = item_data_raw.data.arr;
-        } else if (item_data_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [item_data_raw.msg]));
-            return false;
-        }
-
-        const tech_data_raw = await GET("/api/save/tech_data");
-        if (tech_data_raw === false) return false;
-
-        if (tech_data_raw.status == 0) {
-            TECH_LV_DICT.value = tech_data_raw.data.techLvDict;
-        } else if (tech_data_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [tech_data_raw.msg]));
-            return false;
-        }
-
-        const skin_data_raw = await GET("/api/save/skin_data");
-        if (skin_data_raw === false) return false;
-        if (skin_data_raw.status == 0) {
-            SKIN_DATA_LIST.value = skin_data_raw.data.arr;
-        } else if (skin_data_raw.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [skin_data_raw.msg]));
-            return false;
-        }
-        return true;
     }
 
     function reset(updateAppState = true) {
@@ -815,14 +737,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             translation = translation.replace(`{{${index}}}`, arg);
         });
         return translation;
-    }
-
-    function getTechName(internalName) {
-        for (const entries of Object.values(TECH_LV_DICT.value)) {
-            const tech = entries.find(item => item.InternalName === internalName);
-            if (tech) return tech.I18n?.Name || tech.InternalName;
-        }
-        return "";
     }
 
     // ---- players -------------------------------------------------------------
@@ -1094,7 +1008,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const value = e.target.value;
         const recordKey = pals.selectedRecordKey;
         const addingActiveSkill = key === "add_MasteredWaza" || key === "add_EquipWaza";
-        const activeSkill = ACTIVE_SKILLS.value[value];
+        const activeSkill = catalogs.activeSkillsByName[value];
         if (
             addingActiveSkill
             && (
@@ -1211,7 +1125,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function addPassiveSkill() {
         const skill = PAL_PASSIVE_SELECTED_ITEM.value;
-        if (!PASSIVE_SKILLS.value[skill]) {
+        if (!catalogs.passiveSkillsByName[skill]) {
             showToast("Message_Select_Skill");
             return;
         }
@@ -1236,7 +1150,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function addMasteredWaza() {
         const skill = PAL_ACTIVE_SELECTED_ITEM.value;
-        if (!ACTIVE_SKILLS.value[skill]) {
+        if (!catalogs.activeSkillsByName[skill]) {
             showToast("Message_Select_Skill");
             return;
         }
@@ -1655,7 +1569,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function palElementKeys(DataAccessKey) {
-        return (PAL_STATIC_DATA.value[DataAccessKey]?.Elements ?? [])
+        return (catalogs.palsByName[DataAccessKey]?.Elements ?? [])
             .map(elementIconKey)
             .filter(Boolean);
     }
@@ -1697,23 +1611,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         CURRENT_MESSAGE,
 
 
-        PAL_STATIC_DATA,
-        PAL_STATIC_DATA_LIST,
-        ITEM_STATIC_DATA,
-        ITEM_STATIC_DATA_LIST,
-        SKIN_DATA_LIST,
-        PASSIVE_SKILLS,
-        PASSIVE_SKILLS_LIST,
-        ACTIVE_SKILLS,
-        ACTIVE_SKILLS_LIST,
-        TECH_LV_DICT,
         PAL_TEMPLATES,
         SKILL_TEMPLATES,
         PAL_CONTAINERS,
         PAL_TRANSFER_CONFLICT,
 
         getTranslatedText,
-        getTechName,
         getMessageText,
 
         elementIconKey,

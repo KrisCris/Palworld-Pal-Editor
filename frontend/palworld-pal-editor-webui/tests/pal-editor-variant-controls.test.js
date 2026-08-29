@@ -20,16 +20,17 @@ function button(html, name) {
 }
 
 async function renderPalEditorFixture() {
-  const [{ default: PalEditor }, { usePalEditorStore }, { usePalsStore }] = await Promise.all([
+  const [{ default: PalEditor }, { usePalEditorStore }, { usePalsStore }, { useCatalogsStore }] = await Promise.all([
     loadVueModule("/src/components/PalEditor.vue"),
     loadVueModule("/src/stores/paleditor.js"),
     loadVueModule("/src/stores/pals.js"),
+    loadVueModule("/src/stores/catalogs.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
   const store = usePalEditorStore();
   const pals = usePalsStore();
-  store.PAL_STATIC_DATA = { TestPal: { I18n: "Test Pal", Elements: [], Paldeck: 1 } };
+  useCatalogsStore().pals = [{ InternalName: "TestPal", I18n: "Test Pal", Elements: [], Paldeck: 1 }];
   // The editor reads whatever is in the Pal cache under the selected key; there
   // is no separate copy to hand it.
   pals.applyDetail({

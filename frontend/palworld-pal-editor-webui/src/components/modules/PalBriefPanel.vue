@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 
 import PalPortrait from '@/components/modules/PalPortrait.vue'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
   changedFields: { type: Object, default: () => ({}) },
   tone: { type: String, default: 'neutral' },
 })
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const changed = key => Object.hasOwn(props.changedFields, key)
 const uiIcon = name => palStore.backendAssetUrl(`/image/ui/${name}`)
@@ -37,15 +39,15 @@ const suitabilityEntries = computed(() => Object.entries(props.data.Suitabilitie
   .filter(([, value]) => Number(value) > 0))
 const activeSkills = computed(() => props.data.EquipWaza || [])
 const passiveSkills = computed(() => props.data.PassiveSkillList || [])
-const passiveName = skill => palStore.PASSIVE_SKILLS[skill]?.I18n?.[0] || skill
-const activeName = skill => palStore.ACTIVE_SKILLS[skill]?.I18n?.[0] || skill
+const passiveName = skill => catalogsStore.passiveSkillsByName[skill]?.I18n?.[0] || skill
+const activeName = skill => catalogsStore.activeSkillsByName[skill]?.I18n?.[0] || skill
 const portraitBorder = computed(() => props.data.IsAwakening
   ? 'var(--editor-color-awakened)'
   : props.data.IsBOSS
   ? 'var(--editor-color-danger)'
   : props.data.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)')
 const elementIcon = skill => {
-  const key = palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)
+  const key = palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)
   return key ? palStore.backendAssetUrl(`/image/elements/Element_${key}`) : uiIcon('stat-attack')
 }
 </script>
@@ -124,12 +126,12 @@ const elementIcon = skill => {
       <h4>{{ palStore.getTranslatedText('Editor_Equipped_Skills') }}</h4>
       <b v-if="activeSkills.length > 3" class="pal-brief__overflow">+{{ activeSkills.length - 3 }}</b>
       <div class="pal-brief__active-skills">
-        <div v-for="skill in activeSkills.slice(0, 3)" :key="skill" :title="palStore.ACTIVE_SKILLS[skill]?.I18n?.[1] || skill">
+        <div v-for="skill in activeSkills.slice(0, 3)" :key="skill" :title="catalogsStore.activeSkillsByName[skill]?.I18n?.[1] || skill">
           <img :src="elementIcon(skill)" alt="">
           <strong>{{ activeName(skill) }}</strong>
-          <small v-if="palStore.ACTIVE_SKILLS[skill]">
-            {{ palStore.getTranslatedText('Editor_Skill_ATK') }}{{ palStore.ACTIVE_SKILLS[skill].Power }} ·
-            {{ palStore.getTranslatedText('Editor_Skill_CD') }}{{ palStore.ACTIVE_SKILLS[skill].CT }}
+          <small v-if="catalogsStore.activeSkillsByName[skill]">
+            {{ palStore.getTranslatedText('Editor_Skill_ATK') }}{{ catalogsStore.activeSkillsByName[skill].Power }} ·
+            {{ palStore.getTranslatedText('Editor_Skill_CD') }}{{ catalogsStore.activeSkillsByName[skill].CT }}
           </small>
         </div>
       </div>
@@ -141,8 +143,8 @@ const elementIcon = skill => {
       <b v-if="passiveSkills.length > 4" class="pal-brief__overflow">+{{ passiveSkills.length - 4 }}</b>
       <div class="pal-brief__passive-skills">
         <div v-for="skill in passiveSkills.slice(0, 4)" :key="skill"
-          :title="palStore.PASSIVE_SKILLS[skill]?.I18n?.[1] || skill">
-          <i :class="`passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`" />
+          :title="catalogsStore.passiveSkillsByName[skill]?.I18n?.[1] || skill">
+          <i :class="`passive-tier--${palStore.passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`" />
           <strong>{{ passiveName(skill) }}</strong>
         </div>
       </div>

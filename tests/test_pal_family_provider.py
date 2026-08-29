@@ -120,21 +120,20 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertIsNone(DataProvider.get_pal_paldeck_record_id("Hunter_Rifle"))
         self.assertIsNone(DataProvider.get_pal_paldeck_record_id("UnknownPal"))
 
-    def test_pal_data_api_includes_exact_boss_rows_and_metadata(self):
+    def test_pal_catalog_includes_exact_boss_rows_and_metadata(self):
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():
             token = create_access_token(identity="test", expires_delta=False)
         with app.test_client() as client:
             response = client.get(
-                "/api/save/pal_data",
+                "/api/catalogs/pals",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
-        payload = response.get_json()["data"]
-        self.assertEqual(len(data_provider.PAL_DATA), len(payload["dict"]))
-        self.assertIn("Boss_Anubis", payload["dict"])
-        row = payload["dict"]["BOSS_KingWhale_otomo"]
-        self.assertIn(row, payload["arr"])
+        rows = {row["InternalName"]: row for row in response.get_json()["pals"]}
+        self.assertEqual(len(data_provider.PAL_DATA), len(rows))
+        self.assertIn("Boss_Anubis", rows)
+        row = rows["BOSS_KingWhale_otomo"]
         self.assertEqual("KingWhale", row["FamilyID"])
         self.assertEqual("boss", row["VariantKind"])
         self.assertEqual(["boss", "otomo"], row["VariantTags"])
@@ -142,10 +141,7 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertEqual("KingWhale", row["PaldeckRecordID"])
         self.assertTrue(row["RegularlyObtainable"])
         self.assertEqual(["capture-replace"], row["ObtainMethods"])
-        self.assertEqual(
-            payload["dict"]["PinkCat"]["I18n"],
-            payload["dict"]["BOSS_PinkCat"]["I18n"],
-        )
+        self.assertEqual(rows["PinkCat"]["I18n"], rows["BOSS_PinkCat"]["I18n"])
 
     def test_selected_pal_payload_contains_exact_metadata(self):
         payload = pal_payload(make_pal("BOSS_KingWhale_otomo"))

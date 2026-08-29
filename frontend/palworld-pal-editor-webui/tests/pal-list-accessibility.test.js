@@ -44,19 +44,20 @@ function row(html, value) {
 
 // The roster the list renders: keys in `stores/rosters`, Pals in `stores/pals`.
 async function showRoster(rows = pals, { edited = [] } = {}) {
-  const [{ default: PalList }, { usePalEditorStore }, { usePalsStore }, { useRostersStore }] =
+  const [{ default: PalList }, { usePalEditorStore }, { usePalsStore }, { useRostersStore }, { useCatalogsStore }] =
     await Promise.all([
       loadVueModule("/src/components/PalList.vue"),
       loadVueModule("/src/stores/paleditor.js"),
       loadVueModule("/src/stores/pals.js"),
       loadVueModule("/src/stores/rosters.js"),
+      loadVueModule("/src/stores/catalogs.js"),
     ]);
   const pinia = createPinia();
   setActivePinia(pinia);
   const store = usePalEditorStore();
   const palsStore = usePalsStore();
   const rostersStore = useRostersStore();
-  store.PAL_STATIC_DATA = { TestPal: { Paldeck: 1 } };
+  useCatalogsStore().pals = [{ InternalName: "TestPal", Paldeck: 1 }];
   palsStore.upsertSummaries(rows);
   for (const recordKey of edited) palsStore.markEdited(recordKey);
   rostersStore.recordKeysByRoster.set("player:player-1", rows.map(row => row.recordKey));

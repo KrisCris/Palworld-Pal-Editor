@@ -7,6 +7,7 @@ import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { readStorage, writeStorage } from '@/services/backend-connection'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const TYPE_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_TYPES'
@@ -41,6 +42,7 @@ const props = defineProps({
   equipment: Boolean,
 })
 const emit = defineEmits(['close', 'save'])
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const query = ref('')
 const selectedTypes = ref(readStoredArray(TYPE_FILTER_STORAGE_KEY).filter(value => typeof value === 'string'))
@@ -124,7 +126,7 @@ const clearFilters = () => {
 }
 watch(selectedTypes, value => writeStorage(localStorage, TYPE_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
 watch(selectedRarities, value => writeStorage(localStorage, RARITY_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
-const selectedItem = computed(() => palStore.ITEM_STATIC_DATA[selectedId.value])
+const selectedItem = computed(() => catalogsStore.itemsByName[selectedId.value])
 const isStackable = computed(() => (selectedItem.value?.MaxStackCount || 1) > 1)
 const maximum = computed(() => {
   if (props.equipment || !isStackable.value) return 1

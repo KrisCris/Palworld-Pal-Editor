@@ -10,9 +10,11 @@ import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 const appStore = useAppStore()
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 // The Pal this page edits. It is the object in the Pal cache, so the `v-model`
@@ -23,7 +25,7 @@ const updateRange = (name, value) => palStore.updatePal({ target: { name, value 
 // Pal's: it only becomes the Pal's when the apply button is pressed.
 const speciesSelection = ref('')
 watch(() => palsStore.selectedRecordKey, () => {
-  speciesSelection.value = palStore.PAL_STATIC_DATA[pal.value?.CharacterID]
+  speciesSelection.value = catalogsStore.palsByName[pal.value?.CharacterID]
     ? pal.value.CharacterID
     : pal.value?.DataAccessKey ?? ''
 }, { immediate: true })
@@ -66,7 +68,7 @@ const currentSkillIds = () => [
 ];
 
 const activeSkillOptions = () => palStore.filterSkillOptions(
-  palStore.ACTIVE_SKILLS_LIST,
+  catalogsStore.activeSkills,
   currentSkillIds(),
   palStore.HIDE_INVALID_OPTIONS,
   pal.value.IsHuman,
@@ -85,11 +87,11 @@ const showEquipMasteredAction = skill => !pal.value.EquipWaza.includes(skill);
 
 const canEquipMasteredSkill = skill => (
   showEquipMasteredAction(skill)
-  && canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])
+  && canSelectActiveSkill(catalogsStore.activeSkillsByName[skill])
 );
 
 const activeSkillEquipTitle = skill => {
-  if (!canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])) {
+  if (!canSelectActiveSkill(catalogsStore.activeSkillsByName[skill])) {
     return palStore.getTranslatedText('Message_Skill_Not_Assignable');
   }
   if (isEquipSkillFull()) {
@@ -124,7 +126,7 @@ const isMinSuit = key => {
 };
 
 const availableSkins = () => filterPalSkins(
-  palStore.SKIN_DATA_LIST,
+  catalogsStore.skins,
   pal.value,
   palStore.HIDE_INVALID_OPTIONS,
 );
@@ -172,7 +174,7 @@ const passiveSkillCategoryKey = group => ({
   partner: 'Editor_Passive_Category_Partner',
 }[group] || 'Editor_Passive_Skills')
 
-const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST
+const passiveSkillOptions = () => catalogsStore.passiveSkills
   .filter(skill => !palStore.HIDE_INVALID_OPTIONS || !skill.Invalid)
   .map(skill => ({
   value: skill.InternalName,
@@ -230,7 +232,7 @@ const portraitBorder = pal => pal.IsAwakening
     <section data-testid="pal-basic-info" class="pal-basic-info editor-surface">
       <header class="editor-summary">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)"
-          :alt="palStore.PAL_STATIC_DATA[pal.DataAccessKey]?.I18n || pal.DataAccessKey"
+          :alt="catalogsStore.palsByName[pal.DataAccessKey]?.I18n || pal.DataAccessKey"
           size="5.5rem" :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
@@ -257,7 +259,7 @@ const portraitBorder = pal => pal.IsAwakening
             {{ currentPaldeck() ? `PAL ${currentPaldeck()}` : palStore.getTranslatedText("Editor_Basic_Info") }}
           </span>
           <h2 class="editor-summary__title" :title="pal.InternalName">
-            {{ palStore.PAL_STATIC_DATA[pal.DataAccessKey]?.I18n ||
+            {{ catalogsStore.palsByName[pal.DataAccessKey]?.I18n ||
               pal.DataAccessKey }}
           </h2>
           <code class="editor-summary__meta">{{ pal.InternalName }}</code>
@@ -301,7 +303,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="editor-field__control">
             <PalSpeciesSelector
               v-model="speciesSelection"
-              :rows="palStore.PAL_STATIC_DATA_LIST"
+              :rows="catalogsStore.pals"
               :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
               :locale="appStore.locale"
               @apply="palStore.changeSpecies"
@@ -558,7 +560,7 @@ const portraitBorder = pal => pal.IsAwakening
     </div>
 
     <section class="pal-panel editor-surface"
-      v-if="palStore.PAL_STATIC_DATA[pal.DataAccessKey]?.Suitabilities">
+      v-if="catalogsStore.palsByName[pal.DataAccessKey]?.Suitabilities">
       <div class="pal-panel__header">
         <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
         <button class="editor-button editor-button--primary" type="button"
@@ -591,14 +593,14 @@ const portraitBorder = pal => pal.IsAwakening
         </div>
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in pal.PassiveSkillList" :key="skill"
-            :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
-            <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span>
+            :title="catalogsStore.passiveSkillsByName[skill]?.I18n[1] || skill">
+            <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`]" aria-hidden="true"></span>
             <div class="skill-card__identity">
               <div class="skill-card__title">
-                <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <strong>{{ catalogsStore.passiveSkillsByName[skill]?.I18n[0] || skill }}</strong>
                 <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
-              <small>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</small>
+              <small>{{ catalogsStore.passiveSkillsByName[skill]?.I18n[1] || skill }}</small>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.removePassiveSkill" :name="skill"
@@ -632,15 +634,15 @@ const portraitBorder = pal => pal.IsAwakening
         </div>
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in pal.EquipWaza" :key="skill"
-            :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-            <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
-              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
+            :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
+            <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
+              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
-                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
                 <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
-              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
+              <small>{{ activeSkillMetadata(catalogsStore.activeSkillsByName[skill]) }}</small>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.removeEquipWaza" :name="skill"
@@ -657,22 +659,22 @@ const portraitBorder = pal => pal.IsAwakening
               'skill-card--actionable': showEquipMasteredAction(skill),
               'skill-card--equipable': canEquipMasteredSkill(skill),
             }]"
-            :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
-            <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
-              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
+            :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
+            <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
+              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
-                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
                 <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
-              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
+              <small>{{ activeSkillMetadata(catalogsStore.activeSkillsByName[skill]) }}</small>
             </div>
             <div v-if="showEquipMasteredAction(skill)" class="skill-card__actions" :title="activeSkillEquipTitle(skill)">
               <button
                 type="button" class="editor-button editor-button--icon skill-card__equip"
                 @click="palStore.addEquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
-                :disabled="!canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill]) || isEquipSkillFull()"><UiIcon name="plus" /></button>
+                :disabled="!canSelectActiveSkill(catalogsStore.activeSkillsByName[skill]) || isEquipSkillFull()"><UiIcon name="plus" /></button>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.removeMasteredWaza" :name="skill"
@@ -692,7 +694,7 @@ const portraitBorder = pal => pal.IsAwakening
                 :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
                 :disabled="!palStore.PAL_ACTIVE_SELECTED_ITEM
                   || pal.MasteredWaza.includes(palStore.PAL_ACTIVE_SELECTED_ITEM)
-                  || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
+                  || !canSelectActiveSkill(catalogsStore.activeSkillsByName[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
             </template>
           </SearchSelect>
         </div>

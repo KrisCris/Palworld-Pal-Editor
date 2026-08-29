@@ -2,9 +2,11 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useResearchStore } from '@/stores/research'
 
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const researchStore = useResearchStore()
 const selectedCategoryId = ref('Handcraft')
@@ -121,7 +123,7 @@ const translated = key => palStore.getTranslatedText(key)
 const categoryIcon = category => palStore.backendAssetUrl(`/image/lab/category-${category}`)
 const researchIcon = research => palStore.backendAssetUrl(`/image/lab/${research.IconKey}`)
 const formatNumber = value => new Intl.NumberFormat().format(value ?? 0)
-const materialName = material => palStore.ITEM_STATIC_DATA[material.ItemId]?.Name ?? material.ItemId
+const materialName = material => catalogsStore.itemsByName[material.ItemId]?.Name ?? material.ItemId
 
 const updateResearchScale = async () => {
   await nextTick()

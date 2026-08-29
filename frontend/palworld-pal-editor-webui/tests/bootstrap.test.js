@@ -43,6 +43,15 @@ const appConfigFor = defaultSavePath => ({
 });
 // REST resources answer with the resource itself, not the old envelope.
 const resource = body => ({ data: body });
+// The five §8.4 catalogs, each empty. No test here asserts on their contents --
+// what they assert is that the editor does not open until all five have answered.
+const emptyCatalog = url => ({
+    "/api/catalogs/pals": { pals: [] },
+    "/api/catalogs/skills": { passive: [], active: [] },
+    "/api/catalogs/items": { items: [] },
+    "/api/catalogs/technologies": { byLevel: {} },
+    "/api/catalogs/skins": { skins: [] },
+}[url.slice(url.indexOf("/api/catalogs/"))]);
 
 function newStore({ preserveStorage = false } = {}) {
     if (!preserveStorage) values.clear();
@@ -165,11 +174,7 @@ function mockBackend({
                 rows.find(row => row.recordKey === recordKey) ?? { recordKey },
             ));
         }
-        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
-            return reply({ dict: {}, arr: [] });
-        }
-        if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
-        if (url.endsWith("skin_data")) return reply({ arr: [] });
+        if (url.includes("/api/catalogs/")) return resource(emptyCatalog(url));
         // Selecting the base roster opens the research page with it.
         if (url.endsWith("/api/guild-research")) {
             return resource({ CategoryOrder: [], Guilds: [] });
@@ -479,7 +484,10 @@ test("connectBackend is unavailable while editing", async () => {
 
     assert.equal(session.appState, "editor");
     assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
-    assert.equal(calls.at(-1)[1], "/api/save/skin_data");
+    // The catalogs are the last thing bootstrap reads, and they go out together,
+    // so which of the five answers last is not this test's business -- that no
+    // sixth request was made to the refused backend is.
+    assert.match(calls.at(-1)[1], /^\/api\/catalogs\//);
 });
 
 test("bootstrap asks for a password when no remembered token exists", async () => {
@@ -816,11 +824,7 @@ test("language changes refresh only the active roster and re-fetch others lazily
                 })]
                 : []);
         }
-        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
-            return reply({ dict: {}, arr: [] });
-        }
-        if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
-        if (url.endsWith("skin_data")) return reply({ arr: [] });
+        if (url.includes("/api/catalogs/")) return resource(emptyCatalog(url));
         throw new Error(`Unexpected GET ${url}`);
     };
 

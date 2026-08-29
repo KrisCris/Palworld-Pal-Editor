@@ -12,6 +12,7 @@ import {
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
+import { useCatalogsStore } from "../src/stores/catalogs.js";
 import { usePalsStore } from "../src/stores/pals.js";
 import { useSessionStore } from "../src/stores/session.js";
 
@@ -157,13 +158,11 @@ test("public updatePal blocks non-assignable skill additions before loading or P
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
-    store.ACTIVE_SKILLS = {
-        [humanPunch]: {
-            InternalName: humanPunch,
-            Invalid: false,
-            Assignable: false,
-        },
-    };
+    useCatalogsStore().activeSkills = [{
+        InternalName: humanPunch,
+        Invalid: false,
+        Assignable: false,
+    }];
     selectPal({ IsHuman: false });
 
     const patchCalls = [];
@@ -188,14 +187,12 @@ test("public updatePal allows known non-assignable skills in cheat mode", async 
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const skillId = "EPalWazaID::Cheat_Test";
-    store.ACTIVE_SKILLS = {
-        [skillId]: {
-            InternalName: skillId,
-            Invalid: true,
-            Disabled: true,
-            Assignable: false,
-        },
-    };
+    useCatalogsStore().activeSkills = [{
+        InternalName: skillId,
+        Invalid: true,
+        Disabled: true,
+        Assignable: false,
+    }];
     selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
 
@@ -223,7 +220,7 @@ test("public updatePal allows known non-assignable skills in cheat mode", async 
 test("public updatePal rejects unknown skills in cheat mode", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
-    store.ACTIVE_SKILLS = {};
+    useCatalogsStore().activeSkills = [];
     selectPal({ IsHuman: false });
     store.HIDE_INVALID_OPTIONS = false;
 
@@ -247,14 +244,12 @@ test("public updatePal allows human-only skills for a selected human", async t =
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
-    store.ACTIVE_SKILLS = {
-        [humanPunch]: {
-            InternalName: humanPunch,
-            Invalid: false,
-            Assignable: false,
-            AssignableToHumans: true,
-        },
-    };
+    useCatalogsStore().activeSkills = [{
+        InternalName: humanPunch,
+        Invalid: false,
+        Assignable: false,
+        AssignableToHumans: true,
+    }];
     selectPal({ IsHuman: true });
 
     const patchCalls = [];
@@ -277,13 +272,11 @@ test("public updatePal still sends removals and unrelated updates", async t => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
     const humanPunch = "EPalWazaID::Human_Punch";
-    store.ACTIVE_SKILLS = {
-        [humanPunch]: {
-            InternalName: humanPunch,
-            Invalid: false,
-            Assignable: false,
-        },
-    };
+    useCatalogsStore().activeSkills = [{
+        InternalName: humanPunch,
+        Invalid: false,
+        Assignable: false,
+    }];
 
     const patchCalls = [];
     const originalPatch = axios.patch;

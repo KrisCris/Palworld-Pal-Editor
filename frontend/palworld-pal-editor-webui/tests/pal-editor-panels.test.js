@@ -49,8 +49,8 @@ test("skill card rows stay compact and do not add a redundant warning row", () =
 });
 
 test("non-Pal passive skills stay cheat-only without a duplicate UI warning", () => {
-  assert.match(source, /PASSIVE_SKILLS_LIST\s*\.filter\(skill => !palStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
-  assert.doesNotMatch(source, /<UiIcon v-if="palStore\.PASSIVE_SKILLS\[skill\]\?\.Invalid" name="warning"/);
+  assert.match(source, /catalogsStore\.passiveSkills\s*\.filter\(skill => !palStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
+  assert.doesNotMatch(source, /<UiIcon v-if="catalogsStore\.passiveSkillsByName\[skill\]\?\.Invalid" name="warning"/);
   assert.doesNotMatch(source, /skill-warning-icon/);
 });
 

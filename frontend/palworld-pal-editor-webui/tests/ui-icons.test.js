@@ -4,6 +4,7 @@ import test from "node:test";
 
 import { createPinia, setActivePinia } from "pinia";
 
+import { useCatalogsStore } from "../src/stores/catalogs.js";
 import { skillBadges, usePalEditorStore } from "../src/stores/paleditor.js";
 
 globalThis.localStorage ??= {
@@ -71,9 +72,7 @@ test("presentation helpers return asset keys and CSS tiers instead of glyphs", (
 test("Pal element helpers return canonical keys for image rendering", () => {
     setActivePinia(createPinia());
     const store = usePalEditorStore();
-    store.PAL_STATIC_DATA = {
-        TestPal: { Elements: ["Leaf", "Earth"] },
-    };
+    useCatalogsStore().pals = [{ InternalName: "TestPal", Elements: ["Leaf", "Earth"] }];
 
     assert.deepEqual(store.palElementKeys("TestPal"), ["Grass", "Ground"]);
     assert.deepEqual(store.palElementKeys("MissingPal"), []);

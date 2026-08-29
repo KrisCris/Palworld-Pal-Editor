@@ -1,13 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
   item: { type: Object, required: true },
 })
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
-const pal = computed(() => palStore.PAL_STATIC_DATA[props.item.PalGearCharacterId])
+const pal = computed(() => catalogsStore.palsByName[props.item.PalGearCharacterId])
 const iconKey = computed(() => pal.value?.IconKey || pal.value?.IconAccessKey)
 const name = computed(() => pal.value?.I18n || props.item.PalGearCharacterId)
 </script>

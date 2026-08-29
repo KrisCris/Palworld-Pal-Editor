@@ -2,12 +2,14 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
   type: { type: String, required: true, validator: value => ['active', 'passive'].includes(value) },
 })
 const emit = defineEmits(['close'])
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const dialog = ref(null)
 const templateName = ref('')
@@ -27,8 +29,8 @@ const skillCards = template => (template.Type === 'passive'
   : template.EquipWaza || []
 ).map(skill => {
   const data = template.Type === 'passive'
-    ? palStore.PASSIVE_SKILLS[skill]
-    : palStore.ACTIVE_SKILLS[skill]
+    ? catalogsStore.passiveSkillsByName[skill]
+    : catalogsStore.activeSkillsByName[skill]
   return {
     id: skill,
     name: data?.I18n?.[0] || skill,

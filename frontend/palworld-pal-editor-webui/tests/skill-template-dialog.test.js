@@ -15,19 +15,21 @@ globalThis.localStorage = {
 after(closeVueServer);
 
 test("skill templates keep overflow hidden until its card is explicitly expanded", async () => {
-  const [{ default: SkillTemplateDialog }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: SkillTemplateDialog }, { usePalEditorStore }, { useCatalogsStore }] = await Promise.all([
     loadVueModule("/src/components/SkillTemplateDialog.vue"),
     loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/catalogs.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
   const store = usePalEditorStore();
   const skills = Array.from({ length: 6 }, (_, index) => `Passive${index + 1}`);
   store.SKILL_TEMPLATES = [{ Id: "worker", Name: "Worker passives", Type: "passive", PassiveSkillList: skills }];
-  store.PASSIVE_SKILLS = Object.fromEntries(skills.map((skill, index) => [skill, {
+  useCatalogsStore().passiveSkills = skills.map((skill, index) => ({
+    InternalName: skill,
     I18n: [`Passive ${index + 1}`, `Effect ${index + 1}`],
     Rating: index + 1,
-  }]));
+  }));
 
   const html = await renderVue(SkillTemplateDialog, { pinia, props: { type: "passive" } });
   assert.match(html, /role="dialog"/);
@@ -52,9 +54,10 @@ test("skill templates keep overflow hidden until its card is explicitly expanded
 });
 
 test("active template cards only render equipped skills with compact combat metadata", async () => {
-  const [{ default: SkillTemplateDialog }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: SkillTemplateDialog }, { usePalEditorStore }, { useCatalogsStore }] = await Promise.all([
     loadVueModule("/src/components/SkillTemplateDialog.vue"),
     loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/catalogs.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
@@ -64,10 +67,10 @@ test("active template cards only render equipped skills with compact combat meta
     EquipWaza: ["EPalWazaID::AirCanon"],
     MasteredWaza: ["EPalWazaID::PowerShot"],
   }];
-  store.ACTIVE_SKILLS = {
-    "EPalWazaID::AirCanon": { I18n: ["Air Cannon", "Air"], Element: "Neutral", Power: 25, CT: 2 },
-    "EPalWazaID::PowerShot": { I18n: ["Power Shot", "Power"], Element: "Neutral", Power: 35, CT: 4 },
-  };
+  useCatalogsStore().activeSkills = [
+    { InternalName: "EPalWazaID::AirCanon", I18n: ["Air Cannon", "Air"], Element: "Neutral", Power: 25, CT: 2 },
+    { InternalName: "EPalWazaID::PowerShot", I18n: ["Power Shot", "Power"], Element: "Neutral", Power: 35, CT: 4 },
+  ];
 
   const html = await renderVue(SkillTemplateDialog, { pinia, props: { type: "active" } });
   assert.match(html, /Air Cannon/);

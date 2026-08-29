@@ -3,10 +3,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import InventoryItemSlot from '@/components/InventoryItemSlot.vue'
 import ItemSelectDialog from '@/components/ItemSelectDialog.vue'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePlayersStore } from '@/stores/players'
 import { useRostersStore } from '@/stores/rosters'
 
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -32,8 +34,8 @@ const currentBag = computed(() => containers.value[bagTab.value])
 const armorSlots = computed(() => containers.value.armor?.slots || [])
 const primaryArmorSlots = computed(() => armorSlots.value.filter(slot => [0, 1, 4, 5, 8].includes(slot.slot_index)))
 const accessorySlots = computed(() => armorSlots.value.filter(slot => [2, 3, 6, 7].includes(slot.slot_index)))
-const itemFor = slot => palStore.ITEM_STATIC_DATA[slot?.static_id]
-const detailsItemFor = slot => palStore.ITEM_STATIC_DATA[slot?.effective_static_id] || itemFor(slot)
+const itemFor = slot => catalogsStore.itemsByName[slot?.static_id]
+const detailsItemFor = slot => catalogsStore.itemsByName[slot?.effective_static_id] || itemFor(slot)
 const slotName = slot => itemFor(slot)?.Name || slot?.static_id || palStore.getTranslatedText('Inventory_Empty')
 const armorLabel = slot => palStore.getTranslatedText(armorLabels[slot.slot_index] || 'Inventory_Accessory')
 const isEditable = kind => containers.value[kind]?.editable !== false
@@ -44,7 +46,7 @@ const candidates = computed(() => {
     : kind === 'weapons' ? 'Weapon'
       : kind === 'food' ? 'Food'
         : kind === 'key_items' ? 'KeyItem' : null
-  return palStore.ITEM_STATIC_DATA_LIST.filter(item => {
+  return catalogsStore.items.filter(item => {
     if (!item.Legal || item.Disabled || item.MonsterOnly || item.Group === 'None' || item.DynamicType === 'egg') return false
     if (kind === 'common') return item.Group !== 'KeyItem'
     return item.Group === required

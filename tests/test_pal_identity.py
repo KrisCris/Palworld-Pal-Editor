@@ -277,13 +277,13 @@ class PalIdentityTests(unittest.TestCase):
             token = create_access_token(identity="test", expires_delta=False)
         with app.test_client() as client:
             response = client.get(
-                "/api/save/tech_data",
+                "/api/catalogs/technologies",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
         items = [
             item
-            for level in response.get_json()["data"]["techLvDict"].values()
+            for level in response.get_json()["byLevel"].values()
             for item in level
         ]
         item = next(

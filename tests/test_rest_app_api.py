@@ -1,10 +1,13 @@
-"""The contract of the app-level resources (spec §8.6).
+"""The contract of the app-level and catalog resources (spec §8.4, §8.6).
 
-Three rules worth pinning, all of them about what the backend refuses to do:
+Four rules worth pinning, all of them about what the backend refuses to do:
 browsing for a save does not move any server-side cursor, a config PATCH writes
-only the two preferences it names, and the bootstrap read answers before there is
-a token to answer with. The guild-research cases cover the route's own scope
-validation; `test_guild_lab_research.py` owns what completion does to the save.
+only the two preferences it names, the bootstrap read answers before there is a
+token to answer with, and the catalogs answer with no save open at all. The
+guild-research cases cover the route's own scope validation;
+`test_guild_lab_research.py` owns what completion does to the save. What each
+catalog's rows actually contain belongs to the tests for that data --
+`test_pal_family_provider.py`, `test_game_skill_data.py`, `test_pal_identity.py`.
 """
 
 from pathlib import Path
@@ -219,3 +222,43 @@ class GuildResearchResourceTests(unittest.TestCase):
                 self.assertEqual(
                     "RESEARCH_NOT_AVAILABLE", response.get_json()["error"]["code"]
                 )
+
+
+class CatalogResourceTests(unittest.TestCase):
+    """§8.4's one real rule: the catalogs are the game's data, not the save's.
+
+    Every one of them used to be reachable only from a `/api/save/` route, which
+    said nothing about whether opening a save was a precondition. It never was,
+    and this is what keeps it that way.
+    """
+
+    CATALOG_KEYS = {
+        "pals": {"pals"},
+        "skills": {"passive", "active"},
+        "items": {"items"},
+        "technologies": {"byLevel"},
+        "skins": {"skins"},
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.previous_manager = SaveManager._instance
+        SaveManager._instance = None
+        app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
+        with app.app_context():
+            cls.token = create_access_token(identity="test", expires_delta=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        SaveManager._instance = cls.previous_manager
+
+    def test_every_catalog_answers_with_no_save_loaded(self):
+        client = app.test_client()
+        headers = {"Authorization": f"Bearer {self.token}"}
+        for name, keys in self.CATALOG_KEYS.items():
+            with self.subTest(catalog=name):
+                response = client.get(f"/api/catalogs/{name}", headers=headers)
+                self.assertEqual(200, response.status_code)
+                body = response.get_json()
+                self.assertEqual(keys, set(body))
+                self.assertTrue(all(body[key] for key in keys))

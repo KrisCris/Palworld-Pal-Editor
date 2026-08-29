@@ -84,11 +84,15 @@ test("technology levels partition normal and ancient lanes without mutating stor
 });
 
 test("technology lanes render a stable non-mutating partition", async () => {
-    const [{ default: PlayerEditor }, { usePalEditorStore }, { usePlayersStore }, { useRostersStore }] = await Promise.all([
+    const [
+        { default: PlayerEditor }, { usePalEditorStore }, { usePlayersStore },
+        { useRostersStore }, { useCatalogsStore },
+    ] = await Promise.all([
         loadVueModule("/src/components/PlayerEditor.vue"),
         loadVueModule("/src/stores/paleditor.js"),
         loadVueModule("/src/stores/players.js"),
         loadVueModule("/src/stores/rosters.js"),
+        loadVueModule("/src/stores/catalogs.js"),
     ]);
     const pinia = createPinia();
     setActivePinia(pinia);
@@ -118,7 +122,7 @@ test("technology lanes render a stable non-mutating partition", async () => {
         { InternalName: "NormalTwo", IconAccessKey: "n2", I18n: { Name: "Normal Two", Type: "Normal" }, BossTechnology: false },
     ];
     const originalOrder = items.map(item => item.InternalName);
-    store.TECH_LV_DICT = { 1: items };
+    useCatalogsStore().technologiesByLevel = { 1: items };
 
     const html = await renderVue(PlayerEditor, { pinia });
     const normal = html.match(/technology-lane--normal[^>]*>([\s\S]*?)<\/div><div class="technology-lane technology-lane--ancient/)[1];

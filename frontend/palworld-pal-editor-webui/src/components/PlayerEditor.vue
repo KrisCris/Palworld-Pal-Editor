@@ -32,9 +32,11 @@ import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import NumberStepper from '@/components/modules/NumberStepper.vue'
 import TechCard from '@/components/modules/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePlayersStore } from '@/stores/players'
 
+const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const playersStore = usePlayersStore()
 const player = computed(() => playersStore.selectedPlayer)
@@ -60,7 +62,7 @@ const statusEffect = (name, metadata) => {
   const value = metadata.values?.[rank] ?? rank
   return `+${Number.isInteger(value) ? value : Number(value).toFixed(1)}${metadata.unit === 'percent' ? '%' : ''}`
 }
-const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(([level, items]) => ({
+const technologyRows = computed(() => Object.entries(catalogsStore.technologiesByLevel).map(([level, items]) => ({
   level,
   normal: items.filter(item => !item.BossTechnology),
   ancient: items.filter(item => item.BossTechnology),
