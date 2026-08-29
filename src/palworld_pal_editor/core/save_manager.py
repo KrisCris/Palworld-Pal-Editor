@@ -65,7 +65,7 @@ class PalIdentityConflict(ValueError):
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
     _instance = None
-    _file_path: Optional[Path]
+    file_path: Optional[Path]
     _raw_gvas: Optional[bytes]
     _save_type: Optional[int]
 
@@ -91,7 +91,7 @@ class SaveManager:
     def __init__(self):
         if not hasattr(self, "initialized"):
             self.initialized = True
-            self._lock = threading.RLock()
+            self.session_lock = threading.RLock()
             self.reset()
 
     def reset(self) -> None:
@@ -101,7 +101,7 @@ class SaveManager:
         fails to parse leaves an empty session instead of the half-read wreckage
         of this attempt mixed with the previous save.
         """
-        self._file_path = None
+        self.file_path = None
         self._raw_gvas = None
         self._save_type = None
         self.gvas_file = None
@@ -127,7 +127,7 @@ class SaveManager:
         self.load_warnings: list[str] = []
 
     def open(self, file_path: str) -> Optional[GvasFile]:
-        with self._lock:
+        with self.session_lock:
             self.reset()
             try:
                 gvas_file = self._open(file_path)
@@ -141,9 +141,9 @@ class SaveManager:
             return gvas_file
 
     def _open(self, file_path: str) -> Optional[GvasFile]:
-        self._file_path = Path(file_path).resolve()
+        self.file_path = Path(file_path).resolve()
 
-        level_sav_path = self._file_path / "Level.sav"
+        level_sav_path = self.file_path / "Level.sav"
 
         if not level_sav_path.exists():
             LOGGER.error(f"Save file does not exist: {level_sav_path}.")
@@ -224,7 +224,7 @@ class SaveManager:
         return self.gvas_file
 
     def save(self, file_path: str) -> bool:
-        with self._lock:
+        with self.session_lock:
             return self._save(file_path)
 
     def _save(self, file_path: str) -> bool:
@@ -252,7 +252,7 @@ class SaveManager:
             try:
                 if output_path.exists():
                     LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
-                    shutil.copytree(self._file_path, backup_dir, 
+                    shutil.copytree(self.file_path, backup_dir, 
                                     ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
                     global_storage_path = output_path.parent / "GlobalPalStorage.sav"
                     if (
@@ -419,7 +419,7 @@ class SaveManager:
         temp.replace(target)
     
     def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
-        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
+        player_path: Path = self.file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
         LOGGER.info(f"Loading Player SAV: {player_path}")
         if not player_path.exists():
             LOGGER.error(f"Player SAV {str(player_path.absolute())} not exist")
@@ -436,7 +436,7 @@ class SaveManager:
             return False
 
         gvas_file, compression_times = player_entity.PlayerGVAS
-        output_path = (save_path or self._file_path) / "Players"
+        output_path = (save_path or self.file_path) / "Players"
         if not output_path.exists() and output_path.parent.exists():
             LOGGER.warning(f"Player path does not exist: {output_path}")
             output_path.mkdir(parents=True, exist_ok=True)
@@ -587,7 +587,7 @@ class SaveManager:
             )
 
     def _load_external_storages(self) -> None:
-        players_path = self._file_path / "Players"
+        players_path = self.file_path / "Players"
         for dps_path in sorted(players_path.glob("*_dps.sav")):
             owner_hex = dps_path.stem.removesuffix("_dps")
             try:
@@ -607,7 +607,7 @@ class SaveManager:
                 self.load_warnings.append(warning)
                 LOGGER.warning(warning)
 
-        gps_path = self._file_path.parent / "GlobalPalStorage.sav"
+        gps_path = self.file_path.parent / "GlobalPalStorage.sav"
         if not gps_path.exists():
             return
         try:

@@ -326,11 +326,11 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         str(gps_clone.pal.InstanceId),
         str(world_clone.pal.InstanceId),
     ]
-    assert manager.save(str(manager._file_path)) is True
+    assert manager.save(str(manager.file_path)) is True
 
     SaveManager._instance = None
     reopened = SaveManager()
-    assert reopened.open(str(manager._file_path)) is not None
+    assert reopened.open(str(manager.file_path)) is not None
     for record_key, instance_id in zip(clone_keys, clone_ids):
         record = reopened.get_record(record_key)
         assert record is not None
@@ -377,7 +377,7 @@ def test_save_transaction_restores_level_dps_and_global_on_replace_failure(
     manager = open_copied_world(tmp_path, with_global=True)
     manager.create_pal(LOSSY_UID, f"dps:{LOSSY_UID}")
     manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
-    level_path = manager._file_path / "Level.sav"
+    level_path = manager.file_path / "Level.sav"
     dps_path = manager._dps_storages[f"dps:{LOSSY_UID}"].path
     global_path = manager._global_palbox.path
     original = {
@@ -397,7 +397,7 @@ def test_save_transaction_restores_level_dps_and_global_on_replace_failure(
 
     monkeypatch.setattr(manager, "_replace_staged_output", fail_second_replace)
 
-    assert manager.save(str(manager._file_path)) is False
+    assert manager.save(str(manager.file_path)) is False
     assert replace_count == 2
     assert {path: path.read_bytes() for path in original} == original
 
@@ -415,10 +415,10 @@ def test_base_worker_creation_targets_and_create(tmp_path):
     assert created in manager.records_for_roster("PAL_BASE_WORKER_BTN")
     assert manager.get_record(created.record_key) is created
 
-    assert manager.save(str(manager._file_path)) is True
+    assert manager.save(str(manager.file_path)) is True
     SaveManager._instance = None
     reopened = SaveManager()
-    assert reopened.open(str(manager._file_path)) is not None
+    assert reopened.open(str(manager.file_path)) is not None
     persisted = reopened.get_record(created.record_key)
     assert persisted is not None
     assert str(persisted.pal.InstanceId) == str(created.pal.InstanceId)

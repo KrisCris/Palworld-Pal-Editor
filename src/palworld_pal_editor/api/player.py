@@ -3,22 +3,14 @@ import traceback
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
+from palworld_pal_editor.api.pals import guid_string_or_none as _guid_string_or_none
+from palworld_pal_editor.api.players import player_resource as player_to_dict
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
 
-
-def _guid_string_or_none(value):
-    if value is None:
-        return None
-    text = str(value)
-    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
-        return None
-    return text
 
 
 @player_blueprint.route("/player_pals", methods=["POST"])
@@ -121,12 +113,7 @@ def get_player_data():
         LOGGER.warning(f"Player {PlayerUId} not exist")
         return reply(1, None, f"Player {PlayerUId} not exist")
 
-    player_dict = player_to_dict(player_entity)
-    player_dict["UnlockedRecipeTechnologyNames"] = (
-        player_entity.UnlockedRecipeTechnologyNames or []
-    )
-
-    return reply(0, player_dict)
+    return reply(0, player_to_dict(player_entity))
 
 
 @player_blueprint.route("/inventory", methods=["POST"])
@@ -185,30 +172,6 @@ def patch_player_inventory_slot():
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Inventory slot update failed: {context}\n{stack_trace}")
         return reply(1, None, "Unable to update this inventory slot")
-
-
-def player_to_dict(player: PlayerEntity):
-    return {
-        "InstanceId": str(player.PlayerUId),
-        "GroupId": str(player.group_id) if player.group_id else None,
-        "NickName": player.NickName or "",
-        "Level": player.Level or 1,
-        "Exp": player.Exp or 0,
-        "UnusedStatusPoint": player.UnusedStatusPoint or 0,
-        "StatusPoints": player.StatusPoints,
-        "ExStatusPoints": player.ExStatusPoints,
-        "StatusPointTotals": player.StatusPointTotals,
-        "StatusPointMinimums": player.StatusPointMinimums,
-        "StatusPointMaximums": player.StatusPointMaximums,
-        "StatusPointTotalMaximums": PalObjects.StatusPointMaximums,
-        "StatusPointMetadata": DataProvider.get_player_status_data(),
-        "HasViewingCage": player.has_viewing_cage(),
-        "OtomoCharacterContainerId": str(player.OtomoCharacterContainerId),
-        "PalStorageContainerId": str(player.PalStorageContainerId),
-        "UnlockedRecipeTechnologyNames": [],
-        "TechnologyPoint": player.TechnologyPoint or 0,
-        "bossTechnologyPoint": player.bossTechnologyPoint or 0,
-    }
 
 
 @player_blueprint.route("/player_data", methods=["PATCH"])

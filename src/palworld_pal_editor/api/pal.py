@@ -5,6 +5,7 @@ import uuid
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
+from palworld_pal_editor.api.pals import guid_string_or_none as _guid_string_or_none
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
 from palworld_pal_editor.core.pal_objects import dumps
@@ -454,15 +455,6 @@ def _record_location(manager: SaveManager, record) -> dict:
         "ContainerLabel": location["ContainerLabel"],
         "SlotIndex": location["SlotIndex"],
     }
-
-
-def _guid_string_or_none(value) -> str | None:
-    if value is None:
-        return None
-    text = str(value)
-    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
-        return None
-    return text
 
 
 @pal_blueprint.route("/dump_data", methods=["POST"])

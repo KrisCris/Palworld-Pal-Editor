@@ -30,7 +30,7 @@ def session_state(manager: SaveManager) -> dict:
     return {
         name: len(value) if isinstance(value, Sized) else value
         for name, value in vars(manager).items()
-        if name not in ("_lock", "initialized")
+        if name not in ("session_lock", "initialized")
     }
 
 

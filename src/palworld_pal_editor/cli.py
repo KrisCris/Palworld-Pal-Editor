@@ -156,7 +156,7 @@ def lang(i18n_code):
         LOGGER.warning(f"I18n code {i18n_code} not available. Select from {DataProvider.get_i18n_options()}")
 
 def save():
-    SaveManager().save(SaveManager()._file_path)
+    SaveManager().save(SaveManager().file_path)
 
 def print_example():
     msg = r"""
