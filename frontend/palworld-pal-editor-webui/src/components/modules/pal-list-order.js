@@ -9,8 +9,11 @@ const locationOrder = Object.freeze({
   other: 2,
   base: 3,
   unknown: 4,
-  anomaly: 5,
 });
+
+// A Pal whose record occupies no container has no ContainerKind at all; it sorts
+// with the unknown containers, at the end.
+const kindOrder = kind => locationOrder[kind] ?? locationOrder.unknown;
 
 export const filterPalPriority = (pal, priority) => (
   priority === "all" || Number(pal?.FavoriteIndex ?? 0) === Number(priority)
@@ -57,8 +60,7 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
     }
 
     if (mode !== "paldeck") {
-      const location = (locationOrder[left.ContainerKind] ?? 2)
-        - (locationOrder[right.ContainerKind] ?? 2);
+      const location = kindOrder(left.ContainerKind) - kindOrder(right.ContainerKind);
       if (location) return location;
       const leftStorageKey = left.StorageKey || left.ContainerId;
       const rightStorageKey = right.StorageKey || right.ContainerId;
@@ -66,8 +68,8 @@ export function sortPalList(pals, mode = "paldeck", paldeckFor = pal => pal.Pald
       if (missingContainer) return missingContainer;
       const container = textOrder(leftStorageKey, rightStorageKey);
       if (container) return container;
-      const slot = (left.ActualSlotIndex ?? Number.MAX_SAFE_INTEGER)
-        - (right.ActualSlotIndex ?? Number.MAX_SAFE_INTEGER);
+      const slot = (left.SlotIndex ?? Number.MAX_SAFE_INTEGER)
+        - (right.SlotIndex ?? Number.MAX_SAFE_INTEGER);
       if (slot) return slot;
     } else {
       const leftPaldeck = paldeckFor(left);
@@ -89,16 +91,13 @@ export function groupPalList(pals, mode = "paldeck") {
 
   const groups = [];
   for (const pal of pals) {
-    const anomalous = pal.LocationStatus && pal.LocationStatus !== "ok";
     const storageKey = pal.StorageKey || pal.ContainerId;
-    const key = anomalous ? "anomaly" : storageKey || "unknown";
+    const key = storageKey || "unknown";
     let group = groups.at(-1);
     if (!group || group.key !== key) {
       group = {
         key,
-        label: anomalous
-          ? "Location anomaly"
-          : pal.ContainerLabel || `Container ${storageKey || "unknown"}`,
+        label: pal.ContainerLabel || `Container ${storageKey || "unknown"}`,
         pals: [],
       };
       groups.push(group);

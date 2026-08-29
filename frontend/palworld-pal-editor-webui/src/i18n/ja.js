@@ -98,7 +98,6 @@ export default {
     EntryView_Update_Link2: "または、次の場所からダウンロードできます：",
 
 
-    Editor_Note_Ghost_Pal: "このパルはゲーム内に存在しない可能性があります",
     Editor_Basic_Info: "基本情報",
     Editor_Identity_Appearance: "プロフィール",
     Editor_Growth: "成長",
@@ -366,7 +365,6 @@ export default {
     Message_Pal_Maximized: "パルのステータスを正規の上限に設定しました。",
     Operation_Maximize_Pal: "パルのステータスを最大化",
     PalList_Expedition: "Expedition",
-    PalList_Location_Anomaly: "Location error",
     Editor_Move_Target: "Move to",
     Editor_Move_Pal: "パルを移動",
     Editor_Move_Blocked_Expedition: "Recall this Pal from its expedition in-game before moving it.",

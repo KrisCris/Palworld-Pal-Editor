@@ -22,7 +22,7 @@ class FakeContainer:
         self.ID = TARGET_CONTAINER
         self.pals = []
 
-    def get_empty_slot(self):
+    def get_free_slot_index(self):
         return 7
 
     def add_pal(self, pal_id):

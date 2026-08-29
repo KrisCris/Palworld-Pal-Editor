@@ -233,11 +233,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.group_id = obj.group_id;
             this.ContainerId = obj.ContainerId;
             this.SlotIndex = obj.SlotIndex;
-            this.ActualContainerId = obj.ActualContainerId;
-            this.ActualSlotIndex = obj.ActualSlotIndex;
-            this.ActualLocations = obj.ActualLocations || [];
-            this.LocationStatus = obj.LocationStatus || "ok";
-            this.LocationAnomaly = obj.LocationAnomaly;
             this.ContainerKind = obj.ContainerKind;
             this.ContainerLabel = obj.ContainerLabel;
             this.FavoriteIndex = obj.FavoriteIndex ?? 0;
@@ -265,7 +260,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             this.HasTowerVariant = obj.HasTowerVariant;
             this.HasWorkerSick = obj.HasWorkerSick;
             this.IsFaintedPal = obj.IsFaintedPal;
-            this.Is_Unref_Pal = obj.Is_Unref_Pal;
             this.IsNewPal = obj.IsNewPal;
             this.in_owner_palbox = obj.in_owner_palbox;
 
@@ -561,7 +555,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // const ADD_PAL_RESELECT_CTR = ref(0);
     // const DEL_PAL_RESELECT_CTR = ref(0)
     const UPDATE_PAL_RESELECT_CTR = ref(0);
-    const SHOW_UNREF_PAL_FLAG = ref(false);
     const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
@@ -1279,7 +1272,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_LIST_CREATED_ONLY.value = false;
         EDITED_PAL_IDS.value.clear();
         CREATED_PAL_IDS.value.clear();
-        SHOW_UNREF_PAL_FLAG.value = false;
 
         // display data
         SELECTED_PAL_DATA.value = new Map();
@@ -1908,13 +1900,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     function isFilteredPal(pal) {
-        if (!SHOW_UNREF_PAL_FLAG.value && pal.Is_Unref_Pal) {
-            return true;
-        }
-        if (SHOW_UNREF_PAL_FLAG.value && !pal.Is_Unref_Pal) {
-            return true;
-        }
-
         if (
             PAL_LIST_SEARCH_KEYWORD.value &&
             !pal.DisplayName.toLowerCase().includes(
@@ -2364,7 +2349,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SAVE_LOADED_FLAG,
         // ADD_PAL_RESELECT_CTR,
         UPDATE_PAL_RESELECT_CTR,
-        SHOW_UNREF_PAL_FLAG,
         HIDE_INVALID_OPTIONS,
         PAL_SAVE_DETAILS_OPEN,
 

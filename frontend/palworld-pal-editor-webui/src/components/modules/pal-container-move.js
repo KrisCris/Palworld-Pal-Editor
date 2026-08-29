@@ -48,7 +48,7 @@ export function buildContainerMoveGroups(containers, players, selectedPlayerId) 
 
 export function containerMoveDisabledReason(container, pal) {
   if ((container.StorageKey && container.StorageKey === pal.StorageKey)
-    || (!container.StorageKey && container.ContainerId === pal.ActualContainerId)) return "current";
+    || (!container.StorageKey && container.ContainerId === pal.ContainerId)) return "current";
   if (pal.StorageKind === "global_palbox") {
     const ownedPlayerContainer = container.StorageKind === "world"
       && ["party", "storage"].includes(container.ContainerKind)

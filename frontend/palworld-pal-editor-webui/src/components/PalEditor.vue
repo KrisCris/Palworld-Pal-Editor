@@ -18,8 +18,10 @@ const showMoveDialog = ref(false)
 const passiveSkillSelect = ref(null)
 const activeSkillSelect = ref(null)
 const skinSelect = ref(null)
+// A record only keeps a StorageKey while it really occupies the slot it records,
+// so a missing one is exactly the location the move dialog cannot work from.
 const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
-  || palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok')
+  || !palStore.SELECTED_PAL_DATA.StorageKey)
 const externalContainerLabel = computed(() => formatContainerLabel(
   palStore.SELECTED_PAL_DATA,
   palStore.getTranslatedText,
@@ -35,9 +37,7 @@ const guildLabel = computed(() => palStore.SELECTED_PAL_DATA.group_id
 const technicalContainer = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
   ? palStore.SELECTED_PAL_DATA.ContainerId
   : externalContainerLabel.value)
-const technicalSlot = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
-  ? palStore.SELECTED_PAL_DATA.SlotIndex
-  : palStore.SELECTED_PAL_DATA.ActualSlotIndex)
+const technicalSlot = computed(() => palStore.SELECTED_PAL_DATA.SlotIndex)
 const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
@@ -211,11 +211,8 @@ const portraitBorder = pal => pal.IsAwakening
 </script>
 
 <template>
-  <div class="pal-editor" :class="{ 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }">
-    <section
-      data-testid="pal-basic-info"
-      :class="['pal-basic-info editor-surface', { 'is-unreferenced': palStore.SELECTED_PAL_DATA.Is_Unref_Pal }]"
-    >
+  <div class="pal-editor">
+    <section data-testid="pal-basic-info" class="pal-basic-info editor-surface">
       <header class="editor-summary">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${palStore.SELECTED_PAL_DATA.IconAccessKey}`)"
           :alt="palStore.PAL_STATIC_DATA[palStore.SELECTED_PAL_DATA.DataAccessKeyOG]?.I18n || palStore.SELECTED_PAL_DATA.DataAccessKeyOG"
@@ -260,9 +257,6 @@ const portraitBorder = pal => pal.IsAwakening
               {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') }}
             </span>
           </div>
-          <p class="pal-basic-note" v-if="palStore.SELECTED_PAL_DATA.Is_Unref_Pal">
-            {{ palStore.getTranslatedText("Editor_Note_Ghost_Pal") }}
-          </p>
         </div>
         <div class="editor-summary__actions">
           <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal"
@@ -459,21 +453,12 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="pal-technical-slot">
             <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
             <div class="pal-technical-location__value">
-              <code :class="{ 'is-location-anomaly': palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok' }"
-                :title="palStore.SELECTED_PAL_DATA.LocationAnomaly || ''">
-                {{ technicalContainer }} @ {{ technicalSlot }}
-              </code>
+              <code>{{ technicalContainer }} @ {{ technicalSlot }}</code>
             </div>
-            <small v-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">
-              {{ palStore.SELECTED_PAL_DATA.LocationAnomaly }}
-              <template v-if="palStore.SELECTED_PAL_DATA.ActualContainerId">
-                {{ palStore.SELECTED_PAL_DATA.ActualContainerId }} @ {{ palStore.SELECTED_PAL_DATA.ActualSlotIndex }}
-              </template>
-            </small>
             <small v-if="palStore.SELECTED_PAL_DATA.IsExpeditionPal">
               {{ palStore.getTranslatedText('Editor_Move_Blocked_Expedition') }}
             </small>
-            <small v-else-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">
+            <small v-else-if="!palStore.SELECTED_PAL_DATA.StorageKey">
               {{ palStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
             </small>
           </div>
@@ -739,19 +724,11 @@ const portraitBorder = pal => pal.IsAwakening
   container: pal-editor / inline-size;
 }
 
-.pal-editor.is-unreferenced {
-  filter: grayscale(100%);
-}
-
 .pal-basic-info {
   max-width: 100%;
   width: 100%;
   container-name: pal-basic-info;
   container-type: inline-size;
-}
-
-.pal-basic-info.is-unreferenced {
-  filter: grayscale(100%);
 }
 
 .pal-basic-tags,
@@ -801,10 +778,6 @@ const portraitBorder = pal => pal.IsAwakening
 
 .pal-technical-slot > .editor-disclosure__label {
   grid-column: 1 / -1;
-}
-
-.is-location-anomaly {
-  color: var(--editor-color-danger);
 }
 
 .pal-technical-location__value { min-width: 0; }

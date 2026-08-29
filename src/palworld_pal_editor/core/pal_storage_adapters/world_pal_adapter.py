@@ -118,10 +118,9 @@ class WorldPalAdapter:
                 LOGGER.error(f"Error occured while init'in object: {error}, skipping")
                 continue
 
-            located = self._occupies_recorded_slot(pal)
-            pal.is_unreferenced_pal = not located
-            if not located:
-                LOGGER.info(f"Likely Ghost Pal: {pal}")
+            # A Pal that does not occupy the slot it records is left without a
+            # storage key; SaveManager logs every one of them once load finishes.
+            located = self.occupies_recorded_slot(pal)
 
             yield self.record(
                 native_record,
@@ -135,14 +134,19 @@ class WorldPalAdapter:
                 pal=pal,
             )
 
-    def _occupies_recorded_slot(self, pal: PalEntity) -> bool:
-        """Whether the one slot the Pal records for itself really holds it."""
+    def occupies_recorded_slot(self, pal: PalEntity) -> bool:
+        """Whether the one slot the Pal records for itself really holds it.
+
+        The whole of World location validation: resolve `ContainerId` + `SlotIndex`
+        to one container and one slot and compare `instance_id`. No scan for the
+        Pal elsewhere, and no verdict beyond yes or no.
+        """
         container = self._container_data.get_container(pal.ContainerId)
         if container is None:
             return False
-        slot_index = pal.SlotIndex
         slot = next(
-            (slot for slot in container.slots if slot.inv_idx == slot_index), None
+            (slot for slot in container.slots if slot.SlotIndex == pal.SlotIndex),
+            None,
         )
         if slot is None:
             return False

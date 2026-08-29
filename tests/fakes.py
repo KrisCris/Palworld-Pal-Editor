@@ -35,25 +35,16 @@ def world_record(
     )
 
 
-def pal_location(pal: PalEntity, *, container_kind: str = "world") -> dict:
-    """The location a loaded session would report for a Pal that sits where it says."""
-    container_id = str(pal.ContainerId) if pal.ContainerId else None
-    slot_index = pal.SlotIndex
+def record_location(record: PalRecord, *, container_kind: str = "world") -> dict:
+    """The location a loaded session would report for a record that sits where it says."""
     return {
-        "RecordedContainerId": container_id,
-        "RecordedSlotIndex": slot_index,
-        "ActualContainerId": container_id,
-        "ActualSlotIndex": slot_index,
-        "ActualLocations": [],
-        "LocationStatus": "ok",
-        "LocationAnomaly": None,
+        "ContainerId": str(record.pal.ContainerId) if record.pal.ContainerId else None,
+        "SlotIndex": record.slot_index,
         "ContainerKind": container_kind,
         "ContainerLabel": None,
+        "StorageKey": record.storage_key,
+        "StorageKind": record.storage_kind,
     }
-
-
-def record_location(record: PalRecord, *, container_kind: str = "world") -> dict:
-    return pal_location(record.pal, container_kind=container_kind)
 
 
 class LocationManager:
@@ -68,9 +59,6 @@ class LocationManager:
 
     def resolve_record_location(self, record: PalRecord) -> dict:
         return record_location(record)
-
-    def resolve_pal_location(self, pal: PalEntity) -> dict:
-        return pal_location(pal)
 
     def get_player(self, _player_uid):
         return None

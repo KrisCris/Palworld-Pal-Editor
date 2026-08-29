@@ -97,7 +97,6 @@ export default {
     EntryView_Update_Link1: "Get it from {{0}} so we can have more downloads and visibility!",
     EntryView_Update_Link2: "Alternatively, you can download it from ",
 
-    Editor_Note_Ghost_Pal: "THIS PAL IS LIKELY UNREFERENCED IN GAME",
     Editor_Basic_Info: "BASIC INFO",
     Editor_Identity_Appearance: "PROFILE",
     Editor_Growth: "GROWTH",
@@ -237,7 +236,6 @@ export default {
     PalList_Status_Unsaved: "New, unsaved Pal",
     PalList_Status_Edited: "Edited this session",
     PalList_Expedition: "Expedition",
-    PalList_Location_Anomaly: "Location error",
     Editor_Move_Target: "Move to",
     Editor_Move_Pal: "Move Pal",
     Editor_Move_Blocked_Expedition: "Recall this Pal from its expedition in-game before moving it.",

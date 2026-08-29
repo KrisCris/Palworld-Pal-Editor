@@ -50,7 +50,7 @@ test("move groups keep bases first, roster-order players next, and other last", 
 
 test("disabled target reasons are stable and shared cages accept owned Pals", () => {
   const pal = {
-    ActualContainerId: "current",
+    ContainerId: "current",
     OwnerPlayerUId: "player-a",
     group_id: "guild-a",
   };

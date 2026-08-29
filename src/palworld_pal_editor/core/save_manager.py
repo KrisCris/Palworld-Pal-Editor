@@ -76,7 +76,6 @@ class SaveManager:
     pal_repository: PalRepository
     world_adapter: Optional[WorldPalAdapter]
     storage_adapters: dict[str, "PalAdapter"]
-    _dangling_pals: Optional[dict[str, PalEntity]]
     
     container_data: Optional[ContainerData]
     item_container_data: Optional[ItemContainerData]
@@ -114,7 +113,6 @@ class SaveManager:
         # storageKey -> the adapter that reads and writes that place. A plain
         # routing table: it holds no Pals, no rosters and no descriptors.
         self.storage_adapters: dict[str, PalAdapter] = {}
-        self._dangling_pals = {}
 
         self.container_data = None
         self.item_container_data = None
@@ -505,7 +503,6 @@ class SaveManager:
 
     def _unregister_record(self, record: PalRecord) -> None:
         self.pal_repository.unregister(record)
-        self._dangling_pals.pop(str(record.pal.InstanceId), None)
 
     def _register_external_record(
         self, record: PalRecord, *, created: bool = False
@@ -537,20 +534,10 @@ class SaveManager:
                 continue
 
             self.pal_repository.register(record)
-            if (
-                not pal.OwnerPlayerUId
-                and record.storage_key is not None
-                and str(pal.ContainerId) in base_container_ids
-            ):
-                continue
-
-            self._dangling_pals[str(pal.InstanceId)] = pal
             if pal.OwnerPlayerUId:
                 LOGGER.warning(
                     f"Found pal owned by non-existing user {pal.OwnerPlayerUId}: {pal}"
                 )
-            else:
-                LOGGER.error(f"Found dangling pal object: {pal}")
 
         for player in self.players:
             LOGGER.newline()
@@ -563,10 +550,41 @@ class SaveManager:
         for pal in self.get_working_pals():
             LOGGER.info(f"\t{pal}")
 
-        LOGGER.newline()
-        LOGGER.info("Dangling Pals (No OwnerID and OldOwnerID): ")
-        for pal in self._dangling_pals.values():
-            LOGGER.warning(f"\t{pal}")
+        self._log_location_anomalies()
+
+    def _log_location_anomalies(self) -> None:
+        """One WARNING per Pal whose recorded container slot does not hold it.
+
+        Spec §9: a container location anomaly gets a load log line and nothing else
+        -- no anomaly set, no query index, no UI field, no second roster. Every value
+        here is read back out of the save at the moment of logging, so the anomaly
+        outlives this call only as text.
+        """
+        for record in self.pal_repository.records():
+            if record.storage_kind != "world" or record.storage_key is not None:
+                continue
+            pal = record.pal
+            container = self.container_data.get_container(pal.ContainerId)
+            slot = (
+                None
+                if container is None
+                else next(
+                    (
+                        slot
+                        for slot in container.slots
+                        if slot.SlotIndex == pal.SlotIndex
+                    ),
+                    None,
+                )
+            )
+            LOGGER.warning(
+                "Container location anomaly: "
+                f"record_key={record.record_key} InstanceId={pal.InstanceId} "
+                f"ContainerId={pal.ContainerId} SlotIndex={pal.SlotIndex} "
+                f"container_exists={container is not None} "
+                f"slot_exists={slot is not None} "
+                f"slot_instance_id={slot.instance_id if slot is not None else None}"
+            )
 
     def _load_external_storages(self) -> None:
         players_path = self._file_path / "Players"
@@ -993,88 +1011,39 @@ class SaveManager:
         )
 
     def resolve_record_location(self, record: PalRecord | str) -> dict:
+        """Where a record sits, and what that place is called.
+
+        Since F4 there is only one location: the one the Pal records for itself,
+        already validated at load. A World record that failed that check has no
+        storage key and no container to name.
+        """
         record_ref = record if isinstance(record, PalRecord) else self.get_record(record)
         if record_ref is None:
             raise ValueError("Pal record not found")
-        if record_ref.storage_kind == "world":
-            location = self.resolve_pal_location(record_ref.pal)
-            location["StorageKey"] = record_ref.storage_key
-            location["StorageKind"] = "world"
-            return location
-        descriptor = self.get_storage_descriptor(record_ref.storage_key)
+        pal = record_ref.pal
+        is_world = record_ref.storage_kind == "world"
+        located = record_ref.storage_key is not None
+        container_id = (
+            str(pal.ContainerId) if is_world and located and pal.ContainerId else None
+        )
+        descriptor = (
+            (self._container_descriptor_map().get(container_id) if located else None)
+            if is_world
+            else self.get_storage_descriptor(record_ref.storage_key)
+        )
         return {
-            "RecordedContainerId": (
-                str(record_ref.pal.ContainerId)
-                if record_ref.pal.ContainerId
-                else None
+            # The container and slot the record actually occupies. A World record that
+            # failed its load-time slot check occupies neither, and says so.
+            "ContainerId": container_id,
+            "SlotIndex": record_ref.slot_index,
+            "ContainerKind": (
+                descriptor["ContainerKind"]
+                if descriptor
+                else (None if is_world else record_ref.storage_kind)
             ),
-            "RecordedSlotIndex": record_ref.pal.SlotIndex,
-            "ActualContainerId": None,
-            "ActualSlotIndex": record_ref.slot_index,
-            "ActualLocations": [
-                {
-                    "StorageKey": record_ref.storage_key,
-                    "SlotIndex": record_ref.slot_index,
-                }
-            ],
-            "LocationStatus": "ok",
-            "LocationAnomaly": None,
-            "ContainerKind": record_ref.storage_kind,
-            "ContainerLabel": (
-                descriptor["ContainerLabel"] if descriptor else record_ref.storage_key
-            ),
+            "ContainerLabel": descriptor["ContainerLabel"] if descriptor else None,
             "StorageKey": record_ref.storage_key,
             "StorageKind": record_ref.storage_kind,
-        }
-
-    def resolve_pal_location(self, pal: PalEntity | UUID | str) -> dict:
-        pal_entity = pal if isinstance(pal, PalEntity) else self.get_pal(pal)
-        if pal_entity is None:
-            raise ValueError("Pal not found")
-
-        recorded_container_id = (
-            str(pal_entity.ContainerId) if pal_entity.ContainerId else None
-        )
-        recorded_slot_index = pal_entity.SlotIndex
-        actual_slots = self.container_data.find_pal_slots(pal_entity.InstanceId)
-        actual_locations = [
-            {"ContainerId": str(container.ID), "SlotIndex": slot.inv_idx}
-            for container, slot in actual_slots
-        ]
-
-        if recorded_container_id and self.container_data.get_container(pal_entity.ContainerId) is None:
-            status = "unknown_container"
-        elif not actual_slots:
-            status = "missing"
-        elif len(actual_slots) > 1:
-            status = "duplicate"
-        elif (
-            str(actual_slots[0][0].ID) != recorded_container_id
-            or actual_slots[0][1].inv_idx != recorded_slot_index
-        ):
-            status = "slot_mismatch"
-        else:
-            status = "ok"
-
-        actual_container_id = actual_locations[0]["ContainerId"] if len(actual_locations) == 1 else None
-        actual_slot_index = actual_locations[0]["SlotIndex"] if len(actual_locations) == 1 else None
-        descriptor = self._container_descriptor_map().get(actual_container_id or recorded_container_id)
-        messages = {
-            "missing": "Pal is not present in any decoded container slot.",
-            "slot_mismatch": "Pal SlotId does not match its actual container slot.",
-            "duplicate": "Pal appears in multiple container slots.",
-            "unknown_container": "Pal SlotId refers to an unknown container.",
-        }
-        return {
-            "RecordedContainerId": recorded_container_id,
-            "RecordedSlotIndex": recorded_slot_index,
-            "ActualContainerId": actual_container_id,
-            "ActualSlotIndex": actual_slot_index,
-            "ActualLocations": actual_locations,
-            "LocationStatus": status,
-            "LocationAnomaly": messages.get(status),
-            "ContainerKind": descriptor["ContainerKind"] if status == "ok" and descriptor else "anomaly",
-            "ContainerLabel": descriptor["ContainerLabel"] if status == "ok" and descriptor else "Location anomaly",
         }
 
     def _locker_entries(self) -> list[dict]:
@@ -1140,7 +1109,6 @@ class SaveManager:
             ],
             "entities": list(self._entities_list),
             "created": self.pal_repository.snapshot_created(),
-            "dangling": dict(self._dangling_pals),
             "groups": [
                 (group, copy.deepcopy(group.individual_character_handle_ids))
                 for group in self.group_data.get_groups()
@@ -1163,8 +1131,6 @@ class SaveManager:
         for container, slot_snapshot in snapshot["containers"]:
             container.restore_slots(slot_snapshot)
         self._entities_list[:] = snapshot["entities"]
-        self._dangling_pals.clear()
-        self._dangling_pals.update(snapshot["dangling"])
         for group, handles in snapshot["groups"]:
             if handles is None:
                 group._group_param.pop("individual_character_handle_ids", None)
@@ -1418,7 +1384,7 @@ class SaveManager:
             target_container = self.container_data.get_container(
                 descriptor["ContainerId"]
             )
-            if target_container is None or target_container.get_empty_slot() == -1:
+            if target_container is None or target_container.get_free_slot_index() == -1:
                 raise ValueError("Target world container is full or unavailable.")
             snapshot = self._snapshot_external_mutation([], [target_container])
             try:
@@ -1517,12 +1483,10 @@ class SaveManager:
         target_storage_key = descriptor["StorageKey"]
         if source.storage_key == target_storage_key:
             raise ValueError("Pal is already in the target storage.")
-        if source.storage_kind == "world":
-            location = self.resolve_record_location(source)
-            if location["LocationStatus"] != "ok":
-                raise ValueError(
-                    f"Pal location is {location['LocationStatus']}; repair it before moving."
-                )
+        if source.storage_kind == "world" and source.storage_key is None:
+            raise ValueError(
+                "Pal is not in the container slot it records; repair it before moving."
+            )
 
         LOGGER.info(
             "Transfer Pal requested: "
@@ -1563,7 +1527,7 @@ class SaveManager:
             target_container = self.container_data.get_container(
                 descriptor["ContainerId"]
             )
-            if target_container is None or target_container.get_empty_slot() == -1:
+            if target_container is None or target_container.get_free_slot_index() == -1:
                 raise ValueError("Target world container is full or unavailable.")
             self._validate_world_target(source, descriptor)
         else:
@@ -1576,9 +1540,7 @@ class SaveManager:
         )
         source_container = None
         if source.storage_kind == "world":
-            source_container = self.container_data.get_container(
-                self.resolve_record_location(source)["ActualContainerId"]
-            )
+            source_container = self.container_data.get_container(source.pal.ContainerId)
         external_slots = []
         if source_storage is not None:
             external_slots.append((source_storage, source.slot_index))
@@ -1702,15 +1664,12 @@ class SaveManager:
         if pal_entity.IsExpeditionPal:
             reject("Expedition Pals must be recalled in-game before moving.")
 
-        location = self.resolve_pal_location(pal_entity)
-        if location["LocationStatus"] != "ok":
-            reject(
-                f"Pal location is {location['LocationStatus']}; repair it before moving."
-            )
+        # A World record only keeps its storage key if it really occupies the slot it
+        # records, so this is the whole location precondition the move needs.
+        if pal_record is None or pal_record.storage_key is None:
+            reject("Pal is not in the container slot it records; repair it first.")
 
-        source_text = (
-            f"{location['ActualContainerId']}@{location['ActualSlotIndex']}"
-        )
+        source_text = f"{pal_entity.ContainerId}@{pal_entity.SlotIndex}"
         LOGGER.info(
             f"Move Pal requested: pal={pal_entity.InstanceId} source={source_text} "
             f"owner={pal_entity.OwnerPlayerUId} targets=[{target_ids_text}]"
@@ -1747,9 +1706,7 @@ class SaveManager:
                 f"candidates=[{'; '.join(candidate_statuses)}]",
             )
 
-        source_container = self.container_data.get_container(
-            location["ActualContainerId"]
-        )
+        source_container = self.container_data.get_container(pal_entity.ContainerId)
         if source_container is None:
             reject("Source container is unavailable.", f"source={source_text}")
         if str(source_container.ID) == str(target_container.ID):
@@ -2152,7 +2109,7 @@ class SaveManager:
                 LOGGER.warning(f"Unsafe target container {target_container_id}")
                 return None
             pal_container = self.container_data.get_container(target_container_id)
-            if pal_container is None or pal_container.get_empty_slot() == -1:
+            if pal_container is None or pal_container.get_free_slot_index() == -1:
                 LOGGER.info("No Empty Pal Slot")
                 return None
             group_id = target_descriptor.get("GroupId")
@@ -2191,7 +2148,7 @@ class SaveManager:
                     if (
                         container := self.container_data.get_container(container_id)
                     ) is not None
-                    and container.get_empty_slot() != -1
+                    and container.get_free_slot_index() != -1
                 ),
                 None,
             )

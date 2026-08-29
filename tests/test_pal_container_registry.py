@@ -52,27 +52,26 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         self.assertEqual("unknown", by_kind["unknown"][0]["Classification"])
 
     def test_fixture_pals_have_one_matching_physical_slot(self):
-        pals = [
-            *self.manager.get_working_pals(),
+        records = [
+            *self.manager.working_records(),
             *(
-                record.pal
+                record
                 for player in self.manager.get_players()
                 for record in self.manager.records_for_roster(player.PlayerUId)
             ),
         ]
 
-        statuses = [self.manager.resolve_pal_location(pal)["LocationStatus"] for pal in pals]
+        # A World record only keeps its storage key when the slot it records for
+        # itself really holds it, so this is the same claim the status check made.
+        located = [record.storage_key is not None for record in records]
 
-        self.assertGreater(len(statuses), 900)
-        self.assertEqual({"ok"}, set(statuses))
+        self.assertGreater(len(located), 900)
+        self.assertEqual({True}, set(located))
 
     def test_base_pals_resolve_to_each_registered_base_container(self):
         counts = {}
-        for pal in self.manager.get_working_pals():
-            location = self.manager.resolve_pal_location(pal)
-            counts[location["ActualContainerId"]] = counts.get(
-                location["ActualContainerId"], 0
-            ) + 1
+        for record in self.manager.working_records():
+            counts[record.storage_key] = counts.get(record.storage_key, 0) + 1
 
         self.assertEqual([3, 36, 44], sorted(counts.values()))
 
@@ -142,8 +141,8 @@ class PalContainerRoundTripTests(unittest.TestCase):
                 reloaded_pal = reloaded.get_pal(pal_id)
                 self.assertEqual(target_id, str(reloaded_pal.ContainerId))
                 self.assertEqual(expected_slot, reloaded_pal.SlotIndex)
-                location = reloaded.resolve_pal_location(reloaded_pal)
-                self.assertEqual("ok", location["LocationStatus"])
+                reloaded_record = reloaded.get_record(f"world:{pal_id}")
+                self.assertIsNotNone(reloaded_record.storage_key)
         finally:
             SaveManager._instance = previous_manager
 

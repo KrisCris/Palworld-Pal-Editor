@@ -41,7 +41,9 @@ class PalContainerMutationTests(unittest.TestCase):
         slot_index = container.add_pal(new_id)
 
         self.assertEqual(0, slot_index)
-        self.assertEqual((0, new_id), (container.slots[-1].inv_idx, container.slots[-1].instance_id))
+        self.assertEqual(
+            (0, new_id), (container.slots[-1].SlotIndex, container.slots[-1].instance_id)
+        )
 
     def test_transferred_slot_preserves_raw_fields_and_does_not_alias_source(self):
         source_slot = PalObjects.ContainerSlotData(1)
@@ -107,6 +109,18 @@ def as_base_worker(manager, pal, container_id=CONTAINER_ID):
     manager.pal_repository.reindex()
 
 
+def sole_world_record(manager):
+    """The record the World adapter yields for this fixture's one Pal.
+
+    Reading it back through a fresh adapter is how the load path decides whether a
+    Pal occupies the slot it records, so a test can mutate the containers and ask
+    the same question the load asks.
+    """
+    native = manager.pal_repository.get("world:" + str(PAL_ID)).native_record
+    [record] = list(WorldPalAdapter([native], manager.container_data).records())
+    return record
+
+
 def in_roster(manager, roster_key, pal_id):
     """Whether the roster the old UI asks for lists this Pal."""
     return any(
@@ -135,14 +149,6 @@ class FakeContainerData:
 
     def get_containers(self):
         return self.container_map.values()
-
-    def find_pal_slots(self, pal_id):
-        return [
-            (container, slot)
-            for container in self.get_containers()
-            for slot in container.slots
-            if str(slot.instance_id) == str(pal_id)
-        ]
 
 
 class FakeGroup:
@@ -220,7 +226,6 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
     manager.players.register(target_player)
     manager.pal_repository = PalRepository()
     manager.pal_repository.register(pal_record)
-    manager._dangling_pals = {}
     # A "base" target means the target container is some camp's worker container;
     # that is the whole of what makes the Pals inside it base workers.
     manager.camp_data = FakeCampData(
@@ -280,31 +285,57 @@ class SaveManagerMovementTests(unittest.TestCase):
         self.assertEqual(17, target.get_slot(PAL_ID)._slot_raw_data["permission_tribe_id"])
         self.assertEqual([1, 2, 3], target.get_slot(PAL_ID)._slot_raw_data["unknown_bytes"])
 
-    def test_location_resolver_reports_every_slot_anomaly(self):
-        manager, pal, source, target, _, _ = movement_manager()
-        self.assertEqual("ok", manager.resolve_pal_location(pal)["LocationStatus"])
+    def test_a_world_record_is_located_only_by_the_slot_it_records(self):
+        """Container location validation in full: one container, one slot, one id.
 
+        What the old resolver split into `missing`, `slot_mismatch` and
+        `unknown_container` is one answer now -- the record occupies nothing, so it
+        gets no storage key. `duplicate` is not looked for at all: finding it needed
+        a scan of every container, which is exactly the scan the Pal's own recorded
+        position makes unnecessary.
+        """
+        manager, _, _, _, _, _ = movement_manager()
+        self.assertIsNotNone(sole_world_record(manager).storage_key)
+
+        with self.subTest("the recorded container does not exist"):
+            manager, pal, _, _, _, _ = movement_manager()
+            pal.SlotId = (toUUID("cccccccc-cccc-cccc-cccc-cccccccccccc"), 0)
+            self.assertIsNone(sole_world_record(manager).storage_key)
+
+        with self.subTest("the recorded slot is not in the container"):
+            manager, _, source, _, _, _ = movement_manager()
+            source.del_pal(PAL_ID)
+            self.assertIsNone(sole_world_record(manager).storage_key)
+
+        with self.subTest("the recorded slot holds a different Pal"):
+            manager, _, source, _, _, _ = movement_manager()
+            source.get_slot(PAL_ID).instance_id = toUUID(
+                "dddddddd-dddd-dddd-dddd-dddddddddddd"
+            )
+            self.assertIsNone(sole_world_record(manager).storage_key)
+
+    def test_load_logs_one_warning_per_container_location_anomaly(self):
+        """Spec §9: the anomaly is a load log line, and nothing else survives it."""
+        manager, _, source, _, _, _ = movement_manager()
         source.del_pal(PAL_ID)
-        self.assertEqual("missing", manager.resolve_pal_location(pal)["LocationStatus"])
+        record = sole_world_record(manager)
+        manager.pal_repository = PalRepository()
+        manager.pal_repository.register(record)
 
-        manager, pal, _, _, _, _ = movement_manager()
-        pal.SlotId = (TARGET_CONTAINER_ID, 0)
-        self.assertEqual(
-            "slot_mismatch", manager.resolve_pal_location(pal)["LocationStatus"]
-        )
+        with self.assertLogs("Palworld-Pal-Editor", level="WARNING") as captured:
+            manager._log_location_anomalies()
 
-        manager, pal, source, target, _, _ = movement_manager()
-        target.add_slot_copy(source.get_slot(PAL_ID))
-        self.assertEqual("duplicate", manager.resolve_pal_location(pal)["LocationStatus"])
-
-        manager, pal, _, _, _, _ = movement_manager()
-        pal.SlotId = (
-            toUUID("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-            0,
-        )
-        self.assertEqual(
-            "unknown_container", manager.resolve_pal_location(pal)["LocationStatus"]
-        )
+        logged = "\n".join(captured.output)
+        for field in (
+            f"record_key={record.record_key}",
+            f"InstanceId={PAL_ID}",
+            f"ContainerId={CONTAINER_ID}",
+            "SlotIndex=1",
+            "container_exists=True",
+            "slot_exists=False",
+            "slot_instance_id=None",
+        ):
+            self.assertIn(field, logged)
 
     def test_player_to_player_move_changes_owner_and_history(self):
         manager, pal, _, _, source_player, target_player = movement_manager("storage")

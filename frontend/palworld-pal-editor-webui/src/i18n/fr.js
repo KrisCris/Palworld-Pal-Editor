@@ -97,7 +97,6 @@ export default {
     EntryView_Update_Link1: "Téléchargez-la depuis {{0}} pour que nous puissions avoir plus de téléchargements et de visibilité !",
     EntryView_Update_Link2: "Vous pouvez également la télécharger depuis ",
 
-    Editor_Note_Ghost_Pal: "CE PAL EST PROBABLEMENT NON RÉFÉRENCÉ DANS LE JEU",
     Editor_Basic_Info: "INFOS DE BASE",
     Editor_Identity_Appearance: "PROFIL",
     Editor_Growth: "PROGRESSION",
@@ -366,7 +365,6 @@ export default {
     Message_Pal_Maximized: "Les attributs du Pal ont été définis au maximum autorisé.",
     Operation_Maximize_Pal: "maximisation des attributs du Pal",
     PalList_Expedition: "Expedition",
-    PalList_Location_Anomaly: "Location error",
     Editor_Move_Target: "Move to",
     Editor_Move_Pal: "Déplacer le Pal",
     Editor_Move_Blocked_Expedition: "Recall this Pal from its expedition in-game before moving it.",

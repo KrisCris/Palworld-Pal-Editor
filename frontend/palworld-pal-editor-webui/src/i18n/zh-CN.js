@@ -97,7 +97,6 @@ export default {
     EntryView_Update_Link1: "从 {{0}} 下载，以便我们可以获得更多的下载量和可见度！",
     EntryView_Update_Link2: "或者，你可以从以下链接下载：",
 
-    Editor_Note_Ghost_Pal: "这只帕鲁很可能不存在于游戏中",
     Editor_Basic_Info: "基础信息",
     Editor_Identity_Appearance: "档案",
     Editor_Growth: "成长",
@@ -237,7 +236,6 @@ export default {
     PalList_Status_Unsaved: "未保存的新帕鲁",
     PalList_Status_Edited: "本次编辑的帕鲁",
     PalList_Expedition: "远征中",
-    PalList_Location_Anomaly: "位置异常",
     Editor_Move_Target: "移动到",
     Editor_Move_Pal: "移动帕鲁",
     Editor_Move_Blocked_Expedition: "请先在游戏中召回正在远征的帕鲁。",

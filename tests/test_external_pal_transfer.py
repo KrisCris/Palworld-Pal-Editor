@@ -85,8 +85,8 @@ def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
     location = manager.resolve_record_location(world_record)
     assert world_record.record_key == f"world:{instance_id}"
     assert str(world_record.pal.OwnerPlayerUId) == MINT_UID
-    assert location["LocationStatus"] == "ok"
-    assert world_record.pal.SlotIndex == location["ActualSlotIndex"]
+    assert world_record.storage_key is not None
+    assert world_record.pal.SlotIndex == location["SlotIndex"]
     assert instance_id not in locker_ids(manager)
     assert manager.group_data.get_group(mint.group_id).has_pal(instance_id)
 
@@ -95,7 +95,7 @@ def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
         for record in manager.records_for_roster(LOSSY_UID)
         if record.storage_kind == "world"
         and not record.pal.IsExpeditionPal
-        and manager.resolve_record_location(record)["LocationStatus"] == "ok"
+        and record.storage_key is not None
     )
     world_instance_id = str(world_source.pal.InstanceId)
     world_owner = str(world_source.pal.OwnerPlayerUId)
@@ -185,14 +185,14 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert manager.get_record(created.record_key) is created
     assert str(imported_record.pal.InstanceId) == created_id
     assert str(imported_record.pal.OwnerPlayerUId) == MINT_UID
-    assert manager.resolve_record_location(imported_record)["LocationStatus"] == "ok"
+    assert imported_record.storage_key is not None
 
     world_source = next(
         record
         for record in manager.records_for_roster(LOSSY_UID)
         if record.storage_kind == "world"
         and not record.pal.IsExpeditionPal
-        and manager.resolve_record_location(record)["LocationStatus"] == "ok"
+        and record.storage_key is not None
     )
     source_old_owners = list(world_source.pal.OldOwnerPlayerUIds or [])
     source_slot = world_source.pal.SlotId
@@ -294,7 +294,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         record
         for record in manager.records_for_roster(LOSSY_UID)
         if record.storage_kind == "world"
-        and manager.resolve_record_location(record)["LocationStatus"] == "ok"
+        and record.storage_key is not None
     )
 
     dps_clone = manager.duplicate_pal(dps_source.record_key, LOSSY_UID)
@@ -345,7 +345,7 @@ def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
         for record in manager.records_for_roster(LOSSY_UID)
         if record.storage_kind == "world"
         and not record.pal.IsExpeditionPal
-        and manager.resolve_record_location(record)["LocationStatus"] == "ok"
+        and record.storage_key is not None
     )
     exported = manager.transfer_pal(source.record_key, "global-palbox", "clone")
     gps_record = manager.get_record(exported["RecordKey"])
@@ -429,7 +429,7 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     base_records = [
         record
         for record in manager.records_for_roster("PAL_BASE_WORKER_BTN")
-        if manager.resolve_record_location(record)["LocationStatus"] == "ok"
+        if record.storage_key is not None
     ]
     assert base_records
     source = base_records[0]

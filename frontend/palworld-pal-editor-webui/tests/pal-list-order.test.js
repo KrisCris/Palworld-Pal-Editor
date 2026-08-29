@@ -46,12 +46,14 @@ test("location sorting groups base-camp Pals by container before slot", () => {
   );
 });
 
-test("location groups use labels and place all anomalies last", () => {
+test("location groups use labels and place uncontained Pals last", () => {
+  // A Pal whose record occupies no container arrives with neither a container id
+  // nor a kind -- there is no anomaly flag to group it by any more.
   const rows = [
-    { InstanceId: "bad", ContainerKind: "anomaly", ContainerId: "broken", LocationStatus: "slot_mismatch" },
-    { InstanceId: "box", ContainerKind: "storage", ContainerId: "box", ContainerLabel: "Alice · Palbox", SlotIndex: 2, LocationStatus: "ok" },
-    { InstanceId: "party", ContainerKind: "party", ContainerId: "party", ContainerLabel: "Alice · Party", SlotIndex: 1, LocationStatus: "ok" },
-    { InstanceId: "cage", ContainerKind: "special", ContainerId: "cage", ContainerLabel: "Alice · Viewing cage", SlotIndex: 0, LocationStatus: "ok" },
+    { InstanceId: "bad", ContainerKind: null, ContainerId: null },
+    { InstanceId: "box", ContainerKind: "storage", ContainerId: "box", ContainerLabel: "Alice · Palbox", SlotIndex: 2 },
+    { InstanceId: "party", ContainerKind: "party", ContainerId: "party", ContainerLabel: "Alice · Party", SlotIndex: 1 },
+    { InstanceId: "cage", ContainerKind: "special", ContainerId: "cage", ContainerLabel: "Alice · Viewing cage", SlotIndex: 0 },
   ];
 
   const groups = groupPalList(sortPalList(rows, "location"), "location");
@@ -60,7 +62,7 @@ test("location groups use labels and place all anomalies last", () => {
     "Alice · Party",
     "Alice · Palbox",
     "Alice · Viewing cage",
-    "Location anomaly",
+    "Container unknown",
   ]);
   assert.deepEqual(groups.at(-1).pals.map(pal => pal.InstanceId), ["bad"]);
   assert.equal(groupPalList(rows, "paldeck").length, 1);

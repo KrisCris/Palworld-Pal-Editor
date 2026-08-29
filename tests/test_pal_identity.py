@@ -232,6 +232,9 @@ class PalIdentityTests(unittest.TestCase):
         record = world_record(
             self.make_pal_obj("SheepBall"),
             storage_key=f"world-container:{party_id}",
+            # A located record and its Pal always agree on the slot -- the adapter
+            # copies one from the other -- and the DTO now reads the record's.
+            slot_index=4,
         )
         pal = record.pal
         pal.InstanceId = "33333333-3333-3333-3333-333333333333"

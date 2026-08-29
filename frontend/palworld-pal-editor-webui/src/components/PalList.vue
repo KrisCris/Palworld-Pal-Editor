@@ -248,7 +248,7 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
         <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
       </h3>
       <button v-for="pal in group.pals" :key="palKey(pal)"
-        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': isAwayPal(pal) }]"
+        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', 'out-of-container': isAwayPal(pal) }]"
         :value="palKey(pal)" @click="palStore.selectPal(palKey(pal))"
         :aria-current="palStore.SELECTED_PAL_ID == palKey(pal) ? 'true' : undefined"
         :disabled="palStore.SELECTED_PAL_ID == palKey(pal) || palStore.LOADING_FLAG">
@@ -283,10 +283,6 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
             <span>{{ pal.DisplayName }}</span>
             <span v-if="pal.IsExpeditionPal" class="pal-location-badge pal-location-badge--expedition">
               {{ palStore.getTranslatedText('PalList_Expedition') }}
-            </span>
-            <span v-if="pal.LocationStatus && pal.LocationStatus !== 'ok'"
-              class="pal-location-badge pal-location-badge--anomaly" :title="pal.LocationAnomaly">
-              {{ palStore.getTranslatedText('PalList_Location_Anomaly') }}
             </span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>
@@ -603,7 +599,6 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
 
 .pal-row.male { --pal-row-accent: var(--editor-color-male); border-left-color: var(--pal-row-accent); }
 .pal-row.female { --pal-row-accent: var(--editor-color-female); border-left-color: var(--pal-row-accent); }
-.pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
 
 .new-pal-marker,
@@ -650,7 +645,6 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
 }
 
 .pal-location-badge--expedition { background: var(--editor-color-primary); }
-.pal-location-badge--anomaly { background: var(--editor-color-danger); }
 
 .pal-copy strong,
 .pal-copy small {
