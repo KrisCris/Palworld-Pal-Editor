@@ -196,10 +196,6 @@ class PlayerProgressionTests(unittest.TestCase):
 
             self.player.toggle_UnlockedRecipeTechnologyNames("PALBOX", True)
             self.assertIn("PALBOX", unlocked)
-
-            self.player.unlock_all_techs()
-            self.assertIn("Snowman", unlocked)
-            self.assertEqual(len(unlocked), len({item.casefold() for item in unlocked}))
         finally:
             self.player._player_save_data = original
 

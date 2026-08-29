@@ -442,26 +442,8 @@ class PlayerEntity:
                 return
             self.UnlockedRecipeTechnologyNames.remove(unlocked)
 
-    @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
-    def unlock_all_techs(self):
-        if self.UnlockedRecipeTechnologyNames is None:
-            self._player_save_data["UnlockedRecipeTechnologyNames"] = (
-                PalObjects.ArrayProperty("NameProperty", {"values": []})
-            )
-        unlocked = {
-            tech.casefold() for tech in self.UnlockedRecipeTechnologyNames
-        }
-        for tech in DataProvider.get_tech_data():
-            if tech.casefold() not in unlocked:
-                self.UnlockedRecipeTechnologyNames.append(tech)
-                unlocked.add(tech.casefold())
-        LOGGER.info(f"Unlocked all techs for {self}")
-
     def has_viewing_cage(self) -> bool:
         return self._unlocked_technology_name("DisplayCharacter") is not None
-
-    def unlock_viewing_cage(self):
-        self.toggle_UnlockedRecipeTechnologyNames("DisplayCharacter", True)
 
     @property
     def PlayerGVAS(self) -> Optional[tuple[GvasFile, int]]:

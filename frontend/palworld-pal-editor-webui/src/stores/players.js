@@ -7,7 +7,12 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
-import { getPlayer, listPlayers } from "../api/players.js";
+import {
+    getPlayerInventory,
+    listPlayers,
+    patchInventorySlot,
+    patchPlayer,
+} from "../api/players.js";
 import { usePalsStore } from "./pals.js";
 import { useRostersStore } from "./rosters.js";
 import { useSessionStore } from "./session.js";
@@ -40,12 +45,40 @@ export const usePlayersStore = defineStore("players", () => {
         return true;
     }
 
-    async function refreshPlayer(playerUid) {
-        const epoch = session.sessionEpoch;
-        const player = await getPlayer(playerUid, session.readOptions());
-        if (!session.isCurrentSession(epoch)) return false;
+    // Every write below answers with the resource it changed, so none of them
+    // follows itself with a read. They return `null` when no player is open,
+    // which is the caller's cue to say so -- this store reports nothing.
+    async function update(patch) {
+        const playerUid = rosters.activePlayerUid;
+        if (playerUid === null) return null;
+        const player = await patchPlayer(playerUid, patch);
         playersByUid.value.set(player.InstanceId, player);
-        return true;
+        return player;
+    }
+
+    async function loadInventory() {
+        const playerUid = rosters.activePlayerUid;
+        if (playerUid === null) {
+            inventory.value = null;
+            return null;
+        }
+        const epoch = session.sessionEpoch;
+        const snapshot = await getPlayerInventory(playerUid, session.readOptions());
+        if (!session.isCurrentSession(epoch)) return null;
+        inventory.value = snapshot;
+        return snapshot;
+    }
+
+    async function updateInventorySlot(containerKind, slotIndex, itemId, count, allowOverstack) {
+        const playerUid = rosters.activePlayerUid;
+        if (playerUid === null) return null;
+        inventory.value = await patchInventorySlot(playerUid, slotIndex, {
+            containerKind,
+            itemId,
+            count,
+            allowOverstack,
+        });
+        return inventory.value;
     }
 
     function clear() {
@@ -60,7 +93,9 @@ export const usePlayersStore = defineStore("players", () => {
         selectedPlayer,
         showPlayerEditor,
         loadPlayers,
-        refreshPlayer,
+        update,
+        loadInventory,
+        updateInventorySlot,
         clear,
     };
 });

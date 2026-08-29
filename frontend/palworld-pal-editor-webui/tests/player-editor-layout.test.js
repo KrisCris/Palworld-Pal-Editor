@@ -145,7 +145,7 @@ test("player controls preserve every update contract", async () => {
     }
     for (const handler of [
         "palStore.updatePlayer", "playerLevelDown", "playerLevelUp", "playerMaxLevel",
-        "setStatusPoint(name)", "unlock_all_techs",
+        "setStatusPoint(name)", "palStore.unlockAllTechs",
     ]) assert.match(source, new RegExp(handler.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), handler);
     assert.match(source, /<SegmentedRange/);
     assert.doesNotMatch(source, /<input[^>]+type="range"/);
@@ -157,7 +157,7 @@ test("player controls preserve every update contract", async () => {
 
 test("status sliders dispatch stat totals separately from effigy ranks", async () => {
     const source = await read("../src/stores/paleditor.js");
-    assert.match(source, /category === "stat"[\s\S]*\? "set_TotalStatusPoint"[\s\S]*: "set_StatusPoint"/);
+    assert.match(source, /category === "stat"[\s\S]*\? "StatusPointTotals"[\s\S]*: "StatusPoints"/);
     assert.match(source, /Math\.max\(Math\.trunc\(points\), player\.StatusPointMinimums\[name\] \?\? 0\)/);
     assert.match(source, /player\.StatusPointTotalMaximums\[name\] \?\? 0/);
 });

@@ -17,6 +17,7 @@ globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
 const { useAppStore } = await import("../src/stores/app.js");
+const { useCatalogsStore } = await import("../src/stores/catalogs.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 const { usePalsStore } = await import("../src/stores/pals.js");
 const { usePlayersStore } = await import("../src/stores/players.js");
@@ -918,6 +919,87 @@ test("missing player validation uses a nonblocking warning", async () => {
     assert.equal(store.CURRENT_MESSAGE.severity, "warning");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
     assert.equal(session.operationPending, false);
+});
+
+// A player the editor has open, so the write actions have somewhere to write.
+function openPlayer(overrides = {}) {
+    const player = {
+        InstanceId: "player-1",
+        NickName: "Tester",
+        Level: 10,
+        UnlockedRecipeTechnologyNames: ["Workbench"],
+        ...overrides,
+    };
+    players.playersByUid = new Map([["player-1", player]]);
+    rosters.activeRosterKey = "player:player-1";
+    return player;
+}
+
+test("a field edit patches the player resource and keeps the answer", async () => {
+    const store = newStore();
+    openPlayer();
+    const calls = [];
+    axios.patch = async (url, body) => {
+        calls.push([url, body]);
+        return resource({ InstanceId: "player-1", NickName: "Renamed" });
+    };
+
+    await store.updatePlayer({ target: { name: "NickName", value: "Renamed" } });
+
+    // One request, not a PATCH followed by a read: the PATCH answers with the
+    // player, and that answer is what the panel now shows.
+    assert.deepEqual(calls, [["/api/players/player-1", { NickName: "Renamed" }]]);
+    assert.equal(players.selectedPlayer.NickName, "Renamed");
+});
+
+test("unlocking every technology can never lock one", async () => {
+    const store = newStore();
+    openPlayer({ UnlockedRecipeTechnologyNames: ["OwnedByTheSaveOnly"] });
+    // The catalog is what "all" means, and it does not have to contain
+    // everything the save does.
+    useCatalogsStore().technologiesByLevel = { 1: [{ InternalName: "Workbench" }] };
+    let sent;
+    axios.patch = async (url, body) => {
+        sent = body.UnlockedRecipeTechnologyNames;
+        return resource({ InstanceId: "player-1" });
+    };
+
+    await store.unlockAllTechs();
+
+    assert.deepEqual(sent, ["OwnedByTheSaveOnly", "Workbench"]);
+});
+
+test("locking a technology matches the spelling the save uses", async () => {
+    const store = newStore();
+    openPlayer({ UnlockedRecipeTechnologyNames: ["workbench", "PalCondenser"] });
+    let sent;
+    axios.patch = async (url, body) => {
+        sent = body.UnlockedRecipeTechnologyNames;
+        return resource({ InstanceId: "player-1" });
+    };
+
+    await store.toggleTech("Workbench", false);
+
+    assert.deepEqual(sent, ["PalCondenser"]);
+});
+
+test("editing an inventory slot needs no second request to redraw the grid", async () => {
+    const store = newStore();
+    openPlayer();
+    const calls = [];
+    const inventory = { containers: { food: { slots: [] } }, warnings: [] };
+    axios.patch = async (url, body) => {
+        calls.push([url, body]);
+        return resource(inventory);
+    };
+
+    assert.equal(await store.patchInventorySlot("food", 3, "Curry", 42), true);
+
+    assert.deepEqual(calls, [[
+        "/api/players/player-1/inventory/3",
+        { containerKind: "food", itemId: "Curry", count: 42, allowOverstack: false },
+    ]]);
+    assert.deepEqual(players.inventory, inventory);
 });
 
 test("unexpected request errors release loading before showing details", async t => {

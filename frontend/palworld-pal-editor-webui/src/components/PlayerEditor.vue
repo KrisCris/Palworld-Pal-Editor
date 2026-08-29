@@ -227,7 +227,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
     <section class="player-panel technology-panel">
       <header class="technology-panel__header">
         <h2>{{ palStore.getTranslatedText('Editor_TechEdit') }}</h2>
-        <button type="button" class="unlock-all" @click="palStore.updatePlayer" name="unlock_all_techs">
+        <button type="button" class="unlock-all" @click="palStore.unlockAllTechs">
           <UiIcon name="unlock" />
           {{ palStore.getTranslatedText('Editor_UnlockAllTech') }}
         </button>

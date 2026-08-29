@@ -740,56 +740,42 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     // ---- players -------------------------------------------------------------
-    // `PATCH /api/players/{uid}` and the inventory sub-resources are specified in
-    // §8.2 but built by no task in this plan, so these three still speak the
-    // pre-REST routes and stay here rather than in `stores/players`.
+    // The store owns the player and its inventory; what stays here is the DOM
+    // events the existing controls fire and the reporting they need.
 
-    async function updatePlayer(e) {
-        const key = e.target.name;
-        const value = e.target.value;
-        const playerUid = rosters.activePlayerUid;
+    // Called straight from `@click` on the field buttons, whose `name` is the
+    // field to write and whose `value` is what to write into it. The backend's
+    // allowlist decides whether that name is writable -- it is not a method name
+    // any more.
+    function updatePlayer(e) {
+        return applyPlayerPatch({ [e.target.name]: e.target.value });
+    }
 
-        if (playerUid == null) {
-            showToast("Message_Select_Player");
-            return;
-        }
-
-        const response = await PATCH("/api/player/player_data", {
-            key: key,
-            value: value,
-            PlayerUId: playerUid,
-        });
-        if (response === false) return;
-
-        if (response.status == 0) {
-            try {
-                await players.refreshPlayer(playerUid);
-            } catch (error) {
-                reportApiFailure(error, "Operation_Load_Player");
-            }
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Update_Player", response);
+    async function applyPlayerPatch(patch) {
+        try {
+            if (await players.update(patch) === null) showToast("Message_Select_Player");
+        } catch (error) {
+            reportApiFailure(error, "Operation_Update_Player");
         }
     }
 
     function playerLevelDown() {
         const player = players.selectedPlayer;
         if (!player || player.Level <= 1) return;
-        return updatePlayer({ target: { name: "Level", value: player.Level - 1 } });
+        return applyPlayerPatch({ Level: player.Level - 1 });
     }
 
     function playerLevelUp() {
         const player = players.selectedPlayer;
         const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
         if (!player || player.Level >= ceiling) return;
-        return updatePlayer({ target: { name: "Level", value: player.Level + 1 } });
+        return applyPlayerPatch({ Level: player.Level + 1 });
     }
 
     function playerMaxLevel() {
-        const value = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
-        return updatePlayer({ target: { name: "Level", value } });
+        return applyPlayerPatch({
+            Level: HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL,
+        });
     }
 
     function setStatusPoint(name) {
@@ -802,59 +788,68 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             player.StatusPointTotalMaximums[name] ?? 0,
         );
         player.StatusPointTotals[name] = points;
-        return updatePlayer({
-            target: {
-                name: player.StatusPointMetadata[name]?.category === "stat"
-                    ? "set_TotalStatusPoint"
-                    : "set_StatusPoint",
-                value: { name, points },
-            },
+        // A stat point can also be bought with an item, so it is spent against
+        // the total; every other kind is the plain allocation.
+        const field = player.StatusPointMetadata[name]?.category === "stat"
+            ? "StatusPointTotals"
+            : "StatusPoints";
+        return applyPlayerPatch({ [field]: { [name]: points } });
+    }
+
+    // The technology field takes the list the player should end up with, so both
+    // of these send one: §8.3's rule for skills, applied to the same shape.
+    // Locking compares case-insensitively for the same reason the cards do --
+    // the save's spelling of a technology need not be the catalog's, and an
+    // exact filter would quietly leave it unlocked.
+    function toggleTech(tech, status) {
+        const unlocked = players.selectedPlayer?.UnlockedRecipeTechnologyNames ?? [];
+        return applyPlayerPatch({
+            UnlockedRecipeTechnologyNames: status
+                ? [...unlocked, tech]
+                : unlocked.filter(
+                    name => name.toLowerCase() !== tech.toLowerCase(),
+                ),
         });
     }
 
-    function toggleTech(tech, status) {
-        return updatePlayer({
-            target: {
-                name: "toggle_UnlockedRecipeTechnologyNames",
-                value: { tech, status },
-            },
+    // The union, not the catalog: this field is a replacement, so sending the
+    // catalog alone would lock anything the save has that the catalog does not
+    // -- including everything, if the catalog were somehow empty. Unlocking all
+    // of them has never been able to take one away, and still cannot.
+    function unlockAllTechs() {
+        const unlocked = players.selectedPlayer?.UnlockedRecipeTechnologyNames ?? [];
+        const everything = Object.values(catalogs.technologiesByLevel)
+            .flat()
+            .map(tech => tech.InternalName);
+        return applyPlayerPatch({
+            UnlockedRecipeTechnologyNames: [...unlocked, ...everything],
         });
     }
 
     async function loadPlayerInventory() {
-        const playerUid = rosters.activePlayerUid;
-        if (!playerUid) return false;
-        const response = await POST("/api/player/inventory", {
-            PlayerUId: playerUid,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            players.inventory = response.data;
-            return true;
+        try {
+            return await players.loadInventory() !== null;
+        } catch (error) {
+            reportApiFailure(error, "Operation_Load_Player_Data");
+            return false;
         }
-        if (response.status == 2) requireAuth("AuthView_Session_Expired");
-        else reportOperationError("Operation_Load_Player_Data", response);
-        return false;
     }
 
+    // The reply is the whole inventory, so the reload this used to do afterwards
+    // is that same request, answered once.
     async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
-        const playerUid = rosters.activePlayerUid;
-        if (!playerUid) return false;
-        const response = await PATCH("/api/player/inventory_slot", {
-            PlayerUId: playerUid,
-            ContainerKind: containerKind,
-            SlotIndex: slotIndex,
-            ItemId: itemId,
-            Count: count,
-            AllowOverstack: !HIDE_INVALID_OPTIONS.value,
-        });
-        if (response !== false && response.status == 0) {
-            await loadPlayerInventory();
-            return true;
+        try {
+            return await players.updateInventorySlot(
+                containerKind,
+                slotIndex,
+                itemId,
+                count,
+                !HIDE_INVALID_OPTIONS.value,
+            ) !== null;
+        } catch (error) {
+            reportApiFailure(error, "Operation_Update_Player");
+            return false;
         }
-        if (response?.status == 2) requireAuth("AuthView_Session_Expired");
-        else if (response !== false) reportOperationError("Operation_Update_Player", response);
-        return false;
     }
 
     // ---- loading -------------------------------------------------------------
@@ -1700,6 +1695,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             toggleAwakening,
             toggleTech,
             unlock,
+            unlockAllTechs,
             updateConflictingPal,
             updateI18n,
             updatePal,
