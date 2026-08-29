@@ -1,5 +1,6 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 import { computed } from '@vue/reactivity';
 import { ref, onMounted } from 'vue'
 
@@ -8,6 +9,7 @@ import UiIcon from './modules/UiIcon.vue';
 import InputArea from './modules/InputArea.vue'
 import BarButton from './modules/BarButton.vue'
 const palStore = usePalEditorStore()
+const sessionStore = useSessionStore()
 
 const sortedPathChildren = computed(() => {
     return Array.from(palStore.PATH_CONTEXT.entries()).sort((a, b) => {
@@ -23,7 +25,7 @@ const sortedPathChildren = computed(() => {
 
 const savePickerResult = () => {
     palStore.SHOW_FILE_PICKER = false
-    palStore.PAL_GAME_SAVE_PATH = palStore.PAL_FILE_PICKER_PATH
+    sessionStore.savePath = palStore.PAL_FILE_PICKER_PATH
 
 }
 

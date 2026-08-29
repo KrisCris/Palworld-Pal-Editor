@@ -22,12 +22,12 @@ const unlock = async () => {
 
         <label class="sr-only" for="password">{{ palStore.getTranslatedText('AuthView_Password_Label') }}</label>
         <input id="password" type="password" v-model="PW" autocomplete="current-password"
-                :placeholder="palStore.getTranslatedText('AuthView_Password_Label')" :disabled="palStore.LOADING_FLAG">
+                :placeholder="palStore.getTranslatedText('AuthView_Password_Label')">
         <label class="remember">
-            <input type="checkbox" v-model="remember" :disabled="palStore.LOADING_FLAG">
+            <input type="checkbox" v-model="remember">
             {{ palStore.getTranslatedText('AuthView_Remember_7_Days') }}
         </label>
-        <button type="submit" :disabled="palStore.LOADING_FLAG">
+        <button type="submit">
             {{ palStore.getTranslatedText("AuthView_BTN_Unlock") }}
         </button>
     </form>

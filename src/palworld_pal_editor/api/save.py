@@ -36,12 +36,6 @@ def fetch_config():
     )
 
 
-@save_blueprint.route("/status", methods=["GET"])
-@jwt_required()
-def status():
-    return reply(0, {"SaveLoaded": getattr(SaveManager(), "gvas_file", None) is not None})
-
-
 @save_blueprint.route("/basecamp/research", methods=["GET"])
 @jwt_required()
 def get_basecamp_research():
@@ -85,29 +79,6 @@ def complete_basecamp_research():
         )
     except ValueError as error:
         return reply(1, msg=str(error))
-
-
-@save_blueprint.route("/load", methods=["POST"])
-# @LOGGER.api_logger
-@jwt_required()
-def load():
-    path = request.json.get("ReadPath", None)
-    path = path or Config.path
-    try:
-        if path and SaveManager().open(path):
-            Config.path = path
-            Config.save_to_file(PROGRAM_PATH / "config.json")
-            return reply(0)
-    except Exception as e:
-        stack_trace = traceback.format_exc()
-        LOGGER.error(f"Error Loading Save {stack_trace}")
-        return reply(
-            1,
-            msg=f"Error occored during loading, please make sure both the editor and your game save is up to date! Check debug console for further details.",
-        )
-
-    LOGGER.warning(f"Failed to load, check path: {path}")
-    return reply(1, None, f"Failed to load, check path: {path}")
 
 
 @save_blueprint.route("/save", methods=["POST"])

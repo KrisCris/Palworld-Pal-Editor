@@ -173,7 +173,6 @@ test("technology cards preserve toggle behavior in a compact square control", as
     assert.match(source, /<button type="button"/);
     assert.match(source, /:aria-pressed="!isLocked"/);
     assert.match(source, /:title="`\$\{techName\}: \$\{techState\}`"/);
-    assert.match(source, /:disabled="palStore\.LOADING_FLAG"/);
     assert.match(source, /class="[^"]*tech-type/);
     assert.match(source, /class="[^"]*tech-lock/);
     assert.doesNotMatch(source, /\.tech-lock\s*\{[^}]*width:\s*2rem/s);

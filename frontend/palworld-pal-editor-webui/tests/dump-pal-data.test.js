@@ -12,9 +12,12 @@ globalThis.localStorage = {
 globalThis.window = { location: { origin: "http://frontend.test" } };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useSessionStore } = await import("../src/stores/session.js");
+let session;
 
 function newStore() {
     setActivePinia(createPinia());
+    session = useSessionStore();
     return usePalEditorStore();
 }
 
@@ -37,7 +40,7 @@ test("dumping Pal data only copies JSON and reports success", async t => {
     assert.equal(opened, false);
     assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Pal_Copied");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
 });
 
 test("clipboard failures use the normal error dialog and release loading", async t => {
@@ -60,5 +63,5 @@ test("clipboard failures use the normal error dialog and release loading", async
     assert.equal(store.CURRENT_MESSAGE.presentation, "dialog");
     assert.equal(store.CURRENT_MESSAGE.code, "Error");
     assert.match(store.CURRENT_MESSAGE.log, /clipboard denied/);
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
 });

@@ -259,25 +259,21 @@ const portraitBorder = pal => pal.IsAwakening
           </div>
         </div>
         <div class="editor-summary__actions">
-          <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal"
-            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
+          <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal" :aria-label="palStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
             <UiIcon name="maximum" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
           </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
-            :disabled="palStore.LOADING_FLAG"
             :aria-label="palStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
             <UiIcon name="copy" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
           </button>
           <button id="move_btn" class="editor-button editor-button--secondary" @click="showMoveDialog = true"
-            :disabled="moveBlocked || palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Move_Pal')">
+            :disabled="moveBlocked" :aria-label="palStore.getTranslatedText('Editor_Move_Pal')">
             <UiIcon name="forward" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Move_Pal") }}</span>
           </button>
-          <button id="dump_btn" class="editor-button editor-button--secondary" @click="palStore.dumpPalData"
-            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
+          <button id="dump_btn" class="editor-button editor-button--secondary" @click="palStore.dumpPalData" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
             <UiIcon name="export" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
           </button>
-          <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal"
-            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
+          <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
             <UiIcon name="delete" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
           </button>
         </div>
@@ -293,7 +289,6 @@ const portraitBorder = pal => pal.IsAwakening
               :rows="palStore.PAL_STATIC_DATA_LIST"
               :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
               :locale="palStore.I18n"
-              :disabled="palStore.LOADING_FLAG"
               @apply="palStore.SELECTED_PAL_DATA.changeSpecie"
             />
           </div>
@@ -310,8 +305,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
                 name="NickName" :value="palStore.SELECTED_PAL_DATA.NickName"
-                :aria-label="palStore.getTranslatedText('Editor_Nickname')"
-                :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
+                :aria-label="palStore.getTranslatedText('Editor_Nickname')"><UiIcon name="check" /></button>
             </div>
           </div>
           <div v-if="palStore.SELECTED_PAL_DATA.StorageKind !== 'global_palbox'" class="editor-field">
@@ -325,7 +319,6 @@ const portraitBorder = pal => pal.IsAwakening
                 name="IsImportedCharacter"
                 :aria-label="palStore.getTranslatedText('Editor_ImportedCharacter')"
                 :aria-pressed="palStore.SELECTED_PAL_DATA.IsImportedCharacter"
-                :disabled="palStore.LOADING_FLAG"
                 @click="updateRange('IsImportedCharacter', !palStore.SELECTED_PAL_DATA.IsImportedCharacter)">
                 <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
               </button>
@@ -337,13 +330,12 @@ const portraitBorder = pal => pal.IsAwakening
               :options="skinOptions()" :placeholder="palStore.getTranslatedText('Editor_Skin_Default')"
               :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
               :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-              :aria-label="palStore.getTranslatedText('Editor_Skin')" :disabled="palStore.LOADING_FLAG"
+              :aria-label="palStore.getTranslatedText('Editor_Skin')"
               :close-on-select="false">
               <template #actions>
                 <button class="editor-button editor-button--icon editor-button--primary"
                   @click="applySkin" name="SkinName"
-                  :aria-label="palStore.getTranslatedText('Editor_Skin')"
-                  :disabled="palStore.LOADING_FLAG"><UiIcon name="plus" /></button>
+                  :aria-label="palStore.getTranslatedText('Editor_Skin')"><UiIcon name="plus" /></button>
               </template>
             </SearchSelect>
           </div>
@@ -355,8 +347,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon"
                 @click="palStore.SELECTED_PAL_DATA.swapGender" name="Gender"
-                :aria-label="palStore.getTranslatedText('Editor_Gender')"
-                :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
+                :aria-label="palStore.getTranslatedText('Editor_Gender')"><UiIcon name="refresh" /></button>
             </div>
           </div>
           <div class="editor-field">
@@ -366,7 +357,6 @@ const portraitBorder = pal => pal.IsAwakening
                 :class="['editor-button', palStore.SELECTED_PAL_DATA.FavoriteIndex === priority ? 'editor-button--primary' : 'editor-button--secondary']"
                 :aria-label="`${palStore.getTranslatedText('PalList_Sort_Priority')}: ${['—', 'I', 'II', 'III'][priority]}`"
                 :aria-pressed="palStore.SELECTED_PAL_DATA.FavoriteIndex === priority"
-                :disabled="palStore.LOADING_FLAG"
                 @click="updateRange('FavoriteIndex', priority)">
                 <span v-if="priority === 0">—</span>
                 <img v-else class="game-priority-icon"
@@ -387,13 +377,13 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelDown"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Decrease')"
-                :disabled="palStore.LOADING_FLAG || isMinFriendshipLv()"><UiIcon name="minus" /></button>
+                :disabled="isMinFriendshipLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.friendshipLevelUp"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Increase')"
-                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()"><UiIcon name="plus" /></button>
+                :disabled="isMaxFriendshipLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxFriendshipLevel"
                 name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Max')"
-                :disabled="palStore.LOADING_FLAG || isMaxFriendshipLv()"><UiIcon name="maximum" /></button>
+                :disabled="isMaxFriendshipLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
           <div class="editor-stepper" v-if="palStore.SELECTED_PAL_DATA.Level">
@@ -404,13 +394,13 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelDown"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"
-                :disabled="palStore.LOADING_FLAG || isMinLv()"><UiIcon name="minus" /></button>
+                :disabled="isMinLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.levelUp"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="plus" /></button>
+                :disabled="isMaxLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.maxLevel"
                 name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="maximum" /></button>
+                :disabled="isMaxLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
           <div class="editor-field editor-field--value" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
@@ -423,14 +413,12 @@ const portraitBorder = pal => pal.IsAwakening
                 @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
                 :aria-pressed="palStore.SELECTED_PAL_DATA.IsBOSS"
-                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsRarePal }]"
                 @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
                 :aria-pressed="palStore.SELECTED_PAL_DATA.IsRarePal"
-                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
             </div>
           </div>
         </section>
@@ -470,11 +458,11 @@ const portraitBorder = pal => pal.IsAwakening
 
       <div class="pal-health-actions" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick || palStore.SELECTED_PAL_DATA.IsFaintedPal">
         <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.HasWorkerSick"
-          @click="palStore.updatePal" name="HasWorkerSick" :disabled="palStore.LOADING_FLAG">
+          @click="palStore.updatePal" name="HasWorkerSick">
           <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
         </button>
         <button class="editor-button editor-button--primary" v-if="palStore.SELECTED_PAL_DATA.IsFaintedPal"
-          @click="palStore.updatePal" name="IsFaintedPal" :disabled="palStore.LOADING_FLAG">
+          @click="palStore.updatePal" name="IsFaintedPal">
           <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/revive')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
         </button>
       </div>
@@ -486,29 +474,25 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_HP }}</strong>
-            <SegmentedRange name="Talent_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_HP"
+            <SegmentedRange name="Talent_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="palStore.SELECTED_PAL_DATA.Talent_HP"
               @change="updateRange('Talent_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Defense }}</strong>
-            <SegmentedRange name="Talent_Defense" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Defense"
+            <SegmentedRange name="Talent_Defense" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="palStore.SELECTED_PAL_DATA.Talent_Defense"
               @change="updateRange('Talent_Defense', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Shot }}</strong>
-            <SegmentedRange name="Talent_Shot" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
+            <SegmentedRange name="Talent_Shot" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="palStore.SELECTED_PAL_DATA.Talent_Shot"
               @change="updateRange('Talent_Shot', $event)" />
           </label>
           <label class="range-control" v-if="!palStore.HIDE_INVALID_OPTIONS">
             <span>{{ palStore.getTranslatedText("Editor_IV_MELEE") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Talent_Melee }}</strong>
-            <SegmentedRange name="Talent_Melee" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
+            <SegmentedRange name="Talent_Melee" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="palStore.SELECTED_PAL_DATA.Talent_Melee"
               @change="updateRange('Talent_Melee', $event)" />
           </label>
         </div>
@@ -516,8 +500,7 @@ const portraitBorder = pal => pal.IsAwakening
           <span>{{ palStore.getTranslatedText("Editor_Awakening") }}</span>
           <strong>{{ palStore.SELECTED_PAL_DATA.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}</strong>
           <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.toggleAwakening"
-            name="IsAwakening" :aria-label="palStore.getTranslatedText('Editor_Awakening')"
-            :disabled="palStore.LOADING_FLAG"><UiIcon name="refresh" /></button>
+            name="IsAwakening" :aria-label="palStore.getTranslatedText('Editor_Awakening')"><UiIcon name="refresh" /></button>
         </div>
       </section>
 
@@ -527,29 +510,25 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_HP }}</strong>
-            <SegmentedRange name="Rank_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
+            <SegmentedRange name="Rank_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="palStore.SELECTED_PAL_DATA.Rank_HP"
               @change="updateRange('Rank_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Attack }}</strong>
-            <SegmentedRange name="Rank_Attack" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack"
+            <SegmentedRange name="Rank_Attack" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="palStore.SELECTED_PAL_DATA.Rank_Attack"
               @change="updateRange('Rank_Attack', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_Defence }}</strong>
-            <SegmentedRange name="Rank_Defence" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence"
+            <SegmentedRange name="Rank_Defence" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="palStore.SELECTED_PAL_DATA.Rank_Defence"
               @change="updateRange('Rank_Defence', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
             <strong>{{ palStore.SELECTED_PAL_DATA.Rank_CraftSpeed }}</strong>
-            <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255"
-              :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed"
+            <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="palStore.SELECTED_PAL_DATA.Rank_CraftSpeed"
               @change="updateRange('Rank_CraftSpeed', $event)" />
           </label>
         </div>
@@ -557,8 +536,7 @@ const portraitBorder = pal => pal.IsAwakening
         <label class="range-control range-control--wide">
           <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ palStore.SELECTED_PAL_DATA.Rank - 1 }}</strong>
-          <SegmentedRange name="Rank" :min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255"
-            :disabled="palStore.LOADING_FLAG" v-model="palStore.SELECTED_PAL_DATA.Rank"
+          <SegmentedRange name="Rank" :min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255" v-model="palStore.SELECTED_PAL_DATA.Rank"
             @change="updateRange('Rank', $event)" />
         </label>
       </section>
@@ -569,8 +547,7 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="pal-panel__header">
         <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
         <button class="editor-button editor-button--primary" type="button"
-          @click="palStore.SELECTED_PAL_DATA.maxSuitabilities"
-          :disabled="palStore.LOADING_FLAG">
+          @click="palStore.SELECTED_PAL_DATA.maxSuitabilities">
           <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Suitabilities_Max") }}
         </button>
       </div>
@@ -581,9 +558,9 @@ const portraitBorder = pal => pal.IsAwakening
           <strong>{{ value }}</strong>
           <div class="suitability-control__actions">
             <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.suitDown" :name="key"
-              :aria-label="`${key} -`" :disabled="palStore.LOADING_FLAG || isMinSuit(key)"><UiIcon name="minus" /></button>
+              :aria-label="`${key} -`" :disabled="isMinSuit(key)"><UiIcon name="minus" /></button>
             <button class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.suitUp" :name="key"
-              :aria-label="`${key} +`" :disabled="palStore.LOADING_FLAG || isMaxSuit(key)"><UiIcon name="plus" /></button>
+              :aria-label="`${key} +`" :disabled="isMaxSuit(key)"><UiIcon name="plus" /></button>
           </div>
         </div>
       </div>
@@ -610,8 +587,7 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_PassiveSkillList" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`"
-              :disabled="palStore.LOADING_FLAG">×</button>
+              :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`">×</button>
           </article>
         </div>
         <div class="skill-add" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
@@ -619,14 +595,13 @@ const portraitBorder = pal => pal.IsAwakening
             :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
             :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
             :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG"
+            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
                 @click="addPassiveSkill" name="add_PassiveSkillList"
                 :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
-                :disabled="palStore.LOADING_FLAG
-                  || !palStore.PAL_PASSIVE_SELECTED_ITEM
+                :disabled="!palStore.PAL_PASSIVE_SELECTED_ITEM
                   || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
             </template>
           </SearchSelect>
@@ -654,8 +629,7 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`"
-              :disabled="palStore.LOADING_FLAG">×</button>
+              :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`">×</button>
           </article>
         </div>
       </div>
@@ -683,12 +657,11 @@ const portraitBorder = pal => pal.IsAwakening
                 type="button" class="editor-button editor-button--icon skill-card__equip"
                 @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
-                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill]) || palStore.SELECTED_PAL_DATA.isEquipSkillFull()"><UiIcon name="plus" /></button>
+                :disabled="!canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill]) || palStore.SELECTED_PAL_DATA.isEquipSkillFull()"><UiIcon name="plus" /></button>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
-              :disabled="palStore.LOADING_FLAG">×</button>
+              :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`">×</button>
           </article>
         </div>
         <div class="skill-add">
@@ -696,14 +669,13 @@ const portraitBorder = pal => pal.IsAwakening
             :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
             :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
             :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG"
+            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
                 @click="addActiveSkill" name="add_MasteredWaza"
                 :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
-                :disabled="palStore.LOADING_FLAG
-                  || !palStore.PAL_ACTIVE_SELECTED_ITEM
+                :disabled="!palStore.PAL_ACTIVE_SELECTED_ITEM
                   || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
                   || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
             </template>

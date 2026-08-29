@@ -6,7 +6,7 @@ defineProps(['content', 'name', 'value', 'disabled'])
 </script>
 
 <template>
-    <button :name="name" :value="value" :disabled="disabled || palStore.LOADING_FLAG">
+    <button :name="name" :value="value" :disabled="disabled">
         {{ content }}
     </button>
 </template>

@@ -17,6 +17,7 @@ import MessageCenter from '@/components/MessageCenter.vue'
 import SupportDialog from '@/components/SupportDialog.vue'
 import TopBar from '@/components/TopBar.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 import AuthView from '@/views/AuthView.vue'
 import BackendErrorView from '@/views/BackendErrorView.vue'
 import EditorView from '@/views/EditorView.vue'
@@ -24,13 +25,18 @@ import EntryView from '@/views/EntryView.vue'
 import uiIconSprite from '@/assets/ui-icons.svg?raw'
 
 const palStore = usePalEditorStore()
-const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
+const sessionStore = useSessionStore()
+const runtimeError = computed(() => palStore.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
 const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
 const supportDialogVisible = computed(() =>
-  palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(palStore.APP_STATE)
+  palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(sessionStore.appState)
 )
 const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
 const modalOverlay = computed(() => blockingOverlay.value || supportDialogVisible.value)
+// Spec 8.8: while an operation is running nothing in the app may start a second
+// one or edit what the first is about to send. One region, one gate -- so a new
+// control is covered by existing here rather than by remembering to disable itself.
+const interactionBlocked = computed(() => modalOverlay.value || sessionStore.operationPending)
 const playersCollapsed = ref(readRosterCollapsed('editor.playersCollapsed'))
 const palsCollapsed = ref(readRosterCollapsed('editor.palsCollapsed'))
 const refreshPage = () => window.location.reload()
@@ -55,34 +61,34 @@ onMounted(palStore.bootstrap)
   <div class="ui-icon-sprite" aria-hidden="true" v-html="uiIconSprite"></div>
   <div
     :class="['app-content', { obscured: modalOverlay }]"
-    :inert="modalOverlay || undefined"
+    :inert="interactionBlocked || undefined"
     @focusin="rememberFocus"
   >
     <TopBar :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
       @restore-players="playersCollapsed = false" @restore-pals="palsCollapsed = false" />
 
-    <p v-if="palStore.APP_STATE === 'connecting'" role="status">
+    <p v-if="sessionStore.appState === 'connecting'" role="status">
       {{ palStore.getTranslatedText('App_Connecting') }}
     </p>
     <BackendErrorView
-      v-else-if="palStore.APP_STATE === 'backend-error'"
+      v-else-if="sessionStore.appState === 'backend-error'"
       startup
       :kind="palStore.BACKEND_ERROR?.kind"
       :message="palStore.BACKEND_ERROR?.message"
       :code="palStore.BACKEND_ERROR?.code"
       :log="palStore.BACKEND_ERROR?.log"
-      :loading="palStore.LOADING_FLAG"
+      :loading="sessionStore.operationPending"
       @retry="refreshPage"
     />
-    <AuthView v-else-if="palStore.APP_STATE === 'auth-required'" />
-    <EntryView v-else-if="palStore.APP_STATE === 'entry'" />
-    <EditorView v-else-if="palStore.APP_STATE === 'editor'"
+    <AuthView v-else-if="sessionStore.appState === 'auth-required'" />
+    <EntryView v-else-if="sessionStore.appState === 'entry'" />
+    <EditorView v-else-if="sessionStore.appState === 'editor'"
       :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
       @collapse-players="playersCollapsed = true" @collapse-pals="palsCollapsed = true" />
 
   </div>
 
-  <SupportDialog v-if="palStore.APP_STATE === 'entry' || palStore.APP_STATE === 'editor'" />
+  <SupportDialog v-if="sessionStore.appState === 'entry' || sessionStore.appState === 'editor'" />
 
   <BackendErrorView
     v-if="runtimeError"
@@ -90,7 +96,7 @@ onMounted(palStore.bootstrap)
     :message="palStore.BACKEND_ERROR.message"
     :code="palStore.BACKEND_ERROR.code"
     :log="palStore.BACKEND_ERROR.log"
-    :loading="palStore.LOADING_FLAG"
+    :loading="sessionStore.operationPending"
     @retry="refreshPage"
     @dismiss="palStore.clearBackendError"
   />

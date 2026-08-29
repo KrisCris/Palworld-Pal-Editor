@@ -212,14 +212,13 @@ onBeforeUnmount(() => {
             :search-placeholder="translated('Editor_Select_Search')"
             :no-results="translated('Editor_Select_No_Results')"
             :aria-label="translated('BaseCamp_Research_Guild')"
-            :show-tooltip="false"
-            :disabled="palStore.LOADING_FLAG" />
+            :show-tooltip="false" />
         </div>
         <div v-else-if="selectedGuild" class="guild-name">
           <span>{{ translated('BaseCamp_Research_Guild') }}</span>
           <strong>{{ selectedGuild.GuildName }}</strong>
         </div>
-        <button class="editor-button editor-button--danger" :disabled="allCompleted || palStore.LOADING_FLAG" @click="completeAll">
+        <button class="editor-button editor-button--danger" :disabled="allCompleted" @click="completeAll">
           {{ translated('BaseCamp_Research_Complete_All') }}
         </button>
       </div>
@@ -254,7 +253,7 @@ onBeforeUnmount(() => {
             </div>
             <strong>{{ selectedCategory.Completed }}<small>/{{ selectedCategory.Total }}</small></strong>
           </div>
-          <button class="editor-button" :disabled="selectedCategory.Completed === selectedCategory.Total || palStore.LOADING_FLAG"
+          <button class="editor-button" :disabled="selectedCategory.Completed === selectedCategory.Total"
             @click="completeCategory">
             {{ translated('BaseCamp_Research_Complete_Category') }}
           </button>
@@ -336,7 +335,7 @@ onBeforeUnmount(() => {
               : 'BaseCamp_Research_Locked') }}
           </p>
 
-          <button class="editor-button editor-button--primary" :disabled="selectedResearch.Completed || palStore.LOADING_FLAG"
+          <button class="editor-button editor-button--primary" :disabled="selectedResearch.Completed"
             @click="completeResearch">
             {{ translated('BaseCamp_Research_Complete_Node') }}
           </button>

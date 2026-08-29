@@ -318,7 +318,7 @@ async function deleteTemplate(id) {
           <button class="secondary-button" @click="emit('close')">
             {{ palStore.getTranslatedText('AddPal_Cancel') }}
           </button>
-          <button class="primary-button" :disabled="!canCreate || palStore.LOADING_FLAG" @click="createPal">
+          <button class="primary-button" :disabled="!canCreate" @click="createPal">
             <UiIcon name="plus" /> {{ palStore.getTranslatedText('AddPal_Create') }}
           </button>
         </div>

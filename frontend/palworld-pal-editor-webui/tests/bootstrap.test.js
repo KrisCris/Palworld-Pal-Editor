@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import axios from "axios";
@@ -15,12 +16,17 @@ globalThis.window = { location: { origin: "http://frontend.test" } };
 globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useSessionStore } = await import("../src/stores/session.js");
+let session;
 
 const reply = data => ({ data: { status: 0, data } });
+// REST resources answer with the resource itself, not the old envelope.
+const resource = body => ({ data: body });
 
 function newStore({ preserveStorage = false } = {}) {
     if (!preserveStorage) values.clear();
     setActivePinia(createPinia());
+    session = useSessionStore();
     return usePalEditorStore();
 }
 
@@ -47,7 +53,9 @@ function mockBackend({
             });
         }
         if (url.endsWith("/auth")) return reply(null);
-        if (url.endsWith("/status")) return reply({ SaveLoaded: loaded });
+        if (url.endsWith("/api/session")) {
+            return resource({ loaded, path: loaded ? "C:/save" : null, warnings: [] });
+        }
         if (url.endsWith("players_data")) {
             return reply({ hasWorkingPal, players });
         }
@@ -62,10 +70,16 @@ function mockBackend({
         calls.push(["PATCH", url]);
         return reply(null);
     };
+    axios.put = async (url, body) => {
+        calls.push(["PUT", url]);
+        if (url.endsWith("/api/session")) {
+            return resource({ loaded: true, path: body?.path ?? "C:/save", warnings: [] });
+        }
+        throw new Error(`Unexpected PUT ${url}`);
+    };
     axios.post = async (url, data) => {
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
-        if (url.endsWith("/save/load")) return reply(null);
         if (url.endsWith("/player_pals")) return reply(pals.map(pal => ({
             ...pal,
             RecordKey: pal.RecordKey || `world:${pal.InstanceId}`,
@@ -102,7 +116,7 @@ test("connectBackend keeps the persisted origin when the candidate cannot fetch 
     const store = newStore();
     mockBackend({ password: true });
     await store.connectBackend("10.0.0.1:58081");
-    const previousState = store.APP_STATE;
+    const previousState = session.appState;
     axios.get = async () => {
         const error = new Error("Network Error");
         error.request = {};
@@ -113,7 +127,7 @@ test("connectBackend keeps the persisted origin when the candidate cannot fetch 
     assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.1:58081");
     assert.equal(store.BACKEND_CANDIDATE, "http://10.0.0.1:58081");
     assert.equal(store.BACKEND_CONNECTED, true);
-    assert.equal(store.APP_STATE, previousState);
+    assert.equal(session.appState, previousState);
     assert.equal(store.BACKEND_ERROR, null);
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.1:58081");
 });
@@ -206,12 +220,14 @@ test("a failed probe preserves the active backend's ephemeral token", async () =
             assert.equal(config.headers.Authorization, "Bearer token");
             return reply(null);
         }
-        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        if (url.endsWith("/api/session")) {
+            return resource({ loaded: false, path: null, warnings: [] });
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
 
     assert.equal(await store.connectBackend(""), true);
-    assert.equal(store.APP_STATE, "entry");
+    assert.equal(session.appState, "entry");
 });
 
 test("candidate auth failures preserve the active backend token", async () => {
@@ -233,7 +249,9 @@ test("candidate auth failures preserve the active backend token", async () => {
             assert.equal(config.headers.Authorization, "Bearer token-a");
             return reply(null);
         }
-        if (url === `${originA}/api/save/status`) return reply({ SaveLoaded: false });
+        if (url === `${originA}/api/session`) {
+            return resource({ loaded: false, path: null, warnings: [] });
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.post = async () => reply(null);
@@ -276,20 +294,22 @@ test("backend credentials and paths are scoped to the selected origin", async ()
             assert.equal(config.headers.Authorization, `Bearer ${expectedToken}`);
             return reply(null);
         }
-        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        if (url.endsWith("/api/session")) {
+            return resource({ loaded: false, path: null, warnings: [] });
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.post = async () => reply(null);
 
     let store = newStore({ preserveStorage: true });
     await store.bootstrap();
-    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save-a");
+    assert.equal(session.savePath, "C:/save-a");
 
     expectedToken = "token-b";
     localStorage.setItem("PAL_BACKEND_ORIGIN", originB);
     store = newStore({ preserveStorage: true });
     await store.bootstrap();
-    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save-b");
+    assert.equal(session.savePath, "C:/save-b");
 });
 
 test("legacy credentials and paths stay in same-origin mode", async () => {
@@ -309,19 +329,21 @@ test("legacy credentials and paths stay in same-origin mode", async () => {
             assert.equal(config.headers.Authorization, "Bearer legacy-token");
             return reply(null);
         }
-        if (url.endsWith("/status")) return reply({ SaveLoaded: false });
+        if (url.endsWith("/api/session")) {
+            return resource({ loaded: false, path: null, warnings: [] });
+        }
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.post = async () => reply(null);
 
     const store = newStore({ preserveStorage: true });
     await store.bootstrap();
-    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/legacy-save");
+    assert.equal(session.savePath, "C:/legacy-save");
 
     localStorage.setItem("PAL_BACKEND_ORIGIN", "http://10.0.0.2:58081");
     const remoteStore = newStore({ preserveStorage: true });
     await remoteStore.bootstrap();
-    assert.equal(remoteStore.PAL_GAME_SAVE_PATH, "C:/configured");
+    assert.equal(session.savePath, "C:/configured");
 });
 
 test("connectBackend is unavailable while editing", async () => {
@@ -329,7 +351,7 @@ test("connectBackend is unavailable while editing", async () => {
     const calls = mockBackend({ password: false, loaded: true });
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "editor");
+    assert.equal(session.appState, "editor");
     assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
     assert.equal(calls.at(-1)[1], "/api/save/skin_data");
 });
@@ -340,7 +362,7 @@ test("bootstrap asks for a password when no remembered token exists", async () =
 
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "auth-required");
+    assert.equal(session.appState, "auth-required");
     assert.deepEqual(calls, [["GET", "/api/save/fetch_config"]]);
 });
 
@@ -351,12 +373,14 @@ test("bootstrap resumes an already loaded backend save with a remembered token",
 
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "editor");
-    assert.equal(store.SAVE_LOADED_FLAG, true);
-    assert.equal(store.PAL_WRITE_BACK_PATH, "C:/save");
+    assert.equal(session.appState, "editor");
+    assert.equal(session.session.loaded, true);
+    assert.equal(session.writeBackPath, "C:/save");
     assert.ok(calls.some(call => call[1] === "/api/auth/auth"));
-    assert.ok(calls.some(call => call[1] === "/api/save/status"));
-    assert.equal(calls.some(call => call[1] === "/api/save/load"), false);
+    assert.ok(calls.some(call => call[0] === "GET" && call[1] === "/api/session"));
+    // Reading the session is not loading one: a save already open is resumed,
+    // never re-read from disk.
+    assert.equal(calls.some(call => call[0] === "PUT"), false);
 });
 
 test("bootstrap logs in without a password and routes an empty backend to entry", async () => {
@@ -365,8 +389,8 @@ test("bootstrap logs in without a password and routes an empty backend to entry"
 
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "entry");
-    assert.equal(store.SAVE_LOADED_FLAG, false);
+    assert.equal(session.appState, "entry");
+    assert.equal(session.session.loaded, false);
 });
 
 test("unlock stores only remembered tokens and resumes backend state", async () => {
@@ -377,7 +401,7 @@ test("unlock stores only remembered tokens and resumes backend state", async () 
     await store.unlock("secret", true);
 
     assert.equal(localStorage.getItem("PAL_AUTH_TOKEN"), "token");
-    assert.equal(store.APP_STATE, "entry");
+    assert.equal(session.appState, "entry");
 });
 
 test("startup network failures route to the dedicated backend error state", async () => {
@@ -390,7 +414,7 @@ test("startup network failures route to the dedicated backend error state", asyn
 
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "backend-error");
+    assert.equal(session.appState, "backend-error");
     assert.equal(store.BACKEND_ERROR.message, "Network Error");
 });
 
@@ -398,7 +422,7 @@ test("runtime failures preserve editor state", async () => {
     const store = newStore();
     const calls = mockBackend({ password: false, loaded: true });
     await store.bootstrap();
-    assert.equal(store.APP_STATE, "editor");
+    assert.equal(session.appState, "editor");
 
     axios.get = async url => {
         calls.push(["GET", url]);
@@ -407,8 +431,8 @@ test("runtime failures preserve editor state", async () => {
         throw error;
     };
     await store.get_updates();
-    assert.equal(store.APP_STATE, "editor");
-    assert.equal(store.SAVE_LOADED_FLAG, true);
+    assert.equal(session.appState, "editor");
+    assert.equal(session.editorOpen, true);
 });
 
 test("a failed Pal detail request preserves the current complete selection", async () => {
@@ -440,14 +464,14 @@ test("a failed Pal detail request preserves the current complete selection", asy
     assert.equal(store.BACKEND_ERROR.kind, "connection");
     assert.equal(store.SELECTED_PAL_ID, currentPal.InstanceId);
     assert.deepEqual(store.SELECTED_PAL_DATA, currentPal);
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
 });
 
 test("a failed path-picker request does not clear the current save path", async () => {
     const store = newStore();
     mockBackend({ password: false, loaded: false });
     await store.bootstrap();
-    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save");
+    assert.equal(session.savePath, "C:/save");
 
     const fail = async () => {
         const error = new Error("Network Error");
@@ -458,8 +482,8 @@ test("a failed path-picker request does not clear the current save path", async 
     axios.post = fail;
     await store.show_file_picker();
 
-    assert.equal(store.PAL_GAME_SAVE_PATH, "C:/save");
-    assert.equal(store.APP_STATE, "entry");
+    assert.equal(session.savePath, "C:/save");
+    assert.equal(session.appState, "entry");
 });
 
 test("a transient post-login failure can reuse the in-memory session token", async () => {
@@ -470,7 +494,7 @@ test("a transient post-login failure can reuse the in-memory session token", asy
     const backendGet = axios.get;
     let failStatus = true;
     axios.get = async url => {
-        if (url.endsWith("/status") && failStatus) {
+        if (url.endsWith("/api/session") && failStatus) {
             failStatus = false;
             const error = new Error("Network Error");
             error.request = {};
@@ -480,10 +504,10 @@ test("a transient post-login failure can reuse the in-memory session token", asy
     };
 
     await store.unlock("secret", false);
-    assert.equal(store.APP_STATE, "backend-error");
+    assert.equal(session.appState, "backend-error");
 
     await store.bootstrap();
-    assert.equal(store.APP_STATE, "entry");
+    assert.equal(session.appState, "entry");
     assert.equal(calls.filter(call => call[1] === "/api/auth/login").length, 1);
 });
 
@@ -498,12 +522,12 @@ test("startup stays connecting until loaded-save hydration completes", async () 
 
     const boot = store.bootstrap();
     while (!releasePlayers) await new Promise(resolve => setTimeout(resolve, 0));
-    assert.equal(store.APP_STATE, "connecting");
-    assert.equal(store.SAVE_LOADED_FLAG, false);
+    assert.equal(session.appState, "connecting");
+    assert.equal(session.editorOpen, false);
 
     releasePlayers();
     await boot;
-    assert.equal(store.APP_STATE, "editor");
+    assert.equal(session.appState, "editor");
 });
 
 test("mid-hydration authentication failure unlocks the password form", async () => {
@@ -525,8 +549,8 @@ test("mid-hydration authentication failure unlocks the password form", async () 
 
     await store.bootstrap();
 
-    assert.equal(store.APP_STATE, "auth-required");
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.appState, "auth-required");
+    assert.equal(session.operationPending, false);
 });
 
 test("a failed login request uses the dedicated backend error state", async () => {
@@ -541,8 +565,8 @@ test("a failed login request uses the dedicated backend error state", async () =
 
     await store.unlock("secret", false);
 
-    assert.equal(store.APP_STATE, "backend-error");
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.appState, "backend-error");
+    assert.equal(session.operationPending, false);
 });
 
 test("loaded-save hydration opens base camp editing after reloading", async () => {
@@ -655,7 +679,7 @@ test("fetch_config publishes backend locales and switches to the translated loca
 test("language changes refresh only the active roster and re-fetch others lazily", async () => {
     const store = newStore();
     store.IS_LOCKED = false;
-    store.SAVE_LOADED_FLAG = true;
+    session.appState = "editor";
     store.PLAYER_MAP = new Map([
         ["player-1", { InstanceId: "player-1", pals: new Map() }],
     ]);
@@ -697,7 +721,7 @@ test("language changes refresh only the active roster and re-fetch others lazily
 test("language changes fail when the active roster cannot be refreshed", async () => {
     const store = newStore();
     store.IS_LOCKED = false;
-    store.SAVE_LOADED_FLAG = true;
+    session.appState = "editor";
     store.PLAYER_MAP = new Map([
         ["player-1", { InstanceId: "player-1", pals: new Map() }],
     ]);
@@ -719,7 +743,7 @@ test("language changes fail when the active roster cannot be refreshed", async (
 
     assert.equal(await store.updateI18n(), false);
     assert.equal(staticRequests, 0);
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
 });
 
 test("healing all pals does not try to reselect a missing pal", async t => {
@@ -751,7 +775,7 @@ test("wrong passwords remain on the auth page with inline feedback", async () =>
 
     await store.unlock("wrong", false);
 
-    assert.equal(store.APP_STATE, "auth-required");
+    assert.equal(session.appState, "auth-required");
     assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Wrong_Password");
 });
 
@@ -760,7 +784,7 @@ test("expired sessions retain an inline authentication explanation", () => {
 
     store.requireAuth("AuthView_Session_Expired");
 
-    assert.equal(store.APP_STATE, "auth-required");
+    assert.equal(session.appState, "auth-required");
     assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Session_Expired");
 });
 
@@ -772,7 +796,7 @@ test("missing player validation uses a nonblocking warning", async () => {
     assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Select_Player");
     assert.equal(store.CURRENT_MESSAGE.severity, "warning");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
 });
 
 test("unexpected request errors release loading before showing details", async t => {
@@ -784,9 +808,35 @@ test("unexpected request errors release loading before showing details", async t
 
     await store.writeSave();
 
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(session.operationPending, false);
     assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Unexpected_Frontend_Error");
     assert.match(store.CURRENT_MESSAGE.log, /broken request adapter/);
+});
+
+test("one gate covers the whole app and is released even when an operation fails", async t => {
+    const app = await readFile(new URL("../src/App.vue", import.meta.url), "utf8");
+    // Spec 8.8 wants one region made inert, not a `:disabled` on each control:
+    // that is what makes a control added later covered without being told to be.
+    assert.match(app, /:inert="interactionBlocked \|\| undefined"/);
+    assert.match(app, /interactionBlocked = computed\(\(\) => modalOverlay\.value \|\| sessionStore\.operationPending\)/);
+
+    const store = newStore();
+    mockBackend({ password: false });
+    const originalConsoleError = console.error;
+    console.error = () => {};
+    t.after(() => { console.error = originalConsoleError; });
+
+    let pendingDuringRequest = null;
+    axios.get = async () => {
+        pendingDuringRequest = session.operationPending;
+        throw new TypeError("broken request adapter");
+    };
+
+    await store.get_updates();
+
+    assert.equal(pendingDuringRequest, true);
+    // Released by `finally`, so a failure cannot leave the app inert forever.
+    assert.equal(session.operationPending, false);
 });
 
 test("donation failures do not open the donation panel", async () => {
@@ -805,7 +855,7 @@ test("successful saves use a nonblocking success message", async () => {
         assert.equal(url, "/api/save/save");
         return reply(null);
     };
-    store.PAL_WRITE_BACK_PATH = "C:/output";
+    session.writeBackPath = "C:/output";
 
     await store.writeSave();
 

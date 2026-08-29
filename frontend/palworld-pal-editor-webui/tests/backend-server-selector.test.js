@@ -10,7 +10,7 @@ test("backend selector is available before the language control outside the edit
     const topBar = await read("../src/components/TopBar.vue");
 
     assert.match(topBar, /import BackendServerSelector from ['"]\.\/BackendServerSelector\.vue['"]/);
-    assert.match(topBar, /<BackendServerSelector v-if="palStore\.APP_STATE !== 'editor'"\s*\/>[\s\S]*<label class="language-control">/);
+    assert.match(topBar, /<BackendServerSelector v-if="sessionStore\.appState !== 'editor'"\s*\/>[\s\S]*<label class="language-control">/);
 });
 
 test("startup backend errors leave the server selector toolbar interactive", async () => {

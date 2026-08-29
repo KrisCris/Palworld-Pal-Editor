@@ -17,8 +17,10 @@ import {
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 
 const palStore = usePalEditorStore()
+const sessionStore = useSessionStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
@@ -58,13 +60,13 @@ onBeforeUnmount(() => window.removeEventListener('pointerdown', closeSortMenuOnO
 
 watch([
   activeSpecialRoster,
-  () => palStore.LOADING_FLAG,
+  () => sessionStore.operationPending,
 ], async ([roster, loading], previous = []) => {
   if (roster !== previous[0]) attemptedAutoSelectRoster.value = null
   if (roster === palStore.PAL_BASE_WORKER_BTN) return
   if (!roster || loading || palStore.SELECTED_PAL_ID || attemptedAutoSelectRoster.value === roster) return
   await nextTick()
-  if (palStore.LOADING_FLAG || palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return
+  if (palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return
   try {
     const button = palListContainer.value?.querySelector('button:not(:disabled)')
     if (!button) return
@@ -227,8 +229,7 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
           </div>
           </details>
           <button class="roster-icon-button"
-            :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
-            :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
+            :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')" @click="showAddPalDialog = true" name="add_pal">
             <UiIcon name="plus" />
           </button>
         </div>
@@ -236,7 +237,7 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
       <label class="pal-search">
         <UiIcon name="search" />
         <input type="search" v-model="palStore.PAL_LIST_SEARCH_KEYWORD"
-          :placeholder="palStore.getTranslatedText('PalList_Search')" :disabled="palStore.LOADING_FLAG">
+          :placeholder="palStore.getTranslatedText('PalList_Search')">
       </label>
     </header>
 
@@ -251,7 +252,7 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
         :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', 'out-of-container': isAwayPal(pal) }]"
         :value="palKey(pal)" @click="palStore.selectPal(palKey(pal))"
         :aria-current="palStore.SELECTED_PAL_ID == palKey(pal) ? 'true' : undefined"
-        :disabled="palStore.SELECTED_PAL_ID == palKey(pal) || palStore.LOADING_FLAG">
+        :disabled="palStore.SELECTED_PAL_ID == palKey(pal)">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">

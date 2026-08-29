@@ -96,7 +96,7 @@ async function renameTemplate(template) {
           <input id="skill-template-name" v-model="templateName" maxlength="64"
             :placeholder="palStore.getTranslatedText('SkillTemplate_Name_Placeholder')"
             @keydown.enter="saveTemplate">
-          <button class="primary-button" :disabled="!templateName.trim() || palStore.LOADING_FLAG" @click="saveTemplate">
+          <button class="primary-button" :disabled="!templateName.trim()" @click="saveTemplate">
             <UiIcon name="save" /> {{ palStore.getTranslatedText('SkillTemplate_Save') }}
           </button>
         </div>
@@ -115,10 +115,10 @@ async function renameTemplate(template) {
             </div>
 
             <div class="template-card__actions">
-              <button class="danger-button" :disabled="palStore.LOADING_FLAG" @click="palStore.deleteSkillTemplate(template.Id)">
+              <button class="danger-button" @click="palStore.deleteSkillTemplate(template.Id)">
                 <UiIcon name="delete" /> {{ palStore.getTranslatedText('SkillTemplate_Delete') }}
               </button>
-              <button class="primary-button" :disabled="palStore.LOADING_FLAG" @click="palStore.applySkillTemplate(template.Id)">
+              <button class="primary-button" @click="palStore.applySkillTemplate(template.Id)">
                 <UiIcon name="check" /> {{ palStore.getTranslatedText('SkillTemplate_Apply') }}
               </button>
             </div>

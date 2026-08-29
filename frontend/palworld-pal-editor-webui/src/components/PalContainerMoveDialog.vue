@@ -218,16 +218,16 @@ onBeforeUnmount(() => {
         <footer>
           <button type="button" @click="closeDialog">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
           <template v-if="conflict">
-            <button type="button" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG" @click="jumpToPal">
+            <button type="button" :disabled="!conflict.LockedTarget" @click="jumpToPal">
               {{ palStore.getTranslatedText('Editor_Transfer_Jump') }}
             </button>
             <span ref="updateAction" class="move-dialog__update-action" @pointerenter="schedulePreviewScale"
               @focusin="schedulePreviewScale">
-              <button type="button" class="move-dialog__update" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG"
+              <button type="button" class="move-dialog__update" :disabled="!conflict.LockedTarget"
                 @click="updatePal">{{ palStore.getTranslatedText('Editor_Transfer_Update') }}</button>
             </span>
           </template>
-          <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingContainerId || palStore.LOADING_FLAG"
+          <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingContainerId"
             @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>

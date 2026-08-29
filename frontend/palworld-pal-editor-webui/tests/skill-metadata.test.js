@@ -12,6 +12,7 @@ import {
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
+import { useSessionStore } from "../src/stores/session.js";
 
 test("boss toggles require both a base and boss family member", () => {
     assert.equal(canToggleBossVariant({ HasBaseVariant: true, HasBossVariant: true }), true);
@@ -162,14 +163,7 @@ test("public updatePal blocks non-assignable skill additions before loading or P
         patchCalls.push(args);
         return { data: { status: 0, data: null, msg: null } };
     };
-    const loadingChanges = [];
-    const stopWatching = watch(
-        () => store.LOADING_FLAG,
-        value => loadingChanges.push(value),
-        { flush: "sync" },
-    );
     t.after(() => {
-        stopWatching();
         axios.patch = originalPatch;
     });
 
@@ -178,8 +172,7 @@ test("public updatePal blocks non-assignable skill additions before loading or P
     }
 
     assert.deepEqual(patchCalls, []);
-    assert.equal(store.LOADING_FLAG, false);
-    assert.deepEqual(loadingChanges, []);
+    assert.equal(useSessionStore().operationPending, false);
 });
 
 test("public updatePal allows known non-assignable skills in cheat mode", async t => {
@@ -238,7 +231,7 @@ test("public updatePal rejects unknown skills in cheat mode", async t => {
     });
 
     assert.deepEqual(patchCalls, []);
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(useSessionStore().operationPending, false);
 });
 
 test("public updatePal allows human-only skills for a selected human", async t => {
@@ -309,5 +302,5 @@ test("public updatePal still sends removals and unrelated updates", async t => {
             ["/api/pal/paldata", "unknown_operation", "unchanged passthrough"],
         ],
     );
-    assert.equal(store.LOADING_FLAG, false);
+    assert.equal(useSessionStore().operationPending, false);
 });

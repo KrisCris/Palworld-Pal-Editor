@@ -27,7 +27,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
       <button v-if="globalRoster()" class="roster-row roster-row--global"
         @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
         :aria-current="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
-        :disabled="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
+        :disabled="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN">
         <span class="player-avatar">GPS</span>
         <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>
@@ -35,7 +35,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
         @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
         :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"
-        :disabled="(palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID) || palStore.LOADING_FLAG">
+        :disabled="(palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID)">
         <span class="player-avatar">PAL</span>
         <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
       </button>
@@ -43,7 +43,7 @@ const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind =
       <button v-for="player in palStore.PLAYER_MAP.values()" :key="player.InstanceId"
         class="roster-row" @click="palStore.selectPlayer(player.InstanceId)" :title="player.InstanceId"
         :aria-current="player.InstanceId == palStore.SELECTED_PLAYER_ID ? 'true' : undefined"
-        :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG) || palStore.LOADING_FLAG">
+        :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG)">
         <span class="player-avatar">{{ playerInitial(player) }}</span>
         <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
       </button>

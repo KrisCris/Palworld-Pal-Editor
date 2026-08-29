@@ -41,22 +41,6 @@ def select_pal(monkeypatch, record):
     )
 
 
-def test_save_status_uses_gvas_file(monkeypatch):
-    configure_app(monkeypatch)
-    manager = SaveManager()
-    monkeypatch.delattr(manager, "gvas_file", raising=False)
-
-    with app.test_client() as client:
-        token = login(client)
-        headers = {"Authorization": f"Bearer {token}"}
-        response = client.get("/api/save/status", headers=headers)
-        assert response.get_json()["data"] == {"SaveLoaded": False}
-
-        monkeypatch.setattr(manager, "gvas_file", object(), raising=False)
-        response = client.get("/api/save/status", headers=headers)
-        assert response.get_json()["data"] == {"SaveLoaded": True}
-
-
 def test_remembered_token_expires_in_seven_days(monkeypatch):
     configure_app(monkeypatch)
 

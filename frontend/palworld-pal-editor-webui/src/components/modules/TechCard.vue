@@ -27,8 +27,7 @@ const toggleLock = () => toggleTechnology(palStore.SELECTED_PLAYER_DATA, props.i
 
 <template>
   <button type="button" :class="['tech', { 'tech--boss': item.BossTechnology, 'tech--locked': isLocked }]"
-    :style="bgStyle" :aria-label="`${techName}: ${techState}`" :title="`${techName}: ${techState}`" :aria-pressed="!isLocked"
-    :disabled="palStore.LOADING_FLAG" @click="toggleLock">
+    :style="bgStyle" :aria-label="`${techName}: ${techState}`" :title="`${techName}: ${techState}`" :aria-pressed="!isLocked" @click="toggleLock">
     <span class="tech-header tech-type">
       <UiIcon v-if="!item.I18n.Type" name="warning" />
       {{ item.I18n.Type ?? palStore.getTranslatedText('Editor_Tech_Invalid') }}

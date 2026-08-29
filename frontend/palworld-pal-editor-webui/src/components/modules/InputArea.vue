@@ -8,7 +8,7 @@ const model = defineModel()
 </script>
 
 <template>
-    <input type="text" v-model="model" :placeholder="placeholder" :disabled="palStore.LOADING_FLAG">
+    <input type="text" v-model="model" :placeholder="placeholder">
 </template>
 
 <style scoped>

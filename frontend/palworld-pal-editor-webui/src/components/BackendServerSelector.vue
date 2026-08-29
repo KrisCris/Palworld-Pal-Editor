@@ -5,8 +5,10 @@ import { moveRecentFocus } from './backend-server-selector-keys'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { normalizeBackendOrigin, readRecentBackends, writeStorage } from '@/services/backend-connection'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 
 const palStore = usePalEditorStore()
+const sessionStore = useSessionStore()
 const open = ref(false)
 const address = ref(palStore.BACKEND_CANDIDATE)
 const errorKey = ref('')
@@ -20,7 +22,7 @@ const candidateOrigin = computed(() => palStore.BACKEND_CANDIDATE || pageOrigin)
 const visibleRecent = computed(() => palStore.BACKEND_RECENT.filter(origin => origin !== currentOrigin.value))
 const triggerLabel = computed(() => `${text('BackendSelector_Label')}: ${candidateOrigin.value}, ${text(
   palStore.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected')}`)
-const busy = computed(() => palStore.LOADING_FLAG)
+const busy = computed(() => sessionStore.operationPending)
 
 const close = focus => {
   open.value = false

@@ -4,8 +4,10 @@ import { onMounted } from 'vue'
 import PathPicker from '@/components/PathPicker.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 
 const palStore = usePalEditorStore()
+const sessionStore = useSessionStore()
 
 onMounted(palStore.get_updates)
 </script>
@@ -32,16 +34,15 @@ onMounted(palStore.get_updates)
         <div class="entry-path-row">
           <input
             id="entry-save-path"
-            v-model="palStore.PAL_GAME_SAVE_PATH"
+            v-model="sessionStore.savePath"
             type="text"
             placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
-            :disabled="palStore.LOADING_FLAG"
           >
-          <button class="entry-path-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.show_file_picker">
+          <button class="entry-path-button" type="button" @click="palStore.show_file_picker">
             <UiIcon name="folder" />
             {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
           </button>
-          <button class="entry-load-button" type="button" :disabled="palStore.LOADING_FLAG" @click="palStore.loadSave">
+          <button class="entry-load-button" type="button" @click="palStore.loadSave">
             <UiIcon name="play" />
             {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
           </button>

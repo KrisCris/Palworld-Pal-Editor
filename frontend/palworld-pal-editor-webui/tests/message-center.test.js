@@ -11,6 +11,7 @@ globalThis.localStorage = {
 };
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useSessionStore } = await import("../src/stores/session.js");
 const messageCenterSource = await readFile(
     new URL("../src/components/MessageCenter.vue", import.meta.url),
     "utf8",
@@ -127,14 +128,14 @@ test("operation errors retain backend diagnostics and translatable context", () 
 
 test("frontend errors retain editor state and expose their stack", t => {
     const store = newStore();
-    const originalState = store.APP_STATE;
+    const originalState = useSessionStore().appState;
     const originalConsoleError = console.error;
     console.error = () => {};
     t.after(() => { console.error = originalConsoleError; });
 
     store.reportFrontendError(new TypeError("broken renderer"), "Vue render");
 
-    assert.equal(store.APP_STATE, originalState);
+    assert.equal(useSessionStore().appState, originalState);
     assert.equal(store.CURRENT_MESSAGE.code, "TypeError");
     assert.match(store.CURRENT_MESSAGE.log, /broken renderer/);
 });

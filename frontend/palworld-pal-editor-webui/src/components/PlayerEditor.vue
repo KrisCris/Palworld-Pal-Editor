@@ -98,7 +98,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
             <div class="player-control">
               <input id="player-name" type="text" name="NickName" v-model="palStore.SELECTED_PLAYER_DATA.NickName">
               <button type="button" @click="palStore.updatePlayer" name="NickName"
-                :value="palStore.SELECTED_PLAYER_DATA.NickName" :disabled="palStore.LOADING_FLAG"
+                :value="palStore.SELECTED_PLAYER_DATA.NickName"
                 :aria-label="fieldActionLabel('Editor_Nickname')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -110,7 +110,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
                 :label="palStore.getTranslatedText('Editor_TechPoint')"
                 v-model="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="TechnologyPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint" :disabled="palStore.LOADING_FLAG"
+                :value="palStore.SELECTED_PLAYER_DATA.TechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_TechPoint')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -122,7 +122,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
                 :label="palStore.getTranslatedText('Editor_BossTechPoint')"
                 v-model="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" />
               <button type="button" @click="palStore.updatePlayer" name="bossTechnologyPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint" :disabled="palStore.LOADING_FLAG"
+                :value="palStore.SELECTED_PLAYER_DATA.bossTechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_BossTechPoint')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -134,7 +134,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
                 :label="palStore.getTranslatedText('Editor_UnusedStatusPoints')"
                 v-model="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint" />
               <button type="button" @click="palStore.updatePlayer" name="UnusedStatusPoint"
-                :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint" :disabled="palStore.LOADING_FLAG"
+                :value="palStore.SELECTED_PLAYER_DATA.UnusedStatusPoint"
                 :aria-label="fieldActionLabel('Editor_UnusedStatusPoints')"><UiIcon name="check" /></button>
             </div>
           </div>
@@ -143,13 +143,13 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
             <span>Lv. {{ palStore.SELECTED_PLAYER_DATA.Level }}</span>
             <div class="level-controls">
               <button type="button" @click="palStore.SELECTED_PLAYER_DATA.levelDown" name="Level"
-                :disabled="palStore.LOADING_FLAG || isMinLv()"
+                :disabled="isMinLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"><UiIcon name="minus" /></button>
               <button type="button" @click="palStore.SELECTED_PLAYER_DATA.levelUp" name="Level"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()"
+                :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"><UiIcon name="plus" /></button>
               <button type="button" @click="palStore.SELECTED_PLAYER_DATA.maxLevel" name="Level"
-                :disabled="palStore.LOADING_FLAG || isMaxLv()"
+                :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"><UiIcon name="maximum" /></button>
             </div>
           </div>
@@ -184,7 +184,6 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
               ]"
               :thumb-role="statAllocation(name).stat ? 'primary' : 'item'"
               v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
-              :disabled="palStore.LOADING_FLAG"
               :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
               @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
             <footer>
@@ -210,7 +209,6 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
           <SegmentedRange :name="`status-${name}`" :min="0"
             :max="palStore.SELECTED_PLAYER_DATA.StatusPointTotalMaximums[name]"
             v-model="palStore.SELECTED_PLAYER_DATA.StatusPointTotals[name]"
-            :disabled="palStore.LOADING_FLAG"
             :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
             @change="palStore.SELECTED_PLAYER_DATA.setStatusPoint(name)" />
           <footer>
@@ -224,8 +222,7 @@ const technologyRows = computed(() => Object.entries(palStore.TECH_LV_DICT).map(
     <section class="player-panel technology-panel">
       <header class="technology-panel__header">
         <h2>{{ palStore.getTranslatedText('Editor_TechEdit') }}</h2>
-        <button type="button" class="unlock-all" @click="palStore.updatePlayer" name="unlock_all_techs"
-          :disabled="palStore.LOADING_FLAG">
+        <button type="button" class="unlock-all" @click="palStore.updatePlayer" name="unlock_all_techs">
           <UiIcon name="unlock" />
           {{ palStore.getTranslatedText('Editor_UnlockAllTech') }}
         </button>

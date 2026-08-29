@@ -13,7 +13,7 @@ defineEmits([])
 </script>
 
 <template>
-    <button :name="name" :value="value" :aria-label="label" :disabled="palStore.LOADING_FLAG">
+    <button :name="name" :value="value" :aria-label="label">
         <UiIcon :name="icon" />
     </button>
 </template>

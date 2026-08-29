@@ -230,6 +230,34 @@ test("bootstrap, authentication, and error controls are translated in every loca
     }
 });
 
+// Carried over from the deleted `test_entry_view_ui.py`, which checked these in
+// four locales by reading the .js files as text. The entry page is the first
+// thing anyone sees, so an untranslated string there is the most visible kind.
+test("the entry page is translated in every locale", () => {
+    const keys = [
+        "Entry_Title", "Entry_Intro", "Entry_Help",
+        "Entry_Support_Title", "Entry_Support_Subtitle",
+        "Entry_Support_Community_Title", "Entry_Support_Community_Description",
+        "Entry_Support_Code_Title", "Entry_Support_Code_Description",
+        "Entry_Support_Issue_Title", "Entry_Support_Issue_Description",
+        "Entry_Support_Author_Title", "Entry_Support_Author_Description",
+        "Entry_Downloads_Title", "Entry_Downloads_Subtitle",
+        "Entry_Download_GitHub_Description", "Entry_Download_Nexus_Description",
+        "Entry_Download_Bilibili_Description",
+        "Entry_Load_Title", "Entry_Load_Subtitle", "Entry_Path_Label",
+        "Entry_Instructions_Title", "Entry_Instructions_Subtitle",
+        "Entry_Instruction_First_Title", "Entry_Instruction_First_Description",
+        "Entry_Instruction_WebUI_Title", "Entry_Instruction_WebUI_Description",
+        "Entry_Instruction_Docker_Title", "Entry_Instruction_Docker_Description",
+    ];
+    for (const locale of Object.values(UI_TRANSLATIONS)) {
+        for (const key of keys) {
+            assert.equal(typeof locale[key], "string", key);
+            assert.ok(locale[key].trim(), key);
+        }
+    }
+});
+
 test("roster collapse controls are translated in every locale", () => {
     for (const locale of Object.values(UI_TRANSLATIONS)) {
         for (const key of ["PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {

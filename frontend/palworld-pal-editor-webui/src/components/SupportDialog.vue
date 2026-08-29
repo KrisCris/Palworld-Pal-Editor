@@ -3,8 +3,10 @@ import { computed, nextTick, ref, watch } from 'vue'
 
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useSessionStore } from '@/stores/session'
 
 const palStore = usePalEditorStore()
+const sessionStore = useSessionStore()
 const closeButton = ref()
 const openQrButton = ref()
 const qrCloseButton = ref()
@@ -25,7 +27,7 @@ const expandedPayment = computed(() => paymentMethods.find(method => method.id =
 const close = async () => {
   expandedQr.value = undefined
   palStore.SHOW_DONATE_FLAG = false
-  if (palStore.SAVE_LOADED_FLAG) await palStore.shownDonate()
+  if (sessionStore.editorOpen) await palStore.shownDonate()
 }
 
 const openQr = async method => {

@@ -254,7 +254,7 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
           @click="emit('save', { itemId: null, count: 0 })">
           {{ palStore.getTranslatedText('Inventory_Clear') }}
         </button>
-        <button type="button" class="primary-button" :disabled="!selectedId || palStore.LOADING_FLAG" @click="save">
+        <button type="button" class="primary-button" :disabled="!selectedId" @click="save">
           {{ palStore.getTranslatedText('Inventory_Apply') }}
         </button>
       </footer>
