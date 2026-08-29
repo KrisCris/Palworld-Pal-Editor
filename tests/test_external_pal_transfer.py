@@ -412,7 +412,7 @@ def test_base_worker_creation_targets_and_create(tmp_path):
 
     assert created.storage_kind == "world"
     assert created.pal.OwnerPlayerUId is None
-    assert manager.baseworker_mapping[str(created.pal.InstanceId)] is created.pal
+    assert created in manager.records_for_roster("PAL_BASE_WORKER_BTN")
     assert manager.get_record(created.record_key) is created
 
     assert manager.save(str(manager._file_path)) is True
@@ -439,5 +439,5 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     assert clone.pal.InstanceId != source.pal.InstanceId
     assert clone.pal.OwnerPlayerUId is None
     assert clone.storage_kind == "world"
-    assert manager.baseworker_mapping[str(clone.pal.InstanceId)] is clone.pal
+    assert clone in manager.records_for_roster("PAL_BASE_WORKER_BTN")
     assert manager.get_record(clone.record_key) is clone

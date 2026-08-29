@@ -83,7 +83,7 @@ class CondensationSuitabilityTests(unittest.TestCase):
             record.pal
             for player in manager.get_players()
             for record in manager.records_for_roster(player.PlayerUId)
-        ] + list(manager.baseworker_mapping.values())
+        ] + manager.get_working_pals()
         pal = next(
             item
             for item in pals

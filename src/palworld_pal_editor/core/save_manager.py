@@ -76,7 +76,6 @@ class SaveManager:
     pal_repository: PalRepository
     world_adapter: Optional[WorldPalAdapter]
     storage_adapters: dict[str, "PalAdapter"]
-    baseworker_mapping: Optional[dict[str, PalEntity]]
     _dangling_pals: Optional[dict[str, PalEntity]]
     
     container_data: Optional[ContainerData]
@@ -115,7 +114,6 @@ class SaveManager:
         # storageKey -> the adapter that reads and writes that place. A plain
         # routing table: it holds no Pals, no rosters and no descriptors.
         self.storage_adapters: dict[str, PalAdapter] = {}
-        self.baseworker_mapping = {}
         self._dangling_pals = {}
 
         self.container_data = None
@@ -124,10 +122,6 @@ class SaveManager:
         self.camp_data = None
         self.guild_lab_data = None
 
-        # Roster grouping is a display concept the old UI still asks for by
-        # button key. It is the last compat layer over the repository and is
-        # deleted in F3b; it is not a second Pal authority.
-        self._roster_record_keys: dict[str, list[str]] = {}
         self._dps_storages: dict[str, PalStorageSaveFile] = {}
         self._global_palbox: PalStorageSaveFile | None = None
 
@@ -509,44 +503,18 @@ class SaveManager:
     def has_global_palbox(self) -> bool:
         return self._global_palbox is not None
 
-    def _register_record(
-        self, record: PalRecord, roster_key: str, *, created: bool = False
-    ) -> None:
-        self.pal_repository.register(record, created=created)
-        self._roster_record_keys.setdefault(roster_key, []).append(record.record_key)
-
     def _unregister_record(self, record: PalRecord) -> None:
         self.pal_repository.unregister(record)
-        instance_key = str(record.pal.InstanceId)
-        self._drop_from_rosters(record)
-        self.baseworker_mapping.pop(instance_key, None)
-        self._dangling_pals.pop(instance_key, None)
-
-    def _drop_from_rosters(self, record: PalRecord) -> None:
-        for record_keys in self._roster_record_keys.values():
-            while record.record_key in record_keys:
-                record_keys.remove(record.record_key)
-
-    def _refile_record(self, record: PalRecord, roster_key: str) -> None:
-        """Move an already-registered record to another roster.
-
-        A Pal that changes owner or container changes which list the old UI shows it
-        in, but it is the same record, so it is re-filed rather than unregistered and
-        registered again -- which would drop its created mark.
-        """
-        self._drop_from_rosters(record)
-        self._roster_record_keys.setdefault(roster_key, []).append(record.record_key)
+        self._dangling_pals.pop(str(record.pal.InstanceId), None)
 
     def _register_external_record(
         self, record: PalRecord, *, created: bool = False
     ) -> None:
         owner = self.get_player(record.pal.OwnerPlayerUId)
-        roster_key = "PAL_OTHER_PAL_BTN"
         if owner is not None:
             record.group_id = owner.group_id
             record.pal.set_owner_player_entity(owner)
-            roster_key = str(owner.PlayerUId)
-        self._register_record(record, roster_key, created=created)
+        self.pal_repository.register(record, created=created)
 
     def _register_world_records(self) -> None:
         """Register every World Pal and file it under the roster the old UI asks for.
@@ -564,21 +532,19 @@ class SaveManager:
             owner = self.get_player(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
             if owner is not None:
                 pal.set_owner_player_entity(owner)
-                self._register_record(record, str(owner.PlayerUId))
+                self.pal_repository.register(record)
                 LOGGER.info(f"Found pal: {pal}")
                 continue
 
+            self.pal_repository.register(record)
             if (
                 not pal.OwnerPlayerUId
                 and record.storage_key is not None
                 and str(pal.ContainerId) in base_container_ids
             ):
-                self.baseworker_mapping[str(pal.InstanceId)] = pal
-                self._register_record(record, "PAL_BASE_WORKER_BTN")
                 continue
 
             self._dangling_pals[str(pal.InstanceId)] = pal
-            self._register_record(record, "PAL_OTHER_PAL_BTN")
             if pal.OwnerPlayerUId:
                 LOGGER.warning(
                     f"Found pal owned by non-existing user {pal.OwnerPlayerUId}: {pal}"
@@ -638,7 +604,7 @@ class SaveManager:
                 f"{self._global_palbox.capacity}"
             )
             for record in adapter.records():
-                self._register_record(record, "PAL_GLOBAL_STORAGE_BTN")
+                self.pal_repository.register(record)
         except Exception as error:
             warning = f"Unable to load Global Palbox {gps_path}: {error}"
             self.load_warnings.append(warning)
@@ -680,12 +646,73 @@ class SaveManager:
             )
         return records[0] if records else None
 
-    def records_for_roster(self, roster_key: str) -> list[PalRecord]:
-        records = (
-            self.pal_repository.get(key)
-            for key in self._roster_record_keys.get(str(roster_key), [])
+    def working_records(self) -> list[PalRecord]:
+        """Every Pal standing in a base camp's container, in base-worker order.
+
+        A base worker is not a kind of record, it is a place: an unowned Pal in a
+        container some camp owns. The camps say which containers those are and the
+        repository's storage index says who is in them, so both halves are index
+        hits and neither can drift out of sync with the other.
+        """
+        records = [
+            record
+            for camp in self.camp_data.get_camps()
+            if camp.container_id
+            for record in self.pal_repository.records_for_storage(
+                WorldPalAdapter.storage_key(camp.container_id)
+            )
+            if not record.pal.OwnerPlayerUId
+        ]
+        return sorted(
+            records,
+            key=lambda record: (
+                alphanumeric_key(record.pal.PalDeckID),
+                record.pal.Level or 1,
+            ),
         )
-        return [record for record in records if record is not None]
+
+    def records_for_roster(self, roster_key: str) -> list[PalRecord]:
+        """The Pals one of the old UI's lists shows, derived on every call.
+
+        Until F3b this was a hand-maintained list of record keys per roster, and
+        every create, move and transfer had to remember to re-file it -- forgetting
+        was silent and left the list pointing at the previous owner. Nothing is
+        stored now, so nothing can go stale.
+        """
+        key = str(roster_key)
+        if key == "PAL_BASE_WORKER_BTN":
+            return self.working_records()
+        if key == "PAL_GLOBAL_STORAGE_BTN":
+            if self._global_palbox is None:
+                return []
+            return self.pal_repository.records_for_storage(
+                self._global_palbox.storage_key
+            )
+        if key == "PAL_OTHER_PAL_BTN":
+            return self._unrostered_records()
+        # A Pal in the Global Palbox can still carry the uid of whoever deposited
+        # it; it belongs to that storage's list, not to the depositor's.
+        return [
+            record
+            for record in self.pal_repository.records_for_owner(key)
+            if record.storage_kind != "global_palbox"
+        ]
+
+    def _unrostered_records(self) -> list[PalRecord]:
+        """Pals no player, base or Global Palbox list claims.
+
+        No owner and no base container, or an owner uid naming a player this save
+        does not contain. This is the one roster with no index to ask, which is
+        fitting -- it is defined by every other roster failing to match.
+        """
+        working = {record.record_key for record in self.working_records()}
+        return [
+            record
+            for record in self.pal_repository.records()
+            if record.storage_kind != "global_palbox"
+            and self.get_player(record.pal.OwnerPlayerUId) is None
+            and record.record_key not in working
+        ]
 
     def sorted_records_for_roster(self, roster_key: str | UUID) -> list[PalRecord]:
         """A roster in the order the Pal list displays it."""
@@ -725,9 +752,6 @@ class SaveManager:
     def get_players_by_name(self, name: str) -> list[PlayerEntity]:
         return self.players.by_name(name)
     
-    def get_working_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        return self.baseworker_mapping.get(str(guid), None)
-
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
         records = self.records_by_instance(guid)
         if not records:
@@ -739,7 +763,7 @@ class SaveManager:
         return (world[0] if world else records[0]).pal
 
     def get_working_pals(self) -> list[PalEntity]:
-        return sorted(self.baseworker_mapping.values(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
+        return [record.pal for record in self.working_records()]
 
     def _container_descriptor_map(self) -> dict[str, dict]:
         cached = getattr(self, "_container_registry_cache", None)
@@ -1116,7 +1140,6 @@ class SaveManager:
             ],
             "entities": list(self._entities_list),
             "created": self.pal_repository.snapshot_created(),
-            "baseworker": dict(self.baseworker_mapping),
             "dangling": dict(self._dangling_pals),
             "groups": [
                 (group, copy.deepcopy(group.individual_character_handle_ids))
@@ -1124,10 +1147,6 @@ class SaveManager:
             ],
             "locker": copy.deepcopy(self._locker_entries()),
             "records": self.pal_repository.snapshot_records(),
-            "roster_record_keys": {
-                key: list(record_keys)
-                for key, record_keys in self._roster_record_keys.items()
-            },
             "registry": getattr(self, "_container_registry_cache", None),
         }
 
@@ -1144,8 +1163,6 @@ class SaveManager:
         for container, slot_snapshot in snapshot["containers"]:
             container.restore_slots(slot_snapshot)
         self._entities_list[:] = snapshot["entities"]
-        self.baseworker_mapping.clear()
-        self.baseworker_mapping.update(snapshot["baseworker"])
         self._dangling_pals.clear()
         self._dangling_pals.update(snapshot["dangling"])
         for group, handles in snapshot["groups"]:
@@ -1160,15 +1177,7 @@ class SaveManager:
         self._locker_entries()[:] = snapshot["locker"]
         self.pal_repository.replace_records(snapshot["records"])
         self.pal_repository.restore_created(snapshot["created"])
-        self._roster_record_keys = snapshot["roster_record_keys"]
         self._container_registry_cache = snapshot["registry"]
-
-    def _world_roster_key(self, descriptor: dict, pal: PalEntity) -> str:
-        if descriptor["ContainerKind"] == "base":
-            return "PAL_BASE_WORKER_BTN"
-        if pal.OwnerPlayerUId and self.get_player(pal.OwnerPlayerUId):
-            return str(pal.OwnerPlayerUId)
-        return "PAL_OTHER_PAL_BTN"
 
     def _make_world_pal(
         self,
@@ -1432,9 +1441,7 @@ class SaveManager:
                 )
                 owner = self.get_player(target_pal.OwnerPlayerUId)
                 target_pal.set_owner_player_entity(owner)
-                self._register_record(
-                    target_record, str(target_pal.OwnerPlayerUId), created=True
-                )
+                self.pal_repository.register(target_record, created=True)
             except Exception:
                 self._restore_external_mutation(snapshot)
                 LOGGER.error(
@@ -1458,9 +1465,7 @@ class SaveManager:
                 target_record = self.storage_adapters[
                     global_storage.storage_key
                 ].allocate(save_parameter, source.pal.InstanceId)
-                self._register_record(
-                    target_record, "PAL_GLOBAL_STORAGE_BTN"
-                )
+                self.pal_repository.register(target_record)
             except Exception:
                 self._restore_external_mutation(snapshot)
                 LOGGER.error(
@@ -1530,12 +1535,9 @@ class SaveManager:
         )
 
         if source.storage_kind == "world" and descriptor["StorageKind"] == "world":
+            # `move_pal` re-locates the record itself, so the transfer no longer
+            # patches `storage_key`/`slot_index` behind it.
             self.move_pal(source.pal.InstanceId, descriptor["ContainerId"])
-            source.storage_key = target_storage_key
-            source.slot_index = source.pal.SlotIndex
-            self._refile_record(
-                source, self._world_roster_key(descriptor, source.pal)
-            )
             return {
                 "RecordKey": source.record_key,
                 "StorageKey": source.storage_key,
@@ -1633,17 +1635,12 @@ class SaveManager:
             if target_record.storage_kind == "dps":
                 self._register_external_record(target_record)
             else:
+                # A Pal moved into a base container has already had its owner
+                # cleared, so this binds an owner exactly when there is one.
                 owner = self.get_player(target_record.pal.OwnerPlayerUId)
-                if descriptor["ContainerKind"] == "base":
-                    self.baseworker_mapping[str(target_record.pal.InstanceId)] = (
-                        target_record.pal
-                    )
-                elif owner is not None:
+                if owner is not None:
                     target_record.pal.set_owner_player_entity(owner)
-                self._register_record(
-                    target_record,
-                    self._world_roster_key(descriptor, target_record.pal),
-                )
+                self.pal_repository.register(target_record)
             self._container_registry_cache = None
             locker_action = (
                 "add"
@@ -1775,12 +1772,9 @@ class SaveManager:
         source_snapshot = source_container.snapshot_slots()
         target_snapshot = target_container.snapshot_slots()
         pal_param_snapshot = copy.deepcopy(pal_entity.pal_param)
+        storage_key_snapshot = pal_record.storage_key
+        slot_index_snapshot = pal_record.slot_index
         owner_entity_snapshot = pal_entity.owner_player_entity
-        roster_snapshot = {
-            key: list(record_keys)
-            for key, record_keys in self._roster_record_keys.items()
-        }
-        baseworker_snapshot = dict(self.baseworker_mapping)
         registry_snapshot = getattr(self, "_container_registry_cache", None)
 
         try:
@@ -1791,29 +1785,28 @@ class SaveManager:
             if source_container.has_pal(pal_entity.InstanceId):
                 raise RuntimeError("Failed removing the source slot.")
             pal_entity.SlotId = (target_container.ID, target_slot_index)
+            # The record's location mirrors the Pal's slot, so the two move together
+            # and the repository's storage index never points at the container the
+            # Pal just left. Until F3b only the transfer path patched this up
+            # afterwards, so a plain move left the record on its old storage key.
+            pal_record.storage_key = WorldPalAdapter.storage_key(target_container.ID)
+            pal_record.slot_index = pal_entity.SlotIndex
 
-            pal_key = str(pal_entity.InstanceId)
             old_owner_id = (
                 str(pal_entity.OwnerPlayerUId) if pal_entity.OwnerPlayerUId else None
             )
             target_owner_id = target_descriptor.get("OwnerPlayerUId")
             if target_descriptor["ContainerKind"] == "base":
                 pal_entity.set_owner_player_uid(None)
-                self.baseworker_mapping[pal_key] = pal_entity
-            elif target_is_shared:
-                self.baseworker_mapping.pop(pal_key, None)
-            else:
+            elif not target_is_shared:
+                # A shared container keeps whoever already owned the Pal.
                 target_owner = self.get_player(target_owner_id)
                 if target_owner is None:
                     raise ValueError("Target container owner is unavailable.")
-                self.baseworker_mapping.pop(pal_key, None)
                 pal_entity.set_owner_player_uid(target_owner.PlayerUId, target_owner)
 
-            # The move changed the Pal's owner and container, so both the roster the
-            # old UI lists it under and the repository's owner index are stale.
-            self._refile_record(
-                pal_record, self._world_roster_key(target_descriptor, pal_entity)
-            )
+            # Owner and location both changed, and every roster reads through those
+            # indexes, so they are rebuilt once the move is settled.
             self.pal_repository.reindex()
             self._container_registry_cache = None
             LOGGER.info(
@@ -1828,10 +1821,9 @@ class SaveManager:
             pal_entity.pal_param.clear()
             pal_entity.pal_param.update(pal_param_snapshot)
             pal_entity.owner_player_entity = owner_entity_snapshot
-            self._roster_record_keys = roster_snapshot
+            pal_record.storage_key = storage_key_snapshot
+            pal_record.slot_index = slot_index_snapshot
             self.pal_repository.reindex()
-            self.baseworker_mapping.clear()
-            self.baseworker_mapping.update(baseworker_snapshot)
             self._container_registry_cache = registry_snapshot
             LOGGER.error(
                 f"Move Pal rolled back: pal={pal_entity.InstanceId} "
@@ -2015,9 +2007,7 @@ class SaveManager:
                 record = self.storage_adapters[storage.storage_key].allocate(
                     save_parameter, instance_id
                 )
-                self._register_record(
-                    record, "PAL_GLOBAL_STORAGE_BTN", created=True
-                )
+                self.pal_repository.register(record, created=True)
                 self._container_registry_cache = None
                 LOGGER.info(
                     "Created Global Palbox Pal: "
@@ -2280,8 +2270,6 @@ class SaveManager:
             if not group.add_pal(pal_instanceId):
                 raise ValueError("Duplicated Pal ID in group")
             group_added = True
-            if owner_player is None:
-                self.baseworker_mapping[str(pal_instanceId)] = pal_entity
             self._entities_list.append(pal_obj)
 
             record = self.world_adapter.record(
@@ -2296,18 +2284,8 @@ class SaveManager:
             # Every creation entry point registers here, so a Pal made through the CLI
             # or through `create_pal` is tracked the same way -- and marked created,
             # which is what settles its capture count and paldeck flag on save.
-            self._register_record(
-                record,
-                (
-                    self._world_roster_key(target_descriptor, pal_entity)
-                    if target_descriptor is not None
-                    else str(owner_player.PlayerUId)
-                ),
-                created=True,
-            )
+            self.pal_repository.register(record, created=True)
         except Exception:
-            if owner_player is None:
-                self.baseworker_mapping.pop(str(pal_instanceId), None)
             if pal_obj in self._entities_list:
                 self._entities_list.remove(pal_obj)
             if group_added:

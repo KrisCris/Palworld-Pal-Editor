@@ -23,7 +23,7 @@ class PalUpgradeTests(unittest.TestCase):
             record.pal
             for player in cls.manager.get_players()
             for record in cls.manager.records_for_roster(player.PlayerUId)
-        ] + list(cls.manager.baseworker_mapping.values())
+        ] + cls.manager.get_working_pals()
 
     def test_level_80_assignment_preserves_existing_exp(self):
         self.assertEqual(80, PalEntity.MAX_LEVEL)
@@ -81,7 +81,7 @@ class PalUpgradeTests(unittest.TestCase):
     def test_base_worker_skin_uses_last_owner(self):
         pal = next(
             item
-            for item in self.manager.baseworker_mapping.values()
+            for item in self.manager.get_working_pals()
             if item.RawSpecieKey == "Anubis" and item.OwnerPlayerUId is None
         )
         original = copy.deepcopy(pal.pal_param)

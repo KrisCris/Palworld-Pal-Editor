@@ -104,7 +104,6 @@ def manager_fixture():
     manager.world_adapter = WorldPalAdapter(
         manager._entities_list, manager.container_data
     )
-    manager._roster_record_keys = {}
     SaveManager._instance = manager
     return manager, player, container, group
 

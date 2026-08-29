@@ -27,20 +27,10 @@ def get_player_pals():
     roster_key = request.json.get("RosterKey") or request.json.get("PlayerUId")
     manager = SaveManager()
 
-    if roster_key == "PAL_GLOBAL_STORAGE_BTN":
+    if roster_key in ("PAL_GLOBAL_STORAGE_BTN", "PAL_BASE_WORKER_BTN"):
+        # Both come back in the order their own list displays: slot order for the
+        # Global Palbox, base-worker order for the camps.
         records = manager.records_for_roster(roster_key)
-    elif roster_key == "PAL_BASE_WORKER_BTN":
-        # Base workers keep their own display order, which is a Pal list rather than
-        # a record list, so the roster's records are read back through it.
-        by_pal = {
-            id(record.pal): record
-            for record in manager.records_for_roster(roster_key)
-        }
-        records = [
-            record
-            for pal in manager.get_working_pals()
-            if (record := by_pal.get(id(pal))) is not None
-        ]
     else:
         if not manager.get_player(roster_key):
             return reply(1, None, f"Player {roster_key} Not Found")
