@@ -17,11 +17,11 @@ from palworld_pal_editor.core.pal_storage_adapters.world_pal_adapter import (
 # What `SaveManager.storage_adapters` maps a storageKey to. A union rather than a
 # base class or Protocol: the three formats share no method a caller invokes
 # without already knowing which one it holds.
-PalStorageAdapter = DpsPalAdapter | GpsPalAdapter | WorldPalAdapter
+PalAdapter = DpsPalAdapter | GpsPalAdapter | WorldPalAdapter
 
 __all__ = [
     "DpsPalAdapter",
     "GpsPalAdapter",
-    "PalStorageAdapter",
+    "PalAdapter",
     "WorldPalAdapter",
 ]

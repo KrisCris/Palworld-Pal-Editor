@@ -27,7 +27,7 @@ from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import (
     DpsPalAdapter,
     GpsPalAdapter,
-    PalStorageAdapter,
+    PalAdapter,
     WorldPalAdapter,
 )
 from palworld_pal_editor.core.player_repository import PlayerRepository
@@ -75,7 +75,7 @@ class SaveManager:
     players: PlayerRepository
     pal_repository: PalRepository
     world_adapter: Optional[WorldPalAdapter]
-    storage_adapters: dict[str, "PalStorageAdapter"]
+    storage_adapters: dict[str, "PalAdapter"]
     baseworker_mapping: Optional[dict[str, PalEntity]]
     _dangling_pals: Optional[dict[str, PalEntity]]
     
@@ -114,7 +114,7 @@ class SaveManager:
         self.world_adapter = None
         # storageKey -> the adapter that reads and writes that place. A plain
         # routing table: it holds no Pals, no rosters and no descriptors.
-        self.storage_adapters: dict[str, PalStorageAdapter] = {}
+        self.storage_adapters: dict[str, PalAdapter] = {}
         self.baseworker_mapping = {}
         self._dangling_pals = {}
 
