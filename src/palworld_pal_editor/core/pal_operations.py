@@ -240,6 +240,10 @@ class TransferPlan:
     # The logical owner the Pal ends up with. Not the storage's owner: a DPS belongs
     # to a player, but the Pals in it keep whoever owned them (spec §7).
     owner_uid: Optional[str] = None
+    # The guild the Pal ends up in. Usually the target storage's, but a shared
+    # storage has none of its own, so a Pal put in one stays in the guild it was
+    # already in.
+    group_id: Optional[str] = None
     candidates: list[PalRecord] = field(default_factory=list)
 
     @property
@@ -321,7 +325,10 @@ class PalOperationService:
         if container is None or container.get_free_slot_index() == -1:
             return _refused("TARGET_FULL")
         return TransferPlan(
-            REPLICATE, descriptor=descriptor, owner_uid=str(owner.PlayerUId)
+            REPLICATE,
+            descriptor=descriptor,
+            owner_uid=str(owner.PlayerUId),
+            group_id=descriptor["GroupId"],
         )
 
     def _plan_into_global(self, source: PalRecord, descriptor: dict) -> TransferPlan:
@@ -377,26 +384,32 @@ class PalOperationService:
             return _refused("DUPLICATE_IN_TARGET")
 
         shared = bool(descriptor.get("Shared"))
+        group_id = descriptor.get("GroupId")
         if descriptor["ContainerKind"] == "base":
             owner_uid = None
         elif shared:
             # A viewing cage is nobody's, so the Pal in it stays whoever's it was --
-            # which means it has to be someone's to begin with.
+            # which means it has to be someone's to begin with, and it stays in that
+            # owner's guild rather than in the cage's, which has none.
             if source.pal.OwnerPlayerUId is None:
                 return _refused("OWNER_REQUIRED")
             owner_uid = str(source.pal.OwnerPlayerUId)
+            group_id = self._source_group_id(source)
         else:
             target_owner = manager.get_player(descriptor.get("OwnerPlayerUId"))
             if target_owner is None:
                 return _refused("TARGET_OWNER_UNAVAILABLE")
             owner_uid = str(target_owner.PlayerUId)
-        if not shared and str(self._source_group_id(source)) != str(
-            descriptor.get("GroupId")
-        ):
+        if not shared and str(self._source_group_id(source)) != str(group_id):
             return _refused("CROSS_GUILD_UNSUPPORTED")
-        if manager.group_data.get_group(descriptor.get("GroupId")) is None:
+        if manager.group_data.get_group(group_id) is None:
             return _refused("TARGET_GUILD_UNAVAILABLE")
-        return TransferPlan(RELOCATE, descriptor=descriptor, owner_uid=owner_uid)
+        return TransferPlan(
+            RELOCATE,
+            descriptor=descriptor,
+            owner_uid=owner_uid,
+            group_id=str(group_id),
+        )
 
     def _source_group_id(self, source: PalRecord):
         """The guild the Pal counts as being in: its owner's, or its record's."""
@@ -464,7 +477,10 @@ class PalOperationService:
         comes back as the same conflict the user answered the first time, rather than
         as a distinct staleness the dialog would need its own branch for.
         """
-        if not isinstance(expected_target, dict):
+        if not isinstance(expected_target, dict) or len(plan.candidates) > 1:
+            # A second candidate appearing since the dialog opened is the same
+            # staleness as the first one moving: what the user confirmed is no
+            # longer what they were asked, so they are asked again (spec §7).
             raise PalIdentityConflict(plan.candidates)
         destination = next(
             (
@@ -557,7 +573,7 @@ class PalOperationService:
             touched.watch_list(manager.locker_entries())
         try:
             allocated = adapter.allocate(save_parameter, instance_id)
-            self._release_source(source, touched)
+            self.release_record(source, touched)
             if entering_from_world:
                 # A Pal held outside the world save is registered in the locker, and
                 # the game treats one that is not as still standing in its container.
@@ -586,7 +602,7 @@ class PalOperationService:
         manager = self._manager
         descriptor = plan.descriptor
         container = manager.container_data.get_container(descriptor["ContainerId"])
-        group = manager.group_data.get_group(descriptor["GroupId"])
+        group = manager.group_data.get_group(plan.group_id)
         instance_id = source.pal.InstanceId
         save_parameter = copy.deepcopy(source.pal.save_parameter)
         origin_storage_key = source.storage_key
@@ -607,7 +623,7 @@ class PalOperationService:
                 raise ValueError("Pal already exists in the target guild.")
             manager.world_adapter.append(native_record)
             touched.on_undo(lambda: manager.world_adapter.remove(native_record))
-            self._release_source(source, touched)
+            self.release_record(source, touched)
             manager.remove_locker_id(instance_id)
             manager.pal_repository.rebind_and_rekey(
                 source,
@@ -660,7 +676,7 @@ class PalOperationService:
         manager = self._manager
         descriptor = plan.descriptor
         container = manager.container_data.get_container(descriptor["ContainerId"])
-        group = manager.group_data.get_group(descriptor["GroupId"])
+        group = manager.group_data.get_group(plan.group_id)
         instance_id = source.pal.InstanceId
         save_parameter = copy.deepcopy(source.pal.save_parameter)
 
@@ -767,14 +783,20 @@ class PalOperationService:
             owner_uid=plan.owner_uid or PalObjects.EMPTY_UUID,
             container_id=container.ID,
             slot_index=slot_index,
-            group_id=plan.descriptor["GroupId"],
+            group_id=plan.group_id,
         )
         pal = WorldPalAdapter.entity(native_record)
         set_owner(pal, plan.owner_uid)
         return native_record, pal
 
-    def _release_source(self, source: PalRecord, touched: TouchedParents) -> None:
-        """Take the Pal out of wherever it is now, in that format's own terms."""
+    def release_record(self, source: PalRecord, touched: TouchedParents) -> None:
+        """Take the Pal out of wherever it is now, in that format's own terms.
+
+        A relocate calls this halfway through and puts the Pal down again; a delete
+        calls it and does not. The container and guild are looked up rather than
+        assumed, because a save can hold a World Pal whose container is already gone
+        -- `_log_location_anomalies` reports those, and deleting one is the fix.
+        """
         manager = self._manager
         if source.storage_kind != "world":
             adapter = manager.storage_adapters[source.storage_key]
@@ -785,11 +807,13 @@ class PalOperationService:
 
         container = manager.container_data.get_container(source.pal.ContainerId)
         group = manager.group_data.get_group(source.group_id)
-        touched.watch_container(container)
+        if container is not None:
+            touched.watch_container(container)
         if group is not None:
             touched.watch_group(group)
         native_record = source.native_record
-        container.del_pal(source.pal.InstanceId)
+        if container is not None:
+            container.del_pal(source.pal.InstanceId)
         if group is not None:
             group.del_pal(source.pal.InstanceId)
         entry_index = manager.world_adapter.remove(native_record)

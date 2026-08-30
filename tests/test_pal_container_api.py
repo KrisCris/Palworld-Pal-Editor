@@ -18,8 +18,6 @@ from fakes import record_location, world_record
 class FakeManager:
     def __init__(self):
         self.session_lock = threading.RLock()
-        self.moves = []
-        self.transfers = []
         self.pal_repository = PalRepository()
         instance_id = toUUID("10000000-0000-0000-0000-000000000001")
         world_obj = PalObjects.PalSaveParameter(
@@ -54,14 +52,6 @@ class FakeManager:
             "gps:0": gps_record,
         }
 
-    def move_pal(self, pal_id, target_container_id):
-        self.moves.append((pal_id, target_container_id))
-        return True
-
-    def transfer_pal(self, source_key, target_key, action, expected_key=None):
-        self.transfers.append((source_key, target_key, action, expected_key))
-        return {"RecordKey": "dps:owner:0", "StorageKey": target_key}
-
     def get_pal(self, _pal_id):
         return None
 
@@ -85,7 +75,7 @@ class PalContainerApiTests(unittest.TestCase):
         self.patches = [
             patch(f"{module}.SaveManager", return_value=self.manager)
             for module in (
-                "palworld_pal_editor.api.pal",
+                "palworld_pal_editor.api.pal_transfers",
                 "palworld_pal_editor.api.pals",
             )
         ]
@@ -96,31 +86,28 @@ class PalContainerApiTests(unittest.TestCase):
         for started in self.patches:
             started.stop()
 
-    def test_transfer_endpoint_requires_storage_qualified_keys(self):
-        missing = self.client.post(
-            "/api/pal/transfer",
-            json={"SourceRecordKey": "world:pal"},
-            headers=self.headers,
-        ).get_json()
-        self.assertEqual(1, missing["status"])
+    def test_a_transfer_names_one_record_and_one_storage_or_it_is_refused(self):
+        """Both halves of a transfer are keys, and neither has a default.
 
-    def test_transfer_endpoint_uses_storage_qualified_keys(self):
-        moved = self.client.post(
-            "/api/pal/transfer",
-            json={
-                "SourceRecordKey": "world:pal",
-                "TargetStorageKey": "dps:owner",
-                "Action": "move",
-            },
-            headers=self.headers,
-        ).get_json()
+        An Instance ID is not an address and a container id is not a storage key, so
+        a request missing either half is refused before the session is touched
+        rather than resolved to whatever the Pal happens to be nearest to.
+        """
+        for payload in (
+            {"sourceRecordKey": "world:pal"},
+            {"targetStorageKey": "dps:owner"},
+            {},
+        ):
+            with self.subTest(payload=payload):
+                response = self.client.post(
+                    "/api/pal-transfers", json=payload, headers=self.headers
+                )
 
-        self.assertEqual(0, moved["status"])
-        self.assertEqual("dps:owner:0", moved["data"]["RecordKey"])
-        self.assertEqual(
-            [("world:pal", "dps:owner", "move", None)],
-            self.manager.transfers,
-        )
+                self.assertEqual(400, response.status_code)
+                self.assertEqual(
+                    "PAL_TRANSFER_INVALID",
+                    response.get_json()["error"]["code"],
+                )
 
     def test_pal_detail_selects_record_key_when_instance_id_is_shared(self):
         """The premise the whole design rests on: an Instance ID is not an address.

@@ -23,7 +23,6 @@ mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('text/html', '.html')
 
 app = Flask(__name__, static_folder=ASSETS_PATH / "webui", static_url_path='/')
-app.register_blueprint(pal_blueprint, url_prefix='/api/pal')
 app.register_blueprint(save_blueprint, url_prefix='/api/save')
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(session_blueprint, url_prefix='/api/session')

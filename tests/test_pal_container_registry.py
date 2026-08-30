@@ -2,6 +2,7 @@ import unittest
 import tempfile
 from pathlib import Path
 
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.save_manager import SaveManager
 
 
@@ -80,7 +81,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         group = self.manager.group_data.get_group(camps[0].owner_group_id)
         original_base_ids = group._group_param["base_ids"]
         original_names = [camp._camp_param.get("name") for camp in camps]
-        original_cache = getattr(self.manager, "_container_registry_cache", None)
+        original_cache = self.manager._container_registry_cache
 
         try:
             group._group_param["base_ids"] = [camp.id for camp in reversed(camps)]
@@ -118,17 +119,19 @@ class PalContainerRoundTripTests(unittest.TestCase):
                 if len(manager.container_data.get_container(player.OtomoCharacterContainerId).slots)
                 < manager.container_data.get_container(player.OtomoCharacterContainerId).size
             )
-            pal = next(
-                record.pal
+            record = next(
+                record
                 for record in manager.records_for_roster(player.PlayerUId)
                 if str(record.pal.ContainerId) == str(player.PalStorageContainerId)
+                and not record.pal.IsExpeditionPal
             )
-            pal_id = str(pal.InstanceId)
-            player_id = str(player.PlayerUId)
+            pal_id = str(record.pal.InstanceId)
             target_id = str(player.OtomoCharacterContainerId)
 
-            self.assertTrue(manager.move_pal(pal_id, target_id))
-            expected_slot = pal.SlotIndex
+            manager.pal_operations.transfer(
+                record.record_key, WorldPalAdapter.storage_key(target_id)
+            )
+            expected_slot = record.pal.SlotIndex
 
             with tempfile.TemporaryDirectory() as directory:
                 output = Path(directory, "world")

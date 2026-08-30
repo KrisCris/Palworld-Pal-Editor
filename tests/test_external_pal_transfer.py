@@ -1,10 +1,22 @@
+"""What a Pal keeps when it changes format (spec §6.3, §7).
+
+`test_pal_transfers.py` owns the capability and the three executors as such. What
+is left here is the part only the real save files can answer: a payload written in
+one format and read back in another, and the two side lists -- the DPS locker and
+the Global Palbox -- that have to agree with it afterwards.
+"""
+
 import copy
 from pathlib import Path
 
 import pytest
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.save_manager import PalIdentityConflict, SaveManager
+from palworld_pal_editor.core.pal_operations import (
+    PalIdentityConflict,
+    PalOperationRefused,
+)
+from palworld_pal_editor.core.save_manager import SaveManager
 from world_fixture import (
     LOSSY_UID,
     MINT_UID,
@@ -23,67 +35,76 @@ def open_copied_world(tmp_path: Path, with_global=False) -> SaveManager:
     return open_world(tmp_path, global_palbox=empty_global)
 
 
-def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
-    tmp_path,
-):
-    manager = open_copied_world(tmp_path)
-    lossy = manager.get_player(LOSSY_UID)
-    mint = manager.get_player(MINT_UID)
-    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
-    mint_dps = manager.storage_adapters[f"dps:{MINT_UID}"]
-
-    # Mint's Pal is physically stored in Lossy's public DPS in the real fixture.
-    source = next(
+def a_world_pal(manager, player_uid):
+    """One of a player's Pals that is really standing in the container it records."""
+    return next(
         record
-        for record in lossy_dps.records()
-        if str(record.pal.OwnerPlayerUId) == MINT_UID
-    )
-    instance_id = str(source.pal.InstanceId)
-    original_locker = locker_ids(manager)
-
-    moved = manager.transfer_pal(source.record_key, mint_dps.storage_key, "move")
-    moved_record = manager.get_record(moved["RecordKey"])
-    assert lossy_dps.get(source.record_key) is None
-    assert moved_record.storage_key == mint_dps.storage_key
-    assert str(moved_record.pal.OwnerPlayerUId) == MINT_UID
-    assert str(moved_record.pal.InstanceId) == instance_id
-    assert locker_ids(manager) == original_locker
-
-    moved = manager.transfer_pal(
-        moved_record.record_key,
-        f"world-container:{mint.PalStorageContainerId}",
-        "move",
-    )
-    world_record = manager.get_record(moved["RecordKey"])
-    location = manager.resolve_record_location(world_record)
-    assert world_record.record_key == f"world:{instance_id}"
-    assert str(world_record.pal.OwnerPlayerUId) == MINT_UID
-    assert world_record.storage_key is not None
-    assert world_record.pal.SlotIndex == location["SlotIndex"]
-    assert instance_id not in locker_ids(manager)
-    assert manager.group_data.get_group(mint.group_id).has_pal(instance_id)
-
-    world_source = next(
-        record
-        for record in manager.records_for_roster(LOSSY_UID)
+        for record in manager.records_for_roster(player_uid)
         if record.storage_kind == "world"
         and not record.pal.IsExpeditionPal
         and record.storage_key is not None
     )
-    world_instance_id = str(world_source.pal.InstanceId)
-    world_owner = str(world_source.pal.OwnerPlayerUId)
-    source_group = manager.group_data.get_group(world_source.group_id)
-    moved = manager.transfer_pal(world_source.record_key, lossy_dps.storage_key, "move")
-    dps_record = manager.get_record(moved["RecordKey"])
-    assert str(dps_record.pal.OwnerPlayerUId) == world_owner
-    assert world_source.native_record not in manager._entities_list
-    assert not source_group.has_pal(world_instance_id)
-    assert locker_ids(manager)[-1] == world_instance_id
 
-    deleted_slot = dps_record.slot_index
-    assert manager.delete_pal(dps_record.record_key) is True
-    assert lossy_dps.storage.free_index() == deleted_slot
-    assert world_instance_id not in locker_ids(manager)
+
+def test_a_move_between_two_dps_files_keeps_the_pal_whole(tmp_path):
+    """DPS to DPS: the one row of the spec §7 table with no World record in it.
+
+    Nothing converts, so what has to hold is that the record is re-keyed rather than
+    replaced, that the Pal keeps the owner it had -- a DPS is a place, not a person
+    -- and that the locker does not move, because the Pal was held outside the world
+    save before and still is.
+    """
+    manager = open_copied_world(tmp_path)
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
+    mint_dps = manager.storage_adapters[f"dps:{MINT_UID}"]
+    # Mint's Pal is physically stored in Lossy's public DPS in the real fixture.
+    # The adapter reads a fresh record out of the file every call, so the one the
+    # session holds -- the one a transfer moves -- is the repository's.
+    origin_key = next(
+        record.record_key
+        for record in lossy_dps.records()
+        if str(record.pal.OwnerPlayerUId) == MINT_UID
+    )
+    source = manager.get_record(origin_key)
+    instance_id = str(source.pal.InstanceId)
+    character = source.pal.CharacterID
+    locker_before = locker_ids(manager)
+
+    outcome = manager.pal_operations.transfer(origin_key, mint_dps.storage_key)
+
+    assert outcome.record is source
+    assert outcome.deleted_record_keys == [origin_key]
+    assert source.storage_key == mint_dps.storage_key
+    assert source.record_key.startswith(f"{mint_dps.storage_key}:")
+    assert str(source.pal.InstanceId) == instance_id
+    assert source.pal.CharacterID == character
+    assert str(source.pal.OwnerPlayerUId) == MINT_UID
+    assert lossy_dps.get(origin_key) is None
+    assert manager.get_record(origin_key) is None
+    assert manager.get_record(source.record_key) is source
+    assert locker_ids(manager) == locker_before
+
+
+def test_deleting_and_creating_in_a_dps_keep_the_locker_in_step(tmp_path):
+    """The locker is the game's list of Pals held outside the world save.
+
+    A Pal that stops existing has to leave it, and one created in a DPS has to join
+    it: an entry the locker does not list reads to the game as a Pal still standing
+    in a container somewhere.
+    """
+    manager = open_copied_world(tmp_path)
+    lossy = manager.get_player(LOSSY_UID)
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
+    doomed = lossy_dps.records()[0]
+    doomed_id = str(doomed.pal.InstanceId)
+    occupied_before = lossy_dps.storage.occupied
+
+    assert manager.delete_pal(doomed.record_key) is True
+
+    assert manager.get_record(doomed.record_key) is None
+    assert lossy_dps.get(doomed.record_key) is None
+    assert lossy_dps.storage.occupied == occupied_before - 1
+    assert doomed_id not in locker_ids(manager)
 
     target_keys = {
         descriptor["StorageKey"]
@@ -101,41 +122,17 @@ def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
     assert str(created.pal.InstanceId) in locker_ids(manager)
 
 
-def test_full_dps_target_rejects_without_mutating_source_or_locker(
-    tmp_path, monkeypatch
-):
-    manager = open_copied_world(tmp_path)
-    source_storage = manager.storage_adapters[f"dps:{LOSSY_UID}"]
-    target_storage = manager.storage_adapters[f"dps:{MINT_UID}"]
-    source = source_storage.records()[0]
-    source_snapshot = copy.deepcopy(source.native_record)
-    target_snapshot = copy.deepcopy(target_storage.storage.entries)
-    locker_snapshot = copy.deepcopy(manager.locker_entries())
-    registry_snapshot = {
-        record.record_key for record in manager.pal_repository.records()
-    }
-    monkeypatch.setattr(target_storage.storage, "free_index", lambda: -1)
+def test_a_pal_created_in_the_global_palbox_carries_no_local_position(tmp_path):
+    """A Global Palbox entry is a payload, not a Pal standing anywhere.
 
-    with pytest.raises(ValueError, match="full"):
-        manager.transfer_pal(source.record_key, target_storage.storage_key, "move")
-
-    assert source.native_record == source_snapshot
-    assert target_storage.storage.entries == target_snapshot
-    assert manager.locker_entries() == locker_snapshot
-    assert {
-        record.record_key for record in manager.pal_repository.records()
-    } == registry_snapshot
-
-
-def test_global_creation_export_import_and_update_keep_the_right_envelopes(
-    tmp_path,
-):
+    Every field that says where a Pal is or whose it is has to be cleared on the way
+    in, including the ones written outside `SaveParameter`; the game reads a Global
+    Palbox entry that still names a container as belonging to a save it is not in.
+    """
     manager = open_copied_world(tmp_path, with_global=True)
-    global_storage = manager._global_palbox
-    mint = manager.get_player(MINT_UID)
 
     created = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
-    created_id = str(created.pal.InstanceId)
+
     assert created.storage_kind == "global_palbox"
     assert created.pal.OwnerPlayerUId == PalObjects.EMPTY_UUID
     assert created.pal.OldOwnerPlayerUIds == []
@@ -147,93 +144,20 @@ def test_global_creation_export_import_and_update_keep_the_right_envelopes(
     assert PalObjects.get_BaseType(
         created.native_record["InstanceId"]["value"]["PlayerUId"]
     ) == PalObjects.EMPTY_UUID
-    assert created_id not in locker_ids(manager)
-
-    imported = manager.transfer_pal(
-        created.record_key,
-        f"world-container:{mint.PalStorageContainerId}",
-        "clone",
-    )
-    imported_record = manager.get_record(imported["RecordKey"])
-    assert manager.get_record(created.record_key) is created
-    assert str(imported_record.pal.InstanceId) == created_id
-    assert str(imported_record.pal.OwnerPlayerUId) == MINT_UID
-    assert imported_record.storage_key is not None
-
-    world_source = next(
-        record
-        for record in manager.records_for_roster(LOSSY_UID)
-        if record.storage_kind == "world"
-        and not record.pal.IsExpeditionPal
-        and record.storage_key is not None
-    )
-    source_old_owners = list(world_source.pal.OldOwnerPlayerUIds or [])
-    source_slot = world_source.pal.SlotId
-    exported = manager.transfer_pal(
-        world_source.record_key, "global-palbox", "clone"
-    )
-    gps_record = manager.get_record(exported["RecordKey"])
-    assert manager.get_record(world_source.record_key) is world_source
-    assert gps_record.pal.InstanceId == world_source.pal.InstanceId
-    assert gps_record.pal.OwnerPlayerUId == PalObjects.EMPTY_UUID
-    assert gps_record.pal.OldOwnerPlayerUIds == source_old_owners
-    assert gps_record.pal.SlotId == source_slot
-    assert gps_record.pal.IsImportedCharacter is True
-    assert str(gps_record.pal.InstanceId) not in locker_ids(manager)
-
-    with pytest.raises(PalIdentityConflict) as collision:
-        manager.transfer_pal(
-            gps_record.record_key,
-            f"world-container:{mint.PalStorageContainerId}",
-            "clone",
-        )
-    assert [item.record_key for item in collision.value.candidates] == [
-        world_source.record_key
-    ]
-
-    destination_envelope = {
-        "record_key": world_source.record_key,
-        "owner": world_source.pal.OwnerPlayerUId,
-        "owners": copy.deepcopy(world_source.pal.pal_param.get("OldOwnerPlayerUIds")),
-        "group": world_source.group_id,
-        "slot": world_source.pal.SlotId,
-        "expedition": copy.deepcopy(
-            world_source.pal.pal_param.get(
-                "MapObjectConcreteInstanceIdAssignedToExpedition"
-            )
-        ),
-        "locker": locker_ids(manager),
-    }
-    gps_record.pal.NickName = "GPS update payload"
-    updated = manager.transfer_pal(
-        gps_record.record_key,
-        world_source.storage_key,
-        "update",
-        world_source.record_key,
-    )
-    updated_record = manager.get_record(updated["RecordKey"])
-    assert updated_record.record_key == destination_envelope["record_key"]
-    assert updated_record.pal.NickName == "GPS update payload"
-    assert updated_record.pal.OwnerPlayerUId == destination_envelope["owner"]
-    assert (
-        updated_record.pal.pal_param.get("OldOwnerPlayerUIds")
-        == destination_envelope["owners"]
-    )
-    assert updated_record.group_id == destination_envelope["group"]
-    assert updated_record.pal.SlotId == destination_envelope["slot"]
-    assert (
-        updated_record.pal.pal_param.get(
-            "MapObjectConcreteInstanceIdAssignedToExpedition"
-        )
-        == destination_envelope["expedition"]
-    )
-    assert locker_ids(manager) == destination_envelope["locker"]
+    # Nothing is holding it: the Global Palbox is not this save's locker.
+    assert str(created.pal.InstanceId) not in locker_ids(manager)
 
 
-def test_global_import_requires_an_owned_player_party_or_palbox(tmp_path):
+def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_path):
+    """The other direction: a payload becomes a World Pal in somebody's Palbox.
+
+    Only a player's own Party or Palbox can take one, because that is the only
+    target that answers the two questions the payload does not: whose it is and
+    which guild it joins.
+    """
     manager = open_copied_world(tmp_path, with_global=True)
-    source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
     lossy = manager.get_player(LOSSY_UID)
+    source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
     base = next(
         descriptor
         for descriptor in manager.get_container_registry()
@@ -241,16 +165,63 @@ def test_global_import_requires_an_owned_player_party_or_palbox(tmp_path):
     )
 
     for target in (f"dps:{LOSSY_UID}", base["StorageKey"]):
-        with pytest.raises(ValueError, match="player Party or Palbox"):
-            manager.transfer_pal(source.record_key, target, "clone")
+        with pytest.raises(PalOperationRefused) as refused:
+            manager.pal_operations.transfer(source.record_key, target)
+        assert refused.value.code == "GPS_PLAYER_TARGET_REQUIRED"
 
-    imported = manager.transfer_pal(
-        source.record_key,
-        f"world-container:{lossy.PalStorageContainerId}",
-        "clone",
+    outcome = manager.pal_operations.transfer(
+        source.record_key, f"world-container:{lossy.PalStorageContainerId}"
     )
-    imported_record = manager.get_record(imported["RecordKey"])
-    assert imported_record.pal.OwnerPlayerUId == lossy.PlayerUId
+
+    # A copy: the Global Palbox keeps its own entry, and the new Pal is a second
+    # physical Pal with the same identity.
+    assert manager.get_record(source.record_key) is source
+    assert outcome.record is not source
+    assert outcome.deleted_record_keys == []
+    assert outcome.record.storage_kind == "world"
+    assert outcome.record.pal.InstanceId == source.pal.InstanceId
+    assert str(outcome.record.pal.OwnerPlayerUId) == LOSSY_UID
+    assert manager.group_data.get_group(lossy.group_id).has_pal(
+        str(outcome.record.pal.InstanceId)
+    )
+    assert str(outcome.record.pal.InstanceId) not in locker_ids(manager)
+
+
+def test_a_second_local_twin_makes_a_confirmed_overwrite_ambiguous_again(tmp_path):
+    """Two candidates and the backend does not choose, confirmation or not.
+
+    The user confirmed one target out of one. A second Pal with the same identity
+    appearing since is the same staleness as that target moving, so it comes back as
+    the conflict again rather than being overwritten on a guess (spec §7).
+    """
+    manager = open_copied_world(tmp_path, with_global=True)
+    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
+    source = a_world_pal(manager, LOSSY_UID)
+    gps_record = manager.pal_operations.transfer(
+        source.record_key, "global-palbox"
+    ).record
+    duplicate = lossy_dps.allocate(
+        gps_record.pal.save_parameter, gps_record.pal.InstanceId
+    )
+    manager.add_locker_id(duplicate.pal.InstanceId)
+    manager._register_external_record(duplicate)
+    source_snapshot = copy.deepcopy(source.pal.pal_param)
+
+    with pytest.raises(PalIdentityConflict) as collision:
+        manager.pal_operations.transfer(
+            gps_record.record_key,
+            source.storage_key,
+            {
+                "recordKey": source.record_key,
+                "storageKey": source.storage_key,
+            },
+        )
+
+    assert {record.record_key for record in collision.value.candidates} == {
+        source.record_key,
+        duplicate.record_key,
+    }
+    assert source.pal.pal_param == source_snapshot
 
 
 def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
@@ -308,40 +279,6 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         record = reopened.get_record(record_key)
         assert record is not None
         assert str(record.pal.InstanceId) == instance_id
-
-
-def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
-    manager = open_copied_world(tmp_path, with_global=True)
-    lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
-    source = next(
-        record
-        for record in manager.records_for_roster(LOSSY_UID)
-        if record.storage_kind == "world"
-        and not record.pal.IsExpeditionPal
-        and record.storage_key is not None
-    )
-    exported = manager.transfer_pal(source.record_key, "global-palbox", "clone")
-    gps_record = manager.get_record(exported["RecordKey"])
-    duplicate = lossy_dps.allocate(
-        gps_record.pal.save_parameter, gps_record.pal.InstanceId
-    )
-    manager.add_locker_id(duplicate.pal.InstanceId)
-    manager._register_external_record(duplicate)
-    source_snapshot = copy.deepcopy(source.pal.pal_param)
-
-    with pytest.raises(PalIdentityConflict) as collision:
-        manager.transfer_pal(
-            gps_record.record_key,
-            source.storage_key,
-            "update",
-            source.record_key,
-        )
-
-    assert {record.record_key for record in collision.value.candidates} == {
-        source.record_key,
-        duplicate.record_key,
-    }
-    assert source.pal.pal_param == source_snapshot
 
 
 def test_save_transaction_restores_level_dps_and_global_on_replace_failure(

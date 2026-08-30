@@ -1,5 +1,4 @@
 from palworld_pal_editor.api.save import save_blueprint
-from palworld_pal_editor.api.pal import pal_blueprint
 from palworld_pal_editor.api.auth import auth_blueprint
 from palworld_pal_editor.api.pals import pals_blueprint
 from palworld_pal_editor.api.players import players_blueprint
