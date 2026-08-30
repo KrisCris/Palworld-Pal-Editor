@@ -107,22 +107,26 @@ def get_pal(guid: str) -> Optional[PalEntity]:
     return pal
 
 def delete_pal(guid: str):
-    SaveManager().delete_pal(guid)
+    # The CLI names a Pal by its InstanceId; every world Pal's record key is that
+    # id with the storage it lives in in front.
+    SaveManager().delete_pal(f"world:{guid}")
 
 def batch_pal_delete(guid_list: list[str]):
     for guid in guid_list:
-        delete_pal(guid, yes=True)
+        delete_pal(guid)
 
 def add_pal(player_uid: str) -> Optional[PalRecord]:
     return SaveManager().add_pal(player_uid)
 
 def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]:
-    record = SaveManager().get_record(f"world:{pal_guid}")
-    if record is None:
-        LOGGER.warning("Unable to find the target pal.")
-        return
-
-    return SaveManager().add_pal(player_uid, record.native_record)
+    # Was its own copy of the duplicate chain, and had been handing `add_pal` a
+    # whole world record where the payload alone belongs since the create pipeline
+    # started speaking SaveParameter -- which writes a Pal the game cannot read.
+    try:
+        return SaveManager().duplicate_pal(f"world:{pal_guid}", player_uid)
+    except ValueError as error:
+        LOGGER.warning(f"Unable to duplicate the target pal: {error}")
+        return None
 
 
 def list_attacks():

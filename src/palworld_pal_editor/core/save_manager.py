@@ -670,18 +670,6 @@ class SaveManager:
                 continue
             return instance_id
 
-    def get_unique_world_record(
-        self, instance_id: UUID | str | None
-    ) -> Optional[PalRecord]:
-        if instance_id is None:
-            return None
-        records = self.records_by_instance(instance_id, "world")
-        if len(records) > 1:
-            raise ValueError(
-                "Multiple ordinary world records share this Instance ID; use RecordKey."
-            )
-        return records[0] if records else None
-
     def working_records(self) -> list[PalRecord]:
         """Every Pal standing in a base camp's container, in base-worker order.
 
@@ -1133,7 +1121,7 @@ class SaveManager:
             ],
             "locker": copy.deepcopy(self._locker_entries()),
             "records": self.pal_repository.snapshot_records(),
-            "registry": getattr(self, "_container_registry_cache", None),
+            "registry": self._container_registry_cache,
         }
 
     def _restore_external_mutation(self, snapshot: dict) -> None:
@@ -1809,9 +1797,8 @@ class SaveManager:
             )
             raise
     
-    def delete_pal(self, guid: str | UUID) -> bool:
-        guid = str(guid)
-        record = self.get_record(guid)
+    def delete_pal(self, record_key: str) -> bool:
+        record = self.get_record(record_key)
         if record is not None and record.storage_kind == "global_palbox":
             storage = self._global_palbox
             snapshot = self._snapshot_external_mutation(
@@ -1862,10 +1849,8 @@ class SaveManager:
                 return False
 
         world_record = record
-        if world_record is None and not guid.startswith(("dps:", "gps:")):
-            world_record = self.get_record(f"world:{guid}")
         if world_record is None:
-            LOGGER.warning(f"Can't find pal {guid}")
+            LOGGER.warning(f"Can't find pal {record_key}")
             return False
         # The record is the Pal's location; the baseworker and dangling maps it may
         # also appear in are cleared by `_unregister_record` once the delete lands.
@@ -1879,11 +1864,13 @@ class SaveManager:
                 pal_container.del_pal(popped_pal.InstanceId)
             self._entities_list.remove(world_record.native_record)
         except:
-            LOGGER.warning(f"Error Deleting PAL {guid}: {traceback.format_exc()}")
+            LOGGER.warning(
+                f"Error Deleting PAL {record_key}: {traceback.format_exc()}"
+            )
             return False
         self._unregister_record(world_record)
         self._container_registry_cache = None
-        LOGGER.info(f"DELETED PAL {guid}")
+        LOGGER.info(f"DELETED PAL {record_key}")
         return True
 
     def creation_targets(self, roster_key: str) -> list[dict]:

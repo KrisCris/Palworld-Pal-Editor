@@ -33,6 +33,7 @@ WORLD_FIXTURE = Path(__file__).parents[1] / "tests/saves/1.0/AF518B19A47340B8A55
 GPS_FIXTURE = Path(__file__).parents[1] / "tests/saves/1.0/GlobalPalStorage.sav"
 LOSSY_UID = "a18b721d-0000-0000-0000-000000000000"
 KNOWN_ATTACK = "EPalWazaID::FireBall"
+OTHER_ATTACK = "EPalWazaID::AirCanon"
 KNOWN_PASSIVE = "PAL_ALLAttack_up2"
 
 
@@ -215,6 +216,143 @@ class TemplateApiTests(unittest.TestCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual("SKILL_UNKNOWN", response.get_json()["error"]["code"])
         self.assertEqual([KNOWN_PASSIVE], target.pal.PassiveSkillList)
+
+
+    def test_a_template_saved_before_this_release_still_equips_what_it_named(self):
+        """A skill template is user data older than any of this code.
+
+        Templates saved by earlier versions also stored `MasteredWaza`, and
+        replaying that list would hand a Pal skills its owner had unlearned. The
+        equipped list is the whole template; learning follows from equipping.
+        """
+        target = self.world_records()[0]
+        target.pal.replace_EquipWaza([])
+        target.pal.replace_MasteredWaza([KNOWN_ATTACK])
+        Config.skillTemplates = [
+            {
+                "Id": "legacy",
+                "Name": "Legacy combat",
+                "Type": "active",
+                "EquipWaza": [OTHER_ATTACK],
+                "MasteredWaza": ["EPalWazaID::PowerShot"],
+            }
+        ]
+
+        listed = self.client.get("/api/skill-templates", headers=self.headers).get_json()
+        self.assertNotIn("MasteredWaza", listed[0])
+
+        applied = self.client.post(
+            f"/api/pals/{target.record_key}/skill-template-applications",
+            json={"templateId": "legacy"},
+            headers=self.headers,
+        )
+        self.assertEqual(200, applied.status_code, applied.get_json())
+        result = applied.get_json()["resultRecord"]
+
+        self.assertEqual([OTHER_ATTACK], result["EquipWaza"])
+        # What the Pal already knew stays known, what it now equips is learned,
+        # and the template's own stale mastered list reaches nothing.
+        self.assertEqual([KNOWN_ATTACK, OTHER_ATTACK], result["MasteredWaza"])
+
+    def test_a_template_applies_to_a_pal_whose_save_has_no_skill_lists(self):
+        """A Pal that has never had a skill has no array to replace.
+
+        The save file omits these properties entirely rather than storing an empty
+        one, so applying a template has to create them.
+        """
+        target = self.world_records()[0]
+        original = {
+            key: target.pal.pal_param.pop(key)
+            for key in ("PassiveSkillList", "EquipWaza", "MasteredWaza")
+            if key in target.pal.pal_param
+        }
+        self.addCleanup(target.pal.pal_param.update, original)
+        Config.skillTemplates = [
+            {
+                "Id": "passive",
+                "Name": "Worker",
+                "Type": "passive",
+                "PassiveSkillList": [KNOWN_PASSIVE],
+            },
+            {
+                "Id": "active",
+                "Name": "Combat",
+                "Type": "active",
+                "EquipWaza": [KNOWN_ATTACK],
+            },
+        ]
+
+        for template_id in ("passive", "active"):
+            response = self.client.post(
+                f"/api/pals/{target.record_key}/skill-template-applications",
+                json={"templateId": template_id},
+                headers=self.headers,
+            )
+            self.assertEqual(200, response.status_code, response.get_json())
+
+        self.assertEqual([KNOWN_PASSIVE], target.pal.PassiveSkillList)
+        self.assertEqual([KNOWN_ATTACK], target.pal.EquipWaza)
+        self.assertEqual([KNOWN_ATTACK], target.pal.MasteredWaza)
+
+    def test_a_template_this_editor_cannot_store_is_refused_before_config_is_touched(self):
+        record = self.world_records()[0]
+        cases = (
+            ({"name": "  ", "type": "passive"}, "TEMPLATE_NAME_REQUIRED"),
+            ({"name": "x" * 65, "type": "passive"}, "TEMPLATE_NAME_TOO_LONG"),
+            ({"name": "Fine", "type": "sideways"}, "SKILL_TEMPLATE_TYPE_UNKNOWN"),
+        )
+        for body, code in cases:
+            with self.subTest(code=code):
+                response = self.client.post(
+                    "/api/skill-templates",
+                    json={**body, "recordKey": record.record_key},
+                    headers=self.headers,
+                )
+                self.assertEqual(400, response.status_code)
+                self.assertEqual(code, response.get_json()["error"]["code"])
+
+        # The list is bounded because it is written back to the config file whole.
+        Config.skillTemplates = [
+            {"Id": str(index), "Name": str(index), "Type": "passive"}
+            for index in range(50)
+        ]
+        full = self.client.post(
+            "/api/skill-templates",
+            json={"name": "One more", "type": "passive", "recordKey": record.record_key},
+            headers=self.headers,
+        )
+        self.assertEqual(400, full.status_code)
+        self.assertEqual("TEMPLATE_LIMIT_REACHED", full.get_json()["error"]["code"])
+        self.assertEqual(50, len(Config.skillTemplates))
+
+        missing = self.client.post(
+            f"/api/pals/{record.record_key}/skill-template-applications",
+            json={"templateId": "no-such-template"},
+            headers=self.headers,
+        )
+        self.assertEqual(404, missing.status_code)
+        self.assertEqual(
+            "SKILL_TEMPLATE_NOT_FOUND", missing.get_json()["error"]["code"]
+        )
+        self.assertFalse(self.saved_config.called)
+
+    def test_a_delete_that_cannot_be_persisted_keeps_the_template(self):
+        record = self.world_records()[0]
+        template_id = self.client.post(
+            "/api/pal-templates",
+            json={"name": "Worker", "recordKey": record.record_key},
+            headers=self.headers,
+        ).get_json()["templateId"]
+        self.saved_config.side_effect = OSError("disk full")
+
+        response = self.client.delete(
+            f"/api/pal-templates/{template_id}", headers=self.headers
+        )
+
+        self.assertEqual(500, response.status_code)
+        # The file still has it, so the list the user is looking at must too --
+        # the same rule as a failed create, in the other direction.
+        self.assertEqual([template_id], [item["Id"] for item in Config.palTemplates])
 
 
 if __name__ == "__main__":

@@ -144,7 +144,7 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertEqual(rows["PinkCat"]["I18n"], rows["BOSS_PinkCat"]["I18n"])
 
     def test_selected_pal_payload_contains_exact_metadata(self):
-        payload = pal_payload(make_pal("BOSS_KingWhale_otomo"))
+        payload = pal_payload(world_record(make_pal_obj("BOSS_KingWhale_otomo")))
         self.assertEqual("BOSS_KingWhale_otomo", payload["CharacterID"])
         self.assertEqual("KingWhale", payload["FamilyID"])
         self.assertEqual("boss", payload["VariantKind"])
@@ -158,9 +158,6 @@ class PalFamilyProviderTests(unittest.TestCase):
         class Manager:
             pal_repository = PalRepository()
             session_lock = threading.RLock()
-
-            def get_unique_world_record(self, _instance_id):
-                return record
 
             def get_record(self, _record_key):
                 return record

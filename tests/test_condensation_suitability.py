@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-from palworld_pal_editor.api.pal import _pal_data
+from palworld_pal_editor.api.pals import pal_detail
 from palworld_pal_editor.core.pal_entity import condensation_work_suitability_bonus
 from palworld_pal_editor.core.pal_objects import PalSuitability
 from palworld_pal_editor.core.save_manager import SaveManager
@@ -79,19 +79,20 @@ class CondensationSuitabilityTests(unittest.TestCase):
     def test_payload_separates_condensation_minimum_from_manual_bonus(self):
         manager = SaveManager()
         self.assertIsNotNone(manager.open(str(SAVE)))
-        pals = [
-            record.pal
+        records = [
+            record
             for player in manager.get_players()
             for record in manager.records_for_roster(player.PlayerUId)
-        ] + manager.get_working_pals()
-        pal = next(
+        ] + manager.working_records()
+        record = next(
             item
-            for item in pals
-            if item.Rank == 5
-            and item.MinimumWorkSuitabilities
-            and item.WorkSuitabilities
+            for item in records
+            if item.pal.Rank == 5
+            and item.pal.MinimumWorkSuitabilities
+            and item.pal.WorkSuitabilities
         )
-        payload = _pal_data(pal)
+        pal = record.pal
+        payload = pal_detail(manager, record)
         self.assertEqual(pal.MinimumWorkSuitabilities, payload["SuitabilityMinimums"])
         self.assertTrue(
             all(0 < value <= 10 for value in payload["Suitabilities"].values())

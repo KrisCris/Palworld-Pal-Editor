@@ -4,9 +4,7 @@ The routes ask SaveManager where a Pal physically is; a test that never opens a
 save has to answer that question itself rather than have the route guess.
 """
 
-from unittest.mock import patch
-
-from palworld_pal_editor.api.pal import _pal_data
+from palworld_pal_editor.api.pals import pal_detail
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_repository import PalRepository
@@ -64,13 +62,11 @@ class LocationManager:
         return None
 
 
-def pal_payload(
-    pal: PalEntity,
-    *,
-    record: PalRecord | None = None,
-    created: bool = False,
-) -> dict:
-    """The Pal detail DTO for a Pal that is not part of a loaded session."""
-    manager = LocationManager(created=record if created else None)
-    with patch("palworld_pal_editor.api.pal.SaveManager", return_value=manager):
-        return _pal_data(pal, record)
+def pal_payload(record: PalRecord, *, created: bool = False) -> dict:
+    """The Pal detail DTO for a Pal that is not part of a loaded session.
+
+    A record, not an entity: the DTO answers where a Pal is as well as what it
+    is, and a Pal with nowhere to be was only ever a shape the old route had to
+    tolerate.
+    """
+    return pal_detail(LocationManager(created=record if created else None), record)

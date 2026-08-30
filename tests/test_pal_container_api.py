@@ -82,9 +82,6 @@ class FakeManager:
     def get_record(self, record_key):
         return self.records.get(record_key)
 
-    def get_unique_world_record(self, instance_id):
-        return self.records.get(f"world:{instance_id}")
-
     def resolve_record_location(self, record):
         return record_location(record)
 

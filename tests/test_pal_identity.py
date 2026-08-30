@@ -144,7 +144,7 @@ class PalIdentityTests(unittest.TestCase):
             0,
             PalObjects.EMPTY_UUID,
         )
-        pal = world_pal(pal_obj)
+        record = world_record(pal_obj)
 
         class Player:
             NickName = None
@@ -157,7 +157,7 @@ class PalIdentityTests(unittest.TestCase):
             "palworld_pal_editor.core.save_manager.SaveManager",
             return_value=Manager(),
         ):
-            payload = pal_payload(pal)
+            payload = pal_payload(record)
 
         self.assertEqual(str(owner_id), payload["OwnerName"])
         json.dumps(payload)
@@ -165,9 +165,9 @@ class PalIdentityTests(unittest.TestCase):
     def test_api_marks_new_pals_until_the_save_is_written(self):
         record = world_record(self.make_pal_obj("SheepBall"))
 
-        payload = pal_payload(record.pal, record=record, created=True)
+        payload = pal_payload(record, created=True)
 
-        self.assertTrue(payload["IsNewPal"])
+        self.assertEqual("created", payload["changeState"])
 
     def test_priority_setter_preserves_save_property_shape(self):
         pal = self.make_pal("SheepBall")
@@ -208,17 +208,18 @@ class PalIdentityTests(unittest.TestCase):
         self.assertEqual(2, brief["FavoriteIndex"])
 
     def test_imported_character_flag_round_trips_and_reaches_api_payloads(self):
-        pal = self.make_pal("SheepBall")
+        record = world_record(self.make_pal_obj("SheepBall"))
+        pal = record.pal
 
         self.assertFalse(pal.IsImportedCharacter)
-        self.assertFalse(pal_payload(pal)["IsImportedCharacter"])
+        self.assertFalse(pal_payload(record)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = True
         self.assertTrue(pal.IsImportedCharacter)
         self.assertEqual(
             "BoolProperty", pal.pal_param["bImportedCharacter"]["type"]
         )
-        self.assertTrue(pal_payload(pal)["IsImportedCharacter"])
+        self.assertTrue(pal_payload(record)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = False
         self.assertFalse(pal.IsImportedCharacter)

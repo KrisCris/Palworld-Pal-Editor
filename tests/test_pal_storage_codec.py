@@ -48,15 +48,18 @@ def test_sparse_codec_preserves_empty_slots_as_raw_bytes_and_round_trips():
     generic_entries = generic.properties["SaveParameterArray"]["value"]["values"]
     sparse_entries = sparse.properties["SaveParameterArray"]["value"]["values"]
 
+    # Slot 0 of this fixture is empty and slot 1 holds the first Pal. The
+    # generic decoder is the reference for that, and the sparse one has to agree
+    # with it exactly rather than with a hardcoded shape.
     expected_occupied = occupied_indices(generic_entries)
-    assert expected_occupied == [0, 9, 24]
+    assert expected_occupied == [1, 9, 24]
     assert occupied_indices(sparse_entries) == expected_occupied
     assert len(sparse_entries) == len(generic_entries) == 9600
 
-    assert "_raw_entry" not in sparse_entries[0]
-    assert "SaveParameter" in sparse_entries[0]
-    assert isinstance(sparse_entries[1]["_raw_entry"], bytes)
-    assert "SaveParameter" not in sparse_entries[1]
+    assert "_raw_entry" not in sparse_entries[1]
+    assert "SaveParameter" in sparse_entries[1]
+    assert isinstance(sparse_entries[0]["_raw_entry"], bytes)
+    assert "SaveParameter" not in sparse_entries[0]
 
     assert sparse.write(PAL_STORAGE_CUSTOM_PROPERTIES) == raw_gvas
 
@@ -69,14 +72,15 @@ def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
         "dps",
         "a18b721d-0000-0000-0000-000000000000",
     )
-    assert RAW_PAL_STORAGE_ENTRY in storage.entries[1]
+    assert RAW_PAL_STORAGE_ENTRY in storage.entries[0]
 
     new_instance_id = str(uuid.uuid4())
     record = DpsPalAdapter(storage).allocate(
-        copy.deepcopy(storage.entries[0]["SaveParameter"]),
+        copy.deepcopy(storage.entries[1]["SaveParameter"]),
         new_instance_id,
     )
-    assert record.slot_index == 1
+    # The first free slot, which for this fixture is the one before the first Pal.
+    assert record.slot_index == 0
     assert RAW_PAL_STORAGE_ENTRY not in storage.entries[record.slot_index]
     storage_path.write_bytes(storage.serialize())
 

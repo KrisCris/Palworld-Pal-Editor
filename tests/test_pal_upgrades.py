@@ -2,7 +2,7 @@ import copy
 from pathlib import Path
 import unittest
 
-from palworld_pal_editor.api.pal import _pal_data
+from palworld_pal_editor.api.pals import pal_detail
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.save_manager import SaveManager
 
@@ -19,11 +19,12 @@ class PalUpgradeTests(unittest.TestCase):
         cls.manager = SaveManager()
         if cls.manager.open(str(SAVE)) is None:
             raise AssertionError("1.0 fixture failed to load")
-        cls.pals = [
-            record.pal
+        cls.records = [
+            record
             for player in cls.manager.get_players()
             for record in cls.manager.records_for_roster(player.PlayerUId)
-        ] + cls.manager.get_working_pals()
+        ] + cls.manager.working_records()
+        cls.pals = [record.pal for record in cls.records]
 
     def test_level_80_assignment_preserves_existing_exp(self):
         self.assertEqual(80, PalEntity.MAX_LEVEL)
@@ -39,16 +40,17 @@ class PalUpgradeTests(unittest.TestCase):
             pal.pal_param.update(original)
 
     def test_rank_change_clears_hidden_condensation_progress(self):
-        pal = next(
+        record = next(
             item
-            for item in self.pals
-            if str(item.InstanceId) == "cfab9a78-49bd-bf16-474f-6e83eee20d7a"
+            for item in self.records
+            if str(item.pal.InstanceId) == "cfab9a78-49bd-bf16-474f-6e83eee20d7a"
         )
+        pal = record.pal
         original = copy.deepcopy(pal.pal_param)
         try:
             self.assertEqual((3, 9), (pal.Rank, pal.RankUpExp))
             self.assertTrue(pal.IsAwakening)
-            self.assertEqual(9, _pal_data(pal)["RankUpExp"])
+            self.assertEqual(9, pal_detail(self.manager, record)["RankUpExp"])
 
             pal.Rank = 3
             self.assertEqual(9, pal.RankUpExp)
