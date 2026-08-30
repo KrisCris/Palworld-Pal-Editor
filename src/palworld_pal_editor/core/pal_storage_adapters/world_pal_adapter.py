@@ -1,10 +1,16 @@
+import copy
 from typing import Iterator, Optional
 
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.core.container_data import ContainerData
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.core.pal_objects import PalObjects, get_nested_attr
+from palworld_pal_editor.core.pal_objects import (
+    CHARACTER_PARAMETER_STRUCT,
+    PalObjects,
+    get_nested_attr,
+    json_native,
+)
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.utils import LOGGER
 
@@ -47,9 +53,62 @@ class WorldPalAdapter:
         )
         if not isinstance(parameter, dict):
             return None
-        if parameter.get("struct_type") != "PalIndividualCharacterSaveParameter":
+        if parameter.get("struct_type") != CHARACTER_PARAMETER_STRUCT:
             return None
         return parameter
+
+    @classmethod
+    def detach(cls, native_record) -> Optional[dict]:
+        """The complete SaveParameter inside a World record, or None if it is not one.
+
+        Strict on purpose (spec §6.1): the identity half has to be there, the
+        property has to say it is a character parameter, and a player is not a Pal.
+        A dict that merely contains something named SaveParameter is not a World
+        record, and guessing would import it into a save as one.
+        """
+        if not isinstance(native_record, dict) or "key" not in native_record:
+            return None
+        parameter = cls.save_parameter(native_record)
+        if parameter is None or cls.is_player(native_record):
+            return None
+        return copy.deepcopy(parameter)
+
+    @staticmethod
+    def export(record: PalRecord) -> dict:
+        """This Pal as a complete World record, in JSON-native values (spec §6.1)."""
+        return json_native(record.native_record)
+
+    @classmethod
+    def native_record(
+        cls,
+        save_parameter: Optional[dict],
+        *,
+        instance_id: UUID | str,
+        owner_uid: UUID | str,
+        container_id: UUID | str,
+        slot_index: int,
+        group_id: UUID | str,
+    ) -> dict:
+        """A World record for one Pal, ready to append to CharacterSaveParameterMap.
+
+        `save_parameter` is the complete gameplay payload the Pal is coming from --
+        another storage format, a template, a pasted export -- or None for a Pal
+        being invented here, which gets the default one. Either way identity and
+        position belong to the target and are written after the payload lands: the
+        outer `PlayerUId` stays empty, because a non-empty one makes the game hide
+        the Pal.
+        """
+        record = PalObjects.PalSaveParameter(
+            instance_id, owner_uid, container_id, slot_index, group_id
+        )
+        if save_parameter is not None:
+            record["value"]["RawData"]["value"]["object"]["SaveParameter"] = (
+                copy.deepcopy(save_parameter)
+            )
+            # The envelope the factory just wrote is already the target's; the only
+            # thing the incoming payload still carries is where it used to sit.
+            cls.entity(record).SlotId = (container_id, slot_index)
+        return record
 
     @staticmethod
     def is_player(native_record: dict) -> bool:
@@ -57,11 +116,6 @@ class WorldPalAdapter:
         if parameter is None:
             return False
         return bool(PalObjects.get_BaseType(parameter["value"].get("IsPlayer")))
-
-    @staticmethod
-    def set_group_id(native_record: dict, group_id: UUID | str) -> None:
-        """Write the guild id on a World record that has no PalRecord yet."""
-        native_record["value"]["RawData"]["value"]["group_id"] = group_id
 
     @staticmethod
     def storage_key(container_id: UUID | str | None) -> Optional[str]:
@@ -151,27 +205,3 @@ class WorldPalAdapter:
         if slot is None:
             return False
         return str(slot.instance_id) == str(pal.InstanceId)
-
-    @staticmethod
-    def envelope(record: PalRecord) -> dict:
-        """A World-shaped record for `record`, built when the Pal lives elsewhere.
-
-        Legacy: raw JSON export, template save and duplicate still speak the World
-        envelope no matter where the Pal actually is. S3c replaces those callers with
-        a SaveParameter-level payload and deletes this together with the fake shape.
-        """
-        if record.storage_kind == "world":
-            return record.native_record
-        return {
-            "key": record.native_record["InstanceId"]["value"],
-            "value": {
-                "RawData": {
-                    "value": {
-                        "group_id": PalObjects.EMPTY_UUID,
-                        "object": {
-                            "SaveParameter": record.native_record["SaveParameter"]
-                        },
-                    }
-                }
-            },
-        }

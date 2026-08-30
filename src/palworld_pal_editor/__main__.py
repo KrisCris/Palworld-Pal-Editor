@@ -5,16 +5,26 @@ import asyncio
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
 from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, get_new_version, CONFIG_PATH, NEXUS_URL
 
+from palworld_pal_editor.core.pal_templates import migrate_pal_templates
+
 from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main
 from palworld_pal_editor.webui import main as webui_main
 
 
 def setup_config_from_args():
-    try: 
+    try:
         Config.load_from_file()
     except:
         LOGGER.warning(f"Failed Loading Config from {CONFIG_PATH}: {traceback.format_exc()}")
+
+    try:
+        migrate_pal_templates()
+    except Exception:
+        # The templates are still in memory exactly as they were read, so the run
+        # continues with the old ones rather than refusing to start over a file the
+        # user can only fix by hand.
+        LOGGER.warning(f"Failed upgrading saved Pal templates: {traceback.format_exc()}")
 
     parser = argparse.ArgumentParser(description="Palworld Pal Editor, developed by _connlost with ❤.")
 

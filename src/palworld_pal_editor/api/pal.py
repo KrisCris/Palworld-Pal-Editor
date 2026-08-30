@@ -9,7 +9,15 @@ from palworld_pal_editor.api.pals import guid_string_or_none as _guid_string_or_
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
 from palworld_pal_editor.core.pal_objects import dumps
-from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
+from palworld_pal_editor.core.pal_sources import (
+    DetachedPalSource,
+    detach_native_record,
+)
+from palworld_pal_editor.core.pal_templates import (
+    pal_templates,
+    skill_templates,
+    template_source,
+)
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
@@ -87,18 +95,6 @@ def move_pal():
         return reply(1, None, "Error transferring Pal. No changes were kept.")
 
 
-def _pal_templates() -> list[dict]:
-    if not isinstance(Config.palTemplates, list):
-        Config.palTemplates = []
-    return Config.palTemplates
-
-
-def _skill_templates() -> list[dict]:
-    if not isinstance(Config.skillTemplates, list):
-        Config.skillTemplates = []
-    return Config.skillTemplates
-
-
 def _selected_record(payload: dict):
     manager = SaveManager()
     if record_key := payload.get("RecordKey"):
@@ -145,18 +141,29 @@ def _replace_skill_group(pal: PalEntity, template: dict) -> None:
     pal.replace_EquipWaza(equipped)
 
 
-def _parse_pal_json(raw: str) -> dict:
+def _parse_pal_json(raw: str) -> DetachedPalSource:
     if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_PAL_JSON_BYTES:
         raise ValueError("Pal JSON must be text smaller than 2 MiB.")
-    pal_obj = json.loads(raw)
-    if not isinstance(pal_obj, dict):
-        raise TypeError("Pal JSON must contain one Pal object.")
-    WorldPalAdapter.entity(pal_obj)
-    return pal_obj
+    return detach_native_record(json.loads(raw))
+
+
+def _native_record(record) -> dict:
+    """One record exactly as its own storage format writes it (spec §6.1).
+
+    A Global Palbox or DPS Pal exports as its real single-entry array, envelope and
+    all, so that what comes out of this editor can be recognised on the way back in.
+    """
+    manager = SaveManager()
+    adapter = (
+        manager.world_adapter
+        if record.storage_kind == "world"
+        else manager.storage_adapters[record.storage_key]
+    )
+    return adapter.export(record)
 
 
 def _template_summary(template: dict) -> dict:
-    pal = WorldPalAdapter.entity(_parse_pal_json(template["PalData"]))
+    pal = template_source(template).entity()
     return {
         "Id": template["Id"],
         "Name": template["Name"],
@@ -351,7 +358,7 @@ def dump_data():
     except ValueError as error:
         return reply(1, None, str(error))
     if record:
-        return reply(0, dumps(WorldPalAdapter.envelope(record)))
+        return reply(0, dumps(_native_record(record)))
     return reply(1, None, "Selected Pal not found.")
 
 
@@ -375,18 +382,18 @@ def add_pal():
         return reply(1, None, "Choose a base container before adding a Pal.")
     try:
         mode = payload.get("Mode", "default")
-        pal_obj = None
+        source = None
         if mode == "json":
-            pal_obj = _parse_pal_json(payload.get("PalJson"))
+            source = _parse_pal_json(payload.get("PalJson"))
         elif mode == "template":
             template_id = payload.get("TemplateId")
             template = next(
-                (item for item in _pal_templates() if item.get("Id") == template_id),
+                (item for item in pal_templates() if item.get("Id") == template_id),
                 None,
             )
             if template is None:
                 return reply(1, None, "Pal template not found.")
-            pal_obj = _parse_pal_json(template.get("PalData"))
+            source = template_source(template)
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
@@ -396,8 +403,14 @@ def add_pal():
                 None,
                 "RosterKey and TargetStorageKey are required.",
             )
+        if source is not None:
+            LOGGER.info(
+                f"Creating a Pal from a {source.kind} record in {target_storage_key}"
+            )
         record = SaveManager().create_pal(
-            roster_key, target_storage_key, pal_obj
+            roster_key,
+            target_storage_key,
+            source.save_parameter if source is not None else None,
         )
         pal_entity = record.pal
         if not pal_entity:
@@ -418,7 +431,7 @@ def add_pal():
 @jwt_required()
 def list_pal_templates():
     templates = []
-    for template in _pal_templates():
+    for template in pal_templates():
         try:
             templates.append(_template_summary(template))
         except (TypeError, ValueError, json.JSONDecodeError, KeyError):
@@ -436,7 +449,7 @@ def create_pal_template():
         return reply(1, None, "Template name is required.")
     if len(name) > MAX_PAL_TEMPLATE_NAME_LENGTH:
         return reply(1, None, "Template name must be 64 characters or fewer.")
-    if len(_pal_templates()) >= MAX_PAL_TEMPLATE_COUNT:
+    if len(pal_templates()) >= MAX_PAL_TEMPLATE_COUNT:
         return reply(1, None, "At most 50 Pal templates can be saved.")
 
     try:
@@ -449,14 +462,14 @@ def create_pal_template():
     template = {
         "Id": uuid.uuid4().hex,
         "Name": name,
-        "PalData": dumps(WorldPalAdapter.envelope(record)),
+        "PalData": _native_record(record),
     }
     try:
         summary = _template_summary(template)
     except (TypeError, ValueError, json.JSONDecodeError, KeyError):
         return reply(1, None, "Selected Pal data cannot be saved as a template.")
 
-    templates = _pal_templates()
+    templates = pal_templates()
     templates.append(template)
     try:
         Config.save_to_file()
@@ -469,7 +482,7 @@ def create_pal_template():
 @pal_blueprint.route("/templates/<template_id>", methods=["DELETE"])
 @jwt_required()
 def delete_pal_template(template_id: str):
-    templates = _pal_templates()
+    templates = pal_templates()
     template = next((item for item in templates if item.get("Id") == template_id), None)
     if template is None:
         return reply(1, None, "Pal template not found.")
@@ -487,7 +500,7 @@ def delete_pal_template(template_id: str):
 @jwt_required()
 def list_skill_templates():
     templates = []
-    for template in _skill_templates():
+    for template in skill_templates():
         try:
             if template.get("Type") in SKILL_TEMPLATE_TYPES:
                 templates.append(_skill_template_summary(template))
@@ -508,7 +521,7 @@ def create_skill_template():
         return reply(1, None, "Template name must be 64 characters or fewer.")
     if template_type not in SKILL_TEMPLATE_TYPES:
         return reply(1, None, "Skill template type must be active or passive.")
-    if len(_skill_templates()) >= MAX_PAL_TEMPLATE_COUNT:
+    if len(skill_templates()) >= MAX_PAL_TEMPLATE_COUNT:
         return reply(1, None, "At most 50 skill templates can be saved.")
 
     try:
@@ -529,7 +542,7 @@ def create_skill_template():
     else:
         template["EquipWaza"] = list(pal.EquipWaza or [])
 
-    templates = _skill_templates()
+    templates = skill_templates()
     templates.append(template)
     try:
         Config.save_to_file()
@@ -548,7 +561,7 @@ def rename_skill_template(template_id: str):
     if len(name) > MAX_PAL_TEMPLATE_NAME_LENGTH:
         return reply(1, None, "Template name must be 64 characters or fewer.")
     template = next(
-        (item for item in _skill_templates() if item.get("Id") == template_id),
+        (item for item in skill_templates() if item.get("Id") == template_id),
         None,
     )
     if template is None:
@@ -567,7 +580,7 @@ def rename_skill_template(template_id: str):
 @jwt_required()
 def apply_skill_template(template_id: str):
     template = next(
-        (item for item in _skill_templates() if item.get("Id") == template_id),
+        (item for item in skill_templates() if item.get("Id") == template_id),
         None,
     )
     if template is None:
@@ -591,7 +604,7 @@ def apply_skill_template(template_id: str):
 @pal_blueprint.route("/skill_templates/<template_id>", methods=["DELETE"])
 @jwt_required()
 def delete_skill_template(template_id: str):
-    templates = _skill_templates()
+    templates = skill_templates()
     template = next((item for item in templates if item.get("Id") == template_id), None)
     if template is None:
         return reply(1, None, "Skill template not found.")

@@ -9,8 +9,22 @@ from palworld_pal_editor.utils import LOGGER, clamp
 from palworld_pal_editor.utils.data_provider import PLAYER_STATUS_DATA
 
 
+# What a Pal's own native property calls itself. Every recognizer checks it, so
+# "looks like it has a SaveParameter" is never enough to accept a record.
+CHARACTER_PARAMETER_STRUCT = "PalIndividualCharacterSaveParameter"
+
+
 def dumps(data: dict) -> str:
     return json.dumps(data, indent=4, cls=CustomEncoder, ensure_ascii=False)
+
+
+def json_native(data: dict) -> dict:
+    """The same DOM with its GVAS values (UUIDs, byte blobs) as JSON-native text.
+
+    One round trip through the encoder the project already uses, rather than a
+    hand-written recursive walk that would have to learn every value type again.
+    """
+    return json.loads(dumps(data))
 
 
 def isUUIDStr(uuid_str: str) -> Optional[UUID]:
@@ -569,6 +583,61 @@ class PalObjects:
         )
 
     @staticmethod
+    def DefaultPalSaveParameter(OwnerPlayerUId, ContainerId, SlotIndex):
+        """The complete parameter a brand-new Pal starts life with.
+
+        Split out of `PalSaveParameter` because only a World Pal needs the record
+        envelope around it: a new DPS or Global Palbox Pal is this parameter written
+        straight into a preallocated slot, with no CharacterSaveParameterMap entry
+        anywhere in the story.
+        """
+        return {
+            "struct_type": CHARACTER_PARAMETER_STRUCT,
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": {
+                "CharacterID": PalObjects.NameProperty("SheepBall"),
+                "Gender": PalObjects.EnumProperty(
+                    "EPalGenderType", "EPalGenderType::Female"
+                ),
+                "NickName": PalObjects.StrProperty(""),
+                "EquipWaza": PalObjects.ArrayProperty(
+                    "EnumProperty",
+                    {"values": ["EPalWazaID::Unique_SheepBall_Roll"]},
+                ),
+                "MasteredWaza": PalObjects.ArrayProperty(
+                    "EnumProperty",
+                    {"values": []},
+                ),
+                "Hp": PalObjects.FixedPoint64(545000),
+                "Talent_HP": PalObjects.ByteProperty(100),
+                "Talent_Shot": PalObjects.ByteProperty(100),
+                "Talent_Defense": PalObjects.ByteProperty(100),
+                "FullStomach": PalObjects.FloatProperty(150.0),
+                "PassiveSkillList": PalObjects.ArrayProperty(
+                    "NameProperty", {"values": []}
+                ),
+                "OwnedTime": PalObjects.DateTime(PalObjects.TIME),
+                "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
+                "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
+                    "StructProperty",
+                    {
+                        "prop_name": "OldOwnerPlayerUIds",
+                        "prop_type": "StructProperty",
+                        "values": [OwnerPlayerUId],
+                        "type_name": "Guid",
+                        "id": PalObjects.EMPTY_UUID,
+                    },
+                ),
+                "SlotId": PalObjects.PalCharacterSlotId(SlotIndex, ContainerId),
+                "GotStatusPointList": PalObjects.GotStatusPointList(),
+                "GotExStatusPointList": PalObjects.GotExStatusPointList(),
+                "LastNickNameModifierPlayerUid": PalObjects.Guid(OwnerPlayerUId),
+            },
+            "type": "StructProperty",
+        }
+
+    @staticmethod
     def PalSaveParameter(InstanceId, OwnerPlayerUId, ContainerId, SlotIndex, group_id):
         return {
             "key": {
@@ -581,59 +650,9 @@ class PalObjects:
                     "ByteProperty",
                     {
                         "object": {
-                            "SaveParameter": {
-                                "struct_type": "PalIndividualCharacterSaveParameter",
-                                "struct_id": PalObjects.EMPTY_UUID,
-                                "id": None,
-                                "value": {
-                                    "CharacterID": PalObjects.NameProperty("SheepBall"),
-                                    "Gender": PalObjects.EnumProperty(
-                                        "EPalGenderType", "EPalGenderType::Female"
-                                    ),
-                                    "NickName": PalObjects.StrProperty(""),
-                                    "EquipWaza": PalObjects.ArrayProperty(
-                                        "EnumProperty",
-                                        {
-                                            "values": [
-                                                "EPalWazaID::Unique_SheepBall_Roll"
-                                            ]
-                                        },
-                                    ),
-                                    "MasteredWaza": PalObjects.ArrayProperty(
-                                        "EnumProperty",
-                                        {"values": []},
-                                    ),
-                                    "Hp": PalObjects.FixedPoint64(545000),
-                                    "Talent_HP": PalObjects.ByteProperty(100),
-                                    "Talent_Shot": PalObjects.ByteProperty(100),
-                                    "Talent_Defense": PalObjects.ByteProperty(100),
-                                    "FullStomach": PalObjects.FloatProperty(150.0),
-                                    "PassiveSkillList": PalObjects.ArrayProperty(
-                                        "NameProperty", {"values": []}
-                                    ),
-                                    "OwnedTime": PalObjects.DateTime(PalObjects.TIME),
-                                    "OwnerPlayerUId": PalObjects.Guid(OwnerPlayerUId),
-                                    "OldOwnerPlayerUIds": PalObjects.ArrayProperty(
-                                        "StructProperty",
-                                        {
-                                            "prop_name": "OldOwnerPlayerUIds",
-                                            "prop_type": "StructProperty",
-                                            "values": [OwnerPlayerUId],
-                                            "type_name": "Guid",
-                                            "id": PalObjects.EMPTY_UUID,
-                                        },
-                                    ),
-                                    "SlotId": PalObjects.PalCharacterSlotId(
-                                        SlotIndex, ContainerId
-                                    ),
-                                    "GotStatusPointList": PalObjects.GotStatusPointList(),
-                                    "GotExStatusPointList": PalObjects.GotExStatusPointList(),
-                                    "LastNickNameModifierPlayerUid": PalObjects.Guid(
-                                        OwnerPlayerUId
-                                    ),
-                                },
-                                "type": "StructProperty",
-                            }
+                            "SaveParameter": PalObjects.DefaultPalSaveParameter(
+                                OwnerPlayerUId, ContainerId, SlotIndex
+                            )
                         },
                         "unknown_bytes": [0, 0, 0, 0],
                         "group_id": group_id,

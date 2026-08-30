@@ -654,6 +654,22 @@ class SaveManager:
             return [record for record in records if record.storage_kind == "dps"]
         raise ValueError(f"Unknown Pal record domain: {domain}")
 
+    def _unused_instance_id(self, *claimed) -> UUID:
+        """A Pal id nothing in this save is already using.
+
+        `claimed` are the native structures the caller is about to write into -- a
+        container, a guild. Those can hold a handle for an id the repository has no
+        record for, and a Pal given that id would be the second thing answering to
+        it in the save file.
+        """
+        while True:
+            instance_id = toUUID(str(uuid.uuid4()))
+            if self.records_by_instance(instance_id):
+                continue
+            if any(structure.has_pal(instance_id) for structure in claimed):
+                continue
+            return instance_id
+
     def get_unique_world_record(
         self, instance_id: UUID | str | None
     ) -> Optional[PalRecord]:
@@ -1202,11 +1218,17 @@ class SaveManager:
 
     def _prepare_global_parameter(
         self,
-        source: PalEntity,
+        source_parameter: dict,
         *,
         preserve_provenance: bool,
-    ) -> tuple[dict, dict]:
-        save_parameter = copy.deepcopy(source.save_parameter)
+    ) -> dict:
+        """A complete SaveParameter rewritten to the rules the Global Palbox keeps.
+
+        Takes and returns the parameter rather than a `PalEntity`, so a Pal that
+        does not exist yet -- a template, an import, a brand-new Pal -- can be
+        normalized before anything has been written for it to be an entity of.
+        """
+        save_parameter = copy.deepcopy(source_parameter)
         parameter = save_parameter["value"]
         parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
         parameter["ItemContainerId"] = PalObjects.PalContainerId(
@@ -1235,17 +1257,12 @@ class SaveManager:
             parameter["SlotId"] = PalObjects.PalCharacterSlotId(
                 -1, PalObjects.EMPTY_UUID
             )
-        outer_instance = {
-            "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
-            "InstanceId": PalObjects.Guid(source.InstanceId),
-            "DebugName": PalObjects.StrProperty(""),
-        }
-        return save_parameter, outer_instance
+        return save_parameter
 
     def normalize_external_record(self, record: PalRecord) -> None:
         if record.storage_kind == "global_palbox":
-            save_parameter, _ = self._prepare_global_parameter(
-                record.pal, preserve_provenance=True
+            save_parameter = self._prepare_global_parameter(
+                record.pal.save_parameter, preserve_provenance=True
             )
             record.pal.pal_param.clear()
             record.pal.pal_param.update(save_parameter["value"])
@@ -1341,8 +1358,8 @@ class SaveManager:
             snapshot = self._snapshot_external_mutation(external_slots, [])
             try:
                 if destination.storage_kind == "global_palbox":
-                    updated_parameter, _ = self._prepare_global_parameter(
-                        source.pal, preserve_provenance=True
+                    updated_parameter = self._prepare_global_parameter(
+                        source.pal.save_parameter, preserve_provenance=True
                     )
                     destination.pal.pal_param.clear()
                     destination.pal.pal_param.update(
@@ -1427,8 +1444,8 @@ class SaveManager:
                 [(global_storage, target_index)], []
             )
             try:
-                save_parameter, _ = self._prepare_global_parameter(
-                    source.pal, preserve_provenance=True
+                save_parameter = self._prepare_global_parameter(
+                    source.pal.save_parameter, preserve_provenance=True
                 )
                 target_record = self.storage_adapters[
                     global_storage.storage_key
@@ -1907,9 +1924,17 @@ class SaveManager:
         self,
         roster_key: str,
         target_storage_key: str,
-        pal_obj: dict | None = None,
+        save_parameter: dict | None = None,
         pal_owner_uid: str | UUID | None = None,
     ) -> PalRecord:
+        """Create one Pal in `target_storage_key`, in that storage own native format.
+
+        `save_parameter` is the complete gameplay payload the new Pal is copied
+        from -- a live Pal, a template, an imported record -- or None for a default
+        Pal. It is the only thing a source contributes: identity, owner, guild and
+        position are the target storage to decide, which is what makes a template
+        made from a Global Palbox Pal creatable into a player Palbox (spec §6.3).
+        """
         allowed = {
             descriptor["StorageKey"]: descriptor
             for descriptor in self.creation_targets(roster_key)
@@ -1925,7 +1950,7 @@ class SaveManager:
             )
             record = self.add_pal(
                 player_uid,
-                pal_obj,
+                save_parameter,
                 descriptor["ContainerId"],
             )
             if record is None:
@@ -1942,29 +1967,20 @@ class SaveManager:
                 [(storage, target_index)], []
             )
             try:
-                instance_id = toUUID(str(uuid.uuid4()))
-                while self.records_by_instance(instance_id):
-                    instance_id = toUUID(str(uuid.uuid4()))
-                new_pal_obj = (
-                    PalObjects.PalSaveParameter(
-                        instance_id,
-                        PalObjects.EMPTY_UUID,
-                        PalObjects.EMPTY_UUID,
-                        -1,
-                        PalObjects.EMPTY_UUID,
-                    )
-                    if pal_obj is None
-                    else copy.deepcopy(pal_obj)
-                )
-                pal = WorldPalAdapter.entity(new_pal_obj)
-                pal.InstanceId = instance_id
-                pal.PlayerUId = PalObjects.EMPTY_UUID
-                pal.SlotId = (PalObjects.EMPTY_UUID, -1)
-                save_parameter, _ = self._prepare_global_parameter(
-                    pal, preserve_provenance=False
-                )
+                instance_id = self._unused_instance_id()
+                # No World record is built on the way: a Global Palbox Pal is a
+                # parameter in a preallocated slot, and normalizing it is what
+                # clears the position and provenance a copied payload arrives with.
                 record = self.storage_adapters[storage.storage_key].allocate(
-                    save_parameter, instance_id
+                    self._prepare_global_parameter(
+                        save_parameter
+                        if save_parameter is not None
+                        else PalObjects.DefaultPalSaveParameter(
+                            PalObjects.EMPTY_UUID, PalObjects.EMPTY_UUID, -1
+                        ),
+                        preserve_provenance=False,
+                    ),
+                    instance_id,
                 )
                 self.pal_repository.register(record, created=True)
                 self._container_registry_cache = None
@@ -1995,29 +2011,23 @@ class SaveManager:
             [(storage, target_index)], []
         )
         try:
-            instance_id = toUUID(str(uuid.uuid4()))
-            while self.records_by_instance(instance_id):
-                instance_id = toUUID(str(uuid.uuid4()))
-            if pal_obj is None:
-                new_pal_obj = PalObjects.PalSaveParameter(
-                    instance_id,
-                    player.PlayerUId,
-                    PalObjects.EMPTY_UUID,
-                    -1,
-                    player.group_id,
-                )
-            else:
-                new_pal_obj = copy.deepcopy(pal_obj)
-            pal = WorldPalAdapter.entity(new_pal_obj)
-            pal.InstanceId = instance_id
-            pal.PlayerUId = PalObjects.EMPTY_UUID
+            instance_id = self._unused_instance_id()
+            record = self.storage_adapters[storage.storage_key].allocate(
+                save_parameter
+                if save_parameter is not None
+                else PalObjects.DefaultPalSaveParameter(
+                    player.PlayerUId, PalObjects.EMPTY_UUID, -1
+                ),
+                instance_id,
+            )
+            # The slot is the Pal now, so the rest is written through it rather than
+            # onto a scratch record: whatever the payload said about where it lived
+            # and who owned it belongs to wherever it came from.
+            pal = record.pal
             pal.SlotId = (PalObjects.EMPTY_UUID, -1)
             pal.set_owner_player_uid(player.PlayerUId, player)
             pal.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
-            )
-            record = self.storage_adapters[storage.storage_key].allocate(
-                pal.save_parameter, instance_id
             )
             self._add_locker_id(instance_id)
             self._register_external_record(record, created=True)
@@ -2038,13 +2048,15 @@ class SaveManager:
         source = self.get_record(record_key)
         if source is None:
             raise ValueError("Selected Pal not found.")
-        source_obj = WorldPalAdapter.envelope(source)
+        # The whole of what a copy inherits: every gameplay field the source has,
+        # including the ones this editor has never heard of.
+        source_parameter = source.pal.save_parameter
 
         if source.storage_kind == "global_palbox":
             clone = self.create_pal(
                 "PAL_GLOBAL_STORAGE_BTN",
                 source.storage_key,
-                source_obj,
+                source_parameter,
             )
         elif source.storage_kind == "dps":
             storage = self._dps_storages.get(source.storage_key)
@@ -2053,7 +2065,7 @@ class SaveManager:
             clone = self.create_pal(
                 str(storage.owner_uid),
                 source.storage_key,
-                source_obj,
+                source_parameter,
                 pal_owner_uid=source.pal.OwnerPlayerUId,
             )
         else:
@@ -2069,7 +2081,7 @@ class SaveManager:
             clone = self.create_pal(
                 roster_key,
                 targets[0]["StorageKey"],
-                source_obj,
+                source_parameter,
             )
 
         LOGGER.info(
@@ -2100,7 +2112,7 @@ class SaveManager:
     def add_pal(
         self,
         player_uid: str | UUID,
-        pal_obj: dict = None,
+        save_parameter: dict = None,
         target_container_id: str | UUID = None,
     ) -> Optional[PalRecord]:
         requested_player = self.get_player(player_uid)
@@ -2169,40 +2181,25 @@ class SaveManager:
             LOGGER.warning(f"Group {group_id} not found")
             return None
 
-        pal_instanceId = toUUID(str(uuid.uuid4()))
-
-        while (
-            pal_container.has_pal(pal_instanceId)
-            or group.has_pal(pal_instanceId)
-            or self.records_by_instance(pal_instanceId)
-        ):
-            pal_instanceId = toUUID(str(uuid.uuid4()))
-
+        pal_instanceId = self._unused_instance_id(pal_container, group)
         container_id = pal_container.ID
+        pal_obj = None
         container_added = group_added = False
         try:
             slot_idx = pal_container.add_pal(pal_instanceId)
             if slot_idx == -1:
                 return None
             container_added = True
-            if not pal_obj:
-                pal_obj = PalObjects.PalSaveParameter(
-                    pal_instanceId,
-                    historical_player.PlayerUId,
-                    container_id,
-                    slot_idx,
-                    group_id,
-                )
-                pal_entity = WorldPalAdapter.entity(pal_obj)
-            else:
-                pal_obj = copy.deepcopy(pal_obj)
-                pal_entity = WorldPalAdapter.entity(pal_obj)
-                pal_entity.InstanceId = pal_instanceId
-                pal_entity.SlotId = (container_id, slot_idx)
-                # I don't know why some captured pals have PlayerUId, 
-                # But having non-empty ID will cause the game to hide the duped pal
-                pal_entity.PlayerUId = PalObjects.EMPTY_UUID
-                WorldPalAdapter.set_group_id(pal_obj, group_id)
+            pal_obj = WorldPalAdapter.native_record(
+                save_parameter,
+                instance_id=pal_instanceId,
+                owner_uid=historical_player.PlayerUId,
+                container_id=container_id,
+                slot_index=slot_idx,
+                group_id=group_id,
+            )
+            pal_entity = WorldPalAdapter.entity(pal_obj)
+            if save_parameter is not None:
                 # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
                 # so just assign a randomly for now.
                 pal_entity.pal_param["EquipItemContainerId"] = (

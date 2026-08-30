@@ -125,14 +125,12 @@ class PalCreationTests(unittest.TestCase):
 
     def test_cloned_pal_keeps_traits_but_rewrites_save_identity(self):
         manager, _, _, _ = manager_fixture()
-        source = PalObjects.PalSaveParameter(
-            toUUID("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-            SOURCE_PLAYER,
-            SOURCE_CONTAINER,
-            2,
-            SOURCE_GROUP,
+        # A clone inherits one thing: the complete gameplay payload. Identity,
+        # owner, guild and position are written by wherever it lands.
+        source = PalObjects.DefaultPalSaveParameter(
+            SOURCE_PLAYER, SOURCE_CONTAINER, 2
         )
-        parameter = source["value"]["RawData"]["value"]["object"]["SaveParameter"]["value"]
+        parameter = source["value"]
         parameter["NickName"] = PalObjects.StrProperty("Keeper")
         parameter["EquipItemContainerId"] = PalObjects.PalContainerId(SOURCE_CONTAINER)
         parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = PalObjects.Guid(SOURCE_CONTAINER)
@@ -142,7 +140,6 @@ class PalCreationTests(unittest.TestCase):
         pal = record.pal
 
         self.assertEqual("Keeper", pal.NickName)
-        self.assertNotEqual(original["key"]["InstanceId"]["value"], pal.InstanceId)
         self.assertEqual(PalObjects.EMPTY_UUID, pal.PlayerUId)
         self.assertEqual(TARGET_PLAYER, pal.OwnerPlayerUId)
         self.assertEqual([TARGET_PLAYER], pal.OldOwnerPlayerUIds)
@@ -162,6 +159,8 @@ class PalCreationTests(unittest.TestCase):
     def test_invalid_import_rolls_back_container_and_group_reservations(self):
         manager, player, container, group = manager_fixture()
 
+        # Nothing recognises this as a Pal, so it is rejected at the boundary and
+        # the container and guild slots it had already claimed are given back.
         pal = manager.add_pal(TARGET_PLAYER, {"invalid": True})
 
         self.assertIsNone(pal)

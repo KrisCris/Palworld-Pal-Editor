@@ -1,10 +1,15 @@
+import copy
 from typing import Optional
 
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.core.pal_entity import PalEntity
+from palworld_pal_editor.core.pal_objects import (
+    CHARACTER_PARAMETER_STRUCT,
+    json_native,
+)
 from palworld_pal_editor.core.pal_record import PalRecord
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage import ENTRY_TYPE_NAME, PalStorageSaveFile
 
 
 class StoragePalAdapter:
@@ -17,6 +22,8 @@ class StoragePalAdapter:
     """
 
     kind: str
+    # The one field that tells a DPS export and a GPS export apart.
+    entry_type_name: str
 
     def __init__(self, storage: PalStorageSaveFile) -> None:
         self.storage = storage
@@ -31,6 +38,57 @@ class StoragePalAdapter:
     @property
     def _key_prefix(self) -> str:
         raise NotImplementedError
+
+    @classmethod
+    def detach(cls, native_property) -> Optional[dict]:
+        """The SaveParameter in a one-entry SaveParameterArray of this format.
+
+        A DPS export and a GPS export are the same shape apart from `type_name`, so
+        the name and the entry count are both load-bearing (spec §6.1): without them
+        an import would be guessing which storage the record came out of.
+        """
+        if not isinstance(native_property, dict):
+            return None
+        if native_property.get("type") != "ArrayProperty":
+            return None
+        value = native_property.get("value")
+        if not isinstance(value, dict):
+            return None
+        if value.get("type_name") != cls.entry_type_name:
+            return None
+        entries = value.get("values")
+        if not isinstance(entries, list) or len(entries) != 1:
+            return None
+        entry = entries[0]
+        parameter = entry.get("SaveParameter") if isinstance(entry, dict) else None
+        if not isinstance(parameter, dict):
+            return None
+        if parameter.get("struct_type") != CHARACTER_PARAMETER_STRUCT:
+            return None
+        return copy.deepcopy(parameter)
+
+    def export(self, record: PalRecord) -> dict:
+        """This Pal as a one-entry SaveParameterArray, in JSON-native values.
+
+        The property header is copied off the live array rather than written from
+        memory. The header and the entry envelope are what say a record came from a
+        DPS rather than the Global Palbox, and an export that flattened them to a
+        bare parameter could not be told apart on the way back in (spec §6.1).
+        """
+        array = self.storage.array_property
+        return json_native(
+            {
+                **{key: value for key, value in array.items() if key != "value"},
+                "value": {
+                    **{
+                        key: value
+                        for key, value in array["value"].items()
+                        if key != "values"
+                    },
+                    "values": [record.native_record],
+                },
+            }
+        )
 
     @staticmethod
     def entity(entry: dict) -> PalEntity:
@@ -103,6 +161,7 @@ class DpsPalAdapter(StoragePalAdapter):
     """A single player's Dimension Pal Storage file."""
 
     kind = "dps"
+    entry_type_name = ENTRY_TYPE_NAME["dps"]
 
     @property
     def _key_prefix(self) -> str:
@@ -113,6 +172,7 @@ class GpsPalAdapter(StoragePalAdapter):
     """The world's single Global Pal Storage file."""
 
     kind = "global_palbox"
+    entry_type_name = ENTRY_TYPE_NAME["global_palbox"]
 
     @property
     def _key_prefix(self) -> str:

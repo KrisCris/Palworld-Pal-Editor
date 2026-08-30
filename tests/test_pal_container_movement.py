@@ -497,16 +497,14 @@ class SaveManagerMovementTests(unittest.TestCase):
         manager, _, _, target, _, _ = movement_manager()
         manager.group_data = FakeGroupData(FakeGroup())
         manager._entities_list = []
-        template = PalObjects.PalSaveParameter(
-            toUUID("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-            TARGET_PLAYER_ID,
-            CONTAINER_ID,
-            2,
-            GROUP_ID,
+        # What a creation is handed is the payload, not a record: where it used to
+        # sit and who used to own it are the target container's to decide.
+        template = PalObjects.DefaultPalSaveParameter(
+            TARGET_PLAYER_ID, CONTAINER_ID, 2
         )
-        template["value"]["RawData"]["value"]["object"]["SaveParameter"]["value"][
-            "MapObjectConcreteInstanceIdAssignedToExpedition"
-        ] = PalObjects.Guid(CONTAINER_ID)
+        template["value"]["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
+            PalObjects.Guid(CONTAINER_ID)
+        )
 
         record = manager.add_pal(
             "PAL_BASE_WORKER_BTN", template, target_container_id=target.ID

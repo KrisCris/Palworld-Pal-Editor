@@ -13,6 +13,14 @@ from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 
 StorageKind = Literal["dps", "global_palbox"]
 
+# What each format calls the entries in its SaveParameterArray. This is how a DPS
+# record and a GPS record are told apart -- they are otherwise the same shape -- so
+# the loader and the import recognizer have to be reading the same two strings.
+ENTRY_TYPE_NAME = {
+    "dps": "PalDimensionPalStorageSaveParameter",
+    "global_palbox": "PalGlobalPalStorageSaveParameter",
+}
+
 
 class PalStorageSaveFile:
     """One DPS or GPS save file: its GVAS, its slot array, and its dirty flag.
@@ -30,10 +38,6 @@ class PalStorageSaveFile:
     _EXPECTED_CLASS = {
         "dps": "/Script/Pal.PalDimensionPalStorageSaveGame",
         "global_palbox": "/Script/Pal.PalGlobalPalStorageSaveGame",
-    }
-    _EXPECTED_TYPE = {
-        "dps": "PalDimensionPalStorageSaveParameter",
-        "global_palbox": "PalGlobalPalStorageSaveParameter",
     }
 
     def __init__(
@@ -71,7 +75,7 @@ class PalStorageSaveFile:
                 f"{gvas_file.header.save_game_class_name}"
             )
         array = gvas_file.properties.get("SaveParameterArray")
-        if not array or array.get("value", {}).get("type_name") != cls._EXPECTED_TYPE[kind]:
+        if not array or array.get("value", {}).get("type_name") != ENTRY_TYPE_NAME[kind]:
             raise ValueError(f"Unexpected {kind} SaveParameterArray")
         return cls(path, kind, owner_uid, gvas_file, save_type)
 
@@ -90,8 +94,18 @@ class PalStorageSaveFile:
         return sum(self.occupies(entry) for entry in self.entries)
 
     @property
+    def array_property(self) -> dict:
+        """The whole native SaveParameterArray property, header included.
+
+        Exporting one Pal means handing back a property of this exact shape holding
+        a single entry, so the header is data to be copied rather than a constant an
+        adapter can write from memory.
+        """
+        return self.gvas_file.properties["SaveParameterArray"]
+
+    @property
     def entries(self) -> list[dict]:
-        return self.gvas_file.properties["SaveParameterArray"]["value"]["values"]
+        return self.array_property["value"]["values"]
 
     def free_index(self) -> int:
         for slot_index, entry in enumerate(self.entries):
