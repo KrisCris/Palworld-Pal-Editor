@@ -25,11 +25,11 @@ import { usePlayersStore } from "./players.js";
 import {
     BASE_ROSTER_KEY,
     GLOBAL_PALBOX_ROSTER_KEY,
-    legacyRosterId,
     playerRosterKey,
     useRostersStore,
 } from "./rosters.js";
 import { useSessionStore } from "./session.js";
+import { useTemplatesStore } from "./templates.js";
 
 export const backendErrorDetails = error => {
     const status = error?.response?.status;
@@ -164,6 +164,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const research = useResearchStore();
     const players = usePlayersStore();
     const rosters = useRostersStore();
+    const templates = useTemplatesStore();
 
     // Spec §8.8: every operation the UI can start holds the interaction gate for
     // as long as it runs, so nothing can begin a second one or edit what the
@@ -184,8 +185,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_SUITABILITY_LEVEL = 10;
     const MAX_EQUIP_WAZA = 3;
 
-    const PAL_TEMPLATES = ref([]);
-    const SKILL_TEMPLATES = ref([]);
     const PAL_CONTAINERS = ref([]);
     const PAL_TRANSFER_CONFLICT = ref(null);
 
@@ -430,30 +429,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
-    async function PATCH(api, data) {
-        try {
-            const response = await axios.patch(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
-                headers: { Authorization: "Bearer " + auth_token },
-            });
-
-            return response.data;
-        } catch (error) {
-            return handleRequestError(error, "patch");
-        }
-    }
-
-    async function DELETE(api) {
-        try {
-            const response = await axios.delete(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
-                headers: { Authorization: "Bearer " + auth_token },
-            });
-
-            return response.data;
-        } catch (error) {
-            return handleRequestError(error, "delete");
-        }
-    }
-
     async function auth() {
         const response = await GET("/api/auth/auth");
         if (response === false) return false;
@@ -515,8 +490,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             ? rememberBackend(localStorage, origin)
             : readRecentBackends(localStorage);
         if (changed) {
-            PAL_TEMPLATES.value = [];
-            SKILL_TEMPLATES.value = [];
+            templates.clear();
             setAuthToken(readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
             app.pickerPath = session.recallSavePath(localStorage, origin);
         }
@@ -716,8 +690,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
-        PAL_TEMPLATES.value = [];
-        SKILL_TEMPLATES.value = [];
+        templates.clear();
         PAL_CONTAINERS.value = [];
         PAL_TRANSFER_CONFLICT.value = null;
         research.clear();
@@ -1213,42 +1186,39 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function healAllPals() {
-        let result;
         try {
-            result = await pals.healAll();
+            await pals.healAll();
         } catch (error) {
             reportApiFailure(error, "Operation_Update_Pal");
             return false;
         }
-        // No record answers for a heal that touched every list, so the reply names
-        // the rosters instead. Only the open one is on screen; the rest are
-        // dropped and re-read whenever they are next opened.
-        for (const rosterKey of result.affectedRosterKeys) {
-            if (rosterKey !== rosters.activeRosterKey) rosters.invalidate(rosterKey);
-        }
-        await refreshRosters([rosters.activeRosterKey]);
+        // The reply names every roster but no record, so nothing in it can say
+        // what the heal did to the Pal on screen; that one is re-read.
         if (pals.selectedRecordKey) await refreshPal(pals.selectedRecordKey);
         return true;
     }
 
+    // The export button copies the Pal as its own storage writes it, formatted
+    // here rather than by the backend: what crosses the wire is the record, and
+    // indentation is a property of what lands on the clipboard.
     async function dumpPalData() {
+        let record;
         try {
-            const response = await POST("/api/pal/dump_data", {
-                RecordKey: pals.selectedRecordKey,
-            });
-
-            if (response === false) return;
-            if (response.status == 0) {
-                await navigator.clipboard.writeText(response.data);
-                showToast("Message_Pal_Copied", "success");
-            } else if (response.status == 2) {
-                requireAuth("AuthView_Session_Expired");
-            } else {
-                reportOperationError("Operation_Copy_Pal", response);
-            }
+            record = await pals.nativeRecord();
         } catch (error) {
-            reportFrontendError(error, getTranslatedText("Operation_Copy_Pal"));
+            reportApiFailure(error, "Operation_Copy_Pal");
+            return false;
         }
+        try {
+            await navigator.clipboard.writeText(JSON.stringify(record, null, 4));
+        } catch (error) {
+            // Refusing the clipboard is the browser's to do, and it is the only
+            // half of this that was never a request.
+            reportFrontendError(error, getTranslatedText("Operation_Copy_Pal"));
+            return false;
+        }
+        showToast("Message_Pal_Copied", "success");
+        return true;
     }
 
     async function maximizePal() {
@@ -1276,19 +1246,22 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function delPal() {
         const recordKey = pals.selectedRecordKey;
         const successor = nextVisibleRecordKey(recordKey);
-        const response = await DELETE(`/api/pal/pal/${encodeURIComponent(recordKey)}`);
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            pals.forget(recordKey);
-            await refreshRosters([rosters.activeRosterKey]);
-            if (successor && pals.summary(successor)) await selectPal(successor);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Delete_Pal", response);
+        try {
+            await refreshStorages(await pals.remove(recordKey));
+        } catch (error) {
+            reportApiFailure(error, "Operation_Delete_Pal");
+            return false;
         }
+        if (successor && pals.summary(successor)) await selectPal(successor);
+        return true;
+    }
+
+    // The container registry still lives here rather than in `stores/storages`,
+    // so the half of the operation result that names storages is consumed here
+    // too. S4b moves both together.
+    async function refreshStorages(result) {
+        if (result.affectedStorageKeys.length) await fetchPalContainers();
+        return result;
     }
 
     // Refresh only the rosters an operation touched. Everything else keeps its
@@ -1415,174 +1388,148 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_TRANSFER_CONFLICT.value = null;
     }
 
-    async function addPal(options = {}) {
-        const rosterId = legacyRosterId(rosters.activeRosterKey);
-        const response = await POST("/api/pal/add_pal", {
-            PlayerUId: rosterId,
-            RosterKey: rosterId,
-            TargetStorageKey: options.TargetStorageKey,
-            ...options,
-        });
+    // The add dialog's three tabs are one operation with three sources: a
+    // default Pal, a saved template, or a record pasted in as JSON. Where it
+    // lands and who owns it are the same question whichever tab is open, so only
+    // `source` differs and the target storage builds the native record.
+    async function addPal({
+        mode = "default", templateId, palJson, targetStorageKey,
+    } = {}) {
+        let source;
+        if (mode === "template") {
+            source = { kind: "template", templateId };
+        } else if (mode === "json") {
+            try {
+                source = { kind: "native-record", record: JSON.parse(palJson) };
+            } catch (error) {
+                // Text that is not JSON never reaches the backend, so there is no
+                // reply for it to fail with; this says so in the dialog the same
+                // way a refused record would.
+                showMessage({
+                    severity: "error",
+                    presentation: "dialog",
+                    messageKey: "Message_Operation_Failed",
+                    args: [{ translationKey: "Operation_Add_Pal" }],
+                    code: "PAL_JSON_INVALID",
+                    log: error.message,
+                });
+                return false;
+            }
+        } else {
+            source = { kind: "default" };
+        }
 
-        if (response === false) {
+        let result;
+        try {
+            result = await refreshStorages(
+                await pals.create(targetStorageKey, source, rosters.activePlayerUid),
+            );
+        } catch (error) {
+            reportApiFailure(error, "Operation_Add_Pal");
             return false;
         }
-
-        if (response.status == 0) {
-            const target = PAL_CONTAINERS.value.find(
-                container => container.StorageKey === options.TargetStorageKey
-            );
-            const targetRoster = rosterKeyForContainer(
-                target,
-                target?.OwnerPlayerUId || rosters.activePlayerUid,
-            );
-            await refreshRosters([rosters.activeRosterKey, targetRoster]);
-            if (targetRoster) await selectPlayer(targetRoster);
-            await selectPal(response.data.RecordKey);
-            return true;
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Add_Pal", response);
+        // Which list the new Pal turned up in is the reply's answer, not a guess
+        // from the target container's kind and owner.
+        const [targetRoster] = result.affectedRosterKeys;
+        if (targetRoster && targetRoster !== rosters.activeRosterKey) {
+            await selectPlayer(targetRoster);
         }
-
-        return false;
+        await selectPal(result.resultRecord.recordKey);
+        return true;
     }
 
     async function dupePal() {
-        const response = await POST("/api/pal/dupe_pal", {
-            PlayerUId: legacyRosterId(rosters.activeRosterKey),
-            RecordKey: pals.selectedRecordKey,
-        });
-
-        if (response === false) return;
-
-        if (response.status == 0) {
-            await refreshRosters([rosters.activeRosterKey]);
-            await selectPal(response.data.RecordKey);
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-        } else {
-            reportOperationError("Operation_Duplicate_Pal", response);
+        let result;
+        try {
+            result = await refreshStorages(await pals.duplicate(pals.selectedRecordKey));
+        } catch (error) {
+            reportApiFailure(error, "Operation_Duplicate_Pal");
+            return false;
         }
+        await selectPal(result.resultRecord.recordKey);
+        return true;
     }
 
     // ---- templates -----------------------------------------------------------
+    // The templates themselves live in `stores/templates`; what stays here is the
+    // gate, the reporting and the toast, which is the same three lines for all
+    // seven of them.
 
-    async function fetchPalTemplates() {
-        const response = await GET("/api/pal/templates");
-        if (response === false) return false;
-        if (response.status == 0) {
-            PAL_TEMPLATES.value = response.data || [];
-            return true;
+    async function runTemplateAction(action, operationKey, toastKey) {
+        try {
+            await action();
+        } catch (error) {
+            reportApiFailure(error, operationKey);
+            return false;
         }
-        reportOperationError("Operation_Load_Pal_Templates", response);
-        return false;
+        if (toastKey) showToast(toastKey, "success");
+        return true;
     }
 
-    async function savePalTemplate(name) {
+    function fetchPalTemplates() {
+        return runTemplateAction(
+            () => templates.loadPalTemplates(),
+            "Operation_Load_Pal_Templates",
+        );
+    }
+
+    function savePalTemplate(name) {
         if (!pals.selectedRecordKey) return false;
-        const response = await POST("/api/pal/templates", {
-            RecordKey: pals.selectedRecordKey,
-            Name: name,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            await fetchPalTemplates();
-            showToast("Message_Pal_Template_Saved", "success");
-            return true;
-        }
-        reportOperationError("Operation_Save_Pal_Template", response);
-        return false;
+        return runTemplateAction(
+            () => templates.savePalTemplate(name, pals.selectedRecordKey),
+            "Operation_Save_Pal_Template",
+            "Message_Pal_Template_Saved",
+        );
     }
 
-    async function deletePalTemplate(templateId) {
-        const response = await DELETE(`/api/pal/templates/${templateId}`);
-        if (response === false) return false;
-        if (response.status == 0) {
-            PAL_TEMPLATES.value = PAL_TEMPLATES.value.filter(
-                template => template.Id != templateId
-            );
-            showToast("Message_Pal_Template_Deleted", "success");
-            return true;
-        }
-        reportOperationError("Operation_Delete_Pal_Template", response);
-        return false;
+    function deletePalTemplate(templateId) {
+        return runTemplateAction(
+            () => templates.removePalTemplate(templateId),
+            "Operation_Delete_Pal_Template",
+            "Message_Pal_Template_Deleted",
+        );
     }
 
-    async function fetchSkillTemplates() {
-        const response = await GET("/api/pal/skill_templates");
-        if (response === false) return false;
-        if (response.status == 0) {
-            SKILL_TEMPLATES.value = response.data || [];
-            return true;
-        }
-        reportOperationError("Operation_Load_Skill_Templates", response);
-        return false;
+    function fetchSkillTemplates() {
+        return runTemplateAction(
+            () => templates.loadSkillTemplates(),
+            "Operation_Load_Skill_Templates",
+        );
     }
 
-    async function saveSkillTemplate(type, name) {
+    function saveSkillTemplate(type, name) {
         if (!pals.selectedRecordKey) return false;
-        const response = await POST("/api/pal/skill_templates", {
-            RecordKey: pals.selectedRecordKey,
-            Type: type,
-            Name: name,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            SKILL_TEMPLATES.value.push(response.data);
-            showToast("Message_Skill_Template_Saved", "success");
-            return true;
-        }
-        reportOperationError("Operation_Save_Skill_Template", response);
-        return false;
+        return runTemplateAction(
+            () => templates.saveSkillTemplate(name, type, pals.selectedRecordKey),
+            "Operation_Save_Skill_Template",
+            "Message_Skill_Template_Saved",
+        );
     }
 
-    async function renameSkillTemplate(templateId, name) {
-        const response = await PATCH(`/api/pal/skill_templates/${templateId}`, {
-            Name: name,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            const index = SKILL_TEMPLATES.value.findIndex(
-                template => template.Id == templateId
-            );
-            if (index >= 0) SKILL_TEMPLATES.value[index] = response.data;
-            showToast("Message_Skill_Template_Renamed", "success");
-            return true;
-        }
-        reportOperationError("Operation_Rename_Skill_Template", response);
-        return false;
+    function renameSkillTemplate(templateId, name) {
+        return runTemplateAction(
+            () => templates.renameTemplate(templateId, name),
+            "Operation_Rename_Skill_Template",
+            "Message_Skill_Template_Renamed",
+        );
     }
 
+    // Applying one is a Pal write, not a template read: it answers with the Pal
+    // it changed, so nothing is re-read afterwards.
     async function applySkillTemplate(templateId) {
-        const recordKey = pals.selectedRecordKey;
-        if (!recordKey) return false;
-        const response = await POST(`/api/pal/skill_templates/${templateId}/apply`, {
-            RecordKey: recordKey,
-        });
-        if (response === false) return false;
-        if (response.status == 0) {
-            await refreshPal(recordKey);
-            showToast("Message_Skill_Template_Applied", "success");
-            return true;
-        }
-        reportOperationError("Operation_Apply_Skill_Template", response);
-        return false;
+        if (!await runPalWrite(
+            () => pals.applyTemplate(templateId), "Operation_Apply_Skill_Template",
+        )) return false;
+        showToast("Message_Skill_Template_Applied", "success");
+        return true;
     }
 
-    async function deleteSkillTemplate(templateId) {
-        const response = await DELETE(`/api/pal/skill_templates/${templateId}`);
-        if (response === false) return false;
-        if (response.status == 0) {
-            SKILL_TEMPLATES.value = SKILL_TEMPLATES.value.filter(
-                template => template.Id != templateId
-            );
-            showToast("Message_Skill_Template_Deleted", "success");
-            return true;
-        }
-        reportOperationError("Operation_Delete_Skill_Template", response);
-        return false;
+    function deleteSkillTemplate(templateId) {
+        return runTemplateAction(
+            () => templates.removeSkillTemplate(templateId),
+            "Operation_Delete_Skill_Template",
+            "Message_Skill_Template_Deleted",
+        );
     }
 
     function palElementKeys(DataAccessKey) {
@@ -1628,8 +1575,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         CURRENT_MESSAGE,
 
 
-        PAL_TEMPLATES,
-        SKILL_TEMPLATES,
         PAL_CONTAINERS,
         PAL_TRANSFER_CONFLICT,
 

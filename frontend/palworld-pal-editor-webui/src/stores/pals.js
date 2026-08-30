@@ -16,12 +16,18 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
 import {
+    deletePal,
+    duplicatePal,
     getPal,
+    getPalNativeRecord,
     healPals,
     maximizePal,
     patchPal,
     putPalSkills,
 } from "../api/pals.js";
+import { createStoragePal } from "../api/storages.js";
+import { applySkillTemplate } from "../api/templates.js";
+import { applyOperationResult } from "./operation-result.js";
 import { useSessionStore } from "./session.js";
 
 export const usePalsStore = defineStore("pals", () => {
@@ -94,45 +100,69 @@ export const usePalsStore = defineStore("pals", () => {
         if (selectedRecordKey.value === recordKey) selectedRecordKey.value = null;
     }
 
-    // Every write answers with the operation result, and the Pal it carries is
-    // the new authority for that record -- including its `changeState`, which is
-    // how the list's edited marker learns an edit happened.
-    function applyOperation(result) {
-        if (result.resultRecord) applyDetail(result.resultRecord);
-        return result;
-    }
-
-    // The five writes below return `null` when no Pal is open. Every editor
+    // The six writes below return `null` when no Pal is open. Every editor
     // control is rendered only while one is, so that is a guard, not a message:
     // this store still reports nothing.
     async function update(patch) {
         const recordKey = selectedRecordKey.value;
         if (recordKey === null) return null;
-        return applyOperation(await patchPal(recordKey, patch));
+        return applyOperationResult(await patchPal(recordKey, patch));
     }
 
     async function replaceSkills(group, skills) {
         const recordKey = selectedRecordKey.value;
         if (recordKey === null) return null;
-        return applyOperation(await putPalSkills(recordKey, group, skills));
+        return applyOperationResult(await putPalSkills(recordKey, group, skills));
     }
 
     async function maximize() {
         const recordKey = selectedRecordKey.value;
         if (recordKey === null) return null;
-        return applyOperation(await maximizePal(recordKey));
+        return applyOperationResult(await maximizePal(recordKey));
     }
 
     async function heal() {
         const recordKey = selectedRecordKey.value;
         if (recordKey === null) return null;
-        return applyOperation(await healPals({ scope: "record", recordKey }));
+        return applyOperationResult(await healPals({ scope: "record", recordKey }));
+    }
+
+    async function applyTemplate(templateId) {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return applyOperationResult(await applySkillTemplate(recordKey, templateId));
+    }
+
+    // The Pal as its storage writes it, for the export button and for saving a
+    // template. Nothing is cached: it is a whole save record and the only thing
+    // that ever wants one asked for it a moment ago.
+    async function nativeRecord() {
+        const recordKey = selectedRecordKey.value;
+        if (recordKey === null) return null;
+        return getPalNativeRecord(recordKey);
     }
 
     // The only write with no single record to answer for: it names the rosters
     // whose rows changed instead, and the caller decides what to re-read.
     async function healAll() {
-        return applyOperation(await healPals({ scope: "all" }));
+        return applyOperationResult(await healPals({ scope: "all" }));
+    }
+
+    // Creating, copying and deleting all answer with the same result, so none of
+    // them tells this store where the Pal went -- `applyOperationResult` reads
+    // that off the reply.
+    async function create(storageKey, source, ownerUid) {
+        return applyOperationResult(
+            await createStoragePal(storageKey, source, ownerUid),
+        );
+    }
+
+    async function duplicate(recordKey) {
+        return applyOperationResult(await duplicatePal(recordKey));
+    }
+
+    async function remove(recordKey) {
+        return applyOperationResult(await deletePal(recordKey));
     }
 
     // Every Pal whose detail has been read and reports base-camp illness. The
@@ -164,6 +194,11 @@ export const usePalsStore = defineStore("pals", () => {
         maximize,
         heal,
         healAll,
+        applyTemplate,
+        nativeRecord,
+        create,
+        duplicate,
+        remove,
         clear,
     };
 });

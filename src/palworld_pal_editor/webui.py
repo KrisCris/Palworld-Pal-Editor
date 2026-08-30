@@ -34,6 +34,8 @@ app.register_blueprint(application_blueprint, url_prefix='/api')
 app.register_blueprint(research_blueprint, url_prefix='/api/guild-research')
 app.register_blueprint(catalogs_blueprint, url_prefix='/api/catalogs')
 app.register_blueprint(pal_heals_blueprint, url_prefix='/api/pal-heals')
+app.register_blueprint(storages_blueprint, url_prefix='/api/storages')
+app.register_blueprint(templates_blueprint, url_prefix='/api')
 
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)

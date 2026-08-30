@@ -11,26 +11,12 @@ from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
 from palworld_pal_editor.api.pals import pal_summary
+from palworld_pal_editor.api.roster_keys import FIXED_ROSTERS, PLAYER_ROSTER_PREFIX
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import DataProvider
 
 rosters_blueprint = Blueprint("rosters", __name__)
 register_error_handlers(rosters_blueprint)
-
-PLAYER_ROSTER_PREFIX = "player:"
-
-# Rosters that are one fixed place rather than one player, mapped to the name
-# SaveManager still knows them by. Those names are the old UI's button ids, and the
-# same vocabulary reaches `creation_targets`, `create_pal` and `duplicate_pal`, so
-# renaming it belongs to the tasks that delete those callers (S1c, S3b, S4a) rather
-# than to this one. `unrostered` has no entry in the listing because no UI control
-# opens it; it stays addressable because it is the only way to see a Pal that every
-# other roster disowns.
-FIXED_ROSTERS = {
-    "base-workers": "PAL_BASE_WORKER_BTN",
-    "global-palbox": "PAL_GLOBAL_STORAGE_BTN",
-    "unrostered": "PAL_OTHER_PAL_BTN",
-}
 
 
 def roster_entries(manager: SaveManager) -> list[dict]:

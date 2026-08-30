@@ -14,6 +14,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
+from palworld_pal_editor.api.roster_keys import legacy_roster_id, roster_key_for_record
 from palworld_pal_editor.core import PalEntity, SaveManager
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
@@ -150,6 +151,22 @@ def pal_detail(manager: SaveManager, record: PalRecord) -> dict:
     }
 
 
+def native_record(manager: SaveManager, record: PalRecord) -> dict:
+    """The record's own native JSON, through the adapter that owns its format.
+
+    A World Pal is the whole `CharacterSaveParameterMap` record; a DPS or Global
+    Palbox Pal is its real single-entry `SaveParameterArray`, header and entry
+    envelope included, because that envelope is the only thing that says which of
+    the two a pasted record came out of (spec §6.1).
+    """
+    adapter = (
+        manager.world_adapter
+        if record.storage_kind == "world"
+        else manager.storage_adapters[record.storage_key]
+    )
+    return adapter.export(record)
+
+
 def require_record(record_key: str) -> PalRecord:
     """The record that key names, or the 404 every Pal sub-resource would repeat."""
     record = SaveManager().get_record(record_key)
@@ -167,19 +184,20 @@ def operation_result(
     record: PalRecord | None = None,
     *,
     affected_roster_keys=(),
+    deleted_record_keys=(),
+    affected_storage_keys=(),
 ) -> dict:
     """The one shape every Pal-changing response uses (spec §8.3).
 
     All four keys are always present, so the client reads one shape and never has
-    to guess what an operation did. The two this task can never fill are constants
-    rather than parameters: nothing here deletes a record or moves one between
-    storages, and S3b and S4a add the arguments alongside their first callers.
+    to guess what an operation did. A delete says what is gone, a create says which
+    storage now holds one more Pal, and S4a fills both at once for a move.
     """
     return {
         "resultRecord": pal_detail(manager, record) if record is not None else None,
-        "deletedRecordKeys": [],
+        "deletedRecordKeys": list(deleted_record_keys),
         "affectedRosterKeys": list(affected_roster_keys),
-        "affectedStorageKeys": [],
+        "affectedStorageKeys": list(affected_storage_keys),
     }
 
 
@@ -278,6 +296,72 @@ def patch_pal(record_key: str):
         except (TypeError, ValueError, AttributeError) as error:
             raise ApiError("PAL_VALUE_INVALID", str(error))
         return commit_pal_edit(manager, record)
+
+
+@pals_blueprint.route("/<record_key>", methods=["DELETE"])
+@jwt_required()
+def delete_pal(record_key: str):
+    """Remove one Pal from the save.
+
+    The roster and the storage are read before the delete, because afterwards the
+    record answers for nowhere: it is the one operation whose `resultRecord` is
+    null, so `deletedRecordKeys` is all the client gets to act on.
+    """
+    manager = SaveManager()
+    with manager.session_lock:
+        record = require_record(record_key)
+        roster_key = roster_key_for_record(manager, record)
+        storage_key = record.storage_key
+        if not manager.delete_pal(record.record_key):
+            raise ApiError(
+                "PAL_DELETE_FAILED",
+                f"Unable to delete {record_key}",
+                status=500,
+            )
+        return operation_result(
+            manager,
+            deleted_record_keys=[record.record_key],
+            affected_roster_keys=[roster_key],
+            affected_storage_keys=[key for key in (storage_key,) if key],
+        )
+
+
+@pals_blueprint.route("/<record_key>/native-record", methods=["GET"])
+@jwt_required()
+def get_pal_native_record(record_key: str):
+    """This Pal as its own storage format writes it, for export and templates."""
+    manager = SaveManager()
+    with manager.session_lock:
+        return native_record(manager, require_record(record_key))
+
+
+@pals_blueprint.route("/<record_key>/duplicates", methods=["POST"])
+@jwt_required()
+def duplicate_pal(record_key: str):
+    """One more of this Pal, wherever the backend decides it fits (spec §8.3).
+
+    There is no target in the request because the editor's copy button has never
+    offered one: a Global Palbox or DPS Pal is copied inside its own storage, and a
+    World Pal into the first container of its roster with room. Which roster that
+    is comes from the record rather than from whatever list the client had open --
+    the button is on the Pal, and the two cannot disagree.
+    """
+    manager = SaveManager()
+    with manager.session_lock:
+        record = require_record(record_key)
+        try:
+            clone = manager.duplicate_pal(
+                record.record_key,
+                legacy_roster_id(roster_key_for_record(manager, record)),
+            )
+        except ValueError as error:
+            raise ApiError("PAL_DUPLICATE_REFUSED", str(error))
+        return operation_result(
+            manager,
+            clone,
+            affected_roster_keys=[roster_key_for_record(manager, clone)],
+            affected_storage_keys=[clone.storage_key],
+        )
 
 
 @pals_blueprint.route("/<record_key>/skills/<group>", methods=["PUT"])

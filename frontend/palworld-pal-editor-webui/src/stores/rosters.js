@@ -18,21 +18,6 @@ export const PLAYER_ROSTER_PREFIX = "player:";
 
 export const playerRosterKey = playerUid => `${PLAYER_ROSTER_PREFIX}${playerUid}`;
 
-// The old UI's button ids. `add_pal`, `dupe_pal` and `creation_targets` still
-// speak them, so the two vocabularies meet here until S3b and S4a delete those
-// callers and the backend's roster keys are the only ones left.
-const LEGACY_ROSTER_IDS = Object.freeze({
-    [BASE_ROSTER_KEY]: "PAL_BASE_WORKER_BTN",
-    [GLOBAL_PALBOX_ROSTER_KEY]: "PAL_GLOBAL_STORAGE_BTN",
-});
-
-export const legacyRosterId = rosterKey => (
-    LEGACY_ROSTER_IDS[rosterKey]
-    ?? (rosterKey?.startsWith(PLAYER_ROSTER_PREFIX)
-        ? rosterKey.slice(PLAYER_ROSTER_PREFIX.length)
-        : rosterKey)
-);
-
 const PAL_LIST_PREFERENCES_KEY = "PAL_LIST_PREFERENCES";
 const PAL_LIST_SORT_VALUES = new Set(["paldeck", "location", "priority"]);
 const PAL_LIST_ATTRIBUTE_VALUES = new Set([

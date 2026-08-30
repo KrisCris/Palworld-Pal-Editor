@@ -4,6 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useTemplatesStore } from '@/stores/templates'
 
 const props = defineProps({
   type: { type: String, required: true, validator: value => ['active', 'passive'].includes(value) },
@@ -11,52 +12,53 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const templatesStore = useTemplatesStore()
 const dialog = ref(null)
 const templateName = ref('')
 const names = reactive({})
 const expandedTemplates = reactive(new Set())
 let previousFocus
 
-const templates = computed(() => palStore.SKILL_TEMPLATES.filter(
-  template => template.Type === props.type,
+const templates = computed(() => templatesStore.skillTemplates.filter(
+  template => template.type === props.type,
 ))
 const titleKey = computed(() => props.type === 'passive'
   ? 'SkillTemplate_Passive_Title'
   : 'SkillTemplate_Active_Title')
 
-const skillCards = template => (template.Type === 'passive'
+const skillCards = template => (template.type === 'passive'
   ? template.PassiveSkillList || []
   : template.EquipWaza || []
 ).map(skill => {
-  const data = template.Type === 'passive'
+  const data = template.type === 'passive'
     ? catalogsStore.passiveSkillsByName[skill]
     : catalogsStore.activeSkillsByName[skill]
   return {
     id: skill,
     name: data?.I18n?.[0] || skill,
-    summary: template.Type === 'passive'
+    summary: template.type === 'passive'
       ? data?.I18n?.[1] || skill
       : `${palStore.getTranslatedText('Editor_Skill_ATK')}${data?.Power ?? '-'} · ${palStore.getTranslatedText('Editor_Skill_CD')}${data?.CT ?? '-'}`,
-    tier: template.Type === 'passive' ? palStore.passiveTier(data?.Rating) : '',
-    element: template.Type === 'active' ? palStore.elementIconKey(data?.Element) : '',
+    tier: template.type === 'passive' ? palStore.passiveTier(data?.Rating) : '',
+    element: template.type === 'active' ? palStore.elementIconKey(data?.Element) : '',
   }
 })
 const summarySkills = template => skillCards(template).slice(0, 4)
 const overflowSkills = template => skillCards(template).slice(4)
-const isExpanded = template => expandedTemplates.has(template.Id)
+const isExpanded = template => expandedTemplates.has(template.templateId)
 
 function toggleExpanded(template) {
-  if (isExpanded(template)) expandedTemplates.delete(template.Id)
-  else expandedTemplates.add(template.Id)
+  if (isExpanded(template)) expandedTemplates.delete(template.templateId)
+  else expandedTemplates.add(template.templateId)
 }
 
 function syncNames() {
-  for (const template of templates.value) names[template.Id] = template.Name
+  for (const template of templates.value) names[template.templateId] = template.name
 }
 
 onMounted(async () => {
   previousFocus = document.activeElement
-  if (!palStore.SKILL_TEMPLATES.length) await palStore.fetchSkillTemplates()
+  if (!templatesStore.skillTemplates.length) await palStore.fetchSkillTemplates()
   syncNames()
   await nextTick()
   dialog.value?.focus()
@@ -72,8 +74,8 @@ async function saveTemplate() {
 }
 
 async function renameTemplate(template) {
-  const name = names[template.Id]?.trim()
-  if (name && name !== template.Name) await palStore.renameSkillTemplate(template.Id, name)
+  const name = names[template.templateId]?.trim()
+  if (name && name !== template.name) await palStore.renameSkillTemplate(template.templateId, name)
 }
 </script>
 
@@ -104,30 +106,30 @@ async function renameTemplate(template) {
         </div>
 
         <main>
-          <article v-for="template in templates" :key="template.Id" class="template-card">
+          <article v-for="template in templates" :key="template.templateId" class="template-card">
             <div class="template-card__name">
-              <input v-model="names[template.Id]" maxlength="64"
-                :title="template.Name"
+              <input v-model="names[template.templateId]" maxlength="64"
+                :title="template.name"
                 :aria-label="palStore.getTranslatedText('SkillTemplate_Name')"
                 @keydown.enter="renameTemplate(template)">
               <button class="icon-button" :title="palStore.getTranslatedText('SkillTemplate_Rename')"
                 :aria-label="palStore.getTranslatedText('SkillTemplate_Rename')"
-                :disabled="!names[template.Id]?.trim() || names[template.Id]?.trim() === template.Name"
+                :disabled="!names[template.templateId]?.trim() || names[template.templateId]?.trim() === template.name"
                 @click="renameTemplate(template)"><UiIcon name="edit" /></button>
             </div>
 
             <div class="template-card__actions">
-              <button class="danger-button" @click="palStore.deleteSkillTemplate(template.Id)">
+              <button class="danger-button" @click="palStore.deleteSkillTemplate(template.templateId)">
                 <UiIcon name="delete" /> {{ palStore.getTranslatedText('SkillTemplate_Delete') }}
               </button>
-              <button class="primary-button" @click="palStore.applySkillTemplate(template.Id)">
+              <button class="primary-button" @click="palStore.applySkillTemplate(template.templateId)">
                 <UiIcon name="check" /> {{ palStore.getTranslatedText('SkillTemplate_Apply') }}
               </button>
             </div>
 
             <div class="template-skills template-skills--summary">
               <div v-for="skill in summarySkills(template)" :key="skill.id" class="template-skill" :title="skill.summary">
-                <span v-if="template.Type === 'passive'"
+                <span v-if="template.type === 'passive'"
                   :class="['passive-tier', `passive-tier--${skill.tier}`]" aria-hidden="true"></span>
                 <img v-else-if="skill.element" class="element-icon"
                   :src="palStore.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">
@@ -141,7 +143,7 @@ async function renameTemplate(template) {
             <div v-if="overflowSkills(template).length && isExpanded(template)"
               class="template-skills template-skills--overflow">
               <div v-for="skill in overflowSkills(template)" :key="skill.id" class="template-skill" :title="skill.summary">
-                <span v-if="template.Type === 'passive'"
+                <span v-if="template.type === 'passive'"
                   :class="['passive-tier', `passive-tier--${skill.tier}`]" aria-hidden="true"></span>
                 <img v-else-if="skill.element" class="element-icon"
                   :src="palStore.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">

@@ -9,3 +9,5 @@ from palworld_pal_editor.api.application import application_blueprint
 from palworld_pal_editor.api.research import research_blueprint
 from palworld_pal_editor.api.catalogs import catalogs_blueprint
 from palworld_pal_editor.api.pal_heals import pal_heals_blueprint
+from palworld_pal_editor.api.storages import storages_blueprint
+from palworld_pal_editor.api.templates import templates_blueprint

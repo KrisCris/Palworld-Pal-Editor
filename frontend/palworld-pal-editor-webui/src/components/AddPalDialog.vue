@@ -9,12 +9,14 @@ import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
+import { useTemplatesStore } from '@/stores/templates'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
+const templatesStore = useTemplatesStore()
 const containerLabel = container => formatContainerLabel(
   container,
   palStore.getTranslatedText,
@@ -34,8 +36,8 @@ let previousAriaHidden
 let previewAnchor
 let previewFrame = 0
 
-const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
-  .find(template => template.Id === templateId.value))
+const selectedTemplate = computed(() => templatesStore.palTemplates
+  .find(template => template.templateId === templateId.value))
 const targetContainers = computed(() => {
   const roster = rostersStore.activeRosterKey
   const playerUid = rostersStore.activePlayerUid
@@ -217,13 +219,12 @@ function trapFocus(event) {
 }
 
 async function createPal() {
-  const options = mode.value === 'template'
-    ? { Mode: 'template', TemplateId: templateId.value }
-    : mode.value === 'json'
-      ? { Mode: 'json', PalJson: palJson.value }
-      : { Mode: 'default' }
-  options.TargetStorageKey = targetContainerId.value
-  if (await palStore.addPal(options)) emit('close')
+  if (await palStore.addPal({
+    mode: mode.value,
+    templateId: templateId.value,
+    palJson: palJson.value,
+    targetStorageKey: targetContainerId.value,
+  })) emit('close')
 }
 
 async function saveTemplate() {
@@ -281,23 +282,23 @@ async function deleteTemplate(id) {
               @click="saveTemplate">{{ palStore.getTranslatedText('AddPal_Save') }}</button>
           </div>
 
-          <div v-if="palStore.PAL_TEMPLATES.length" class="template-grid">
-            <article v-for="template in palStore.PAL_TEMPLATES" :key="template.Id"
-              :class="['template-card', { selected: templateId === template.Id }]"
+          <div v-if="templatesStore.palTemplates.length" class="template-grid">
+            <article v-for="template in templatesStore.palTemplates" :key="template.templateId"
+              :class="['template-card', { selected: templateId === template.templateId }]"
               @pointerenter="showTemplatePreview($event, template)" @pointerleave="hideTemplatePreview"
               @focusin="showTemplatePreview($event, template)" @focusout="hideTemplatePreview">
-              <button class="template-select" @click="templateId = template.Id">
+              <button class="template-select" @click="templateId = template.templateId">
                 <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
                   alt="" size="3rem" />
                 <span>
-                  <strong>{{ template.Name }}</strong>
+                  <strong>{{ template.name }}</strong>
                   <small>{{ template.DisplayName }} · Lv. {{ template.Level }}</small>
                   <small>{{ template.CharacterID }}</small>
                 </span>
               </button>
               <button class="template-delete"
-                :aria-label="palStore.getTranslatedText('AddPal_Delete_Template', [template.Name])"
-                @click="deleteTemplate(template.Id)"><UiIcon name="delete" /></button>
+                :aria-label="palStore.getTranslatedText('AddPal_Delete_Template', [template.name])"
+                @click="deleteTemplate(template.templateId)"><UiIcon name="delete" /></button>
             </article>
           </div>
           <p v-else class="empty-state">{{ palStore.getTranslatedText('AddPal_Template_Empty') }}</p>

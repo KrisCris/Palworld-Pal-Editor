@@ -17,6 +17,23 @@ export function getPal(recordKey, options) {
     return request("get", palPath(recordKey), options);
 }
 
+// The Pal exactly as its own storage format writes it: a World record, or a
+// single-entry DPS/Global Palbox array. What comes out here is what
+// `POST /api/storages/{key}/pals` accepts back as a `native-record` source.
+export function getPalNativeRecord(recordKey, options) {
+    return request("get", `${palPath(recordKey)}/native-record`, options);
+}
+
+export function deletePal(recordKey, options) {
+    return request("delete", palPath(recordKey), options);
+}
+
+// No target: the backend picks one, which is what the editor's copy button has
+// always done. The reply names the roster the copy landed in.
+export function duplicatePal(recordKey, options) {
+    return request("post", `${palPath(recordKey)}/duplicates`, options);
+}
+
 // Takes only the fields the backend's allowlist names; anything else is a 400.
 export function patchPal(recordKey, patch, options) {
     return request("patch", palPath(recordKey), { ...options, body: patch });

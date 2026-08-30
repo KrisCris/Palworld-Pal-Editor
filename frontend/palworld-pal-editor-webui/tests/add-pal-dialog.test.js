@@ -19,16 +19,20 @@ globalThis.localStorage = {
 after(closeVueServer);
 
 test("Add Pal dialog exposes default, template, and JSON workflows", async () => {
-  const [{ default: AddPalDialog }, { usePalEditorStore }] = await Promise.all([
+  const [
+    { default: AddPalDialog }, { usePalEditorStore }, { useTemplatesStore },
+  ] = await Promise.all([
     loadVueModule("/src/components/AddPalDialog.vue"),
     loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/templates.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
   const store = usePalEditorStore();
-  store.PAL_TEMPLATES = [{
-    Id: "worker",
-    Name: "Worker",
+  const templates = useTemplatesStore();
+  templates.palTemplates = [{
+    templateId: "worker",
+    name: "Worker",
     DisplayName: "Lamball",
     CharacterID: "SheepBall",
     IconAccessKey: "SheepBall",
@@ -42,6 +46,15 @@ test("Add Pal dialog exposes default, template, and JSON workflows", async () =>
     assert.match(html, new RegExp(`>${tab}<`));
   }
   assert.match(html, /Create Pal/);
+});
+
+test("the add dialog reads templates from the templates store", async () => {
+  const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
+  // The dialog names a template by the id the API gives it, so the create call
+  // can pass it straight back as a `template` source.
+  assert.match(source, /templatesStore\.palTemplates/);
+  assert.match(source, /template\.templateId/);
+  assert.doesNotMatch(source, /PAL_TEMPLATES/);
 });
 
 test("Add Pal dialog uses translated labels in every locale", () => {
@@ -81,7 +94,7 @@ test("Add Pal dialog traps focus and reuses the Pal brief for template previews"
 
 test("Pal templates are cleared when the editor resets or switches backends", async () => {
   const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
-  assert.ok(source.match(/PAL_TEMPLATES\.value = \[\]/g)?.length >= 2);
+  assert.ok(source.match(/templates\.clear\(\)/g)?.length >= 2);
 });
 
 test("Add Pal chooses an explicit capacity-checked container, including bases", async () => {
@@ -89,7 +102,7 @@ test("Add Pal chooses an explicit capacity-checked container, including bases", 
   assert.match(source, /v-model="targetContainerId"/);
   assert.match(source, /container\.Occupied >= container\.Size/);
   assert.match(source, /container\.ContainerKind === 'base'/);
-  assert.match(source, /options\.TargetStorageKey = targetContainerId\.value/);
+  assert.match(source, /targetStorageKey: targetContainerId\.value/);
   assert.match(source, /formatContainerLabel/);
   assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
 });
