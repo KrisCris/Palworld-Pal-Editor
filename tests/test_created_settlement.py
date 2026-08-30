@@ -1,15 +1,14 @@
 """Save-time settlement of Pals created in this session.
 
-The tracked defect: settlement used to run *and consume its own tracker* inside the
-save loop, so a save that failed after the first file write had already applied the
-capture count and paldeck flag to the in-memory player GVAS while forgetting that it
-had. Retrying then wrote a save that under-counted, silently and permanently.
+What a created Pal owes its owner -- a capture count, a paldeck flag, a skill unlock
+-- is folded in at save time and nowhere else, so these are the rules about when
+that happens and to whom. What happens to it when the save itself fails belongs with
+the rest of the failure path, in `test_save_transaction.py`.
 """
 
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
 
 from palworld_pal_editor.core.save_manager import SaveManager
 from palworld_pal_editor.utils import DataProvider
@@ -49,36 +48,6 @@ class CreatedSettlementTests(unittest.TestCase):
             for entry in self.player.PaldeckUnlockFlag or []
         )
 
-    def test_a_failed_save_keeps_the_created_pal_and_its_unsettled_records(self):
-        record = self.manager.add_pal(PLAYER_UID)
-        self.assertIsNotNone(record)
-        self.assertTrue(self.manager.pal_repository.is_created(record))
-        paldeck_key = DataProvider.get_pal_paldeck_record_id(record.pal.CharacterID)
-        self.assertIsNotNone(paldeck_key)
-        before = self.capture_count(paldeck_key)
-        before_unlocked = self.paldeck_unlocked(paldeck_key)
-
-        with tempfile.TemporaryDirectory(prefix="pal-editor-failed-save-") as directory:
-            with patch.object(
-                SaveManager,
-                "_replace_staged_output",
-                side_effect=OSError("target file is locked"),
-            ):
-                self.assertFalse(self.manager.save(directory))
-
-            # The tracking survives, so the retry still has something to settle...
-            self.assertTrue(self.manager.pal_repository.is_created(record))
-            # ...and the settlement it already applied was rolled back, so the retry
-            # counts the capture once rather than twice.
-            self.assertEqual(before, self.capture_count(paldeck_key))
-            self.assertEqual(before_unlocked, self.paldeck_unlocked(paldeck_key))
-
-            self.assertTrue(self.manager.save(directory))
-
-        self.assertEqual(before + 1, self.capture_count(paldeck_key))
-        self.assertTrue(self.paldeck_unlocked(paldeck_key))
-        self.assertFalse(self.manager.pal_repository.is_created(record))
-
     def test_a_successful_save_settles_each_created_pal_exactly_once(self):
         record = self.manager.add_pal(PLAYER_UID)
         self.assertIsNotNone(record)
@@ -94,6 +63,7 @@ class CreatedSettlementTests(unittest.TestCase):
             self.assertTrue(self.manager.save(directory))
 
         self.assertEqual(before + 1, self.capture_count(paldeck_key))
+        self.assertTrue(self.paldeck_unlocked(paldeck_key))
         self.assertEqual([], self.manager.pal_repository.created_records())
 
     def test_a_deleted_pal_stops_being_settled(self):

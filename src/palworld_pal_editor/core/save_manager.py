@@ -1,8 +1,6 @@
 import copy
-from datetime import datetime
 from pathlib import Path
 import re
-import shutil
 import threading
 import traceback
 from typing import Optional
@@ -39,8 +37,13 @@ from palworld_pal_editor.core.pal_storage_adapters import (
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_codec import (
     MAIN_SKIP_PROPERTIES,
-    PAL_STORAGE_CUSTOM_PROPERTIES,
     PLAYER_SKIP_PROPERTIES,
+)
+from palworld_pal_editor.core.save_io import (
+    GLOBAL_STORAGE_NAME,
+    SaveFailed,
+    backup_saves,
+    restore_saves,
 )
 from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
 from palworld_pal_editor.core.group_data import GroupData
@@ -233,136 +236,106 @@ class SaveManager:
             return self._save(file_path)
 
     def _save(self, file_path: str) -> bool:
-        if self.gvas_file is None:
-            LOGGER.error("No gvas_file stored in save manager, aborting")
-            return False
-        if self._save_type is None:
-            LOGGER.warning("_save_type is None, aborting")
-            return False
+        """Write the session to `file_path`, or raise `SaveFailed` having undone it.
 
-        output_path = Path(file_path).resolve() 
+        Nothing is staged and nothing is read back to check itself: producing bytes
+        the game can load is `palworld-save-tools`' job, and a file that decompresses
+        again proves nothing about the save inside it. What does have to hold is that
+        a half-written save never survives, and the backup taken before the first
+        write is what holds it.
 
+        The bytes come from a deepcopy of each live GVAS so that a successful save
+        leaves the session exactly as it was -- still live, still the same objects the
+        open editor is holding -- rather than swapping it for what was serialized.
+        """
+        if self.gvas_file is None or self._save_type is None:
+            raise SaveFailed("No save is loaded")
+
+        output_path = Path(file_path).resolve()
         if not output_path.exists():
-            LOGGER.warning(f"Path does not exist: {output_path}")
-            if output_path.parent.exists():
-                output_path.mkdir(parents=True, exist_ok=True)
-                LOGGER.debug(f"Path {output_path} created")
-            else:
-                LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
-                return False
-            
-        if output_path.exists():
-            BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
-            backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
-            try:
-                if output_path.exists():
-                    LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
-                    shutil.copytree(self.file_path, backup_dir, 
-                                    ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
-                    global_storage_path = output_path.parent / "GlobalPalStorage.sav"
-                    if (
-                        self._global_palbox is not None
-                        and global_storage_path.exists()
-                    ):
-                        global_storage_backup = backup_dir / global_storage_path.name
-                        LOGGER.info(
-                            "Saving Global Pal Storage backup: "
-                            f"source={global_storage_path} "
-                            f"destination={global_storage_backup}"
-                        )
-                        shutil.copy2(global_storage_path, global_storage_backup)
-                else:
-                    LOGGER.info(f"No existing directory to backup: {output_path}")
-            except Exception as e:
-                LOGGER.error(f"Error backing up directory: {e}")
-                return False
+            if not output_path.parent.exists():
+                raise SaveFailed(f"Parent path does not exist: {output_path.parent}")
+            LOGGER.info(f"Creating {output_path}")
+            output_path.mkdir(parents=True, exist_ok=True)
 
-        outputs: list[tuple[Path, bytes, dict]] = []
-        level_data = compress_gvas_to_sav(
-            copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
-            self._save_type,
-        )
-        outputs.append((output_path / "Level.sav", level_data, MAIN_SKIP_PROPERTIES))
-        settled = self._settle_created_records()
-        for player in self.players:
-            if player.PlayerGVAS is None:
-                continue
-            player_gvas, player_save_type = player.PlayerGVAS
-            player_data = compress_gvas_to_sav(
-                copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
-                player_save_type,
-            )
-            outputs.append(
-                (
-                    output_path
-                    / "Players"
-                    / f"{UUID2HexStr(player.PlayerUId)}.sav",
-                    player_data,
-                    PLAYER_SKIP_PROPERTIES,
-                )
-            )
-        dirty_storages = [
-            storage for storage in self._dps_storages.values() if storage.dirty
-        ]
-        if self._global_palbox is not None and self._global_palbox.dirty:
-            dirty_storages.append(self._global_palbox)
-        for storage in dirty_storages:
-            target = (
-                output_path.parent / "GlobalPalStorage.sav"
-                if storage.kind == "global_palbox"
-                else output_path / "Players" / storage.path.name
-            )
-            outputs.append(
-                (target, storage.serialize(), PAL_STORAGE_CUSTOM_PROPERTIES)
-            )
-
-        staged: list[tuple[Path, Path]] = []
-        backups: dict[Path, Path | None] = {}
-        replaced: list[Path] = []
-        transaction_id = uuid.uuid4().hex
+        global_storage_path = output_path.parent / GLOBAL_STORAGE_NAME
         try:
-            for target, sav_data, custom_properties in outputs:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                staged.append(
-                    (target, self._staged_output(target, sav_data, custom_properties))
+            backup_dir = backup_saves(output_path, global_storage_path)
+        except Exception as error:
+            # Nothing has been written yet, so there is nothing to undo -- but there
+            # is also no safety net, and that is reason enough not to start.
+            raise SaveFailed(f"Could not back up {output_path}: {error}") from error
+
+        settled: dict[str, dict] = {}
+        created: list[Path] = []
+        dirty_storages: list[PalStorageSaveFile] = []
+        try:
+            settled = self._settle_created_records()
+            outputs: list[tuple[Path, bytes]] = [
+                (
+                    output_path / "Level.sav",
+                    compress_gvas_to_sav(
+                        copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
+                        self._save_type,
+                    ),
                 )
-            for target, _ in staged:
-                if target.exists():
-                    backup = target.with_name(
-                        f".{target.name}.{transaction_id}.bak"
+            ]
+            for player in self.players:
+                if player.PlayerGVAS is None:
+                    continue
+                player_gvas, player_save_type = player.PlayerGVAS
+                outputs.append(
+                    (
+                        output_path
+                        / "Players"
+                        / f"{UUID2HexStr(player.PlayerUId)}.sav",
+                        compress_gvas_to_sav(
+                            copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
+                            player_save_type,
+                        ),
                     )
-                    shutil.copy2(target, backup)
-                    backups[target] = backup
-                else:
-                    backups[target] = None
-            for target, temp in staged:
-                self._replace_staged_output(temp, target)
-                replaced.append(target)
-                LOGGER.info(f"Saved verified output: file_path={target}")
-        except Exception:
-            LOGGER.error(
-                f"Save transaction failed; restoring outputs: {traceback.format_exc()}"
-            )
-            for target in reversed(replaced):
-                backup = backups.get(target)
-                try:
-                    if backup is None:
-                        target.unlink(missing_ok=True)
-                    else:
-                        shutil.copy2(backup, target)
-                    LOGGER.info(f"Restored output: file_path={target}")
-                except Exception:
-                    LOGGER.critical(
-                        f"Failed restoring output {target}: {traceback.format_exc()}"
-                    )
+                )
+            dirty_storages = [
+                storage for storage in self._dps_storages.values() if storage.dirty
+            ]
+            if self._global_palbox is not None and self._global_palbox.dirty:
+                dirty_storages.append(self._global_palbox)
+            for storage in dirty_storages:
+                target = (
+                    global_storage_path
+                    if storage.kind == "global_palbox"
+                    else output_path / "Players" / storage.path.name
+                )
+                outputs.append((target, storage.serialize()))
+
+            # Files this save is about to bring into existence. Putting a backup back
+            # cannot undo those, so undoing them means deleting them.
+            created = [target for target, _ in outputs if not target.exists()]
+            for target, sav_data in outputs:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(sav_data)
+                LOGGER.info(f"Saved {target}")
+        except Exception as error:
+            LOGGER.error(f"Save failed: {traceback.format_exc()}")
+            restored = True
+            try:
+                restore_saves(backup_dir, output_path, created)
+            except Exception:
+                restored = False
+                LOGGER.critical(
+                    f"Could not put {output_path} back the way it was. The save files "
+                    f"there are the half-written ones, and {backup_dir} is now the "
+                    f"only complete copy: {traceback.format_exc()}"
+                )
+            # The settlement was folded in for a save that did not happen, so the
+            # players go back to what they were and the next attempt settles once.
             self._restore_settled_records(settled)
-            return False
-        finally:
-            for _, temp in staged:
-                temp.unlink(missing_ok=True)
-            for backup in backups.values():
-                if backup is not None:
-                    backup.unlink(missing_ok=True)
+            raise SaveFailed(
+                f"Could not save to {output_path}: {error}",
+                backup_path=backup_dir,
+                restored=restored,
+            ) from error
+
         for storage in dirty_storages:
             storage.dirty = False
         # Every output file is on disk, so the settlement they contain is durable,
@@ -405,26 +378,6 @@ class SaveManager:
             if player is not None:
                 player.restore_capture_records(snapshot)
 
-    @staticmethod
-    def _staged_output(
-        path: Path,
-        sav_data: bytes,
-        custom_properties: dict,
-    ) -> Path:
-        temp = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
-        try:
-            temp.write_bytes(sav_data)
-            raw_gvas, _ = decompress_sav_to_gvas(temp.read_bytes())
-            GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, custom_properties)
-            return temp
-        except Exception:
-            temp.unlink(missing_ok=True)
-            raise
-
-    @staticmethod
-    def _replace_staged_output(temp: Path, target: Path) -> None:
-        temp.replace(target)
-    
     def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
         player_path: Path = self.file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
         LOGGER.info(f"Loading Player SAV: {player_path}")
@@ -436,33 +389,7 @@ class SaveManager:
         raw_gvas, compression_times = decompress_sav_to_gvas(player_data)
         player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PLAYER_SKIP_PROPERTIES)
         return player_gvas_file, compression_times
-    
-    
-    def save_player_sav(self, player_entity: PlayerEntity, save_path: Optional[Path] = None) -> bool:
-        if player_entity.PlayerGVAS is None:
-            return False
 
-        gvas_file, compression_times = player_entity.PlayerGVAS
-        output_path = (save_path or self.file_path) / "Players"
-        if not output_path.exists() and output_path.parent.exists():
-            LOGGER.warning(f"Player path does not exist: {output_path}")
-            output_path.mkdir(parents=True, exist_ok=True)
-            LOGGER.info(f"Player path {output_path} created")
-
-        player_path: Path = output_path / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
-
-        LOGGER.info(f"Compressing Player {player_entity} GVAS file")
-        player_gvas_file = copy.deepcopy(gvas_file)
-        sav_data = compress_gvas_to_sav(
-            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times
-        )
-
-        LOGGER.info(f"Saving to {player_path}")
-        with player_path.open("wb") as file:
-            file.write(sav_data)
-        LOGGER.info(f"Saved to {player_path}")
-        return True
-    
     def _load_players(self) -> None:
         """Create every PlayerEntity from the World save's character array.
 
@@ -612,7 +539,7 @@ class SaveManager:
                 self.load_warnings.append(warning)
                 LOGGER.warning(warning)
 
-        gps_path = self.file_path.parent / "GlobalPalStorage.sav"
+        gps_path = self.file_path.parent / GLOBAL_STORAGE_NAME
         if not gps_path.exists():
             return
         try:

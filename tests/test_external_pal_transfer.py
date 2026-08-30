@@ -281,37 +281,6 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         assert str(record.pal.InstanceId) == instance_id
 
 
-def test_save_transaction_restores_level_dps_and_global_on_replace_failure(
-    tmp_path, monkeypatch
-):
-    manager = open_copied_world(tmp_path, with_global=True)
-    manager.create_pal(LOSSY_UID, f"dps:{LOSSY_UID}")
-    manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
-    level_path = manager.file_path / "Level.sav"
-    dps_path = manager._dps_storages[f"dps:{LOSSY_UID}"].path
-    global_path = manager._global_palbox.path
-    original = {
-        level_path: level_path.read_bytes(),
-        dps_path: dps_path.read_bytes(),
-        global_path: global_path.read_bytes(),
-    }
-    replace_count = 0
-    real_replace = manager._replace_staged_output
-
-    def fail_second_replace(temp, target):
-        nonlocal replace_count
-        replace_count += 1
-        if replace_count == 2:
-            raise OSError("injected replacement failure")
-        real_replace(temp, target)
-
-    monkeypatch.setattr(manager, "_replace_staged_output", fail_second_replace)
-
-    assert manager.save(str(manager.file_path)) is False
-    assert replace_count == 2
-    assert {path: path.read_bytes() for path in original} == original
-
-
 def test_base_worker_creation_targets_and_create(tmp_path):
     manager = open_copied_world(tmp_path)
     base_targets = manager.creation_targets("PAL_BASE_WORKER_BTN")

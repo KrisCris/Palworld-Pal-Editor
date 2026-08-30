@@ -7,12 +7,14 @@ the save it loads is the checked-in fixture.
 """
 
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.config import Config
+from palworld_pal_editor.core.save_io import SaveFailed
 from palworld_pal_editor.core.save_manager import SaveManager
 from palworld_pal_editor.webui import app
 
@@ -77,6 +79,46 @@ class RestContractTests(unittest.TestCase):
         self.assertTrue(body["loaded"])
         self.assertEqual(SAVE.resolve(), Path(body["path"]))
         self.assertEqual(body, self.get("/api/session").get_json())
+
+    def test_saving_writes_where_it_is_told_without_moving_the_session(self):
+        """`POST /api/session/saves` is one save, not a change of session.
+
+        A save-as answers with the path it wrote and leaves the session pointing at
+        the save that is open, so the next reload opens that one and not the copy.
+        """
+        loaded = self.get("/api/session").get_json()["path"]
+
+        with tempfile.TemporaryDirectory(prefix="pal-editor-rest-save-") as directory:
+            response = self.client.post(
+                "/api/session/saves", json={"path": directory}, headers=self.headers
+            )
+
+            self.assertEqual(201, response.status_code)
+            self.assertEqual({"path": directory}, response.get_json())
+            self.assertTrue((Path(directory) / "Level.sav").exists())
+
+        self.assertEqual(loaded, self.get("/api/session").get_json()["path"])
+
+    def test_a_save_that_failed_says_where_the_untouched_copy_is(self):
+        """The one thing the error envelope has to carry that a message cannot.
+
+        When the restore failed too, that backup folder is the only complete copy of
+        the save left, so the code alone is not enough for the frontend to say what
+        the user must do next.
+        """
+        failure = SaveFailed(
+            "disk full", backup_path=Path("/backups/2026-08-30"), restored=False
+        )
+        with patch.object(SaveManager, "save", side_effect=failure):
+            response = self.client.post(
+                "/api/session/saves", json={"path": "/somewhere"}, headers=self.headers
+            )
+
+        self.assertEqual(400, response.status_code)
+        error = response.get_json()["error"]
+        self.assertEqual("SAVE_FAILED", error["code"])
+        self.assertEqual(str(Path("/backups/2026-08-30")), error["details"]["backupPath"])
+        self.assertFalse(error["details"]["restored"])
 
     def test_players_are_listed_and_fetched_by_uid(self):
         listed = self.get("/api/players").get_json()
