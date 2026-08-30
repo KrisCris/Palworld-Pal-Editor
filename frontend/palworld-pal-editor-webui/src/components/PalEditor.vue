@@ -6,17 +6,19 @@ import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
-import { formatContainerLabel } from '@/components/modules/pal-container-label'
+import { formatStorageLabel } from '@/components/modules/pal-storage-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
+import { useStoragesStore } from '@/stores/storages'
 const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
+const storagesStore = useStoragesStore()
 // The Pal this page edits. It is the object in the Pal cache, so the `v-model`
 // bindings below write to the same place the list reads.
 const pal = computed(() => palsStore.selectedPal)
@@ -37,15 +39,11 @@ const skinSelect = ref(null)
 // A record only keeps a StorageKey while it really occupies the slot it records,
 // so a missing one is exactly the location the move dialog cannot work from.
 const moveBlocked = computed(() => pal.value.IsExpeditionPal || !pal.value.storageKey)
-// A Pal is not a container, but it says which one it is in. This is the label of
-// that container, built from the Pal's own account of it.
-const externalContainerLabel = computed(() => formatContainerLabel(
-  {
-    ContainerKind: pal.value.containerKind,
-    ContainerLabel: pal.value.containerLabel,
-    ContainerId: pal.value.ContainerId,
-    OwnerName: pal.value.OwnerName,
-  },
+// A Pal is not a storage, but it says which one it is standing in. A Pal with no
+// storage key is not in the slot it records for itself, and the directory has no
+// entry for that -- which is the anomaly label.
+const externalContainerLabel = computed(() => formatStorageLabel(
+  storagesStore.storage(pal.value.storageKey),
   palStore.getTranslatedText,
 ))
 const ownerLabel = computed(() => pal.value.OwnerName

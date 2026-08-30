@@ -23,12 +23,14 @@ const { usePalsStore } = await import("../src/stores/pals.js");
 const { usePlayersStore } = await import("../src/stores/players.js");
 const { useResearchStore } = await import("../src/stores/research.js");
 const { useRostersStore } = await import("../src/stores/rosters.js");
+const { useStoragesStore } = await import("../src/stores/storages.js");
 let appState;
 let session;
 let pals;
 let players;
 let research;
 let rosters;
+let storages;
 
 const reply = data => ({ data: { status: 0, data } });
 // What `GET /api/app-config` answers, for the tests that mock axios themselves
@@ -63,6 +65,7 @@ function newStore({ preserveStorage = false } = {}) {
     players = usePlayersStore();
     research = useResearchStore();
     rosters = useRostersStore();
+    storages = useStoragesStore();
     return usePalEditorStore();
 }
 
@@ -123,7 +126,7 @@ function mockBackend({
     globalPalbox = false,
     players: playerRows = [],
     pals: palRows = [],
-    containers = [],
+    storageRows = [],
     locale = "en",
     locales = { en: "English" },
 } = {}) {
@@ -176,7 +179,7 @@ function mockBackend({
         }
         if (url.endsWith("/api/rosters")) return resource(rosterEntries);
         if (url.endsWith("/api/players")) return resource(playerRows);
-        if (url.endsWith("/api/pal/containers")) return reply(containers);
+        if (url.endsWith("/api/storages")) return resource(storageRows);
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
         if (rosterPals) return resource(rows);
         const player = url.match(/\/api\/players\/(.+)$/);
@@ -337,7 +340,7 @@ test("a roster refresh keeps the detail the editor is showing", async () => {
     assert.deepEqual(pals.selectedPal.PassiveSkillList, ["Legend"]);
 });
 
-test("GPS conflicts lock updates to the matching Pal's actual container", async () => {
+test("an identity conflict is answered by overwriting the Pal the backend named", async () => {
     const store = newStore();
     pals.applyDetail(detail({
         InstanceId: "gps-pal",
@@ -345,32 +348,63 @@ test("GPS conflicts lock updates to the matching Pal's actual container", async 
         storageKind: "global_palbox",
     }));
     pals.selectedRecordKey = "gps:0";
-    store.PAL_CONTAINERS = [{
-        StorageKey: "world-container:palbox",
-        StorageKind: "world",
-        ContainerKind: "storage",
-    }];
+    rosters.activeRosterKey = "player:player-1";
+    axios.get = async url => {
+        if (url.includes("/pal-transfer-capability")) {
+            return resource({
+                allowed: true,
+                effect: "update-existing",
+                reason: null,
+                resultRosterKey: "player:player-1",
+            });
+        }
+        if (url.includes("/api/pals/")) return resource(detail({ InstanceId: "pal-id" }));
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    await store.loadMoveTargets(["world-container:palbox"]);
+
+    const sent = [];
     axios.post = async (url, payload) => {
-        assert.match(url, /\/api\/pal\/transfer$/);
-        assert.equal(payload.TargetStorageKey, "world-container:palbox");
-        return {
+        assert.equal(url, "/api/pal-transfers");
+        sent.push(payload);
+        if (sent.length > 1) return resource(operation({ InstanceId: "pal-id" }));
+        const error = new Error("conflict");
+        error.response = {
+            status: 409,
             data: {
-                status: 1,
-                msg: "This genetic identity already exists.",
-                data: {
-                    Code: "PAL_IDENTITY_CONFLICT",
-                    LockedTarget: "world:pal-id",
-                    Candidates: [{
-                        RecordKey: "world:pal-id",
-                        StorageKey: "world-container:party",
-                    }],
+                error: {
+                    code: "PAL_IDENTITY_CONFLICT",
+                    message: "This identity already exists in the destination",
+                    details: {
+                        incoming: {},
+                        existing: {},
+                        fieldChanges: {},
+                        candidates: [{
+                            recordKey: "world:pal-id",
+                            storageKey: "world-container:party",
+                            SlotIndex: 2,
+                            label: "Player One · Party",
+                        }],
+                    },
                 },
             },
         };
+        throw error;
     };
 
+    // The move is not an error: the backend asked a question, and the dialog is
+    // now showing which Pal an overwrite would land on.
     assert.equal(await store.movePal("world-container:palbox"), false);
-    assert.equal(store.PAL_TRANSFER_CONFLICT.TargetStorageKey, "world-container:party");
+    assert.equal(storages.conflictTarget.recordKey, "world:pal-id");
+
+    assert.equal(await store.updateConflictingPal(), true);
+
+    // The overwrite names the Pal the user was shown, in the slot it was shown
+    // in. If the save has moved on, the backend rejects it rather than writing
+    // over whatever is sitting there now.
+    assert.deepEqual(sent[1].conflictResolution, {
+        expectedTarget: { recordKey: "world:pal-id", storageKey: "world-container:party" },
+    });
 });
 
 test("a failed probe preserves the active backend's ephemeral token", async () => {
@@ -849,11 +883,16 @@ test("language changes refresh only the active roster and re-fetch others lazily
     rosters.activeRosterKey = "player:player-1";
 
     const requestedRosters = [];
+    let storageReads = 0;
     axios.patch = async url => {
         assert.equal(url, "/api/app-config");
         return resource(appConfigFor("C:/save"));
     };
     axios.get = async url => {
+        if (url.endsWith("/api/storages")) {
+            storageReads += 1;
+            return resource([]);
+        }
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
         if (rosterPals) {
             const rosterKey = decodeURIComponent(rosterPals[1]);
@@ -874,6 +913,9 @@ test("language changes refresh only the active roster and re-fetch others lazily
     // Only the roster currently being viewed is refreshed eagerly; every other
     // roster's keys are dropped instead of being fetched all at once.
     assert.deepEqual(requestedRosters, ["player:player-1"]);
+    // The storage directory is re-read too: the game's own words for the Global
+    // Palbox and the Dimensional Pal Storage come from the backend's locale.
+    assert.equal(storageReads, 1);
 
     // A different roster re-fetches in the new language once it is selected.
     await store.selectPlayer("global-palbox");
@@ -1136,7 +1178,7 @@ test("deleting the last Pal falls through to the player editor instead of a blan
         }));
     };
     axios.get = async url => {
-        if (url.endsWith("/api/pal/containers")) return reply([]);
+        if (url.endsWith("/api/storages")) return resource([]);
         if (url.match(/\/api\/rosters\/([^/]+)\/pals$/)) return resource([]);
         throw new Error(`Unexpected GET ${url}`);
     };
@@ -1152,16 +1194,13 @@ test("deleting the last Pal falls through to the player editor instead of a blan
 test("adding a Pal from pasted JSON sends the record and follows the reply to its roster", async () => {
     const store = newStore();
     players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
-    store.PAL_CONTAINERS = [
-        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
-    ];
     rosters.activeRosterKey = "player:player-1";
     rosters.recordKeysByRoster.set("player:player-1", []);
 
     let sent;
     const requestedRosters = [];
     axios.get = async url => {
-        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        if (url.endsWith("/api/storages")) return resource([]);
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
         if (rosterPals) {
             requestedRosters.push(decodeURIComponent(rosterPals[1]));
@@ -1221,7 +1260,7 @@ test("duplicating a Pal names no target and selects the copy", async () => {
 
     let sent = "unset";
     axios.get = async url => {
-        if (url.endsWith("/api/pal/containers")) return reply([]);
+        if (url.endsWith("/api/storages")) return resource([]);
         if (url.match(/\/api\/rosters\/([^/]+)\/pals$/)) {
             return resource([summary({ InstanceId: "pal-1" }), summary({ InstanceId: "pal-2" })]);
         }
@@ -1275,11 +1314,7 @@ test("applying a skill template answers with the Pal and is not read back", asyn
 test("exporting a Pal to the Global Palbox auto-jumps to its new location and refreshes only affected rosters", async () => {
     const store = newStore();
     players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
-    const targetStorageKey = "gps-global";
-    store.PAL_CONTAINERS = [
-        { StorageKey: targetStorageKey, StorageKind: "global_palbox", ContainerKind: "global" },
-        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
-    ];
+    const targetStorageKey = "global-palbox";
     rosters.activeRosterKey = "player:player-1";
     rosters.recordKeysByRoster.set("player:player-1", ["world:pal-1"]);
     pals.applyDetail(detail({ InstanceId: "pal-1", OwnerPlayerUId: "player-1" }));
@@ -1287,7 +1322,17 @@ test("exporting a Pal to the Global Palbox auto-jumps to its new location and re
 
     const requestedRosters = [];
     axios.get = async url => {
-        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        if (url.endsWith("/api/storages")) return resource([]);
+        // A copy into the Global Palbox, and the list the copy will be in. The
+        // client is told both; it works neither out from the target itself.
+        if (url.includes("/pal-transfer-capability")) {
+            return resource({
+                allowed: true,
+                effect: "replicate",
+                reason: null,
+                resultRosterKey: "global-palbox",
+            });
+        }
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
         if (rosterPals) {
             const rosterKey = decodeURIComponent(rosterPals[1]);
@@ -1301,13 +1346,24 @@ test("exporting a Pal to the Global Palbox auto-jumps to its new location and re
         }
         throw new Error(`Unexpected GET ${url}`);
     };
-    axios.post = async url => {
-        if (url.endsWith("/api/pal/transfer")) return reply({ RecordKey: "gps:pal-1" });
-        throw new Error(`Unexpected POST ${url}`);
+    axios.post = async (url, body) => {
+        assert.equal(url, "/api/pal-transfers");
+        // The request says only where the Pal should end up. That it is a copy
+        // rather than a move is the backend's decision, and it already told the
+        // dialog which one it would be.
+        assert.deepEqual(body, {
+            sourceRecordKey: "world:pal-1",
+            targetStorageKey: "global-palbox",
+        });
+        return resource(operation({ InstanceId: "pal-1", recordKey: "gps:pal-1" }, {
+            affectedRosterKeys: ["player:player-1", "global-palbox"],
+            affectedStorageKeys: ["world-container:palbox", "global-palbox"],
+        }));
     };
 
+    await store.loadMoveTargets([targetStorageKey]);
     assert.equal(await store.movePal(targetStorageKey), true);
-    // Only the source roster and the Global Palbox are refreshed, not every player.
+    // Only the rosters the reply named are refreshed, not every player.
     assert.deepEqual(requestedRosters, ["player:player-1", "global-palbox"]);
     // Auto-jumped to the Global Palbox and selected the newly exported Pal.
     assert.equal(rosters.activeRosterKey, "global-palbox");
@@ -1317,26 +1373,34 @@ test("exporting a Pal to the Global Palbox auto-jumps to its new location and re
 test("resolving an update conflict auto-jumps to the updated Pal's new location", async () => {
     const store = newStore();
     players.playersByUid.set("player-1", { InstanceId: "player-1", NickName: "Player One" });
-    store.PAL_CONTAINERS = [
-        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
-    ];
     // Looking at the Global Palbox, updating a Pal into player-1's storage.
     rosters.activeRosterKey = "global-palbox";
     rosters.recordKeysByRoster.set("global-palbox", []);
-    store.PAL_TRANSFER_CONFLICT = {
-        SourceRecordKey: "gps:0",
-        TargetStorageKey: "world-container:palbox",
-        LockedTarget: "world:pal-1",
-        Candidates: [{
-            RecordKey: "world:pal-1",
-            StorageKind: "world",
-            OwnerPlayerUId: "player-1",
+    storages.conflict = {
+        incoming: {},
+        existing: {},
+        fieldChanges: {},
+        candidates: [{
+            recordKey: "world:pal-1",
+            storageKey: "world-container:palbox",
+            SlotIndex: 0,
+            label: "Player One · Palbox",
         }],
+        sourceRecordKey: "gps:0",
+        targetStorageKey: "world-container:palbox",
     };
 
     const requestedRosters = [];
     axios.get = async url => {
-        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        if (url.endsWith("/api/storages")) return resource([]);
+        if (url.includes("/pal-transfer-capability")) {
+            return resource({
+                allowed: true,
+                effect: "update-existing",
+                reason: null,
+                resultRosterKey: "player:player-1",
+            });
+        }
         const rosterPals = url.match(/\/api\/rosters\/([^/]+)\/pals$/);
         if (rosterPals) {
             const rosterKey = decodeURIComponent(rosterPals[1]);
@@ -1349,10 +1413,15 @@ test("resolving an update conflict auto-jumps to the updated Pal's new location"
         throw new Error(`Unexpected GET ${url}`);
     };
     axios.post = async url => {
-        if (url.endsWith("/api/pal/transfer")) return reply(null);
-        throw new Error(`Unexpected POST ${url}`);
+        assert.equal(url, "/api/pal-transfers");
+        return resource(operation({ InstanceId: "pal-1" }, {
+            deletedRecordKeys: ["gps:0"],
+            affectedRosterKeys: ["global-palbox", "player:player-1"],
+            affectedStorageKeys: ["world-container:palbox"],
+        }));
     };
 
+    await store.loadMoveTargets(["world-container:palbox"]);
     assert.equal(await store.updateConflictingPal(), true);
     // The affected rosters are refreshed (active + target), not every player.
     assert.deepEqual(requestedRosters, ["global-palbox", "player:player-1"]);

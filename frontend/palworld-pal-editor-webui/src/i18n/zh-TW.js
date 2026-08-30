@@ -389,6 +389,7 @@ export default {
     Editor_Move_No_Containers: "此分組中沒有容器。",
     Editor_Move_Reason_Current: "目前容器",
     Editor_Move_Reason_Full: "容器已滿",
+    Editor_Move_Reason_Duplicate: "該容器中已有此帕魯",
     Editor_Move_Reason_Unsafe: "無法安全修改此容器",
     Editor_Move_Reason_DifferentGuild: "容器屬於其他公會",
     Editor_Move_Reason_OwnerRequired: "請先把基地帕魯移動給一名玩家",

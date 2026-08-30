@@ -252,6 +252,7 @@ export default {
     Editor_Move_No_Containers: "No containers in this group.",
     Editor_Move_Reason_Current: "Current container",
     Editor_Move_Reason_Full: "Container is full",
+    Editor_Move_Reason_Duplicate: "Container already has this Pal",
     Editor_Move_Reason_Unsafe: "Container cannot be modified safely",
     Editor_Move_Reason_DifferentGuild: "Container belongs to another guild",
     Editor_Move_Reason_OwnerRequired: "Move this base Pal to a player first",

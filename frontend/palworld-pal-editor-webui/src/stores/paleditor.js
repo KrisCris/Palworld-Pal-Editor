@@ -22,13 +22,9 @@ import { useCatalogsStore } from "./catalogs.js";
 import { usePalsStore } from "./pals.js";
 import { useResearchStore } from "./research.js";
 import { usePlayersStore } from "./players.js";
-import {
-    BASE_ROSTER_KEY,
-    GLOBAL_PALBOX_ROSTER_KEY,
-    playerRosterKey,
-    useRostersStore,
-} from "./rosters.js";
+import { BASE_ROSTER_KEY, useRostersStore } from "./rosters.js";
 import { useSessionStore } from "./session.js";
+import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
 
 export const backendErrorDetails = error => {
@@ -153,10 +149,11 @@ export function specialTypeKeys(pal = {}) {
 
 export const usePalEditorStore = defineStore("paleditor", () => {
     // What is left here after S1c: the app shell. Messages, auth, the backend
-    // connection, the static catalogs, templates, containers and the write
-    // operations that still speak the pre-REST routes. The save itself lives in
-    // `stores/session`, and its Pals, players and rosters in the three stores
-    // below -- this store reads them, and nothing reads back into it.
+    // connection, the static catalogs, templates and the choreography around the
+    // writes -- which list to open, which Pal to select, what to say when one
+    // fails. The save itself lives in `stores/session`, and its Pals, players,
+    // rosters and storages in the stores below -- this store reads them, and
+    // nothing reads back into it.
     const session = useSessionStore();
     const app = useAppStore();
     const catalogs = useCatalogsStore();
@@ -164,6 +161,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const research = useResearchStore();
     const players = usePlayersStore();
     const rosters = useRostersStore();
+    const storages = useStoragesStore();
     const templates = useTemplatesStore();
 
     // Spec §8.8: every operation the UI can start holds the interaction gate for
@@ -185,9 +183,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const MAX_SUITABILITY_LEVEL = 10;
     const MAX_EQUIP_WAZA = 3;
 
-    const PAL_CONTAINERS = ref([]);
-    const PAL_TRANSFER_CONFLICT = ref(null);
-
     // flags
     const SHOW_DONATE_FLAG = ref(false);
     const UPDATE_PAL_RESELECT_CTR = ref(0);
@@ -195,9 +190,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
     // A base camp is worth listing even when nobody works in it yet, so the base
-    // roster button follows the containers as well as the roster listing.
-    const HAS_WORKING_PAL_FLAG = computed(() => rosters.hasBaseRoster
-        || PAL_CONTAINERS.value.some(container => container.ContainerKind === "base"));
+    // roster button follows the storages as well as the roster listing.
+    const HAS_WORKING_PAL_FLAG = computed(
+        () => rosters.hasBaseRoster || storages.hasBaseStorage,
+    );
 
     const PAL_PASSIVE_SELECTED_ITEM = ref("");
     const PAL_ACTIVE_SELECTED_ITEM = ref("");
@@ -657,6 +653,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 try {
                     if (activeRoster) await rosters.loadRosterPals(activeRoster);
                     if (pals.selectedRecordKey) await pals.loadDetail(pals.selectedRecordKey);
+                    // Storage names carry the game's own words for the Global
+                    // Palbox and the Dimensional Pal Storage, which the backend
+                    // answers in the language it was just told about.
+                    await storages.load();
                 } catch (error) {
                     reportStartupFailure(error);
                     return false;
@@ -691,8 +691,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_PASSIVE_SELECTED_ITEM.value = "";
         PAL_ACTIVE_SELECTED_ITEM.value = "";
         templates.clear();
-        PAL_CONTAINERS.value = [];
-        PAL_TRANSFER_CONFLICT.value = null;
+        storages.clear();
         research.clear();
 
         if (updateAppState) {
@@ -832,41 +831,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         try {
             if (!await rosters.loadRosters()) return false;
             if (!await players.loadPlayers()) return false;
+            if (!await storages.load()) return false;
         } catch (error) {
             reportStartupFailure(error);
             return false;
         }
 
-        // Containers are still the pre-REST registry; `GET /api/storages` and
-        // `stores/storages` are S4's.
-        const containers = await GET("/api/pal/containers");
-        if (containers === false) return false;
-        if (containers.status == 2) {
-            requireAuth("AuthView_Session_Expired");
-            return false;
-        }
-        if (containers.status != 0) {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [containers.msg]));
-            return false;
-        }
-        PAL_CONTAINERS.value = containers.data || [];
-
         if (!players.players.length && !HAS_WORKING_PAL_FLAG.value) {
             showToast("Message_No_Player");
         }
         return true;
-    }
-
-    async function fetchPalContainers() {
-        const response = await GET("/api/pal/containers");
-        if (response === false) return false;
-        if (response.status == 0) {
-            PAL_CONTAINERS.value = response.data || [];
-            return true;
-        }
-        if (response.status == 2) requireAuth("AuthView_Session_Expired");
-        else reportOperationError("Operation_Load_Pals", response);
-        return false;
     }
 
     async function sorryandfuckyou() {
@@ -1247,7 +1221,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const recordKey = pals.selectedRecordKey;
         const successor = nextVisibleRecordKey(recordKey);
         try {
-            await refreshStorages(await pals.remove(recordKey));
+            await pals.remove(recordKey);
         } catch (error) {
             reportApiFailure(error, "Operation_Delete_Pal");
             return false;
@@ -1256,136 +1230,89 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return true;
     }
 
-    // The container registry still lives here rather than in `stores/storages`,
-    // so the half of the operation result that names storages is consumed here
-    // too. S4b moves both together.
-    async function refreshStorages(result) {
-        if (result.affectedStorageKeys.length) await fetchPalContainers();
-        return result;
-    }
-
-    // Refresh only the rosters an operation touched. Everything else keeps its
-    // keys and is re-read by `selectPlayer` the next time it is opened.
-    async function refreshRosters(rosterKeys) {
-        await fetchPalContainers();
-        const affected = new Set((rosterKeys || [rosters.activeRosterKey]).filter(Boolean));
+    // Which targets the move dialog may offer for the Pal on screen. One request
+    // per target, for the group being looked at: whether a Pal may go somewhere
+    // is the backend's answer about that pair, not something a storage or a
+    // storage kind can be asked on its own (spec §8.2).
+    async function loadMoveTargets(storageKeys) {
         try {
-            for (const rosterKey of affected) await rosters.loadRosterPals(rosterKey);
+            return await storages.loadCapabilities(pals.selectedRecordKey, storageKeys);
         } catch (error) {
-            reportApiFailure(error, "Operation_Load_Pals");
+            reportApiFailure(error, "Operation_Move_Pal");
             return false;
         }
-        return true;
     }
 
-    // Which list a Pal ends up in once it reaches this container. A base camp and
-    // the Global Palbox are places; everywhere else the list is a player's, and
-    // which player that is depends on the operation.
-    function rosterKeyForContainer(container, ownerUid) {
-        if (container?.ContainerKind === "base") return BASE_ROSTER_KEY;
-        if (container?.StorageKind === "global_palbox") return GLOBAL_PALBOX_ROSTER_KEY;
-        return ownerUid ? playerRosterKey(ownerUid) : null;
-    }
-
-    async function movePal(targetContainerId) {
-        const recordKey = pals.selectedRecordKey;
-        if (!recordKey || !targetContainerId) return false;
-        const pal = pals.selectedPal;
-        const target = PAL_CONTAINERS.value.find(
-            container => container.StorageKey === targetContainerId || container.ContainerId === targetContainerId
-        );
-        PAL_TRANSFER_CONFLICT.value = null;
-        const response = await POST("/api/pal/transfer", {
-            SourceRecordKey: recordKey,
-            TargetStorageKey: target?.StorageKey || targetContainerId,
-            Action: target?.StorageKind === "global_palbox" || pal?.storageKind === "global_palbox" ? "clone" : "move",
-        });
-        if (response === false) return false;
-        if (response.status != 0) {
-            if (response.status == 2) requireAuth("AuthView_Session_Expired");
-            else if (response.data?.Code === "PAL_IDENTITY_CONFLICT") {
-                const lockedTarget = response.data.Candidates?.find(
-                    candidate => candidate.RecordKey === response.data.LockedTarget,
-                );
-                PAL_TRANSFER_CONFLICT.value = {
-                    ...response.data,
-                    SourceRecordKey: recordKey,
-                    TargetStorageKey: lockedTarget?.StorageKey
-                        || target?.StorageKey
-                        || targetContainerId,
-                };
-            }
-            else reportOperationError("Operation_Move_Pal", response);
+    // Every transfer ends the same way: the lists the reply named are already
+    // refreshed, so what is left is opening the list the Pal is now in and
+    // showing it there.
+    async function followTransfer(result, rosterKey) {
+        if (rosterKey !== rosters.activeRosterKey && !await selectPlayer(rosterKey)) {
             return false;
         }
-        const sourceRoster = rosters.activeRosterKey;
-        // A DPS holds Pals its owner never owned, and the backend files those by
-        // the Pal's owner, not the storage's.
-        const targetRoster = rosterKeyForContainer(target, target?.StorageKind === "dps"
-            ? pal?.OwnerPlayerUId
-            : target?.OwnerPlayerUId);
-        await refreshRosters([sourceRoster, targetRoster]);
-        if (targetRoster) {
-            await selectPlayer(targetRoster);
-            await selectPal(response.data.RecordKey);
+        return selectPal(result.resultRecord.recordKey);
+    }
+
+    async function movePal(targetStorageKey) {
+        // Read before the move: this is the answer the user was shown, and it
+        // names the list the Pal is about to be in.
+        const capability = storages.capability(targetStorageKey);
+        let result;
+        try {
+            result = await storages.movePal(targetStorageKey);
+        } catch (error) {
+            reportApiFailure(error, "Operation_Move_Pal");
+            return false;
         }
+        // The backend answered with a question rather than a result: the dialog
+        // is now showing which existing Pal an overwrite would land on.
+        if (result === null) return false;
+        await followTransfer(result, capability.resultRosterKey);
         showToast("Message_Pal_Moved", "success");
         return true;
     }
 
-    // The roster a conflict candidate is sitting in. Candidates come from the
-    // pre-REST transfer route, so they still spell their fields its way.
-    function candidateRosterKey(candidate) {
-        if (!candidate) return null;
-        if (candidate.StorageKind === "global_palbox") return GLOBAL_PALBOX_ROSTER_KEY;
-        return candidate.OwnerPlayerUId
-            ? playerRosterKey(candidate.OwnerPlayerUId)
-            : BASE_ROSTER_KEY;
-    }
-
     async function updateConflictingPal() {
-        const conflict = PAL_TRANSFER_CONFLICT.value;
-        if (!conflict?.LockedTarget) return false;
-        const response = await POST("/api/pal/transfer", {
-            SourceRecordKey: conflict.SourceRecordKey,
-            TargetStorageKey: conflict.TargetStorageKey,
-            Action: "update",
-            ExpectedTargetRecordKey: conflict.LockedTarget,
-        });
-        if (response === false) return false;
-        if (response.status != 0) {
-            if (response.status == 2) requireAuth("AuthView_Session_Expired");
-            else reportOperationError("Operation_Move_Pal", response);
+        if (!storages.conflictTarget) return false;
+        const capability = storages.capability(storages.conflict.targetStorageKey);
+        let result;
+        try {
+            result = await storages.overwriteConflictTarget();
+        } catch (error) {
+            reportApiFailure(error, "Operation_Move_Pal");
             return false;
         }
-        const conflictRoster = candidateRosterKey(conflict.Candidates?.find(
-            item => item.RecordKey === conflict.LockedTarget,
-        ));
-        PAL_TRANSFER_CONFLICT.value = null;
-        await refreshRosters([rosters.activeRosterKey, conflictRoster]);
-        if (conflictRoster) {
-            await selectPlayer(conflictRoster);
-            await selectPal(conflict.LockedTarget);
-        }
+        if (result === null) return false;
+        await followTransfer(result, capability.resultRosterKey);
         showToast("Message_Pal_Updated", "success");
         return true;
     }
 
+    // Go and look at the Pal that is in the way instead of overwriting it. For an
+    // overwrite the capability's result roster is the destination's, which is
+    // exactly the list that Pal is sitting in.
     async function jumpToConflictingPal() {
-        const conflict = PAL_TRANSFER_CONFLICT.value;
-        const candidate = conflict?.Candidates?.find(
-            item => item.RecordKey === conflict.LockedTarget,
+        const target = storages.conflictTarget;
+        if (!target) return false;
+        const { resultRosterKey } = storages.capability(
+            storages.conflict.targetStorageKey,
         );
-        if (!candidate) return false;
-        const rosterKey = candidateRosterKey(candidate);
-        PAL_TRANSFER_CONFLICT.value = null;
-        await selectPlayer(rosterKey);
-        await selectPal(candidate.RecordKey);
-        return true;
+        storages.clearConflict();
+        if (resultRosterKey !== rosters.activeRosterKey
+            && !await selectPlayer(resultRosterKey)) return false;
+        return selectPal(target.recordKey);
     }
 
-    function clearPalTransferConflict() {
-        PAL_TRANSFER_CONFLICT.value = null;
+    // Which storages the add dialog may offer, for the list that is open. The
+    // answer is the save's, so a target that would put the new Pal in a list
+    // nobody opened is never on screen.
+    async function loadCreationTargets() {
+        try {
+            return await storages.creationTargets(rosters.activeRosterKey);
+        } catch (error) {
+            reportApiFailure(error, "Operation_Add_Pal");
+            return [];
+        }
     }
 
     // The add dialog's three tabs are one operation with three sources: a
@@ -1421,8 +1348,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
         let result;
         try {
-            result = await refreshStorages(
-                await pals.create(targetStorageKey, source, rosters.activePlayerUid),
+            result = await pals.create(
+                targetStorageKey, source, rosters.activePlayerUid,
             );
         } catch (error) {
             reportApiFailure(error, "Operation_Add_Pal");
@@ -1441,7 +1368,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function dupePal() {
         let result;
         try {
-            result = await refreshStorages(await pals.duplicate(pals.selectedRecordKey));
+            result = await pals.duplicate(pals.selectedRecordKey);
         } catch (error) {
             reportApiFailure(error, "Operation_Duplicate_Pal");
             return false;
@@ -1575,9 +1502,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         CURRENT_MESSAGE,
 
 
-        PAL_CONTAINERS,
-        PAL_TRANSFER_CONFLICT,
-
         getTranslatedText,
         getMessageText,
 
@@ -1592,7 +1516,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         skillBadgeTranslationKey,
 
         reset,
-        clearPalTransferConflict,
 
         backendAssetUrl,
         requireAuth,
@@ -1623,7 +1546,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             dumpPalData,
             dupePal,
             fetchBaseCampResearch,
-            fetchPalContainers,
             fetchPalTemplates,
             fetchSkillTemplates,
             friendshipDown,
@@ -1631,7 +1553,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             healAllPals,
             healPal,
             jumpToConflictingPal,
+            loadCreationTargets,
             loadLatestRelease,
+            loadMoveTargets,
             loadPlayerInventory,
             loadSave,
             maxFriendship,

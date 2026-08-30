@@ -232,13 +232,13 @@ test("location sorting renders container headers and explicit safety markers", a
   ]);
   assert.match(listSource, /visiblePalGroups/);
   assert.match(listSource, /class="container-heading"/);
-  assert.match(listSource, /formatContainerLabel/);
+  assert.match(listSource, /formatStorageLabel/);
   assert.match(listSource, /containerLabel\(group\)/);
-  assert.match(listSource, /group\.container\.Occupied.*group\.container\.Size/s);
+  assert.match(listSource, /group\.storage\.occupied.*group\.storage\.capacity/s);
   assert.match(listSource, /pal\.IsExpeditionPal/);
   assert.doesNotMatch(listSource, /v-if="[^"]*BASE_ROSTER_KEY"[^>]*name="add_pal"/);
 
   assert.match(editorSource, /PalContainerMoveDialog/);
-  assert.match(moveDialogSource, /palStore\.movePal\(pendingContainerId\.value\)/);
+  assert.match(moveDialogSource, /palStore\.movePal\(pendingStorageKey\.value\)/);
   assert.match(editorSource, /IsExpeditionPal[\s\S]*!pal\.storageKey/);
 });

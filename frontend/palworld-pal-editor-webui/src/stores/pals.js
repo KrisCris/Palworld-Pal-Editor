@@ -100,6 +100,13 @@ export const usePalsStore = defineStore("pals", () => {
         if (selectedRecordKey.value === recordKey) selectedRecordKey.value = null;
     }
 
+    // The Pal on screen took a new address. Not a selection: it is already in the
+    // cache under the new key, so nothing is read and nothing is shown that was
+    // not being shown a moment ago.
+    function reselect(recordKey) {
+        selectedRecordKey.value = recordKey;
+    }
+
     // The six writes below return `null` when no Pal is open. Every editor
     // control is rendered only while one is, so that is a guard, not a message:
     // this store still reports nothing.
@@ -189,6 +196,7 @@ export const usePalsStore = defineStore("pals", () => {
         select,
         clearSelection,
         forget,
+        reselect,
         update,
         replaceSkills,
         maximize,

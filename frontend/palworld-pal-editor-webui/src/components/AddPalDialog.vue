@@ -3,12 +3,13 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import PalBriefPanel from '@/components/modules/PalBriefPanel.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatContainerLabel } from '@/components/modules/pal-container-label'
+import { formatStorageLabel } from '@/components/modules/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
-import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
+import { useRostersStore } from '@/stores/rosters'
+import { useStoragesStore } from '@/stores/storages'
 import { useTemplatesStore } from '@/stores/templates'
 
 const emit = defineEmits(['close'])
@@ -16,16 +17,18 @@ const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
+const storagesStore = useStoragesStore()
 const templatesStore = useTemplatesStore()
-const containerLabel = container => formatContainerLabel(
-  container,
+const storageLabel = storage => formatStorageLabel(
+  storage,
   palStore.getTranslatedText,
 )
 const mode = ref('default')
 const templateId = ref('')
 const templateName = ref('')
 const palJson = ref('')
-const targetContainerId = ref('')
+const targetStorageKey = ref('')
+const creationTargetKeys = ref([])
 const dialog = ref(null)
 const templatePreview = ref(null)
 const previewTemplate = ref(null)
@@ -38,21 +41,13 @@ let previewFrame = 0
 
 const selectedTemplate = computed(() => templatesStore.palTemplates
   .find(template => template.templateId === templateId.value))
-const targetContainers = computed(() => {
-  const roster = rostersStore.activeRosterKey
-  const playerUid = rostersStore.activePlayerUid
-  return palStore.PAL_CONTAINERS.filter(container => (
-    roster === GLOBAL_PALBOX_ROSTER_KEY
-      ? container.StorageKind === 'global_palbox'
-      : roster === BASE_ROSTER_KEY
-        ? container.ContainerKind === 'base'
-        : (container.OwnerPlayerUId === playerUid
-          && ['party', 'storage'].includes(container.ContainerKind))
-          || (container.StorageKind === 'dps'
-            && container.StorageOwnerPlayerUid === playerUid)
-  ))
-})
-const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
+// Where a new Pal may go is the backend's answer for this list, not a filter over
+// the storage directory: creating one into a viewing cage or another guild's base
+// would put it in a list nobody opened.
+const targetStorages = computed(() => creationTargetKeys.value
+  .map(storageKey => storagesStore.storage(storageKey))
+  .filter(Boolean))
+const canCreate = computed(() => Boolean(targetStorageKey.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
   || (mode.value === 'json' && palJson.value.trim())))
 
@@ -181,12 +176,12 @@ onMounted(async () => {
   previousAriaHidden = appContent?.getAttribute('aria-hidden')
   appContent?.setAttribute('aria-hidden', 'true')
   await palStore.fetchPalTemplates()
-  await palStore.fetchPalContainers()
-  targetContainerId.value = rostersStore.activeRosterKey === BASE_ROSTER_KEY
-    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.StorageKey || ''
-    : targetContainers.value.find(
-      container => container.ContainerId === playersStore.selectedPlayer?.PalStorageContainerId
-    )?.StorageKey || targetContainers.value[0]?.StorageKey || ''
+  creationTargetKeys.value = await palStore.loadCreationTargets()
+  // The player's own Palbox where there is one, and otherwise the first target
+  // the backend offered -- which is the only base a base list has to choose from.
+  targetStorageKey.value = targetStorages.value.find(
+    storage => storage.containerId === playersStore.selectedPlayer?.PalStorageContainerId,
+  )?.storageKey || targetStorages.value[0]?.storageKey || ''
   await nextTick()
   dialog.value?.focus()
   window.addEventListener('resize', scheduleTemplatePreview)
@@ -223,7 +218,7 @@ async function createPal() {
     mode: mode.value,
     templateId: templateId.value,
     palJson: palJson.value,
-    targetStorageKey: targetContainerId.value,
+    targetStorageKey: targetStorageKey.value,
   })) emit('close')
 }
 
@@ -315,10 +310,10 @@ async function deleteTemplate(id) {
       <footer>
         <label class="target-container">
           <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
-          <select v-model="targetContainerId">
-            <option v-for="container in targetContainers" :key="container.StorageKey"
-              :value="container.StorageKey" :disabled="container.Occupied >= container.Size">
-              {{ containerLabel(container) }} ({{ container.Occupied }}/{{ container.Size }})
+          <select v-model="targetStorageKey">
+            <option v-for="storage in targetStorages" :key="storage.storageKey"
+              :value="storage.storageKey" :disabled="storage.occupied >= storage.capacity">
+              {{ storageLabel(storage) }} ({{ storage.occupied }}/{{ storage.capacity }})
             </option>
           </select>
         </label>

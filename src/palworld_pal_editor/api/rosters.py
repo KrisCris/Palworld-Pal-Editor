@@ -11,7 +11,11 @@ from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
 from palworld_pal_editor.api.pals import pal_summary
-from palworld_pal_editor.api.roster_keys import FIXED_ROSTERS, PLAYER_ROSTER_PREFIX
+from palworld_pal_editor.api.roster_keys import (
+    FIXED_ROSTERS,
+    PLAYER_ROSTER_PREFIX,
+    legacy_roster_id,
+)
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import DataProvider
 
@@ -58,17 +62,26 @@ def roster_entries(manager: SaveManager) -> list[dict]:
     return entries
 
 
-def roster_records(manager: SaveManager, roster_key: str) -> list:
+def require_roster(manager: SaveManager, roster_key: str) -> str:
+    """The roster key, or a 404. A player roster exists while its player does."""
     if roster_key in FIXED_ROSTERS:
-        return manager.records_for_roster(FIXED_ROSTERS[roster_key])
-    if roster_key.startswith(PLAYER_ROSTER_PREFIX):
-        player_uid = roster_key[len(PLAYER_ROSTER_PREFIX):]
-        if manager.get_player(player_uid) is not None:
-            return manager.sorted_records_for_roster(player_uid)
+        return roster_key
+    player_uid = roster_key.removeprefix(PLAYER_ROSTER_PREFIX)
+    if player_uid != roster_key and manager.get_player(player_uid) is not None:
+        return roster_key
     raise ApiError(
         "ROSTER_NOT_FOUND",
         f"No roster named {roster_key}",
         status=404,
+    )
+
+
+def roster_records(manager: SaveManager, roster_key: str) -> list:
+    require_roster(manager, roster_key)
+    if roster_key in FIXED_ROSTERS:
+        return manager.records_for_roster(FIXED_ROSTERS[roster_key])
+    return manager.sorted_records_for_roster(
+        roster_key.removeprefix(PLAYER_ROSTER_PREFIX)
     )
 
 
@@ -88,4 +101,24 @@ def list_roster_pals(roster_key: str):
         return [
             pal_summary(manager, record)
             for record in roster_records(manager, roster_key)
+        ]
+
+
+@rosters_blueprint.route("/<roster_key>/pal-creation-targets", methods=["GET"])
+@jwt_required()
+def list_pal_creation_targets(roster_key: str):
+    """The storages a Pal added to this list may be created in, as storage keys.
+
+    Where a *new* Pal may go is not where an existing one may be moved: creating
+    into a viewing cage or another guild's base would make a Pal that belongs to
+    the list nobody opened. The answer is the save's, not the client's -- which is
+    why the client asks for it rather than filtering the storage directory by
+    storage kind. What each key looks like is `GET /api/storages`.
+    """
+    manager = SaveManager()
+    with manager.session_lock:
+        require_roster(manager, roster_key)
+        return [
+            descriptor["StorageKey"]
+            for descriptor in manager.creation_targets(legacy_roster_id(roster_key))
         ]

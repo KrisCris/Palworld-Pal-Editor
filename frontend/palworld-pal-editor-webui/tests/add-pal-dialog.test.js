@@ -97,12 +97,15 @@ test("Pal templates are cleared when the editor resets or switches backends", as
   assert.ok(source.match(/templates\.clear\(\)/g)?.length >= 2);
 });
 
-test("Add Pal chooses an explicit capacity-checked container, including bases", async () => {
+test("Add Pal offers the storages the save says a new Pal may go in", async () => {
   const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
-  assert.match(source, /v-model="targetContainerId"/);
-  assert.match(source, /container\.Occupied >= container\.Size/);
-  assert.match(source, /container\.ContainerKind === 'base'/);
-  assert.match(source, /targetStorageKey: targetContainerId\.value/);
-  assert.match(source, /formatContainerLabel/);
-  assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
+  // Which storages qualify is asked of the roster, not filtered out of the
+  // directory by kind -- a viewing cage or another guild's base would otherwise
+  // put the new Pal in a list nobody can open.
+  assert.match(source, /loadCreationTargets\(\)/);
+  assert.doesNotMatch(source, /ContainerKind|StorageKind/);
+  assert.match(source, /v-model="targetStorageKey"/);
+  assert.match(source, /storage\.occupied >= storage\.capacity/);
+  assert.match(source, /targetStorageKey: targetStorageKey\.value/);
+  assert.match(source, /formatStorageLabel/);
 });

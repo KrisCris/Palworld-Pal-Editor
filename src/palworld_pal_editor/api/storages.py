@@ -52,6 +52,45 @@ CONTAINER_ORDER = {
     "unknown": 5,
 }
 
+# What kind of place a storage is, as an i18n key rather than as English. The
+# registry's own `ContainerLabel` is composed in English ("Alice · Palbox"), so a
+# frontend that rendered it would show untranslated text in every other locale --
+# and one that re-derived the wording from `storageKind` would be the branching
+# spec §8.2 removes. So the descriptor splits the label in two: `label` is the data
+# half (a nickname, a base's name), and `labelKey`/`labelArgs` name the translated
+# half the frontend already has.
+CONTAINER_LABEL_KEYS = {
+    "party": "Editor_Container_Party",
+    "storage": "Editor_Container_Palbox",
+    "dps": "Editor_Container_DimensionalPalStorage",
+    "global_palbox": "Editor_Container_GlobalPalbox",
+}
+
+
+def _label(descriptor: dict) -> tuple:
+    """`(label, labelKey, labelArgs)` -- the data half, then the translated half."""
+    kind = descriptor["ContainerKind"]
+    if kind == "base":
+        if descriptor.get("BaseOrdinal"):
+            return None, "Editor_Container_Base", [descriptor["BaseOrdinal"]]
+        return descriptor.get("BaseName") or descriptor["ContainerLabel"], None, []
+    if kind == "special":
+        # A viewing cage belongs to the guild rather than to a player, and is the
+        # one special container with a name of its own.
+        if descriptor.get("Shared"):
+            return None, "Editor_Container_ViewingCage", []
+        return (
+            descriptor.get("OwnerName"),
+            "Editor_Container_Special",
+            [descriptor["Size"]],
+        )
+    if kind == "unknown":
+        return None, "Editor_Container_Unknown", [descriptor["Size"]]
+    label_key = CONTAINER_LABEL_KEYS.get(kind)
+    if label_key is None:
+        return descriptor["ContainerLabel"], None, []
+    return descriptor.get("OwnerName"), label_key, []
+
 
 def _creation_roster_key(descriptor: dict, owner_uid) -> str:
     """Which list the new Pal turns up in, and therefore whose targets are legal."""
@@ -68,7 +107,9 @@ def _creation_roster_key(descriptor: dict, owner_uid) -> str:
 
 def _navigation(descriptor: dict, order: dict) -> tuple:
     if descriptor["StorageKind"] == "global_palbox":
-        return GLOBAL_PALBOX_GROUP, descriptor["ContainerLabel"], 0
+        # Null like the bases group: "Global Palbox" is a phrase the frontend has
+        # translated, not a name this save holds.
+        return GLOBAL_PALBOX_GROUP, None, 0
     if descriptor["ContainerKind"] == "base":
         return BASES_GROUP, None, 1
     owner_uid = descriptor.get("OwnerPlayerUId")
@@ -95,12 +136,18 @@ def storage_descriptor(descriptor: dict, order: dict) -> dict:
     Generated from the containers, players and repository indexes that already exist,
     every time it is asked for: there is no second directory of storages being kept
     in step with the first.
+
+    `label` carries only what is data -- a nickname, a base's name -- and is null
+    where the whole name is a translated phrase; see `_label`.
     """
     group_key, group_label, group_order = _navigation(descriptor, order)
+    label, label_key, label_args = _label(descriptor)
     return {
         "storageKey": descriptor["StorageKey"],
         "storageKind": descriptor["StorageKind"],
-        "label": descriptor["ContainerLabel"],
+        "label": label,
+        "labelKey": label_key,
+        "labelArgs": label_args,
         "navigationGroupKey": group_key,
         "navigationGroupLabel": group_label,
         "navigationGroupOrder": group_order,

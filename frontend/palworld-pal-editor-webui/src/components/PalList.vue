@@ -4,7 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatContainerLabel } from '@/components/modules/pal-container-label'
+import { formatStorageLabel } from '@/components/modules/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import {
   groupPalList,
@@ -20,12 +20,14 @@ import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 import { useSessionStore } from '@/stores/session'
+import { useStoragesStore } from '@/stores/storages'
 
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
 const sessionStore = useSessionStore()
+const storagesStore = useStoragesStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
@@ -120,15 +122,14 @@ const visiblePalGroups = computed(() => groupPalList(
   rostersStore.sortMode,
 ).map(group => ({
   ...group,
-  container: palStore.PAL_CONTAINERS.find(container => container.StorageKey === group.key),
+  storage: storagesStore.storage(group.key),
 })))
-const containerLabel = group => formatContainerLabel(
-  group.container || {
-    ContainerKind: group.key === 'anomaly' ? 'anomaly' : 'other',
-    ContainerLabel: group.label,
-  },
-  palStore.getTranslatedText,
-)
+// A group whose key names a storage is titled by the directory. One that does not
+// is a Pal reporting a place the save has no entry for, and keeps the name it
+// reported.
+const containerLabel = group => (group.storage
+  ? formatStorageLabel(group.storage, palStore.getTranslatedText)
+  : group.label)
 
 watch(
   [
@@ -241,7 +242,7 @@ const palWasEdited = pal => isEditedPal(pal)
       <template v-for="group in visiblePalGroups" :key="group.key">
       <h3 v-if="group.label" class="container-heading">
         <span>{{ containerLabel(group) }}</span>
-        <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
+        <small v-if="group.storage">{{ group.storage.occupied }} / {{ group.storage.capacity }}</small>
       </h3>
       <button v-for="pal in group.pals" :key="pal.recordKey"
         :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', 'out-of-container': pal.isAway }]"

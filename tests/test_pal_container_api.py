@@ -54,18 +54,6 @@ class FakeManager:
             "gps:0": gps_record,
         }
 
-    def get_container_registry(self):
-        return [
-            {
-                "ContainerId": "target",
-                "ContainerKind": "base",
-                "ContainerLabel": "Main Base",
-                "Size": 50,
-                "Occupied": 12,
-                "MovableInto": True,
-            }
-        ]
-
     def move_pal(self, pal_id, target_container_id):
         self.moves.append((pal_id, target_container_id))
         return True
@@ -107,15 +95,6 @@ class PalContainerApiTests(unittest.TestCase):
     def tearDown(self):
         for started in self.patches:
             started.stop()
-
-    def test_container_registry_endpoint_returns_normalized_descriptors(self):
-        response = self.client.get(
-            "/api/pal/containers", headers=self.headers
-        ).get_json()
-
-        self.assertEqual(0, response["status"])
-        self.assertEqual("target", response["data"][0]["ContainerId"])
-        self.assertEqual("Main Base", response["data"][0]["ContainerLabel"])
 
     def test_transfer_endpoint_requires_storage_qualified_keys(self):
         missing = self.client.post(

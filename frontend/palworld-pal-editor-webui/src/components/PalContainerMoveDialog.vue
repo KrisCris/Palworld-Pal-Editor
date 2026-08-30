@@ -4,73 +4,71 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import OverlayScrollArea from "@/components/modules/OverlayScrollArea.vue";
 import PalBriefPanel from "@/components/modules/PalBriefPanel.vue";
 import {
-  buildContainerMoveGroups,
-  containerMoveDisabledReason,
-} from "@/components/modules/pal-container-move";
-import { formatContainerLabel } from "@/components/modules/pal-container-label";
+  buildStorageMoveGroups,
+  moveReasonKey,
+} from "@/components/modules/pal-storage-move";
+import { formatStorageLabel } from "@/components/modules/pal-storage-label";
 import { usePalEditorStore } from "@/stores/paleditor";
 import { usePalsStore } from "@/stores/pals";
-import { usePlayersStore } from "@/stores/players";
-import { useRostersStore } from "@/stores/rosters";
+import { playerRosterKey, useRostersStore } from "@/stores/rosters";
+import { useStoragesStore } from "@/stores/storages";
 
 const emit = defineEmits(["close"]);
 const palStore = usePalEditorStore();
 const palsStore = usePalsStore();
-const playersStore = usePlayersStore();
 const rostersStore = useRostersStore();
+const storagesStore = useStoragesStore();
 const pal = computed(() => palsStore.selectedPal);
 const dialog = ref(null);
 const updateAction = ref(null);
 const preview = ref(null);
 const previewScale = ref(1);
 const activeGroupKey = ref("");
-const pendingContainerId = ref("");
-const conflict = computed(() => palStore.PAL_TRANSFER_CONFLICT);
+const pendingStorageKey = ref("");
+const conflict = computed(() => storagesStore.conflict);
 let previewFrame = 0;
 
-const groups = computed(() => buildContainerMoveGroups(
-  palStore.PAL_CONTAINERS,
-  playersStore.players,
-  rostersStore.activePlayerUid,
+const groups = computed(() => buildStorageMoveGroups(
+  storagesStore.storages,
+  rostersStore.activePlayerUid
+    ? playerRosterKey(rostersStore.activePlayerUid)
+    : null,
 ));
 const activeGroup = computed(() => (
   groups.value.find(group => group.key === activeGroupKey.value) ?? groups.value[0]
 ));
-const reasonKey = Object.freeze({
-  current: "Editor_Move_Reason_Current",
-  full: "Editor_Move_Reason_Full",
-  unsafe: "Editor_Move_Reason_Unsafe",
-  different_guild: "Editor_Move_Reason_DifferentGuild",
-  owner_required: "Editor_Move_Reason_OwnerRequired",
-  gps_player_required: "Editor_Move_Reason_GpsPlayerRequired",
-});
+// A group whose label is null is one of the fixed groups, whose heading is a
+// phrase this app has translated rather than a name the save holds.
+const FIXED_GROUP_KEYS = {
+  bases: "Editor_Move_Group_Bases",
+  "global-palbox": "Editor_Container_GlobalPalbox",
+};
 const groupLabel = group => group.label || palStore.getTranslatedText(
-  group.kind === "bases" ? "Editor_Move_Group_Bases" : "Editor_Move_Group_Other",
+  FIXED_GROUP_KEYS[group.key] ?? "Editor_Move_Group_Other",
 );
-const containerLabel = container => formatContainerLabel(
-  container,
+const storageLabel = storage => formatStorageLabel(
+  storage,
   palStore.getTranslatedText,
 );
-const disabledReason = container => containerMoveDisabledReason(container, pal.value);
-const pendingContainer = computed(() => palStore.PAL_CONTAINERS.find(
-  container => container.StorageKey === pendingContainerId.value,
-));
-const lockedTargetContainer = computed(() => {
-  const candidate = conflict.value?.Candidates?.find(
-    item => item.RecordKey === conflict.value?.LockedTarget,
-  );
-  return palStore.PAL_CONTAINERS.find(
-    container => container.StorageKey === candidate?.StorageKey,
-  );
+// Until the answer for a row is in, the row is not offered: an unanswered target
+// is not a permitted one.
+const capabilityOf = storage => storagesStore.capability(storage.storageKey);
+const disabledReasonKey = storage => moveReasonKey(capabilityOf(storage)?.reason);
+const isOffered = storage => Boolean(capabilityOf(storage)?.allowed);
+const pendingCapability = computed(() => storagesStore.capability(pendingStorageKey.value));
+// The Pal an overwrite would land on, and where it is sitting. `label` is what the
+// backend called that place; the directory has the translated name when it holds it.
+const conflictTargetLabel = computed(() => {
+  const target = storagesStore.conflictTarget;
+  if (!target) return "";
+  return storagesStore.storage(target.storageKey)
+    ? storageLabel(storagesStore.storage(target.storageKey))
+    : target.label || "";
 });
-const lockedTargetLabel = computed(() => lockedTargetContainer.value
-  ? containerLabel(lockedTargetContainer.value)
-  : conflict.value?.Candidates?.find(
-    item => item.RecordKey === conflict.value?.LockedTarget,
-  )?.ContainerLabel || '');
-const isGlobalTransfer = computed(() => (
-  pal.value?.storageKind === "global_palbox"
-  || pendingContainer.value?.StorageKind === "global_palbox"
+// A move is a move; a copy into or out of the Global Palbox leaves the source
+// where it is. Which one this is comes from the backend's `effect`.
+const isGlobalTransfer = computed(() => Boolean(
+  pendingCapability.value?.effect && pendingCapability.value.effect !== "relocate",
 ));
 const previewStyle = computed(() => ({
   "--move-preview-scale": previewScale.value,
@@ -94,19 +92,14 @@ function schedulePreviewScale() {
   previewFrame = requestAnimationFrame(updatePreviewScale);
 }
 
-function selectContainer(container) {
-  if (disabledReason(container)) return;
-  pendingContainerId.value = container.StorageKey;
+function selectStorage(storage) {
+  if (!isOffered(storage)) return;
+  pendingStorageKey.value = storage.storageKey;
 }
 
 async function movePal() {
-  if (!pendingContainerId.value) return;
-  if (await palStore.movePal(pendingContainerId.value)) return closeDialog();
-  if (conflict.value?.LockedTarget) {
-    pendingContainerId.value = conflict.value.Candidates?.find(
-      candidate => candidate.RecordKey === conflict.value.LockedTarget,
-    )?.StorageKey || pendingContainerId.value;
-  }
+  if (!pendingStorageKey.value) return;
+  if (await palStore.movePal(pendingStorageKey.value)) closeDialog();
 }
 
 async function updatePal() {
@@ -118,29 +111,38 @@ async function jumpToPal() {
 }
 
 function closeDialog(clearConflict = true) {
-  if (clearConflict) palStore.clearPalTransferConflict();
+  if (clearConflict) storagesStore.clearConflict();
   emit("close");
 }
 
 onMounted(async () => {
-  palStore.clearPalTransferConflict();
-  const current = palStore.PAL_CONTAINERS.find(
-    container => container.StorageKey === pal.value.storageKey,
+  storagesStore.clearConflict();
+  storagesStore.clearCapabilities();
+  // Open on the group the Pal is already in, unless it is the only place in that
+  // group -- a Pal alone in the Global Palbox would otherwise open on a list of
+  // one row it cannot use. Then the list the user came from is the better start.
+  const sourceGroup = groups.value.find(
+    group => group.storages.some(storage => storage.storageKey === pal.value.storageKey),
   );
-  activeGroupKey.value = current?.StorageKind === "global_palbox"
-    ? groups.value.find(group => group.kind === "player")?.key || "global_palbox"
-    : current?.ContainerKind === "base"
-      ? "bases"
-      : current?.OwnerPlayerUId || "other";
+  activeGroupKey.value = (sourceGroup?.storages.length > 1
+    ? sourceGroup
+    : groups.value.find(group => group.selected) ?? groups.value[0])?.key ?? "";
   await nextTick();
   dialog.value?.focus();
   window.addEventListener("resize", schedulePreviewScale);
 });
 
+// One request per target in the group on screen, and only the first time it is
+// opened -- the answers are about this Pal and are kept for as long as it is the
+// one being moved.
+watch(activeGroup, group => {
+  if (group) palStore.loadMoveTargets(group.storages.map(storage => storage.storageKey));
+}, { immediate: true });
+
 watch(
-  () => conflict.value?.LockedTarget,
-  async lockedTarget => {
-    if (!lockedTarget) return;
+  () => storagesStore.conflictTarget,
+  async target => {
+    if (!target) return;
     await nextTick();
     schedulePreviewScale();
   },
@@ -189,20 +191,20 @@ onBeforeUnmount(() => {
             <OverlayScrollArea>
               <div class="move-dialog__containers overlay-scroll-area__viewport" role="listbox"
                 :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
-                <button v-for="container in activeGroup?.containers || []" :key="container.StorageKey" type="button"
-                  role="option" :aria-selected="container.StorageKey === pendingContainerId"
-                  :aria-disabled="Boolean(disabledReason(container))"
-                  :class="{ 'is-active': container.StorageKey === pendingContainerId }"
-                  @click="selectContainer(container)">
+                <button v-for="storage in activeGroup?.storages || []" :key="storage.storageKey" type="button"
+                  role="option" :aria-selected="storage.storageKey === pendingStorageKey"
+                  :aria-disabled="!isOffered(storage)"
+                  :class="{ 'is-active': storage.storageKey === pendingStorageKey }"
+                  @click="selectStorage(storage)">
                   <span class="move-dialog__container-copy">
-                    <strong>{{ containerLabel(container) }}</strong>
-                    <small v-if="disabledReason(container)">
-                      {{ palStore.getTranslatedText(reasonKey[disabledReason(container)]) }}
+                    <strong>{{ storageLabel(storage) }}</strong>
+                    <small v-if="disabledReasonKey(storage)">
+                      {{ palStore.getTranslatedText(disabledReasonKey(storage)) }}
                     </small>
                   </span>
-                  <span class="move-dialog__capacity">{{ container.Occupied }}/{{ container.Size }}</span>
+                  <span class="move-dialog__capacity">{{ storage.occupied }}/{{ storage.capacity }}</span>
                 </button>
-                <p v-if="!activeGroup?.containers?.length" class="move-dialog__empty">
+                <p v-if="!activeGroup?.storages?.length" class="move-dialog__empty">
                   {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
                 </p>
               </div>
@@ -215,32 +217,32 @@ onBeforeUnmount(() => {
           <p>{{ palStore.getTranslatedText('Editor_Transfer_Conflict_Subtitle') }}</p>
           <div class="move-dialog__locked-target">
             <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
-            <strong>{{ lockedTargetLabel }}</strong>
+            <strong>{{ conflictTargetLabel }}</strong>
           </div>
         </section>
 
         <footer>
           <button type="button" @click="closeDialog">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
           <template v-if="conflict">
-            <button type="button" :disabled="!conflict.LockedTarget" @click="jumpToPal">
+            <button type="button" :disabled="!storagesStore.conflictTarget" @click="jumpToPal">
               {{ palStore.getTranslatedText('Editor_Transfer_Jump') }}
             </button>
             <span ref="updateAction" class="move-dialog__update-action" @pointerenter="schedulePreviewScale"
               @focusin="schedulePreviewScale">
-              <button type="button" class="move-dialog__update" :disabled="!conflict.LockedTarget"
+              <button type="button" class="move-dialog__update" :disabled="!storagesStore.conflictTarget"
                 @click="updatePal">{{ palStore.getTranslatedText('Editor_Transfer_Update') }}</button>
             </span>
           </template>
-          <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingContainerId"
+          <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingStorageKey"
             @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>
-      <div v-if="conflict?.LockedTarget" ref="preview" class="move-dialog__preview" role="tooltip"
+      <div v-if="storagesStore.conflictTarget" ref="preview" class="move-dialog__preview" role="tooltip"
         :style="previewStyle">
-        <PalBriefPanel :data="conflict.Incoming" :changed-fields="conflict.FieldChanges" tone="incoming"
+        <PalBriefPanel :data="conflict.incoming" :changed-fields="conflict.fieldChanges" tone="incoming"
           :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
         <span class="move-dialog__comparison-arrow" aria-hidden="true" />
-        <PalBriefPanel :data="conflict.Existing" :changed-fields="conflict.FieldChanges" tone="existing"
+        <PalBriefPanel :data="conflict.existing" :changed-fields="conflict.fieldChanges" tone="existing"
           :title="palStore.getTranslatedText('Editor_Transfer_Existing')" />
       </div>
     </div>

@@ -1,11 +1,12 @@
-"""What is left of the pre-REST Pal blueprint: containers and the move.
+"""What is left of the pre-REST Pal blueprint: the move.
 
-Everything else this file held -- create, duplicate, delete, raw export and the two
-kinds of template -- is gone, replaced by the resources under `/api/pals`,
-`/api/storages` and `/api/pal-templates`. The move has a resource too now, in
-`api/pal_transfers.py`; these three routes are what the frontend has not been moved
-onto yet, and they are the last callers of the old `reply(status, data, msg)`
-envelope. S4b migrates the dialogs and S4c deletes this file.
+Everything else this file held -- create, duplicate, delete, raw export, the two
+kinds of template, the container registry and the creation-target list -- is gone,
+replaced by the resources under `/api/pals`, `/api/storages`, `/api/rosters` and
+`/api/pal-templates`. The move has a resource too, in `api/pal_transfers.py`, and
+the dialogs call it; this route is the last caller of the old
+`reply(status, data, msg)` envelope and S4c deletes this file with the chain
+behind it.
 """
 
 import traceback
@@ -20,18 +21,6 @@ from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.utils.util import reply
 
 pal_blueprint = Blueprint("pal", __name__)
-
-
-@pal_blueprint.route("/containers", methods=["GET"])
-@jwt_required()
-def list_pal_containers():
-    return reply(0, SaveManager().get_container_registry())
-
-
-@pal_blueprint.route("/creation_targets/<path:roster_key>", methods=["GET"])
-@jwt_required()
-def list_pal_creation_targets(roster_key):
-    return reply(0, SaveManager().creation_targets(roster_key))
 
 
 @pal_blueprint.route("/transfer", methods=["POST"])

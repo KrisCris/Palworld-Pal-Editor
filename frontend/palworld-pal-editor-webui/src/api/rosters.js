@@ -16,3 +16,14 @@ export function listRosterPals(rosterKey, options) {
         options,
     );
 }
+
+// The storage keys a Pal added to this list may be created in. Where a new Pal may
+// go is the save's answer, not a filter over the storage directory: creating one
+// into a viewing cage or another guild's base would put it in a list nobody opened.
+export function listPalCreationTargets(rosterKey, options) {
+    return request(
+        "get",
+        `/api/rosters/${encodeURIComponent(rosterKey)}/pal-creation-targets`,
+        options,
+    );
+}
