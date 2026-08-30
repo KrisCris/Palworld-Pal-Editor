@@ -1,3 +1,4 @@
+import copy
 from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
@@ -59,6 +60,27 @@ class PalGroup:
 
     def has_pal(self, instanceId: UUID | str) -> bool:
         return str(instanceId) in self.instance_map
+
+    def snapshot_handles(self) -> Optional[list[dict]]:
+        """The guild's membership handles, for rolling a failed mutation back.
+
+        None is a real answer and not an absence: a guild whose native param has no
+        handle list at all is not the same as one whose list is empty, and restoring
+        the wrong one of those writes a key the game did not have.
+        """
+        return copy.deepcopy(self.individual_character_handle_ids)
+
+    def restore_handles(self, snapshot: Optional[list[dict]]) -> None:
+        if snapshot is None:
+            self._group_param.pop("individual_character_handle_ids", None)
+        else:
+            self._group_param["individual_character_handle_ids"] = copy.deepcopy(
+                snapshot
+            )
+        self.instance_map = {
+            str(handle["instance_id"]): handle
+            for handle in self.individual_character_handle_ids or []
+        }
 
     def has_player(self, playerUId: UUID | str) -> bool:
         return playerUId in self.player_map

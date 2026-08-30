@@ -110,6 +110,24 @@ class WorldPalAdapter:
             cls.entity(record).SlotId = (container_id, slot_index)
         return record
 
+    def append(self, native_record: dict) -> None:
+        """Put one new World record into CharacterSaveParameterMap."""
+        self._entities_list.append(native_record)
+
+    def remove(self, native_record: dict) -> int:
+        """Take one World record out, answering where it was.
+
+        The position carries no meaning to the game (spec §4.3), but a failed
+        operation putting the record back where it was keeps the array byte-identical
+        to what was loaded, which is worth the one integer.
+        """
+        entry_index = self._entities_list.index(native_record)
+        self._entities_list.pop(entry_index)
+        return entry_index
+
+    def insert(self, entry_index: int, native_record: dict) -> None:
+        self._entities_list.insert(entry_index, native_record)
+
     @staticmethod
     def is_player(native_record: dict) -> bool:
         parameter = WorldPalAdapter.save_parameter(native_record)

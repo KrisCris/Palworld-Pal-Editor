@@ -23,12 +23,17 @@ def session_state(manager: SaveManager) -> dict:
     """Every field the session owns, described so two empty sessions compare equal.
 
     Read out of `vars()` rather than a list written here, so a field added to the
-    session later is covered without anyone remembering this test exists. Sized
-    values collapse to their length because two empty repositories are different
-    objects; everything else is `None` in an empty session and compares directly.
+    session later is covered without anyone remembering this test exists. Two empty
+    sessions hold different objects, so each value collapses to something that says
+    what it is without saying which one it is: a length, or a type name. A field the
+    previous save left behind still shows up, because in an empty session it is None.
     """
     return {
-        name: len(value) if isinstance(value, Sized) else value
+        name: (
+            len(value)
+            if isinstance(value, Sized)
+            else None if value is None else type(value).__name__
+        )
         for name, value in vars(manager).items()
         if name not in ("session_lock", "initialized")
     }

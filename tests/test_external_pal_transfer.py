@@ -1,53 +1,26 @@
 import copy
-import shutil
 from pathlib import Path
 
 import pytest
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
 from palworld_pal_editor.core.save_manager import PalIdentityConflict, SaveManager
-
-
-WORLD_FIXTURE = Path(
-    "tests/saves/1.0/AF518B19A47340B8A55BC58137981393"
+from world_fixture import (
+    LOSSY_UID,
+    MINT_UID,
+    locker_ids,
+    open_world,
+    write_empty_global,
 )
-EMPTY_DPS_FIXTURE = Path(
-    "tests/saves/1.0/8C439FF04713B5F986F9CAB485575089/Players/"
-    "00000000000000000000000000000001_dps.sav"
-)
-LOSSY_UID = "a18b721d-0000-0000-0000-000000000000"
-MINT_UID = "c8b99cc9-0000-0000-0000-000000000000"
-
-
-def write_empty_global(path: Path) -> None:
-    shutil.copy2(EMPTY_DPS_FIXTURE, path)
-    storage = PalStorageSaveFile.open(path, "dps", LOSSY_UID)
-    storage.gvas_file.header.save_game_class_name = (
-        "/Script/Pal.PalGlobalPalStorageSaveGame"
-    )
-    storage.gvas_file.properties["SaveParameterArray"]["value"]["type_name"] = (
-        "PalGlobalPalStorageSaveParameter"
-    )
-    path.write_bytes(storage.serialize())
 
 
 def open_copied_world(tmp_path: Path, with_global=False) -> SaveManager:
-    world = tmp_path / "world"
-    shutil.copytree(WORLD_FIXTURE, world)
-    if with_global:
-        write_empty_global(world.parent / "GlobalPalStorage.sav")
-    SaveManager._instance = None
-    manager = SaveManager()
-    assert manager.open(str(world)) is not None
-    return manager
-
-
-def locker_ids(manager: SaveManager) -> list[str]:
-    return [
-        str(PalObjects.get_BaseType(entry["InstanceId"]))
-        for entry in manager._locker_entries()
-    ]
+    """This file's Global Palbox is always the empty one: it tests creating into it."""
+    if not with_global:
+        return open_world(tmp_path)
+    empty_global = tmp_path / "empty-global.sav"
+    write_empty_global(empty_global)
+    return open_world(tmp_path, global_palbox=empty_global)
 
 
 def test_dps_transfer_delete_and_contextual_creation_preserve_save_invariants(
@@ -137,7 +110,7 @@ def test_full_dps_target_rejects_without_mutating_source_or_locker(
     source = source_storage.records()[0]
     source_snapshot = copy.deepcopy(source.native_record)
     target_snapshot = copy.deepcopy(target_storage.storage.entries)
-    locker_snapshot = copy.deepcopy(manager._locker_entries())
+    locker_snapshot = copy.deepcopy(manager.locker_entries())
     registry_snapshot = {
         record.record_key for record in manager.pal_repository.records()
     }
@@ -148,7 +121,7 @@ def test_full_dps_target_rejects_without_mutating_source_or_locker(
 
     assert source.native_record == source_snapshot
     assert target_storage.storage.entries == target_snapshot
-    assert manager._locker_entries() == locker_snapshot
+    assert manager.locker_entries() == locker_snapshot
     assert {
         record.record_key for record in manager.pal_repository.records()
     } == registry_snapshot
@@ -352,7 +325,7 @@ def test_global_update_rejects_ambiguous_destination_identity(tmp_path):
     duplicate = lossy_dps.allocate(
         gps_record.pal.save_parameter, gps_record.pal.InstanceId
     )
-    manager._add_locker_id(duplicate.pal.InstanceId)
+    manager.add_locker_id(duplicate.pal.InstanceId)
     manager._register_external_record(duplicate)
     source_snapshot = copy.deepcopy(source.pal.pal_param)
 

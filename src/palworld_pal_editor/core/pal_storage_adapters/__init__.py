@@ -6,9 +6,11 @@ owns identity, ownership, guild membership or conflict rules — those belong to
 operation layer.
 """
 
+from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_storage_adapters.storage_pal_adapter import (
     DpsPalAdapter,
     GpsPalAdapter,
+    StoragePalAdapter,
 )
 from palworld_pal_editor.core.pal_storage_adapters.world_pal_adapter import (
     WorldPalAdapter,
@@ -19,9 +21,23 @@ from palworld_pal_editor.core.pal_storage_adapters.world_pal_adapter import (
 # without already knowing which one it holds.
 PalAdapter = DpsPalAdapter | GpsPalAdapter | WorldPalAdapter
 
+def bind_entity(storage_kind: str, native_record: dict) -> PalEntity:
+    """Bind a `PalEntity` to a native record through the adapter that owns its format.
+
+    Every other binding happens where the record was read or written, next to the
+    code that knows which shape it is holding. This exists for the one caller that
+    does not: `PalRepository.rebind_and_rekey()` undoing itself has a record whose
+    format it can only read off the record.
+    """
+    if storage_kind == WorldPalAdapter.kind:
+        return WorldPalAdapter.entity(native_record)
+    return StoragePalAdapter.entity(native_record)
+
+
 __all__ = [
     "DpsPalAdapter",
     "GpsPalAdapter",
     "PalAdapter",
     "WorldPalAdapter",
+    "bind_entity",
 ]

@@ -3,6 +3,7 @@ from typing import Optional
 from palworld_save_tools.archive import UUID
 
 from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.pal_storage_adapters import bind_entity
 from palworld_pal_editor.utils import LOGGER
 
 
@@ -54,6 +55,76 @@ class PalRepository:
             self._modified_records.discard(removed)
             self.reindex()
         return removed
+
+    def rebind_and_rekey(
+        self,
+        record: PalRecord,
+        *,
+        record_key: str,
+        storage_kind: str,
+        storage_key: Optional[str],
+        slot_index: Optional[int],
+        native_record: dict,
+        pal,
+        storage_owner_uid: Optional[str] = None,
+        group_id: Optional[UUID | str] = None,
+    ) -> PalRecord:
+        """Move one record to a new key, format and position without replacing it.
+
+        A relocate is the same physical Pal somewhere else, so the object survives it
+        (spec §4.3): `_created_records` and `_modified_records` hold these by identity,
+        and a Pal created this session that is then moved must still settle its
+        capture count when the save is written.
+
+        The old key goes and the new one arrives in one step here rather than as an
+        unregister followed by a register, because between those two the repository
+        would be a set of records that does not include this Pal.
+        """
+        previous = (
+            record.record_key,
+            record.storage_kind,
+            record.storage_key,
+            record.slot_index,
+            record.native_record,
+            record.storage_owner_uid,
+            record.external_group_id,
+        )
+        occupant = self._records.get(record_key)
+        if occupant is not None and occupant is not record:
+            raise ValueError(f"Duplicated Pal RecordKey: {record_key}")
+
+        self._records.pop(record.record_key, None)
+        try:
+            record.record_key = record_key
+            record.storage_kind = storage_kind
+            record.storage_key = storage_key
+            record.slot_index = slot_index
+            record.native_record = native_record
+            record.pal = pal
+            record.storage_owner_uid = storage_owner_uid
+            if group_id is not None:
+                record.group_id = group_id
+            self._records[record_key] = record
+            self.reindex()
+        except Exception:
+            self._records.pop(record_key, None)
+            (
+                record.record_key,
+                record.storage_kind,
+                record.storage_key,
+                record.slot_index,
+                record.native_record,
+                record.storage_owner_uid,
+                record.external_group_id,
+            ) = previous
+            # Not the PalEntity this started with: the caller's rollback restores the
+            # old native record's contents in place, which leaves the old entity bound
+            # to dicts nothing else references any more.
+            record.pal = bind_entity(record.storage_kind, record.native_record)
+            self._records[record.record_key] = record
+            self.reindex()
+            raise
+        return record
 
     def snapshot_records(self) -> dict[str, PalRecord]:
         """A shallow copy of the record set, for rolling a failed mutation back."""

@@ -4,6 +4,7 @@ import unittest
 from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_operations import set_owner
 from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
@@ -104,7 +105,7 @@ def as_base_worker(manager, pal, container_id=CONTAINER_ID):
     There is no base-worker collection to add it to any more, so this sets up what
     actually makes one: no owner, standing in a container a camp owns.
     """
-    pal.set_owner_player_uid(None)
+    set_owner(pal, None)
     manager.camp_data.add_camp(container_id)
     manager.pal_repository.reindex()
 
@@ -218,7 +219,6 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
         storage_owner_uid=str(source_player.PlayerUId),
     )
     pal = pal_record.pal
-    pal.set_owner_player_entity(source_player)
 
     manager = object.__new__(SaveManager)
     manager.players = PlayerRepository()

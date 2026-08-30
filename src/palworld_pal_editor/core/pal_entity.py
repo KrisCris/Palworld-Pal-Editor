@@ -103,7 +103,6 @@ class PalEntity:
             )
 
         self._display_name_cache = {}
-        self.owner_player_entity = None
 
     def __str__(self) -> str:
         return f"{self.DisplayName} - {self.InstanceId}"
@@ -131,44 +130,13 @@ class PalEntity:
         else:
             PalObjects.set_BaseType(existing, toUUID(str(id)))
 
-    def set_owner_player_entity(self, player):
-        self.owner_player_entity = player
+    def reset_display_name_cache(self) -> None:
+        """Forget the cached display names after the payload is replaced wholesale.
 
-    def set_owner_player_uid(self, player_uid: UUID | str | None, player=None):
-        if player_uid is None:
-            self.pal_param.pop("OwnerPlayerUId", None)
-            self.owner_player_entity = None
-            return
-
-        player_uid = toUUID(str(player_uid))
-        self.pal_param["OwnerPlayerUId"] = PalObjects.Guid(player_uid)
-        owners = self.OldOwnerPlayerUIds
-        if owners is None:
-            self.pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-                "StructProperty",
-                {
-                    "prop_name": "OldOwnerPlayerUIds",
-                    "prop_type": "StructProperty",
-                    "values": [player_uid],
-                    "type_name": "Guid",
-                    "id": PalObjects.EMPTY_UUID,
-                },
-            )
-        elif not owners or str(owners[-1]) != str(player_uid):
-            owners.append(player_uid)
-        self.owner_player_entity = player
-
-    @property
-    def in_owner_palbox(self) -> bool:
-        # base pal, no owner
-        if not self.owner_player_entity:
-            return True
-        if (
-            self.ContainerId == self.owner_player_entity.OtomoCharacterContainerId
-            or self.ContainerId == self.owner_player_entity.PalStorageContainerId
-        ):
-            return True
-        return False
+        Every other edit goes through a setter that knows what it invalidated; an
+        overwrite swaps the whole `SaveParameter` value at once and cannot.
+        """
+        self._display_name_cache = {}
 
     @property
     def PlayerUId(self) -> Optional[UUID]:

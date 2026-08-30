@@ -6,7 +6,7 @@ from uuid import UUID
 from flask_jwt_extended import create_access_token
 
 from fakes import pal_payload, world_pal, world_record
-from palworld_pal_editor.api.pal import _pal_brief
+from palworld_pal_editor.api.pal_transfers import pal_brief
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
@@ -199,7 +199,7 @@ class PalIdentityTests(unittest.TestCase):
         pal.IsImportedCharacter = True
         pal.FavoriteIndex = 2
 
-        brief = _pal_brief(pal)
+        brief = pal_brief(pal)
 
         self.assertTrue(brief["IsBOSS"])
         self.assertFalse(brief["IsRarePal"])

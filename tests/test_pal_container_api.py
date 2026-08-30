@@ -8,6 +8,7 @@ from palworld_pal_editor.webui import app
 import copy
 
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_operations import set_owner
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
 from palworld_pal_editor.core.pal_repository import PalRepository
@@ -29,7 +30,7 @@ class FakeManager:
             PalObjects.EMPTY_UUID,
         )
         world_entry = world_record(world_obj, storage_key="world-container:box")
-        world_entry.pal.set_owner_player_uid(None)
+        set_owner(world_entry.pal, None)
         world_entry.pal.NickName = "World copy"
         gps_entry = {
             "InstanceId": {

@@ -19,6 +19,13 @@ from palworld_pal_editor.core.container_data import ContainerData
 from palworld_pal_editor.core.item_container_data import ItemContainerData
 
 from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
+from palworld_pal_editor.core.pal_operations import (
+    PalIdentityConflict,
+    PalOperationService,
+    prepare_global_parameter,
+    restore_local_parameter_envelope,
+    set_owner,
+)
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
@@ -54,12 +61,6 @@ def paldeck_display_key(pal: PalEntity) -> tuple:
         pal.IsRarePal or False,
         pal.Level or 1,
     )
-
-
-class PalIdentityConflict(ValueError):
-    def __init__(self, candidates: list[PalRecord]):
-        self.candidates = candidates
-        super().__init__("Pal identity already exists in the destination")
 
 
 class SaveManager:
@@ -125,6 +126,11 @@ class SaveManager:
 
         self._container_registry_cache = None
         self.load_warnings: list[str] = []
+
+        # Relocate, replicate and update-existing. It reads this manager rather than
+        # holding anything of its own, so a reset replaces it along with everything
+        # it would have read (spec §4.5).
+        self.pal_operations = PalOperationService(self)
 
     def open(self, file_path: str) -> Optional[GvasFile]:
         with self.session_lock:
@@ -512,7 +518,6 @@ class SaveManager:
         owner = self.get_player(record.pal.OwnerPlayerUId)
         if owner is not None:
             record.group_id = owner.group_id
-            record.pal.set_owner_player_entity(owner)
         self.pal_repository.register(record, created=created)
 
     def _register_world_records(self) -> None:
@@ -530,7 +535,6 @@ class SaveManager:
             pal = record.pal
             owner = self.get_player(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
             if owner is not None:
-                pal.set_owner_player_entity(owner)
                 self.pal_repository.register(record)
                 LOGGER.info(f"Found pal: {pal}")
                 continue
@@ -790,7 +794,7 @@ class SaveManager:
         return [record.pal for record in self.working_records()]
 
     def _container_descriptor_map(self) -> dict[str, dict]:
-        cached = getattr(self, "_container_registry_cache", None)
+        cached = self._container_registry_cache
         if cached is not None:
             return cached
         descriptors = {}
@@ -1005,6 +1009,10 @@ class SaveManager:
             ),
         )
 
+    def invalidate_storage_descriptors(self) -> None:
+        """Forget the cached descriptors after a Pal changed how full something is."""
+        self._container_registry_cache = None
+
     def get_storage_descriptor(self, storage_key: str) -> Optional[dict]:
         return next(
             (
@@ -1052,7 +1060,7 @@ class SaveManager:
             "StorageKind": record_ref.storage_kind,
         }
 
-    def _locker_entries(self) -> list[dict]:
+    def locker_entries(self) -> list[dict]:
         world_data = self.gvas_file.properties["worldSaveData"]["value"]
         locker = world_data.get("InLockerCharacterInstanceIDArray")
         if locker is None:
@@ -1070,14 +1078,14 @@ class SaveManager:
     def _locker_instance_id(entry: dict) -> Optional[UUID]:
         return PalObjects.get_BaseType(entry.get("InstanceId"))
 
-    def _add_locker_id(self, instance_id: UUID | str) -> None:
+    def add_locker_id(self, instance_id: UUID | str) -> None:
         instance_id = toUUID(str(instance_id))
         if any(
             self._locker_instance_id(entry) == instance_id
-            for entry in self._locker_entries()
+            for entry in self.locker_entries()
         ):
             return
-        self._locker_entries().append(
+        self.locker_entries().append(
             {
                 "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
                 "InstanceId": PalObjects.Guid(instance_id),
@@ -1085,9 +1093,9 @@ class SaveManager:
             }
         )
 
-    def _remove_locker_id(self, instance_id: UUID | str) -> None:
+    def remove_locker_id(self, instance_id: UUID | str) -> None:
         instance_id = toUUID(str(instance_id))
-        entries = self._locker_entries()
+        entries = self.locker_entries()
         entries[:] = [
             entry
             for entry in entries
@@ -1119,7 +1127,7 @@ class SaveManager:
                 (group, copy.deepcopy(group.individual_character_handle_ids))
                 for group in self.group_data.get_groups()
             ],
-            "locker": copy.deepcopy(self._locker_entries()),
+            "locker": copy.deepcopy(self.locker_entries()),
             "records": self.pal_repository.snapshot_records(),
             "registry": self._container_registry_cache,
         }
@@ -1146,7 +1154,7 @@ class SaveManager:
                 group.instance_map = {
                     str(handle["instance_id"]): handle for handle in handles
                 }
-        self._locker_entries()[:] = snapshot["locker"]
+        self.locker_entries()[:] = snapshot["locker"]
         self.pal_repository.replace_records(snapshot["records"])
         self.pal_repository.restore_created(snapshot["created"])
         self._container_registry_cache = snapshot["registry"]
@@ -1189,9 +1197,9 @@ class SaveManager:
         pal.PlayerUId = PalObjects.EMPTY_UUID
         pal.SlotId = (container.ID, slot_index)
         if owner is None:
-            pal.set_owner_player_uid(None)
+            set_owner(pal, None)
         else:
-            pal.set_owner_player_uid(owner.PlayerUId, owner)
+            set_owner(pal, owner.PlayerUId)
         return pal_obj, pal, group
 
     def _validate_world_target(self, source: PalRecord, descriptor: dict) -> None:
@@ -1204,59 +1212,16 @@ class SaveManager:
         if str(source_group_id) != str(descriptor.get("GroupId")):
             raise ValueError("Cross-guild Pal movement is not supported.")
 
-    def _prepare_global_parameter(
-        self,
-        source_parameter: dict,
-        *,
-        preserve_provenance: bool,
-    ) -> dict:
-        """A complete SaveParameter rewritten to the rules the Global Palbox keeps.
-
-        Takes and returns the parameter rather than a `PalEntity`, so a Pal that
-        does not exist yet -- a template, an import, a brand-new Pal -- can be
-        normalized before anything has been written for it to be an entity of.
-        """
-        save_parameter = copy.deepcopy(source_parameter)
-        parameter = save_parameter["value"]
-        parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
-        parameter["ItemContainerId"] = PalObjects.PalContainerId(
-            PalObjects.EMPTY_UUID
-        )
-        parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
-            PalObjects.Guid(PalObjects.EMPTY_UUID)
-        )
-        parameter["bImportedCharacter"] = PalObjects.BoolProperty(True)
-        parameter["BaseCampWorkerEventType"] = PalObjects.EnumProperty(
-            "EPalBaseCampWorkerEventType",
-            "EPalBaseCampWorkerEventType::None",
-        )
-        parameter["BaseCampWorkerEventProgressTime"] = PalObjects.FloatProperty(0.0)
-        if not preserve_provenance:
-            parameter["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-                "StructProperty",
-                {
-                    "prop_name": "OldOwnerPlayerUIds",
-                    "prop_type": "StructProperty",
-                    "values": [],
-                    "type_name": "Guid",
-                    "id": PalObjects.EMPTY_UUID,
-                },
-            )
-            parameter["SlotId"] = PalObjects.PalCharacterSlotId(
-                -1, PalObjects.EMPTY_UUID
-            )
-        return save_parameter
-
     def normalize_external_record(self, record: PalRecord) -> None:
         if record.storage_kind == "global_palbox":
-            save_parameter = self._prepare_global_parameter(
+            save_parameter = prepare_global_parameter(
                 record.pal.save_parameter, preserve_provenance=True
             )
             record.pal.pal_param.clear()
             record.pal.pal_param.update(save_parameter["value"])
             self._global_palbox.dirty = True
         elif record.storage_kind == "dps":
-            self._add_locker_id(record.pal.InstanceId)
+            self.add_locker_id(record.pal.InstanceId)
             storage = self._dps_storages.get(record.storage_key)
             if storage is not None:
                 storage.dirty = True
@@ -1274,30 +1239,6 @@ class SaveManager:
             for record in records
             if record.storage_kind == "global_palbox"
         ]
-
-    @staticmethod
-    def _restore_local_parameter_envelope(
-        incoming_parameter: dict,
-        destination_parameter: dict,
-    ) -> dict:
-        local_keys = {
-            "OwnerPlayerUId",
-            "OldOwnerPlayerUIds",
-            "SlotId",
-            "ItemContainerId",
-            "EquipItemContainerId",
-            "MapObjectConcreteInstanceIdAssignedToExpedition",
-            "BaseCampWorkerEventType",
-            "BaseCampWorkerEventProgressTime",
-            "bImportedCharacter",
-        }
-        merged = copy.deepcopy(incoming_parameter)
-        for key in local_keys:
-            if key in destination_parameter:
-                merged[key] = copy.deepcopy(destination_parameter[key])
-            else:
-                merged.pop(key, None)
-        return merged
 
     def _transfer_global(
         self,
@@ -1346,7 +1287,7 @@ class SaveManager:
             snapshot = self._snapshot_external_mutation(external_slots, [])
             try:
                 if destination.storage_kind == "global_palbox":
-                    updated_parameter = self._prepare_global_parameter(
+                    updated_parameter = prepare_global_parameter(
                         source.pal.save_parameter, preserve_provenance=True
                     )
                     destination.pal.pal_param.clear()
@@ -1357,7 +1298,7 @@ class SaveManager:
                     incoming = copy.deepcopy(
                         source.pal.save_parameter["value"]
                     )
-                    merged = self._restore_local_parameter_envelope(
+                    merged = restore_local_parameter_envelope(
                         incoming, destination.pal.pal_param
                     )
                     destination.pal.pal_param.clear()
@@ -1412,8 +1353,6 @@ class SaveManager:
                     storage_owner_uid=descriptor.get("StorageOwnerPlayerUid"),
                     pal=target_pal,
                 )
-                owner = self.get_player(target_pal.OwnerPlayerUId)
-                target_pal.set_owner_player_entity(owner)
                 self.pal_repository.register(target_record, created=True)
             except Exception:
                 self._restore_external_mutation(snapshot)
@@ -1432,7 +1371,7 @@ class SaveManager:
                 [(global_storage, target_index)], []
             )
             try:
-                save_parameter = self._prepare_global_parameter(
+                save_parameter = prepare_global_parameter(
                     source.pal.save_parameter, preserve_provenance=True
                 )
                 target_record = self.storage_adapters[
@@ -1594,21 +1533,16 @@ class SaveManager:
                 if source_group:
                     source_group.del_pal(source.pal.InstanceId)
                 self._entities_list.remove(source.native_record)
-                self._add_locker_id(source.pal.InstanceId)
+                self.add_locker_id(source.pal.InstanceId)
             else:
                 self.storage_adapters[source.storage_key].clear(source.record_key)
                 if descriptor["StorageKind"] == "world":
-                    self._remove_locker_id(source.pal.InstanceId)
+                    self.remove_locker_id(source.pal.InstanceId)
 
             self._unregister_record(source)
             if target_record.storage_kind == "dps":
                 self._register_external_record(target_record)
             else:
-                # A Pal moved into a base container has already had its owner
-                # cleared, so this binds an owner exactly when there is one.
-                owner = self.get_player(target_record.pal.OwnerPlayerUId)
-                if owner is not None:
-                    target_record.pal.set_owner_player_entity(owner)
                 self.pal_repository.register(target_record)
             self._container_registry_cache = None
             locker_action = (
@@ -1738,8 +1672,7 @@ class SaveManager:
         pal_param_snapshot = copy.deepcopy(pal_entity.pal_param)
         storage_key_snapshot = pal_record.storage_key
         slot_index_snapshot = pal_record.slot_index
-        owner_entity_snapshot = pal_entity.owner_player_entity
-        registry_snapshot = getattr(self, "_container_registry_cache", None)
+        registry_snapshot = self._container_registry_cache
 
         try:
             target_slot_index = target_container.add_slot_copy(source_slot)
@@ -1761,13 +1694,13 @@ class SaveManager:
             )
             target_owner_id = target_descriptor.get("OwnerPlayerUId")
             if target_descriptor["ContainerKind"] == "base":
-                pal_entity.set_owner_player_uid(None)
+                set_owner(pal_entity, None)
             elif not target_is_shared:
                 # A shared container keeps whoever already owned the Pal.
                 target_owner = self.get_player(target_owner_id)
                 if target_owner is None:
                     raise ValueError("Target container owner is unavailable.")
-                pal_entity.set_owner_player_uid(target_owner.PlayerUId, target_owner)
+                set_owner(pal_entity, target_owner.PlayerUId)
 
             # Owner and location both changed, and every roster reads through those
             # indexes, so they are rebuilt once the move is settled.
@@ -1784,7 +1717,6 @@ class SaveManager:
             target_container.restore_slots(target_snapshot)
             pal_entity.pal_param.clear()
             pal_entity.pal_param.update(pal_param_snapshot)
-            pal_entity.owner_player_entity = owner_entity_snapshot
             pal_record.storage_key = storage_key_snapshot
             pal_record.slot_index = slot_index_snapshot
             self.pal_repository.reindex()
@@ -1830,7 +1762,7 @@ class SaveManager:
             )
             try:
                 self.storage_adapters[record.storage_key].clear(record.record_key)
-                self._remove_locker_id(record.pal.InstanceId)
+                self.remove_locker_id(record.pal.InstanceId)
                 self._unregister_record(record)
                 self._container_registry_cache = None
                 LOGGER.info(
@@ -1959,7 +1891,7 @@ class SaveManager:
                 # parameter in a preallocated slot, and normalizing it is what
                 # clears the position and provenance a copied payload arrives with.
                 record = self.storage_adapters[storage.storage_key].allocate(
-                    self._prepare_global_parameter(
+                    prepare_global_parameter(
                         save_parameter
                         if save_parameter is not None
                         else PalObjects.DefaultPalSaveParameter(
@@ -2012,11 +1944,11 @@ class SaveManager:
             # and who owned it belongs to wherever it came from.
             pal = record.pal
             pal.SlotId = (PalObjects.EMPTY_UUID, -1)
-            pal.set_owner_player_uid(player.PlayerUId, player)
+            set_owner(pal, player.PlayerUId)
             pal.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
             )
-            self._add_locker_id(instance_id)
+            self.add_locker_id(instance_id)
             self._register_external_record(record, created=True)
             self._container_registry_cache = None
             LOGGER.info(
@@ -2208,9 +2140,9 @@ class SaveManager:
                 PalObjects.Guid(historical_uid)
             )
             if owner_player is None:
-                pal_entity.set_owner_player_uid(None)
+                set_owner(pal_entity, None)
             else:
-                pal_entity.set_owner_player_uid(owner_player.PlayerUId, owner_player)
+                set_owner(pal_entity, owner_player.PlayerUId)
             pal_entity.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
             )

@@ -1,10 +1,11 @@
 """What is left of the pre-REST Pal blueprint: containers and the move.
 
-Everything else this file held -- create, duplicate, delete, raw export and the
-two kinds of template -- is gone, replaced by the resources under `/api/pals`,
-`/api/storages` and `/api/pal-templates`. The three routes below are the last
-callers of the old `reply(status, data, msg)` envelope; S4a and S4b delete them
-along with this file when the transfer becomes an operation resource.
+Everything else this file held -- create, duplicate, delete, raw export and the two
+kinds of template -- is gone, replaced by the resources under `/api/pals`,
+`/api/storages` and `/api/pal-templates`. The move has a resource too now, in
+`api/pal_transfers.py`; these three routes are what the frontend has not been moved
+onto yet, and they are the last callers of the old `reply(status, data, msg)`
+envelope. S4b migrates the dialogs and S4c deletes this file.
 """
 
 import traceback
@@ -12,9 +13,10 @@ import traceback
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
+from palworld_pal_editor.api.pal_transfers import brief_field_changes, pal_brief
 from palworld_pal_editor.api.pals import guid_string_or_none as _guid_string_or_none
-from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
-from palworld_pal_editor.utils import LOGGER, DataProvider
+from palworld_pal_editor.core import PalIdentityConflict, SaveManager
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.utils.util import reply
 
 pal_blueprint = Blueprint("pal", __name__)
@@ -64,15 +66,15 @@ def move_pal():
             1,
             {
                 "Code": "PAL_IDENTITY_CONFLICT",
-                "Incoming": _pal_brief(source.pal) if source else None,
+                "Incoming": pal_brief(source.pal) if source else None,
                 "Candidates": [
                     _record_location(manager, candidate)
                     for candidate in conflict.candidates
                 ],
                 "LockedTarget": locked.record_key if locked else None,
-                "Existing": _pal_brief(locked.pal) if locked else None,
+                "Existing": pal_brief(locked.pal) if locked else None,
                 "FieldChanges": (
-                    _brief_field_changes(source.pal, locked.pal)
+                    brief_field_changes(source.pal, locked.pal)
                     if source and locked
                     else {}
                 ),
@@ -84,50 +86,6 @@ def move_pal():
     except Exception:
         LOGGER.error(f"Error transferring Pal: {traceback.format_exc()}")
         return reply(1, None, "Error transferring Pal. No changes were kept.")
-
-
-def _pal_brief(pal: PalEntity) -> dict:
-    return {
-        "CharacterID": pal.CharacterID,
-        "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
-        "DisplayName": pal.DisplayName,
-        "NickName": pal.NickName or "",
-        "Gender": pal.Gender.value if pal.Gender else None,
-        "Level": pal.Level or 1,
-        "Exp": pal.Exp or 0,
-        "Rank": pal.Rank or 1,
-        "FriendshipLevel": pal.FriendshipLevel or 0,
-        "FavoriteIndex": pal.FavoriteIndex,
-        "IsBOSS": pal.IsBOSS,
-        "IsRarePal": bool(pal.IsRarePal),
-        "IsAwakening": pal.IsAwakening,
-        "IsImportedCharacter": pal.IsImportedCharacter,
-        "Talent_HP": pal.Talent_HP or 0,
-        "Talent_Melee": pal.Talent_Melee or 0,
-        "Talent_Shot": pal.Talent_Shot or 0,
-        "Talent_Defense": pal.Talent_Defense or 0,
-        "Rank_HP": pal.Rank_HP or 0,
-        "Rank_Attack": pal.Rank_Attack or 0,
-        "Rank_Defence": pal.Rank_Defence or 0,
-        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
-        "ComputedMaxHP": pal.ComputedMaxHP,
-        "ComputedAttack": pal.ComputedAttack,
-        "ComputedDefense": pal.ComputedDefense,
-        "ComputedCraftSpeed": pal.ComputedCraftSpeed,
-        "Suitabilities": pal.WorkSuitabilities or {},
-        "EquipWaza": pal.EquipWaza or [],
-        "PassiveSkillList": pal.PassiveSkillList or [],
-    }
-
-
-def _brief_field_changes(incoming: PalEntity, existing: PalEntity) -> dict:
-    incoming_data = _pal_brief(incoming)
-    existing_data = _pal_brief(existing)
-    return {
-        key: {"Incoming": value, "Existing": existing_data.get(key)}
-        for key, value in incoming_data.items()
-        if value != existing_data.get(key)
-    }
 
 
 def _record_location(manager: SaveManager, record) -> dict:
