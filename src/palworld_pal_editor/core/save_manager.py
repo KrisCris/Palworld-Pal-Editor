@@ -15,6 +15,7 @@ from palworld_pal_editor.core.basecamp_data import BaseCampData
 
 from palworld_pal_editor.core.container_data import ContainerData
 from palworld_pal_editor.core.item_container_data import ItemContainerData
+from palworld_pal_editor.core.locker import LockerIndex
 
 from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
 from palworld_pal_editor.core.pal_operations import (
@@ -130,6 +131,9 @@ class SaveManager:
         # What storages this save has and what each one is. Derived, cached, and
         # invalidated by whatever moved a Pal (spec §8.2).
         self.storage_directory = StorageDirectory(self)
+        # Which Pals Level.sav says are in a DPS. Maintained by the mutations
+        # that put one there or take it out.
+        self.locker = LockerIndex(self)
         self.load_warnings: list[str] = []
 
         # Relocate, replicate and update-existing. It reads this manager rather than
@@ -745,61 +749,10 @@ class SaveManager:
 
 
 
-    def locker_entries(self) -> list[dict]:
-        world_data = self.gvas_file.properties["worldSaveData"]["value"]
-        locker = world_data.get("InLockerCharacterInstanceIDArray")
-        if locker is None:
-            locker = {
-                "set_type": "StructProperty",
-                "id": None,
-                "struct_type": "StructProperty",
-                "type": "SetProperty",
-                "value": [],
-            }
-            world_data["InLockerCharacterInstanceIDArray"] = locker
-        return locker["value"]
 
-    @staticmethod
-    def _locker_instance_id(entry: dict) -> Optional[UUID]:
-        return PalObjects.get_BaseType(entry.get("InstanceId"))
 
-    def add_locker_id(self, instance_id: UUID | str) -> None:
-        instance_id = toUUID(str(instance_id))
-        if any(
-            self._locker_instance_id(entry) == instance_id
-            for entry in self.locker_entries()
-        ):
-            return
-        self.locker_entries().append(
-            {
-                "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
-                "InstanceId": PalObjects.Guid(instance_id),
-                "DebugName": PalObjects.StrProperty(""),
-            }
-        )
 
-    def remove_locker_id(self, instance_id: UUID | str) -> None:
-        instance_id = toUUID(str(instance_id))
-        entries = self.locker_entries()
-        entries[:] = [
-            entry
-            for entry in entries
-            if self._locker_instance_id(entry) != instance_id
-        ]
 
-    def normalize_external_record(self, record: PalRecord) -> None:
-        if record.storage_kind == "global_palbox":
-            save_parameter = prepare_global_parameter(
-                record.pal.save_parameter, preserve_provenance=True
-            )
-            record.pal.pal_param.clear()
-            record.pal.pal_param.update(save_parameter["value"])
-            self._global_palbox.dirty = True
-        elif record.storage_kind == "dps":
-            self.add_locker_id(record.pal.InstanceId)
-            storage = self._dps_storages.get(record.storage_key)
-            if storage is not None:
-                storage.dirty = True
 
     def delete_pal(self, record_key: str) -> bool:
         # Deleting a Pal is releasing it from wherever it is and never putting it
@@ -812,12 +765,12 @@ class SaveManager:
             return False
         touched = TouchedParents()
         if record.storage_kind == "dps":
-            touched.watch_list(self.locker_entries())
+            touched.watch_list(self.locker.entries())
         try:
             self.pal_operations.release_record(record, touched)
             if record.storage_kind == "dps":
                 # A Pal that is nowhere is not in the locker either.
-                self.remove_locker_id(record.pal.InstanceId)
+                self.locker.remove(record.pal.InstanceId)
         except Exception:
             touched.restore()
             LOGGER.warning(
@@ -923,7 +876,7 @@ class SaveManager:
         touched = TouchedParents()
         touched.watch_dict(storage.entries[target_index])
         touched.watch_storage_dirty(storage)
-        touched.watch_list(self.locker_entries())
+        touched.watch_list(self.locker.entries())
         try:
             instance_id = self._unused_instance_id()
             record = self.storage_adapters[storage.storage_key].allocate(
@@ -943,7 +896,7 @@ class SaveManager:
             pal.pal_param.pop(
                 "MapObjectConcreteInstanceIdAssignedToExpedition", None
             )
-            self.add_locker_id(instance_id)
+            self.locker.add(instance_id)
             self._register_external_record(record, created=True)
             self.storage_directory.invalidate()
             LOGGER.info(
@@ -1020,7 +973,7 @@ class SaveManager:
             # Global Palbox and DPS Pals live outside the world save, so a heal that
             # skips this is discarded when the session is written -- the same
             # normalization every single-Pal edit does, owed to every Pal here too.
-            self.normalize_external_record(record)
+            self.pal_operations.normalize_external_record(record)
             self.pal_repository.mark_modified(record)
     
     def add_pal(

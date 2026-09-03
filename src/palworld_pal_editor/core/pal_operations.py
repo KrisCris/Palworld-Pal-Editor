@@ -570,14 +570,14 @@ class PalOperationService:
         touched.watch_dict(adapter.storage.entries[adapter.storage.free_index()])
         touched.watch_storage_dirty(adapter.storage)
         if entering_from_world:
-            touched.watch_list(manager.locker_entries())
+            touched.watch_list(manager.locker.entries())
         try:
             allocated = adapter.allocate(save_parameter, instance_id)
             self.release_record(source, touched)
             if entering_from_world:
                 # A Pal held outside the world save is registered in the locker, and
                 # the game treats one that is not as still standing in its container.
-                manager.add_locker_id(instance_id)
+                manager.locker.add(instance_id)
             manager.pal_repository.rebind_and_rekey(
                 source,
                 record_key=allocated.record_key,
@@ -611,7 +611,7 @@ class PalOperationService:
         touched = TouchedParents()
         touched.watch_container(container)
         touched.watch_group(group)
-        touched.watch_list(manager.locker_entries())
+        touched.watch_list(manager.locker.entries())
         try:
             slot_index = container.add_pal(instance_id)
             if slot_index < 0:
@@ -624,7 +624,7 @@ class PalOperationService:
             manager.world_adapter.append(native_record)
             touched.on_undo(lambda: manager.world_adapter.remove(native_record))
             self.release_record(source, touched)
-            manager.remove_locker_id(instance_id)
+            manager.locker.remove(instance_id)
             manager.pal_repository.rebind_and_rekey(
                 source,
                 record_key=f"world:{instance_id}",
@@ -788,6 +788,28 @@ class PalOperationService:
         pal = WorldPalAdapter.entity(native_record)
         set_owner(pal, plan.owner_uid)
         return native_record, pal
+
+    def normalize_external_record(self, record: PalRecord) -> None:
+        """Make an external record match the format its storage actually stores.
+
+        A Pal read out of a GPS file carries a global envelope; a Pal in a DPS has
+        to be in Level.sav's locker for the game to show it. Both are mutations of
+        an already-placed Pal, which is why they live with the other mutations
+        rather than on the session that loaded the file.
+        """
+        manager = self._manager
+        if record.storage_kind == "global_palbox":
+            save_parameter = prepare_global_parameter(
+                record.pal.save_parameter, preserve_provenance=True
+            )
+            record.pal.pal_param.clear()
+            record.pal.pal_param.update(save_parameter["value"])
+            manager.global_palbox.dirty = True
+        elif record.storage_kind == "dps":
+            manager.locker.add(record.pal.InstanceId)
+            storage = manager.dps_storages.get(record.storage_key)
+            if storage is not None:
+                storage.dirty = True
 
     def release_record(self, source: PalRecord, touched: TouchedParents) -> None:
         """Take the Pal out of wherever it is now, in that format's own terms.

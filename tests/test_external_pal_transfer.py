@@ -203,7 +203,7 @@ def test_a_second_local_twin_makes_a_confirmed_overwrite_ambiguous_again(tmp_pat
     duplicate = lossy_dps.allocate(
         gps_record.pal.save_parameter, gps_record.pal.InstanceId
     )
-    manager.add_locker_id(duplicate.pal.InstanceId)
+    manager.locker.add(duplicate.pal.InstanceId)
     manager._register_external_record(duplicate)
     source_snapshot = copy.deepcopy(source.pal.pal_param)
 

@@ -1,4 +1,5 @@
 import threading
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -165,12 +166,15 @@ class PalFamilyProviderTests(unittest.TestCase):
             def get_player(self, _player_uid):
                 return None
 
-            def normalize_external_record(self, _record):
-                pass
-
             @property
             def storage_directory(self):
                 return FakeStorageDirectory()
+
+            @property
+            def pal_operations(self):
+                # A world record needs no normalizing; this Pal is not in an
+                # external storage, so the call is a no-op either way.
+                return SimpleNamespace(normalize_external_record=lambda _record: None)
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():

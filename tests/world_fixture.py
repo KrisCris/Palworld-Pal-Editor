@@ -63,5 +63,5 @@ def locker_ids(manager: SaveManager) -> list[str]:
     """Every Pal the world save says is being held outside it."""
     return [
         str(PalObjects.get_BaseType(entry["InstanceId"]))
-        for entry in manager.locker_entries()
+        for entry in manager.locker.entries()
     ]

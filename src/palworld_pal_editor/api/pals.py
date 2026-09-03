@@ -208,7 +208,7 @@ def commit_pal_edit(manager: SaveManager, record: PalRecord) -> dict:
     session is saved, and a changed Pal is one the change-set marks have to know
     about. Forgetting either is silent, which is why no route does it by hand.
     """
-    manager.normalize_external_record(record)
+    manager.pal_operations.normalize_external_record(record)
     manager.pal_repository.mark_modified(record)
     return operation_result(manager, record)
 
