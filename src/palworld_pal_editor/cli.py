@@ -95,7 +95,7 @@ def list_player_pals(player: PlayerEntity | str) -> list[PalEntity]:
         player = get_player(player)
     pals = [
         record.pal
-        for record in SaveManager().sorted_records_for_roster(player.PlayerUId)
+        for record in SaveManager().rosters.sorted_records_for_roster(player.PlayerUId)
     ]
     for pal in pals:
         LOGGER.info(f" - {pal}")

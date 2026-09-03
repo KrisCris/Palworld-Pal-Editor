@@ -1,6 +1,5 @@
 import copy
 from pathlib import Path
-import re
 import threading
 import traceback
 from typing import Optional
@@ -31,6 +30,7 @@ from palworld_pal_editor.core.pal_storage_adapters import (
     WorldPalAdapter,
 )
 from palworld_pal_editor.core.player_repository import PlayerRepository
+from palworld_pal_editor.core.rosters import RosterIndex
 from palworld_pal_editor.core.storage_directory import StorageDirectory
 from palworld_pal_editor.core.save_codec import (
     MAIN_SKIP_PROPERTIES,
@@ -42,24 +42,10 @@ from palworld_pal_editor.core.save_io import (
     backup_saves,
     restore_saves,
 )
-from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
+from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.core.group_data import GroupData
 from palworld_pal_editor.core.guild_lab_data import GuildLabData
 
-def paldeck_display_key(pal: PalEntity) -> tuple:
-    """The Pal list's display order, unchanged from when it lived on PlayerEntity.
-
-    It reads nothing but the Pal itself, so it sorts a roster of records as happily
-    as it sorted a palbox of entities.
-    """
-    return (
-        pal.IsHuman or False,
-        alphanumeric_key(pal.PalDeckID),
-        pal.IsTower,
-        pal.IsBOSS,
-        pal.IsRarePal or False,
-        pal.Level or 1,
-    )
 
 
 class SaveManager:
@@ -126,6 +112,8 @@ class SaveManager:
         # What storages this save has and what each one is. Derived, cached, and
         # invalidated by whatever moved a Pal (spec §8.2).
         self.storage_directory = StorageDirectory(self)
+        # Which Pals each list shows. Derived on every call, never maintained.
+        self.rosters = RosterIndex(self)
         # Which Pals Level.sav says are in a DPS. Maintained by the mutations
         # that put one there or take it out.
         self.locker = LockerIndex(self)
@@ -485,7 +473,7 @@ class SaveManager:
         for player in self.players:
             LOGGER.newline()
             LOGGER.info(f"{player}")
-            for record in self.sorted_records_for_roster(player.PlayerUId):
+            for record in self.rosters.sorted_records_for_roster(player.PlayerUId):
                 LOGGER.info(f"\t{record.pal}")
 
         LOGGER.newline()
@@ -596,89 +584,9 @@ class SaveManager:
         raise ValueError(f"Unknown Pal record domain: {domain}")
 
 
-    def working_records(self) -> list[PalRecord]:
-        """Every Pal standing in a base camp's container, in base-worker order.
 
-        A base worker is not a kind of record, it is a place: an unowned Pal in a
-        container some camp owns. The camps say which containers those are and the
-        repository's storage index says who is in them, so both halves are index
-        hits and neither can drift out of sync with the other.
 
-        With no save open there are no camps to ask, which is a session holding no
-        base workers rather than a failure -- the same empty answer `get_players`
-        already gives from its own reset repository.
-        """
-        if self.camp_data is None:
-            return []
-        records = [
-            record
-            for camp in self.camp_data.get_camps()
-            if camp.container_id
-            for record in self.pal_repository.records_for_storage(
-                WorldPalAdapter.storage_key(camp.container_id)
-            )
-            if not record.pal.OwnerPlayerUId
-        ]
-        return sorted(
-            records,
-            key=lambda record: (
-                alphanumeric_key(record.pal.PalDeckID),
-                record.pal.Level or 1,
-            ),
-        )
 
-    def records_for_roster(self, roster_key: str) -> list[PalRecord]:
-        """The Pals one roster lists, derived on every call.
-
-        Nothing is stored: a roster is a question asked of the records, not a
-        hand-maintained list of record keys that every create, move and transfer
-        has to remember to re-file. Forgetting to re-file was silent and left a
-        list pointing at the previous owner.
-
-        A player roster is named by the player's uid. `base-workers`,
-        `global-palbox` and `unrostered` name themselves.
-        """
-        key = str(roster_key)
-        if key == "base-workers":
-            return self.working_records()
-        if key == "global-palbox":
-            if self._global_palbox is None:
-                return []
-            return self.pal_repository.records_for_storage(
-                self._global_palbox.storage_key
-            )
-        if key == "unrostered":
-            return self._unrostered_records()
-        # A Pal in the Global Palbox can still carry the uid of whoever deposited
-        # it; it belongs to that storage's list, not to the depositor's.
-        return [
-            record
-            for record in self.pal_repository.records_for_owner(key)
-            if record.storage_kind != "global_palbox"
-        ]
-
-    def _unrostered_records(self) -> list[PalRecord]:
-        """Pals no player, base or Global Palbox list claims.
-
-        No owner and no base container, or an owner uid naming a player this save
-        does not contain. This is the one roster with no index to ask, which is
-        fitting -- it is defined by every other roster failing to match.
-        """
-        working = {record.record_key for record in self.working_records()}
-        return [
-            record
-            for record in self.pal_repository.records()
-            if record.storage_kind != "global_palbox"
-            and self.get_player(record.pal.OwnerPlayerUId) is None
-            and record.record_key not in working
-        ]
-
-    def sorted_records_for_roster(self, roster_key: str | UUID) -> list[PalRecord]:
-        """A roster in the order the Pal list displays it."""
-        return sorted(
-            self.records_for_roster(str(roster_key)),
-            key=lambda record: paldeck_display_key(record.pal),
-        )
 
     def get_players(self) -> list[PlayerEntity]:
         return self.players.all()
@@ -722,7 +630,7 @@ class SaveManager:
         return (world[0] if world else records[0]).pal
 
     def get_working_pals(self) -> list[PalEntity]:
-        return [record.pal for record in self.working_records()]
+        return [record.pal for record in self.rosters.working_records()]
 
 
 

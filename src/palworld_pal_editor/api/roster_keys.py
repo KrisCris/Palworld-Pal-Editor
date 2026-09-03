@@ -56,5 +56,5 @@ def roster_key_for_record(manager: SaveManager, record: PalRecord) -> str:
     owner = manager.get_player(record.pal.OwnerPlayerUId)
     if owner is not None:
         return f"{PLAYER_ROSTER_PREFIX}{owner.PlayerUId}"
-    working = {item.record_key for item in manager.working_records()}
+    working = {item.record_key for item in manager.rosters.working_records()}
     return "base-workers" if record.record_key in working else "unrostered"

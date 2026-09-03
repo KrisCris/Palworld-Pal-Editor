@@ -39,7 +39,7 @@ def roster_entries(manager: SaveManager) -> list[dict]:
         }
         for player in manager.get_players()
     ]
-    if manager.working_records():
+    if manager.rosters.working_records():
         entries.append(
             {
                 "rosterKey": "base-workers",
@@ -79,8 +79,8 @@ def require_roster(manager: SaveManager, roster_key: str) -> str:
 def roster_records(manager: SaveManager, roster_key: str) -> list:
     require_roster(manager, roster_key)
     if roster_key in FIXED_ROSTERS:
-        return manager.records_for_roster(roster_key)
-    return manager.sorted_records_for_roster(core_roster_key(roster_key))
+        return manager.rosters.records_for_roster(roster_key)
+    return manager.rosters.sorted_records_for_roster(core_roster_key(roster_key))
 
 
 @rosters_blueprint.route("", methods=["GET"])

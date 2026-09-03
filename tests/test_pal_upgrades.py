@@ -22,8 +22,8 @@ class PalUpgradeTests(unittest.TestCase):
         cls.records = [
             record
             for player in cls.manager.get_players()
-            for record in cls.manager.records_for_roster(player.PlayerUId)
-        ] + cls.manager.working_records()
+            for record in cls.manager.rosters.records_for_roster(player.PlayerUId)
+        ] + cls.manager.rosters.working_records()
         cls.pals = [record.pal for record in cls.records]
 
     def test_level_80_assignment_preserves_existing_exp(self):

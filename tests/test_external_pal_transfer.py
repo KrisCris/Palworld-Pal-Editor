@@ -39,7 +39,7 @@ def a_world_pal(manager, player_uid):
     """One of a player's Pals that is really standing in the container it records."""
     return next(
         record
-        for record in manager.records_for_roster(player_uid)
+        for record in manager.rosters.records_for_roster(player_uid)
         if record.storage_kind == "world"
         and not record.pal.IsExpeditionPal
         and record.storage_key is not None
@@ -236,7 +236,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
     gps_source = manager.pal_mutations.create("global-palbox", "global-palbox")
     world_source = next(
         record
-        for record in manager.records_for_roster(LOSSY_UID)
+        for record in manager.rosters.records_for_roster(LOSSY_UID)
         if record.storage_kind == "world"
         and record.storage_key is not None
     )
@@ -291,7 +291,7 @@ def test_base_worker_creation_targets_and_create(tmp_path):
 
     assert created.storage_kind == "world"
     assert created.pal.OwnerPlayerUId is None
-    assert created in manager.records_for_roster("base-workers")
+    assert created in manager.rosters.records_for_roster("base-workers")
     assert manager.get_record(created.record_key) is created
 
     assert manager.save(str(manager.file_path)) is True
@@ -307,7 +307,7 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     manager = open_copied_world(tmp_path)
     base_records = [
         record
-        for record in manager.records_for_roster("base-workers")
+        for record in manager.rosters.records_for_roster("base-workers")
         if record.storage_key is not None
     ]
     assert base_records
@@ -318,5 +318,5 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     assert clone.pal.InstanceId != source.pal.InstanceId
     assert clone.pal.OwnerPlayerUId is None
     assert clone.storage_kind == "world"
-    assert clone in manager.records_for_roster("base-workers")
+    assert clone in manager.rosters.records_for_roster("base-workers")
     assert manager.get_record(clone.record_key) is clone

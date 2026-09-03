@@ -123,7 +123,7 @@ def test_save_manager_discovers_qualified_dps_and_optional_global_records(tmp_pa
         } == {f"world:{WORLD_PAL_ID}", "gps:0"}
         assert f"dps:{OWNER_UID}:0" in {
             record.record_key
-            for record in manager.records_for_roster(str(OWNER_UID))
+            for record in manager.rosters.records_for_roster(str(OWNER_UID))
         }
     finally:
         SaveManager._instance = previous_manager

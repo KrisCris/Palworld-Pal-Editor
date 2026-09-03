@@ -54,11 +54,11 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
 
     def test_fixture_pals_have_one_matching_physical_slot(self):
         records = [
-            *self.manager.working_records(),
+            *self.manager.rosters.working_records(),
             *(
                 record
                 for player in self.manager.get_players()
-                for record in self.manager.records_for_roster(player.PlayerUId)
+                for record in self.manager.rosters.records_for_roster(player.PlayerUId)
             ),
         ]
 
@@ -71,7 +71,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
 
     def test_base_pals_resolve_to_each_registered_base_container(self):
         counts = {}
-        for record in self.manager.working_records():
+        for record in self.manager.rosters.working_records():
             counts[record.storage_key] = counts.get(record.storage_key, 0) + 1
 
         self.assertEqual([3, 36, 44], sorted(counts.values()))
@@ -121,7 +121,7 @@ class PalContainerRoundTripTests(unittest.TestCase):
             )
             record = next(
                 record
-                for record in manager.records_for_roster(player.PlayerUId)
+                for record in manager.rosters.records_for_roster(player.PlayerUId)
                 if str(record.pal.ContainerId) == str(player.PalStorageContainerId)
                 and not record.pal.IsExpeditionPal
             )

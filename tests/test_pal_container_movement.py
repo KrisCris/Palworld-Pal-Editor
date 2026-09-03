@@ -13,6 +13,7 @@ from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.core.rosters import RosterIndex
 from palworld_pal_editor.core.storage_directory import StorageDirectory
 
 
@@ -161,7 +162,7 @@ def in_roster(manager, roster_key, pal_id):
     """Whether the roster the old UI asks for lists this Pal."""
     return any(
         str(record.pal.InstanceId) == str(pal_id)
-        for record in manager.records_for_roster(roster_key)
+        for record in manager.rosters.records_for_roster(roster_key)
     )
 
 
@@ -285,6 +286,7 @@ def movement_manager(target_kind="base"):
     # collaborators the same way. The cache below is then the whole directory:
     # these fakes have no real containers for it to derive descriptors from.
     manager.storage_directory = StorageDirectory(manager)
+    manager.rosters = RosterIndex(manager)
     manager.storage_directory._cache = {
         str(source.ID): {
             "ContainerId": str(source.ID),

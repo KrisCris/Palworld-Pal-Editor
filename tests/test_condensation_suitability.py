@@ -82,8 +82,8 @@ class CondensationSuitabilityTests(unittest.TestCase):
         records = [
             record
             for player in manager.get_players()
-            for record in manager.records_for_roster(player.PlayerUId)
-        ] + manager.working_records()
+            for record in manager.rosters.records_for_roster(player.PlayerUId)
+        ] + manager.rosters.working_records()
         record = next(
             item
             for item in records

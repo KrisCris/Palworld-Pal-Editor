@@ -59,7 +59,7 @@ class PalCreationTests(unittest.TestCase):
         """A live Pal's complete payload, marked so it can be recognised again."""
         record = next(
             item
-            for item in self.manager.records_for_roster(OWNER_UID)
+            for item in self.manager.rosters.records_for_roster(OWNER_UID)
             if item.storage_kind == "world"
         )
         parameter = copy.deepcopy(record.pal.save_parameter)
@@ -184,7 +184,7 @@ class PalCreationTests(unittest.TestCase):
         self.assertNotIn(record.native_record, self.manager._entities_list)
 
     def test_deleting_a_base_worker_takes_it_out_of_the_working_roster(self):
-        record = self.manager.working_records()[0]
+        record = self.manager.rosters.working_records()[0]
         instance_id = str(record.pal.InstanceId)
 
         self.assertTrue(self.manager.pal_mutations.delete(record.record_key))
@@ -193,7 +193,7 @@ class PalCreationTests(unittest.TestCase):
         # container -- so removing the record is what empties the roster.
         self.assertNotIn(
             instance_id,
-            {str(item.pal.InstanceId) for item in self.manager.working_records()},
+            {str(item.pal.InstanceId) for item in self.manager.rosters.working_records()},
         )
         self.assertIsNone(self.manager.get_record(record.record_key))
 
