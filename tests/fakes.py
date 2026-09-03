@@ -45,6 +45,13 @@ def record_location(record: PalRecord, *, container_kind: str = "world") -> dict
     }
 
 
+class FakeStorageDirectory:
+    """The one question `api/` asks the directory about a Pal outside a session."""
+
+    def resolve_record_location(self, record: PalRecord) -> dict:
+        return record_location(record)
+
+
 class LocationManager:
     """Answers only the location and created-state questions the Pal DTO asks."""
 
@@ -54,9 +61,7 @@ class LocationManager:
         self.pal_repository = PalRepository()
         if created is not None:
             self.pal_repository.register(created, created=True)
-
-    def resolve_record_location(self, record: PalRecord) -> dict:
-        return record_location(record)
+        self.storage_directory = FakeStorageDirectory()
 
     def get_player(self, _player_uid):
         return None

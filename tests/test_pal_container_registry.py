@@ -25,7 +25,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         SaveManager._instance = cls.previous_manager
 
     def test_registry_classifies_players_bases_and_unknown_without_capacity_guessing(self):
-        descriptors = self.manager.get_container_registry()
+        descriptors = self.manager.storage_directory.registry()
         by_kind = {}
         for descriptor in descriptors:
             by_kind.setdefault(descriptor["ContainerKind"], []).append(descriptor)
@@ -81,17 +81,17 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         group = self.manager.group_data.get_group(camps[0].owner_group_id)
         original_base_ids = group._group_param["base_ids"]
         original_names = [camp._camp_param.get("name") for camp in camps]
-        original_cache = self.manager._container_registry_cache
+        original_cache = self.manager.storage_directory._cache
 
         try:
             group._group_param["base_ids"] = [camp.id for camp in reversed(camps)]
             for camp in camps:
                 camp._camp_param["name"] = "新規生成拠点テンプレート名2(仮)"
-            self.manager._container_registry_cache = None
+            self.manager.storage_directory._cache = None
 
             descriptors = {
                 item["BaseId"]: item
-                for item in self.manager.get_container_registry()
+                for item in self.manager.storage_directory.registry()
                 if item["ContainerKind"] == "base"
             }
 
@@ -103,7 +103,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
             group._group_param["base_ids"] = original_base_ids
             for camp, name in zip(camps, original_names):
                 camp._camp_param["name"] = name
-            self.manager._container_registry_cache = original_cache
+            self.manager.storage_directory._cache = original_cache
 
 
 class PalContainerRoundTripTests(unittest.TestCase):

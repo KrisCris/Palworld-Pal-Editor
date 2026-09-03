@@ -108,7 +108,7 @@ def test_deleting_and_creating_in_a_dps_keep_the_locker_in_step(tmp_path):
 
     target_keys = {
         descriptor["StorageKey"]
-        for descriptor in manager.creation_targets(LOSSY_UID)
+        for descriptor in manager.storage_directory.creation_targets(LOSSY_UID)
     }
     assert target_keys == {
         f"world-container:{lossy.OtomoCharacterContainerId}",
@@ -160,7 +160,7 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
     source = manager.create_pal("global-palbox", "global-palbox")
     base = next(
         descriptor
-        for descriptor in manager.get_container_registry()
+        for descriptor in manager.storage_directory.registry()
         if descriptor["ContainerKind"] == "base"
     )
 
@@ -283,7 +283,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
 
 def test_base_worker_creation_targets_and_create(tmp_path):
     manager = open_copied_world(tmp_path)
-    base_targets = manager.creation_targets("base-workers")
+    base_targets = manager.storage_directory.creation_targets("base-workers")
     assert base_targets
     base_key = base_targets[0]["StorageKey"]
 

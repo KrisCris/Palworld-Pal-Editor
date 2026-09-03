@@ -13,6 +13,7 @@ from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.core.storage_directory import StorageDirectory
 
 
 CONTAINER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -115,7 +116,7 @@ def as_base_worker(manager, pal, container_id=CONTAINER_ID):
 
 def as_shared_cage(manager, container):
     """Make the target the one world container nobody owns: a viewing cage."""
-    manager._container_registry_cache[str(container.ID)].update(
+    manager.storage_directory._cache[str(container.ID)].update(
         {"Shared": True, "OwnerPlayerUId": None, "GroupId": None}
     )
 
@@ -272,7 +273,11 @@ def movement_manager(target_kind="base"):
     manager._global_palbox = None
     manager.group_data = FakeGroupData(FakeGroup())
     manager.pal_operations = PalOperationService(manager)
-    manager._container_registry_cache = {
+    # This manager is assembled field by field rather than loaded, so it gets its
+    # collaborators the same way. The cache below is then the whole directory:
+    # these fakes have no real containers for it to derive descriptors from.
+    manager.storage_directory = StorageDirectory(manager)
+    manager.storage_directory._cache = {
         str(source.ID): {
             "ContainerId": str(source.ID),
             "StorageKey": WorldPalAdapter.storage_key(source.ID),
@@ -454,9 +459,9 @@ class SaveManagerMovementTests(unittest.TestCase):
         target.size = 40
         source_player.PalStorageContainerId = source.ID
         manager.camp_data = FakeCampData()
-        manager._container_registry_cache = None
+        manager.storage_directory._cache = None
 
-        descriptor = manager._container_descriptor_map()[str(target.ID)]
+        descriptor = manager.storage_directory._descriptor_map()[str(target.ID)]
 
         self.assertEqual("special", descriptor["ContainerKind"])
         self.assertEqual("Viewing Cage", descriptor["ContainerLabel"])

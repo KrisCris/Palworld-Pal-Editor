@@ -61,7 +61,7 @@ def _change_state(manager: SaveManager, record: PalRecord) -> str:
 def pal_summary(manager: SaveManager, record: PalRecord) -> dict:
     """One roster row: enough to render, sort, group and badge it, and no more."""
     pal = record.pal
-    location = manager.resolve_record_location(record)
+    location = manager.storage_directory.resolve_record_location(record)
     static_record = DataProvider.get_pal_record(pal.CharacterID) or {}
     return {
         "recordKey": record.record_key,

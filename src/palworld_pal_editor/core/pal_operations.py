@@ -289,7 +289,7 @@ class PalOperationService:
             # A World Pal that does not occupy the slot it records for itself has no
             # position to move out of (spec §8.2).
             return _refused("SOURCE_LOCATION_ANOMALY")
-        descriptor = manager.get_storage_descriptor(target_storage_key)
+        descriptor = manager.storage_directory.descriptor(target_storage_key)
         if descriptor is None:
             return _refused("TARGET_NOT_FOUND")
         if descriptor["StorageKey"] == source.storage_key:
@@ -756,7 +756,7 @@ class PalOperationService:
             f"target_storage={destination.storage_key} "
             f"target_slot={destination.slot_index} pal={destination.pal.InstanceId}"
         )
-        manager.invalidate_storage_descriptors()
+        manager.storage_directory.invalidate()
         return OperationOutcome(
             destination, affected_storage_keys=[destination.storage_key]
         )
@@ -844,7 +844,7 @@ class PalOperationService:
         manager = self._manager
         if modified:
             manager.pal_repository.mark_modified(record)
-        manager.invalidate_storage_descriptors()
+        manager.storage_directory.invalidate()
         LOGGER.info(
             "Pal transfer succeeded: "
             f"result_record={record.record_key} "

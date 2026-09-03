@@ -83,7 +83,7 @@ def brief_field_changes(incoming: PalEntity, existing: PalEntity) -> dict:
 
 def _candidate(manager: SaveManager, record: PalRecord) -> dict:
     """One Pal the user could be about to overwrite, named well enough to pick."""
-    location = manager.resolve_record_location(record)
+    location = manager.storage_directory.resolve_record_location(record)
     return {
         "recordKey": record.record_key,
         "storageKey": record.storage_key,

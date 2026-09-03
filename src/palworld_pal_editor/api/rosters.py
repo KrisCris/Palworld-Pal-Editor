@@ -118,5 +118,5 @@ def list_pal_creation_targets(roster_key: str):
         require_roster(manager, roster_key)
         return [
             descriptor["StorageKey"]
-            for descriptor in manager.creation_targets(core_roster_key(roster_key))
+            for descriptor in manager.storage_directory.creation_targets(core_roster_key(roster_key))
         ]

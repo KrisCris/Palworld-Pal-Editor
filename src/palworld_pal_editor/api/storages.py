@@ -160,7 +160,7 @@ def storage_descriptor(descriptor: dict, order: dict) -> dict:
 
 
 def require_descriptor(manager: SaveManager, storage_key: str) -> dict:
-    descriptor = manager.get_storage_descriptor(storage_key)
+    descriptor = manager.storage_directory.descriptor(storage_key)
     if descriptor is None:
         raise ApiError(
             "STORAGE_NOT_FOUND",
@@ -206,7 +206,7 @@ def list_storages():
         order = player_order(manager)
         return [
             storage_descriptor(descriptor, order)
-            for descriptor in manager.get_container_registry()
+            for descriptor in manager.storage_directory.registry()
         ]
 
 
@@ -283,7 +283,7 @@ def create_storage_pal(storage_key: str):
 
     manager = SaveManager()
     with manager.session_lock:
-        descriptor = manager.get_storage_descriptor(storage_key)
+        descriptor = manager.storage_directory.descriptor(storage_key)
         if descriptor is None:
             raise ApiError(
                 "STORAGE_NOT_FOUND",

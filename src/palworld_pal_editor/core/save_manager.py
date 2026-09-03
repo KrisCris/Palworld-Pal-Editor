@@ -35,6 +35,7 @@ from palworld_pal_editor.core.pal_storage_adapters import (
     WorldPalAdapter,
 )
 from palworld_pal_editor.core.player_repository import PlayerRepository
+from palworld_pal_editor.core.storage_directory import StorageDirectory
 from palworld_pal_editor.core.save_codec import (
     MAIN_SKIP_PROPERTIES,
     PLAYER_SKIP_PROPERTIES,
@@ -126,7 +127,9 @@ class SaveManager:
         self._dps_storages: dict[str, PalStorageSaveFile] = {}
         self._global_palbox: PalStorageSaveFile | None = None
 
-        self._container_registry_cache = None
+        # What storages this save has and what each one is. Derived, cached, and
+        # invalidated by whatever moved a Pal (spec §8.2).
+        self.storage_directory = StorageDirectory(self)
         self.load_warnings: list[str] = []
 
         # Relocate, replicate and update-existing. It reads this manager rather than
@@ -226,7 +229,7 @@ class SaveManager:
             self._load_players()
             self._register_world_records()
             self._load_external_storages()
-            self._container_registry_cache = None
+            self.storage_directory.invalidate()
 
             LOGGER.info("Done")
         return self.gvas_file
@@ -434,6 +437,15 @@ class SaveManager:
     @property
     def has_global_palbox(self) -> bool:
         return self._global_palbox is not None
+
+    @property
+    def dps_storages(self) -> dict[str, PalStorageSaveFile]:
+        """Every loaded Dimensional Pal Storage, by storage key."""
+        return self._dps_storages
+
+    @property
+    def global_palbox(self) -> Optional[PalStorageSaveFile]:
+        return self._global_palbox
 
     def _unregister_record(self, record: PalRecord) -> None:
         self.pal_repository.unregister(record)
@@ -728,277 +740,10 @@ class SaveManager:
     def get_working_pals(self) -> list[PalEntity]:
         return [record.pal for record in self.working_records()]
 
-    def _container_descriptor_map(self) -> dict[str, dict]:
-        cached = self._container_registry_cache
-        if cached is not None:
-            return cached
-        # An unloaded session has no containers to describe. Left unsaid, the
-        # camp and container reads below would raise on None and every storage
-        # route would answer 500 with a traceback for an ordinary startup state.
-        if self.container_data is None or self.camp_data is None:
-            return {}
-        descriptors = {}
 
-        def add_descriptor(container_id, **values):
-            container = self.container_data.get_container(container_id)
-            if container is None:
-                return
-            descriptors[str(container.ID)] = {
-                "ContainerId": str(container.ID),
-                "StorageKey": f"world-container:{container.ID}",
-                "StorageKind": "world",
-                "ContainerKind": values["kind"],
-                "ContainerLabel": values["label"],
-                "OwnerPlayerUId": values.get("owner_player_uid"),
-                "StorageOwnerPlayerUid": values.get("owner_player_uid"),
-                "OwnerName": values.get("owner_name"),
-                "BaseId": values.get("base_id"),
-                "BaseName": values.get("base_name"),
-                "BaseOrdinal": values.get("base_ordinal"),
-                "GroupId": values.get("group_id"),
-                "Size": container.size,
-                "Capacity": container.size,
-                "Occupied": len(container.slots),
-                "Classification": values["classification"],
-                "MovableInto": values["movable_into"],
-                "CloneableInto": False,
-                "Shared": values.get("shared", False),
-                "Anomaly": values.get("anomaly"),
-            }
 
-        for player in self.get_players():
-            owner_id = str(player.PlayerUId)
-            group_id = str(player.group_id) if player.group_id else None
-            add_descriptor(
-                player.OtomoCharacterContainerId,
-                kind="party",
-                label=f"{player.NickName} · Party",
-                owner_player_uid=owner_id,
-                owner_name=player.NickName,
-                group_id=group_id,
-                classification="exact",
-                movable_into=True,
-            )
-            add_descriptor(
-                player.PalStorageContainerId,
-                kind="storage",
-                label=f"{player.NickName} · Palbox",
-                owner_player_uid=owner_id,
-                owner_name=player.NickName,
-                group_id=group_id,
-                classification="exact",
-                movable_into=True,
-            )
 
-        for base_ordinal, camp in enumerate(self.camp_data.get_camps(), start=1):
-            template_match = re.fullmatch(
-                r"新規生成拠点テンプレート名(\d+)\(仮\)", camp.name or ""
-            )
-            display_ordinal = base_ordinal if template_match else None
-            add_descriptor(
-                camp.container_id,
-                kind="base",
-                label=(
-                    f"Base {display_ordinal}"
-                    if display_ordinal is not None
-                    else camp.name or f"Base {str(camp.id)[:8]}"
-                ),
-                base_id=str(camp.id),
-                base_name=camp.name,
-                base_ordinal=display_ordinal,
-                group_id=str(camp.owner_group_id),
-                classification="exact",
-                movable_into=True,
-            )
 
-        for container in self.container_data.get_containers():
-            container_id = str(container.ID)
-            if container_id in descriptors:
-                continue
-
-            if container.size == 40:
-                add_descriptor(
-                    container.ID,
-                    kind="special",
-                    label="Viewing Cage",
-                    classification="inferred",
-                    movable_into=True,
-                    shared=True,
-                )
-                continue
-
-            owners = []
-            unresolved = False
-            for slot in container.slots:
-                pal = self.get_pal(slot.instance_id)
-                if pal is None or pal.OwnerPlayerUId is None:
-                    unresolved = True
-                    continue
-                owners.append(str(pal.OwnerPlayerUId))
-
-            unique_owners = set(owners)
-            if (
-                container.slots
-                and not unresolved
-                and len(owners) == len(container.slots)
-                and len(unique_owners) == 1
-            ):
-                owner_id = owners[0]
-                owner = self.get_player(owner_id)
-                if owner is not None:
-                    kind_label = f"Special container ({container.size} slots)"
-                    add_descriptor(
-                        container.ID,
-                        kind="special",
-                        label=f"{owner.NickName} · {kind_label}",
-                        owner_player_uid=owner_id,
-                        owner_name=owner.NickName,
-                        group_id=str(owner.group_id),
-                        classification="inferred",
-                        movable_into=True,
-                    )
-                    continue
-
-            anomaly = "mixed_owner" if len(unique_owners) > 1 else None
-            add_descriptor(
-                container.ID,
-                kind="unknown",
-                label=f"Unknown container ({container.size} slots)",
-                classification="unknown",
-                movable_into=False,
-                anomaly=anomaly,
-            )
-
-        dps_name = DataProvider.get_tech_name("DimensionPalStorage") or (
-            "Dimensional Pal Storage"
-        )
-        for storage in self._dps_storages.values():
-            owner = self.get_player(storage.owner_uid)
-            owner_name = owner.NickName if owner else storage.owner_uid
-            descriptors[storage.storage_key] = {
-                "ContainerId": None,
-                "StorageKey": storage.storage_key,
-                "StorageKind": "dps",
-                "ContainerKind": "dps",
-                "ContainerLabel": f"{owner_name} · {dps_name}",
-                "OwnerPlayerUId": storage.owner_uid,
-                "StorageOwnerPlayerUid": storage.owner_uid,
-                "OwnerName": owner_name,
-                "BaseId": None,
-                "BaseName": None,
-                "BaseOrdinal": None,
-                "GroupId": str(owner.group_id) if owner else None,
-                "Size": storage.capacity,
-                "Capacity": storage.capacity,
-                "Occupied": storage.occupied,
-                "Classification": "exact" if owner else "unknown_owner",
-                "MovableInto": True,
-                "CloneableInto": False,
-                "Shared": True,
-                "Anomaly": None if owner else "unknown_storage_owner",
-            }
-
-        if self._global_palbox is not None:
-            storage = self._global_palbox
-            descriptors[storage.storage_key] = {
-                "ContainerId": None,
-                "StorageKey": storage.storage_key,
-                "StorageKind": "global_palbox",
-                "ContainerKind": "global_palbox",
-                "ContainerLabel": (
-                    DataProvider.get_tech_name("GlobalPalStorage")
-                    or "Global Palbox"
-                ),
-                "OwnerPlayerUId": None,
-                "StorageOwnerPlayerUid": None,
-                "OwnerName": None,
-                "BaseId": None,
-                "BaseName": None,
-                "BaseOrdinal": None,
-                "GroupId": None,
-                "Size": storage.capacity,
-                "Capacity": storage.capacity,
-                "Occupied": storage.occupied,
-                "Classification": "exact",
-                "MovableInto": False,
-                "CloneableInto": True,
-                "Shared": True,
-                "Anomaly": None,
-            }
-
-        self._container_registry_cache = descriptors
-        return descriptors
-
-    def get_container_registry(self) -> list[dict]:
-        order = {
-            "global_palbox": -1,
-            "party": 0,
-            "storage": 1,
-            "dps": 2,
-            "special": 3,
-            "base": 4,
-            "unknown": 5,
-        }
-        return sorted(
-            self._container_descriptor_map().values(),
-            key=lambda item: (
-                item.get("GroupId") or "",
-                order.get(item["ContainerKind"], 99),
-                item["ContainerLabel"],
-                item["ContainerId"],
-            ),
-        )
-
-    def invalidate_storage_descriptors(self) -> None:
-        """Forget the cached descriptors after a Pal changed how full something is."""
-        self._container_registry_cache = None
-
-    def get_storage_descriptor(self, storage_key: str) -> Optional[dict]:
-        return next(
-            (
-                descriptor
-                for descriptor in self._container_descriptor_map().values()
-                if descriptor["StorageKey"] == str(storage_key)
-                or descriptor.get("ContainerId") == str(storage_key)
-            ),
-            None,
-        )
-
-    def resolve_record_location(self, record: PalRecord | str) -> dict:
-        """Where a record sits, and what that place is called.
-
-        There is one location, and it is the one the Pal records for itself,
-        already validated at load. A World record that failed that check has no
-        storage key and no container to name.
-        """
-        record_ref = record if isinstance(record, PalRecord) else self.get_record(record)
-        if record_ref is None:
-            raise ValueError("Pal record not found")
-        pal = record_ref.pal
-        is_world = record_ref.storage_kind == "world"
-        located = record_ref.storage_key is not None
-        container_id = (
-            str(pal.ContainerId) if is_world and located and pal.ContainerId else None
-        )
-        descriptor = (
-            (self._container_descriptor_map().get(container_id) if located else None)
-            if is_world
-            else self.get_storage_descriptor(record_ref.storage_key)
-        )
-        return {
-            # The container and slot the record actually occupies. A World record that
-            # failed its load-time slot check occupies neither, and says so.
-            "ContainerId": container_id,
-            "SlotIndex": record_ref.slot_index,
-            "ContainerKind": (
-                descriptor["ContainerKind"]
-                if descriptor
-                else (None if is_world else record_ref.storage_kind)
-            ),
-            "ContainerLabel": descriptor["ContainerLabel"] if descriptor else None,
-            "StorageKey": record_ref.storage_key,
-            "StorageKind": record_ref.storage_kind,
-        }
 
     def locker_entries(self) -> list[dict]:
         world_data = self.gvas_file.properties["worldSaveData"]["value"]
@@ -1080,46 +825,13 @@ class SaveManager:
             )
             return False
         self._unregister_record(record)
-        self._container_registry_cache = None
+        self.storage_directory.invalidate()
         LOGGER.info(
             f"DELETED PAL {record_key} storage={record.storage_key} "
             f"slot={record.slot_index} pal={record.pal.InstanceId}"
         )
         return True
 
-    def creation_targets(self, roster_key: str) -> list[dict]:
-        roster_key = str(roster_key)
-        descriptors = self.get_container_registry()
-        if roster_key == "base-workers":
-            return [
-                descriptor
-                for descriptor in descriptors
-                if descriptor["ContainerKind"] == "base"
-                and descriptor["MovableInto"]
-            ]
-        if roster_key == "global-palbox":
-            return [
-                descriptor
-                for descriptor in descriptors
-                if descriptor["StorageKind"] == "global_palbox"
-                and descriptor["CloneableInto"]
-            ]
-        player = self.get_player(roster_key)
-        if player is None:
-            return []
-        return [
-            descriptor
-            for descriptor in descriptors
-            if (
-                descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"party", "storage"}
-                and descriptor.get("OwnerPlayerUId") == roster_key
-            )
-            or (
-                descriptor["StorageKind"] == "dps"
-                and descriptor.get("StorageOwnerPlayerUid") == roster_key
-            )
-        ]
 
     def create_pal(
         self,
@@ -1138,7 +850,7 @@ class SaveManager:
         """
         allowed = {
             descriptor["StorageKey"]: descriptor
-            for descriptor in self.creation_targets(roster_key)
+            for descriptor in self.storage_directory.creation_targets(roster_key)
         }
         descriptor = allowed.get(str(target_storage_key))
         if descriptor is None:
@@ -1184,7 +896,7 @@ class SaveManager:
                     instance_id,
                 )
                 self.pal_repository.register(record, created=True)
-                self._container_registry_cache = None
+                self.storage_directory.invalidate()
                 LOGGER.info(
                     "Created Global Palbox Pal: "
                     f"record={record.record_key} slot={record.slot_index} "
@@ -1233,7 +945,7 @@ class SaveManager:
             )
             self.add_locker_id(instance_id)
             self._register_external_record(record, created=True)
-            self._container_registry_cache = None
+            self.storage_directory.invalidate()
             LOGGER.info(
                 "Created DPS Pal: "
                 f"record={record.record_key} storage={record.storage_key} "
@@ -1273,7 +985,7 @@ class SaveManager:
         else:
             targets = [
                 descriptor
-                for descriptor in self.creation_targets(roster_key)
+                for descriptor in self.storage_directory.creation_targets(roster_key)
                 if descriptor["StorageKind"] == "world"
                 and descriptor["ContainerKind"] in {"base", "party", "storage"}
                 and descriptor["Occupied"] < descriptor["Capacity"]
@@ -1323,9 +1035,7 @@ class SaveManager:
         target_descriptor = None
 
         if target_container_id is not None:
-            target_descriptor = self._container_descriptor_map().get(
-                str(target_container_id)
-            )
+            target_descriptor = self.storage_directory.descriptor(target_container_id)
             if target_descriptor is None or not target_descriptor["MovableInto"]:
                 LOGGER.warning(f"Unsafe target container {target_container_id}")
                 return None
@@ -1457,6 +1167,6 @@ class SaveManager:
                 pal_container.del_pal(pal_instanceId)
             LOGGER.error(f"Failed adding pal: {traceback.format_exc()}")
             return None
-        self._container_registry_cache = None
+        self.storage_directory.invalidate()
         LOGGER.info(f"Added Pal {pal_entity} to container {pal_container.ID}")
         return record

@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
-from fakes import pal_payload, record_location, world_pal, world_record
+from fakes import FakeStorageDirectory, pal_payload, world_pal, world_record
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
@@ -168,8 +168,9 @@ class PalFamilyProviderTests(unittest.TestCase):
             def normalize_external_record(self, _record):
                 pass
 
-            def resolve_record_location(self, record):
-                return record_location(record)
+            @property
+            def storage_directory(self):
+                return FakeStorageDirectory()
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():

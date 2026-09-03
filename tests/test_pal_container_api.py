@@ -12,7 +12,7 @@ from palworld_pal_editor.core.pal_operations import set_owner
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
 from palworld_pal_editor.core.pal_repository import PalRepository
-from fakes import record_location, world_record
+from fakes import FakeStorageDirectory, world_record
 
 
 class FakeManager:
@@ -61,8 +61,9 @@ class FakeManager:
     def get_record(self, record_key):
         return self.records.get(record_key)
 
-    def resolve_record_location(self, record):
-        return record_location(record)
+    @property
+    def storage_directory(self):
+        return FakeStorageDirectory()
 
 
 class PalContainerApiTests(unittest.TestCase):

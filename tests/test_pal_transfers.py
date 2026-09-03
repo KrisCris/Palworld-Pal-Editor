@@ -442,7 +442,7 @@ def test_capability_refuses_a_target_the_global_palbox_may_not_reach(tmp_path):
 
     base = next(
         descriptor["StorageKey"]
-        for descriptor in manager.get_container_registry()
+        for descriptor in manager.storage_directory.registry()
         if descriptor["ContainerKind"] == "base"
     )
     response = api.get(
