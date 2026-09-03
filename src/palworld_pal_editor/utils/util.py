@@ -1,8 +1,7 @@
 from pathlib import Path
 import re
 from functools import wraps
-import sys
-from typing import Callable, Optional, get_type_hints, Union, _GenericAlias
+from typing import get_type_hints
 import socket
 
 from palworld_pal_editor.utils import LOGGER

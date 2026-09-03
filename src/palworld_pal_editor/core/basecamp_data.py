@@ -2,7 +2,6 @@ from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
 
-from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import LOGGER
 
 

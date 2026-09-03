@@ -5,7 +5,7 @@ import uuid
 from palworld_save_tools.archive import UUID
 from palworld_save_tools.json_tools import CustomEncoder
 
-from palworld_pal_editor.utils import LOGGER, clamp
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.utils.data_provider import PLAYER_STATUS_DATA
 
 

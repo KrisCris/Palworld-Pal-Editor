@@ -1,5 +1,5 @@
 import copy
-from typing import Optional, overload
+from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
 
