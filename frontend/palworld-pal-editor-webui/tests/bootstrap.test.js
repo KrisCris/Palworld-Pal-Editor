@@ -1145,20 +1145,95 @@ test("a failed donation dismissal is reported as an operation error", async () =
     assert.equal(store.BACKEND_ERROR.kind, "connection");
 });
 
-test("successful saves use a nonblocking success message", async () => {
+test("a save reports the path the backend says it wrote, and clears the markers", async () => {
+    // Spec 10: `changeState` is the only authority for the new/edited markers, and
+    // a successful save makes every one of them stale at once. They clear inside
+    // the operation, so the list cannot redraw showing edits already on disk.
     const store = newStore();
-    axios.post = async url => {
-        assert.equal(url, "/api/save/save");
-        return reply(null);
+    const calls = [];
+    axios.post = async (url, body) => {
+        calls.push([url, body]);
+        return resource({ path: "C:/output" });
     };
     session.writeBackPath = "C:/output";
+    pals.applyDetail(detail({ InstanceId: "pal-1", changeState: "created" }));
+    pals.upsertSummaries([summary({ InstanceId: "pal-2", changeState: "modified" })]);
+    pals.selectedRecordKey = "world:pal-1";
 
     await store.writeSave();
 
+    assert.deepEqual(calls, [["/api/session/saves", { path: "C:/output" }]]);
     assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Save_Success");
     assert.deepEqual(store.CURRENT_MESSAGE.args, ["C:/output"]);
     assert.equal(store.CURRENT_MESSAGE.severity, "success");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+    assert.deepEqual(
+        [...pals.palsByRecordKey.values()].flatMap(
+            ({ summary: row, detail: full }) => [row?.changeState, full?.changeState],
+        ),
+        ["unchanged", "unchanged", "unchanged", undefined],
+    );
+    // The selection and the Pal data behind it survive; only the marker went.
+    assert.equal(pals.selectedRecordKey, "world:pal-1");
+    assert.equal(pals.selectedPal.CharacterID, "SheepBall");
+});
+
+test("a save that could not put the original files back says where they are", async () => {
+    // Every other failure is the same operation-failed dialog. This one is not:
+    // the save on disk is half written and that backup folder is the only whole
+    // copy of it left, which no error code on its own tells anyone.
+    const store = newStore();
+    axios.post = async () => {
+        const error = new Error("Request failed with status code 400");
+        error.response = {
+            status: 400,
+            data: {
+                error: {
+                    code: "SAVE_FAILED",
+                    message: "Could not save to C:/output: disk full",
+                    details: {
+                        path: "C:/output",
+                        backupPath: "C:/output/Palworld-Pal-Editor-Backup/2026-08-30",
+                        restored: false,
+                    },
+                },
+            },
+        };
+        throw error;
+    };
+
+    assert.equal(await store.writeSave(), false);
+
+    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Save_Not_Restored");
+    assert.deepEqual(
+        store.CURRENT_MESSAGE.args,
+        ["C:/output/Palworld-Pal-Editor-Backup/2026-08-30"],
+    );
+    assert.equal(store.CURRENT_MESSAGE.presentation, "dialog");
+    assert.equal(store.CURRENT_MESSAGE.code, "SAVE_FAILED");
+});
+
+test("a save that failed but was rolled back is an ordinary operation failure", async () => {
+    const store = newStore();
+    axios.post = async () => {
+        const error = new Error("Request failed with status code 400");
+        error.response = {
+            status: 400,
+            data: {
+                error: {
+                    code: "SAVE_FAILED",
+                    message: "Could not save to C:/output: disk full",
+                    details: { path: "C:/output", backupPath: null, restored: true },
+                },
+            },
+        };
+        throw error;
+    };
+
+    assert.equal(await store.writeSave(), false);
+
+    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Operation_Failed");
+    assert.equal(store.CURRENT_MESSAGE.code, "SAVE_FAILED");
 });
 
 test("deleting the last Pal falls through to the player editor instead of a blank canvas", async () => {

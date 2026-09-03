@@ -12,8 +12,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
-import { getSession, putSession } from "../api/session.js";
-import { ApiError, request } from "../api/http.js";
+import { getSession, postSessionSave, putSession } from "../api/session.js";
 import {
     backendStorageKey,
     readStorage,
@@ -98,15 +97,13 @@ export const useSessionStore = defineStore("session", () => {
         return session.value.loaded;
     }
 
-    // Still the pre-REST route: `POST /api/session/saves` is S5a's to build.
+    // Answers with the path that was written, which is what the caller tells the
+    // user -- not the path it asked for, so a save that landed somewhere else
+    // cannot be reported as if it had not. A failure throws its `ApiError` like
+    // everything else here.
     async function writeSave(path = writeBackPath.value) {
-        const reply = await request("post", "/api/save/save", {
-            body: { WritePath: path },
-        });
-        if (reply?.status !== 0) {
-            throw new ApiError(200, "SAVE_FAILED", reply?.msg || "Save failed");
-        }
-        return true;
+        const saved = await postSessionSave(path);
+        return saved.path;
     }
 
     function rememberSavePath(storage, origin) {

@@ -884,14 +884,37 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     async function writeSave() {
+        let savedTo;
         try {
-            await session.writeSave();
+            savedTo = await session.writeSave();
         } catch (error) {
-            reportApiFailure(error, "Operation_Save");
+            reportSaveFailure(error);
             return false;
         }
-        showToast("Message_Save_Success", "success", [session.writeBackPath]);
+        // Spec §10: the markers clear before the interaction gate is released, so
+        // the list never redraws showing edits that are already on disk.
+        pals.clearChangeStates();
+        showToast("Message_Save_Success", "success", [savedTo]);
         return true;
+    }
+
+    // The one failure whose message has to carry a path. A save that could not
+    // put the target back left the user's save half written, and the backup
+    // folder is the only complete copy of it there is -- an error code alone does
+    // not tell anyone to go and get it.
+    function reportSaveFailure(error) {
+        if (error.code === "SAVE_FAILED" && error.details?.restored === false) {
+            showMessage({
+                severity: "error",
+                presentation: "dialog",
+                messageKey: "Message_Save_Not_Restored",
+                args: [error.details.backupPath],
+                code: error.code,
+                log: error.message,
+            });
+            return;
+        }
+        reportApiFailure(error, "Operation_Save");
     }
 
     async function fetchBaseCampResearch() {

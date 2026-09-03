@@ -432,6 +432,7 @@ export default {
     Message_No_Player: "No player was found in this gamesave.",
     Message_Select_Pal_Failed: "Failed to select the Pal. Try again or reload the save.",
     Message_Save_Success: "Changes successfully saved to {{0}}.",
+    Message_Save_Not_Restored: "Saving failed and the original save files could not be put back. A complete copy of them is in {{0}} -- copy it back before loading this save again.",
     Message_Pal_Copied: "Pal data copied to the clipboard.",
     Message_Pal_Template_Saved: "Pal template saved.",
     Message_Pal_Template_Deleted: "Pal template deleted.",

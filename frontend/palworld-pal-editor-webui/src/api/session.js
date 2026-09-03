@@ -10,3 +10,9 @@ export function getSession(options) {
 export function putSession(path, options) {
     return request("put", "/api/session", { ...options, body: { path } });
 }
+
+// One save that happened, not a change of session: the answer says where it was
+// written, and the session goes on naming the save that is open.
+export function postSessionSave(path, options) {
+    return request("post", "/api/session/saves", { ...options, body: { path } });
+}

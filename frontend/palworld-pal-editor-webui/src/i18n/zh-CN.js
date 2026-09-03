@@ -432,6 +432,7 @@ export default {
     Message_No_Player: "该存档中没有找到玩家。",
     Message_Select_Pal_Failed: "无法选择该帕鲁，请重试或重新载入存档。",
     Message_Save_Success: "更改已成功保存到 {{0}}。",
+    Message_Save_Not_Restored: "保存失败，且原存档文件未能恢复。它们的完整副本位于 {{0}}，请先把它复制回去再重新载入此存档。",
     Message_Pal_Copied: "帕鲁数据已复制到剪贴板。",
     Message_Pal_Template_Saved: "帕鲁模板已保存。",
     Message_Pal_Template_Deleted: "帕鲁模板已删除。",

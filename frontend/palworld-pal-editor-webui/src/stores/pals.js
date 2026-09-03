@@ -74,6 +74,17 @@ export const usePalsStore = defineStore("pals", () => {
         });
     }
 
+    // Spec §10: a successful save makes every "new" and "edited" marker stale at
+    // once, and the backend has already forgotten them. Only that one field is
+    // rewritten -- the cached objects stay as they are, because the editor is
+    // holding the selected detail and binds `v-model` straight into it.
+    function clearChangeStates() {
+        for (const { summary, detail } of palsByRecordKey.value.values()) {
+            if (summary) summary.changeState = "unchanged";
+            if (detail) detail.changeState = "unchanged";
+        }
+    }
+
     async function loadDetail(recordKey) {
         const epoch = session.sessionEpoch;
         const detail = await getPal(recordKey, session.readOptions());
@@ -192,6 +203,7 @@ export const usePalsStore = defineStore("pals", () => {
         summary,
         upsertSummaries,
         applyDetail,
+        clearChangeStates,
         loadDetail,
         select,
         clearSelection,
