@@ -626,23 +626,26 @@ class SaveManager:
         )
 
     def records_for_roster(self, roster_key: str) -> list[PalRecord]:
-        """The Pals one of the old UI's lists shows, derived on every call.
+        """The Pals one roster lists, derived on every call.
 
-        Until F3b this was a hand-maintained list of record keys per roster, and
-        every create, move and transfer had to remember to re-file it -- forgetting
-        was silent and left the list pointing at the previous owner. Nothing is
-        stored now, so nothing can go stale.
+        Nothing is stored: a roster is a question asked of the records, not a
+        hand-maintained list of record keys that every create, move and transfer
+        has to remember to re-file. Forgetting to re-file was silent and left a
+        list pointing at the previous owner.
+
+        A player roster is named by the player's uid. `base-workers`,
+        `global-palbox` and `unrostered` name themselves.
         """
         key = str(roster_key)
-        if key == "PAL_BASE_WORKER_BTN":
+        if key == "base-workers":
             return self.working_records()
-        if key == "PAL_GLOBAL_STORAGE_BTN":
+        if key == "global-palbox":
             if self._global_palbox is None:
                 return []
             return self.pal_repository.records_for_storage(
                 self._global_palbox.storage_key
             )
-        if key == "PAL_OTHER_PAL_BTN":
+        if key == "unrostered":
             return self._unrostered_records()
         # A Pal in the Global Palbox can still carry the uid of whoever deposited
         # it; it belongs to that storage's list, not to the depositor's.
@@ -953,7 +956,7 @@ class SaveManager:
     def resolve_record_location(self, record: PalRecord | str) -> dict:
         """Where a record sits, and what that place is called.
 
-        Since F4 there is only one location: the one the Pal records for itself,
+        There is one location, and it is the one the Pal records for itself,
         already validated at load. A World record that failed that check has no
         storage key and no container to name.
         """
@@ -1076,14 +1079,14 @@ class SaveManager:
     def creation_targets(self, roster_key: str) -> list[dict]:
         roster_key = str(roster_key)
         descriptors = self.get_container_registry()
-        if roster_key == "PAL_BASE_WORKER_BTN":
+        if roster_key == "base-workers":
             return [
                 descriptor
                 for descriptor in descriptors
                 if descriptor["ContainerKind"] == "base"
                 and descriptor["MovableInto"]
             ]
-        if roster_key == "PAL_GLOBAL_STORAGE_BTN":
+        if roster_key == "global-palbox":
             return [
                 descriptor
                 for descriptor in descriptors
@@ -1132,7 +1135,7 @@ class SaveManager:
         if descriptor["StorageKind"] == "world":
             player_uid = (
                 roster_key
-                if roster_key != "PAL_BASE_WORKER_BTN"
+                if roster_key != "base-workers"
                 else descriptor.get("OwnerPlayerUId")
             )
             record = self.add_pal(
@@ -1242,7 +1245,7 @@ class SaveManager:
 
         if source.storage_kind == "global_palbox":
             clone = self.create_pal(
-                "PAL_GLOBAL_STORAGE_BTN",
+                "global-palbox",
                 source.storage_key,
                 source_parameter,
             )

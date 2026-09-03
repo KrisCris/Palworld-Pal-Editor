@@ -148,9 +148,8 @@ export function specialTypeKeys(pal = {}) {
 }
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    // What is left here after S1c: the app shell. Messages, auth, the backend
-    // connection, the static catalogs, templates and the choreography around the
-    // writes -- which list to open, which Pal to select, what to say when one
+    // The app shell. Messages, auth, the backend connection, the static catalogs,
+    // templates and the choreography around the writes -- which list to open, which Pal to select, what to say when one
     // fails. The save itself lives in `stores/session`, and its Pals, players,
     // rosters and storages in the stores below -- this store reads them, and
     // nothing reads back into it.
@@ -1568,7 +1567,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             deleteSkillTemplate,
             dumpPalData,
             dupePal,
-            fetchBaseCampResearch,
             fetchPalTemplates,
             fetchSkillTemplates,
             friendshipDown,

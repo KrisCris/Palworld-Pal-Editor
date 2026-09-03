@@ -271,10 +271,6 @@ class PalObjects:
         return get_nested_attr(container, ["value", "values"])
 
     @staticmethod
-    def add_ArrayProperty(container: dict, value: Any):
-        PalObjects.get_ArrayProperty(container).append(value)
-
-    @staticmethod
     def pop_ArrayProperty(container: dict, index: Any) -> Any:
         return PalObjects.get_ArrayProperty(container).pop(index)
 
@@ -356,13 +352,6 @@ class PalObjects:
         if container_id is None or slot_idx is None:
             return None
         return (container_id, slot_idx)
-
-    @staticmethod
-    def set_PalCharacterSlotId(
-        container: dict, container_id: UUID | str, slot_idx: int
-    ):
-        PalObjects.set_PalContainerId(container["value"]["ContainerId"], container_id)
-        PalObjects.set_BaseType(container["value"]["SlotIndex"], slot_idx)
 
     @staticmethod
     def FloatContainer(value: dict):

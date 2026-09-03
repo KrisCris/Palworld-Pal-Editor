@@ -14,7 +14,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.roster_keys import legacy_roster_id, roster_key_for_record
+from palworld_pal_editor.api.roster_keys import core_roster_key, roster_key_for_record
 from palworld_pal_editor.core import PalEntity, SaveManager
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
@@ -191,7 +191,7 @@ def operation_result(
 
     All four keys are always present, so the client reads one shape and never has
     to guess what an operation did. A delete says what is gone, a create says which
-    storage now holds one more Pal, and S4a fills both at once for a move.
+    storage now holds one more Pal, and a move fills both at once.
     """
     return {
         "resultRecord": pal_detail(manager, record) if record is not None else None,
@@ -352,7 +352,7 @@ def duplicate_pal(record_key: str):
         try:
             clone = manager.duplicate_pal(
                 record.record_key,
-                legacy_roster_id(roster_key_for_record(manager, record)),
+                core_roster_key(roster_key_for_record(manager, record)),
             )
         except ValueError as error:
             raise ApiError("PAL_DUPLICATE_REFUSED", str(error))

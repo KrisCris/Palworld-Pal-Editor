@@ -14,7 +14,7 @@ from palworld_pal_editor.api.pals import pal_summary
 from palworld_pal_editor.api.roster_keys import (
     FIXED_ROSTERS,
     PLAYER_ROSTER_PREFIX,
-    legacy_roster_id,
+    core_roster_key,
 )
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.utils import DataProvider
@@ -79,10 +79,8 @@ def require_roster(manager: SaveManager, roster_key: str) -> str:
 def roster_records(manager: SaveManager, roster_key: str) -> list:
     require_roster(manager, roster_key)
     if roster_key in FIXED_ROSTERS:
-        return manager.records_for_roster(FIXED_ROSTERS[roster_key])
-    return manager.sorted_records_for_roster(
-        roster_key.removeprefix(PLAYER_ROSTER_PREFIX)
-    )
+        return manager.records_for_roster(roster_key)
+    return manager.sorted_records_for_roster(core_roster_key(roster_key))
 
 
 @rosters_blueprint.route("", methods=["GET"])
@@ -120,5 +118,5 @@ def list_pal_creation_targets(roster_key: str):
         require_roster(manager, roster_key)
         return [
             descriptor["StorageKey"]
-            for descriptor in manager.creation_targets(legacy_roster_id(roster_key))
+            for descriptor in manager.creation_targets(core_roster_key(roster_key))
         ]

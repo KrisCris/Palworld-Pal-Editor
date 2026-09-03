@@ -131,7 +131,7 @@ def test_a_pal_created_in_the_global_palbox_carries_no_local_position(tmp_path):
     """
     manager = open_copied_world(tmp_path, with_global=True)
 
-    created = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    created = manager.create_pal("global-palbox", "global-palbox")
 
     assert created.storage_kind == "global_palbox"
     assert created.pal.OwnerPlayerUId == PalObjects.EMPTY_UUID
@@ -157,7 +157,7 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
     """
     manager = open_copied_world(tmp_path, with_global=True)
     lossy = manager.get_player(LOSSY_UID)
-    source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    source = manager.create_pal("global-palbox", "global-palbox")
     base = next(
         descriptor
         for descriptor in manager.get_container_registry()
@@ -233,7 +233,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         for record in lossy_dps.records()
         if str(record.pal.OwnerPlayerUId) == MINT_UID
     )
-    gps_source = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    gps_source = manager.create_pal("global-palbox", "global-palbox")
     world_source = next(
         record
         for record in manager.records_for_roster(LOSSY_UID)
@@ -242,7 +242,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
     )
 
     dps_clone = manager.duplicate_pal(dps_source.record_key, LOSSY_UID)
-    gps_clone = manager.duplicate_pal(gps_source.record_key, "PAL_GLOBAL_STORAGE_BTN")
+    gps_clone = manager.duplicate_pal(gps_source.record_key, "global-palbox")
     world_clone = manager.duplicate_pal(world_source.record_key, LOSSY_UID)
 
     assert dps_clone.storage_key == dps_source.storage_key
@@ -283,15 +283,15 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
 
 def test_base_worker_creation_targets_and_create(tmp_path):
     manager = open_copied_world(tmp_path)
-    base_targets = manager.creation_targets("PAL_BASE_WORKER_BTN")
+    base_targets = manager.creation_targets("base-workers")
     assert base_targets
     base_key = base_targets[0]["StorageKey"]
 
-    created = manager.create_pal("PAL_BASE_WORKER_BTN", base_key)
+    created = manager.create_pal("base-workers", base_key)
 
     assert created.storage_kind == "world"
     assert created.pal.OwnerPlayerUId is None
-    assert created in manager.records_for_roster("PAL_BASE_WORKER_BTN")
+    assert created in manager.records_for_roster("base-workers")
     assert manager.get_record(created.record_key) is created
 
     assert manager.save(str(manager.file_path)) is True
@@ -307,16 +307,16 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     manager = open_copied_world(tmp_path)
     base_records = [
         record
-        for record in manager.records_for_roster("PAL_BASE_WORKER_BTN")
+        for record in manager.records_for_roster("base-workers")
         if record.storage_key is not None
     ]
     assert base_records
     source = base_records[0]
 
-    clone = manager.duplicate_pal(source.record_key, "PAL_BASE_WORKER_BTN")
+    clone = manager.duplicate_pal(source.record_key, "base-workers")
 
     assert clone.pal.InstanceId != source.pal.InstanceId
     assert clone.pal.OwnerPlayerUId is None
     assert clone.storage_kind == "world"
-    assert clone in manager.records_for_roster("PAL_BASE_WORKER_BTN")
+    assert clone in manager.records_for_roster("base-workers")
     assert manager.get_record(clone.record_key) is clone

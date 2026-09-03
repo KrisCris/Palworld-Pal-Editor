@@ -65,11 +65,6 @@ class BaseCampData:
             self.camp_map[str(camp_id)] = camp_entity
             LOGGER.info(f"BaseCamp found: {camp_entity}")
 
-    def get_camp(self, camp_id: UUID | str) -> Optional[PalBaseCamp]:
-        return self.camp_map.get(str(camp_id))
-
     def get_camps(self) -> list[PalBaseCamp]:
         return self.camp_map.values()
 
-    def get_owned_camp(self, group_id: UUID | str) -> list[PalBaseCamp]:
-        return [camp for camp in self.get_camps() if camp.owner_group_id == group_id]

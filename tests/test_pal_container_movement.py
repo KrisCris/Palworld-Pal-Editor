@@ -166,7 +166,7 @@ def in_roster(manager, roster_key, pal_id):
 
 def rosters_of(manager, pal_id):
     """Every roster listing this Pal -- what the roster dict used to record."""
-    keys = ["PAL_BASE_WORKER_BTN", "PAL_OTHER_PAL_BTN"] + [
+    keys = ["base-workers", "unrostered"] + [
         str(player.PlayerUId) for player in manager.players.all()
     ]
     return sorted(key for key in keys if in_roster(manager, key, pal_id))
@@ -383,7 +383,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         self.assertEqual([], outcome.deleted_record_keys)
         self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
-        self.assertEqual(["PAL_BASE_WORKER_BTN"], rosters_of(manager, PAL_ID))
+        self.assertEqual(["base-workers"], rosters_of(manager, PAL_ID))
         self.assertFalse(source.has_pal(PAL_ID))
         self.assertTrue(target.has_pal(PAL_ID))
         slot = target.get_slot(PAL_ID)
@@ -477,7 +477,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         )
 
         record = manager.add_pal(
-            "PAL_BASE_WORKER_BTN", template, target_container_id=target.ID
+            "base-workers", template, target_container_id=target.ID
         )
 
         self.assertIsNotNone(record)
@@ -488,7 +488,7 @@ class SaveManagerMovementTests(unittest.TestCase):
             "MapObjectConcreteInstanceIdAssignedToExpedition", pal.pal_param
         )
         self.assertEqual(
-            ["PAL_BASE_WORKER_BTN"], rosters_of(manager, pal.InstanceId)
+            ["base-workers"], rosters_of(manager, pal.InstanceId)
         )
 
     def test_default_creation_prefers_an_empty_party_over_pal_storage(self):

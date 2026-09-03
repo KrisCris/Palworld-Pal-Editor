@@ -126,15 +126,6 @@ class PalRepository:
             raise
         return record
 
-    def snapshot_records(self) -> dict[str, PalRecord]:
-        """A shallow copy of the record set, for rolling a failed mutation back."""
-        return dict(self._records)
-
-    def replace_records(self, records: dict[str, PalRecord]) -> None:
-        """Restore the whole record set, e.g. when rolling a failed mutation back."""
-        self._records = records
-        self.reindex()
-
     # --- created tracking -------------------------------------------------
 
     def created_records(self) -> list[PalRecord]:

@@ -9,7 +9,7 @@ has to follow an edit with a read to see what it did.
 replaces took a `{key, value}` pair and, for anything it did not recognise, did
 `setattr(player_entity, key, value)` after checking the attribute was a property
 with a setter -- which is every settable field `PlayerEntity` has, named by the
-client. The allowlist here is the same shape S2a builds for Pals.
+client. The allowlist here is the same shape `PATCH /api/pals/{recordKey}` uses.
 """
 
 from flask import Blueprint, request

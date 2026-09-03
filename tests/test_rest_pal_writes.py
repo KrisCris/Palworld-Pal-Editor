@@ -11,7 +11,7 @@ broke or could not state:
 - healing everything reaches the Pals that do not live in the world save.
 
 `test_webui_bootstrap.py`'s heal-all, batch-suitability and `FavoriteIndex` cases
-are here now: S2b deleted the route they asked, and the rules they held are real.
+are here now: the route they asked is gone, and the rules they held are real.
 
 The fixture save is opened once and mutated in memory only; nothing is written
 back to disk.

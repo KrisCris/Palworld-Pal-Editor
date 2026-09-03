@@ -1,11 +1,11 @@
 """What a roster is called on each side of the API boundary (spec §8.2).
 
-`GET /api/rosters` answers in `player:<uid>` / `base-workers` / `global-palbox`;
-`SaveManager` still answers in the old UI's button ids. This is the one place that
-translation happens, and the one place that says which list a record turns up in.
-It exists as its own module because `pals`, `rosters` and `storages` all need it
-and `rosters` already reads `pals`. A later task deletes `legacy_roster_id` when the
-create and duplicate chains it feeds start speaking the API's own vocabulary.
+Both sides name the fixed rosters the same way. The one difference is a player
+roster: `player:<uid>` over HTTP, and the bare uid inside `SaveManager`, which
+identifies a player by uid and has no reason to know the URL prefix. This is the
+one place that difference is spelled out, and the one place that says which list a
+record turns up in. It exists as its own module because `pals`, `rosters` and
+`storages` all need it and `rosters` already reads `pals`.
 """
 
 from palworld_pal_editor.core import SaveManager
@@ -13,17 +13,12 @@ from palworld_pal_editor.core.pal_record import PalRecord
 
 PLAYER_ROSTER_PREFIX = "player:"
 
-# Rosters that are one fixed place rather than one player, mapped to the name
-# SaveManager still knows them by. `unrostered` has no entry in the `GET /api/rosters`
-# listing because no UI control opens it; it stays addressable because it is the only
-# way to see a Pal that every other roster disowns.
+# Rosters that are one fixed place rather than one player. `unrostered` has no entry
+# in the `GET /api/rosters` listing because no UI control opens it; it stays
+# addressable because it is the only way to see a Pal that every other roster disowns.
 UNROSTERED = "unrostered"
 
-FIXED_ROSTERS = {
-    "base-workers": "PAL_BASE_WORKER_BTN",
-    "global-palbox": "PAL_GLOBAL_STORAGE_BTN",
-    UNROSTERED: "PAL_OTHER_PAL_BTN",
-}
+FIXED_ROSTERS = frozenset({"base-workers", "global-palbox", UNROSTERED})
 
 
 def roster_key_for_target(descriptor: dict, owner_uid) -> str:
@@ -41,9 +36,9 @@ def roster_key_for_target(descriptor: dict, owner_uid) -> str:
     return f"{PLAYER_ROSTER_PREFIX}{owner_uid}" if owner_uid else UNROSTERED
 
 
-def legacy_roster_id(roster_key: str) -> str:
-    """The button id `creation_targets`, `create_pal` and `duplicate_pal` still take."""
-    return FIXED_ROSTERS.get(roster_key, roster_key.removeprefix(PLAYER_ROSTER_PREFIX))
+def core_roster_key(roster_key: str) -> str:
+    """The name `SaveManager` knows this roster by: a fixed roster keeps its own."""
+    return roster_key.removeprefix(PLAYER_ROSTER_PREFIX)
 
 
 def roster_key_for_record(manager: SaveManager, record: PalRecord) -> str:

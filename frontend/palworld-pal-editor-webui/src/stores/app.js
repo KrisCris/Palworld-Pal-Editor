@@ -97,12 +97,6 @@ export const useAppStore = defineStore("app", () => {
         pickerOpen.value = true;
     }
 
-    // At a filesystem root the backend answers with the directory itself, so this
-    // stops rather than looping.
-    function browseParent() {
-        return browse(pickerParentPath.value);
-    }
-
     function closePicker() {
         pickerOpen.value = false;
     }
@@ -127,7 +121,6 @@ export const useAppStore = defineStore("app", () => {
         dismissDonationPrompt,
         loadLatestRelease,
         browse,
-        browseParent,
         closePicker,
     };
 });

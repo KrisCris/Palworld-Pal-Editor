@@ -29,7 +29,6 @@ export const useSessionStore = defineStore("session", () => {
     // having one open: between `PUT /api/session` and the end of hydration the
     // save exists but the rosters behind it do not yet.
     const editorOpen = computed(() => appState.value === "editor");
-    const loadWarnings = computed(() => session.value.warnings);
 
     // The path the user picked to load, and the path a save writes back to. They
     // are separate because "save as" exists: the second only follows the first
@@ -131,7 +130,6 @@ export const useSessionStore = defineStore("session", () => {
         session,
         appState,
         editorOpen,
-        loadWarnings,
         savePath,
         writeBackPath,
         sessionEpoch,
@@ -140,7 +138,6 @@ export const useSessionStore = defineStore("session", () => {
         runOperation,
         readOptions,
         isCurrentSession,
-        abandonSession,
         refreshSession,
         loadSave,
         writeSave,

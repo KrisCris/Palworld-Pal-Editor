@@ -20,7 +20,7 @@ from palworld_pal_editor.api.pals import operation_result
 from palworld_pal_editor.api.roster_keys import (
     PLAYER_ROSTER_PREFIX,
     UNROSTERED,
-    legacy_roster_id,
+    core_roster_key,
     roster_key_for_record,
     roster_key_for_target,
 )
@@ -294,7 +294,7 @@ def create_storage_pal(storage_key: str):
         roster_key = _creation_roster_key(descriptor, payload.get("ownerUid"))
         try:
             record = manager.create_pal(
-                legacy_roster_id(roster_key),
+                core_roster_key(roster_key),
                 descriptor["StorageKey"],
                 save_parameter,
             )

@@ -4,7 +4,6 @@ from datetime import datetime
 import copy
 from pathlib import Path
 from typing import Callable
-from flask import request
 
 class ColorConsoleFormatter(logging.Formatter):
     """Custom formatter for adding colors to console output only."""
@@ -116,13 +115,3 @@ class Logger:
             return wrapper
         return decorator
 
-    def api_logger(self, func):
-        @wraps(func)
-        def decorated_function(*args, **kwargs):
-            self.info(f"API Path: {request.path}")
-            self.info(f"Request Body: {request.get_json()}")
-            response = func(*args, **kwargs)
-            self.info(f"Response: {response}")
-
-            return response
-        return decorated_function

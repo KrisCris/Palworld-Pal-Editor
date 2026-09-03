@@ -130,19 +130,6 @@ class ContainerSlot:
         self._slot_data: dict = slot_data
         self._slot_raw_data: dict = slot_data["RawData"]["value"]
 
-    # def __eq__(self, __value: object) -> bool:
-    #     if not isinstance(__value, ContainerSlot):
-    #         return False
-    #     return UUID.__eq__(self.instance_id, __value.instance_id)
-
-    # def __hash__(self) -> int:
-    #     return hash(str(self.instance_id))
-
-    @property
-    def isEmpty(self) -> bool:
-        id = self.instance_id or PalObjects.EMPTY_UUID
-        return id == PalObjects.EMPTY_UUID
-
     @property
     def instance_id(self) -> Optional[UUID]:
         return self._slot_raw_data.get("instance_id")

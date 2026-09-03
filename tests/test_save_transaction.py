@@ -115,7 +115,7 @@ def test_a_failed_save_rolls_back_its_settlement_and_the_retry_settles_once(tmp_
     manager = open_world(tmp_path, global_palbox=empty_global)
     world = manager.file_path
     created = manager.create_pal(LOSSY_UID, f"dps:{LOSSY_UID}")
-    in_global = manager.create_pal("PAL_GLOBAL_STORAGE_BTN", "global-palbox")
+    in_global = manager.create_pal("global-palbox", "global-palbox")
     lossy = manager.get_player(LOSSY_UID)
     paldeck_key = DataProvider.get_pal_paldeck_record_id(created.pal.CharacterID)
     before = capture_count(lossy, paldeck_key)
