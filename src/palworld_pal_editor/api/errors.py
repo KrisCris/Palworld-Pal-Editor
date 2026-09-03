@@ -5,14 +5,19 @@ its own i18n text, so no message written here is ever shown to a user verbatim.
 Anything else escaping a view is unexpected by definition and comes back as a 500
 carrying its traceback, because the person who can act on it is the user filing the
 report, not the process that already logged it.
+
+The one exception is a failure to authenticate, which is not this envelope's to
+answer and is handed back to auth's own shape below.
 """
 
 import traceback
 
 from flask import jsonify
+from flask_jwt_extended.exceptions import JWTExtendedException
+from jwt import PyJWTError
 from werkzeug.exceptions import HTTPException
 
-from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils import LOGGER, reply
 
 
 class ApiError(Exception):
@@ -42,6 +47,16 @@ def register_error_handlers(blueprint) -> None:
     def _handle_api_error(error: ApiError):
         LOGGER.warning(f"{error.code}: {error.message}")
         return _envelope(error.code, error.message, error.details), error.status
+
+    @blueprint.errorhandler(JWTExtendedException)
+    @blueprint.errorhandler(PyJWTError)
+    def _handle_auth_failure(error: Exception):
+        # `webui.py`'s `@jwt` loaders answer these, but a blueprint handler shadows
+        # an app-level one, so the catch-all below claimed them first and turned a
+        # missing or expired token into a 500 with a server traceback in it. Spec
+        # §12 leaves auth's behaviour alone this round, so this says what those
+        # loaders say -- 401, in the envelope the frontend already reads for them.
+        return reply(status=2, msg=str(error)), 401
 
     @blueprint.errorhandler(Exception)
     def _handle_unexpected(error: Exception):
