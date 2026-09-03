@@ -92,7 +92,14 @@ def cors_response(response):
         elif "origin" not in {value.strip().lower() for value in vary.split(",")}:
             response.headers["Vary"] = f"{vary}, Origin"
         if request.method == "OPTIONS" and request.headers.get("Access-Control-Request-Method"):
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
+            # Every method the API actually routes. PUT was missing, so a
+            # cross-origin `PUT /api/session` -- Load and Reload Save -- failed its
+            # preflight and never left the browser, which reaches the user as a
+            # network error with no status behind it. `test_webui_cors` derives this
+            # list from `app.url_map` so it cannot drift from the routes again.
+            response.headers["Access-Control-Allow-Methods"] = (
+                "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+            )
             response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
     return response
 
