@@ -49,7 +49,7 @@ class CreatedSettlementTests(unittest.TestCase):
         )
 
     def test_a_successful_save_settles_each_created_pal_exactly_once(self):
-        record = self.manager.add_pal(PLAYER_UID)
+        record = self.manager.pal_mutations.create_world_pal(PLAYER_UID)
         self.assertIsNotNone(record)
         paldeck_key = DataProvider.get_pal_paldeck_record_id(record.pal.CharacterID)
         before = self.capture_count(paldeck_key)
@@ -67,12 +67,12 @@ class CreatedSettlementTests(unittest.TestCase):
         self.assertEqual([], self.manager.pal_repository.created_records())
 
     def test_a_deleted_pal_stops_being_settled(self):
-        record = self.manager.add_pal(PLAYER_UID)
+        record = self.manager.pal_mutations.create_world_pal(PLAYER_UID)
         self.assertIsNotNone(record)
         paldeck_key = DataProvider.get_pal_paldeck_record_id(record.pal.CharacterID)
         before = self.capture_count(paldeck_key)
 
-        self.assertTrue(self.manager.delete_pal(record.record_key))
+        self.assertTrue(self.manager.pal_mutations.delete(record.record_key))
         self.assertFalse(self.manager.pal_repository.is_created(record))
 
         with tempfile.TemporaryDirectory(prefix="pal-editor-deleted-save-") as directory:

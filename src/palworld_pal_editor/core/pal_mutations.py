@@ -18,6 +18,8 @@ handful of native parents its short commit touches (spec §7, `TouchedParents`).
 """
 
 import copy
+import traceback
+import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
@@ -27,6 +29,16 @@ from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
+from palworld_pal_editor.core.pal_transactions import (
+    PalIdentityConflict,
+    PalOperationRefused,
+    TouchedParents,
+    prepare_global_parameter,
+    restore_dict,
+    restore_list,
+    restore_local_parameter_envelope,
+    set_owner,
+)
 from palworld_pal_editor.utils import LOGGER
 
 if TYPE_CHECKING:
@@ -41,189 +53,21 @@ REPLICATE = "replicate"
 UPDATE_EXISTING = "update-existing"
 
 
-class PalIdentityConflict(ValueError):
-    """The target already holds a Pal with the source's identity.
-
-    Carries every candidate rather than picking one: with two the backend has no
-    basis to choose, and with one the user still has to see what will be overwritten.
-    """
-
-    def __init__(self, candidates: list[PalRecord]):
-        super().__init__("Pal identity already exists in the destination")
-        self.candidates = candidates
 
 
-class PalOperationRefused(ValueError):
-    """A transfer the current state does not allow, named by a stable business code.
-
-    The message is for the log. What the user sees comes from `code`, which the
-    frontend looks up in its own i18n table (spec §8.7).
-    """
-
-    def __init__(self, code: str, message: str) -> None:
-        super().__init__(message)
-        self.code = code
 
 
-def set_owner(pal: PalEntity, owner_uid: UUID | str | None) -> None:
-    """Settle who owns this Pal, current owner and history together (spec §7.1).
-
-    They are one decision, not two: the history is what the current owner used to be,
-    so a caller that could write one without the other could leave a Pal owned by
-    someone who never appears in its own provenance. An ownerless Pal -- a base
-    worker, a Pal in the Global Palbox -- keeps the history it arrived with, because
-    being put to work in a camp does not undo having been caught.
-    """
-    if owner_uid is None:
-        pal.pal_param.pop("OwnerPlayerUId", None)
-        return
-
-    owner_uid = toUUID(str(owner_uid))
-    pal.pal_param["OwnerPlayerUId"] = PalObjects.Guid(owner_uid)
-    owners = pal.OldOwnerPlayerUIds
-    if owners is None:
-        pal.pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-            "StructProperty",
-            {
-                "prop_name": "OldOwnerPlayerUIds",
-                "prop_type": "StructProperty",
-                "values": [owner_uid],
-                "type_name": "Guid",
-                "id": PalObjects.EMPTY_UUID,
-            },
-        )
-    elif not owners or str(owners[-1]) != str(owner_uid):
-        owners.append(owner_uid)
 
 
-def prepare_global_parameter(
-    source_parameter: dict,
-    *,
-    preserve_provenance: bool,
-) -> dict:
-    """A complete SaveParameter rewritten to the rules the Global Palbox keeps.
-
-    Takes and returns the parameter rather than a `PalEntity`, so a Pal that does not
-    exist yet -- a template, an import, a brand-new Pal -- can be normalized before
-    anything has been written for it to be an entity of.
-    """
-    save_parameter = copy.deepcopy(source_parameter)
-    parameter = save_parameter["value"]
-    parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
-    parameter["ItemContainerId"] = PalObjects.PalContainerId(PalObjects.EMPTY_UUID)
-    parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = PalObjects.Guid(
-        PalObjects.EMPTY_UUID
-    )
-    parameter["bImportedCharacter"] = PalObjects.BoolProperty(True)
-    parameter["BaseCampWorkerEventType"] = PalObjects.EnumProperty(
-        "EPalBaseCampWorkerEventType",
-        "EPalBaseCampWorkerEventType::None",
-    )
-    parameter["BaseCampWorkerEventProgressTime"] = PalObjects.FloatProperty(0.0)
-    if not preserve_provenance:
-        parameter["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-            "StructProperty",
-            {
-                "prop_name": "OldOwnerPlayerUIds",
-                "prop_type": "StructProperty",
-                "values": [],
-                "type_name": "Guid",
-                "id": PalObjects.EMPTY_UUID,
-            },
-        )
-        parameter["SlotId"] = PalObjects.PalCharacterSlotId(-1, PalObjects.EMPTY_UUID)
-    return save_parameter
 
 
-# What belongs to where a Pal is standing rather than to the Pal. A Global Palbox
-# copy comes back carrying the Global Palbox's answers for all of these, so an
-# overwrite keeps the destination's own.
-DESTINATION_OWNED_KEYS = frozenset(
-    {
-        "OwnerPlayerUId",
-        "OldOwnerPlayerUIds",
-        "SlotId",
-        "ItemContainerId",
-        "EquipItemContainerId",
-        "MapObjectConcreteInstanceIdAssignedToExpedition",
-        "BaseCampWorkerEventType",
-        "BaseCampWorkerEventProgressTime",
-        "bImportedCharacter",
-    }
-)
 
 
-def restore_local_parameter_envelope(
-    incoming_parameter: dict,
-    destination_parameter: dict,
-) -> dict:
-    """The incoming gameplay payload, wearing the destination's own position."""
-    merged = copy.deepcopy(incoming_parameter)
-    for key in DESTINATION_OWNED_KEYS:
-        if key in destination_parameter:
-            merged[key] = copy.deepcopy(destination_parameter[key])
-        else:
-            merged.pop(key, None)
-    return merged
 
 
-def restore_dict(parent: dict, snapshot: dict) -> None:
-    """Put a native dict's contents back, in place.
-
-    In place matters: the save file's dicts are referenced from several directions at
-    once -- a `PalEntity` binding, a parent array, an index -- so rebinding the name
-    would restore the data and leave everything pointing at the old object.
-    """
-    parent.clear()
-    parent.update(copy.deepcopy(snapshot))
 
 
-def restore_list(parent: list, snapshot: list) -> None:
-    """Put a native list's contents back, in place, for the same reason."""
-    parent[:] = copy.deepcopy(snapshot)
 
-
-class TouchedParents:
-    """Deep copies of the few native parents one short commit writes into.
-
-    This is a safety net against a bug in the lines below it, not a transaction
-    system: every failure the save file can actually produce -- a full container, a
-    stale target, a cross-guild move -- has already been answered by `plan()` before
-    an executor starts. So it stays small, and what it holds is bounded by what the
-    operation touches rather than by the size of the save.
-    """
-
-    def __init__(self) -> None:
-        self._undo: list = []
-
-    def watch_dict(self, parent: dict) -> None:
-        snapshot = copy.deepcopy(parent)
-        self._undo.append(lambda: restore_dict(parent, snapshot))
-
-    def watch_list(self, parent: list) -> None:
-        snapshot = copy.deepcopy(parent)
-        self._undo.append(lambda: restore_list(parent, snapshot))
-
-    def watch_container(self, container) -> None:
-        snapshot = container.snapshot_slots()
-        self._undo.append(lambda: container.restore_slots(snapshot))
-
-    def watch_group(self, group) -> None:
-        snapshot = group.snapshot_handles()
-        self._undo.append(lambda: group.restore_handles(snapshot))
-
-    def watch_storage_dirty(self, storage) -> None:
-        """A storage file's unsaved flag, which a rolled-back write must not leave set."""
-        dirty = storage.dirty
-        self._undo.append(lambda: setattr(storage, "dirty", dirty))
-
-    def on_undo(self, undo) -> None:
-        """A one-off reversal for something no primitive above covers."""
-        self._undo.append(undo)
-
-    def restore(self) -> None:
-        for undo in reversed(self._undo):
-            undo()
 
 
 @dataclass(slots=True)
@@ -264,7 +108,7 @@ class OperationOutcome:
     affected_storage_keys: list[str] = field(default_factory=list)
 
 
-class PalOperationService:
+class PalMutationService:
     """The one owner of relocate, replicate and update-existing (spec §4.6).
 
     It holds the session rather than copying anything out of it: every Pal it moves
@@ -762,6 +606,447 @@ class PalOperationService:
         )
 
     # --- shared steps -----------------------------------------------------
+
+    # --- create -----------------------------------------------------------
+    #
+    # A creation is a plan with no source record. Where a Pal lands decides its
+    # identity, its owner and its guild whether it arrived from another storage or
+    # from nothing at all, so the three `_create_into_*` bodies below are the
+    # `_relocate_into_*` and `_replicate_into_*` bodies with the release half
+    # removed -- not a fourth set of rules.
+
+    def _unused_instance_id(self, *claimed) -> UUID:
+        """A Pal id nothing in this save is already using.
+
+        `claimed` are the native structures the caller is about to write into -- a
+        container, a guild. Those can hold a handle for an id the repository has no
+        record for, and a Pal given that id would be the second thing answering to
+        it in the save file.
+        """
+        manager = self._manager
+        while True:
+            instance_id = toUUID(str(uuid.uuid4()))
+            if manager.records_by_instance(instance_id):
+                continue
+            if any(structure.has_pal(instance_id) for structure in claimed):
+                continue
+            return instance_id
+
+    def create(
+        self,
+        roster_key: str,
+        target_storage_key: str,
+        save_parameter: Optional[dict] = None,
+        pal_owner_uid: Optional[str | UUID] = None,
+    ) -> PalRecord:
+        """Create one Pal in `target_storage_key`, in that storage's own format.
+
+        `save_parameter` is the complete gameplay payload the new Pal is copied
+        from -- a live Pal, a template, an imported record -- or None for a default
+        Pal. It is the only thing a source contributes: identity, owner, guild and
+        position are the target storage's to decide, which is what makes a template
+        made from a Global Palbox Pal creatable into a player Palbox (spec §6.3).
+        """
+        allowed = {
+            descriptor["StorageKey"]: descriptor
+            for descriptor in self._manager.storage_directory.creation_targets(roster_key)
+        }
+        descriptor = allowed.get(str(target_storage_key))
+        if descriptor is None:
+            raise ValueError("Target storage is not valid for this roster.")
+
+        kind = descriptor["StorageKind"]
+        if kind == "world":
+            player_uid = (
+                roster_key
+                if roster_key != "base-workers"
+                else descriptor.get("OwnerPlayerUId")
+            )
+            return self.create_world_pal(
+                player_uid, save_parameter, descriptor["ContainerId"]
+            )
+        if kind == "global_palbox":
+            return self._create_into_global(save_parameter)
+        if kind == "dps":
+            return self._create_into_dps(
+                descriptor, roster_key, pal_owner_uid, save_parameter
+            )
+        raise ValueError("Creation for this storage is not implemented yet.")
+
+    def _create_into_global(self, save_parameter: Optional[dict]) -> PalRecord:
+        manager = self._manager
+        storage = manager.global_palbox
+        if storage is None:
+            raise ValueError("Global Palbox is unavailable.")
+        target_index = storage.free_index()
+        if target_index < 0:
+            raise ValueError("Global Palbox is full.")
+        touched = TouchedParents()
+        touched.watch_dict(storage.entries[target_index])
+        touched.watch_storage_dirty(storage)
+        try:
+            # No World record is built on the way: a Global Palbox Pal is a
+            # parameter in a preallocated slot, and normalizing it is what clears
+            # the position and provenance a copied payload arrives with.
+            record = manager.storage_adapters[storage.storage_key].allocate(
+                prepare_global_parameter(
+                    save_parameter
+                    if save_parameter is not None
+                    else PalObjects.DefaultPalSaveParameter(
+                        PalObjects.EMPTY_UUID, PalObjects.EMPTY_UUID, -1
+                    ),
+                    preserve_provenance=False,
+                ),
+                self._unused_instance_id(),
+            )
+            manager.pal_repository.register(record, created=True)
+        except Exception:
+            touched.restore()
+            raise
+        manager.storage_directory.invalidate()
+        LOGGER.info(
+            "Created Global Palbox Pal: "
+            f"record={record.record_key} slot={record.slot_index} "
+            f"pal={record.pal.InstanceId}"
+        )
+        return record
+
+    def _create_into_dps(
+        self,
+        descriptor: dict,
+        roster_key: str,
+        pal_owner_uid: Optional[str | UUID],
+        save_parameter: Optional[dict],
+    ) -> PalRecord:
+        manager = self._manager
+        storage_owner = manager.get_player(roster_key)
+        player = manager.get_player(pal_owner_uid) if pal_owner_uid else storage_owner
+        storage = manager.dps_storages.get(descriptor["StorageKey"])
+        if storage_owner is None or player is None or storage is None:
+            raise ValueError("DPS owner or storage is unavailable.")
+        target_index = storage.free_index()
+        if target_index < 0:
+            raise ValueError("Target DPS is full.")
+        touched = TouchedParents()
+        touched.watch_dict(storage.entries[target_index])
+        touched.watch_storage_dirty(storage)
+        touched.watch_list(manager.locker.entries())
+        try:
+            instance_id = self._unused_instance_id()
+            record = manager.storage_adapters[storage.storage_key].allocate(
+                save_parameter
+                if save_parameter is not None
+                else PalObjects.DefaultPalSaveParameter(
+                    player.PlayerUId, PalObjects.EMPTY_UUID, -1
+                ),
+                instance_id,
+            )
+            # The slot is the Pal now, so the rest is written through it rather than
+            # onto a scratch record: whatever the payload said about where it lived
+            # and who owned it belongs to wherever it came from.
+            pal = record.pal
+            pal.SlotId = (PalObjects.EMPTY_UUID, -1)
+            set_owner(pal, player.PlayerUId)
+            pal.pal_param.pop("MapObjectConcreteInstanceIdAssignedToExpedition", None)
+            manager.locker.add(instance_id)
+            manager._register_external_record(record, created=True)
+        except Exception:
+            touched.restore()
+            raise
+        manager.storage_directory.invalidate()
+        LOGGER.info(
+            "Created DPS Pal: "
+            f"record={record.record_key} storage={record.storage_key} "
+            f"slot={record.slot_index} pal={record.pal.InstanceId} "
+            f"pal_owner={record.pal.OwnerPlayerUId} locker_action=add"
+        )
+        return record
+
+    def _resolve_world_creation_target(self, player_uid, target_container_id):
+        """Which container, guild, owner and historical owner a creation lands on.
+
+        Two ways in. With a target container the storage decides everything and the
+        requested player only has to belong to the same guild; without one the Pal
+        goes to the requesting player's own party, or their Palbox if the party is
+        full. A base container has no owner, which is why the owner and the
+        historical owner are separate answers: the Pal ends up owned by nobody but
+        still records whose guild caught it.
+        """
+        manager = self._manager
+        requested_player = manager.get_player(player_uid)
+
+        if target_container_id is None:
+            if requested_player is None:
+                raise ValueError(f"Player {player_uid} not found")
+            container = next(
+                (
+                    candidate
+                    for container_id in (
+                        requested_player.OtomoCharacterContainerId,
+                        requested_player.PalStorageContainerId,
+                    )
+                    if (
+                        candidate := manager.container_data.get_container(container_id)
+                    ) is not None
+                    and candidate.get_free_slot_index() != -1
+                ),
+                None,
+            )
+            return (
+                container,
+                requested_player.group_id,
+                requested_player,
+                requested_player,
+            )
+
+        descriptor = manager.storage_directory.descriptor(target_container_id)
+        if descriptor is None or not descriptor["MovableInto"]:
+            raise ValueError(f"Unsafe target container {target_container_id}")
+        container = manager.container_data.get_container(target_container_id)
+        if container is None or container.get_free_slot_index() == -1:
+            raise ValueError("No empty Pal slot")
+        group_id = descriptor.get("GroupId")
+        owner_id = descriptor.get("OwnerPlayerUId")
+        owner_player = manager.get_player(owner_id) if owner_id else None
+        if descriptor["ContainerKind"] != "base" and owner_player is None:
+            raise ValueError("Target container owner not found")
+        if requested_player and str(requested_player.group_id) != str(group_id):
+            raise ValueError("Cross-guild Pal creation is unsupported")
+        historical_player = owner_player or (
+            requested_player
+            if requested_player and str(requested_player.group_id) == str(group_id)
+            else next(
+                (
+                    player
+                    for player in manager.get_players()
+                    if str(player.group_id) == str(group_id)
+                ),
+                None,
+            )
+        )
+        return container, group_id, owner_player, historical_player
+
+    def _build_created_world_pal(
+        self,
+        save_parameter,
+        instance_id,
+        container,
+        slot_index,
+        group_id,
+        owner_player,
+        historical_player,
+    ):
+        """The world Pal a creation writes, provenance included.
+
+        This does not reuse `_build_world_pal`, and the reason is the provenance: a
+        relocated Pal *appends* its new owner to the history it arrived with, while
+        a created one *starts* a history at whoever's guild made it. Forcing one
+        builder to do both would hide that difference rather than remove it.
+        """
+        native_record = WorldPalAdapter.native_record(
+            save_parameter,
+            instance_id=instance_id,
+            owner_uid=historical_player.PlayerUId,
+            container_id=container.ID,
+            slot_index=slot_index,
+            group_id=group_id,
+        )
+        pal = WorldPalAdapter.entity(native_record)
+        if save_parameter is not None:
+            # The item container id is not necessarily referenced in
+            # ItemContainerSaveData, so a fresh one is assigned rather than shared
+            # with whatever the payload was copied from.
+            pal.pal_param["EquipItemContainerId"] = PalObjects.PalContainerId(
+                str(uuid.uuid4())
+            )
+        historical_uid = historical_player.PlayerUId
+        pal.pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "OldOwnerPlayerUIds",
+                "prop_type": "StructProperty",
+                "values": [toUUID(historical_uid)],
+                "type_name": "Guid",
+                "id": PalObjects.EMPTY_UUID,
+            },
+        )
+        pal.pal_param["LastNickNameModifierPlayerUid"] = PalObjects.Guid(historical_uid)
+        set_owner(pal, owner_player.PlayerUId if owner_player else None)
+        pal.pal_param.pop("MapObjectConcreteInstanceIdAssignedToExpedition", None)
+        return native_record, pal
+
+    def create_world_pal(
+        self,
+        player_uid: str | UUID,
+        save_parameter: Optional[dict] = None,
+        target_container_id: Optional[str | UUID] = None,
+    ) -> PalRecord:
+        """Create one Pal in a world container.
+
+        Raises rather than answering None: a caller that ignores a None writes a
+        half-made Pal into the save, and every other mutation here already raises.
+        """
+        manager = self._manager
+        (
+            container,
+            group_id,
+            owner_player,
+            historical_player,
+        ) = self._resolve_world_creation_target(player_uid, target_container_id)
+        if container is None or historical_player is None:
+            raise ValueError("No valid Pal target or historical owner")
+        group = manager.group_data.get_group(group_id)
+        if group is None:
+            raise ValueError(f"Group {group_id} not found")
+
+        instance_id = self._unused_instance_id(container, group)
+        touched = TouchedParents()
+        touched.watch_container(container)
+        touched.watch_group(group)
+        try:
+            slot_index = container.add_pal(instance_id)
+            if slot_index < 0:
+                raise ValueError("Target world container is full.")
+            try:
+                native_record, pal = self._build_created_world_pal(
+                    save_parameter,
+                    instance_id,
+                    container,
+                    slot_index,
+                    group_id,
+                    owner_player,
+                    historical_player,
+                )
+            except ValueError:
+                raise
+            except Exception as error:
+                # A payload that is not a Pal is a bad value, not a bug here. The
+                # old chain reported every failure as one generic ValueError; this
+                # keeps the type callers depend on and the cause they could not see.
+                raise ValueError(
+                    f"Pal payload could not be read: {error!r}"
+                ) from error
+            if not group.add_pal(instance_id):
+                raise ValueError("Duplicated Pal ID in group")
+            manager.world_adapter.append(native_record)
+            touched.on_undo(lambda: manager.world_adapter.remove(native_record))
+            record = manager.world_adapter.record(
+                native_record,
+                storage_key=WorldPalAdapter.storage_key(container.ID),
+                slot_index=slot_index,
+                storage_owner_uid=(
+                    str(owner_player.PlayerUId) if owner_player else None
+                ),
+                pal=pal,
+            )
+            # Every creation entry point registers here, so a Pal made through the
+            # CLI or through `create` is tracked the same way -- and marked created,
+            # which is what settles its capture count and paldeck flag on save.
+            manager.pal_repository.register(record, created=True)
+        except Exception:
+            touched.restore()
+            raise
+        manager.storage_directory.invalidate()
+        LOGGER.info(f"Added Pal {pal} to container {container.ID}")
+        return record
+
+    def duplicate(self, record_key: str, roster_key: str) -> PalRecord:
+        """A second Pal built from an existing one, landing where its kind allows.
+
+        Which storage a copy goes to is the source's kind, not the caller's choice:
+        an external Pal is copied within its own storage, a world Pal into the first
+        of the roster's creation targets with room.
+        """
+        manager = self._manager
+        source = manager.get_record(record_key)
+        if source is None:
+            raise ValueError("Selected Pal not found.")
+        # The whole of what a copy inherits: every gameplay field the source has,
+        # including the ones this editor has never heard of.
+        source_parameter = source.pal.save_parameter
+
+        if source.storage_kind == "global_palbox":
+            clone = self.create("global-palbox", source.storage_key, source_parameter)
+        elif source.storage_kind == "dps":
+            storage = manager.dps_storages.get(source.storage_key)
+            if storage is None:
+                raise ValueError("Source DPS is unavailable.")
+            clone = self.create(
+                str(storage.owner_uid),
+                source.storage_key,
+                source_parameter,
+                pal_owner_uid=source.pal.OwnerPlayerUId,
+            )
+        else:
+            targets = [
+                descriptor
+                for descriptor in manager.storage_directory.creation_targets(roster_key)
+                if descriptor["StorageKind"] == "world"
+                and descriptor["ContainerKind"] in {"base", "party", "storage"}
+                and descriptor["Occupied"] < descriptor["Capacity"]
+            ]
+            if not targets:
+                raise ValueError("The target Pal containers are full.")
+            clone = self.create(roster_key, targets[0]["StorageKey"], source_parameter)
+
+        LOGGER.info(
+            "Duplicated Pal: "
+            f"source_record={source.record_key} "
+            f"source_storage={source.storage_key} "
+            f"source_pal={source.pal.InstanceId} "
+            f"target_record={clone.record_key} "
+            f"target_storage={clone.storage_key} "
+            f"target_slot={clone.slot_index} "
+            f"target_pal={clone.pal.InstanceId} "
+            f"owner={clone.pal.OwnerPlayerUId}"
+        )
+        return clone
+
+    def delete(self, record_key: str) -> bool:
+        """Release a Pal from wherever it is and never put it down again.
+
+        The same three format-specific bodies a relocate owns, with no destination.
+        The record is the Pal's location; the baseworker and dangling maps it may
+        also appear in are cleared by unregistering it.
+        """
+        manager = self._manager
+        record = manager.get_record(record_key)
+        if record is None:
+            LOGGER.warning(f"Can't find pal {record_key}")
+            return False
+        touched = TouchedParents()
+        if record.storage_kind == "dps":
+            touched.watch_list(manager.locker.entries())
+        try:
+            self.release_record(record, touched)
+            if record.storage_kind == "dps":
+                # A Pal that is nowhere is not in the locker either.
+                manager.locker.remove(record.pal.InstanceId)
+        except Exception:
+            touched.restore()
+            LOGGER.warning(
+                f"Error Deleting PAL {record_key}: {traceback.format_exc()}"
+            )
+            return False
+        manager._unregister_record(record)
+        manager.storage_directory.invalidate()
+        LOGGER.info(
+            f"DELETED PAL {record_key} storage={record.storage_key} "
+            f"slot={record.slot_index} pal={record.pal.InstanceId}"
+        )
+        return True
+
+    def heal_all(self) -> None:
+        # Every base worker and dangling Pal is a registered record too, so one pass
+        # over the repository covers what three passes over three collections did --
+        # plus the Global Palbox, which the old palbox-shaped scan could not reach.
+        for record in self._manager.pal_repository.records():
+            record.pal.heal_pal()
+            # Global Palbox and DPS Pals live outside the world save, so a heal that
+            # skips this is discarded when the session is written -- the same
+            # normalization every single-Pal edit does, owed to every Pal here too.
+            self.normalize_external_record(record)
+            self._manager.pal_repository.mark_modified(record)
 
     def _build_world_pal(
         self,

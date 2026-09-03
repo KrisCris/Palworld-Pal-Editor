@@ -26,7 +26,7 @@ from palworld_pal_editor.api.roster_keys import (
 )
 from palworld_pal_editor.api.templates import require_pal_template
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.core.pal_operations import UPDATE_EXISTING
+from palworld_pal_editor.core.pal_mutations import UPDATE_EXISTING
 from palworld_pal_editor.core.pal_sources import detach_native_record
 from palworld_pal_editor.core.pal_templates import template_source
 
@@ -240,7 +240,7 @@ def get_pal_transfer_capability(storage_key: str):
         require_descriptor(manager, storage_key)
         return transfer_capability(
             manager,
-            manager.pal_operations.capability(source_record_key, storage_key),
+            manager.pal_mutations.capability(source_record_key, storage_key),
         )
 
 
@@ -293,7 +293,7 @@ def create_storage_pal(storage_key: str):
         save_parameter = _source_parameter(payload.get("source"))
         roster_key = _creation_roster_key(descriptor, payload.get("ownerUid"))
         try:
-            record = manager.create_pal(
+            record = manager.pal_mutations.create(
                 core_roster_key(roster_key),
                 descriptor["StorageKey"],
                 save_parameter,

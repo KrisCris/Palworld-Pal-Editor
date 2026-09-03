@@ -4,9 +4,9 @@ import unittest
 from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_operations import (
+from palworld_pal_editor.core.pal_mutations import (
     PalOperationRefused,
-    PalOperationService,
+    PalMutationService,
     set_owner,
 )
 from palworld_pal_editor.core.pal_repository import PalRepository
@@ -137,9 +137,9 @@ def refusal(manager, target):
     would have refused, and a test that asked only one of them could not tell.
     """
     target_key = WorldPalAdapter.storage_key(target.ID)
-    capability = manager.pal_operations.capability("world:" + str(PAL_ID), target_key)
+    capability = manager.pal_mutations.capability("world:" + str(PAL_ID), target_key)
     try:
-        manager.pal_operations.transfer("world:" + str(PAL_ID), target_key)
+        manager.pal_mutations.transfer("world:" + str(PAL_ID), target_key)
     except PalOperationRefused as refused:
         assert refused.code == capability.reason, (refused.code, capability.reason)
     return capability.allowed, capability.reason
@@ -202,6 +202,14 @@ class FakeGroup:
 
     def del_pal(self, pal_id):
         self.pals.discard(str(pal_id))
+
+    # Creation goes through the same `TouchedParents` transaction as relocation
+    # now, so the fake answers the same two snapshot calls the real group does.
+    def snapshot_handles(self):
+        return set(self.pals)
+
+    def restore_handles(self, snapshot):
+        self.pals = set(snapshot)
 
 
 class FakeGroupData:
@@ -272,7 +280,7 @@ def movement_manager(target_kind="base"):
     manager._dps_storages = {}
     manager._global_palbox = None
     manager.group_data = FakeGroupData(FakeGroup())
-    manager.pal_operations = PalOperationService(manager)
+    manager.pal_mutations = PalMutationService(manager)
     # This manager is assembled field by field rather than loaded, so it gets its
     # collaborators the same way. The cache below is then the whole directory:
     # these fakes have no real containers for it to derive descriptors from.
@@ -379,7 +387,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         manager, pal, source, target, _, _ = movement_manager("base")
         record = manager.get_record("world:" + str(PAL_ID))
 
-        outcome = manager.pal_operations.transfer(
+        outcome = manager.pal_mutations.transfer(
             record.record_key, WorldPalAdapter.storage_key(target.ID)
         )
 
@@ -408,7 +416,7 @@ class SaveManagerMovementTests(unittest.TestCase):
                 if source_state == "an ownerless base worker":
                     as_base_worker(manager, pal)
 
-                manager.pal_operations.transfer(
+                manager.pal_mutations.transfer(
                     "world:" + str(PAL_ID), WorldPalAdapter.storage_key(target.ID)
                 )
 
@@ -426,7 +434,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         manager, pal, _, target, source_player, _ = movement_manager("special")
         as_shared_cage(manager, target)
 
-        manager.pal_operations.transfer(
+        manager.pal_mutations.transfer(
             "world:" + str(PAL_ID), WorldPalAdapter.storage_key(target.ID)
         )
 
@@ -481,7 +489,7 @@ class SaveManagerMovementTests(unittest.TestCase):
             PalObjects.Guid(CONTAINER_ID)
         )
 
-        record = manager.add_pal(
+        record = manager.pal_mutations.create_world_pal(
             "base-workers", template, target_container_id=target.ID
         )
 
@@ -503,7 +511,7 @@ class SaveManagerMovementTests(unittest.TestCase):
         player.PalStorageContainerId = storage.ID
         manager._entities_list = []
 
-        record = manager.add_pal(player.PlayerUId)
+        record = manager.pal_mutations.create_world_pal(player.PlayerUId)
 
         self.assertIsNotNone(record)
         pal = record.pal

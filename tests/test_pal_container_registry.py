@@ -128,7 +128,7 @@ class PalContainerRoundTripTests(unittest.TestCase):
             pal_id = str(record.pal.InstanceId)
             target_id = str(player.OtomoCharacterContainerId)
 
-            manager.pal_operations.transfer(
+            manager.pal_mutations.transfer(
                 record.record_key, WorldPalAdapter.storage_key(target_id)
             )
             expected_slot = record.pal.SlotIndex

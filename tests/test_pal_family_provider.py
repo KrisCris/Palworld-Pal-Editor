@@ -171,7 +171,7 @@ class PalFamilyProviderTests(unittest.TestCase):
                 return FakeStorageDirectory()
 
             @property
-            def pal_operations(self):
+            def pal_mutations(self):
                 # A world record needs no normalizing; this Pal is not in an
                 # external storage, so the call is a no-op either way.
                 return SimpleNamespace(normalize_external_record=lambda _record: None)

@@ -14,6 +14,7 @@ import copy
 import shutil
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from palworld_pal_editor.core.group_data import PalGroup
@@ -70,8 +71,42 @@ class PalCreationTests(unittest.TestCase):
         )
         return parameter
 
+
+    def test_a_failed_world_creation_leaves_container_group_and_entities_untouched(self):
+        """The rollback that has to survive `add_pal` and the transfer path merging.
+
+        The two implementations undo a half-made Pal by different means -- one with
+        `container_added` / `group_added` flags, one with `TouchedParents` -- and
+        only one of them can remain. Whichever it is has to leave all three places
+        a world Pal is written exactly as it found them.
+
+        The guild refusing the Pal is the failure to force, because it happens
+        after the container slot is taken and after the entity is appended, so a
+        rollback that misses any of the three shows up here.
+        """
+        container = self.container()
+        group = self.group()
+        before = (
+            len(container.slots),
+            len(group.individual_character_handle_ids or []),
+            len(self.manager._entities_list),
+        )
+
+        with unittest.mock.patch.object(PalGroup, "add_pal", return_value=False):
+            with self.assertRaises(Exception):
+                self.manager.pal_mutations.create(OWNER_UID, self.palbox)
+
+        self.assertEqual(
+            (
+                len(container.slots),
+                len(group.individual_character_handle_ids or []),
+                len(self.manager._entities_list),
+            ),
+            before,
+        )
+
     def test_a_default_pal_is_unnamed_and_counts_as_new_until_the_save_is_written(self):
-        record = self.manager.create_pal(OWNER_UID, self.palbox)
+        record = self.manager.pal_mutations.create(OWNER_UID, self.palbox)
 
         self.assertIsNone(record.pal.NickName)
         self.assertTrue(self.manager.pal_repository.is_created(record))
@@ -86,7 +121,7 @@ class PalCreationTests(unittest.TestCase):
         source = self.source_parameter()
         untouched = copy.deepcopy(source)
 
-        record = self.manager.create_pal(OWNER_UID, self.palbox, source)
+        record = self.manager.pal_mutations.create(OWNER_UID, self.palbox, source)
         pal = record.pal
 
         # Everything the source contributes is gameplay, and all of it survives.
@@ -123,7 +158,7 @@ class PalCreationTests(unittest.TestCase):
         )
 
         with self.assertRaises(ValueError):
-            self.manager.create_pal(OWNER_UID, self.palbox, {"invalid": True})
+            self.manager.pal_mutations.create(OWNER_UID, self.palbox, {"invalid": True})
 
         # The slot and the guild handle are claimed before the Pal is built, so a
         # payload that fails halfway has to give both back.
@@ -138,10 +173,10 @@ class PalCreationTests(unittest.TestCase):
         )
 
     def test_deleting_a_pal_gives_back_its_slot_and_its_guild_handle(self):
-        record = self.manager.create_pal(OWNER_UID, self.palbox)
+        record = self.manager.pal_mutations.create(OWNER_UID, self.palbox)
         instance_id = record.pal.InstanceId
 
-        self.assertTrue(self.manager.delete_pal(record.record_key))
+        self.assertTrue(self.manager.pal_mutations.delete(record.record_key))
 
         self.assertIsNone(self.manager.get_record(record.record_key))
         self.assertFalse(self.container().has_pal(instance_id))
@@ -152,7 +187,7 @@ class PalCreationTests(unittest.TestCase):
         record = self.manager.working_records()[0]
         instance_id = str(record.pal.InstanceId)
 
-        self.assertTrue(self.manager.delete_pal(record.record_key))
+        self.assertTrue(self.manager.pal_mutations.delete(record.record_key))
 
         # A base worker is not a kind of record, it is a Pal standing in a camp's
         # container -- so removing the record is what empties the roster.
@@ -164,7 +199,7 @@ class PalCreationTests(unittest.TestCase):
 
     def test_a_missing_record_key_deletes_nothing(self):
         self.assertFalse(
-            self.manager.delete_pal("world:00000000-0000-0000-0000-000000000000")
+            self.manager.pal_mutations.delete("world:00000000-0000-0000-0000-000000000000")
         )
 
 

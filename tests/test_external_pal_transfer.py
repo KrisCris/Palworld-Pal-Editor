@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_operations import (
+from palworld_pal_editor.core.pal_mutations import (
     PalIdentityConflict,
     PalOperationRefused,
 )
@@ -70,7 +70,7 @@ def test_a_move_between_two_dps_files_keeps_the_pal_whole(tmp_path):
     character = source.pal.CharacterID
     locker_before = locker_ids(manager)
 
-    outcome = manager.pal_operations.transfer(origin_key, mint_dps.storage_key)
+    outcome = manager.pal_mutations.transfer(origin_key, mint_dps.storage_key)
 
     assert outcome.record is source
     assert outcome.deleted_record_keys == [origin_key]
@@ -99,7 +99,7 @@ def test_deleting_and_creating_in_a_dps_keep_the_locker_in_step(tmp_path):
     doomed_id = str(doomed.pal.InstanceId)
     occupied_before = lossy_dps.storage.occupied
 
-    assert manager.delete_pal(doomed.record_key) is True
+    assert manager.pal_mutations.delete(doomed.record_key) is True
 
     assert manager.get_record(doomed.record_key) is None
     assert lossy_dps.get(doomed.record_key) is None
@@ -115,7 +115,7 @@ def test_deleting_and_creating_in_a_dps_keep_the_locker_in_step(tmp_path):
         f"world-container:{lossy.PalStorageContainerId}",
         lossy_dps.storage_key,
     }
-    created = manager.create_pal(LOSSY_UID, lossy_dps.storage_key)
+    created = manager.pal_mutations.create(LOSSY_UID, lossy_dps.storage_key)
     assert created.storage_kind == "dps"
     assert str(created.pal.OwnerPlayerUId) == LOSSY_UID
     assert created.pal.IsExpeditionPal is False
@@ -131,7 +131,7 @@ def test_a_pal_created_in_the_global_palbox_carries_no_local_position(tmp_path):
     """
     manager = open_copied_world(tmp_path, with_global=True)
 
-    created = manager.create_pal("global-palbox", "global-palbox")
+    created = manager.pal_mutations.create("global-palbox", "global-palbox")
 
     assert created.storage_kind == "global_palbox"
     assert created.pal.OwnerPlayerUId == PalObjects.EMPTY_UUID
@@ -157,7 +157,7 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
     """
     manager = open_copied_world(tmp_path, with_global=True)
     lossy = manager.get_player(LOSSY_UID)
-    source = manager.create_pal("global-palbox", "global-palbox")
+    source = manager.pal_mutations.create("global-palbox", "global-palbox")
     base = next(
         descriptor
         for descriptor in manager.storage_directory.registry()
@@ -166,10 +166,10 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
 
     for target in (f"dps:{LOSSY_UID}", base["StorageKey"]):
         with pytest.raises(PalOperationRefused) as refused:
-            manager.pal_operations.transfer(source.record_key, target)
+            manager.pal_mutations.transfer(source.record_key, target)
         assert refused.value.code == "GPS_PLAYER_TARGET_REQUIRED"
 
-    outcome = manager.pal_operations.transfer(
+    outcome = manager.pal_mutations.transfer(
         source.record_key, f"world-container:{lossy.PalStorageContainerId}"
     )
 
@@ -197,7 +197,7 @@ def test_a_second_local_twin_makes_a_confirmed_overwrite_ambiguous_again(tmp_pat
     manager = open_copied_world(tmp_path, with_global=True)
     lossy_dps = manager.storage_adapters[f"dps:{LOSSY_UID}"]
     source = a_world_pal(manager, LOSSY_UID)
-    gps_record = manager.pal_operations.transfer(
+    gps_record = manager.pal_mutations.transfer(
         source.record_key, "global-palbox"
     ).record
     duplicate = lossy_dps.allocate(
@@ -208,7 +208,7 @@ def test_a_second_local_twin_makes_a_confirmed_overwrite_ambiguous_again(tmp_pat
     source_snapshot = copy.deepcopy(source.pal.pal_param)
 
     with pytest.raises(PalIdentityConflict) as collision:
-        manager.pal_operations.transfer(
+        manager.pal_mutations.transfer(
             gps_record.record_key,
             source.storage_key,
             {
@@ -233,7 +233,7 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         for record in lossy_dps.records()
         if str(record.pal.OwnerPlayerUId) == MINT_UID
     )
-    gps_source = manager.create_pal("global-palbox", "global-palbox")
+    gps_source = manager.pal_mutations.create("global-palbox", "global-palbox")
     world_source = next(
         record
         for record in manager.records_for_roster(LOSSY_UID)
@@ -241,9 +241,9 @@ def test_duplicate_pal_registers_a_new_record_in_the_source_storage(tmp_path):
         and record.storage_key is not None
     )
 
-    dps_clone = manager.duplicate_pal(dps_source.record_key, LOSSY_UID)
-    gps_clone = manager.duplicate_pal(gps_source.record_key, "global-palbox")
-    world_clone = manager.duplicate_pal(world_source.record_key, LOSSY_UID)
+    dps_clone = manager.pal_mutations.duplicate(dps_source.record_key, LOSSY_UID)
+    gps_clone = manager.pal_mutations.duplicate(gps_source.record_key, "global-palbox")
+    world_clone = manager.pal_mutations.duplicate(world_source.record_key, LOSSY_UID)
 
     assert dps_clone.storage_key == dps_source.storage_key
     assert dps_clone.pal.InstanceId != dps_source.pal.InstanceId
@@ -287,7 +287,7 @@ def test_base_worker_creation_targets_and_create(tmp_path):
     assert base_targets
     base_key = base_targets[0]["StorageKey"]
 
-    created = manager.create_pal("base-workers", base_key)
+    created = manager.pal_mutations.create("base-workers", base_key)
 
     assert created.storage_kind == "world"
     assert created.pal.OwnerPlayerUId is None
@@ -313,7 +313,7 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     assert base_records
     source = base_records[0]
 
-    clone = manager.duplicate_pal(source.record_key, "base-workers")
+    clone = manager.pal_mutations.duplicate(source.record_key, "base-workers")
 
     assert clone.pal.InstanceId != source.pal.InstanceId
     assert clone.pal.OwnerPlayerUId is None

@@ -21,7 +21,7 @@ import pytest
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_operations import PalOperationRefused
+from palworld_pal_editor.core.pal_transactions import PalOperationRefused
 from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.webui import app
@@ -84,9 +84,9 @@ def test_a_move_between_containers_keeps_one_pal_and_one_record(tmp_path):
     entity_count = len(manager._entities_list)
     handle_count = len(guild.individual_character_handle_ids)
 
-    capability = manager.pal_operations.capability(record.record_key, target_key)
+    capability = manager.pal_mutations.capability(record.record_key, target_key)
     assert (capability.allowed, capability.effect) == (True, "relocate")
-    outcome = manager.pal_operations.transfer(record.record_key, target_key)
+    outcome = manager.pal_mutations.transfer(record.record_key, target_key)
 
     # The same object, so a Pal created this session and then moved still settles
     # its capture count when the save is written (spec §4.3).
@@ -125,7 +125,7 @@ def test_a_move_out_to_a_dps_and_back_is_one_pal_the_whole_time(tmp_path):
     guild = guild_of(manager, LOSSY_UID)
     entity_count = len(manager._entities_list)
 
-    outcome = manager.pal_operations.transfer(record.record_key, dps_key)
+    outcome = manager.pal_mutations.transfer(record.record_key, dps_key)
 
     assert outcome.record is record
     assert record.storage_kind == "dps"
@@ -144,7 +144,7 @@ def test_a_move_out_to_a_dps_and_back_is_one_pal_the_whole_time(tmp_path):
     # A DPS is a place, not a person: whose Pal it is does not change (spec §7).
     assert str(record.pal.OwnerPlayerUId) == LOSSY_UID
 
-    back = manager.pal_operations.transfer(record.record_key, world_key)
+    back = manager.pal_mutations.transfer(record.record_key, world_key)
 
     assert back.record is record
     assert record.record_key == f"world:{instance_id}"
@@ -164,7 +164,7 @@ def test_a_pal_that_is_not_in_the_slot_it_records_can_go_nowhere(tmp_path):
     record.storage_key = None
     record.slot_index = None
 
-    capability = manager.pal_operations.capability(
+    capability = manager.pal_mutations.capability(
         record.record_key, storage_key_of(manager, MINT_UID, "party")
     )
     assert capability.allowed is False
@@ -200,10 +200,10 @@ def test_a_target_the_move_dialog_must_grey_out_says_why(tmp_path, target, reaso
         "other-guild": storage_key_of(manager, TIGEREST_UID),
     }[target]
 
-    capability = manager.pal_operations.capability(record.record_key, target_key)
+    capability = manager.pal_mutations.capability(record.record_key, target_key)
     assert (capability.allowed, capability.reason) == (False, reason)
     with pytest.raises(PalOperationRefused) as refusal:
-        manager.pal_operations.transfer(record.record_key, target_key)
+        manager.pal_mutations.transfer(record.record_key, target_key)
     assert refusal.value.code == reason
 
 
@@ -215,9 +215,9 @@ def test_a_copy_into_the_global_palbox_keeps_the_source_and_strips_its_position(
     provenance = list(record.pal.OldOwnerPlayerUIds or [])
     slot = record.pal.SlotId
 
-    capability = manager.pal_operations.capability(record.record_key, "global-palbox")
+    capability = manager.pal_mutations.capability(record.record_key, "global-palbox")
     assert (capability.allowed, capability.effect) == (True, "replicate")
-    outcome = manager.pal_operations.transfer(record.record_key, "global-palbox")
+    outcome = manager.pal_mutations.transfer(record.record_key, "global-palbox")
 
     assert outcome.record is not record
     assert manager.get_record(record.record_key) is record
@@ -239,7 +239,7 @@ def test_bringing_a_copy_back_asks_first_and_then_leaves_the_target_where_it_is(
 ):
     manager = open_world(tmp_path, global_palbox=GPS_FIXTURE)
     local = a_movable_pal(manager, storage_key_of(manager, LOSSY_UID))
-    copy_record = manager.pal_operations.transfer(
+    copy_record = manager.pal_mutations.transfer(
         local.record_key, "global-palbox"
     ).record
     local_nickname = local.pal.NickName or ""
@@ -251,7 +251,7 @@ def test_bringing_a_copy_back_asks_first_and_then_leaves_the_target_where_it_is(
 
     # The identity is in two places now, so the same target that was a copy is an
     # overwrite -- which is why the dialog asks the backend rather than the kind.
-    capability = manager.pal_operations.capability(copy_record.record_key, target_key)
+    capability = manager.pal_mutations.capability(copy_record.record_key, target_key)
     assert (capability.allowed, capability.effect) == (True, "update-existing")
 
     request = {
@@ -298,7 +298,7 @@ def test_a_confirmation_for_a_target_that_has_since_moved_is_refused(tmp_path):
     manager = open_world(tmp_path, global_palbox=GPS_FIXTURE)
     local = a_movable_pal(manager, storage_key_of(manager, LOSSY_UID))
     nickname = local.pal.NickName
-    copy_record = manager.pal_operations.transfer(
+    copy_record = manager.pal_mutations.transfer(
         local.record_key, "global-palbox"
     ).record
     copy_record.pal.NickName = "Should not land"
@@ -367,7 +367,7 @@ def test_a_commit_that_fails_leaves_the_save_exactly_as_it_was(tmp_path):
     with pytest.raises(RuntimeError):
         with pytest.MonkeyPatch.context() as monkeypatch:
             monkeypatch.setattr(PalRepository, "_index", fail_once)
-            manager.pal_operations.transfer(record.record_key, dps_key)
+            manager.pal_mutations.transfer(record.record_key, dps_key)
 
     # The record is back under its own key with a working binding: the rollback
     # re-reads the Pal out of the restored native record rather than putting back an

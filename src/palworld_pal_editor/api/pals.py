@@ -208,7 +208,7 @@ def commit_pal_edit(manager: SaveManager, record: PalRecord) -> dict:
     session is saved, and a changed Pal is one the change-set marks have to know
     about. Forgetting either is silent, which is why no route does it by hand.
     """
-    manager.pal_operations.normalize_external_record(record)
+    manager.pal_mutations.normalize_external_record(record)
     manager.pal_repository.mark_modified(record)
     return operation_result(manager, record)
 
@@ -312,7 +312,7 @@ def delete_pal(record_key: str):
         record = require_record(record_key)
         roster_key = roster_key_for_record(manager, record)
         storage_key = record.storage_key
-        if not manager.delete_pal(record.record_key):
+        if not manager.pal_mutations.delete(record.record_key):
             raise ApiError(
                 "PAL_DELETE_FAILED",
                 f"Unable to delete {record_key}",
@@ -350,7 +350,7 @@ def duplicate_pal(record_key: str):
     with manager.session_lock:
         record = require_record(record_key)
         try:
-            clone = manager.duplicate_pal(
+            clone = manager.pal_mutations.duplicate(
                 record.record_key,
                 core_roster_key(roster_key_for_record(manager, record)),
             )

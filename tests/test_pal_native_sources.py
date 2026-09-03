@@ -123,7 +123,7 @@ def test_a_global_palbox_pal_imports_into_a_world_container_and_survives_a_save(
     exported = manager.storage_adapters["global-palbox"].export(source_record)
 
     source = detach_native_record(exported)
-    created = manager.create_pal(
+    created = manager.pal_mutations.create(
         LOSSY_UID,
         WorldPalAdapter.storage_key(player.PalStorageContainerId),
         source.save_parameter,

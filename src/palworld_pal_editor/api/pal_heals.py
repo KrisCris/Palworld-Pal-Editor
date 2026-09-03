@@ -29,7 +29,7 @@ def heal_pals():
     manager = SaveManager()
     with manager.session_lock:
         if scope == "all":
-            manager.heal_all_pals()
+            manager.pal_mutations.heal_all()
             # Every list on screen now shows different sickness and faint badges,
             # and no single record can say so. Naming the rosters is how a healed
             # Pal three lists away stops being drawn as sick.

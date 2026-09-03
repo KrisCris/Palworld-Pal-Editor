@@ -8,7 +8,7 @@ from palworld_pal_editor.webui import app
 import copy
 
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_operations import set_owner
+from palworld_pal_editor.core.pal_transactions import set_owner
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
 from palworld_pal_editor.core.pal_repository import PalRepository

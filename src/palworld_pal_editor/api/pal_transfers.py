@@ -19,7 +19,7 @@ from palworld_pal_editor.api.errors import ApiError, register_error_handlers
 from palworld_pal_editor.api.pals import operation_result, require_record
 from palworld_pal_editor.api.roster_keys import roster_key_for_record
 from palworld_pal_editor.core import PalEntity, SaveManager
-from palworld_pal_editor.core.pal_operations import (
+from palworld_pal_editor.core.pal_transactions import (
     PalIdentityConflict,
     PalOperationRefused,
 )
@@ -149,7 +149,7 @@ def create_pal_transfer():
         source_roster_key = roster_key_for_record(manager, source)
         source_storage_key = source.storage_key
         try:
-            outcome = manager.pal_operations.transfer(
+            outcome = manager.pal_mutations.transfer(
                 source_record_key, target_storage_key, _expected_target(payload)
             )
         except PalIdentityConflict as conflict:
