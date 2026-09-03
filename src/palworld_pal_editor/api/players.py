@@ -166,7 +166,11 @@ def patch_player(player_uid: str):
 def get_player_inventory(player_uid: str):
     manager = SaveManager()
     with manager.session_lock:
-        return manager.item_container_data.inventory_snapshot(require_player(player_uid))
+        # The player is resolved first, as the PATCH below does: written the other
+        # way round, `item_container_data` is read before `require_player` runs, so
+        # asking with no save open raised on None instead of answering 404.
+        player = require_player(player_uid)
+        return manager.item_container_data.inventory_snapshot(player)
 
 
 @players_blueprint.route("/<player_uid>/inventory/<int:slot_index>", methods=["PATCH"])

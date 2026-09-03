@@ -607,7 +607,13 @@ class SaveManager:
         container some camp owns. The camps say which containers those are and the
         repository's storage index says who is in them, so both halves are index
         hits and neither can drift out of sync with the other.
+
+        With no save open there are no camps to ask, which is a session holding no
+        base workers rather than a failure -- the same empty answer `get_players`
+        already gives from its own reset repository.
         """
+        if self.camp_data is None:
+            return []
         records = [
             record
             for camp in self.camp_data.get_camps()
@@ -726,6 +732,11 @@ class SaveManager:
         cached = self._container_registry_cache
         if cached is not None:
             return cached
+        # An unloaded session has no containers to describe. Left unsaid, the
+        # camp and container reads below would raise on None and every storage
+        # route would answer 500 with a traceback for an ordinary startup state.
+        if self.container_data is None or self.camp_data is None:
+            return {}
         descriptors = {}
 
         def add_descriptor(container_id, **values):

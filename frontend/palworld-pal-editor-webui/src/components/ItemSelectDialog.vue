@@ -177,94 +177,100 @@ const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 </script>
 
 <template>
-  <div v-if="open" class="item-dialog-backdrop" role="presentation" @pointerdown.self="emit('close')">
-    <section class="item-dialog" role="dialog" aria-modal="true" aria-labelledby="item-dialog-title">
-      <header>
-        <div>
-          <small>{{ palStore.getTranslatedText('Inventory_Select_Hint') }}</small>
-          <h2 id="item-dialog-title">{{ palStore.getTranslatedText('Inventory_Select_Item') }}</h2>
+  <!-- Every other overlay in this app teleports to the body, and this one has to
+  for the same reason: `.editor-canvas` sets `isolation: isolate`, so a backdrop
+  left inside it opens a stacking context the roster rails -- siblings of the
+  canvas, not descendants -- sit above however high its z-index goes. -->
+  <Teleport to="body">
+    <div v-if="open" class="item-dialog-backdrop" role="presentation" @pointerdown.self="emit('close')">
+      <section class="item-dialog" role="dialog" aria-modal="true" aria-labelledby="item-dialog-title">
+        <header>
+          <div>
+            <small>{{ palStore.getTranslatedText('Inventory_Select_Hint') }}</small>
+            <h2 id="item-dialog-title">{{ palStore.getTranslatedText('Inventory_Select_Item') }}</h2>
+          </div>
+          <div class="dialog-header-actions">
+            <details ref="filterMenu" class="item-filter-menu">
+              <summary class="icon-button filter-button" :class="{ 'is-active': activeFilterCount > 0 }"
+                :title="palStore.getTranslatedText('Inventory_Filter')"
+                :aria-label="palStore.getTranslatedText('Inventory_Filter')">
+                <UiIcon name="filter" />
+                <span v-if="activeFilterCount" class="filter-count">{{ activeFilterCount }}</span>
+              </summary>
+              <div class="item-filter-popover editor-glass-surface">
+                <fieldset>
+                  <legend>{{ palStore.getTranslatedText('Inventory_Filter_Type') }}</legend>
+                  <div class="type-filter-grid">
+                    <button v-for="type in availableTypes" :key="type" type="button" class="filter-option type-filter-option"
+                      :class="{ 'is-active': selectedTypes.includes(type) }"
+                      :aria-pressed="selectedTypes.includes(type)"
+                      @click="toggleType(type)">
+                      <img v-if="typeIcon(type)" :src="iconUrl(typeIcon(type))" alt=""
+                        @error="$event.currentTarget.hidden = true">
+                      <span>{{ palStore.getTranslatedText(`Inventory_Type_${type}`) }}</span>
+                    </button>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>{{ palStore.getTranslatedText('Inventory_Filter_Rarity') }}</legend>
+                  <div class="rarity-filter-grid">
+                    <button v-for="rarity in availableRarities" :key="rarity" type="button"
+                      class="filter-option rarity-filter-option" :class="[`rarity-${rarity}`, { 'is-active': selectedRarities.includes(rarity) }]"
+                      :aria-pressed="selectedRarities.includes(rarity)"
+                      @click="toggleRarity(rarity)">
+                      <i></i>
+                      <span>{{ palStore.getTranslatedText(`Inventory_Rarity_${rarity}`) }}</span>
+                    </button>
+                  </div>
+                </fieldset>
+                <button type="button" class="clear-filter-button" :disabled="!selectedTypes.length && !selectedRarities.length"
+                  @click="clearFilters">
+                  <UiIcon name="close" />
+                  {{ palStore.getTranslatedText('Inventory_Filter_Clear') }}
+                </button>
+              </div>
+            </details>
+            <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
+          </div>
+        </header>
+
+        <input ref="searchInput" v-model="query" class="item-search" type="search"
+          :placeholder="palStore.getTranslatedText('Inventory_Search')">
+
+        <div class="item-results">
+          <button v-for="item in visibleItems" :key="item.InternalName"
+            :ref="element => setOptionRef(item.InternalName, element)" type="button"
+            class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
+            @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
+            @click="selectItem(item)">
+            <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
+              <img :src="iconUrl(item.IconKey)" alt="">
+              <img v-if="item.OverlayIconKey" class="option-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
+              <PalGearBadge :item="item" />
+            </span>
+            <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
+          </button>
+          <p v-if="!visibleItems.length" class="empty-results">{{ palStore.getTranslatedText('Inventory_No_Results') }}</p>
         </div>
-        <div class="dialog-header-actions">
-          <details ref="filterMenu" class="item-filter-menu">
-            <summary class="icon-button filter-button" :class="{ 'is-active': activeFilterCount > 0 }"
-              :title="palStore.getTranslatedText('Inventory_Filter')"
-              :aria-label="palStore.getTranslatedText('Inventory_Filter')">
-              <UiIcon name="filter" />
-              <span v-if="activeFilterCount" class="filter-count">{{ activeFilterCount }}</span>
-            </summary>
-            <div class="item-filter-popover editor-glass-surface">
-              <fieldset>
-                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Type') }}</legend>
-                <div class="type-filter-grid">
-                  <button v-for="type in availableTypes" :key="type" type="button" class="filter-option type-filter-option"
-                    :class="{ 'is-active': selectedTypes.includes(type) }"
-                    :aria-pressed="selectedTypes.includes(type)"
-                    @click="toggleType(type)">
-                    <img v-if="typeIcon(type)" :src="iconUrl(typeIcon(type))" alt=""
-                      @error="$event.currentTarget.hidden = true">
-                    <span>{{ palStore.getTranslatedText(`Inventory_Type_${type}`) }}</span>
-                  </button>
-                </div>
-              </fieldset>
-              <fieldset>
-                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Rarity') }}</legend>
-                <div class="rarity-filter-grid">
-                  <button v-for="rarity in availableRarities" :key="rarity" type="button"
-                    class="filter-option rarity-filter-option" :class="[`rarity-${rarity}`, { 'is-active': selectedRarities.includes(rarity) }]"
-                    :aria-pressed="selectedRarities.includes(rarity)"
-                    @click="toggleRarity(rarity)">
-                    <i></i>
-                    <span>{{ palStore.getTranslatedText(`Inventory_Rarity_${rarity}`) }}</span>
-                  </button>
-                </div>
-              </fieldset>
-              <button type="button" class="clear-filter-button" :disabled="!selectedTypes.length && !selectedRarities.length"
-                @click="clearFilters">
-                <UiIcon name="close" />
-                {{ palStore.getTranslatedText('Inventory_Filter_Clear') }}
-              </button>
-            </div>
-          </details>
-          <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
-        </div>
-      </header>
 
-      <input ref="searchInput" v-model="query" class="item-search" type="search"
-        :placeholder="palStore.getTranslatedText('Inventory_Search')">
-
-      <div class="item-results">
-        <button v-for="item in visibleItems" :key="item.InternalName"
-          :ref="element => setOptionRef(item.InternalName, element)" type="button"
-          class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
-          @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
-          @click="selectItem(item)">
-          <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
-            <img :src="iconUrl(item.IconKey)" alt="">
-            <img v-if="item.OverlayIconKey" class="option-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
-            <PalGearBadge :item="item" />
-          </span>
-          <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
-        </button>
-        <p v-if="!visibleItems.length" class="empty-results">{{ palStore.getTranslatedText('Inventory_No_Results') }}</p>
-      </div>
-
-      <footer>
-        <NumberSliderField v-if="canAdjustCount" v-model="count" class="quantity-control"
-          :label="palStore.getTranslatedText('Inventory_Count')" :min="1" :max="maximum" :step="1" />
-        <span v-else class="dialog-spacer"></span>
-        <button type="button" class="editor-button editor-button--danger danger-button"
-          @click="emit('save', { itemId: null, count: 0 })">
-          {{ palStore.getTranslatedText('Inventory_Clear') }}
-        </button>
-        <button type="button" class="primary-button" :disabled="!selectedId" @click="save">
-          {{ palStore.getTranslatedText('Inventory_Apply') }}
-        </button>
-      </footer>
-    </section>
-    <ItemHoverCard v-if="hoveredItem" :item="hoveredItem"
-      :count="hoveredItem.InternalName === selectedId ? count : null"
-      :client-x="hoverPoint.clientX" :client-y="hoverPoint.clientY" />
-  </div>
+        <footer>
+          <NumberSliderField v-if="canAdjustCount" v-model="count" class="quantity-control"
+            :label="palStore.getTranslatedText('Inventory_Count')" :min="1" :max="maximum" :step="1" />
+          <span v-else class="dialog-spacer"></span>
+          <button type="button" class="editor-button editor-button--danger danger-button"
+            @click="emit('save', { itemId: null, count: 0 })">
+            {{ palStore.getTranslatedText('Inventory_Clear') }}
+          </button>
+          <button type="button" class="primary-button" :disabled="!selectedId" @click="save">
+            {{ palStore.getTranslatedText('Inventory_Apply') }}
+          </button>
+        </footer>
+      </section>
+      <ItemHoverCard v-if="hoveredItem" :item="hoveredItem"
+        :count="hoveredItem.InternalName === selectedId ? count : null"
+        :client-x="hoverPoint.clientX" :client-y="hoverPoint.clientY" />
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
