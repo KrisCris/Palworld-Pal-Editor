@@ -48,6 +48,10 @@ from palworld_pal_editor.core.guild_lab_data import GuildLabData
 
 
 
+class _WorldDataUnreadable(Exception):
+    """Level.sav parsed, but something inside it did not. Never leaves `_open`."""
+
+
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
     _instance = None
@@ -138,92 +142,149 @@ class SaveManager:
                 self.reset()
             return gvas_file
 
+    def _read_level_sav(self, level_sav_path: Path) -> bool:
+        """Decompress and parse Level.sav into `gvas_file`. False if it will not read."""
+        LOGGER.info(f"Opening {level_sav_path}")
+        data = level_sav_path.read_bytes()
+        try:
+            LOGGER.info("Decompressing sav")
+            self._raw_gvas, self._save_type = decompress_sav_to_gvas(data)
+        except Exception as error:
+            LOGGER.error(
+                "Caught Exception: palworld_save_tools::palsav::"
+                f"decompress_sav_to_gvas: {error}"
+            )
+            return False
+
+        LOGGER.info("Reading GVAS file")
+        self.gvas_file = GvasFile.read(
+            self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
+        )
+        PalObjects.TIME = (
+            PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp"))
+            or PalObjects.TIME
+        )
+        return True
+
+    def _read_world_data(self) -> None:
+        """Build every reader over the loaded world data.
+
+        Each of these was its own try/except answering None, five times over. The
+        answer is the same for all of them -- a save whose world data will not parse
+        is a save this cannot open -- so it is said once, and what failed travels in
+        the exception instead of in a log line at each site.
+        """
+
+        def parse(label: str, build):
+            try:
+                return build()
+            except Exception as error:
+                raise _WorldDataUnreadable(f"Error parsing {label}: {error}") from error
+
+        self.group_data = parse("group data", lambda: GroupData(self.gvas_file))
+        self.camp_data = parse("base camp data", lambda: BaseCampData(self.gvas_file))
+        self.guild_lab_data = parse(
+            "guild laboratory data",
+            lambda: GuildLabData(
+                self.gvas_file,
+                DataProvider.get_lab_research_data(),
+                DataProvider.get_lab_research_labels(),
+            ),
+        )
+        self.container_data = parse(
+            "container data", lambda: ContainerData(self.gvas_file)
+        )
+        self.item_container_data = parse(
+            "item container data", lambda: ItemContainerData(self.gvas_file)
+        )
+        self._entities_list = parse(
+            "pal data",
+            lambda: self.gvas_file.properties["worldSaveData"]["value"][
+                "CharacterSaveParameterMap"
+            ]["value"],
+        )
+
+    def _bind_world_adapter(self) -> None:
+        """Every world container reads and writes through the one world adapter."""
+        self.world_adapter = WorldPalAdapter(self._entities_list, self.container_data)
+        for container in self.container_data.get_containers():
+            self.storage_adapters[
+                WorldPalAdapter.storage_key(container.ID)
+            ] = self.world_adapter
+
     def _open(self, file_path: str) -> Optional[GvasFile]:
         self.file_path = Path(file_path).resolve()
-
         level_sav_path = self.file_path / "Level.sav"
-
         if not level_sav_path.exists():
             LOGGER.error(f"Save file does not exist: {level_sav_path}.")
             return None
+        if not self._read_level_sav(level_sav_path):
+            return None
+        try:
+            self._read_world_data()
+        except _WorldDataUnreadable as failure:
+            LOGGER.error(str(failure))
+            return None
 
-        LOGGER.info(f"Opening {level_sav_path}")
-        with level_sav_path.open("rb") as file:
-            data = file.read()
-
-            try:
-                LOGGER.info("Decompressing sav")
-                self._raw_gvas, self._save_type = decompress_sav_to_gvas(data)
-            except Exception as e:
-                LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
-                return None
-
-            LOGGER.info("Reading GVAS file")
-            self.gvas_file = GvasFile.read(
-                self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
-            )
-
-            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
-
-            try:
-                self.group_data = GroupData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing group data: {e}")
-                return None
-            
-            try:
-                self.camp_data = BaseCampData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing base camp data: {e}")
-                return None
-
-            try:
-                self.guild_lab_data = GuildLabData(
-                    self.gvas_file,
-                    DataProvider.get_lab_research_data(),
-                    DataProvider.get_lab_research_labels(),
-                )
-            except Exception as e:
-                LOGGER.error(f"Error parsing guild laboratory data: {e}")
-                return None
-            
-            try:
-                self.container_data = ContainerData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing container data: {e}")
-                return None
-
-            try:
-                self.item_container_data = ItemContainerData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing item container data: {e}")
-                return None
-
-            try:
-                self._entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
-            except Exception as e:
-                LOGGER.error(f"Unable to retrieve pal data: {e}")
-                return None
-
-            self.world_adapter = WorldPalAdapter(
-                self._entities_list, self.container_data
-            )
-            for container in self.container_data.get_containers():
-                self.storage_adapters[
-                    WorldPalAdapter.storage_key(container.ID)
-                ] = self.world_adapter
-
-            self._load_players()
-            self._register_world_records()
-            self._load_external_storages()
-            self.storage_directory.invalidate()
-
-            LOGGER.info("Done")
+        self._bind_world_adapter()
+        self._load_players()
+        self._register_world_records()
+        self._load_external_storages()
+        self.storage_directory.invalidate()
+        LOGGER.info("Done")
         return self.gvas_file
 
     def save(self, file_path: str) -> bool:
         with self.session_lock:
             return self._save(file_path)
+
+    def _serialize_session(
+        self, output_path: Path, global_storage_path: Path
+    ) -> tuple[list[tuple[Path, bytes]], list[PalStorageSaveFile]]:
+        """Every file this session would write, as bytes, and the storages that owe one.
+
+        Nothing is written here and nothing is mutated: this is the whole of what
+        the session knows about producing a save, separated from the backup and
+        restore around it. The bytes come from a deepcopy of each live GVAS so a
+        successful save leaves the session exactly as it was -- still live, still
+        the same objects the open editor is holding.
+        """
+        outputs: list[tuple[Path, bytes]] = [
+            (
+                output_path / "Level.sav",
+                compress_gvas_to_sav(
+                    copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
+                    self._save_type,
+                ),
+            )
+        ]
+        for player in self.players:
+            if player.PlayerGVAS is None:
+                continue
+            player_gvas, player_save_type = player.PlayerGVAS
+            outputs.append(
+                (
+                    output_path / "Players" / f"{UUID2HexStr(player.PlayerUId)}.sav",
+                    compress_gvas_to_sav(
+                        copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
+                        player_save_type,
+                    ),
+                )
+            )
+
+        dirty_storages = [
+            storage for storage in self._dps_storages.values() if storage.dirty
+        ]
+        if self._global_palbox is not None and self._global_palbox.dirty:
+            dirty_storages.append(self._global_palbox)
+        for storage in dirty_storages:
+            target = (
+                global_storage_path
+                if storage.kind == "global_palbox"
+                else output_path / "Players" / storage.path.name
+            )
+            outputs.append((target, storage.serialize()))
+        return outputs, dirty_storages
 
     def _save(self, file_path: str) -> bool:
         """Write the session to `file_path`, or raise `SaveFailed` having undone it.
@@ -261,43 +322,9 @@ class SaveManager:
         dirty_storages: list[PalStorageSaveFile] = []
         try:
             settled = self._settle_created_records()
-            outputs: list[tuple[Path, bytes]] = [
-                (
-                    output_path / "Level.sav",
-                    compress_gvas_to_sav(
-                        copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
-                        self._save_type,
-                    ),
-                )
-            ]
-            for player in self.players:
-                if player.PlayerGVAS is None:
-                    continue
-                player_gvas, player_save_type = player.PlayerGVAS
-                outputs.append(
-                    (
-                        output_path
-                        / "Players"
-                        / f"{UUID2HexStr(player.PlayerUId)}.sav",
-                        compress_gvas_to_sav(
-                            copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
-                            player_save_type,
-                        ),
-                    )
-                )
-            dirty_storages = [
-                storage for storage in self._dps_storages.values() if storage.dirty
-            ]
-            if self._global_palbox is not None and self._global_palbox.dirty:
-                dirty_storages.append(self._global_palbox)
-            for storage in dirty_storages:
-                target = (
-                    global_storage_path
-                    if storage.kind == "global_palbox"
-                    else output_path / "Players" / storage.path.name
-                )
-                outputs.append((target, storage.serialize()))
-
+            outputs, dirty_storages = self._serialize_session(
+                output_path, global_storage_path
+            )
             # Files this save is about to bring into existence. Putting a backup back
             # cannot undo those, so undoing them means deleting them.
             created = [target for target, _ in outputs if not target.exists()]
