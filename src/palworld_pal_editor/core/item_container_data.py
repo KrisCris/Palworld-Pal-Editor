@@ -90,12 +90,7 @@ def _uuid_string(value: object) -> str:
 
 
 def _byte_array(value: bytes) -> dict:
-    return {
-        "array_type": "ByteProperty",
-        "id": None,
-        "value": {"values": value},
-        "type": "ArrayProperty",
-    }
+    return PalObjects.ArrayProperty("ByteProperty", {"values": value})
 
 
 class ItemContainerData:
@@ -320,10 +315,9 @@ class ItemContainerData:
     ) -> dict:
         local_id = dynamic_id or PalObjects.EMPTY_UUID
         return {
-            "RawData": {
-                "array_type": "ByteProperty",
-                "id": None,
-                "value": {
+            "RawData": PalObjects.ArrayProperty(
+                "ByteProperty",
+                {
                     "slot_index": slot_index,
                     "count": count,
                     "item": {
@@ -335,9 +329,8 @@ class ItemContainerData:
                     },
                     "trailing_bytes": bytes(20),
                 },
-                "type": "ArrayProperty",
-                "custom_type": ".worldSaveData.ItemContainerSaveData.Value.Slots.Slots.RawData",
-            },
+                ".worldSaveData.ItemContainerSaveData.Value.Slots.Slots.RawData",
+            ),
             "CustomVersionData": _byte_array(ITEM_SLOT_CUSTOM_VERSION),
         }
 
@@ -366,13 +359,11 @@ class ItemContainerData:
         elif dynamic_type != "armor":
             raise ValueError(f"Unsupported new dynamic item type: {dynamic_type}")
         return {
-            "RawData": {
-                "array_type": "ByteProperty",
-                "id": None,
-                "value": base,
-                "type": "ArrayProperty",
-                "custom_type": ".worldSaveData.DynamicItemSaveData.DynamicItemSaveData.RawData",
-            },
+            "RawData": PalObjects.ArrayProperty(
+                "ByteProperty",
+                base,
+                ".worldSaveData.DynamicItemSaveData.DynamicItemSaveData.RawData",
+            ),
             "CustomVersionData": _byte_array(DYNAMIC_ITEM_CUSTOM_VERSION),
         }
 

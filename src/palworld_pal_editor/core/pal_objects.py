@@ -320,6 +320,46 @@ class PalObjects:
         }
 
     @staticmethod
+    def PalInstanceIDFields(instance_id: UUID | str, player_uid: UUID | str = None):
+        """How the save names one Pal: whose it is, which one, and a debug label.
+
+        The bare triple, without a struct envelope. Level.sav's locker set stores
+        it exactly like this, while an external storage file wraps it -- see
+        `PalInstanceID` -- so the shape is defined once and wrapped where needed.
+        """
+        return {
+            "PlayerUId": PalObjects.Guid(player_uid or PalObjects.EMPTY_UUID),
+            "InstanceId": PalObjects.Guid(instance_id),
+            "DebugName": PalObjects.StrProperty(""),
+        }
+
+    @staticmethod
+    def PalInstanceID(instance_id: UUID | str, player_uid: UUID | str = None):
+        """`PalInstanceIDFields` as the `PalInstanceID` struct a storage slot holds."""
+        return {
+            "struct_type": "PalInstanceID",
+            "struct_id": PalObjects.EMPTY_UUID,
+            "id": None,
+            "value": PalObjects.PalInstanceIDFields(instance_id, player_uid),
+            "type": "StructProperty",
+        }
+
+    @staticmethod
+    def InLockerCharacterInstanceIDArray():
+        """The empty locker set, for a save that has never had one.
+
+        A `SetProperty` of `PalInstanceID` entries, which is what Level.sav uses to
+        record which Pals are in a Dimensional Pal Storage.
+        """
+        return {
+            "set_type": "StructProperty",
+            "id": None,
+            "struct_type": "StructProperty",
+            "type": "SetProperty",
+            "value": [],
+        }
+
+    @staticmethod
     def get_PalContainerId(container: dict) -> Optional[UUID]:
         return PalObjects.get_BaseType(get_nested_attr(container, ["value", "ID"]))
 

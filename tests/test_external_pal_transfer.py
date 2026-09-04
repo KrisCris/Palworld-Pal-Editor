@@ -320,3 +320,41 @@ def test_base_worker_duplicate_produces_a_fresh_base_pal(tmp_path):
     assert clone.storage_kind == "world"
     assert clone in manager.rosters.records_for_roster("base-workers")
     assert manager.get_record(clone.record_key) is clone
+
+def test_a_save_with_no_locker_yet_gets_a_well_formed_one(tmp_path):
+    """The one branch that builds the locker rather than reading it.
+
+    A save that has never held a Pal in a Dimensional Pal Storage has no
+    `InLockerCharacterInstanceIDArray` at all, so the first `add` has to create the
+    set as well as the entry. Nothing else exercises this -- every fixture already
+    has a locker -- and a wrong envelope here is a save the game cannot read, which
+    is exactly the kind of thing no other test would catch.
+    """
+    manager = open_copied_world(tmp_path)
+    world_data = manager.gvas_file.properties["worldSaveData"]["value"]
+    world_data.pop("InLockerCharacterInstanceIDArray", None)
+
+    assert manager.locker.entries() == []
+    locker = world_data["InLockerCharacterInstanceIDArray"]
+    assert locker["type"] == "SetProperty"
+    assert locker["set_type"] == "StructProperty"
+    assert locker["struct_type"] == "StructProperty"
+    assert locker["id"] is None
+
+    instance_id = "11111111-2222-3333-4444-555555555555"
+    manager.locker.add(instance_id)
+    assert locker_ids(manager) == [instance_id]
+
+    entry = locker["value"][0]
+    assert set(entry) == {"PlayerUId", "InstanceId", "DebugName"}
+    assert str(PalObjects.get_BaseType(entry["PlayerUId"])) == str(PalObjects.EMPTY_UUID)
+    assert PalObjects.get_BaseType(entry["DebugName"]) == ""
+
+    # And the save still writes and reads back with the locker it just grew: a
+    # well-formed envelope is one palworld_save_tools can serialize and re-read.
+    saved_path = str(manager.file_path)
+    manager.save(saved_path)
+    SaveManager._instance = None
+    reopened = SaveManager()
+    assert reopened.open(saved_path) is not None
+    assert instance_id in locker_ids(reopened)

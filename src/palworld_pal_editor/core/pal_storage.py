@@ -152,14 +152,4 @@ class PalStorageSaveFile:
         instance_id: UUID | str,
         player_uid: UUID | str | None,
     ) -> dict:
-        return {
-            "struct_type": "PalInstanceID",
-            "struct_id": PalObjects.EMPTY_UUID,
-            "id": None,
-            "value": {
-                "PlayerUId": PalObjects.Guid(player_uid or PalObjects.EMPTY_UUID),
-                "InstanceId": PalObjects.Guid(instance_id),
-                "DebugName": PalObjects.StrProperty(""),
-            },
-            "type": "StructProperty",
-        }
+        return PalObjects.PalInstanceID(instance_id, player_uid)

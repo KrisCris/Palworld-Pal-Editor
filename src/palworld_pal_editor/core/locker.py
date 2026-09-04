@@ -26,13 +26,7 @@ class LockerIndex:
         world_data = self._manager.gvas_file.properties["worldSaveData"]["value"]
         locker = world_data.get("InLockerCharacterInstanceIDArray")
         if locker is None:
-            locker = {
-                "set_type": "StructProperty",
-                "id": None,
-                "struct_type": "StructProperty",
-                "type": "SetProperty",
-                "value": [],
-            }
+            locker = PalObjects.InLockerCharacterInstanceIDArray()
             world_data["InLockerCharacterInstanceIDArray"] = locker
         return locker["value"]
 
@@ -44,13 +38,9 @@ class LockerIndex:
         instance_id = toUUID(str(instance_id))
         if any(self._instance_id(entry) == instance_id for entry in self.entries()):
             return
-        self.entries().append(
-            {
-                "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
-                "InstanceId": PalObjects.Guid(instance_id),
-                "DebugName": PalObjects.StrProperty(""),
-            }
-        )
+        # A locker entry stores the fields bare, without the struct envelope an
+        # external storage slot wraps them in.
+        self.entries().append(PalObjects.PalInstanceIDFields(instance_id))
 
     def remove(self, instance_id: UUID | str) -> None:
         instance_id = toUUID(str(instance_id))
