@@ -20,6 +20,7 @@ import unittest
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
 
 
@@ -116,6 +117,98 @@ class PlayerWriteTests(unittest.TestCase):
         slot = inventory["containers"]["food"]["slots"][0]
         self.assertEqual("Curry", slot["static_id"])
         self.assertEqual(42, slot["count"])
+
+    def test_placing_a_weapon_writes_the_dynamic_entry_it_needs(self):
+        """A weapon is two records: the slot, and a dynamic item the slot points at.
+
+        Nothing else covered this branch. A slot whose `dynamic_id` names no entry
+        is the "dangling dynamic item GUID" the reader warns about, so writing one
+        without the other is a broken inventory rather than a missing feature.
+        """
+        response = self.client.patch(
+            f"/api/players/{self.uid}/inventory/1",
+            json={"containerKind": "weapons", "itemId": "YakushimaBlade", "count": 1},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        slot = response.get_json()["containers"]["weapons"]["slots"][1]
+        self.assertEqual("YakushimaBlade", slot["static_id"])
+        self.assertEqual("weapon", slot["dynamic_type"])
+        self.assertIsNotNone(slot["dynamic_id"])
+        self.assertIsNone(slot["warning"])
+        # A new weapon arrives whole, and with the magazine the game data gives it.
+        self.assertEqual(2222.0, slot["durability"])
+        self.assertEqual(
+            DataProvider.get_item("YakushimaBlade")["MagazineSize"], slot["ammo"]
+        )
+
+    def test_placing_armor_writes_a_dynamic_entry_without_the_weapon_fields(self):
+        """Armor shares the durability half of the shape and none of the ammo half."""
+        response = self.client.patch(
+            f"/api/players/{self.uid}/inventory/4",
+            json={"containerKind": "armor", "itemId": "Shield_03", "count": 1},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        # Armor slots are group-constrained: ARMOR_SLOT_GROUPS puts Shield at 4.
+        slot = response.get_json()["containers"]["armor"]["slots"][4]
+        self.assertEqual("Shield_03", slot["static_id"])
+        self.assertEqual("armor", slot["dynamic_type"])
+        self.assertEqual(2250.0, slot["durability"])
+        self.assertIsNone(slot["ammo"])
+        self.assertIsNone(slot["warning"])
+
+        raw = self.manager.item_container_data.dynamic_items[slot["dynamic_id"]]
+        self.assertEqual(
+            {"type", "id", "leading_bytes", "durability", "trailing_bytes"},
+            set(raw["RawData"]["value"]),
+        )
+
+    def test_an_item_the_game_data_gives_no_durability_is_created_broken(self):
+        """A known gap, pinned so it is a decision rather than a surprise.
+
+        `MaxDurability` is 0 in the game data for grappling guns, sphere launchers
+        and every NPC weapon, while real ones in a save carry 150-450. The NPC
+        weapons are unreachable -- `_validate_item` refuses anything not `Legal` or
+        `Disabled` -- but a grappling gun is neither, so it can be placed, and it is
+        written with no durability at all. There is no better value available: the
+        real maximum is in a game table this editor does not read.
+        """
+        self.assertEqual(0, DataProvider.get_item("GrapplingGun2")["MaxDurability"])
+
+        response = self.client.patch(
+            f"/api/players/{self.uid}/inventory/2",
+            json={"containerKind": "weapons", "itemId": "GrapplingGun2", "count": 1},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        slot = response.get_json()["containers"]["weapons"]["slots"][2]
+        self.assertEqual(0.0, slot["durability"])
+
+    def test_an_egg_cannot_be_placed_because_it_carries_a_pal(self):
+        """The third dynamic type, and the one creation does not implement.
+
+        An egg's dynamic entry holds a whole `PalIndividualCharacterSaveParameter`
+        and 28 trailing bytes rather than 4, so there is nothing to build it from
+        the way a weapon or a piece of armor is built. `_validate_item` refuses it
+        up front, which is why `_new_dynamic_entry`'s own guard against it is
+        unreachable from here -- this pins the reachable refusal.
+        """
+        self.assertEqual("egg", DataProvider.get_item("PalEgg_Dark_02")["DynamicType"])
+
+        response = self.client.patch(
+            f"/api/players/{self.uid}/inventory/3",
+            json={"containerKind": "common", "itemId": "PalEgg_Dark_02", "count": 1},
+            headers=self.headers,
+        )
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(
+            "INVENTORY_SLOT_INVALID", response.get_json()["error"]["code"]
+        )
 
     def test_reading_the_inventory_of_a_player_who_is_not_there_is_a_404(self):
         response = self.client.get(
