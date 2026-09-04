@@ -210,7 +210,7 @@ def patch_player_inventory_slot(player_uid: str, slot_index: int):
 )
 @jwt_required()
 def post_player_inventory_slot_repair(player_uid: str, slot_index: int):
-    """Restore one worn item to full durability.
+    """Restore one worn item: full durability, full magazine.
 
     A sub-resource rather than a field on the PATCH above, for the same reason
     `POST /api/session/saves` is one: the PATCH replaces a slot, and a body that

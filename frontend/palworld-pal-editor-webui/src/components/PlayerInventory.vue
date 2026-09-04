@@ -125,7 +125,8 @@ onBeforeUnmount(() => {
           <div ref="bagGrid" class="slot-grid slot-grid--bag">
             <InventoryItemSlot v-for="slot in currentBag?.slots" :key="slot.slot_index"
               :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable(bagTab)" square
-              @edit="openSlot(bagTab, slot)" @clear="clearSlot(bagTab, slot)" />
+              show-durability @edit="openSlot(bagTab, slot)" @clear="clearSlot(bagTab, slot)"
+              @repair="repairSlot(bagTab, slot)" />
           </div>
         </div>
       </section>

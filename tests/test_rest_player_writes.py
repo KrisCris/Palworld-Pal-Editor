@@ -300,6 +300,57 @@ class PlayerWriteTests(unittest.TestCase):
             "INVENTORY_REPAIR_REFUSED", response.get_json()["error"]["code"]
         )
 
+    def test_restoring_refills_the_magazine_as_well_as_the_durability(self):
+        """They wear out together, so restoring one without the other is half a fix.
+
+        `MagazineSize` is the trustworthy half of this: across the fixture save's
+        2095 loaded weapons not one carries more ammunition than its magazine, and
+        none carries ammunition without one.
+        """
+        placed = self._place("weapons", 2, "AssaultRifle_Default1")
+        magazine = DataProvider.get_item("AssaultRifle_Default1")["MagazineSize"]
+        self.assertGreater(magazine, 0)
+        dynamic = self.manager.item_container_data.dynamic_items[placed["dynamic_id"]]
+        dynamic["RawData"]["value"]["remaining_bullets"] = 1
+        dynamic["RawData"]["value"]["durability"] = 5.0
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/2/repairs",
+            json={"containerKind": "weapons"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        slot = response.get_json()["containers"]["weapons"]["slots"][2]
+        self.assertEqual(magazine, slot["ammo"])
+        self.assertEqual(
+            float(DataProvider.get_item("AssaultRifle_Default1")["MaxDurability"]),
+            slot["durability"],
+        )
+
+    def test_an_item_missing_one_maximum_still_gets_the_other(self):
+        """A refusal is for an item with neither maximum, not for one with one.
+
+        Melee weapons have no magazine and a real durability; the NPC-style guns
+        are the other way round. Restoring what is known beats refusing both.
+        """
+        placed = self._place("weapons", 1, "YakushimaBlade")
+        self.assertEqual(0, DataProvider.get_item("YakushimaBlade")["MagazineSize"])
+        dynamic = self.manager.item_container_data.dynamic_items[placed["dynamic_id"]]
+        dynamic["RawData"]["value"]["durability"] = 7.0
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/1/repairs",
+            json={"containerKind": "weapons"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        slot = response.get_json()["containers"]["weapons"]["slots"][1]
+        self.assertEqual(2222.0, slot["durability"])
+        # The magazine it never had is left alone rather than invented.
+        self.assertEqual(0, slot["ammo"])
+
     def test_reading_the_inventory_of_a_player_who_is_not_there_is_a_404(self):
         response = self.client.get(
             "/api/players/not-a-player/inventory", headers=self.headers

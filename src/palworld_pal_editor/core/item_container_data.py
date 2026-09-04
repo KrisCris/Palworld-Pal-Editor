@@ -391,17 +391,24 @@ class ItemContainerData:
     def repair_slot(
         self, player: PlayerEntity, container_kind: str, slot_index: int
     ) -> dict:
-        """Put one worn item back to the durability the game data gives it.
+        """Put one worn item back to the maxima the game data gives it.
+
+        Durability and ammunition together, because they wear out together and
+        restoring one without the other leaves the item still unusable.
 
         This edits the dynamic entry in place rather than replacing the item.
-        Re-placing it would also restore durability, but it would mint a new
-        dynamic id and throw away everything else the entry holds -- a weapon's
-        passive skills and its remaining ammunition -- which is not a repair.
+        Re-placing it would restore both, but it would mint a new dynamic id and
+        throw away everything else the entry holds -- a weapon's passive skills
+        above all -- which is a replacement, not a repair.
 
-        Not every item can be repaired. `MaxDurability` is 0 in the game data for
-        grappling guns, sphere launchers and the NPC weapons, while real ones in a
-        save carry a real value, so for those there is no maximum to restore and
-        the answer is to say so rather than to write a zero over what is there.
+        The two maxima are not equally trustworthy, which is why each is applied
+        only where it is known. `MagazineSize` is sound: across the fixture save's
+        2095 loaded weapons, not one carries more ammunition than its magazine,
+        and none carries ammunition without one. `MaxDurability` is 0 in the game
+        data for grappling guns, sphere launchers and the NPC weapons, while real
+        ones in a save carry 150 to 450, so writing "the maximum" there would
+        write a zero over a working item. An item with neither maximum known is
+        refused rather than silently left alone.
         """
         if container_kind not in EDITABLE_CONTAINERS:
             raise ValueError(f"Container is not editable: {container_kind}")
@@ -427,20 +434,26 @@ class ItemContainerData:
         )
         dynamic = None if local_id == EMPTY_UUID else self.dynamic_items.get(local_id)
         if dynamic is None:
-            raise ValueError("This item has no durability to restore")
+            raise ValueError("This item has nothing to restore")
         dynamic_raw = dynamic["RawData"]["value"]
-        if "durability" not in dynamic_raw:
-            raise ValueError("This item has no durability to restore")
 
         static_id = dynamic_raw["id"]["static_id"]
-        item = DataProvider.get_item(static_id)
-        maximum = item.get("MaxDurability") if item else None
-        if not maximum:
-            raise ValueError(
-                f"The game data gives {static_id} no maximum durability to restore"
-            )
+        item = DataProvider.get_item(static_id) or {}
+        restored = []
+        maximum = item.get("MaxDurability")
+        if "durability" in dynamic_raw and maximum:
+            dynamic_raw["durability"] = float(maximum)
+            restored.append("durability")
+        magazine = item.get("MagazineSize")
+        if "remaining_bullets" in dynamic_raw and magazine:
+            dynamic_raw["remaining_bullets"] = int(magazine)
+            restored.append("ammo")
 
-        dynamic_raw["durability"] = float(maximum)
+        if not restored:
+            raise ValueError(
+                f"The game data gives {static_id} no maximum durability or "
+                "magazine size to restore"
+            )
         return self._normalized_slot(slot, slot_index)
 
     def patch_slot(

@@ -22,14 +22,20 @@ const tooltipVisible = ref(false)
 const tooltipPoint = ref({ clientX: 0, clientY: 0 })
 
 const rarity = computed(() => Math.max(0, Math.min(4, props.item?.Rarity ?? 0)))
-// The game data leaves MaxDurability at 0 for some real items -- grappling guns,
-// sphere launchers -- so there is no maximum to restore and no repair to offer.
+// Restorable only where the game data actually gives a maximum. It leaves
+// MaxDurability at 0 for some real items -- grappling guns, sphere launchers --
+// so for those there is nothing to restore to and nothing to offer.
 const maxDurability = computed(
   () => props.detailsItem?.MaxDurability || props.item?.MaxDurability || 0)
-const repairable = computed(() => props.editable
+const magazineSize = computed(
+  () => props.detailsItem?.MagazineSize || props.item?.MagazineSize || 0)
+const worn = computed(() => maxDurability.value > 0
   && props.slot.durability != null
-  && maxDurability.value > 0
   && props.slot.durability < maxDurability.value)
+const empty = computed(() => magazineSize.value > 0
+  && props.slot.ammo != null
+  && props.slot.ammo < magazineSize.value)
+const repairable = computed(() => props.editable && (worn.value || empty.value))
 const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 
 const showTooltip = event => {

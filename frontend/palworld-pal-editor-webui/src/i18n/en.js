@@ -290,7 +290,7 @@ export default {
     Inventory_No_Results: "No matching items",
     Inventory_Count: "Count",
     Inventory_Clear: "Clear slot",
-    Inventory_Repair: "Restore durability",
+    Inventory_Repair: "Restore durability and ammo",
     Inventory_Apply: "Apply",
     Inventory_Rarity_0: "Common",
     Inventory_Rarity_1: "Uncommon",
