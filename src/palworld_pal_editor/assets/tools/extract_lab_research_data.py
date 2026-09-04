@@ -241,11 +241,17 @@ def enrich(
         localized[research_id]["I18n"] = by_locale
 
     categories = sorted({definition["Category"] for definition in records.values()})
-    item_types = {
-        definition["EffectItemType"]
-        for definition in records.values()
-        if definition["EffectItemType"] != "None"
-    }
+    # Sorted for the same reason `categories` above is: this set is iterated to
+    # build the label dicts, and set order for strings follows PYTHONHASHSEED, so
+    # leaving it unsorted rewrote lab_research_labels.json and its sha on every
+    # run whether or not the game had changed.
+    item_types = sorted(
+        {
+            definition["EffectItemType"]
+            for definition in records.values()
+            if definition["EffectItemType"] != "None"
+        }
+    )
     labels = {"category": {}, "item": {}}
     for locale in LOCALE_DIRECTORIES:
         labels["category"][locale] = {
