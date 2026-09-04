@@ -1,4 +1,4 @@
-"""What a roster is called on each side of the API boundary (spec §8.2).
+"""What a roster is called on each side of the API boundary.
 
 Both sides name the fixed rosters the same way. The one difference is a player
 roster: `player:<uid>` over HTTP, and the bare uid inside `SaveManager`, which

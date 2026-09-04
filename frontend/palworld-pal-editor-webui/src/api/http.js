@@ -1,16 +1,16 @@
-// One place that knows how to reach the backend, per spec §10.
+// One place that knows how to reach the backend.
 //
 // Every REST call goes through `request()` and either returns the parsed body or
-// throws an `ApiError`. That is the whole point of this module: the old store had
-// each caller inspect `response.status == 0 / 1 / 2` and guess what to do, so
-// every new endpoint meant another three-branch ladder written from memory. A
-// thrown error is handled once, at the operation, or not at all.
+// throws an `ApiError`. That is the whole point of this module: callers do not
+// inspect `response.status == 0 / 1 / 2` and guess what to do, which makes every
+// new endpoint another three-branch ladder written from memory. A thrown error is
+// handled once, at the operation, or not at all.
 
 import axios from "axios";
 
 import { backendUrl } from "../services/backend-connection.js";
 
-// The §8.7 envelope, plus the two failures that never reach a route: the request
+// The backend's error envelope, plus the two failures that never reach a route: the request
 // was cancelled because its session is gone, or the backend is not there at all.
 export class ApiError extends Error {
     constructor(httpStatus, code, message, details = {}) {
@@ -87,9 +87,9 @@ function toApiError(error) {
         );
     }
 
-    // Not a REST blueprint: the JWT handlers and the routes this plan has not
-    // reached yet still answer `{status, data, msg}`. 401 is the case that
-    // matters, and it comes from the app-level auth handlers, not from a route.
+    // Not a REST blueprint: the JWT handlers answer `{status, data, msg}`. 401 is
+    // the case that matters, and it comes from the app-level auth handlers rather
+    // than from a route.
     const status = response.status;
     return new ApiError(
         status,

@@ -1,7 +1,7 @@
-// Guild laboratory research for the loaded save (spec §10).
+// Guild laboratory research for the loaded save.
 //
 // The BaseCamp editor's data and nothing else. It keeps the payload's own field
-// names: renaming them would be a rewrite of a component §8.6 says not to change.
+// names: renaming them would be a rewrite of a component nothing asked to change.
 
 import { ref } from "vue";
 import { defineStore } from "pinia";
@@ -21,7 +21,7 @@ export const useResearchStore = defineStore("research", () => {
         research.value = tree ?? { ...EMPTY_RESEARCH };
         const guilds = research.value.Guilds ?? [];
         // A guild that is no longer in the tree cannot stay selected; the first
-        // one is what the editor opened on before this store existed.
+        // one is what the editor falls back to.
         if (!guilds.some(guild => guild.GuildId === selectedGuildId.value)) {
             selectedGuildId.value = guilds[0]?.GuildId ?? null;
         }

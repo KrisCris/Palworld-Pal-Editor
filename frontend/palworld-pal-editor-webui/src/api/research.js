@@ -1,7 +1,7 @@
-// Guild laboratory research (spec §8.6).
+// Guild laboratory research.
 //
 // One resource for the whole save. The tree keeps the field names the BaseCamp
-// editor already reads -- §8.3's casing rule is about how a Pal says where it is.
+// editor already reads -- the casing rule is about how a Pal says where it is.
 
 import { request } from "./http.js";
 

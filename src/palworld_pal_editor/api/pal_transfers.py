@@ -1,4 +1,4 @@
-"""Moving a Pal, as one resource (spec §8.3).
+"""Moving a Pal, as one resource.
 
 A transfer is a transaction across records the client cannot see -- a container slot,
 a guild's membership, a DPS entry, the locker -- so it is a resource of its own rather
@@ -95,7 +95,7 @@ def _candidate(manager: SaveManager, record: PalRecord) -> dict:
 def conflict_details(
     manager: SaveManager, source: PalRecord, candidates: list[PalRecord]
 ) -> dict:
-    """The §8.3 conflict payload: what is arriving, what it would replace, and the diff.
+    """The conflict payload: what is arriving, what it would replace, and the diff.
 
     `existing` and `fieldChanges` are filled only when there is exactly one candidate.
     With several, the backend has no basis for picking one and the user answers with

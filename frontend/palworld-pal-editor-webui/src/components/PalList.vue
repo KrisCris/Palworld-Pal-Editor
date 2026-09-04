@@ -146,8 +146,8 @@ watch(
   },
 )
 
-// The summary carries its own Paldeck number, so the list no longer has to look
-// the species up in the static catalog to say what a row is.
+// The summary carries its own Paldeck number, so the list does not look the
+// species up in the static catalog to say what a row is.
 function palMetadata(pal) {
   const id = pal.CharacterID || pal.DataAccessKey
   return pal.Paldeck ? `PAL ${pal.Paldeck} · ${id}` : id

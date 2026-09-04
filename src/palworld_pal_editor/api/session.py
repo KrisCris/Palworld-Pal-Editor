@@ -1,4 +1,4 @@
-"""The loaded save, as a resource (spec §8.1).
+"""The loaded save, as a resource.
 
 There is exactly one session, so it has no id: `GET` reports what is loaded and
 `PUT` replaces it. Everything else in the API reads through whatever this holds.

@@ -61,7 +61,7 @@ class WorldPalAdapter:
     def detach(cls, native_record) -> Optional[dict]:
         """The complete SaveParameter inside a World record, or None if it is not one.
 
-        Strict on purpose (spec §6.1): the identity half has to be there, the
+        Strict on purpose: the identity half has to be there, the
         property has to say it is a character parameter, and a player is not a Pal.
         A dict that merely contains something named SaveParameter is not a World
         record, and guessing would import it into a save as one.
@@ -75,7 +75,7 @@ class WorldPalAdapter:
 
     @staticmethod
     def export(record: PalRecord) -> dict:
-        """This Pal as a complete World record, in JSON-native values (spec §6.1)."""
+        """This Pal as a complete World record, in JSON-native values."""
         return json_native(record.native_record)
 
     @classmethod
@@ -117,7 +117,7 @@ class WorldPalAdapter:
     def remove(self, native_record: dict) -> int:
         """Take one World record out, answering where it was.
 
-        The position carries no meaning to the game (spec §4.3), but a failed
+        The position carries no meaning to the game, but a failed
         operation putting the record back where it was keeps the array byte-identical
         to what was loaded, which is worth the one integer.
         """

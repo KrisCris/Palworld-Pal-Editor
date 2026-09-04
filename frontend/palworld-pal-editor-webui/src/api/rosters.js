@@ -1,4 +1,4 @@
-// The Pal lists a save can show (spec §8.2).
+// The Pal lists a save can show.
 //
 // A roster answers with `PalSummary[]` in the order that list displays. What a
 // single Pal looks like in full is `pals.getPal`, not a bigger roster read.

@@ -1,4 +1,4 @@
-"""Creating a Pal in one storage, whatever it is being made from (spec §5.4, §8.3).
+"""Creating a Pal in one storage, whatever it is being made from.
 
 Default, template and pasted native JSON differ only in where the gameplay payload
 comes from. Each is reduced to one complete `SaveParameter` before anything exists,
@@ -9,7 +9,7 @@ without either format knowing about the other.
 `POST /api/pal-transfers` sits beside this: moving a Pal is the same adapters and a
 different commit semantic. What this module adds for it is the storage directory the
 move dialog renders, and the contextual capability that says -- for one Pal and one
-target -- whether it may go and what would happen if it did (spec §8.2).
+target -- whether it may go and what would happen if it did.
 """
 
 from flask import Blueprint, request
@@ -35,7 +35,7 @@ register_error_handlers(storages_blueprint)
 
 
 # Where a storage sits in the move dialog's navigation. The frontend renders these
-# and does not re-derive them from a storage kind (spec §8.2). A group whose label is
+# and does not re-derive them from a storage kind. A group whose label is
 # None is one of the two fixed groups the frontend has its own translated text for,
 # since a label invented here would be untranslatable English in the UI.
 GLOBAL_PALBOX_GROUP = "global-palbox"
@@ -56,7 +56,7 @@ CONTAINER_ORDER = {
 # registry's own `ContainerLabel` is composed in English ("Alice · Palbox"), so a
 # frontend that rendered it would show untranslated text in every other locale --
 # and one that re-derived the wording from `storageKind` would be the branching
-# spec §8.2 removes. So the descriptor splits the label in two: `label` is the data
+# this removes. So the descriptor splits the label in two: `label` is the data
 # half (a nickname, a base's name), and `labelKey`/`labelArgs` name the translated
 # half the frontend already has.
 CONTAINER_LABEL_KEYS = {
@@ -131,7 +131,7 @@ def player_order(manager: SaveManager) -> dict:
 
 
 def storage_descriptor(descriptor: dict, order: dict) -> dict:
-    """One place a Pal can be, as the move dialog needs it (spec §8.2).
+    """One place a Pal can be, as the move dialog needs it.
 
     Generated from the containers, players and repository indexes that already exist,
     every time it is asked for: there is no second directory of storages being kept
@@ -228,7 +228,7 @@ def get_pal_transfer_capability(storage_key: str):
     Static `MovableInto` cannot answer it: whether a move is allowed depends on the
     Pal's guild, its owner, whether the target already holds its identity, and
     whether the Pal is in the slot it records for itself. So the dialog asks about
-    the pair rather than about the target alone (spec §8.2).
+    the pair rather than about the target alone.
     """
     source_record_key = request.args.get("sourceRecordKey")
     if not source_record_key:
@@ -249,7 +249,7 @@ def _source_parameter(source) -> dict | None:
 
     Every kind ends as one `SaveParameter` and nothing else: no source contributes
     identity, owner, guild or position, because those belong to wherever the Pal is
-    about to land (spec §6.3).
+    about to land.
     """
     if not isinstance(source, dict):
         raise ApiError("PAL_SOURCE_INVALID", 'source must be an object with a "kind"')

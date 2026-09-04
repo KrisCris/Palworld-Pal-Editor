@@ -1,4 +1,4 @@
-// The read-only game catalogs (spec §10).
+// The read-only game catalogs.
 //
 // Pal species, skills, items, technologies and skins. None of it belongs to a
 // save, so nothing here is cleared when one is closed -- but the localized names

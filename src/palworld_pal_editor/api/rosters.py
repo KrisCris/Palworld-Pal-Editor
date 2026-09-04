@@ -1,4 +1,4 @@
-"""The read-only Pal lists the UI offers (spec §8.2).
+"""The read-only Pal lists the UI offers.
 
 A roster is a question, not a stored list: every one of these is derived from the
 repository when asked. `GET /api/rosters` says which ones this save has, and

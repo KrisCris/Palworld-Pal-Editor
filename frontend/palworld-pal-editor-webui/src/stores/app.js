@@ -1,9 +1,9 @@
-// The app's own settings, independent of any save (spec §10).
+// The app's own settings, independent of any save.
 //
 // Startup config, the save-path picker, the language preference and the update
-// check. Four small things that were spread through the mega-store; spec §10 puts
-// them in one store rather than one store each, because none of them is big
-// enough to earn a module and all of them are answered by one blueprint.
+// check: four small things in one store rather than one store each, because none
+// of them is big enough to earn a module and all of them are answered by one
+// blueprint.
 //
 // Nothing here reads or holds save data. Like `stores/session`, it reports no
 // errors of its own -- a failed call throws its `ApiError` to whoever started it,

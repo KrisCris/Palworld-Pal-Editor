@@ -1,4 +1,4 @@
-// The app itself, rather than the save it has open (spec §8.6).
+// The app itself, rather than the save it has open.
 //
 // Three unrelated small things share this client for the same reason they share
 // one blueprint on the other side: what the client should boot with, where the

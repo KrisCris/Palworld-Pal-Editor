@@ -1,4 +1,4 @@
-// Storage resources (spec §8.2, §8.3).
+// Storage resources.
 //
 // A storage is one place a Pal can be. `listStorages` is the directory the move
 // dialog renders; it says what each place is called and how full it is, and

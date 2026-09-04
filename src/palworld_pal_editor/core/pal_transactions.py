@@ -57,7 +57,7 @@ class PalOperationRefused(ValueError):
     """A transfer the current state does not allow, named by a stable business code.
 
     The message is for the log. What the user sees comes from `code`, which the
-    frontend looks up in its own i18n table (spec §8.7).
+    frontend looks up in its own i18n table.
     """
 
     def __init__(self, code: str, message: str) -> None:
@@ -66,7 +66,7 @@ class PalOperationRefused(ValueError):
 
 
 def set_owner(pal: PalEntity, owner_uid: UUID | str | None) -> None:
-    """Settle who owns this Pal, current owner and history together (spec §7.1).
+    """Settle who owns this Pal, current owner and history together.
 
     They are one decision, not two: the history is what the current owner used to be,
     so a caller that could write one without the other could leave a Pal owned by

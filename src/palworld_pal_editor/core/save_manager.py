@@ -114,7 +114,7 @@ class SaveManager:
         self._global_palbox: PalStorageSaveFile | None = None
 
         # What storages this save has and what each one is. Derived, cached, and
-        # invalidated by whatever moved a Pal (spec §8.2).
+        # invalidated by whatever moved a Pal.
         self.storage_directory = StorageDirectory(self)
         # Which Pals each list shows. Derived on every call, never maintained.
         self.rosters = RosterIndex(self)
@@ -125,7 +125,7 @@ class SaveManager:
 
         # Relocate, replicate and update-existing. It reads this manager rather than
         # holding anything of its own, so a reset replaces it along with everything
-        # it would have read (spec §4.5).
+        # it would have read.
         self.pal_mutations = PalMutationService(self)
 
     def open(self, file_path: str) -> Optional[GvasFile]:
@@ -473,7 +473,7 @@ class SaveManager:
         self.pal_repository.register(record, created=created)
 
     def _register_world_records(self) -> None:
-        """Register every World Pal and file it under the roster the old UI asks for.
+        """Register every World Pal and file it under the roster it belongs to.
 
         The Pal's own record decides where it belongs: an owner that exists, a base
         container it really occupies, or neither.
@@ -513,7 +513,7 @@ class SaveManager:
     def _log_location_anomalies(self) -> None:
         """One WARNING per Pal whose recorded container slot does not hold it.
 
-        Spec §9: a container location anomaly gets a load log line and nothing else
+        A container location anomaly gets a load log line and nothing else
         -- no anomaly set, no query index, no UI field, no second roster. Every value
         here is read back out of the save at the moment of logging, so the anomaly
         outlives this call only as text.

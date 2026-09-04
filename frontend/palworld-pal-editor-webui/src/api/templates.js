@@ -1,4 +1,4 @@
-// Pal and skill template resources (spec §8.5).
+// Pal and skill template resources.
 //
 // Templates are the one thing this API stores outside the save, so they survive a
 // session and are addressed by `templateId` rather than by anything in the save.

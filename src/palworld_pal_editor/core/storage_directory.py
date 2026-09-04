@@ -1,4 +1,4 @@
-"""What storages this save has, and what each one is (spec §8.2).
+"""What storages this save has, and what each one is.
 
 A storage descriptor is derived, never stored: it is a reading of the containers,
 the base camps, the guilds, the players and the external storage files, taken
@@ -353,7 +353,7 @@ class StorageDirectory:
 
         Where a *new* Pal may go is not where an existing one may be moved, which
         is why this is not a filter over `registry()` the client could apply
-        itself (spec §6.3).
+        itself.
         """
         roster_key = str(roster_key)
         descriptors = self.registry()

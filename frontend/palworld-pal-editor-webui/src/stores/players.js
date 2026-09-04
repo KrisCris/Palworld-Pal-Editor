@@ -1,8 +1,8 @@
-// Players and the inventory of whichever one is open (spec §10).
+// Players and the inventory of whichever one is open.
 //
-// A player is a plain resource here. The class this replaces carried a `pals` Map
-// as well, which made it the fourth place a Pal could live; rosters hold the keys
-// now and `stores/pals` holds the Pals.
+// A player is a plain resource: it holds no Pals of its own, because a player that
+// carried its own `pals` map would be one more place the same Pal could live.
+// Rosters hold the keys and `stores/pals` holds the Pals.
 
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";

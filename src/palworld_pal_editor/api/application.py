@@ -1,4 +1,4 @@
-"""Everything the app needs that is not the loaded save (spec §8.6).
+"""Everything the app needs that is not the loaded save.
 
 Three unrelated small things -- what the client should boot with, where the user
 can browse for a save, and whether a newer build exists. They share a module

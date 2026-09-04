@@ -3,7 +3,7 @@
 A Pal template is a name and a Pal, and the Pal is the same native DOM the export
 route hands out -- stored as an object, not as JSON encoded a second time into a
 string. Reading one back is the same strict recognition an import gets, so there is
-one way for a Pal to enter this editor from outside a save (spec §6.2).
+one way for a Pal to enter this editor from outside a save.
 
 Skill templates are lists of skill ids and have never been anything else.
 """

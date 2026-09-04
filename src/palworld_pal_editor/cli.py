@@ -119,9 +119,8 @@ def add_pal(player_uid: str) -> Optional[PalRecord]:
     return SaveManager().pal_mutations.create_world_pal(player_uid)
 
 def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]:
-    # Was its own copy of the duplicate chain, and had been handing `add_pal` a
-    # whole world record where the payload alone belongs since the create pipeline
-    # started speaking SaveParameter -- which writes a Pal the game cannot read.
+    # The service raises; the CLI reports and answers None rather than letting a
+    # refusal escape into an interactive session.
     try:
         return SaveManager().pal_mutations.duplicate(f"world:{pal_guid}", player_uid)
     except ValueError as error:

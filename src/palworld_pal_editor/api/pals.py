@@ -1,10 +1,10 @@
-"""Pal resources, and the two response levels every Pal read uses (spec §8.3).
+"""Pal resources, and the two response levels every Pal read uses.
 
 `PalSummary` is what a roster row needs; `PalDetail` is everything the editor page
 reads, fetched only when a Pal is clicked. Both are explicit field lists -- nothing
 here reflects over the entity, so what the API promises is readable in one place.
 
-Naming follows §8.3: a field the save file itself has keeps the game's name and
+Naming: a field the save file itself has keeps the game's name and
 casing (`InstanceId`, `ContainerId`, `SlotIndex`, `CharacterID`), while the fields
 the editor invents to say where a Pal is and what has happened to it are camelCase
 (`recordKey`, `storageKey`, `containerLabel`, `changeState`).
@@ -37,7 +37,7 @@ def guid_string_or_none(value) -> str | None:
 def _is_away(manager: SaveManager, record: PalRecord) -> bool:
     """Whether the Pal is somewhere other than its owner's own party or palbox.
 
-    Spec §7.1: an ownerless Pal is never away -- a base worker is where it belongs.
+    An ownerless Pal is never away -- a base worker is where it belongs.
     Comparing storage keys rather than container ids answers the DPS, GPS and
     unlocated cases in the same breath, since none of those can be a World container
     the owner owns.
@@ -157,7 +157,7 @@ def native_record(manager: SaveManager, record: PalRecord) -> dict:
     A World Pal is the whole `CharacterSaveParameterMap` record; a DPS or Global
     Palbox Pal is its real single-entry `SaveParameterArray`, header and entry
     envelope included, because that envelope is the only thing that says which of
-    the two a pasted record came out of (spec §6.1).
+    the two a pasted record came out of.
     """
     adapter = (
         manager.world_adapter
@@ -187,7 +187,7 @@ def operation_result(
     deleted_record_keys=(),
     affected_storage_keys=(),
 ) -> dict:
-    """The one shape every Pal-changing response uses (spec §8.3).
+    """The one shape every Pal-changing response uses.
 
     All four keys are always present, so the client reads one shape and never has
     to guess what an operation did. A delete says what is gone, a create says which
@@ -252,8 +252,8 @@ WRITABLE_PAL_FIELDS = frozenset(PAL_SCALAR_FIELDS) | set(PAL_WRITERS)
 
 # The three skill lists, each with the catalog that says a name is real and the
 # entity method that swaps the whole list for a new one. The methods are named
-# here rather than resolved from the URL: spec §8.3 rules out reading an action
-# name out of a request and looking it up on the entity.
+# here rather than resolved from the URL: reading an action name out of a request
+# and looking it up on the entity is how a typo becomes an arbitrary method call.
 SKILL_GROUPS = {
     "passive": (DataProvider.has_passive_skill, PalEntity.replace_PassiveSkillList),
     "equipped": (DataProvider.has_attack, PalEntity.replace_EquipWaza),
@@ -338,7 +338,7 @@ def get_pal_native_record(record_key: str):
 @pals_blueprint.route("/<record_key>/duplicates", methods=["POST"])
 @jwt_required()
 def duplicate_pal(record_key: str):
-    """One more of this Pal, wherever the backend decides it fits (spec §8.3).
+    """One more of this Pal, wherever the backend decides it fits.
 
     There is no target in the request because the editor's copy button has never
     offered one: a Global Palbox or DPS Pal is copied inside its own storage, and a

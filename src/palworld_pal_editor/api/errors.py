@@ -1,4 +1,4 @@
-"""The one shape a failing REST call takes, per spec §8.7.
+"""The one shape a failing REST call takes.
 
 Routes raise `ApiError` with a stable business code; the frontend maps that code to
 its own i18n text, so no message written here is ever shown to a user verbatim.
@@ -41,7 +41,7 @@ def _envelope(code: str, message: str, details: dict):
 
 
 def register_error_handlers(blueprint) -> None:
-    """Give one blueprint the §8.7 envelope. Called by every REST blueprint."""
+    """Give one blueprint the error envelope. Called by every REST blueprint."""
 
     @blueprint.errorhandler(ApiError)
     def _handle_api_error(error: ApiError):
@@ -53,9 +53,9 @@ def register_error_handlers(blueprint) -> None:
     def _handle_auth_failure(error: Exception):
         # `webui.py`'s `@jwt` loaders answer these, but a blueprint handler shadows
         # an app-level one, so the catch-all below claimed them first and turned a
-        # missing or expired token into a 500 with a server traceback in it. Spec
-        # §12 leaves auth's behaviour alone this round, so this says what those
-        # loaders say -- 401, in the envelope the frontend already reads for them.
+        # missing or expired token into a 500 with a server traceback in it. This
+        # says what those loaders say -- 401, in the envelope the frontend already
+        # reads for them.
         return reply(status=2, msg=str(error)), 401
 
     @blueprint.errorhandler(Exception)

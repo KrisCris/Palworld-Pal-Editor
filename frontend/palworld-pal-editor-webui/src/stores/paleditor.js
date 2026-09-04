@@ -163,7 +163,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const storages = useStoragesStore();
     const templates = useTemplatesStore();
 
-    // Spec §8.8: every operation the UI can start holds the interaction gate for
+    // Every operation the UI can start holds the interaction gate for
     // as long as it runs, so nothing can begin a second one or edit what the
     // first is about to send. Applied once, to the whole surface -- the old code
     // asked each function to remember to raise and lower a flag, and the ones
@@ -669,9 +669,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return refreshSucceeded;
     }
 
-    // Six sequential requests before this task, each with its own copy of the
-    // same three-branch status ladder. The catalogs are what they answer with;
-    // reporting the failure is what stays here.
+    // The catalogs are what this answers with; reporting the failure is what
+    // stays here.
     async function fetchStaticData() {
         try {
             await catalogs.load();
@@ -769,7 +768,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     // The technology field takes the list the player should end up with, so both
-    // of these send one: §8.3's rule for skills, applied to the same shape.
+    // of these send one: the skill rule, applied to the same shape.
     // Locking compares case-insensitively for the same reason the cards do --
     // the save's spelling of a technology need not be the catalog's, and an
     // exact filter would quietly leave it unlocked.
@@ -807,8 +806,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
-    // The reply is the whole inventory, so the reload this used to do afterwards
-    // is that same request, answered once.
+    // The reply is the whole inventory, so no follow-up read is needed.
     async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
         try {
             return await players.updateInventorySlot(
@@ -899,7 +897,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             reportSaveFailure(error);
             return false;
         }
-        // Spec §10: the markers clear before the interaction gate is released, so
+        // The markers clear before the interaction gate is released, so
         // the list never redraws showing edits that are already on disk.
         pals.clearChangeStates();
         showToast("Message_Save_Success", "success", [savedTo]);
@@ -1264,7 +1262,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // Which targets the move dialog may offer for the Pal on screen. One request
     // per target, for the group being looked at: whether a Pal may go somewhere
     // is the backend's answer about that pair, not something a storage or a
-    // storage kind can be asked on its own (spec §8.2).
+    // storage kind can be asked on its own.
     async function loadMoveTargets(storageKeys) {
         try {
             return await storages.loadCapabilities(pals.selectedRecordKey, storageKeys);

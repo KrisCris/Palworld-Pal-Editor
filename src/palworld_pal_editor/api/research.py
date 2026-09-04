@@ -1,11 +1,11 @@
-"""Guild laboratory research (spec §8.6).
+"""Guild laboratory research.
 
 One resource for the whole save: `GET` reports every guild's research tree,
 `PATCH /{guildId}` completes some of one guild's and reports the tree again. The
-tree's own field names are the ones `GuildLabData.snapshot()` already produces --
-§8.3's casing rule is about how a Pal says where it is, and renaming a payload the
-BaseCamp editor reads field for field is a rewrite of a component this task is
-explicitly not changing.
+tree's own field names are the ones `GuildLabData.snapshot()` already produces.
+The API's camelCase rule covers the fields the editor invents to say where a Pal
+is; it does not reach here, and renaming a payload the BaseCamp editor reads
+field for field would be a rewrite of that component for nothing.
 """
 
 from flask import Blueprint, request

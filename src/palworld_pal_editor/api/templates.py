@@ -1,10 +1,10 @@
-"""Saved Pal and skill templates (spec §8.5).
+"""Saved Pal and skill templates.
 
 A Pal template is a name and one native Pal record -- the same DOM
 `GET /api/pals/{recordKey}/native-record` hands out, stored as an object rather
 than as JSON encoded a second time into a string. Reading one back is the same
 strict recognition an import gets, so a Pal enters this editor from outside a save
-by exactly one road (spec §6.2).
+by exactly one road.
 
 A skill template is a list of skill ids. Applying one replaces the whole group,
 which is why it answers with an operation result like every other Pal write: the
@@ -162,7 +162,7 @@ def list_pal_templates():
     """Every readable saved Pal.
 
     A template the recognizer refuses is skipped rather than failing the listing:
-    it is user data the §6.2 migration deliberately preserved, and hiding one bad
+    it is user data the migration deliberately preserved, and hiding one bad
     entry is better than showing none.
     """
     resources = []

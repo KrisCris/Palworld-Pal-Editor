@@ -1,4 +1,4 @@
-// The game's own data, which no save can change (spec §8.4).
+// The game's own data, which no save can change.
 //
 // Five reads that need no session, so unlike every other client here they take
 // no epoch and are never aborted: their answer is as good after a reload as

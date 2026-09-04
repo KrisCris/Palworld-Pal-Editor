@@ -1,4 +1,4 @@
-// Where a Pal can be, and what moving one there would mean (spec §10).
+// Where a Pal can be, and what moving one there would mean.
 //
 // Two different questions live here and they are deliberately not the same one.
 // `storages` is the directory: every place in the save, what it is called and how
@@ -8,9 +8,9 @@
 // its identity and whether the Pal is standing where it says it is, none of which
 // a storage knows about itself.
 //
-// Before this store the dialog decided both from a storage kind, and it disagreed
-// with the backend often enough that a move could be offered and then refused. The
-// component now renders the answer it was given.
+// The dialog decides neither from a storage kind: doing so disagrees with the
+// backend often enough that a move gets offered and then refused. The component
+// renders the answer it was given.
 
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
@@ -36,7 +36,7 @@ export const useStoragesStore = defineStore("storages", () => {
     // offered for a Pal it was never asked about.
     const capabilities = ref(new Map());
     const capabilitySource = ref(null);
-    // The §8.3 conflict payload, held from the 409 that raised it until the user
+    // The conflict payload, held from the 409 that raised it until the user
     // answers it or closes the dialog.
     const conflict = ref(null);
 

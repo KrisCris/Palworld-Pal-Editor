@@ -1,4 +1,4 @@
-// The loaded save and the state that follows from it (spec §10).
+// The loaded save and the state that follows from it.
 //
 // Three things live here and nothing else does: what save is open, which screen
 // the app is on, and whether a write is in flight. Everything the editor shows is
@@ -45,7 +45,7 @@ export const useSessionStore = defineStore("session", () => {
     const sessionEpoch = ref(0);
     let inFlight = new AbortController();
 
-    // Every write holds the whole UI, per spec §8.8: while one is running no
+    // Every write holds the whole UI: while one is running no
     // control anywhere can start a second or edit what the first is about to
     // send. Nested calls share the gate -- an operation built out of two others
     // must not open it halfway through -- so this counts depth rather than

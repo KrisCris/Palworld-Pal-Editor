@@ -1,4 +1,4 @@
-// The loaded save, as a resource (spec §8.1).
+// The loaded save, as a resource.
 
 import { request } from "./http.js";
 

@@ -1,4 +1,4 @@
-// Pal resources (spec §8.3).
+// Pal resources.
 //
 // `recordKey` is the address of a Pal, not its `InstanceId`: a World copy and a
 // Global Palbox copy can carry the same `InstanceId`, so the id alone does not

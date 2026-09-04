@@ -1,4 +1,4 @@
-// Player resources (spec §8.2).
+// Player resources.
 
 import { request } from "./http.js";
 

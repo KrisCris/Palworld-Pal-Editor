@@ -1,18 +1,17 @@
-"""The game's own data, which no save can change (spec §8.4).
+"""The game's own data, which no save can change.
 
 Five read-only catalogs served straight out of `DataProvider`. They touch no
 `SaveManager` and take no session lock, because nothing here depends on which
 save is open -- or on one being open at all.
 
-Two shape changes from the routes these replace:
+Two shape rules:
 
-- Each catalog answers with a list and nothing else. The old routes sent the same
-  rows twice, once as an array and once as a `{InternalName: row}` dict, so every
-  payload was double its size and the client held two objects that had to agree.
-  Building that index is one line in `stores/catalogs`, and it is built from the
-  list rather than beside it.
-- Passive and active skills are one resource, as §8.4 names five catalogs and not
-  six. They are still two lists inside it: nothing reads them together.
+- Each catalog answers with a list and nothing else -- not the same rows again as
+  an `{InternalName: row}` index, which doubles the payload and leaves the client
+  holding two objects that have to agree. Building that index is one line in
+  `stores/catalogs`, and it is built from the list rather than beside it.
+- Passive and active skills are one resource, not two. They are still two lists
+  inside it: nothing reads them together.
 """
 
 from flask import Blueprint

@@ -1,4 +1,4 @@
-"""One healing operation for the three buttons the editor shows (spec §8.3).
+"""One healing operation for the three buttons the editor shows.
 
 Curing an illness, reviving a fainted Pal and healing everything were three RPCs,
 and the first two already called the same `PalEntity.heal_pal()`. There is one

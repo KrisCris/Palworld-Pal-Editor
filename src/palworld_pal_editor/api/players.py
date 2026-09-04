@@ -1,4 +1,4 @@
-"""Player resources (spec §8.2).
+"""Player resources.
 
 One serializer for both the list and a single player: the player page and the
 player list read the same fields, and a second shape would only be a second thing
@@ -101,7 +101,7 @@ def _set_status_point_totals(player: PlayerEntity, value: dict) -> None:
 def _set_unlocked_technologies(player: PlayerEntity, value: list) -> None:
     """Unlock what the client added and lock what it dropped.
 
-    The client sends the list it wants, per §8.3's rule for skills, rather than
+    The client sends the list it wants, as the skill routes do, rather than
     one `add`/`remove` request per technology. The comparison is case-insensitive
     and re-uses the entity's own toggle, so a technology that was already
     unlocked keeps whatever spelling the save has for it -- replacing the array
@@ -180,7 +180,7 @@ def patch_player_inventory_slot(player_uid: str, slot_index: int):
 
     `slotIndex` alone does not identify a slot -- every container kind numbers its
     own from zero -- so `containerKind` travels in the body while the path stays
-    the one §8.2 specifies. The answer is the whole inventory rather than the slot
+    the one the route takes. The answer is the whole inventory rather than the slot
     that changed: an equip can empty another slot, and the grid redrew from a
     fresh snapshot after every edit anyway.
     """

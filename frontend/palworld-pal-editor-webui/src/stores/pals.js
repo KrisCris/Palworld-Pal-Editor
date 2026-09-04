@@ -1,10 +1,9 @@
-// The one place a Pal lives on the frontend (spec §10).
+// The one place a Pal lives on the frontend.
 //
-// Before this store there were four: `PAL_MAP` for whatever roster was open,
-// `BASE_PAL_MAP`, `GLOBAL_PAL_MAP`, and a `pals` Map inside every `Player`. The
-// same Pal appeared in two of them after a move, and which copy the editor showed
-// depended on which list you had clicked last. There is now one entry per
-// `recordKey` and every list holds keys into it.
+// One entry per `recordKey`, with every list holding keys into it. Splitting Pals
+// across per-roster maps instead lets the same Pal sit in two of them after a
+// move, and then which copy the editor shows depends on which list was clicked
+// last.
 //
 // An entry is `{summary, detail}`: the summary is what a roster row renders and is
 // always there, the detail arrives when the Pal is clicked. Neither ever silently
@@ -74,7 +73,7 @@ export const usePalsStore = defineStore("pals", () => {
         });
     }
 
-    // Spec §10: a successful save makes every "new" and "edited" marker stale at
+    // A successful save makes every "new" and "edited" marker stale at
     // once, and the backend has already forgotten them. Only that one field is
     // rewritten -- the cached objects stay as they are, because the editor is
     // holding the selected detail and binds `v-model` straight into it.

@@ -1,4 +1,4 @@
-// Saved Pal and skill templates (spec §10, §8.5).
+// Saved Pal and skill templates.
 //
 // Templates outlive a save: they are stored in the app's config, not in the file
 // being edited, so nothing here is dropped when a session ends. Each entry is

@@ -3,9 +3,9 @@
 The product is a `DetachedPalSource` -- one complete `SaveParameter` and the format
 it was found in. It is deliberately not a `PalRecord`: it has no record key, no
 storage, no slot and no change state, and the repository never sees it. Only once a
-target adapter has written it somewhere does a real record exist (spec §5.4).
+target adapter has written it somewhere does a real record exist.
 
-Recognition is strict and per format (spec §6.1). Each adapter answers only for its
+Recognition is strict and per format. Each adapter answers only for its
 own complete native shape, and nothing here falls back to "it seems to have a
 SaveParameter in it somewhere" -- a record whose format cannot be named is a record
 that would be imported as a guess.

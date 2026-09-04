@@ -1,4 +1,4 @@
-"""Backing up and restoring the .sav files one save writes (spec §5.5).
+"""Backing up and restoring the .sav files one save writes.
 
 The save itself is ordinary: serialize a deepcopy of each live GVAS and write the
 bytes to their file. What needs a home of its own is the part that runs when that

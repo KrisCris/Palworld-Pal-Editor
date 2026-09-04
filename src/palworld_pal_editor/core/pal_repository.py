@@ -72,7 +72,7 @@ class PalRepository:
         """Move one record to a new key, format and position without replacing it.
 
         A relocate is the same physical Pal somewhere else, so the object survives it
-        (spec §4.3): `_created_records` and `_modified_records` hold these by identity,
+       : `_created_records` and `_modified_records` hold these by identity,
         and a Pal created this session that is then moved must still settle its
         capture count when the save is written.
 

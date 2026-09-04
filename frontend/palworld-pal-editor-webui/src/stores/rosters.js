@@ -1,4 +1,4 @@
-// The lists of Pals a save can show, and which one is open (spec §10).
+// The lists of Pals a save can show, and which one is open.
 //
 // A roster holds `recordKey[]` and nothing else. The Pal behind a key lives in
 // `stores/pals`, so a Pal that appears in two lists is still one object and a move

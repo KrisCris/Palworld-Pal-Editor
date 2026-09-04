@@ -44,7 +44,7 @@ class StoragePalAdapter:
         """The SaveParameter in a one-entry SaveParameterArray of this format.
 
         A DPS export and a GPS export are the same shape apart from `type_name`, so
-        the name and the entry count are both load-bearing (spec §6.1): without them
+        the name and the entry count are both load-bearing: without them
         an import would be guessing which storage the record came out of.
         """
         if not isinstance(native_property, dict):
@@ -73,7 +73,7 @@ class StoragePalAdapter:
         The property header is copied off the live array rather than written from
         memory. The header and the entry envelope are what say a record came from a
         DPS rather than the Global Palbox, and an export that flattened them to a
-        bare parameter could not be told apart on the way back in (spec §6.1).
+        bare parameter could not be told apart on the way back in.
         """
         array = self.storage.array_property
         return json_native(

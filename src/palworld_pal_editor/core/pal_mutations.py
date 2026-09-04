@@ -1,7 +1,7 @@
 """Moving a Pal, copying one somewhere else, and overwriting one with another.
 
-Spec §7. Three things can happen when an existing Pal meets another place or another
-Pal, and this module is all three:
+Three things can happen when an existing Pal meets another place or another Pal,
+and this module is all three:
 
     relocate         the same physical Pal, somewhere else. One `PalRecord` throughout.
     replicate        a second physical Pal built from the first. The source stays.
@@ -14,7 +14,7 @@ something the backend will refuse, and neither side re-derives the rules.
 
 Nothing here snapshots the session. Each executor checks everything it can before it
 writes, builds the target payload on a detached copy, and then deep-copies only the
-handful of native parents its short commit touches (spec §7, `TouchedParents`).
+handful of native parents its short commit touches -- see `TouchedParents`.
 """
 
 import copy
@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 
 # What a source/target pair means. These three strings are the contract between the
 # capability endpoint, this service and the frontend; nothing derives behaviour from
-# a storage kind on either side of it (spec §8.2).
+# a storage kind on either side of it.
 RELOCATE = "relocate"
 REPLICATE = "replicate"
 UPDATE_EXISTING = "update-existing"
@@ -82,7 +82,7 @@ class TransferPlan:
     reason: Optional[str] = None
     descriptor: Optional[dict] = None
     # The logical owner the Pal ends up with. Not the storage's owner: a DPS belongs
-    # to a player, but the Pals in it keep whoever owned them (spec §7).
+    # to a player, but the Pals in it keep whoever owned them.
     owner_uid: Optional[str] = None
     # The guild the Pal ends up in. Usually the target storage's, but a shared
     # storage has none of its own, so a Pal put in one stays in the guild it was
@@ -109,7 +109,7 @@ class OperationOutcome:
 
 
 class PalMutationService:
-    """The one owner of relocate, replicate and update-existing (spec §4.6).
+    """The one owner of relocate, replicate and update-existing.
 
     It holds the session rather than copying anything out of it: every Pal it moves
     stays the repository's, and every native dict it writes is the save file's own.
@@ -131,7 +131,7 @@ class PalMutationService:
         manager = self._manager
         if source.storage_key is None:
             # A World Pal that does not occupy the slot it records for itself has no
-            # position to move out of (spec §8.2).
+            # position to move out of.
             return _refused("SOURCE_LOCATION_ANOMALY")
         descriptor = manager.storage_directory.descriptor(target_storage_key)
         if descriptor is None:
@@ -283,7 +283,7 @@ class PalMutationService:
         `expected_target` is the one existing Pal the user has just been shown and
         confirmed overwriting, and it appears only for that. It is re-checked here
         rather than trusted, because the dialog was open while the session was not
-        locked (spec §8.3).
+        locked.
         """
         source = self._manager.get_record(source_record_key)
         if source is None:
@@ -324,7 +324,7 @@ class PalMutationService:
         if not isinstance(expected_target, dict) or len(plan.candidates) > 1:
             # A second candidate appearing since the dialog opened is the same
             # staleness as the first one moving: what the user confirmed is no
-            # longer what they were asked, so they are asked again (spec §7).
+            # longer what they were asked, so they are asked again.
             raise PalIdentityConflict(plan.candidates)
         destination = next(
             (
@@ -351,7 +351,7 @@ class PalMutationService:
     def _relocate_within_world(
         self, source: PalRecord, plan: TransferPlan
     ) -> OperationOutcome:
-        """One container to another. Even the native record stays (spec §4.3).
+        """One container to another. Even the native record stays.
 
         Nothing about the Pal changes format, so there is nothing to build and
         nothing to register: the slot moves, the owner settles, and the record it has
@@ -645,7 +645,7 @@ class PalMutationService:
         from -- a live Pal, a template, an imported record -- or None for a default
         Pal. It is the only thing a source contributes: identity, owner, guild and
         position are the target storage's to decide, which is what makes a template
-        made from a Global Palbox Pal creatable into a player Palbox (spec §6.3).
+        made from a Global Palbox Pal creatable into a player Palbox.
         """
         allowed = {
             descriptor["StorageKey"]: descriptor
@@ -1060,7 +1060,7 @@ class PalMutationService:
 
         The payload is everything the Pal is; identity, position, guild and owner all
         belong to where it is landing, which is why they are written after it and not
-        read out of it (spec §6.3).
+        read out of it.
         """
         native_record = WorldPalAdapter.native_record(
             save_parameter,
@@ -1146,7 +1146,7 @@ class PalMutationService:
         A Pal that moved is a Pal that changed, and the storage descriptors now count
         one more or one fewer Pal in two places -- forgetting either is silent, which
         is why no executor does it by hand. A replicate opts out of the edited mark
-        only because it was registered as created, which outranks it (spec §8.3).
+        only because it was registered as created, which outranks it.
         """
         manager = self._manager
         if modified:

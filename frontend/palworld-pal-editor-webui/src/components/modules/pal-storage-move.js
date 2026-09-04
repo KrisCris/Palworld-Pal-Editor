@@ -2,7 +2,7 @@
 //
 // Which places to show and in what order is `buildStorageMoveGroups`: a storage
 // carries the group it belongs to, that group's heading and both orderings
-// (spec §8.2), so nothing here decides that a Global Palbox deserves its own
+//, so nothing here decides that a Global Palbox deserves its own
 // heading or that a container with no owner belongs under "other".
 //
 // Why a place is not offered is `moveReasonKey`: the reason is a stable business

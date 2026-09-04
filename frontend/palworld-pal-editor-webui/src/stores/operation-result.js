@@ -1,10 +1,10 @@
-// What every Pal write answers with, and the one place that acts on it (spec §10).
+// What every Pal write answers with, and the one place that acts on it.
 //
 // The backend returns `{resultRecord, deletedRecordKeys, affectedRosterKeys,
-// affectedStorageKeys}` from anything that changes a Pal, a roster or a storage
-// (spec §8.3). Before this, each caller guessed: whether the source Pal was still
-// there after a move, which list a new Pal had landed in, whether the selection
-// was still valid. Those guesses were how a Pal ended up in two lists at once.
+// affectedStorageKeys}` from anything that changes a Pal, a roster or a storage.
+// No caller infers any of it -- whether the source Pal survived a move, which
+// list a new one landed in, whether the selection is still valid. Inferring it is
+// how the same Pal ends up in two lists at once.
 //
 // This holds no state of its own -- the Pal cache is `stores/pals`, the lists are
 // `stores/rosters` and the storage directory is `stores/storages`; it only tells
