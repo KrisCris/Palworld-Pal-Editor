@@ -62,6 +62,7 @@ const applySlot = async ({ itemId, count }) => {
   if (await palStore.patchInventorySlot(target.kind, target.slot.slot_index, itemId, count)) editing.value = null
 }
 const clearSlot = (kind, slot) => palStore.patchInventorySlot(kind, slot.slot_index, null, 0)
+const repairSlot = (kind, slot) => palStore.repairInventorySlot(kind, slot.slot_index)
 
 const updateBagLayout = () => {
   if (!inventoryLayout.value || !bagPanel.value || !bagScroll.value || !bagGrid.value) return
@@ -142,7 +143,8 @@ onBeforeUnmount(() => {
             <div class="slot-grid slot-grid--equipment">
               <InventoryItemSlot v-for="slot in containers.weapons?.slots" :key="slot.slot_index"
                 :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable('weapons')"
-                show-name show-durability @edit="openSlot('weapons', slot)" @clear="clearSlot('weapons', slot)" />
+                show-name show-durability @edit="openSlot('weapons', slot)" @clear="clearSlot('weapons', slot)"
+                @repair="repairSlot('weapons', slot)" />
             </div>
           </section>
 
@@ -153,7 +155,8 @@ onBeforeUnmount(() => {
                 <div v-for="slot in primaryArmorSlots" :key="slot.slot_index" class="equipment-slot-field">
                   <span>{{ armorLabel(slot) }}</span>
                   <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
-                    :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
+                    :editable="isEditable('armor')" show-name show-durability @edit="openSlot('armor', slot)"
+                    @clear="clearSlot('armor', slot)" @repair="repairSlot('armor', slot)" />
                 </div>
               </div>
               <section class="accessory-group">
@@ -161,7 +164,8 @@ onBeforeUnmount(() => {
                 <div class="accessory-grid">
                   <div v-for="slot in accessorySlots" :key="slot.slot_index" class="equipment-slot-field accessory-slot-field">
                     <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
-                      :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
+                      :editable="isEditable('armor')" show-name show-durability @edit="openSlot('armor', slot)"
+                    @clear="clearSlot('armor', slot)" @repair="repairSlot('armor', slot)" />
                   </div>
                 </div>
               </section>

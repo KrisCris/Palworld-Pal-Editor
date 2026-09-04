@@ -824,6 +824,15 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    async function repairInventorySlot(containerKind, slotIndex) {
+        try {
+            return await players.repairInventorySlot(containerKind, slotIndex) !== null;
+        } catch (error) {
+            reportApiFailure(error, "Operation_Update_Player");
+            return false;
+        }
+    }
+
     // ---- loading -------------------------------------------------------------
 
     async function loadSaveData() {
@@ -1588,6 +1597,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             palLevelUp,
             palMaxLevel,
             patchInventorySlot,
+            repairInventorySlot,
             playerLevelDown,
             playerLevelUp,
             playerMaxLevel,

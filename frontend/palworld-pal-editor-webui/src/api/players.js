@@ -27,3 +27,14 @@ export function patchInventorySlot(playerUid, slotIndex, change, options) {
         { ...options, body: change },
     );
 }
+
+// Restoring a worn item is its own sub-resource, not a field on the PATCH above:
+// that call replaces a slot, and a body naming no item empties it. Answers with
+// the whole inventory, as the PATCH does.
+export function repairInventorySlot(playerUid, slotIndex, containerKind, options) {
+    return request(
+        "post",
+        `${playerPath(playerUid)}/inventory/${slotIndex}/repairs`,
+        { ...options, body: { containerKind } },
+    );
+}

@@ -290,6 +290,7 @@ export default {
     Inventory_No_Results: "没有匹配的物品",
     Inventory_Count: "数量",
     Inventory_Clear: "清空栏位",
+    Inventory_Repair: "恢复耐久度",
     Inventory_Apply: "应用",
     Inventory_Rarity_0: "普通",
     Inventory_Rarity_1: "优秀",

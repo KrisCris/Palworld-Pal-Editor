@@ -203,3 +203,33 @@ def patch_player_inventory_slot(player_uid: str, slot_index: int):
         except ValueError as error:
             raise ApiError("INVENTORY_SLOT_INVALID", str(error))
         return manager.item_container_data.inventory_snapshot(player)
+
+
+@players_blueprint.route(
+    "/<player_uid>/inventory/<int:slot_index>/repairs", methods=["POST"]
+)
+@jwt_required()
+def post_player_inventory_slot_repair(player_uid: str, slot_index: int):
+    """Restore one worn item to full durability.
+
+    A sub-resource rather than a field on the PATCH above, for the same reason
+    `POST /api/session/saves` is one: the PATCH replaces a slot, and a body that
+    named no `itemId` would mean "empty this slot" rather than "repair it". Each
+    POST here is one repair that happened.
+
+    The answer is the whole inventory, as the slot PATCH's is.
+    """
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        raise ApiError("INVENTORY_REPAIR_INVALID", "Request body must be an object")
+
+    manager = SaveManager()
+    with manager.session_lock:
+        player = require_player(player_uid)
+        try:
+            manager.item_container_data.repair_slot(
+                player, payload.get("containerKind"), slot_index
+            )
+        except ValueError as error:
+            raise ApiError("INVENTORY_REPAIR_REFUSED", str(error))
+        return manager.item_container_data.inventory_snapshot(player)

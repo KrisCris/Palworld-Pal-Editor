@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
+import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const props = defineProps({
@@ -15,12 +16,20 @@ const props = defineProps({
   showDurability: { type: Boolean, default: false },
   square: { type: Boolean, default: false },
 })
-const emit = defineEmits(['edit', 'clear'])
+const emit = defineEmits(['edit', 'clear', 'repair'])
 const palStore = usePalEditorStore()
 const tooltipVisible = ref(false)
 const tooltipPoint = ref({ clientX: 0, clientY: 0 })
 
 const rarity = computed(() => Math.max(0, Math.min(4, props.item?.Rarity ?? 0)))
+// The game data leaves MaxDurability at 0 for some real items -- grappling guns,
+// sphere launchers -- so there is no maximum to restore and no repair to offer.
+const maxDurability = computed(
+  () => props.detailsItem?.MaxDurability || props.item?.MaxDurability || 0)
+const repairable = computed(() => props.editable
+  && props.slot.durability != null
+  && maxDurability.value > 0
+  && props.slot.durability < maxDurability.value)
 const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
 
 const showTooltip = event => {
@@ -45,9 +54,13 @@ const hideTooltip = () => { tooltipVisible.value = false }
       <strong v-if="slot.count > 1" class="slot-count">{{ slot.count }}</strong>
       <span v-if="slot.warning" class="slot-warning">!</span>
       <span v-if="showDurability && slot.durability != null" class="durability">
-        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (detailsItem?.MaxDurability || item?.MaxDurability || 1))}%` }"></i>
+        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (maxDurability || 1))}%` }"></i>
       </span>
     </button>
+    <button v-if="repairable" type="button" class="slot-repair"
+      :title="palStore.getTranslatedText('Inventory_Repair')"
+      :aria-label="palStore.getTranslatedText('Inventory_Repair')"
+      @click.stop="emit('repair')"><UiIcon name="maximum" /></button>
     <button v-if="item && editable" type="button" class="slot-clear"
       :aria-label="palStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
   </div>
@@ -111,6 +124,15 @@ const hideTooltip = () => { tooltipVisible.value = false }
 .slot-clear:hover { color: #fca5a5; }
 .durability { position: absolute; right: 0; bottom: 0; left: 0; height: .2rem; overflow: hidden; border-radius: 0 0 .5rem .5rem; background: rgb(255 255 255 / .15); }
 .durability i { display: block; height: 100%; background: #dbeafe; }
+.slot-repair {
+  position: absolute; top: -.35rem; left: -.35rem;
+  display: grid; place-items: center; width: 1.15rem; height: 1.15rem; padding: 0;
+  border: 1px solid var(--editor-color-border); border-radius: 50%;
+  background: var(--editor-color-control); color: var(--editor-color-text);
+  cursor: pointer; line-height: 1;
+}
+.slot-repair:hover { background: var(--editor-color-control-hover); }
+.slot-repair :deep(svg) { width: .7rem; height: .7rem; }
 .rarity-1 .item-slot-button { background: linear-gradient(145deg, rgb(36 118 74 / .36), rgb(12 28 25 / .45)); }
 .rarity-2 .item-slot-button { background: linear-gradient(145deg, rgb(33 101 166 / .4), rgb(13 27 47 / .48)); }
 .rarity-3 .item-slot-button { background: linear-gradient(145deg, rgb(111 63 162 / .44), rgb(35 20 53 / .5)); }

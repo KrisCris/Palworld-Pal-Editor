@@ -210,6 +210,96 @@ class PlayerWriteTests(unittest.TestCase):
             "INVENTORY_SLOT_INVALID", response.get_json()["error"]["code"]
         )
 
+    def _place(self, container_kind, slot_index, item_id):
+        response = self.client.patch(
+            f"/api/players/{self.uid}/inventory/{slot_index}",
+            json={"containerKind": container_kind, "itemId": item_id, "count": 1},
+            headers=self.headers,
+        )
+        self.assertEqual(200, response.status_code)
+        return response.get_json()["containers"][container_kind]["slots"][slot_index]
+
+    def _wear_down(self, slot, to=1.0):
+        """Damage the item in place, the way the game would have."""
+        dynamic = self.manager.item_container_data.dynamic_items[slot["dynamic_id"]]
+        dynamic["RawData"]["value"]["durability"] = to
+
+    def test_repairing_restores_durability_without_replacing_the_item(self):
+        """A repair is an edit to the dynamic entry, not a fresh item.
+
+        Re-placing the item would restore durability too, and would also mint a new
+        dynamic id and discard the weapon's ammunition and passive skills. Keeping
+        the same dynamic id is what makes this a repair.
+        """
+        placed = self._place("weapons", 5, "YakushimaBlade")
+        dynamic_id = placed["dynamic_id"]
+        self._wear_down(placed, to=12.0)
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/5/repairs",
+            json={"containerKind": "weapons"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        slot = response.get_json()["containers"]["weapons"]["slots"][5]
+        self.assertEqual(2222.0, slot["durability"])
+        self.assertEqual(dynamic_id, slot["dynamic_id"])
+        self.assertIsNone(slot["warning"])
+
+    def test_repairing_armor_works_the_same_way(self):
+        placed = self._place("armor", 4, "Shield_03")
+        self._wear_down(placed, to=3.0)
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/4/repairs",
+            json={"containerKind": "armor"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            2250.0, response.get_json()["containers"]["armor"]["slots"][4]["durability"]
+        )
+
+    def test_an_item_with_no_known_maximum_is_refused_rather_than_zeroed(self):
+        """The grappling gun case, which is why this is not `durability = max`.
+
+        The game data gives it no maximum, so restoring one would mean writing 0
+        over whatever durability the item actually has. Saying so is the only
+        honest answer available.
+        """
+        placed = self._place("weapons", 3, "GrapplingGun2")
+        self._wear_down(placed, to=40.0)
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/3/repairs",
+            json={"containerKind": "weapons"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(
+            "INVENTORY_REPAIR_REFUSED", response.get_json()["error"]["code"]
+        )
+        slot = self.manager.item_container_data.dynamic_items[placed["dynamic_id"]]
+        self.assertEqual(40.0, slot["RawData"]["value"]["durability"])
+
+    def test_repairing_something_with_no_durability_is_refused(self):
+        """A piece of food is not a worn item: it has no dynamic entry at all."""
+        self._place("food", 2, "BakedMeat_Boar")
+
+        response = self.client.post(
+            f"/api/players/{self.uid}/inventory/2/repairs",
+            json={"containerKind": "food"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(
+            "INVENTORY_REPAIR_REFUSED", response.get_json()["error"]["code"]
+        )
+
     def test_reading_the_inventory_of_a_player_who_is_not_there_is_a_404(self):
         response = self.client.get(
             "/api/players/not-a-player/inventory", headers=self.headers

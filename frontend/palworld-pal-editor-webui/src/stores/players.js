@@ -12,6 +12,7 @@ import {
     listPlayers,
     patchInventorySlot,
     patchPlayer,
+    repairInventorySlot as repairSlotRequest,
 } from "../api/players.js";
 import { usePalsStore } from "./pals.js";
 import { useRostersStore } from "./rosters.js";
@@ -81,12 +82,20 @@ export const usePlayersStore = defineStore("players", () => {
         return inventory.value;
     }
 
+    async function repairInventorySlot(containerKind, slotIndex) {
+        const playerUid = rosters.activePlayerUid;
+        if (playerUid === null) return null;
+        inventory.value = await repairSlotRequest(playerUid, slotIndex, containerKind);
+        return inventory.value;
+    }
+
     function clear() {
         playersByUid.value = new Map();
         inventory.value = null;
     }
 
     return {
+        repairInventorySlot,
         playersByUid,
         inventory,
         players,

@@ -388,6 +388,61 @@ class ItemContainerData:
                 count += local_id == dynamic_id
         return count
 
+    def repair_slot(
+        self, player: PlayerEntity, container_kind: str, slot_index: int
+    ) -> dict:
+        """Put one worn item back to the durability the game data gives it.
+
+        This edits the dynamic entry in place rather than replacing the item.
+        Re-placing it would also restore durability, but it would mint a new
+        dynamic id and throw away everything else the entry holds -- a weapon's
+        passive skills and its remaining ammunition -- which is not a repair.
+
+        Not every item can be repaired. `MaxDurability` is 0 in the game data for
+        grappling guns, sphere launchers and the NPC weapons, while real ones in a
+        save carry a real value, so for those there is no maximum to restore and
+        the answer is to say so rather than to write a zero over what is there.
+        """
+        if container_kind not in EDITABLE_CONTAINERS:
+            raise ValueError(f"Container is not editable: {container_kind}")
+        _container_id, container = self._container_for(player, container_kind)
+        if container is None:
+            raise ValueError(f"Player {container_kind} container is missing")
+        slot_num = self._slot_num(container)
+        if type(slot_index) is not int or slot_index < 0 or slot_index >= slot_num:
+            raise ValueError(f"Slot index is outside SlotNum: {slot_index}")
+
+        slot = next(
+            (
+                candidate
+                for candidate in self._slot_values(container)
+                if candidate["RawData"]["value"]["slot_index"] == slot_index
+            ),
+            None,
+        )
+        if slot is None:
+            raise ValueError(f"Slot {slot_index} is empty")
+        local_id = _uuid_string(
+            slot["RawData"]["value"]["item"]["dynamic_id"]["local_id_in_created_world"]
+        )
+        dynamic = None if local_id == EMPTY_UUID else self.dynamic_items.get(local_id)
+        if dynamic is None:
+            raise ValueError("This item has no durability to restore")
+        dynamic_raw = dynamic["RawData"]["value"]
+        if "durability" not in dynamic_raw:
+            raise ValueError("This item has no durability to restore")
+
+        static_id = dynamic_raw["id"]["static_id"]
+        item = DataProvider.get_item(static_id)
+        maximum = item.get("MaxDurability") if item else None
+        if not maximum:
+            raise ValueError(
+                f"The game data gives {static_id} no maximum durability to restore"
+            )
+
+        dynamic_raw["durability"] = float(maximum)
+        return self._normalized_slot(slot, slot_index)
+
     def patch_slot(
         self,
         player: PlayerEntity,
