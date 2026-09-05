@@ -1,3 +1,12 @@
+"""One player: their name, level, status points, technology and container ids.
+
+The same shape as `pal_entity.py` and for the same reason -- properties reading and
+writing the player's own `SaveParameter` in place. The container ids are the link
+outward: `PalStorageContainerId` and `OtomoCharacterContainerId` say which Pal
+containers are this player's, and `InventoryContainerIds` is how
+`item_container_data.py` finds what they are carrying.
+"""
+
 import copy
 from typing import Optional
 from palworld_save_tools.archive import UUID

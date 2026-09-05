@@ -1,3 +1,10 @@
+"""Every player in the open save, keyed by PlayerUId.
+
+The counterpart of `pal_repository.py`, and far smaller on purpose: players are
+found once when the save is opened and are never created, moved or deleted by this
+editor, so there is nothing to index beyond a lookup by name for the UI.
+"""
+
 from typing import Iterator, Optional
 
 from palworld_save_tools.archive import UUID

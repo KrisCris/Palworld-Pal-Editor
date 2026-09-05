@@ -1,3 +1,15 @@
+"""One Pal, and the physical place in the save it lives.
+
+A record pairs a `PalEntity` with where its bytes actually are -- which of the three
+save formats, which storage, which slot. Two Pals that read identically are not
+interchangeable: one may be in a player's palbox and the other in a Dimensional Pal
+Storage file, and almost every rule about what may be done to a Pal turns on which.
+
+`StorageKind` is defined here and only here, naming all three. The narrower one in
+`pal_storage_file.py` is called `ExternalStorageKind` precisely so that nothing can
+import it by this name and end up with a type that cannot describe a world Pal.
+"""
+
 from dataclasses import dataclass
 from typing import Literal, Optional
 

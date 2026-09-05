@@ -1,3 +1,14 @@
+"""The GVAS property toolkit: constructing, reading and writing save properties.
+
+The `Pal` in `PalObjects` means Palworld, not a Pal. Nothing in this module is about
+an individual creature. It is the layer underneath everything else -- where an
+`IntProperty` gets built, a value gets read out of the property envelope wrapped
+around it, and the game's enums become something Python can compare.
+
+`PalObjects` is a namespace of static constructors and accessors, not a class anyone
+instantiates. A Pal is `PalEntity`.
+"""
+
 from enum import Enum
 import json
 from typing import Any, Optional

@@ -1,3 +1,13 @@
+"""Pals that live in Level.sav, in `CharacterSaveParameterMap`.
+
+The largest of the three formats and the only one where a Pal is a map value rather
+than a slot in an array, so a record is keyed by the Pal's instance id
+(`world:<instance id>`) and has no slot index of its own.
+
+It is also the only format whose entries are not all Pals: a player's own character
+is stored the same way, which is what `is_player` is for.
+"""
+
 import copy
 from typing import Iterator, Optional
 

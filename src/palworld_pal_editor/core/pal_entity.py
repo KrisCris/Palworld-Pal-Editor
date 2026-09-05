@@ -1,3 +1,15 @@
+"""One Pal: its names, stats, skills, species and the flags the game keeps on it.
+
+A wide reader-writer over a single Pal's `SaveParameter`. Each property reads and
+writes the native dict in place, so there is no copy to sync back, plus the derived
+values the UI needs -- display name, computed stats, work suitability after
+condensation.
+
+Deliberately not the place for anything involving a second Pal, a container or a
+save file. Where a Pal is, and whether it may go somewhere else, are `pal_record.py`
+and `pal_mutations.py`.
+"""
+
 import math
 from typing import Optional
 from palworld_save_tools.archive import UUID

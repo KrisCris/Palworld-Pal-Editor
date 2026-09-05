@@ -1,3 +1,16 @@
+"""What a player is carrying: inventory and equipment slots, and the items in them.
+
+Two structures that have to be maintained together. `ItemContainerSaveData` holds
+each container's slots -- an item id and a count -- and `DynamicItemSaveData` holds
+the per-item state a stack cannot express, such as a weapon's durability and the
+rounds left in its magazine. A slot points at a dynamic entry by id, so adding,
+replacing or clearing a slot means writing both, and a dynamic entry nothing points
+at any more has to go.
+
+Only the containers a player can meaningfully edit are exposed
+(`EDITABLE_CONTAINERS`); the rest are left alone.
+"""
+
 from __future__ import annotations
 
 import copy

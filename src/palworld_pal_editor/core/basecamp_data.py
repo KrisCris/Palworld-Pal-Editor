@@ -1,3 +1,11 @@
+"""The base camps in a save, and the Pal container each one works out of.
+
+Read-only. Camps matter here for two reasons: a camp belongs to a guild, and a
+camp's `WorkerDirector` names the container holding the Pals assigned to it. That
+name is how a container in `CharacterContainerSaveData` is recognised as a base
+camp's rather than as somebody's palbox.
+"""
+
 from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID

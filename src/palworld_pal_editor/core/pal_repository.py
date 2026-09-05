@@ -1,3 +1,16 @@
+"""Which Pals this session has, and where each one currently is.
+
+Every physical Pal record in the open save is registered here exactly once and
+looked up through indexes by owner, by storage slot and by instance id. Nothing in
+this module decides whether a move is allowed -- that is `pal_mutations.py`. This
+only answers what is true right now.
+
+It also carries the two pieces of state that outlive a single edit: which records
+this session created, and which it modified. Both are identity sets of the
+repository's own `PalRecord` objects, so a relocate that rewrites a record's key
+does not drop it out of either.
+"""
+
 from typing import Optional
 
 from palworld_save_tools.archive import UUID
