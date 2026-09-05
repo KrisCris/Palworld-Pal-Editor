@@ -78,7 +78,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     } = storeToRefs(backend);
     const {
         normalizeStoredBackendOrigin,
-        backendAssetUrl,
         storageKey,
         setAuthToken,
         rememberAuthToken,
@@ -89,20 +88,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportApiFailure,
         reportStartupFailure,
     } = backend;
-    const {
-        MESSAGE_QUEUE,
-        CURRENT_MESSAGE,
-    } = storeToRefs(messages);
-    const {
-        getMessageText,
-        showMessage,
-        showToast,
-        confirmMessage,
-        dismissMessage,
-        respondToMessage,
-        reportOperationError,
-        reportFrontendError,
-    } = messages;
+    const { showMessage, showToast } = messages;
 
     // Reading the remembered path is what puts it back on `session`; the picker
     // opens on it, which is why the answer is kept.
@@ -473,35 +459,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     return {
-
         SHOW_DONATE_FLAG,
         HAS_WORKING_PAL_FLAG,
 
-        IS_LOCKED,
-
-        BACKEND_ERROR,
-        BACKEND_ORIGIN,
-        BACKEND_CANDIDATE,
-        BACKEND_RECENT,
-        BACKEND_CONNECTED,
-        AUTH_MESSAGE_KEY,
-        MESSAGE_QUEUE,
-        CURRENT_MESSAGE,
-
         getTranslatedText,
-        getMessageText,
-
         reset,
-
-        backendAssetUrl,
-        requireAuth,
-        clearBackendError,
-        showMessage,
-        dismissMessage,
-        confirmMessage,
-        respondToMessage,
-        reportOperationError,
-        reportFrontendError,
 
         ...gated(session, {
             auth,

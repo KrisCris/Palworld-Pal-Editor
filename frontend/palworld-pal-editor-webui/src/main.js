@@ -6,7 +6,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import { usePalEditorStore } from './stores/paleditor'
+import { useMessagesStore } from './stores/messages'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -14,18 +14,18 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-const palStore = usePalEditorStore(pinia)
+const messages = useMessagesStore(pinia)
 app.config.errorHandler = (error, _instance, info) => {
-    palStore.reportFrontendError(error, info)
+    messages.reportFrontendError(error, info)
 }
 window.addEventListener('error', event => {
-    palStore.reportFrontendError(
+    messages.reportFrontendError(
         event.error || new Error(event.message),
         `${event.filename || 'browser'}:${event.lineno || 0}:${event.colno || 0}`,
     )
 })
 window.addEventListener('unhandledrejection', event => {
-    palStore.reportFrontendError(event.reason, 'Unhandled promise rejection')
+    messages.reportFrontendError(event.reason, 'Unhandled promise rejection')
     event.preventDefault()
 })
 

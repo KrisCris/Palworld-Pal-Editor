@@ -10,7 +10,7 @@ globalThis.localStorage = {
     removeItem: () => {},
 };
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useMessagesStore } = await import("../src/stores/messages.js");
 const { useAppStore } = await import("../src/stores/app.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 const messageCenterSource = await readFile(
@@ -20,7 +20,7 @@ const messageCenterSource = await readFile(
 
 function newStore() {
     setActivePinia(createPinia());
-    return usePalEditorStore();
+    return useMessagesStore();
 }
 
 test("dialogs interrupt toasts without reversing either queue", () => {

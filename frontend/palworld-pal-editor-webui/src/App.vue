@@ -16,6 +16,8 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import MessageCenter from '@/components/MessageCenter.vue'
 import SupportDialog from '@/components/SupportDialog.vue'
 import TopBar from '@/components/TopBar.vue'
+import { useBackendStore } from '@/stores/backend'
+import { useMessagesStore } from '@/stores/messages'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useSessionStore } from '@/stores/session'
 import AuthView from '@/views/AuthView.vue'
@@ -24,10 +26,12 @@ import EditorView from '@/views/EditorView.vue'
 import EntryView from '@/views/EntryView.vue'
 import uiIconSprite from '@/assets/ui-icons.svg?raw'
 
+const backend = useBackendStore()
+const messages = useMessagesStore()
 const palStore = usePalEditorStore()
 const sessionStore = useSessionStore()
-const runtimeError = computed(() => palStore.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
-const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
+const runtimeError = computed(() => backend.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
+const applicationDialog = computed(() => !backend.BACKEND_ERROR && messages.CURRENT_MESSAGE?.presentation === 'dialog')
 const supportDialogVisible = computed(() =>
   palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(sessionStore.appState)
 )
@@ -73,10 +77,10 @@ onMounted(palStore.bootstrap)
     <BackendErrorView
       v-else-if="sessionStore.appState === 'backend-error'"
       startup
-      :kind="palStore.BACKEND_ERROR?.kind"
-      :message="palStore.BACKEND_ERROR?.message"
-      :code="palStore.BACKEND_ERROR?.code"
-      :log="palStore.BACKEND_ERROR?.log"
+      :kind="backend.BACKEND_ERROR?.kind"
+      :message="backend.BACKEND_ERROR?.message"
+      :code="backend.BACKEND_ERROR?.code"
+      :log="backend.BACKEND_ERROR?.log"
       :loading="sessionStore.operationPending"
       @retry="refreshPage"
     />
@@ -92,15 +96,15 @@ onMounted(palStore.bootstrap)
 
   <BackendErrorView
     v-if="runtimeError"
-    :kind="palStore.BACKEND_ERROR.kind"
-    :message="palStore.BACKEND_ERROR.message"
-    :code="palStore.BACKEND_ERROR.code"
-    :log="palStore.BACKEND_ERROR.log"
+    :kind="backend.BACKEND_ERROR.kind"
+    :message="backend.BACKEND_ERROR.message"
+    :code="backend.BACKEND_ERROR.code"
+    :log="backend.BACKEND_ERROR.log"
     :loading="sessionStore.operationPending"
     @retry="refreshPage"
-    @dismiss="palStore.clearBackendError"
+    @dismiss="backend.clearBackendError"
   />
-  <MessageCenter v-if="!palStore.BACKEND_ERROR" />
+  <MessageCenter v-if="!backend.BACKEND_ERROR" />
 </template>
 
 <style scoped>
