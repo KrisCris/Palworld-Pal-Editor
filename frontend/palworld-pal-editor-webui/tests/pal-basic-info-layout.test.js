@@ -130,7 +130,7 @@ test("Pal basic info keeps specific translated icon action names", () => {
     "Editor_Btn_Toggle_Boss",
     "Editor_Btn_Toggle_Rare",
   ]) {
-    assert.match(panel, new RegExp(`:aria-label="palStore\\.getTranslatedText\\('${key}'\\)"`));
+    assert.match(panel, new RegExp(`:aria-label="appStore\\.getTranslatedText\\('${key}'\\)"`));
   }
 });
 

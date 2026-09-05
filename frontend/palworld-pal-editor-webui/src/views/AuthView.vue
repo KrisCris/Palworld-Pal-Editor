@@ -1,7 +1,9 @@
 <script setup>
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 import { ref } from 'vue'
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const backend = useBackendStore()
 
@@ -16,21 +18,21 @@ const unlock = async () => {
     <form id="authDiv" @submit.prevent="unlock">
         <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
         <br>
-        <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
-        <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
+        <p>{{ appStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
+        <p>{{ appStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
         <p v-if="backend.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
-            {{ palStore.getTranslatedText(backend.AUTH_MESSAGE_KEY) }}
+            {{ appStore.getTranslatedText(backend.AUTH_MESSAGE_KEY) }}
         </p>
 
-        <label class="sr-only" for="password">{{ palStore.getTranslatedText('AuthView_Password_Label') }}</label>
+        <label class="sr-only" for="password">{{ appStore.getTranslatedText('AuthView_Password_Label') }}</label>
         <input id="password" type="password" v-model="PW" autocomplete="current-password"
-                :placeholder="palStore.getTranslatedText('AuthView_Password_Label')">
+                :placeholder="appStore.getTranslatedText('AuthView_Password_Label')">
         <label class="remember">
             <input type="checkbox" v-model="remember">
-            {{ palStore.getTranslatedText('AuthView_Remember_7_Days') }}
+            {{ appStore.getTranslatedText('AuthView_Remember_7_Days') }}
         </label>
         <button type="submit">
-            {{ palStore.getTranslatedText("AuthView_BTN_Unlock") }}
+            {{ appStore.getTranslatedText("AuthView_BTN_Unlock") }}
         </button>
     </form>
 </template>

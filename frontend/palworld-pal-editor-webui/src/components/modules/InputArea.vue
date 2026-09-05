@@ -1,6 +1,4 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
-const palStore = usePalEditorStore()
 
 defineProps(['placeholder'])
 const model = defineModel()

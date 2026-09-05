@@ -873,7 +873,7 @@ test("the app config publishes backend locales and switches to the translated lo
 
     assert.deepEqual(appState.localeOptions, locales);
     assert.equal(appState.locale, "de");
-    assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
+    assert.equal(appState.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
 });
 
 test("language changes refresh only the active roster and re-fetch others lazily", async () => {

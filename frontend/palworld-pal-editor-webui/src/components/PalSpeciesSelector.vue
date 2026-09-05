@@ -3,7 +3,6 @@ import { computed, nextTick, ref, watch } from "vue";
 import OverlayScrollArea from "./modules/OverlayScrollArea.vue";
 import UiIcon from "./modules/UiIcon.vue";
 import { useBackendStore } from "@/stores/backend";
-import { usePalEditorStore } from "@/stores/paleditor";
 
 import en from "../i18n/en.js";
 import fr from "../i18n/fr.js";
@@ -24,7 +23,6 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue", "apply"]);
-const palStore = usePalEditorStore()
 const backend = useBackendStore();
 
 const translations = { en, fr, ja, "zh-CN": zhCN };

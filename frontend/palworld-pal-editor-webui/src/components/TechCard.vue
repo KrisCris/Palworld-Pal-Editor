@@ -9,11 +9,11 @@ export const hasUnlockedTechnology = (names, internalName) => names.some(
 import { computed } from 'vue'
 
 import UiIcon from './modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { usePlayersStore } from '@/stores/players'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const playersStore = usePlayersStore()
 const props = defineProps({ item: { type: Object, required: true } })
@@ -22,7 +22,7 @@ const isLocked = computed(() => !hasUnlockedTechnology(
   props.item.InternalName,
 ))
 const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
-const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
+const techState = computed(() => appStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
 const bgStyle = computed(() => ({
   backgroundImage: `url('${backend.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
 }))
@@ -34,7 +34,7 @@ const toggleLock = () => toggleTechnology(playersStore, props.item, isLocked.val
     :style="bgStyle" :aria-label="`${techName}: ${techState}`" :title="`${techName}: ${techState}`" :aria-pressed="!isLocked" @click="toggleLock">
     <span class="tech-header tech-type">
       <UiIcon v-if="!item.I18n.Type" name="warning" />
-      {{ item.I18n.Type ?? palStore.getTranslatedText('Editor_Tech_Invalid') }}
+      {{ item.I18n.Type ?? appStore.getTranslatedText('Editor_Tech_Invalid') }}
     </span>
     <span class="tech-state tech-lock">{{ techState }}</span>
     <span class="tech-footer">{{ techName }}</span>

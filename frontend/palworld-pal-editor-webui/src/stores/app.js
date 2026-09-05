@@ -18,7 +18,7 @@ import {
     getLatestRelease,
     patchAppConfig,
 } from "../api/app.js";
-import { GAME_LANGUAGES } from "../i18n/index.js";
+import { GAME_LANGUAGES, translate } from "../i18n/index.js";
 
 const LOCALE_STORAGE_KEY = "PAL_I18n";
 
@@ -59,6 +59,13 @@ export const useAppStore = defineStore("app", () => {
     // -- including on the auth screen, where there is no token to tell the
     // backend with and `pushLocale` never runs.
     watch(locale, value => localStorage.setItem(LOCALE_STORAGE_KEY, value));
+
+    // Every piece of interface text goes through here. It sits with the locale
+    // because that is all it needs, and because a store that reports something
+    // to the user should not have to reach past this one to name it.
+    function getTranslatedText(translationKey, args = []) {
+        return translate(locale.value, translationKey, args);
+    }
 
     function applyConfig(config) {
         localeOptions.value = config.i18nOptions;
@@ -123,6 +130,7 @@ export const useAppStore = defineStore("app", () => {
         pickerEntries,
         pickerIsSaveDir,
 
+        getTranslatedText,
         loadConfig,
         pushLocale,
         dismissDonationPrompt,

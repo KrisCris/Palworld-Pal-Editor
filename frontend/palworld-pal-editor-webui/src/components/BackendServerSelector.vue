@@ -20,7 +20,7 @@ const trigger = ref(null)
 const root = ref(null)
 const popoverTop = ref('0px')
 const pageOrigin = window.location.origin
-const text = key => palStore.getTranslatedText(key)
+const text = key => appStore.getTranslatedText(key)
 const currentOrigin = computed(() => backend.BACKEND_ORIGIN || pageOrigin)
 const candidateOrigin = computed(() => backend.BACKEND_CANDIDATE || pageOrigin)
 const visibleRecent = computed(() => backend.BACKEND_RECENT.filter(origin => origin !== currentOrigin.value))

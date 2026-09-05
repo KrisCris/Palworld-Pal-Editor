@@ -6,12 +6,12 @@ import BaseCampEditor from '@/components/BaseCampEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import { computed } from 'vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -47,7 +47,7 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
           <PalEditor />
         </div>
       </OverlayScrollArea>
-      <p v-else class="editor-empty">{{ palStore.getTranslatedText('Editor_Select_Prompt') }}</p>
+      <p v-else class="editor-empty">{{ appStore.getTranslatedText('Editor_Select_Prompt') }}</p>
     </main>
   </div>
 </template>

@@ -5,7 +5,7 @@ import PalBriefPanel from '@/components/PalBriefPanel.vue'
 import PalPortrait from '@/components/PalPortrait.vue'
 import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
@@ -14,7 +14,7 @@ import { useStoragesStore } from '@/stores/storages'
 import { useTemplatesStore } from '@/stores/templates'
 
 const emit = defineEmits(['close'])
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
@@ -23,7 +23,7 @@ const storagesStore = useStoragesStore()
 const templatesStore = useTemplatesStore()
 const storageLabel = storage => formatStorageLabel(
   storage,
-  palStore.getTranslatedText,
+  appStore.getTranslatedText,
 )
 const mode = ref('default')
 const templateId = ref('')
@@ -242,18 +242,18 @@ async function deleteTemplate(id) {
       tabindex="-1" @keydown.esc="emit('close')" @keydown.tab="trapFocus">
       <header>
         <div>
-          <p>{{ palStore.getTranslatedText('AddPal_Eyebrow') }}</p>
-          <h2 id="add-pal-title">{{ palStore.getTranslatedText('AddPal_Title') }}</h2>
-          <small>{{ palStore.getTranslatedText('AddPal_Subtitle') }}</small>
+          <p>{{ appStore.getTranslatedText('AddPal_Eyebrow') }}</p>
+          <h2 id="add-pal-title">{{ appStore.getTranslatedText('AddPal_Title') }}</h2>
+          <small>{{ appStore.getTranslatedText('AddPal_Subtitle') }}</small>
         </div>
-        <button class="icon-button" :aria-label="palStore.getTranslatedText('AddPal_Cancel')"
+        <button class="icon-button" :aria-label="appStore.getTranslatedText('AddPal_Cancel')"
           @click="emit('close')"><UiIcon name="close" /></button>
       </header>
 
       <div class="add-pal-tabs" role="tablist">
         <button v-for="tab in tabs" :key="tab[0]" role="tab"
           :aria-selected="mode === tab[0]" @click="mode = tab[0]">
-          {{ palStore.getTranslatedText(tab[1]) }}
+          {{ appStore.getTranslatedText(tab[1]) }}
         </button>
       </div>
 
@@ -261,8 +261,8 @@ async function deleteTemplate(id) {
         <section v-if="mode === 'default'" class="default-pal-panel">
           <PalPortrait :src="backend.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
           <div>
-            <h3>{{ palStore.getTranslatedText('AddPal_Default_Title') }}</h3>
-            <p>{{ palStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
+            <h3>{{ appStore.getTranslatedText('AddPal_Default_Title') }}</h3>
+            <p>{{ appStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
             <small>SheepBall</small>
           </div>
         </section>
@@ -270,13 +270,13 @@ async function deleteTemplate(id) {
         <section v-else-if="mode === 'template'" class="template-panel">
           <div class="template-save">
             <div>
-              <strong>{{ palStore.getTranslatedText('AddPal_Save_Template') }}</strong>
-              <small>{{ palStore.getTranslatedText('AddPal_Save_Template_Hint') }}</small>
+              <strong>{{ appStore.getTranslatedText('AddPal_Save_Template') }}</strong>
+              <small>{{ appStore.getTranslatedText('AddPal_Save_Template_Hint') }}</small>
             </div>
             <input v-model="templateName" maxlength="64"
-              :placeholder="palStore.getTranslatedText('AddPal_Template_Name')">
+              :placeholder="appStore.getTranslatedText('AddPal_Template_Name')">
             <button class="secondary-button" :disabled="!templateName.trim() || !palsStore.selectedRecordKey"
-              @click="saveTemplate">{{ palStore.getTranslatedText('AddPal_Save') }}</button>
+              @click="saveTemplate">{{ appStore.getTranslatedText('AddPal_Save') }}</button>
           </div>
 
           <div v-if="templatesStore.palTemplates.length" class="template-grid">
@@ -294,24 +294,24 @@ async function deleteTemplate(id) {
                 </span>
               </button>
               <button class="template-delete"
-                :aria-label="palStore.getTranslatedText('AddPal_Delete_Template', [template.name])"
+                :aria-label="appStore.getTranslatedText('AddPal_Delete_Template', [template.name])"
                 @click="deleteTemplate(template.templateId)"><UiIcon name="delete" /></button>
             </article>
           </div>
-          <p v-else class="empty-state">{{ palStore.getTranslatedText('AddPal_Template_Empty') }}</p>
+          <p v-else class="empty-state">{{ appStore.getTranslatedText('AddPal_Template_Empty') }}</p>
         </section>
 
         <section v-else class="json-panel">
-          <label for="pal-json">{{ palStore.getTranslatedText('AddPal_Json_Label') }}</label>
-          <p>{{ palStore.getTranslatedText('AddPal_Json_Hint') }}</p>
+          <label for="pal-json">{{ appStore.getTranslatedText('AddPal_Json_Label') }}</label>
+          <p>{{ appStore.getTranslatedText('AddPal_Json_Hint') }}</p>
           <textarea id="pal-json" v-model="palJson" rows="13" spellcheck="false"
-            :placeholder="palStore.getTranslatedText('AddPal_Json_Placeholder')" />
+            :placeholder="appStore.getTranslatedText('AddPal_Json_Placeholder')" />
         </section>
       </main>
 
       <footer>
         <label class="target-container">
-          <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
+          <span>{{ appStore.getTranslatedText('Editor_Move_Target') }}</span>
           <select v-model="targetStorageKey">
             <option v-for="storage in targetStorages" :key="storage.storageKey"
               :value="storage.storageKey" :disabled="storage.occupied >= storage.capacity">
@@ -321,10 +321,10 @@ async function deleteTemplate(id) {
         </label>
         <div>
           <button class="secondary-button" @click="emit('close')">
-            {{ palStore.getTranslatedText('AddPal_Cancel') }}
+            {{ appStore.getTranslatedText('AddPal_Cancel') }}
           </button>
           <button class="primary-button" :disabled="!canCreate" @click="createPal">
-            <UiIcon name="plus" /> {{ palStore.getTranslatedText('AddPal_Create') }}
+            <UiIcon name="plus" /> {{ appStore.getTranslatedText('AddPal_Create') }}
           </button>
         </div>
       </footer>

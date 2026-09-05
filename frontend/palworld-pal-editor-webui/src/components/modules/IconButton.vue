@@ -1,7 +1,5 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
 import UiIcon from './UiIcon.vue'
-const palStore = usePalEditorStore()
 
 defineProps({
     icon: { type: String, required: true },

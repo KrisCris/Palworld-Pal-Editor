@@ -172,7 +172,7 @@ export const useBackendStore = defineStore("backend", () => {
         if (error.isFrontendFault) {
             messages.reportFrontendError(
                 error.cause ?? error,
-                messages.getTranslatedText(operationKey),
+                app.getTranslatedText(operationKey),
             );
             return;
         }
@@ -192,7 +192,7 @@ export const useBackendStore = defineStore("backend", () => {
     function reportStartupFailure(error) {
         const details = startupErrorDetails(
             error,
-            messages.getTranslatedText("BackendError_Request_Failed", [error.message]),
+            app.getTranslatedText("BackendError_Request_Failed", [error.message]),
         );
         if (!details) {
             if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");

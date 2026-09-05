@@ -15,13 +15,11 @@ import { filterSkillOptions, isSkillAssignable, skillBadgeTranslationKey, skillB
 import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { useRostersStore } from '@/stores/rosters'
 import { useStoragesStore } from '@/stores/storages'
 const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
 const backend = useBackendStore()
 const palsStore = usePalsStore()
 const rostersStore = useRostersStore()
@@ -51,12 +49,12 @@ const moveBlocked = computed(() => pal.value.IsExpeditionPal || !pal.value.stora
 // entry for that -- which is the anomaly label.
 const externalContainerLabel = computed(() => formatStorageLabel(
   storagesStore.storage(pal.value.storageKey),
-  palStore.getTranslatedText,
+  appStore.getTranslatedText,
 ))
 const ownerLabel = computed(() => pal.value.OwnerName
   || (pal.value.storageKind !== 'world'
     ? externalContainerLabel.value
-    : palStore.getTranslatedText('Editor_Pal_No_Owner')))
+    : appStore.getTranslatedText('Editor_Pal_No_Owner')))
 const guildLabel = computed(() => pal.value.groupId
   || (pal.value.storageKind === 'global_palbox'
     ? externalContainerLabel.value
@@ -97,10 +95,10 @@ const canEquipMasteredSkill = skill => (
 
 const activeSkillEquipTitle = skill => {
   if (!canSelectActiveSkill(catalogsStore.activeSkillsByName[skill])) {
-    return palStore.getTranslatedText('Message_Skill_Not_Assignable');
+    return appStore.getTranslatedText('Message_Skill_Not_Assignable');
   }
   if (isEquipSkillFull()) {
-    return palStore.getTranslatedText('Message_Skill_Equip_Full');
+    return appStore.getTranslatedText('Message_Skill_Equip_Full');
   }
   return '';
 };
@@ -161,7 +159,7 @@ const currentPaldeck = () => pal.value.Paldeck;
 const skinOptions = () => [
   {
     value: '',
-    label: palStore.getTranslatedText('Editor_Skin_Default'),
+    label: appStore.getTranslatedText('Editor_Skin_Default'),
     icon: backend.backendAssetUrl(`/image/pals/${pal.value.IconKey || 'unknown'}`),
   },
   ...availableSkins().map(skin => ({
@@ -187,7 +185,7 @@ const passiveSkillOptions = () => catalogsStore.passiveSkills
   description: skill.I18n[1],
   meta: appStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
   tone: passiveTier(skill.Rating),
-  group: palStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
+  group: appStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
   }))
 
 function activeSkillMetadata(skill = {}) {
@@ -195,13 +193,13 @@ function activeSkillMetadata(skill = {}) {
   const metadata = [
     ...badges
       .filter(badge => badge !== 'exclusive')
-      .map(badge => palStore.getTranslatedText(skillBadgeTranslationKey(badge))),
-    `${palStore.getTranslatedText('Editor_Skill_ATK')}${skill.Power}`,
-    `${palStore.getTranslatedText('Editor_Skill_CD')}${skill.CT}`,
+      .map(badge => appStore.getTranslatedText(skillBadgeTranslationKey(badge))),
+    `${appStore.getTranslatedText('Editor_Skill_ATK')}${skill.Power}`,
+    `${appStore.getTranslatedText('Editor_Skill_CD')}${skill.CT}`,
   ]
 
   if (badges.includes('exclusive')) {
-    metadata.push(palStore.getTranslatedText(skillBadgeTranslationKey('exclusive')))
+    metadata.push(appStore.getTranslatedText(skillBadgeTranslationKey('exclusive')))
     if (skill.LearnerNames?.length) metadata.push(skill.LearnerNames.join(' / '))
   }
 
@@ -222,7 +220,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
   }
 })
 
-const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
+const specialTypeLabel = key => appStore.getTranslatedText(`Editor_Variant_${key}`);
 
 const portraitBorder = pal => pal.IsAwakening
   ? 'var(--editor-color-awakened)'
@@ -261,7 +259,7 @@ const portraitBorder = pal => pal.IsAwakening
         </PalPortrait>
         <div class="editor-summary__identity">
           <span class="editor-summary__eyebrow">
-            {{ currentPaldeck() ? `PAL ${currentPaldeck()}` : palStore.getTranslatedText("Editor_Basic_Info") }}
+            {{ currentPaldeck() ? `PAL ${currentPaldeck()}` : appStore.getTranslatedText("Editor_Basic_Info") }}
           </span>
           <h2 class="editor-summary__title" :title="pal.InternalName">
             {{ catalogsStore.palsByName[pal.DataAccessKey]?.I18n ||
@@ -281,30 +279,30 @@ const portraitBorder = pal => pal.IsAwakening
           </div>
         </div>
         <div class="editor-summary__actions">
-          <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palsStore.maximize" :aria-label="palStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
-            <UiIcon name="maximum" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
+          <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palsStore.maximize" :aria-label="appStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
+            <UiIcon name="maximum" /> <span class="editor-button__label">{{ appStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
           </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palsStore.duplicateSelected"
-            :aria-label="palStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
-            <UiIcon name="copy" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
+            :aria-label="appStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
+            <UiIcon name="copy" /> <span class="editor-button__label">{{ appStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
           </button>
           <button id="move_btn" class="editor-button editor-button--secondary" @click="showMoveDialog = true"
-            :disabled="moveBlocked" :aria-label="palStore.getTranslatedText('Editor_Move_Pal')">
-            <UiIcon name="forward" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Move_Pal") }}</span>
+            :disabled="moveBlocked" :aria-label="appStore.getTranslatedText('Editor_Move_Pal')">
+            <UiIcon name="forward" /> <span class="editor-button__label">{{ appStore.getTranslatedText("Editor_Move_Pal") }}</span>
           </button>
-          <button id="dump_btn" class="editor-button editor-button--secondary" @click="palsStore.copyNativeRecord" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
-            <UiIcon name="export" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
+          <button id="dump_btn" class="editor-button editor-button--secondary" @click="palsStore.copyNativeRecord" :aria-label="appStore.getTranslatedText('Editor_Btn_Export_Data')">
+            <UiIcon name="export" /> <span class="editor-button__label">{{ appStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
           </button>
-          <button id="del_btn" class="editor-button editor-button--danger" @click="rostersStore.deletePal" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
-            <UiIcon name="delete" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
+          <button id="del_btn" class="editor-button editor-button--danger" @click="rostersStore.deletePal" :aria-label="appStore.getTranslatedText('Editor_Btn_Delete_Pal')">
+            <UiIcon name="delete" /> <span class="editor-button__label">{{ appStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
           </button>
         </div>
       </header>
 
       <section class="editor-section">
-        <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Basic_Info") }}</h3>
+        <h3 class="editor-section__heading">{{ appStore.getTranslatedText("Editor_Basic_Info") }}</h3>
         <div class="editor-field">
-          <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Species") }}</span>
+          <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_Species") }}</span>
           <div class="editor-field__control">
             <PalSpeciesSelector
               v-model="speciesSelection"
@@ -319,19 +317,19 @@ const portraitBorder = pal => pal.IsAwakening
 
       <div class="pal-basic-grid">
         <section class="editor-section">
-          <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Identity_Appearance") }}</h3>
+          <h3 class="editor-section__heading">{{ appStore.getTranslatedText("Editor_Identity_Appearance") }}</h3>
           <div class="editor-field">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Nickname") }}</span>
+            <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_Nickname") }}</span>
             <input class="editor-control" type="text" name="NickName" v-model="pal.NickName"
               :placeholder="pal.I18nName">
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon" @click="palsStore.updateField"
                 name="NickName" :value="pal.NickName"
-                :aria-label="palStore.getTranslatedText('Editor_Nickname')"><UiIcon name="check" /></button>
+                :aria-label="appStore.getTranslatedText('Editor_Nickname')"><UiIcon name="check" /></button>
             </div>
           </div>
           <div v-if="pal.storageKind !== 'global_palbox'" class="editor-field">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
+            <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
             <span class="editor-tag">
               <img v-if="pal.IsImportedCharacter" class="game-icon" :src="backend.backendAssetUrl('/image/ui/dna')" alt="">
               <template v-else>-</template>
@@ -339,7 +337,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="editor-field__actions">
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': pal.IsImportedCharacter }]"
                 name="IsImportedCharacter"
-                :aria-label="palStore.getTranslatedText('Editor_ImportedCharacter')"
+                :aria-label="appStore.getTranslatedText('Editor_ImportedCharacter')"
                 :aria-pressed="pal.IsImportedCharacter"
                 @click="updateRange('IsImportedCharacter', !pal.IsImportedCharacter)">
                 <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/dna')" alt="">
@@ -347,37 +345,37 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
           </div>
           <div class="editor-field" v-if="availableSkins().length || pal.SkinName">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Skin") }}</span>
+            <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_Skin") }}</span>
             <SearchSelect ref="skinSelect" v-model="pal.SkinName"
-              :options="skinOptions()" :placeholder="palStore.getTranslatedText('Editor_Skin_Default')"
-              :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
-              :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-              :aria-label="palStore.getTranslatedText('Editor_Skin')"
+              :options="skinOptions()" :placeholder="appStore.getTranslatedText('Editor_Skin_Default')"
+              :search-placeholder="appStore.getTranslatedText('Editor_Select_Search')"
+              :no-results="appStore.getTranslatedText('Editor_Select_No_Results')"
+              :aria-label="appStore.getTranslatedText('Editor_Skin')"
               :close-on-select="false">
               <template #actions>
                 <button class="editor-button editor-button--icon editor-button--primary"
                   @click="applySkin" name="SkinName"
-                  :aria-label="palStore.getTranslatedText('Editor_Skin')"><UiIcon name="plus" /></button>
+                  :aria-label="appStore.getTranslatedText('Editor_Skin')"><UiIcon name="plus" /></button>
               </template>
             </SearchSelect>
           </div>
           <div class="editor-field" v-if="pal.Gender || !appStore.HIDE_INVALID_OPTIONS">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
+            <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_Gender") }}</span>
             <span class="editor-tag" v-if="genderKey(pal.Gender)">
               <img class="game-icon" :src="backend.backendAssetUrl(`/image/ui/gender-${genderKey(pal.Gender)}`)" alt="">
             </span>
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon"
                 @click="palsStore.swapGender" name="Gender"
-                :aria-label="palStore.getTranslatedText('Editor_Gender')"><UiIcon name="refresh" /></button>
+                :aria-label="appStore.getTranslatedText('Editor_Gender')"><UiIcon name="refresh" /></button>
             </div>
           </div>
           <div class="editor-field">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("PalList_Sort_Priority") }}</span>
-            <div class="pal-priority-control" role="group" :aria-label="palStore.getTranslatedText('PalList_Sort_Priority')">
+            <span class="editor-field__label">{{ appStore.getTranslatedText("PalList_Sort_Priority") }}</span>
+            <div class="pal-priority-control" role="group" :aria-label="appStore.getTranslatedText('PalList_Sort_Priority')">
               <button v-for="priority in [0, 1, 2, 3]" :key="priority" type="button"
                 :class="['editor-button', pal.FavoriteIndex === priority ? 'editor-button--primary' : 'editor-button--secondary']"
-                :aria-label="`${palStore.getTranslatedText('PalList_Sort_Priority')}: ${['—', 'I', 'II', 'III'][priority]}`"
+                :aria-label="`${appStore.getTranslatedText('PalList_Sort_Priority')}: ${['—', 'I', 'II', 'III'][priority]}`"
                 :aria-pressed="pal.FavoriteIndex === priority"
                 @click="updateRange('FavoriteIndex', priority)">
                 <span v-if="priority === 0">—</span>
@@ -390,21 +388,21 @@ const portraitBorder = pal => pal.IsAwakening
         </section>
 
         <section class="editor-section">
-          <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Growth") }}</h3>
+          <h3 class="editor-section__heading">{{ appStore.getTranslatedText("Editor_Growth") }}</h3>
           <div class="editor-stepper">
             <div>
-              <span class="editor-field__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/friendship')" alt=""> {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
+              <span class="editor-field__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/friendship')" alt=""> {{ appStore.getTranslatedText("Editor_Friendship_Level") }}</span>
               <strong class="editor-stepper__value">{{ pal.FriendshipLevel }}</strong>
             </div>
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palsStore.friendshipDown"
-                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Decrease')"
+                name="FriendshipLevel" :aria-label="appStore.getTranslatedText('Editor_Btn_Friendship_Decrease')"
                 :disabled="isMinFriendshipLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palsStore.friendshipUp"
-                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Increase')"
+                name="FriendshipLevel" :aria-label="appStore.getTranslatedText('Editor_Btn_Friendship_Increase')"
                 :disabled="isMaxFriendshipLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palsStore.maxFriendship"
-                name="FriendshipLevel" :aria-label="palStore.getTranslatedText('Editor_Btn_Friendship_Max')"
+                name="FriendshipLevel" :aria-label="appStore.getTranslatedText('Editor_Btn_Friendship_Max')"
                 :disabled="isMaxFriendshipLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
@@ -415,30 +413,30 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
             <div class="editor-stepper__actions">
               <button class="editor-button editor-button--icon" @click="palsStore.levelDown"
-                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"
+                name="Level" :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Decrease')"
                 :disabled="isMinLv()"><UiIcon name="minus" /></button>
               <button class="editor-button editor-button--icon" @click="palsStore.levelUp"
-                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"
+                name="Level" :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Increase')"
                 :disabled="isMaxLv()"><UiIcon name="plus" /></button>
               <button class="editor-button editor-button--icon" @click="palsStore.maxLevel"
-                name="Level" :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"
+                name="Level" :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Max')"
                 :disabled="isMaxLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
           <div class="editor-field editor-field--value" v-if="!pal.IsHuman">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
+            <span class="editor-field__label">{{ appStore.getTranslatedText("Editor_Variant") }}</span>
             <span class="editor-tag">
               {{ specialTypeKeys(pal).map(specialTypeLabel).join(' · ') || '-' }}
             </span>
             <div class="editor-field__actions">
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': pal.IsBOSS }]"
                 @click="palsStore.swapBoss" name="IsBOSS"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
+                :aria-label="appStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
                 :aria-pressed="pal.IsBOSS"
                 v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/boss')" alt=""></button>
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': pal.IsRarePal }]"
                 @click="palsStore.swapRare" name="IsRarePal"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
+                :aria-label="appStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
                 :aria-pressed="pal.IsRarePal"
                 v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/rare')" alt=""></button>
             </div>
@@ -446,33 +444,33 @@ const portraitBorder = pal => pal.IsAwakening
         </section>
       </div>
       <div class="editor-stat-grid">
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ pal.ComputedMaxHP / 1000 }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ pal.ComputedAttack }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ pal.ComputedDefense }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ pal.ComputedCraftSpeed }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ appStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ pal.ComputedMaxHP / 1000 }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ appStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ pal.ComputedAttack }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ appStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ pal.ComputedDefense }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ appStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ pal.ComputedCraftSpeed }}</strong></div>
       </div>
 
       <details class="editor-disclosure"
         :open="palsStore.saveDetailsOpen"
         @toggle="palsStore.saveDetailsOpen = $event.currentTarget.open">
-        <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
+        <summary>{{ appStore.getTranslatedText("Editor_Save_Details") }}</summary>
         <div class="pal-technical-grid">
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ pal.CharacterID }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ pal.InstanceId }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ guildLabel }}</code></div>
+          <div><span class="editor-disclosure__label">{{ appStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ pal.CharacterID }}</code></div>
+          <div><span class="editor-disclosure__label">{{ appStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ pal.InstanceId }}</code></div>
+          <div><span class="editor-disclosure__label">{{ appStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ guildLabel }}</code></div>
           <div class="pal-technical-slot">
-            <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
+            <span class="editor-disclosure__label">{{ appStore.getTranslatedText("Editor_Pal_Slot") }}</span>
             <div class="pal-technical-location__value">
               <code>{{ technicalContainer }} @ {{ technicalSlot }}</code>
             </div>
             <small v-if="pal.IsExpeditionPal">
-              {{ palStore.getTranslatedText('Editor_Move_Blocked_Expedition') }}
+              {{ appStore.getTranslatedText('Editor_Move_Blocked_Expedition') }}
             </small>
             <small v-else-if="!pal.storageKey">
-              {{ palStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
+              {{ appStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
             </small>
           </div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ ownerLabel }}</span></div>
+          <div><span class="editor-disclosure__label">{{ appStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ ownerLabel }}</span></div>
         </div>
       </details>
 
@@ -481,82 +479,82 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="pal-health-actions" v-if="pal.HasWorkerSick || pal.IsFaintedPal">
         <button type="button" class="editor-button editor-button--primary" v-if="pal.HasWorkerSick"
           @click="palsStore.heal">
-          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt=""> {{ appStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
         </button>
         <button type="button" class="editor-button editor-button--primary" v-if="pal.IsFaintedPal"
           @click="palsStore.heal">
-          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/revive')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/revive')" alt=""> {{ appStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
         </button>
       </div>
     </section>
     <div class="pal-progression-grid">
       <section class="pal-panel editor-surface">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_IV") }}</h2>
+        <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_IV") }}</h2>
         <div class="range-grid">
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ appStore.getTranslatedText("Editor_IV_HP") }}</span>
             <strong>{{ pal.Talent_HP }}</strong>
             <SegmentedRange name="Talent_HP" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_HP"
               @change="updateRange('Talent_HP', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ appStore.getTranslatedText("Editor_IV_DEF") }}</span>
             <strong>{{ pal.Talent_Defense }}</strong>
             <SegmentedRange name="Talent_Defense" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Defense"
               @change="updateRange('Talent_Defense', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ appStore.getTranslatedText("Editor_IV_ATK") }}</span>
             <strong>{{ pal.Talent_Shot }}</strong>
             <SegmentedRange name="Talent_Shot" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Shot"
               @change="updateRange('Talent_Shot', $event)" />
           </label>
           <label class="range-control" v-if="!appStore.HIDE_INVALID_OPTIONS">
-            <span>{{ palStore.getTranslatedText("Editor_IV_MELEE") }}</span>
+            <span>{{ appStore.getTranslatedText("Editor_IV_MELEE") }}</span>
             <strong>{{ pal.Talent_Melee }}</strong>
             <SegmentedRange name="Talent_Melee" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Melee"
               @change="updateRange('Talent_Melee', $event)" />
           </label>
         </div>
         <div class="pal-inline-action" v-if="!pal.IsHuman">
-          <span>{{ palStore.getTranslatedText("Editor_Awakening") }}</span>
-          <strong>{{ pal.IsAwakening ? palStore.getTranslatedText("Editor_Awakened") : "-" }}</strong>
+          <span>{{ appStore.getTranslatedText("Editor_Awakening") }}</span>
+          <strong>{{ pal.IsAwakening ? appStore.getTranslatedText("Editor_Awakened") : "-" }}</strong>
           <button class="editor-button editor-button--icon" @click="palsStore.toggleAwakening"
-            name="IsAwakening" :aria-label="palStore.getTranslatedText('Editor_Awakening')"><UiIcon name="refresh" /></button>
+            name="IsAwakening" :aria-label="appStore.getTranslatedText('Editor_Awakening')"><UiIcon name="refresh" /></button>
         </div>
       </section>
 
       <section class="pal-panel editor-surface">
-        <h2 class="pal-panel__heading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/soul')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
+        <h2 class="pal-panel__heading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/soul')" alt=""> {{ appStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
         <div class="range-grid">
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ appStore.getTranslatedText("Editor_Souls_HP") }}</span>
             <strong>{{ pal.Rank_HP }}</strong>
             <SegmentedRange name="Rank_HP" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_HP"
               @change="updateRange('Rank_HP', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ appStore.getTranslatedText("Editor_Souls_ATK") }}</span>
             <strong>{{ pal.Rank_Attack }}</strong>
             <SegmentedRange name="Rank_Attack" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Attack"
               @change="updateRange('Rank_Attack', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ appStore.getTranslatedText("Editor_Souls_DEF") }}</span>
             <strong>{{ pal.Rank_Defence }}</strong>
             <SegmentedRange name="Rank_Defence" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Defence"
               @change="updateRange('Rank_Defence', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ appStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
             <strong>{{ pal.Rank_CraftSpeed }}</strong>
             <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_CraftSpeed"
               @change="updateRange('Rank_CraftSpeed', $event)" />
           </label>
         </div>
-        <h3 class="pal-panel__subheading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser") }}</h3>
+        <h3 class="pal-panel__subheading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/condense')" alt=""> {{ appStore.getTranslatedText("Editor_Condenser") }}</h3>
         <label class="range-control range-control--wide">
-          <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
+          <span>{{ appStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ pal.Rank - 1 }}</strong>
           <SegmentedRange name="Rank" :min="1" :max="appStore.HIDE_INVALID_OPTIONS ? 5 : 255" v-model="pal.Rank"
             @change="updateRange('Rank', $event)" />
@@ -567,10 +565,10 @@ const portraitBorder = pal => pal.IsAwakening
     <section class="pal-panel editor-surface"
       v-if="catalogsStore.palsByName[pal.DataAccessKey]?.Suitabilities">
       <div class="pal-panel__header">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Suitabilities") }}</h2>
+        <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_Suitabilities") }}</h2>
         <button class="editor-button editor-button--primary" type="button"
           @click="palsStore.maxSuitabilities">
-          <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Suitabilities_Max") }}
+          <UiIcon name="maximum" /> {{ appStore.getTranslatedText("Editor_Suitabilities_Max") }}
         </button>
       </div>
       <div class="suitability-grid">
@@ -591,9 +589,9 @@ const portraitBorder = pal => pal.IsAwakening
     <section class="pal-panel editor-surface">
       <div class="skill-section">
         <div class="skill-section__header">
-          <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Passive_Skills") }}</h2>
+          <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_Passive_Skills") }}</h2>
           <button class="editor-button editor-button--secondary" type="button" @click="openSkillTemplates('passive')">
-            <UiIcon name="copy" /> {{ palStore.getTranslatedText('SkillTemplate_Button') }}
+            <UiIcon name="copy" /> {{ appStore.getTranslatedText('SkillTemplate_Button') }}
           </button>
         </div>
         <div class="skill-cards">
@@ -609,20 +607,20 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
             <button type="button" class="skill-card__remove"
               @click="palsStore.removePassiveSkill" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`">×</button>
+              :aria-label="`${appStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`">×</button>
           </article>
         </div>
         <div class="skill-add" v-if="!appStore.HIDE_INVALID_OPTIONS || pal.PassiveSkillList.length < 4">
           <SearchSelect ref="passiveSkillSelect" v-model="palsStore.passiveSkillChoice" placement="top"
-            :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
-            :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
-            :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
+            :options="passiveSkillOptions()" :placeholder="appStore.getTranslatedText('Editor_Select_Skill')"
+            :search-placeholder="appStore.getTranslatedText('Editor_Select_Search')"
+            :no-results="appStore.getTranslatedText('Editor_Select_No_Results')"
+            :aria-label="appStore.getTranslatedText('Editor_Passive_Skills')"
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
                 @click="addPassiveSkill"
-                :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
+                :aria-label="appStore.getTranslatedText('Editor_Passive_Skills')"
                 :disabled="!palsStore.passiveSkillChoice
                   || pal.PassiveSkillList.includes(palsStore.passiveSkillChoice)"><UiIcon name="plus" /></button>
             </template>
@@ -632,9 +630,9 @@ const portraitBorder = pal => pal.IsAwakening
 
       <div class="skill-section">
         <div class="skill-section__header">
-          <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Equipped_Skills") }}</h2>
+          <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_Equipped_Skills") }}</h2>
           <button class="editor-button editor-button--secondary" type="button" @click="openSkillTemplates('active')">
-            <UiIcon name="copy" /> {{ palStore.getTranslatedText('SkillTemplate_Button') }}
+            <UiIcon name="copy" /> {{ appStore.getTranslatedText('SkillTemplate_Button') }}
           </button>
         </div>
         <div class="skill-cards">
@@ -651,13 +649,13 @@ const portraitBorder = pal => pal.IsAwakening
             </div>
             <button type="button" class="skill-card__remove"
               @click="palsStore.removeEquipWaza" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`">×</button>
+              :aria-label="`${appStore.getTranslatedText('Editor_Equipped_Skills')} - ${skill}`">×</button>
           </article>
         </div>
       </div>
 
       <div class="skill-section">
-        <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
+        <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
         <div class="skill-cards">
           <article v-for="skill in pal.MasteredWaza" :key="skill"
             :class="['skill-card', {
@@ -678,25 +676,25 @@ const portraitBorder = pal => pal.IsAwakening
               <button
                 type="button" class="editor-button editor-button--icon skill-card__equip"
                 @click="palsStore.addEquipWaza" :name="skill"
-                :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
+                :aria-label="`${appStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
                 :disabled="!canSelectActiveSkill(catalogsStore.activeSkillsByName[skill]) || isEquipSkillFull()"><UiIcon name="plus" /></button>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palsStore.removeMasteredWaza" :name="skill"
-              :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`">×</button>
+              :aria-label="`${appStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`">×</button>
           </article>
         </div>
         <div class="skill-add">
           <SearchSelect ref="activeSkillSelect" v-model="palsStore.activeSkillChoice" placement="top"
-            :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
-            :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
-            :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
+            :options="activeSkillSelectOptions()" :placeholder="appStore.getTranslatedText('Editor_Select_Skill')"
+            :search-placeholder="appStore.getTranslatedText('Editor_Select_Search')"
+            :no-results="appStore.getTranslatedText('Editor_Select_No_Results')"
+            :aria-label="appStore.getTranslatedText('Editor_Mastered_Skills')"
             :close-on-select="false">
             <template #actions>
               <button class="editor-button editor-button--icon editor-button--primary"
                 @click="addActiveSkill"
-                :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
+                :aria-label="appStore.getTranslatedText('Editor_Mastered_Skills')"
                 :disabled="!palsStore.activeSkillChoice
                   || pal.MasteredWaza.includes(palsStore.activeSkillChoice)
                   || !canSelectActiveSkill(catalogsStore.activeSkillsByName[palsStore.activeSkillChoice])"><UiIcon name="plus" /></button>

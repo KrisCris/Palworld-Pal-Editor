@@ -5,7 +5,7 @@ import PalPortrait from '@/components/PalPortrait.vue'
 import { MAX_FRIENDSHIP_LEVEL } from '@/game-limits'
 import { elementIconKey, passiveTier } from '@/pal-traits'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
@@ -15,11 +15,11 @@ const props = defineProps({
   tone: { type: String, default: 'neutral' },
 })
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const changed = key => Object.hasOwn(props.changedFields, key)
 const uiIcon = name => backend.backendAssetUrl(`/image/ui/${name}`)
-const cleanLabel = key => palStore.getTranslatedText(key).replace(/\s*[:：]\s*$/, '').trim()
+const cleanLabel = key => appStore.getTranslatedText(key).replace(/\s*[:：]\s*$/, '').trim()
 const attributeLabel = row => row.suffix
   ? `${cleanLabel(row.label)} ${cleanLabel(row.suffix)}`
   : cleanLabel(row.label)
@@ -87,14 +87,14 @@ const elementIcon = skill => {
         </strong>
         <span>{{ data.DisplayName }} · {{ data.CharacterID }}</span>
         <span :class="{ changed: changed('Level') }">
-          {{ palStore.getTranslatedText('PalBrief_Level') }} {{ data.Level }}
+          {{ appStore.getTranslatedText('PalBrief_Level') }} {{ data.Level }}
         </span>
       </div>
     </header>
 
     <dl class="pal-brief__friendship-row" :class="{ changed: changed('FriendshipLevel') }">
       <div>
-        <dt><img :src="uiIcon('friendship')" alt=""><span>{{ palStore.getTranslatedText('Editor_Friendship_Level') }}</span></dt>
+        <dt><img :src="uiIcon('friendship')" alt=""><span>{{ appStore.getTranslatedText('Editor_Friendship_Level') }}</span></dt>
         <dd>{{ data.FriendshipLevel }}</dd>
         <i><b :style="{ width: `${friendshipPercent}%` }" /></i>
       </div>
@@ -116,7 +116,7 @@ const elementIcon = skill => {
     </div>
 
     <section v-if="suitabilityEntries.length" class="pal-brief__section">
-      <h4>{{ palStore.getTranslatedText('Editor_Suitabilities') }}</h4>
+      <h4>{{ appStore.getTranslatedText('Editor_Suitabilities') }}</h4>
       <div class="pal-brief__suitabilities" :class="{ changed: changed('Suitabilities') }">
         <span v-for="([key, value]) in suitabilityEntries" :key="key" :title="key.split('::').pop()">
           <img :src="backend.backendAssetUrl(`/image/suitabilities/${key.split('::').pop()}`)" alt="">
@@ -127,15 +127,15 @@ const elementIcon = skill => {
 
     <section v-if="activeSkills.length" class="pal-brief__section pal-brief__section--skills"
       :class="{ changed: changed('EquipWaza') }">
-      <h4>{{ palStore.getTranslatedText('Editor_Equipped_Skills') }}</h4>
+      <h4>{{ appStore.getTranslatedText('Editor_Equipped_Skills') }}</h4>
       <b v-if="activeSkills.length > 3" class="pal-brief__overflow">+{{ activeSkills.length - 3 }}</b>
       <div class="pal-brief__active-skills">
         <div v-for="skill in activeSkills.slice(0, 3)" :key="skill" :title="catalogsStore.activeSkillsByName[skill]?.I18n?.[1] || skill">
           <img :src="elementIcon(skill)" alt="">
           <strong>{{ activeName(skill) }}</strong>
           <small v-if="catalogsStore.activeSkillsByName[skill]">
-            {{ palStore.getTranslatedText('Editor_Skill_ATK') }}{{ catalogsStore.activeSkillsByName[skill].Power }} ·
-            {{ palStore.getTranslatedText('Editor_Skill_CD') }}{{ catalogsStore.activeSkillsByName[skill].CT }}
+            {{ appStore.getTranslatedText('Editor_Skill_ATK') }}{{ catalogsStore.activeSkillsByName[skill].Power }} ·
+            {{ appStore.getTranslatedText('Editor_Skill_CD') }}{{ catalogsStore.activeSkillsByName[skill].CT }}
           </small>
         </div>
       </div>
@@ -143,7 +143,7 @@ const elementIcon = skill => {
 
     <section v-if="passiveSkills.length" class="pal-brief__section pal-brief__section--skills"
       :class="{ changed: changed('PassiveSkillList') }">
-      <h4>{{ palStore.getTranslatedText('Editor_Passive_Skills') }}</h4>
+      <h4>{{ appStore.getTranslatedText('Editor_Passive_Skills') }}</h4>
       <b v-if="passiveSkills.length > 4" class="pal-brief__overflow">+{{ passiveSkills.length - 4 }}</b>
       <div class="pal-brief__passive-skills">
         <div v-for="skill in passiveSkills.slice(0, 4)" :key="skill"

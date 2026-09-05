@@ -3,13 +3,13 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { useMessagesStore } from '@/stores/messages'
 import { useResearchStore } from '@/stores/research'
 
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const messages = useMessagesStore()
 const researchStore = useResearchStore()
@@ -123,7 +123,7 @@ const allCompleted = computed(() => categories.value.length > 0 && categories.va
   category => category.Completed === category.Total,
 ))
 
-const translated = key => palStore.getTranslatedText(key)
+const translated = key => appStore.getTranslatedText(key)
 const categoryIcon = category => backend.backendAssetUrl(`/image/lab/category-${category}`)
 const researchIcon = research => backend.backendAssetUrl(`/image/lab/${research.IconKey}`)
 const formatNumber = value => new Intl.NumberFormat().format(value ?? 0)

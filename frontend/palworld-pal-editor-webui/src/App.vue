@@ -18,6 +18,7 @@ import SupportDialog from '@/components/SupportDialog.vue'
 import TopBar from '@/components/TopBar.vue'
 import { useBackendStore } from '@/stores/backend'
 import { useMessagesStore } from '@/stores/messages'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useSessionStore } from '@/stores/session'
 import AuthView from '@/views/AuthView.vue'
@@ -28,6 +29,7 @@ import uiIconSprite from '@/assets/ui-icons.svg?raw'
 
 const backend = useBackendStore()
 const messages = useMessagesStore()
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const sessionStore = useSessionStore()
 const runtimeError = computed(() => backend.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
@@ -72,7 +74,7 @@ onMounted(palStore.bootstrap)
       @restore-players="playersCollapsed = false" @restore-pals="palsCollapsed = false" />
 
     <p v-if="sessionStore.appState === 'connecting'" role="status">
-      {{ palStore.getTranslatedText('App_Connecting') }}
+      {{ appStore.getTranslatedText('App_Connecting') }}
     </p>
     <BackendErrorView
       v-else-if="sessionStore.appState === 'backend-error'"

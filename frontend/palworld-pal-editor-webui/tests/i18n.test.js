@@ -65,7 +65,7 @@ test("Pal upgrade section titles match the game UI terminology", () => {
 
 test("startup translations are available synchronously without the backend", () => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = useAppStore();
 
     assert.equal(typeof store.getTranslatedText("BackendError_Title"), "string");
     assert.notEqual(store.getTranslatedText("BackendError_Title"), "I18N_MISSING");
@@ -108,9 +108,9 @@ test("offline and backend game-data locale maps stay identical", async () => {
 test("saved game-data locales use their complete frontend translation", () => {
     values.set("PAL_I18n", "zh-TW");
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = useAppStore();
 
-    assert.equal(useAppStore().locale, "zh-TW");
+    assert.equal(store.locale, "zh-TW");
     assert.equal(store.getTranslatedText("BackendError_Title"), UI_TRANSLATIONS["zh-TW"].BackendError_Title);
 });
 

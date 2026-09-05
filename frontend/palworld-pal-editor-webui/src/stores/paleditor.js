@@ -25,7 +25,6 @@ import {
     rememberBackend,
     writeStorage,
 } from "../services/backend-connection.js";
-import { translate } from "../i18n/index.js";
 import { checkAuth, login } from "../api/auth.js";
 import { useAppStore } from "./app.js";
 import { BACKEND_ORIGIN_KEY, useBackendStore } from "./backend.js";
@@ -291,7 +290,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         try {
             await app.pushLocale();
         } catch (error) {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
+            setBackendError(app.getTranslatedText("BackendError_Request_Failed", [error.message]));
             return false;
         }
 
@@ -348,12 +347,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (updateAppState) {
             session.appState = IS_LOCKED.value ? "auth-required" : "entry";
         }
-    }
-
-    // The components' way in (AGENTS.md), which is why it stays on this store
-    // rather than moving with the message queue that also needs it.
-    function getTranslatedText(translationKey, args = []) {
-        return translate(app.locale, translationKey, args);
     }
 
     // ---- loading -------------------------------------------------------------
@@ -462,7 +455,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         SHOW_DONATE_FLAG,
         HAS_WORKING_PAL_FLAG,
 
-        getTranslatedText,
         reset,
 
         ...gated(session, {

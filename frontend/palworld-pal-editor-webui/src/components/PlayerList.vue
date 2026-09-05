@@ -1,30 +1,32 @@
 <script setup>
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
-const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
-const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
+const toggleLabel = () => appStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
+const playerLabel = player => player.NickName || appStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
 </script>
 
 <template>
-  <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
+  <nav class="player-roster" :aria-label="appStore.getTranslatedText('PlayerList_Text')">
     <header class="roster-header">
       <button class="roster-collapse-button" :title="toggleLabel()"
         :aria-label="toggleLabel()" @click="emit('toggle')">
         <UiIcon :name="preview ? 'panel' : 'minus'" />
       </button>
-      <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
+      <h2 class="roster-title">{{ appStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
 
     <OverlayScrollArea>
@@ -34,7 +36,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
         :aria-current="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY ? 'true' : undefined"
         :disabled="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY">
         <span class="player-avatar">GPS</span>
-        <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
+        <span class="roster-copy">{{ appStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>
 
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
@@ -42,7 +44,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
         :aria-current="rostersStore.activeRosterKey === BASE_ROSTER_KEY ? 'true' : undefined"
         :disabled="(rostersStore.activeRosterKey === BASE_ROSTER_KEY && !palsStore.selectedRecordKey)">
         <span class="player-avatar">PAL</span>
-        <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
+        <span class="roster-copy">{{ appStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
       </button>
 
       <button v-for="player in playersStore.players" :key="player.InstanceId"
@@ -50,7 +52,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
         :aria-current="player.InstanceId == rostersStore.activePlayerUid ? 'true' : undefined"
         :disabled="(player.InstanceId == rostersStore.activePlayerUid && playersStore.showPlayerEditor)">
         <span class="player-avatar">{{ playerInitial(player) }}</span>
-        <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
+        <span class="roster-copy">{{ player.NickName || appStore.getTranslatedText('PlayerList_Unknown') }}</span>
       </button>
     </div>
     </OverlayScrollArea>

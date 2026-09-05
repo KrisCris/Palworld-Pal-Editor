@@ -414,7 +414,7 @@ export const usePalsStore = defineStore("pals", () => {
             // half of this that was never a request.
             messages.reportFrontendError(
                 error,
-                messages.getTranslatedText("Operation_Copy_Pal"),
+                app.getTranslatedText("Operation_Copy_Pal"),
             );
             return false;
         }

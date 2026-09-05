@@ -2,14 +2,12 @@
 import { computed } from 'vue'
 
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   item: { type: Object, required: true },
 })
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
 const backend = useBackendStore()
 const pal = computed(() => catalogsStore.palsByName[props.item.PalGearCharacterId])
 const iconKey = computed(() => pal.value?.IconKey || pal.value?.IconAccessKey)

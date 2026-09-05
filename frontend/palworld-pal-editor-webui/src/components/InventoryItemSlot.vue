@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
@@ -18,7 +18,7 @@ const props = defineProps({
   square: { type: Boolean, default: false },
 })
 const emit = defineEmits(['edit', 'clear', 'repair'])
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const tooltipVisible = ref(false)
 const tooltipPoint = ref({ clientX: 0, clientY: 0 })
@@ -66,11 +66,11 @@ const hideTooltip = () => { tooltipVisible.value = false }
       </span>
     </button>
     <button v-if="repairable" type="button" class="slot-repair"
-      :title="palStore.getTranslatedText('Inventory_Repair')"
-      :aria-label="palStore.getTranslatedText('Inventory_Repair')"
+      :title="appStore.getTranslatedText('Inventory_Repair')"
+      :aria-label="appStore.getTranslatedText('Inventory_Repair')"
       @click.stop="emit('repair')"><UiIcon name="maximum" /></button>
     <button v-if="item && editable" type="button" class="slot-clear"
-      :aria-label="palStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
+      :aria-label="appStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
   </div>
 
   <ItemHoverCard v-if="tooltipVisible && item" :item="item" :details-item="detailsItem" :count="slot.count"

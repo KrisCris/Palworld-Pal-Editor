@@ -59,9 +59,9 @@ const abort = () => {
         <div class="popup editor-glass-surface">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">
-                <IconButton icon="back" :label="palStore.getTranslatedText('PathPicker_Back')" @click="palStore.browseParentPath" />
+                <IconButton icon="back" :label="appStore.getTranslatedText('PathPicker_Back')" @click="palStore.browseParentPath" />
                 <InputArea v-model="appStore.pickerPath" />
-                <IconButton icon="forward" :label="palStore.getTranslatedText('PathPicker_Open')"
+                <IconButton icon="forward" :label="appStore.getTranslatedText('PathPicker_Open')"
                     @click="palStore.browseSavePath(appStore.pickerPath)" />
             </div>
 

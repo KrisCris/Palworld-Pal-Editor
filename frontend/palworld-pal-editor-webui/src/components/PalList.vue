@@ -16,7 +16,7 @@ import {
 } from '@/components/pal-list-order'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { genderKey } from '@/pal-traits'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
@@ -24,7 +24,7 @@ import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 import { useSessionStore } from '@/stores/session'
 import { useStoragesStore } from '@/stores/storages'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
@@ -33,7 +33,7 @@ const sessionStore = useSessionStore()
 const storagesStore = useStoragesStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
-const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
+const toggleLabel = () => appStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
@@ -131,7 +131,7 @@ const visiblePalGroups = computed(() => groupPalList(
 // is a Pal reporting a place the save has no entry for, and keeps the name it
 // reported.
 const containerLabel = group => (group.storage
-  ? formatStorageLabel(group.storage, palStore.getTranslatedText)
+  ? formatStorageLabel(group.storage, appStore.getTranslatedText)
   : group.label)
 
 watch(
@@ -162,7 +162,7 @@ const portraitBorder = pal => pal.IsAwakening
   ? 'var(--editor-color-danger)'
   : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
 
-const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
+const palStatus = pal => appStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   ? pal.IsRarePal ? 'AlphaLucky' : 'Alpha'
   : pal.IsRarePal ? 'Lucky' : 'Ordinary'}`)
 
@@ -172,43 +172,43 @@ const palWasEdited = pal => isEditedPal(pal)
 
 <template>
   <nav :class="['pal-roster', { 'pal-roster--preview': preview }]"
-    :aria-label="palStore.getTranslatedText('PalList_Text')">
+    :aria-label="appStore.getTranslatedText('PalList_Text')">
     <header class="roster-header">
       <div class="roster-heading-row">
         <button class="roster-collapse-button" :title="toggleLabel()"
           :aria-label="toggleLabel()" @click="emit('toggle')">
           <UiIcon :name="preview ? 'panel' : 'minus'" />
         </button>
-        <h2 class="roster-title">{{ palStore.getTranslatedText("PalList_Text") }}</h2>
+        <h2 class="roster-title">{{ appStore.getTranslatedText("PalList_Text") }}</h2>
         <div class="roster-actions">
           <details ref="sortMenu" class="pal-list-menu">
           <summary class="roster-icon-button" :class="{ 'is-active': activePalFilterCount > 0 }"
-            :title="palStore.getTranslatedText('PalList_SortFilter')"
-            :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
+            :title="appStore.getTranslatedText('PalList_SortFilter')"
+            :aria-label="appStore.getTranslatedText('PalList_SortFilter')">
             <UiIcon name="filter" />
             <span v-if="activePalFilterCount" class="filter-count">{{ activePalFilterCount }}</span>
           </summary>
           <div class="pal-list-menu__popover editor-glass-surface">
             <label>
-              <span>{{ palStore.getTranslatedText('PalList_Sort') }}</span>
+              <span>{{ appStore.getTranslatedText('PalList_Sort') }}</span>
               <select v-model="rostersStore.sortMode">
-                <option value="paldeck">{{ palStore.getTranslatedText('PalList_Sort_Paldeck') }}</option>
-                <option value="location">{{ palStore.getTranslatedText('PalList_Sort_Location') }}</option>
-                <option value="priority">{{ palStore.getTranslatedText('PalList_Sort_Priority') }}</option>
+                <option value="paldeck">{{ appStore.getTranslatedText('PalList_Sort_Paldeck') }}</option>
+                <option value="location">{{ appStore.getTranslatedText('PalList_Sort_Location') }}</option>
+                <option value="priority">{{ appStore.getTranslatedText('PalList_Sort_Priority') }}</option>
               </select>
             </label>
             <fieldset class="pal-list-menu__attribute-filters">
-              <legend>{{ palStore.getTranslatedText('PalList_Filter_Attributes') }}</legend>
+              <legend>{{ appStore.getTranslatedText('PalList_Filter_Attributes') }}</legend>
               <button v-for="filter in attributeFilters" :key="filter.key" type="button"
                 :class="['pal-list-menu__attribute-button', { 'is-active': rostersStore.attributeFilters.includes(filter.key) }]"
                 :aria-pressed="rostersStore.attributeFilters.includes(filter.key)"
-                :title="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
-                :aria-label="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
+                :title="filter.translation ? appStore.getTranslatedText(filter.translation) : filter.label"
+                :aria-label="filter.translation ? appStore.getTranslatedText(filter.translation) : filter.label"
                 @click="toggleAttributeFilter(filter.key)">
                 <img v-if="filter.icon" :src="backend.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
                   @error="$event.currentTarget.hidden = true">
                 <UiIcon v-else :name="filter.uiIcon" />
-                <span>{{ filter.label || palStore.getTranslatedText(filter.translation) }}</span>
+                <span>{{ filter.label || appStore.getTranslatedText(filter.translation) }}</span>
               </button>
             </fieldset>
             <div class="pal-list-menu__session-buttons">
@@ -216,19 +216,19 @@ const palWasEdited = pal => isEditedPal(pal)
                 :aria-pressed="rostersStore.editedOnly"
                 @click="rostersStore.editedOnly = !rostersStore.editedOnly">
                 <UiIcon name="edit" />
-                <span>{{ palStore.getTranslatedText('PalList_Filter_Edited') }}</span>
+                <span>{{ appStore.getTranslatedText('PalList_Filter_Edited') }}</span>
               </button>
               <button class="pal-list-menu__session-button" type="button"
                 :aria-pressed="rostersStore.createdOnly"
                 @click="rostersStore.createdOnly = !rostersStore.createdOnly">
                 <UiIcon name="plus" />
-                <span>{{ palStore.getTranslatedText('PalList_Filter_Created') }}</span>
+                <span>{{ appStore.getTranslatedText('PalList_Filter_Created') }}</span>
               </button>
             </div>
           </div>
           </details>
           <button class="roster-icon-button"
-            :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')" @click="showAddPalDialog = true" name="add_pal">
+            :title="appStore.getTranslatedText('PalList_Add')" :aria-label="appStore.getTranslatedText('PalList_Add')" @click="showAddPalDialog = true" name="add_pal">
             <UiIcon name="plus" />
           </button>
         </div>
@@ -236,7 +236,7 @@ const palWasEdited = pal => isEditedPal(pal)
       <label class="pal-search">
         <UiIcon name="search" />
         <input type="search" v-model="rostersStore.searchKeyword"
-          :placeholder="palStore.getTranslatedText('PalList_Search')">
+          :placeholder="appStore.getTranslatedText('PalList_Search')">
       </label>
     </header>
 
@@ -282,13 +282,13 @@ const palWasEdited = pal => isEditedPal(pal)
           <strong class="pal-name">
             <span>{{ pal.DisplayName }}</span>
             <span v-if="pal.IsExpeditionPal" class="pal-location-badge pal-location-badge--expedition">
-              {{ palStore.getTranslatedText('PalList_Expedition') }}
+              {{ appStore.getTranslatedText('PalList_Expedition') }}
             </span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>
           <span class="sr-only">{{ palStatus(pal) }}</span>
-          <span v-if="palWasCreated(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
-          <span v-else-if="palWasEdited(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Edited') }}</span>
+          <span v-if="palWasCreated(pal)" class="sr-only">{{ appStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
+          <span v-else-if="palWasEdited(pal)" class="sr-only">{{ appStore.getTranslatedText('PalList_Status_Edited') }}</span>
         </span>
       </button>
       </template>

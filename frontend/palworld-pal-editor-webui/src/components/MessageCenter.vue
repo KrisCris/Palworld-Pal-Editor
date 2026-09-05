@@ -1,10 +1,10 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { useMessagesStore } from '@/stores/messages'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const messages = useMessagesStore()
 const current = computed(() => messages.CURRENT_MESSAGE)
 const visibleText = computed(() => messages.getMessageText(current.value))
@@ -16,7 +16,7 @@ const titleKeys = {
   warning: 'Message_Title_Warning',
   error: 'Message_Title_Error',
 }
-const title = computed(() => palStore.getTranslatedText(
+const title = computed(() => appStore.getTranslatedText(
   titleKeys[current.value?.severity] || 'Message_Title_Warning',
 ))
 const closeButton = ref()
@@ -65,7 +65,7 @@ onBeforeUnmount(clearDismissTimer)
       <h1 id="message-center-title">{{ title }}</h1>
       <p id="message-center-description">{{ visibleText }}</p>
       <label v-if="details" for="message-center-details">
-        {{ palStore.getTranslatedText('Message_Details') }}
+        {{ appStore.getTranslatedText('Message_Details') }}
       </label>
       <textarea
         v-if="details"
@@ -77,14 +77,14 @@ onBeforeUnmount(clearDismissTimer)
       />
       <div v-if="current.confirmation" class="message-dialog__actions">
         <button ref="cancelButton" type="button" @click="respond(false)">
-          {{ palStore.getTranslatedText('Message_Cancel') }}
+          {{ appStore.getTranslatedText('Message_Cancel') }}
         </button>
         <button ref="closeButton" type="button" @click="respond(true)">
-          {{ palStore.getTranslatedText('Message_Confirm') }}
+          {{ appStore.getTranslatedText('Message_Confirm') }}
         </button>
       </div>
       <button v-else ref="closeButton" type="button" @click="dismiss">
-        {{ palStore.getTranslatedText('Message_Close') }}
+        {{ appStore.getTranslatedText('Message_Close') }}
       </button>
     </section>
   </div>
@@ -99,7 +99,7 @@ onBeforeUnmount(clearDismissTimer)
       <p>{{ visibleText }}</p>
     </div>
     <button
-      :aria-label="palStore.getTranslatedText('Message_Close')"
+      :aria-label="appStore.getTranslatedText('Message_Close')"
       @click="dismiss"
     >
       ×

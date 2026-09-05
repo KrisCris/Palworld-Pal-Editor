@@ -4,7 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { elementIconKey, passiveTier } from '@/pal-traits'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 import { usePalsStore } from '@/stores/pals'
 import { useBackendStore } from '@/stores/backend'
 import { useTemplatesStore } from '@/stores/templates'
@@ -14,7 +14,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const palsStore = usePalsStore()
 const backend = useBackendStore()
 const templatesStore = useTemplatesStore()
@@ -43,7 +43,7 @@ const skillCards = template => (template.type === 'passive'
     name: data?.I18n?.[0] || skill,
     summary: template.type === 'passive'
       ? data?.I18n?.[1] || skill
-      : `${palStore.getTranslatedText('Editor_Skill_ATK')}${data?.Power ?? '-'} · ${palStore.getTranslatedText('Editor_Skill_CD')}${data?.CT ?? '-'}`,
+      : `${appStore.getTranslatedText('Editor_Skill_ATK')}${data?.Power ?? '-'} · ${appStore.getTranslatedText('Editor_Skill_CD')}${data?.CT ?? '-'}`,
     tier: template.type === 'passive' ? passiveTier(data?.Rating) : '',
     element: template.type === 'active' ? elementIconKey(data?.Element) : '',
   }
@@ -91,22 +91,22 @@ async function renameTemplate(template) {
         aria-labelledby="skill-template-title" tabindex="-1">
         <header>
           <div>
-            <p>{{ palStore.getTranslatedText('SkillTemplate_Eyebrow') }}</p>
-            <h2 id="skill-template-title">{{ palStore.getTranslatedText(titleKey) }}</h2>
-            <small>{{ palStore.getTranslatedText('SkillTemplate_Description') }}</small>
+            <p>{{ appStore.getTranslatedText('SkillTemplate_Eyebrow') }}</p>
+            <h2 id="skill-template-title">{{ appStore.getTranslatedText(titleKey) }}</h2>
+            <small>{{ appStore.getTranslatedText('SkillTemplate_Description') }}</small>
           </div>
-          <button class="icon-button" :aria-label="palStore.getTranslatedText('Message_Close')" @click="emit('close')">
+          <button class="icon-button" :aria-label="appStore.getTranslatedText('Message_Close')" @click="emit('close')">
             <UiIcon name="close" />
           </button>
         </header>
 
         <div class="template-save">
-          <label for="skill-template-name">{{ palStore.getTranslatedText('SkillTemplate_Save_Current') }}</label>
+          <label for="skill-template-name">{{ appStore.getTranslatedText('SkillTemplate_Save_Current') }}</label>
           <input id="skill-template-name" v-model="templateName" maxlength="64"
-            :placeholder="palStore.getTranslatedText('SkillTemplate_Name_Placeholder')"
+            :placeholder="appStore.getTranslatedText('SkillTemplate_Name_Placeholder')"
             @keydown.enter="saveTemplate">
           <button class="primary-button" :disabled="!templateName.trim()" @click="saveTemplate">
-            <UiIcon name="save" /> {{ palStore.getTranslatedText('SkillTemplate_Save') }}
+            <UiIcon name="save" /> {{ appStore.getTranslatedText('SkillTemplate_Save') }}
           </button>
         </div>
 
@@ -115,20 +115,20 @@ async function renameTemplate(template) {
             <div class="template-card__name">
               <input v-model="names[template.templateId]" maxlength="64"
                 :title="template.name"
-                :aria-label="palStore.getTranslatedText('SkillTemplate_Name')"
+                :aria-label="appStore.getTranslatedText('SkillTemplate_Name')"
                 @keydown.enter="renameTemplate(template)">
-              <button class="icon-button" :title="palStore.getTranslatedText('SkillTemplate_Rename')"
-                :aria-label="palStore.getTranslatedText('SkillTemplate_Rename')"
+              <button class="icon-button" :title="appStore.getTranslatedText('SkillTemplate_Rename')"
+                :aria-label="appStore.getTranslatedText('SkillTemplate_Rename')"
                 :disabled="!names[template.templateId]?.trim() || names[template.templateId]?.trim() === template.name"
                 @click="renameTemplate(template)"><UiIcon name="edit" /></button>
             </div>
 
             <div class="template-card__actions">
               <button class="danger-button" @click="templatesStore.removeSkillTemplate(template.templateId)">
-                <UiIcon name="delete" /> {{ palStore.getTranslatedText('SkillTemplate_Delete') }}
+                <UiIcon name="delete" /> {{ appStore.getTranslatedText('SkillTemplate_Delete') }}
               </button>
               <button class="primary-button" @click="palsStore.applyTemplate(template.templateId)">
-                <UiIcon name="check" /> {{ palStore.getTranslatedText('SkillTemplate_Apply') }}
+                <UiIcon name="check" /> {{ appStore.getTranslatedText('SkillTemplate_Apply') }}
               </button>
             </div>
 
@@ -160,13 +160,13 @@ async function renameTemplate(template) {
             </div>
 
             <button v-if="overflowSkills(template).length" class="template-skills__toggle" type="button"
-              :aria-label="palStore.getTranslatedText(isExpanded(template) ? 'SkillTemplate_Collapse' : 'SkillTemplate_Expand')"
+              :aria-label="appStore.getTranslatedText(isExpanded(template) ? 'SkillTemplate_Collapse' : 'SkillTemplate_Expand')"
               :aria-expanded="isExpanded(template)" @click="toggleExpanded(template)">
               <span>+{{ overflowSkills(template).length }}</span>
               <UiIcon name="forward" :class="{ 'is-expanded': isExpanded(template) }" />
             </button>
           </article>
-          <p v-if="!templates.length" class="empty-state">{{ palStore.getTranslatedText('SkillTemplate_Empty') }}</p>
+          <p v-if="!templates.length" class="empty-state">{{ appStore.getTranslatedText('SkillTemplate_Empty') }}</p>
         </main>
       </section>
     </div>

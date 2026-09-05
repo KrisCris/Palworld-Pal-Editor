@@ -35,24 +35,22 @@ import UiIcon from '@/components/modules/UiIcon.vue'
 import { MAX_INVALID_LEVEL, MAX_LEVEL } from '@/game-limits'
 import { useAppStore } from '@/stores/app'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 import { usePlayersStore } from '@/stores/players'
 
 const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
-const palStore = usePalEditorStore()
 const backend = useBackendStore()
 const playersStore = usePlayersStore()
 const player = computed(() => playersStore.selectedPlayer)
 const activeTab = ref('character')
-const playerName = () => player.value.NickName || palStore.getTranslatedText('PlayerList_Unknown')
+const playerName = () => player.value.NickName || appStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = () => playerName().trim().charAt(0).toUpperCase() || '?'
 const isMaxLv = () => player.value.Level >= (
   appStore.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL
 )
 const isMinLv = () => player.value.Level <= 1
-const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(key)}`
+const fieldActionLabel = key => `${appStore.getTranslatedText('Editor_Apply_Change')}: ${appStore.getTranslatedText(key)}`
 const statusEntries = category => Object.entries(player.value.StatusPointMetadata || {})
   .filter(([, metadata]) => metadata.category === category)
 const playerStats = computed(() => statusEntries('stat'))
@@ -80,31 +78,31 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
     <header class="player-summary">
       <span class="player-summary__avatar">{{ playerInitial() }}</span>
       <div class="player-summary__identity">
-        <small>{{ palStore.getTranslatedText('PlayerEditor_Title') }}</small>
+        <small>{{ appStore.getTranslatedText('PlayerEditor_Title') }}</small>
         <h1>{{ playerName() }}</h1>
         <div class="player-summary__meta">
           <span>Lv. {{ player.Level }}</span>
-          <span>{{ palStore.getTranslatedText('Editor_Exp') }} {{ player.Exp }}</span>
+          <span>{{ appStore.getTranslatedText('Editor_Exp') }} {{ player.Exp }}</span>
         </div>
       </div>
     </header>
 
-    <nav class="player-tabs" :aria-label="palStore.getTranslatedText('PlayerEditor_Title')">
+    <nav class="player-tabs" :aria-label="appStore.getTranslatedText('PlayerEditor_Title')">
       <button type="button" :class="{ active: activeTab === 'character' }" @click="activeTab = 'character'">
-        {{ palStore.getTranslatedText('PlayerEditor_Character') }}
+        {{ appStore.getTranslatedText('PlayerEditor_Character') }}
       </button>
       <button type="button" :class="{ active: activeTab === 'items' }" @click="activeTab = 'items'">
-        {{ palStore.getTranslatedText('PlayerEditor_Items') }}
+        {{ appStore.getTranslatedText('PlayerEditor_Items') }}
       </button>
     </nav>
 
     <div v-if="activeTab === 'character'" class="player-character">
     <div class="player-dashboard">
       <section class="player-panel">
-        <h2>{{ palStore.getTranslatedText('Editor_Basic_Info') }}</h2>
+        <h2>{{ appStore.getTranslatedText('Editor_Basic_Info') }}</h2>
         <div class="player-fields">
           <div class="player-field">
-            <label for="player-name">{{ palStore.getTranslatedText('Editor_Nickname') }}</label>
+            <label for="player-name">{{ appStore.getTranslatedText('Editor_Nickname') }}</label>
             <div class="player-control">
               <input id="player-name" type="text" name="NickName" v-model="player.NickName">
               <button type="button" @click="playersStore.updateField" name="NickName"
@@ -114,10 +112,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
           </div>
 
           <div class="player-field">
-            <label for="technology-points">{{ palStore.getTranslatedText('Editor_TechPoint') }}</label>
+            <label for="technology-points">{{ appStore.getTranslatedText('Editor_TechPoint') }}</label>
             <div class="player-control">
               <NumberStepper id="technology-points" name="TechnologyPoint" :min="0" :max="65535"
-                :label="palStore.getTranslatedText('Editor_TechPoint')"
+                :label="appStore.getTranslatedText('Editor_TechPoint')"
                 v-model="player.TechnologyPoint" />
               <button type="button" @click="playersStore.updateField" name="TechnologyPoint"
                 :value="player.TechnologyPoint"
@@ -126,10 +124,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
           </div>
 
           <div class="player-field">
-            <label for="boss-technology-points">{{ palStore.getTranslatedText('Editor_BossTechPoint') }}</label>
+            <label for="boss-technology-points">{{ appStore.getTranslatedText('Editor_BossTechPoint') }}</label>
             <div class="player-control">
               <NumberStepper id="boss-technology-points" name="bossTechnologyPoint" :min="0" :max="65535"
-                :label="palStore.getTranslatedText('Editor_BossTechPoint')"
+                :label="appStore.getTranslatedText('Editor_BossTechPoint')"
                 v-model="player.bossTechnologyPoint" />
               <button type="button" @click="playersStore.updateField" name="bossTechnologyPoint"
                 :value="player.bossTechnologyPoint"
@@ -138,10 +136,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
           </div>
 
           <div class="player-field">
-            <label for="unused-status-points">{{ palStore.getTranslatedText('Editor_UnusedStatusPoints') }}</label>
+            <label for="unused-status-points">{{ appStore.getTranslatedText('Editor_UnusedStatusPoints') }}</label>
             <div class="player-control">
               <NumberStepper id="unused-status-points" name="UnusedStatusPoint" :min="0" :max="65535"
-                :label="palStore.getTranslatedText('Editor_UnusedStatusPoints')"
+                :label="appStore.getTranslatedText('Editor_UnusedStatusPoints')"
                 v-model="player.UnusedStatusPoint" />
               <button type="button" @click="playersStore.updateField" name="UnusedStatusPoint"
                 :value="player.UnusedStatusPoint"
@@ -154,13 +152,13 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
             <div class="level-controls">
               <button type="button" @click="playersStore.levelDown" name="Level"
                 :disabled="isMinLv()"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"><UiIcon name="minus" /></button>
+                :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Decrease')"><UiIcon name="minus" /></button>
               <button type="button" @click="playersStore.levelUp" name="Level"
                 :disabled="isMaxLv()"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"><UiIcon name="plus" /></button>
+                :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Increase')"><UiIcon name="plus" /></button>
               <button type="button" @click="playersStore.maxLevel" name="Level"
                 :disabled="isMaxLv()"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"><UiIcon name="maximum" /></button>
+                :aria-label="appStore.getTranslatedText('Editor_Btn_Level_Max')"><UiIcon name="maximum" /></button>
             </div>
           </div>
         </div>
@@ -168,10 +166,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
 
       <section class="player-panel player-stats" v-if="player.StatusPointMetadata">
         <header class="status-panel__header">
-          <h2>{{ palStore.getTranslatedText('Editor_PlayerStats') }}</h2>
+          <h2>{{ appStore.getTranslatedText('Editor_PlayerStats') }}</h2>
           <div class="status-legend">
-            <span class="status-legend__stat">{{ palStore.getTranslatedText('Editor_StatPoints') }}</span>
-            <span class="status-legend__item">{{ palStore.getTranslatedText('Editor_ItemLevel') }}</span>
+            <span class="status-legend__stat">{{ appStore.getTranslatedText('Editor_StatPoints') }}</span>
+            <span class="status-legend__item">{{ appStore.getTranslatedText('Editor_ItemLevel') }}</span>
           </div>
         </header>
         <div class="status-grid">
@@ -179,7 +177,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
             <header>
               <span class="status-name">
                 <img :src="backend.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
-                {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
+                {{ appStore.getTranslatedText(`StatusPoint_${name}`) }}
               </span>
               <strong class="status-allocation">
                 {{ statAllocation(name).total }} / {{ player.StatusPointTotalMaximums[name] }}
@@ -194,10 +192,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
               ]"
               :thumb-role="statAllocation(name).stat ? 'primary' : 'item'"
               v-model="player.StatusPointTotals[name]"
-              :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
+              :aria-label="appStore.getTranslatedText(`StatusPoint_${name}`)"
               @change="playersStore.setStatusPoint(name)" />
             <footer>
-              <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
+              <span>{{ appStore.getTranslatedText('Editor_Effect') }}</span>
               <strong>{{ statusEffect(name, metadata) }}</strong>
             </footer>
           </article>
@@ -206,23 +204,23 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
     </div>
 
     <section class="player-panel effigy-panel" v-if="effigyAbilities.length">
-      <h2>{{ palStore.getTranslatedText('Editor_EffigyAbilities') }}</h2>
+      <h2>{{ appStore.getTranslatedText('Editor_EffigyAbilities') }}</h2>
       <div class="effigy-grid">
         <article class="status-control" v-for="([name, metadata]) in effigyAbilities" :key="name">
           <header>
             <span class="status-name">
               <img :src="backend.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
-              {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
+              {{ appStore.getTranslatedText(`StatusPoint_${name}`) }}
             </span>
             <strong>{{ player.StatusPointTotals[name] }} / {{ player.StatusPointTotalMaximums[name] }}</strong>
           </header>
           <SegmentedRange :name="`status-${name}`" :min="0"
             :max="player.StatusPointTotalMaximums[name]"
             v-model="player.StatusPointTotals[name]"
-            :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
+            :aria-label="appStore.getTranslatedText(`StatusPoint_${name}`)"
             @change="playersStore.setStatusPoint(name)" />
           <footer>
-            <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
+            <span>{{ appStore.getTranslatedText('Editor_Effect') }}</span>
             <strong>{{ statusEffect(name, metadata) }}</strong>
           </footer>
         </article>
@@ -231,10 +229,10 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
 
     <section class="player-panel technology-panel">
       <header class="technology-panel__header">
-        <h2>{{ palStore.getTranslatedText('Editor_TechEdit') }}</h2>
+        <h2>{{ appStore.getTranslatedText('Editor_TechEdit') }}</h2>
         <button type="button" class="unlock-all" @click="playersStore.unlockAllTechs">
           <UiIcon name="unlock" />
-          {{ palStore.getTranslatedText('Editor_UnlockAllTech') }}
+          {{ appStore.getTranslatedText('Editor_UnlockAllTech') }}
         </button>
       </header>
 

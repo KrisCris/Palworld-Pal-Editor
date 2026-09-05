@@ -20,19 +20,19 @@ onMounted(palStore.loadLatestRelease)
   <main id="entryDiv" class="entry-page">
     <section class="entry-shell">
       <header class="entry-intro">
-        <h1>{{ palStore.getTranslatedText('Entry_Title') }}</h1>
-        <p>{{ palStore.getTranslatedText('Entry_Intro') }}</p>
+        <h1>{{ appStore.getTranslatedText('Entry_Title') }}</h1>
+        <p>{{ appStore.getTranslatedText('Entry_Intro') }}</p>
       </header>
 
       <section class="entry-load">
         <div class="entry-load-heading">
           <div>
-            <h2>{{ palStore.getTranslatedText('Entry_Load_Title') }}</h2>
-            <p>{{ palStore.getTranslatedText('Entry_Load_Subtitle') }}</p>
+            <h2>{{ appStore.getTranslatedText('Entry_Load_Title') }}</h2>
+            <p>{{ appStore.getTranslatedText('Entry_Load_Subtitle') }}</p>
           </div>
         </div>
 
-        <label for="entry-save-path">{{ palStore.getTranslatedText('Entry_Path_Label') }}</label>
+        <label for="entry-save-path">{{ appStore.getTranslatedText('Entry_Path_Label') }}</label>
         <div class="entry-path-row">
           <input
             id="entry-save-path"
@@ -42,11 +42,11 @@ onMounted(palStore.loadLatestRelease)
           >
           <button class="entry-path-button" type="button" @click="palStore.openFilePicker">
             <UiIcon name="folder" />
-            {{ palStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
+            {{ appStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
           </button>
           <button class="entry-load-button" type="button" @click="palStore.loadSave">
             <UiIcon name="play" />
-            {{ palStore.getTranslatedText('EntryView_BTN_Load') }}
+            {{ appStore.getTranslatedText('EntryView_BTN_Load') }}
           </button>
         </div>
       </section>
@@ -56,8 +56,8 @@ onMounted(palStore.loadLatestRelease)
           <section class="entry-support">
             <div class="entry-section-heading">
               <div>
-                <h2>{{ palStore.getTranslatedText('Entry_Support_Title') }}</h2>
-                <p>{{ palStore.getTranslatedText('Entry_Support_Subtitle') }}</p>
+                <h2>{{ appStore.getTranslatedText('Entry_Support_Title') }}</h2>
+                <p>{{ appStore.getTranslatedText('Entry_Support_Subtitle') }}</p>
               </div>
             </div>
 
@@ -65,22 +65,22 @@ onMounted(palStore.loadLatestRelease)
               <a class="entry-action" target="_blank" href="https://discord.gg/FnuA95nMJ8">
                 <UiIcon name="message" />
                 <span>
-                  <strong>{{ palStore.getTranslatedText('Entry_Support_Community_Title') }}</strong>
-                  <small>{{ palStore.getTranslatedText('Entry_Support_Community_Description') }}</small>
+                  <strong>{{ appStore.getTranslatedText('Entry_Support_Community_Title') }}</strong>
+                  <small>{{ appStore.getTranslatedText('Entry_Support_Community_Description') }}</small>
                 </span>
               </a>
               <a class="entry-action" target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor">
                 <UiIcon name="pull-request" />
                 <span>
-                  <strong>{{ palStore.getTranslatedText('Entry_Support_Code_Title') }}</strong>
-                  <small>{{ palStore.getTranslatedText('Entry_Support_Code_Description') }}</small>
+                  <strong>{{ appStore.getTranslatedText('Entry_Support_Code_Title') }}</strong>
+                  <small>{{ appStore.getTranslatedText('Entry_Support_Code_Description') }}</small>
                 </span>
               </a>
               <a class="entry-action" target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/issues">
                 <UiIcon name="bug" />
                 <span>
-                  <strong>{{ palStore.getTranslatedText('Entry_Support_Issue_Title') }}</strong>
-                  <small>{{ palStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
+                  <strong>{{ appStore.getTranslatedText('Entry_Support_Issue_Title') }}</strong>
+                  <small>{{ appStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
                 </span>
               </a>
               <button
@@ -90,8 +90,8 @@ onMounted(palStore.loadLatestRelease)
               >
                 <UiIcon name="heart" />
                 <span>
-                  <strong>{{ palStore.getTranslatedText('Entry_Support_Author_Title') }}</strong>
-                  <small>{{ palStore.getTranslatedText('Entry_Support_Author_Description') }}</small>
+                  <strong>{{ appStore.getTranslatedText('Entry_Support_Author_Title') }}</strong>
+                  <small>{{ appStore.getTranslatedText('Entry_Support_Author_Description') }}</small>
                 </span>
               </button>
             </div>
@@ -99,26 +99,26 @@ onMounted(palStore.loadLatestRelease)
 
           <section class="entry-downloads">
             <div class="entry-section-heading">
-              <h2>{{ palStore.getTranslatedText('Entry_Downloads_Title') }}</h2>
-              <span>{{ palStore.getTranslatedText('Entry_Downloads_Subtitle') }}</span>
+              <h2>{{ appStore.getTranslatedText('Entry_Downloads_Title') }}</h2>
+              <span>{{ appStore.getTranslatedText('Entry_Downloads_Subtitle') }}</span>
             </div>
             <div class="entry-download-grid">
               <a target="_blank" href="https://github.com/KrisCris/Palworld-Pal-Editor/releases">
                 <UiIcon name="branch" />
-                <span><strong>GitHub Releases</strong><small>{{ palStore.getTranslatedText('Entry_Download_GitHub_Description') }}</small></span>
+                <span><strong>GitHub Releases</strong><small>{{ appStore.getTranslatedText('Entry_Download_GitHub_Description') }}</small></span>
               </a>
               <a target="_blank" href="https://www.nexusmods.com/palworld/mods/995?tab=files">
                 <UiIcon name="download" />
-                <span><strong>Nexus Mods</strong><small>{{ palStore.getTranslatedText('Entry_Download_Nexus_Description') }}</small></span>
+                <span><strong>Nexus Mods</strong><small>{{ appStore.getTranslatedText('Entry_Download_Nexus_Description') }}</small></span>
               </a>
               <a v-if="['zh-CN', 'zh-TW'].includes(appStore.locale)" target="_blank" href="https://space.bilibili.com/12184831">
                 <UiIcon name="video" />
-                <span><strong>_connlost Bilibili</strong><small>{{ palStore.getTranslatedText('Entry_Download_Bilibili_Description') }}</small></span>
+                <span><strong>_connlost Bilibili</strong><small>{{ appStore.getTranslatedText('Entry_Download_Bilibili_Description') }}</small></span>
               </a>
             </div>
 
             <aside v-if="appStore.isOfficialBuild && appStore.latestRelease.updateAvailable" class="entry-update" role="status">
-              <strong>{{ palStore.getTranslatedText('EntryView_Update_Notice', [appStore.latestRelease.version]) }}</strong>
+              <strong>{{ appStore.getTranslatedText('EntryView_Update_Notice', [appStore.latestRelease.version]) }}</strong>
               <span>
                 <a target="_blank" :href="appStore.latestRelease.nexusUrl">Nexus Mods</a>
                 <a target="_blank" :href="appStore.latestRelease.downloadUrl">GitHub</a>
@@ -130,27 +130,27 @@ onMounted(palStore.loadLatestRelease)
         <div class="entry-group entry-right">
           <section class="entry-instructions">
             <div class="entry-section-heading">
-              <h2>{{ palStore.getTranslatedText('Entry_Instructions_Title') }}</h2>
-              <span>{{ palStore.getTranslatedText('Entry_Instructions_Subtitle') }}</span>
+              <h2>{{ appStore.getTranslatedText('Entry_Instructions_Title') }}</h2>
+              <span>{{ appStore.getTranslatedText('Entry_Instructions_Subtitle') }}</span>
             </div>
             <div class="entry-note-grid">
               <article>
                 <UiIcon name="folder-check" />
-                <strong>{{ palStore.getTranslatedText('Entry_Instruction_First_Title') }}</strong>
-                <p>{{ palStore.getTranslatedText('Entry_Instruction_First_Description') }}</p>
+                <strong>{{ appStore.getTranslatedText('Entry_Instruction_First_Title') }}</strong>
+                <p>{{ appStore.getTranslatedText('Entry_Instruction_First_Description') }}</p>
               </article>
               <article>
                 <UiIcon name="shield" />
-                <strong>{{ palStore.getTranslatedText('Entry_Instruction_WebUI_Title') }}</strong>
-                <p>{{ palStore.getTranslatedText('Entry_Instruction_WebUI_Description') }}</p>
+                <strong>{{ appStore.getTranslatedText('Entry_Instruction_WebUI_Title') }}</strong>
+                <p>{{ appStore.getTranslatedText('Entry_Instruction_WebUI_Description') }}</p>
               </article>
               <article>
                 <UiIcon name="box" />
-                <strong>{{ palStore.getTranslatedText('Entry_Instruction_Docker_Title') }}</strong>
-                <p>{{ palStore.getTranslatedText('Entry_Instruction_Docker_Description') }}</p>
+                <strong>{{ appStore.getTranslatedText('Entry_Instruction_Docker_Title') }}</strong>
+                <p>{{ appStore.getTranslatedText('Entry_Instruction_Docker_Description') }}</p>
               </article>
             </div>
-            <p class="entry-help"><UiIcon name="help" /> {{ palStore.getTranslatedText('Entry_Help') }}</p>
+            <p class="entry-help"><UiIcon name="help" /> {{ appStore.getTranslatedText('Entry_Help') }}</p>
           </section>
         </div>
       </div>
@@ -161,7 +161,7 @@ onMounted(palStore.loadLatestRelease)
       <span>VERSION: {{ appStore.version }}</span>
       <span v-if="!appStore.isOfficialBuild" class="entry-warning">
         <UiIcon name="warning" />
-        {{ palStore.getTranslatedText('EntryView_Version_Warning') }}
+        {{ appStore.getTranslatedText('EntryView_Version_Warning') }}
       </span>
     </footer>
   </main>

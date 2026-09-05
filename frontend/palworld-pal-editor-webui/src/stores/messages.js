@@ -6,7 +6,7 @@
 // queue is the only place that ordering can be decided once.
 //
 // This store is the bottom of the store graph -- it imports only the app store,
-// for the locale. Every other store may report through it, which is the whole
+// for the locale and the words that go with it. Every other store may report through it, which is the whole
 // reason it is not part of the app shell: a store that reports a failed request
 // should not have to import the shell that imports it.
 //
@@ -17,7 +17,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 
-import { translate } from "../i18n/index.js";
 import { useAppStore } from "./app.js";
 
 export const useMessagesStore = defineStore("messages", () => {
@@ -26,10 +25,6 @@ export const useMessagesStore = defineStore("messages", () => {
     const MESSAGE_QUEUE = ref([]);
     const CURRENT_MESSAGE = computed(() => MESSAGE_QUEUE.value[0] ?? null);
     let nextMessageId = 1;
-
-    function getTranslatedText(translationKey, args = []) {
-        return translate(app.locale, translationKey, args);
-    }
 
     // A dialog goes ahead of any toast already waiting: the toasts are reporting
     // something that already happened, and the dialog is asking about something
@@ -92,9 +87,9 @@ export const useMessagesStore = defineStore("messages", () => {
     function getMessageText(message) {
         if (message?.message) return message.message;
         const args = (message?.args || []).map(arg =>
-            arg?.translationKey ? getTranslatedText(arg.translationKey) : arg
+            arg?.translationKey ? app.getTranslatedText(arg.translationKey) : arg
         );
-        return getTranslatedText(message?.messageKey, args);
+        return app.getTranslatedText(message?.messageKey, args);
     }
 
     // A backend that answered with a failure, from the `{status, data, msg}`
@@ -130,7 +125,6 @@ export const useMessagesStore = defineStore("messages", () => {
         MESSAGE_QUEUE,
         CURRENT_MESSAGE,
 
-        getTranslatedText,
         getMessageText,
         showMessage,
         showToast,

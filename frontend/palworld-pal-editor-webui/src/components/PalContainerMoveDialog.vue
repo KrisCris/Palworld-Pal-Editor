@@ -8,13 +8,13 @@ import {
   moveReasonKey,
 } from "@/components/pal-storage-move";
 import { formatStorageLabel } from "@/components/pal-storage-label";
-import { usePalEditorStore } from "@/stores/paleditor";
+import { useAppStore } from "@/stores/app";
 import { usePalsStore } from "@/stores/pals";
 import { playerRosterKey, useRostersStore } from "@/stores/rosters";
 import { useStoragesStore } from "@/stores/storages";
 
 const emit = defineEmits(["close"]);
-const palStore = usePalEditorStore();
+const appStore = useAppStore();
 const palsStore = usePalsStore();
 const rostersStore = useRostersStore();
 const storagesStore = useStoragesStore();
@@ -43,12 +43,12 @@ const FIXED_GROUP_KEYS = {
   bases: "Editor_Move_Group_Bases",
   "global-palbox": "Editor_Container_GlobalPalbox",
 };
-const groupLabel = group => group.label || palStore.getTranslatedText(
+const groupLabel = group => group.label || appStore.getTranslatedText(
   FIXED_GROUP_KEYS[group.key] ?? "Editor_Move_Group_Other",
 );
 const storageLabel = storage => formatStorageLabel(
   storage,
-  palStore.getTranslatedText,
+  appStore.getTranslatedText,
 );
 // Until the answer for a row is in, the row is not offered: an unanswered target
 // is not a permitted one.
@@ -162,35 +162,35 @@ onBeforeUnmount(() => {
         aria-labelledby="move-dialog-title" tabindex="-1">
         <header>
           <div>
-            <h2 id="move-dialog-title">{{ palStore.getTranslatedText('Editor_Move_Dialog_Title') }}</h2>
-            <p>{{ palStore.getTranslatedText('Editor_Move_Dialog_Subtitle') }}</p>
+            <h2 id="move-dialog-title">{{ appStore.getTranslatedText('Editor_Move_Dialog_Title') }}</h2>
+            <p>{{ appStore.getTranslatedText('Editor_Move_Dialog_Subtitle') }}</p>
           </div>
-          <button type="button" class="move-dialog__close" :aria-label="palStore.getTranslatedText('Message_Close')"
+          <button type="button" class="move-dialog__close" :aria-label="appStore.getTranslatedText('Message_Close')"
             @click="closeDialog">×</button>
         </header>
 
         <div v-if="!conflict" class="move-dialog__panes">
           <section class="move-dialog__pane">
-            <h3>{{ palStore.getTranslatedText('Editor_Move_Groups') }}</h3>
+            <h3>{{ appStore.getTranslatedText('Editor_Move_Groups') }}</h3>
             <OverlayScrollArea>
               <div class="move-dialog__groups overlay-scroll-area__viewport" role="listbox"
-                :aria-label="palStore.getTranslatedText('Editor_Move_Groups')">
+                :aria-label="appStore.getTranslatedText('Editor_Move_Groups')">
                 <button v-for="group in groups" :key="group.key" type="button" role="option"
                   :aria-selected="group.key === activeGroup?.key"
                   :class="{ 'is-active': group.key === activeGroup?.key, 'is-current-player': group.selected }"
                   @click="activeGroupKey = group.key">
                   <span>{{ groupLabel(group) }}</span>
-                  <small v-if="group.selected">{{ palStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
+                  <small v-if="group.selected">{{ appStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
                 </button>
               </div>
             </OverlayScrollArea>
           </section>
 
           <section class="move-dialog__pane">
-            <h3>{{ palStore.getTranslatedText('Editor_Move_Containers') }}</h3>
+            <h3>{{ appStore.getTranslatedText('Editor_Move_Containers') }}</h3>
             <OverlayScrollArea>
               <div class="move-dialog__containers overlay-scroll-area__viewport" role="listbox"
-                :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
+                :aria-label="appStore.getTranslatedText('Editor_Move_Containers')">
                 <button v-for="storage in activeGroup?.storages || []" :key="storage.storageKey" type="button"
                   role="option" :aria-selected="storage.storageKey === pendingStorageKey"
                   :aria-disabled="!isOffered(storage)"
@@ -199,13 +199,13 @@ onBeforeUnmount(() => {
                   <span class="move-dialog__container-copy">
                     <strong>{{ storageLabel(storage) }}</strong>
                     <small v-if="disabledReasonKey(storage)">
-                      {{ palStore.getTranslatedText(disabledReasonKey(storage)) }}
+                      {{ appStore.getTranslatedText(disabledReasonKey(storage)) }}
                     </small>
                   </span>
                   <span class="move-dialog__capacity">{{ storage.occupied }}/{{ storage.capacity }}</span>
                 </button>
                 <p v-if="!activeGroup?.storages?.length" class="move-dialog__empty">
-                  {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
+                  {{ appStore.getTranslatedText('Editor_Move_No_Containers') }}
                 </p>
               </div>
             </OverlayScrollArea>
@@ -213,37 +213,37 @@ onBeforeUnmount(() => {
         </div>
 
         <section v-else class="move-dialog__conflict">
-          <h3>{{ palStore.getTranslatedText('Editor_Transfer_Conflict_Title') }}</h3>
-          <p>{{ palStore.getTranslatedText('Editor_Transfer_Conflict_Subtitle') }}</p>
+          <h3>{{ appStore.getTranslatedText('Editor_Transfer_Conflict_Title') }}</h3>
+          <p>{{ appStore.getTranslatedText('Editor_Transfer_Conflict_Subtitle') }}</p>
           <div class="move-dialog__locked-target">
-            <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
+            <span>{{ appStore.getTranslatedText('Editor_Move_Target') }}</span>
             <strong>{{ conflictTargetLabel }}</strong>
           </div>
         </section>
 
         <footer>
-          <button type="button" @click="closeDialog">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
+          <button type="button" @click="closeDialog">{{ appStore.getTranslatedText('AddPal_Cancel') }}</button>
           <template v-if="conflict">
             <button type="button" :disabled="!storagesStore.conflictTarget" @click="jumpToPal">
-              {{ palStore.getTranslatedText('Editor_Transfer_Jump') }}
+              {{ appStore.getTranslatedText('Editor_Transfer_Jump') }}
             </button>
             <span ref="updateAction" class="move-dialog__update-action" @pointerenter="schedulePreviewScale"
               @focusin="schedulePreviewScale">
               <button type="button" class="move-dialog__update" :disabled="!storagesStore.conflictTarget"
-                @click="updatePal">{{ palStore.getTranslatedText('Editor_Transfer_Update') }}</button>
+                @click="updatePal">{{ appStore.getTranslatedText('Editor_Transfer_Update') }}</button>
             </span>
           </template>
           <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingStorageKey"
-            @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
+            @click="movePal">{{ appStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>
       <div v-if="storagesStore.conflictTarget" ref="preview" class="move-dialog__preview" role="tooltip"
         :style="previewStyle">
         <PalBriefPanel :data="conflict.incoming" :changed-fields="conflict.fieldChanges" tone="incoming"
-          :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
+          :title="appStore.getTranslatedText('Editor_Transfer_Incoming')" />
         <span class="move-dialog__comparison-arrow" aria-hidden="true" />
         <PalBriefPanel :data="conflict.existing" :changed-fields="conflict.fieldChanges" tone="existing"
-          :title="palStore.getTranslatedText('Editor_Transfer_Existing')" />
+          :title="appStore.getTranslatedText('Editor_Transfer_Existing')" />
       </div>
     </div>
   </Teleport>
