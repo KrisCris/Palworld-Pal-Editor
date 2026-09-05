@@ -2,9 +2,15 @@ import sys
 import threading
 import traceback
 from typing import Optional
-from palworld_pal_editor.core import *
-from palworld_pal_editor.utils import *
-from palworld_pal_editor.config import *
+from palworld_pal_editor.config import Config
+from palworld_pal_editor.core.pal_entity import PalEntity
+from palworld_pal_editor.core.pal_objects import isUUIDStr
+from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.player_entity import PlayerEntity
+from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils.data_provider import DataProvider
+from palworld_pal_editor.utils.logger import ColorConsoleFormatter
 
 # InteractThread: Credit to MagicBear. I was just too lazy to write it, lol.
 class InteractThread(threading.Thread):
