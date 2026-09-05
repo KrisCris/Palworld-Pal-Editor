@@ -190,7 +190,7 @@ test("loading-disabled controls stay neutral across component-specific states", 
 
 test("toolbar distinguishes primary commands from off and on toggles", () => {
   assert.match(sources.topBar, /class="op op--primary"[^>]*@click="save"/s);
-  assert.match(sources.topBar, /class="op op--primary"[^>]*@click="palStore\.healAllPals"/s);
+  assert.match(sources.topBar, /class="op op--primary"[^>]*@click="palsStore\.healAll"/s);
   assert.doesNotMatch(sources.topBar, /\.editor-context-bar \.op\s*\{[^}]*var\(--editor-color-primary\)/s);
   assert.match(sources.topBar, /\.op,\s*#languageSelect,\s*\.savePath\s*\{[^}]*background:\s*var\(--editor-color-control\)/s);
   assert.match(sources.topBar, /\.op:hover\s*\{[^}]*border-color:\s*var\(--editor-color-primary\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);

@@ -100,7 +100,7 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
       </div>
 
       <div v-if="sessionStore.editorOpen" class="editor-app-bar__tools">
-        <button v-if="hasPalToHeal" type="button" class="op op--primary" @click="palStore.healAllPals"
+        <button v-if="hasPalToHeal" type="button" class="op op--primary" @click="palsStore.healAll"
           :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
           <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt="">
           {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}

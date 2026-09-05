@@ -5,6 +5,7 @@ import UiIcon from '@/components/modules/UiIcon.vue'
 import { elementIconKey, passiveTier } from '@/pal-traits'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { usePalsStore } from '@/stores/pals'
 import { useBackendStore } from '@/stores/backend'
 import { useTemplatesStore } from '@/stores/templates'
 
@@ -14,6 +15,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const palsStore = usePalsStore()
 const backend = useBackendStore()
 const templatesStore = useTemplatesStore()
 const dialog = ref(null)
@@ -125,7 +127,7 @@ async function renameTemplate(template) {
               <button class="danger-button" @click="templatesStore.removeSkillTemplate(template.templateId)">
                 <UiIcon name="delete" /> {{ palStore.getTranslatedText('SkillTemplate_Delete') }}
               </button>
-              <button class="primary-button" @click="palStore.applySkillTemplate(template.templateId)">
+              <button class="primary-button" @click="palsStore.applyTemplate(template.templateId)">
                 <UiIcon name="check" /> {{ palStore.getTranslatedText('SkillTemplate_Apply') }}
               </button>
             </div>

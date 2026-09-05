@@ -95,9 +95,11 @@ test("skill template store supports create, rename, apply, delete, and reset", a
     "removeSkillTemplate",
   ]) assert.match(source, new RegExp(`function ${method}\\(`));
 
-  const editor = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+  const pals = await readFile(new URL("../src/stores/pals.js", import.meta.url), "utf8");
   // Applying one changes a Pal, so it goes through the Pal write path and
-  // answers with the Pal; the editor no longer re-reads it afterwards.
-  assert.match(editor, /pals\.applyTemplate\(templateId\)/);
+  // answers with the Pal; nothing re-reads it afterwards.
+  assert.match(pals, /applySkillTemplate\(recordKey, templateId\)/);
+
+  const editor = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
   assert.ok(editor.match(/templates\.clear\(\)/g)?.length >= 2);
 });

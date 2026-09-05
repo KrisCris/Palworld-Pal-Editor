@@ -1,4 +1,4 @@
-// The one place a Pal lives on the frontend.
+// The one place a Pal lives on the frontend, and everything that edits one.
 //
 // One entry per `recordKey`, with every list holding keys into it. Splitting Pals
 // across per-roster maps instead lets the same Pal sit in two of them after a
@@ -10,6 +10,10 @@
 // replaces the other -- a roster refresh writes its fields through to the detail so
 // a Pal that moved does not keep reporting where it used to be, and loading detail
 // never drops the summary the list is reading.
+//
+// What is deliberately not here: creating, deleting and moving a Pal. Each of
+// those changes which list the Pal is in and which list is on screen, so all
+// three live together in `stores/rosters` with the rest of that question.
 
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
@@ -26,14 +30,42 @@ import {
 } from "../api/pals.js";
 import { createStoragePal } from "../api/storages.js";
 import { applySkillTemplate } from "../api/templates.js";
+import {
+    MAX_EQUIP_WAZA,
+    MAX_FRIENDSHIP_LEVEL,
+    MAX_INVALID_LEVEL,
+    MAX_LEVEL,
+    MAX_SUITABILITY_LEVEL,
+} from "../game-limits.js";
+import { maximumSuitabilities } from "../pal-traits.js";
+import { isSkillAssignable } from "../skill-rules.js";
+import { useAppStore } from "./app.js";
+import { useBackendStore } from "./backend.js";
+import { useCatalogsStore } from "./catalogs.js";
+import { useMessagesStore } from "./messages.js";
 import { applyOperationResult } from "./operation-result.js";
-import { useSessionStore } from "./session.js";
+import { gated, useSessionStore } from "./session.js";
 
 export const usePalsStore = defineStore("pals", () => {
+    const app = useAppStore();
+    const backend = useBackendStore();
+    const catalogs = useCatalogsStore();
+    const messages = useMessagesStore();
     const session = useSessionStore();
 
     const palsByRecordKey = ref(new Map());
     const selectedRecordKey = ref(null);
+
+    // The two skill pickers' current choice, which is a control's state and not
+    // the Pal's: it becomes the Pal's only when the add button is pressed.
+    const passiveSkillChoice = ref("");
+    const activeSkillChoice = ref("");
+    // Bumped by every write that landed on the open Pal, so the list can scroll
+    // the row back into view. The Pal itself is already updated in place.
+    const writeCount = ref(0);
+    // Whether the editor's save-details disclosure is open, kept here so it
+    // survives the panel being remounted for another Pal.
+    const saveDetailsOpen = ref(false);
 
     const entry = recordKey => palsByRecordKey.value.get(recordKey) ?? null;
     const summary = recordKey => entry(recordKey)?.summary ?? null;
@@ -84,6 +116,9 @@ export const usePalsStore = defineStore("pals", () => {
         }
     }
 
+    // Throws, unlike everything below it: the app shell reads a Pal again while
+    // bringing a save up or after a language change, and a failure there is a
+    // failure to start rather than a failed operation.
     async function loadDetail(recordKey) {
         const epoch = session.sessionEpoch;
         const detail = await getPal(recordKey, session.readOptions());
@@ -95,8 +130,16 @@ export const usePalsStore = defineStore("pals", () => {
     // Selection moves only once the payload is in: a half-loaded Pal on screen is
     // worse than the previous one staying a moment longer.
     async function select(recordKey) {
-        if (!palsByRecordKey.value.has(recordKey)) return false;
-        if (!await loadDetail(recordKey)) return false;
+        if (!palsByRecordKey.value.has(recordKey)) {
+            messages.showToast("Message_Select_Pal_Failed");
+            return false;
+        }
+        try {
+            if (!await loadDetail(recordKey)) return false;
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_Load_Pal");
+            return false;
+        }
         selectedRecordKey.value = recordKey;
         return true;
     }
@@ -117,57 +160,272 @@ export const usePalsStore = defineStore("pals", () => {
         selectedRecordKey.value = recordKey;
     }
 
-    // The six writes below return `null` when no Pal is open. Every editor
-    // control is rendered only while one is, so that is a guard, not a message:
-    // this store still reports nothing.
-    async function update(patch) {
+    // ---- writes --------------------------------------------------------------
+    // Every write answers with the Pal it changed, so none of them re-reads it
+    // afterwards. All of them run only while a Pal is open, which the editor
+    // controls guarantee by existing -- so no Pal open is a guard, not a message.
+
+    async function runWrite(write, operationKey = "Operation_Update_Pal") {
         const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return applyOperationResult(await patchPal(recordKey, patch));
+        if (recordKey === null) return false;
+        try {
+            await applyOperationResult(await write(recordKey));
+        } catch (error) {
+            backend.reportApiFailure(error, operationKey);
+            return false;
+        }
+        writeCount.value++;
+        return true;
     }
 
-    async function replaceSkills(group, skills) {
-        const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return applyOperationResult(await putPalSkills(recordKey, group, skills));
+    const applyPatch = patch => runWrite(recordKey => patchPal(recordKey, patch));
+
+    // A skill group is submitted whole. The callers build the list the Pal should
+    // end up with; the backend refuses one the game cannot resolve.
+    const replaceSkills = (group, skills) => runWrite(
+        recordKey => putPalSkills(recordKey, group, skills),
+    );
+
+    // Called straight from `@click`/`@change`, whose `name` is the field to write
+    // and whose `value` is what to write into it. Whether that name may be
+    // written is the backend allowlist's answer, not a method lookup.
+    function updateField(e) {
+        return applyPatch({ [e.target.name]: e.target.value });
+    }
+
+    const editedPal = () => selectedPal.value;
+    const levelCeiling = () => app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL;
+
+    function swapRare() {
+        return applyPatch({ IsRarePal: !editedPal().IsRarePal });
+    }
+
+    function swapBoss() {
+        return applyPatch({ IsBOSS: !editedPal().IsBOSS });
+    }
+
+    function toggleAwakening() {
+        return applyPatch({ IsAwakening: !editedPal().IsAwakening });
+    }
+
+    function levelDown() {
+        const pal = editedPal();
+        if (pal.Level <= 1) return;
+        return applyPatch({ Level: pal.Level - 1 });
+    }
+
+    function levelUp() {
+        const pal = editedPal();
+        if (pal.Level >= levelCeiling()) return;
+        return applyPatch({ Level: pal.Level + 1 });
+    }
+
+    function maxLevel() {
+        return applyPatch({ Level: levelCeiling() });
+    }
+
+    function friendshipDown() {
+        const pal = editedPal();
+        if (pal.FriendshipLevel <= -3) return;
+        return applyPatch({ FriendshipLevel: pal.FriendshipLevel - 1 });
+    }
+
+    function friendshipUp() {
+        const pal = editedPal();
+        if (pal.FriendshipLevel >= MAX_FRIENDSHIP_LEVEL) return;
+        return applyPatch({ FriendshipLevel: pal.FriendshipLevel + 1 });
+    }
+
+    function maxFriendship() {
+        return applyPatch({ FriendshipLevel: MAX_FRIENDSHIP_LEVEL });
+    }
+
+    function swapGender() {
+        const gender = editedPal().Gender;
+        let next = app.HIDE_INVALID_OPTIONS ? "NONE" : "EPalGenderType::Female";
+        if (gender == "EPalGenderType::Female") next = "EPalGenderType::Male";
+        if (gender == "EPalGenderType::Male") next = "EPalGenderType::Female";
+        return applyPatch({ Gender: next });
+    }
+
+    function changeSpecies(characterId) {
+        return applyPatch({ CharacterID: characterId });
+    }
+
+    // A skill the game has no entry for is one the backend would refuse, and one
+    // the UI cannot draw either -- so the dropdown selections are checked here
+    // before a request is worth making. The `Invalid`/human rules are the same
+    // check the skill picker already greys the option out with.
+    function assignableActiveSkill(skill) {
+        const active = catalogs.activeSkillsByName[skill];
+        if (!active) return false;
+        return !app.HIDE_INVALID_OPTIONS
+            || isSkillAssignable(active, selectedPal.value?.IsHuman);
+    }
+
+    function removePassiveSkill(e) {
+        return replaceSkills(
+            "passive",
+            editedPal().PassiveSkillList.filter(skill => skill !== e.target.name),
+        );
+    }
+
+    function addPassiveSkill() {
+        const skill = passiveSkillChoice.value;
+        if (!catalogs.passiveSkillsByName[skill]) {
+            messages.showToast("Message_Select_Skill");
+            return;
+        }
+        if (app.HIDE_INVALID_OPTIONS && editedPal().PassiveSkillList.length >= 4) {
+            messages.showToast("Message_Passive_Limit");
+            return;
+        }
+        return replaceSkills("passive", [...editedPal().PassiveSkillList, skill]);
+    }
+
+    function removeEquipWaza(e) {
+        return replaceSkills(
+            "equipped",
+            editedPal().EquipWaza.filter(waza => waza !== e.target.name),
+        );
+    }
+
+    function addEquipWaza(e) {
+        if (!assignableActiveSkill(e.target.name)) {
+            messages.showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+        // Equipping a move also learns it, so this one list says both.
+        return replaceSkills("equipped", [...editedPal().EquipWaza, e.target.name]);
+    }
+
+    function removeMasteredWaza(e) {
+        return replaceSkills(
+            "mastered",
+            editedPal().MasteredWaza.filter(waza => waza !== e.target.name),
+        );
+    }
+
+    function addMasteredWaza() {
+        const skill = activeSkillChoice.value;
+        if (!catalogs.activeSkillsByName[skill]) {
+            messages.showToast("Message_Select_Skill");
+            return;
+        }
+        if (!assignableActiveSkill(skill)) {
+            messages.showToast("Message_Skill_Not_Assignable");
+            return;
+        }
+        const pal = editedPal();
+        // Learning a move with an active slot free has always equipped it too,
+        // and equipping is what learns it -- so the equipped list carries both.
+        if (pal.EquipWaza.length < MAX_EQUIP_WAZA) {
+            return replaceSkills("equipped", [...pal.EquipWaza, skill]);
+        }
+        return replaceSkills("mastered", [...pal.MasteredWaza, skill]);
+    }
+
+    function setSuitability(name, value) {
+        const pal = editedPal();
+        const min = pal.SuitabilityMinimums[name] || 0;
+        if (app.HIDE_INVALID_OPTIONS && min == 0 && value != 0) {
+            messages.showToast("Message_Invalid_Suitability");
+            return;
+        }
+        value = Math.min(Math.max(value, min), MAX_SUITABILITY_LEVEL);
+        if (value == pal.Suitabilities[name]) return;
+        return applyPatch({ Suitabilities: { [name]: value } });
+    }
+
+    function suitabilityUp(e) {
+        const name = e.target.name;
+        return setSuitability(name, editedPal().Suitabilities[name] + 1);
+    }
+
+    function suitabilityDown(e) {
+        const name = e.target.name;
+        return setSuitability(name, editedPal().Suitabilities[name] - 1);
+    }
+
+    function maxSuitabilities() {
+        const values = maximumSuitabilities(
+            editedPal().SuitabilityMinimums,
+            MAX_SUITABILITY_LEVEL,
+        );
+        if (!Object.keys(values).length) return;
+        return applyPatch({ Suitabilities: values });
+    }
+
+    // The three buttons the editor and the top bar show are one operation: curing
+    // an illness and reviving a fainted Pal already ran the same code.
+    function heal() {
+        return runWrite(recordKey => healPals({ scope: "record", recordKey }));
+    }
+
+    // The one write with no single record to answer for: it names the rosters
+    // whose rows changed instead, so nothing in the reply can say what the heal
+    // did to the Pal on screen and that one is re-read.
+    async function healAll() {
+        try {
+            await applyOperationResult(await healPals({ scope: "all" }));
+            if (selectedRecordKey.value) await loadDetail(selectedRecordKey.value);
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_Update_Pal");
+            return false;
+        }
+        return true;
     }
 
     async function maximize() {
-        const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return applyOperationResult(await maximizePal(recordKey));
+        if (!await runWrite(maximizePal, "Operation_Maximize_Pal")) return false;
+        messages.showToast("Message_Pal_Maximized", "success");
+        return true;
     }
 
-    async function heal() {
-        const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return applyOperationResult(await healPals({ scope: "record", recordKey }));
-    }
-
+    // Applying a skill template is a Pal write, not a template read: it answers
+    // with the Pal it changed, so nothing is re-read afterwards.
     async function applyTemplate(templateId) {
-        const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return applyOperationResult(await applySkillTemplate(recordKey, templateId));
+        if (!await runWrite(
+            recordKey => applySkillTemplate(recordKey, templateId),
+            "Operation_Apply_Skill_Template",
+        )) return false;
+        messages.showToast("Message_Skill_Template_Applied", "success");
+        return true;
     }
 
-    // The Pal as its storage writes it, for the export button and for saving a
-    // template. Nothing is cached: it is a whole save record and the only thing
-    // that ever wants one asked for it a moment ago.
-    async function nativeRecord() {
+    // The export button copies the Pal as its own storage writes it, formatted
+    // here rather than by the backend: what crosses the wire is the record, and
+    // indentation is a property of what lands on the clipboard. Nothing is
+    // cached -- it is a whole save record and only this ever wants one.
+    async function copyNativeRecord() {
         const recordKey = selectedRecordKey.value;
-        if (recordKey === null) return null;
-        return getPalNativeRecord(recordKey);
-    }
-
-    // The only write with no single record to answer for: it names the rosters
-    // whose rows changed instead, and the caller decides what to re-read.
-    async function healAll() {
-        return applyOperationResult(await healPals({ scope: "all" }));
+        if (recordKey === null) return false;
+        let record;
+        try {
+            record = await getPalNativeRecord(recordKey);
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_Copy_Pal");
+            return false;
+        }
+        try {
+            await navigator.clipboard.writeText(JSON.stringify(record, null, 4));
+        } catch (error) {
+            // Refusing the clipboard is the browser's to do, and it is the only
+            // half of this that was never a request.
+            messages.reportFrontendError(
+                error,
+                messages.getTranslatedText("Operation_Copy_Pal"),
+            );
+            return false;
+        }
+        messages.showToast("Message_Pal_Copied", "success");
+        return true;
     }
 
     // Creating, copying and deleting all answer with the same result, so none of
     // them tells this store where the Pal went -- `applyOperationResult` reads
-    // that off the reply.
+    // that off the reply. They throw, because the list that has to be opened
+    // afterwards is `stores/rosters`' business and so is saying what failed.
     async function create(storageKey, source, ownerUid) {
         return applyOperationResult(
             await createStoragePal(storageKey, source, ownerUid),
@@ -176,6 +434,19 @@ export const usePalsStore = defineStore("pals", () => {
 
     async function duplicate(recordKey) {
         return applyOperationResult(await duplicatePal(recordKey));
+    }
+
+    // The copy lands beside the original, in the same list, so this one needs no
+    // help from the roster store: the new Pal is simply opened.
+    async function duplicateSelected() {
+        let result;
+        try {
+            result = await duplicate(selectedRecordKey.value);
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_Duplicate_Pal");
+            return false;
+        }
+        return select(result.resultRecord.recordKey);
     }
 
     async function remove(recordKey) {
@@ -191,6 +462,8 @@ export const usePalsStore = defineStore("pals", () => {
     function clear() {
         palsByRecordKey.value = new Map();
         selectedRecordKey.value = null;
+        passiveSkillChoice.value = "";
+        activeSkillChoice.value = "";
     }
 
     return {
@@ -199,25 +472,53 @@ export const usePalsStore = defineStore("pals", () => {
         selectedPal,
         selectedPalLoaded,
         hasSickPal,
+        passiveSkillChoice,
+        activeSkillChoice,
+        writeCount,
+        saveDetailsOpen,
+
         summary,
         upsertSummaries,
         applyDetail,
         clearChangeStates,
         loadDetail,
-        select,
         clearSelection,
         forget,
         reselect,
-        update,
-        replaceSkills,
-        maximize,
-        heal,
-        healAll,
-        applyTemplate,
-        nativeRecord,
         create,
         duplicate,
         remove,
         clear,
+
+        ...gated(session, {
+            select,
+            updateField,
+            swapRare,
+            swapBoss,
+            toggleAwakening,
+            levelDown,
+            levelUp,
+            maxLevel,
+            friendshipDown,
+            friendshipUp,
+            maxFriendship,
+            swapGender,
+            changeSpecies,
+            removePassiveSkill,
+            addPassiveSkill,
+            removeEquipWaza,
+            addEquipWaza,
+            removeMasteredWaza,
+            addMasteredWaza,
+            suitabilityUp,
+            suitabilityDown,
+            maxSuitabilities,
+            heal,
+            healAll,
+            maximize,
+            applyTemplate,
+            copyNativeRecord,
+            duplicateSelected,
+        }),
     };
 });

@@ -11,10 +11,11 @@ globalThis.localStorage = {
 };
 globalThis.window = { location: { origin: "http://frontend.test" } };
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useMessagesStore } = await import("../src/stores/messages.js");
 const { usePalsStore } = await import("../src/stores/pals.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 let session;
+let messages;
 
 // The export button reads the Pal that is open, so these need one open.
 const RECORD_KEY = "world:pal-1";
@@ -23,8 +24,10 @@ const NATIVE_RECORD = { key: { InstanceId: "pal-1" }, value: { CharacterID: "She
 function newStore() {
     setActivePinia(createPinia());
     session = useSessionStore();
-    usePalsStore().selectedRecordKey = RECORD_KEY;
-    return usePalEditorStore();
+    messages = useMessagesStore();
+    const pals = usePalsStore();
+    pals.selectedRecordKey = RECORD_KEY;
+    return pals;
 }
 
 test("dumping Pal data only copies JSON and reports success", async t => {
@@ -44,15 +47,15 @@ test("dumping Pal data only copies JSON and reports success", async t => {
     t.after(() => { axios.get = originalGet; });
 
     const store = newStore();
-    await store.dumpPalData();
+    await store.copyNativeRecord();
 
     assert.equal(requested, `/api/pals/${encodeURIComponent(RECORD_KEY)}/native-record`);
     // The record crosses the wire; the indentation is a property of what lands
     // on the clipboard, so it is added here rather than by the backend.
     assert.equal(copied, JSON.stringify(NATIVE_RECORD, null, 4));
     assert.equal(opened, false);
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Pal_Copied");
-    assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Pal_Copied");
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "toast");
     assert.equal(session.operationPending, false);
 });
 
@@ -71,10 +74,10 @@ test("clipboard failures use the normal error dialog and release loading", async
     });
 
     const store = newStore();
-    await store.dumpPalData();
+    await store.copyNativeRecord();
 
-    assert.equal(store.CURRENT_MESSAGE.presentation, "dialog");
-    assert.equal(store.CURRENT_MESSAGE.code, "Error");
-    assert.match(store.CURRENT_MESSAGE.log, /clipboard denied/);
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "dialog");
+    assert.equal(messages.CURRENT_MESSAGE.code, "Error");
+    assert.match(messages.CURRENT_MESSAGE.log, /clipboard denied/);
     assert.equal(session.operationPending, false);
 });

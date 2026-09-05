@@ -162,7 +162,7 @@ function selectPal(pal) {
 // The two ways the editor adds an active skill: the dropdown under the mastered
 // list, and the pick list beside the equipped slots.
 function learnSkill(store, skill) {
-    store.PAL_ACTIVE_SELECTED_ITEM = skill;
+    store.activeSkillChoice = skill;
     return store.addMasteredWaza();
 }
 
@@ -182,7 +182,7 @@ function recordSkillWrites(t) {
 
 test("adding a non-assignable skill is refused before any request", async t => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = usePalsStore();
     const humanPunch = "EPalWazaID::Human_Punch";
     useCatalogsStore().activeSkills = [{
         InternalName: humanPunch,
@@ -201,7 +201,7 @@ test("adding a non-assignable skill is refused before any request", async t => {
 
 test("cheat mode allows a known skill the game would not assign", async t => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = usePalsStore();
     const skillId = "EPalWazaID::Cheat_Test";
     useCatalogsStore().activeSkills = [{
         InternalName: skillId,
@@ -227,7 +227,7 @@ test("cheat mode allows a known skill the game would not assign", async t => {
 
 test("a skill no catalog knows is refused even in cheat mode", async t => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = usePalsStore();
     useCatalogsStore().activeSkills = [];
     selectPal({ IsHuman: false });
     useAppStore().HIDE_INVALID_OPTIONS = false;
@@ -242,7 +242,7 @@ test("a skill no catalog knows is refused even in cheat mode", async t => {
 
 test("a human-only skill is assignable to a selected human", async t => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = usePalsStore();
     const humanPunch = "EPalWazaID::Human_Punch";
     useCatalogsStore().activeSkills = [{
         InternalName: humanPunch,
@@ -261,7 +261,7 @@ test("a human-only skill is assignable to a selected human", async t => {
 
 test("removing a skill submits the list without it, and a field edit is a patch", async t => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = usePalsStore();
     const humanPunch = "EPalWazaID::Human_Punch";
     const kept = "EPalWazaID::FireBall";
     useCatalogsStore().activeSkills = [
@@ -284,7 +284,7 @@ test("removing a skill submits the list without it, and a field edit is a patch"
 
     await store.removeMasteredWaza({ target: { name: humanPunch } });
     await store.removeEquipWaza({ target: { name: humanPunch } });
-    await store.updatePal({ target: { name: "NickName", value: "ordinary update" } });
+    await store.updateField({ target: { name: "NickName", value: "ordinary update" } });
 
     // A removal is the remaining list, not the skill being taken away. There is
     // no generic action name left to pass through: a field the allowlist does not

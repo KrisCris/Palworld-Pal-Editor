@@ -308,7 +308,7 @@ test("one Pal is one entry: a roster refresh moves it without leaving a copy beh
         pals: [{ InstanceId: "pal-1" }],
     });
     await store.bootstrap();
-    await store.selectPal("world:pal-1");
+    await pals.select("world:pal-1");
     assert.equal(pals.selectedPal.containerKind, "storage");
     assert.equal(pals.palsByRecordKey.size, 1);
 
@@ -337,7 +337,7 @@ test("a roster refresh keeps the detail the editor is showing", async () => {
         pals: [{ InstanceId: "pal-1" }],
     });
     await store.bootstrap();
-    await store.selectPal("world:pal-1");
+    await pals.select("world:pal-1");
     pals.selectedPal.PassiveSkillList.push("Legend");
 
     await rosters.loadRosterPals("player:player-1");
@@ -660,7 +660,7 @@ test("a failed Pal detail request preserves the current complete selection", asy
         throw error;
     };
 
-    assert.equal(await store.selectPal("world:pal-next"), false);
+    assert.equal(await pals.select("world:pal-next"), false);
     assert.equal(backend.BACKEND_ERROR.kind, "connection");
     assert.equal(pals.selectedRecordKey, current.recordKey);
     assert.equal(pals.selectedPal.InstanceId, "pal-current");
@@ -828,7 +828,7 @@ test("selected Pal data retains its game-derived family", async () => {
     });
 
     await store.bootstrap();
-    await store.selectPal("world:pal-1");
+    await pals.select("world:pal-1");
 
     assert.equal(pals.selectedPal.FamilyID, "Anubis");
 });
@@ -843,8 +843,8 @@ test("an edit marks the Pal it changed, and a save load forgets the marks", asyn
     });
 
     await store.bootstrap();
-    await store.selectPal("world:pal-1");
-    await store.updatePal({ target: { name: "NickName", value: "Edited" } });
+    await pals.select("world:pal-1");
+    await pals.updateField({ target: { name: "NickName", value: "Edited" } });
 
     // `changeState` is the backend's answer and the only edited marker there is.
     assert.equal(pals.selectedPal.changeState, "modified");
@@ -970,7 +970,7 @@ test("healing all pals does not try to reselect a missing pal", async t => {
 
     await store.bootstrap();
     assert.equal(pals.selectedRecordKey, null);
-    await store.healAllPals();
+    await pals.healAll();
 
     // No Pal and no roster in the request: healing everything asks for nothing to
     // be selected first, and the reply names the lists to redraw.
@@ -1367,7 +1367,7 @@ test("duplicating a Pal names no target and selects the copy", async () => {
         }));
     };
 
-    assert.equal(await store.dupePal(), true);
+    assert.equal(await pals.duplicateSelected(), true);
 
     // The backend chooses where a copy goes, so the request carries nothing to
     // choose with -- not even the roster the client happens to have open.
@@ -1393,7 +1393,7 @@ test("applying a skill template answers with the Pal and is not read back", asyn
         }));
     };
 
-    assert.equal(await store.applySkillTemplate("passives"), true);
+    assert.equal(await pals.applyTemplate("passives"), true);
 
     assert.deepEqual(sent, { templateId: "passives" });
     // The reply is the Pal, so nothing is fetched afterwards; the GET above

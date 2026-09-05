@@ -17,7 +17,7 @@ const [source, mainCss, editorCss, selectorSource, storeSource] = await Promise.
   readSource("../src/assets/main.css"),
   readSource("../src/assets/editor-ui.css"),
   readSource("../src/components/PalSpeciesSelector.vue"),
-  readSource("../src/stores/paleditor.js"),
+  readSource("../src/stores/pals.js"),
 ]);
 
 const basicPanel = () => {
@@ -156,9 +156,9 @@ test("estimated Pal stats span the full basic-info card width", () => {
 });
 
 test("save details expansion survives Pal editor remounts", () => {
-  assert.match(storeSource, /const PAL_SAVE_DETAILS_OPEN = ref\(false\)/);
-  assert.match(storeSource, /PAL_SAVE_DETAILS_OPEN,/);
-  assert.match(source, /<details class="editor-disclosure"\s+:open="palStore\.PAL_SAVE_DETAILS_OPEN"\s+@toggle="palStore\.PAL_SAVE_DETAILS_OPEN = \$event\.currentTarget\.open">/);
+  assert.match(storeSource, /const saveDetailsOpen = ref\(false\)/);
+  assert.match(storeSource, /saveDetailsOpen,/);
+  assert.match(source, /<details class="editor-disclosure"\s+:open="palsStore\.saveDetailsOpen"\s+@toggle="palsStore\.saveDetailsOpen = \$event\.currentTarget\.open">/);
 });
 
 test("the move Pal button lives with the other summary actions", () => {

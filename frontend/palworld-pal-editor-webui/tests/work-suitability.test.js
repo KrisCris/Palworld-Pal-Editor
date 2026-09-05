@@ -13,6 +13,6 @@ test("maximum suitability payload includes only work types available to this Pal
 
 test("work suitability panel exposes one max-all action", async () => {
   const source = await readFile(new URL("../src/components/PalEditor.vue", import.meta.url), "utf8");
-  assert.match(source, /@click="palStore\.maxSuitabilities"/);
+  assert.match(source, /@click="palsStore\.maxSuitabilities"/);
   assert.match(source, /Editor_Suitabilities_Max/);
 });

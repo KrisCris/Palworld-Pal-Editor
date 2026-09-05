@@ -86,7 +86,7 @@ watch([
   }
 }, { immediate: true, flush: 'post' })
 
-watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
+watch(async () => palsStore.writeCount, async () => {
   await nextTick()
   try {
     const button = palListContainer.value.querySelector(`button[value="${palsStore.selectedRecordKey}"]`)
@@ -249,7 +249,7 @@ const palWasEdited = pal => isEditedPal(pal)
       </h3>
       <button v-for="pal in group.pals" :key="pal.recordKey"
         :class="['pal-row', { male: genderKey(pal.Gender) === 'male', female: genderKey(pal.Gender) === 'female', 'out-of-container': pal.isAway }]"
-        :value="pal.recordKey" @click="palStore.selectPal(pal.recordKey)"
+        :value="pal.recordKey" @click="palsStore.select(pal.recordKey)"
         :aria-current="palsStore.selectedRecordKey == pal.recordKey ? 'true' : undefined"
         :disabled="palsStore.selectedRecordKey == pal.recordKey">
         <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"

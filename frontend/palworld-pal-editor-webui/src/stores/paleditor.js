@@ -12,16 +12,7 @@ import {
     rememberBackend,
     writeStorage,
 } from "../services/backend-connection.js";
-import {
-    MAX_EQUIP_WAZA,
-    MAX_FRIENDSHIP_LEVEL,
-    MAX_INVALID_LEVEL,
-    MAX_LEVEL,
-    MAX_SUITABILITY_LEVEL,
-} from "../game-limits.js";
 import { translate } from "../i18n/index.js";
-import { maximumSuitabilities } from "../pal-traits.js";
-import { isSkillAssignable } from "../skill-rules.js";
 import { checkAuth, login } from "../api/auth.js";
 import { useAppStore } from "./app.js";
 import { BACKEND_ORIGIN_KEY, useBackendStore } from "./backend.js";
@@ -67,17 +58,12 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
-    const UPDATE_PAL_RESELECT_CTR = ref(0);
-    const PAL_SAVE_DETAILS_OPEN = ref(false);
 
     // A base camp is worth listing even when nobody works in it yet, so the base
     // roster button follows the storages as well as the roster listing.
     const HAS_WORKING_PAL_FLAG = computed(
         () => rosters.hasBaseRoster || storages.hasBaseStorage,
     );
-
-    const PAL_PASSIVE_SELECTED_ITEM = ref("");
-    const PAL_ACTIVE_SELECTED_ITEM = ref("");
 
     // The connection, the token and what a failed request means live in
     // `stores/backend`; the message queue in `stores/messages`. Both are read
@@ -373,8 +359,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         pals.clear();
         players.clear();
 
-        PAL_PASSIVE_SELECTED_ITEM.value = "";
-        PAL_ACTIVE_SELECTED_ITEM.value = "";
         templates.clear();
         storages.clear();
         research.clear();
@@ -495,281 +479,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return true;
     }
 
-    async function selectPal(recordKey) {
-        try {
-            if (await pals.select(recordKey)) return true;
-        } catch (error) {
-            reportApiFailure(error, "Operation_Load_Pal");
-            return false;
-        }
-        showToast("Message_Select_Pal_Failed");
-        return false;
-    }
-
-    // ---- Pal edits -----------------------------------------------------------
-    // The store owns the Pal and the writes; what stays here is the DOM events
-    // the existing controls fire, the catalog questions the UI asks before
-    // sending, and the reporting.
-
-    // Called straight from `@click`/`@change`, whose `name` is the field to write
-    // and whose `value` is what to write into it. Whether that name may be
-    // written is the backend allowlist's answer, not a method lookup. The
-    // operation gate is `gated()`, applied to the whole exported surface.
-    function updatePal(e) {
-        return applyPalPatch({ [e.target.name]: e.target.value });
-    }
-
-    function applyPalPatch(patch) {
-        return runPalWrite(() => pals.update(patch), "Operation_Update_Pal");
-    }
-
-    // Every Pal write answers with the Pal it changed, so none of them re-reads
-    // it afterwards. `null` means no Pal is open, which these controls cannot
-    // reach: they are rendered only while one is.
-    async function runPalWrite(write, operation) {
-        try {
-            if (await write() === null) return false;
-            UPDATE_PAL_RESELECT_CTR.value++;
-            return true;
-        } catch (error) {
-            reportApiFailure(error, operation);
-            return false;
-        }
-    }
-
-    // A skill group is submitted whole. These build the list the Pal should end
-    // up with; the backend refuses one the game cannot resolve.
-    function replaceSkills(group, skills) {
-        return runPalWrite(
-            () => pals.replaceSkills(group, skills),
-            "Operation_Update_Pal",
-        );
-    }
-
-    async function refreshPal(recordKey) {
-        try {
-            return await pals.loadDetail(recordKey);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Load_Pal");
-            return false;
-        }
-    }
-
-    const editedPal = () => pals.selectedPal;
-
-    function swapRare() {
-        return applyPalPatch({ IsRarePal: !editedPal().IsRarePal });
-    }
-
-    function swapBoss() {
-        return applyPalPatch({ IsBOSS: !editedPal().IsBOSS });
-    }
-
-    function toggleAwakening() {
-        return applyPalPatch({ IsAwakening: !editedPal().IsAwakening });
-    }
-
-    function palLevelDown() {
-        const pal = editedPal();
-        if (pal.Level <= 1) return;
-        return applyPalPatch({ Level: pal.Level - 1 });
-    }
-
-    function palLevelUp() {
-        const pal = editedPal();
-        const ceiling = app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL;
-        if (pal.Level >= ceiling) return;
-        return applyPalPatch({ Level: pal.Level + 1 });
-    }
-
-    function palMaxLevel() {
-        return applyPalPatch({
-            Level: app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL,
-        });
-    }
-
-    function friendshipDown() {
-        const pal = editedPal();
-        if (pal.FriendshipLevel <= -3) return;
-        return applyPalPatch({ FriendshipLevel: pal.FriendshipLevel - 1 });
-    }
-
-    function friendshipUp() {
-        const pal = editedPal();
-        if (pal.FriendshipLevel >= MAX_FRIENDSHIP_LEVEL) return;
-        return applyPalPatch({ FriendshipLevel: pal.FriendshipLevel + 1 });
-    }
-
-    function maxFriendship() {
-        return applyPalPatch({ FriendshipLevel: MAX_FRIENDSHIP_LEVEL });
-    }
-
-    function swapGender() {
-        const gender = editedPal().Gender;
-        let next = app.HIDE_INVALID_OPTIONS ? "NONE" : "EPalGenderType::Female";
-        if (gender == "EPalGenderType::Female") next = "EPalGenderType::Male";
-        if (gender == "EPalGenderType::Male") next = "EPalGenderType::Female";
-        return applyPalPatch({ Gender: next });
-    }
-
-    // A skill the game has no entry for is one the backend would refuse, and one
-    // the UI cannot draw either -- so the dropdown selections are checked here
-    // before a request is worth making. The `Invalid`/human rules are the same
-    // check the skill picker already greys the option out with.
-    function assignableActiveSkill(skill) {
-        const active = catalogs.activeSkillsByName[skill];
-        if (!active) return false;
-        return !app.HIDE_INVALID_OPTIONS
-            || isSkillAssignable(active, pals.selectedPal?.IsHuman);
-    }
-
-    function removePassiveSkill(e) {
-        return replaceSkills(
-            "passive",
-            editedPal().PassiveSkillList.filter(skill => skill !== e.target.name),
-        );
-    }
-
-    function addPassiveSkill() {
-        const skill = PAL_PASSIVE_SELECTED_ITEM.value;
-        if (!catalogs.passiveSkillsByName[skill]) {
-            showToast("Message_Select_Skill");
-            return;
-        }
-        if (app.HIDE_INVALID_OPTIONS && editedPal().PassiveSkillList.length >= 4) {
-            showToast("Message_Passive_Limit");
-            return;
-        }
-        return replaceSkills("passive", [...editedPal().PassiveSkillList, skill]);
-    }
-
-    function removeEquipWaza(e) {
-        return replaceSkills(
-            "equipped",
-            editedPal().EquipWaza.filter(waza => waza !== e.target.name),
-        );
-    }
-
-    function addEquipWaza(e) {
-        if (!assignableActiveSkill(e.target.name)) {
-            showToast("Message_Skill_Not_Assignable");
-            return;
-        }
-        // Equipping a move also learns it, so this one list says both.
-        return replaceSkills("equipped", [...editedPal().EquipWaza, e.target.name]);
-    }
-
-    function removeMasteredWaza(e) {
-        return replaceSkills(
-            "mastered",
-            editedPal().MasteredWaza.filter(waza => waza !== e.target.name),
-        );
-    }
-
-    function addMasteredWaza() {
-        const skill = PAL_ACTIVE_SELECTED_ITEM.value;
-        if (!catalogs.activeSkillsByName[skill]) {
-            showToast("Message_Select_Skill");
-            return;
-        }
-        if (!assignableActiveSkill(skill)) {
-            showToast("Message_Skill_Not_Assignable");
-            return;
-        }
-        const pal = editedPal();
-        // Learning a move with an active slot free has always equipped it too,
-        // and equipping is what learns it -- so the equipped list carries both.
-        if (pal.EquipWaza.length < MAX_EQUIP_WAZA) {
-            return replaceSkills("equipped", [...pal.EquipWaza, skill]);
-        }
-        return replaceSkills("mastered", [...pal.MasteredWaza, skill]);
-    }
-
-    function setSuitability(name, value) {
-        const pal = editedPal();
-        const min = pal.SuitabilityMinimums[name] || 0;
-        if (app.HIDE_INVALID_OPTIONS && min == 0 && value != 0) {
-            showToast("Message_Invalid_Suitability");
-            return;
-        }
-        value = Math.min(Math.max(value, min), MAX_SUITABILITY_LEVEL);
-        if (value == pal.Suitabilities[name]) return;
-        return applyPalPatch({ Suitabilities: { [name]: value } });
-    }
-
-    function suitabilityUp(e) {
-        const name = e.target.name;
-        return setSuitability(name, editedPal().Suitabilities[name] + 1);
-    }
-
-    function suitabilityDown(e) {
-        const name = e.target.name;
-        return setSuitability(name, editedPal().Suitabilities[name] - 1);
-    }
-
-    function maxSuitabilities() {
-        const values = maximumSuitabilities(
-            editedPal().SuitabilityMinimums,
-            MAX_SUITABILITY_LEVEL,
-        );
-        if (!Object.keys(values).length) return;
-        return applyPalPatch({ Suitabilities: values });
-    }
-
-    function changeSpecies(characterId) {
-        return applyPalPatch({ CharacterID: characterId });
-    }
-
-    // The three buttons the editor and the top bar show are one operation: curing
-    // an illness and reviving a fainted Pal already ran the same code.
-    function healPal() {
-        return runPalWrite(() => pals.heal(), "Operation_Update_Pal");
-    }
-
-    async function healAllPals() {
-        try {
-            await pals.healAll();
-        } catch (error) {
-            reportApiFailure(error, "Operation_Update_Pal");
-            return false;
-        }
-        // The reply names every roster but no record, so nothing in it can say
-        // what the heal did to the Pal on screen; that one is re-read.
-        if (pals.selectedRecordKey) await refreshPal(pals.selectedRecordKey);
-        return true;
-    }
-
-    // The export button copies the Pal as its own storage writes it, formatted
-    // here rather than by the backend: what crosses the wire is the record, and
-    // indentation is a property of what lands on the clipboard.
-    async function dumpPalData() {
-        let record;
-        try {
-            record = await pals.nativeRecord();
-        } catch (error) {
-            reportApiFailure(error, "Operation_Copy_Pal");
-            return false;
-        }
-        try {
-            await navigator.clipboard.writeText(JSON.stringify(record, null, 4));
-        } catch (error) {
-            // Refusing the clipboard is the browser's to do, and it is the only
-            // half of this that was never a request.
-            reportFrontendError(error, getTranslatedText("Operation_Copy_Pal"));
-            return false;
-        }
-        showToast("Message_Pal_Copied", "success");
-        return true;
-    }
-
-    async function maximizePal() {
-        if (!await runPalWrite(() => pals.maximize(), "Operation_Maximize_Pal")) {
-            return false;
-        }
-        showToast("Message_Pal_Maximized", "success");
-        return true;
-    }
-
     // ---- Pal creation, deletion and transfer ---------------------------------
 
     // The row the list would land on once the current one is gone: the next Pal
@@ -793,7 +502,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             reportApiFailure(error, "Operation_Delete_Pal");
             return false;
         }
-        if (successor && pals.summary(successor)) await selectPal(successor);
+        if (successor && pals.summary(successor)) await pals.select(successor);
         return true;
     }
 
@@ -817,7 +526,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (rosterKey !== rosters.activeRosterKey && !await selectPlayer(rosterKey)) {
             return false;
         }
-        return selectPal(result.resultRecord.recordKey);
+        return pals.select(result.resultRecord.recordKey);
     }
 
     async function movePal(targetStorageKey) {
@@ -867,7 +576,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         storages.clearConflict();
         if (resultRosterKey !== rosters.activeRosterKey
             && !await selectPlayer(resultRosterKey)) return false;
-        return selectPal(target.recordKey);
+        return pals.select(target.recordKey);
     }
 
     // Which storages the add dialog may offer, for the list that is open. The
@@ -928,29 +637,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (targetRoster && targetRoster !== rosters.activeRosterKey) {
             await selectPlayer(targetRoster);
         }
-        await selectPal(result.resultRecord.recordKey);
-        return true;
-    }
-
-    async function dupePal() {
-        let result;
-        try {
-            result = await pals.duplicate(pals.selectedRecordKey);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Duplicate_Pal");
-            return false;
-        }
-        await selectPal(result.resultRecord.recordKey);
-        return true;
-    }
-
-    // Applying a skill template is a Pal write, not a template read: it answers
-    // with the Pal it changed, so nothing is re-read afterwards.
-    async function applySkillTemplate(templateId) {
-        if (!await runPalWrite(
-            () => pals.applyTemplate(templateId), "Operation_Apply_Skill_Template",
-        )) return false;
-        showToast("Message_Skill_Template_Applied", "success");
+        await pals.select(result.resultRecord.recordKey);
         return true;
     }
 
@@ -966,11 +653,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     return {
 
-        PAL_PASSIVE_SELECTED_ITEM,
-        PAL_ACTIVE_SELECTED_ITEM,
         SHOW_DONATE_FLAG,
-        UPDATE_PAL_RESELECT_CTR,
-        PAL_SAVE_DETAILS_OPEN,
         HAS_WORKING_PAL_FLAG,
 
         IS_LOCKED,
@@ -1002,53 +685,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportFrontendError,
 
         ...gated({
-            addEquipWaza,
-            addMasteredWaza,
             addPal,
-            addPassiveSkill,
-            applySkillTemplate,
             auth,
             bootstrap,
             browseParentPath,
             browseSavePath,
-            changeSpecies,
             connectBackend,
             delPal,
-            dumpPalData,
-            dupePal,
-            friendshipDown,
-            friendshipUp,
-            healAllPals,
-            healPal,
             jumpToConflictingPal,
             loadCreationTargets,
             loadLatestRelease,
             loadMoveTargets,
             loadSave,
-            maxFriendship,
-            maxSuitabilities,
-            maximizePal,
             movePal,
             openFilePicker,
-            palLevelDown,
-            palLevelUp,
-            palMaxLevel,
-            removeEquipWaza,
-            removeMasteredWaza,
-            removePassiveSkill,
-            selectPal,
             selectPlayer,
             shownDonate,
-            suitabilityDown,
-            suitabilityUp,
-            swapBoss,
-            swapGender,
-            swapRare,
-            toggleAwakening,
             unlock,
             updateConflictingPal,
             updateI18n,
-            updatePal,
             writeSave,
         }),
     };
