@@ -979,9 +979,19 @@ test("wrong passwords remain on the auth page with inline feedback", async () =>
     const store = newStore();
     mockBackend({ password: true });
     await store.bootstrap();
-    axios.post = async () => ({
-        data: { status: 2, msg: "wrong password" },
-    });
+    // What the backend actually answers: `POST /api/auth/login` replies 401 for a
+    // bad password, so the refusal reaches the store as a rejected request rather
+    // than as a `status` field in a 200 body.
+    axios.post = async () => {
+        const refusal = new Error("Request failed with status code 401");
+        refusal.request = {};
+        refusal.response = {
+            status: 401,
+            statusText: "UNAUTHORIZED",
+            data: { status: 2, msg: "Bad password" },
+        };
+        throw refusal;
+    };
 
     await store.unlock("wrong", false);
 

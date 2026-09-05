@@ -1,5 +1,8 @@
 import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
+// Only `connectBackend`'s probe uses this directly: it asks a candidate origin
+// the store has not adopted yet, with no token and its own timeout, which is
+// exactly what `api/http.js` cannot express.
 import axios from "axios";
 import {
     backendStorageKey,
@@ -16,6 +19,7 @@ import {
     DEFAULT_UI_TRANSLATION,
     UI_TRANSLATIONS,
 } from "../i18n/index.js";
+import { checkAuth, login } from "../api/auth.js";
 import { setBackendContext } from "../api/http.js";
 import { useAppStore } from "./app.js";
 import { useCatalogsStore } from "./catalogs.js";
@@ -27,22 +31,26 @@ import { useSessionStore } from "./session.js";
 import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
 
-export const backendErrorDetails = error => {
-    const status = error?.response?.status;
-    if (status >= 500) {
-        const payload = error.response.data;
-        const details = payload?.data?.error;
-        return {
-            kind: "application",
-            message: payload?.msg || `${error.response.statusText || "HTTP"}: ${status}`,
-            code: details?.code || `HTTP ${status}`,
-            log: details?.log,
-        };
-    }
-    if (!error?.response && error?.request) {
-        return { kind: "connection", message: error.message || "Network Error" };
-    }
-    return null;
+// What the startup error screen shows for a failed request, or `null` when the
+// failure is not the screen's business: nobody is waiting on an abandoned request,
+// and an expired token is answered by asking for the password again.
+//
+// `code` and `log` are the two fields a user can paste into a bug report. They
+// reach an `ApiError` as the backend envelope's code and `details.traceback`; a
+// request that was never sent has no traceback, and carries the frontend stack
+// that explains it instead.
+//
+// `message` is passed in already translated, because the sentence around the
+// backend's own words is interface text and the backend's words are not.
+export const startupErrorDetails = (error, message) => {
+    if (error?.isAborted || error?.isAuthFailure) return null;
+    if (error?.isConnectionFailure) return { kind: "connection", message: error.message };
+    return {
+        kind: "application",
+        message,
+        code: error?.code,
+        log: error?.details?.traceback || error?.cause?.stack,
+    };
 };
 
 export function isSkillAssignable(skill = {}, isHuman = false) {
@@ -359,10 +367,16 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // it belongs on the backend error screen rather than in a toast over an app
     // that never finished loading.
     function reportStartupFailure(error) {
-        if (error.isAborted) return;
-        if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
-        else if (error.isConnectionFailure) setConnectionError(error);
-        else setBackendError(getTranslatedText("BackendError_Request_Failed", [error.message]));
+        const details = startupErrorDetails(
+            error,
+            getTranslatedText("BackendError_Request_Failed", [error.message]),
+        );
+        if (!details) {
+            if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
+            return;
+        }
+        if (details.kind === "connection") setConnectionError(error);
+        else setBackendError(details);
     }
 
     // A backend that never answered is the failure the error screen has its own
@@ -379,61 +393,18 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         if (session.appState === "connecting") session.appState = "backend-error";
     }
 
-    function handleRequestError(error, method) {
-        const backendError = backendErrorDetails(error);
-        if (backendError) {
-            if (backendError.kind === "connection") BACKEND_CONNECTED.value = false;
-            setBackendError(backendError);
-            console.error(`${method}(): ${backendError.message}`);
+    async function auth() {
+        // The endpoint answers 200 only for a token the backend still accepts, so
+        // there is nothing in the body to check: reaching the next line is the yes.
+        try {
+            await checkAuth();
+        } catch (error) {
+            if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
+            else reportStartupFailure(error);
             return false;
         }
-        if (error.response) {
-            const message = `${error.response.statusText}: ${error.response.status}`;
-            console.log(message);
-            return typeof error.response.data === "object"
-                ? error.response.data
-                : { msg: message };
-        }
-        reportFrontendError(error, method);
-        return false;
-    }
-
-    async function GET(api) {
-        try {
-            const response = await axios.get(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), {
-                headers: {
-                    Authorization: "Bearer " + auth_token,
-                },
-            });
-
-            return response.data;
-        } catch (error) {
-            return handleRequestError(error, "get");
-        }
-    }
-
-    async function POST(api, data) {
-        try {
-            const response = await axios.post(backendUrl(BACKEND_REQUEST_ORIGIN.value, api), data, {
-                headers: { Authorization: "Bearer " + auth_token },
-            });
-
-            return response.data;
-        } catch (error) {
-            return handleRequestError(error, "post");
-        }
-    }
-
-    async function auth() {
-        const response = await GET("/api/auth/auth");
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            IS_LOCKED.value = false;
-            return true;
-        }
-        requireAuth("AuthView_Session_Expired");
-        return false;
+        IS_LOCKED.value = false;
+        return true;
     }
 
     function clearBackendError() {
@@ -451,28 +422,25 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function unlock(password, remember = false) {
         AUTH_MESSAGE_KEY.value = "";
         session.appState = "connecting";
-        const response = await POST("/api/auth/login", {
-            password,
-            remember,
-        });
-        if (response === false) return false;
-
-        if (response.status == 0) {
-            IS_LOCKED.value = false;
-            setAuthToken(response.data.access_token);
-            if (remember) {
-                writeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"), auth_token);
-            } else {
-                removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
-            }
-            session.appState = "connecting";
-            return await resumeBackendSave();
-        } else if (response.status == 2) {
-            requireAuth("AuthView_Wrong_Password");
-        } else {
-            setBackendError(getTranslatedText("BackendError_Request_Failed", [response.msg]));
+        let response;
+        try {
+            response = await login(password, remember);
+        } catch (error) {
+            // A wrong password is answered with 401, so the refusal arrives as a
+            // thrown error rather than as a field in a 200 body.
+            if (error.isAuthFailure) requireAuth("AuthView_Wrong_Password");
+            else reportStartupFailure(error);
+            return false;
         }
-        return false;
+        IS_LOCKED.value = false;
+        setAuthToken(response.data.access_token);
+        if (remember) {
+            writeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"), auth_token);
+        } else {
+            removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
+        }
+        session.appState = "connecting";
+        return await resumeBackendSave();
     }
 
     function promoteBackend(origin) {
