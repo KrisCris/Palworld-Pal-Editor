@@ -26,7 +26,7 @@ const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Ed
 const bgStyle = computed(() => ({
   backgroundImage: `url('${backend.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
 }))
-const toggleLock = () => toggleTechnology(palStore, props.item, isLocked.value)
+const toggleLock = () => toggleTechnology(playersStore, props.item, isLocked.value)
 </script>
 
 <template>

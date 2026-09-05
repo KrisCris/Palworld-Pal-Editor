@@ -27,7 +27,7 @@ let observedLayoutWidth = 0
 const armorLabels = ['Inventory_Head', 'Inventory_Body', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Shield', 'Inventory_Glider', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Sphere_Module']
 const armorGroups = ['Head', 'Body', 'Accessory', 'Accessory', 'Shield', 'Glider', 'Accessory', 'Accessory', 'SphereModule']
 
-watch(() => rostersStore.activePlayerUid, () => palStore.loadPlayerInventory(), { immediate: true })
+watch(() => rostersStore.activePlayerUid, () => playersStore.loadInventory(), { immediate: true })
 
 const containers = computed(() => playersStore.inventory?.containers || {})
 const currentBag = computed(() => containers.value[bagTab.value])
@@ -59,10 +59,10 @@ const openSlot = (kind, slot) => {
 const applySlot = async ({ itemId, count }) => {
   const target = editing.value
   if (!target) return
-  if (await palStore.patchInventorySlot(target.kind, target.slot.slot_index, itemId, count)) editing.value = null
+  if (await playersStore.updateInventorySlot(target.kind, target.slot.slot_index, itemId, count)) editing.value = null
 }
-const clearSlot = (kind, slot) => palStore.patchInventorySlot(kind, slot.slot_index, null, 0)
-const repairSlot = (kind, slot) => palStore.repairInventorySlot(kind, slot.slot_index)
+const clearSlot = (kind, slot) => playersStore.updateInventorySlot(kind, slot.slot_index, null, 0)
+const repairSlot = (kind, slot) => playersStore.repairInventorySlot(kind, slot.slot_index)
 
 const updateBagLayout = () => {
   if (!inventoryLayout.value || !bagPanel.value || !bagScroll.value || !bagGrid.value) return

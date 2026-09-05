@@ -1017,7 +1017,7 @@ test("expired sessions retain an inline authentication explanation", () => {
 test("missing player validation uses a nonblocking warning", async () => {
     const store = newStore();
 
-    await store.updatePlayer({ target: { name: "Rank", value: 1 } });
+    await players.updateField({ target: { name: "Rank", value: 1 } });
 
     assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Select_Player");
     assert.equal(messages.CURRENT_MESSAGE.severity, "warning");
@@ -1048,7 +1048,7 @@ test("a field edit patches the player resource and keeps the answer", async () =
         return resource({ InstanceId: "player-1", NickName: "Renamed" });
     };
 
-    await store.updatePlayer({ target: { name: "NickName", value: "Renamed" } });
+    await players.updateField({ target: { name: "NickName", value: "Renamed" } });
 
     // One request, not a PATCH followed by a read: the PATCH answers with the
     // player, and that answer is what the panel now shows.
@@ -1068,7 +1068,7 @@ test("unlocking every technology can never lock one", async () => {
         return resource({ InstanceId: "player-1" });
     };
 
-    await store.unlockAllTechs();
+    await players.unlockAllTechs();
 
     assert.deepEqual(sent, ["OwnedByTheSaveOnly", "Workbench"]);
 });
@@ -1082,7 +1082,7 @@ test("locking a technology matches the spelling the save uses", async () => {
         return resource({ InstanceId: "player-1" });
     };
 
-    await store.toggleTech("Workbench", false);
+    await players.toggleTech("Workbench", false);
 
     assert.deepEqual(sent, ["PalCondenser"]);
 });
@@ -1097,7 +1097,7 @@ test("editing an inventory slot needs no second request to redraw the grid", asy
         return resource(inventory);
     };
 
-    assert.equal(await store.patchInventorySlot("food", 3, "Curry", 42), true);
+    assert.equal(await players.updateInventorySlot("food", 3, "Curry", 42), true);
 
     assert.deepEqual(calls, [[
         "/api/players/player-1/inventory/3",

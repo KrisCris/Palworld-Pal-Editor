@@ -107,7 +107,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
             <label for="player-name">{{ palStore.getTranslatedText('Editor_Nickname') }}</label>
             <div class="player-control">
               <input id="player-name" type="text" name="NickName" v-model="player.NickName">
-              <button type="button" @click="palStore.updatePlayer" name="NickName"
+              <button type="button" @click="playersStore.updateField" name="NickName"
                 :value="player.NickName"
                 :aria-label="fieldActionLabel('Editor_Nickname')"><UiIcon name="check" /></button>
             </div>
@@ -119,7 +119,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
               <NumberStepper id="technology-points" name="TechnologyPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_TechPoint')"
                 v-model="player.TechnologyPoint" />
-              <button type="button" @click="palStore.updatePlayer" name="TechnologyPoint"
+              <button type="button" @click="playersStore.updateField" name="TechnologyPoint"
                 :value="player.TechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_TechPoint')"><UiIcon name="check" /></button>
             </div>
@@ -131,7 +131,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
               <NumberStepper id="boss-technology-points" name="bossTechnologyPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_BossTechPoint')"
                 v-model="player.bossTechnologyPoint" />
-              <button type="button" @click="palStore.updatePlayer" name="bossTechnologyPoint"
+              <button type="button" @click="playersStore.updateField" name="bossTechnologyPoint"
                 :value="player.bossTechnologyPoint"
                 :aria-label="fieldActionLabel('Editor_BossTechPoint')"><UiIcon name="check" /></button>
             </div>
@@ -143,7 +143,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
               <NumberStepper id="unused-status-points" name="UnusedStatusPoint" :min="0" :max="65535"
                 :label="palStore.getTranslatedText('Editor_UnusedStatusPoints')"
                 v-model="player.UnusedStatusPoint" />
-              <button type="button" @click="palStore.updatePlayer" name="UnusedStatusPoint"
+              <button type="button" @click="playersStore.updateField" name="UnusedStatusPoint"
                 :value="player.UnusedStatusPoint"
                 :aria-label="fieldActionLabel('Editor_UnusedStatusPoints')"><UiIcon name="check" /></button>
             </div>
@@ -152,13 +152,13 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
           <div class="player-field player-field--level">
             <span>Lv. {{ player.Level }}</span>
             <div class="level-controls">
-              <button type="button" @click="palStore.playerLevelDown" name="Level"
+              <button type="button" @click="playersStore.levelDown" name="Level"
                 :disabled="isMinLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Decrease')"><UiIcon name="minus" /></button>
-              <button type="button" @click="palStore.playerLevelUp" name="Level"
+              <button type="button" @click="playersStore.levelUp" name="Level"
                 :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Increase')"><UiIcon name="plus" /></button>
-              <button type="button" @click="palStore.playerMaxLevel" name="Level"
+              <button type="button" @click="playersStore.maxLevel" name="Level"
                 :disabled="isMaxLv()"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Level_Max')"><UiIcon name="maximum" /></button>
             </div>
@@ -195,7 +195,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
               :thumb-role="statAllocation(name).stat ? 'primary' : 'item'"
               v-model="player.StatusPointTotals[name]"
               :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
-              @change="palStore.setStatusPoint(name)" />
+              @change="playersStore.setStatusPoint(name)" />
             <footer>
               <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
               <strong>{{ statusEffect(name, metadata) }}</strong>
@@ -220,7 +220,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
             :max="player.StatusPointTotalMaximums[name]"
             v-model="player.StatusPointTotals[name]"
             :aria-label="palStore.getTranslatedText(`StatusPoint_${name}`)"
-            @change="palStore.setStatusPoint(name)" />
+            @change="playersStore.setStatusPoint(name)" />
           <footer>
             <span>{{ palStore.getTranslatedText('Editor_Effect') }}</span>
             <strong>{{ statusEffect(name, metadata) }}</strong>
@@ -232,7 +232,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
     <section class="player-panel technology-panel">
       <header class="technology-panel__header">
         <h2>{{ palStore.getTranslatedText('Editor_TechEdit') }}</h2>
-        <button type="button" class="unlock-all" @click="palStore.unlockAllTechs">
+        <button type="button" class="unlock-all" @click="playersStore.unlockAllTechs">
           <UiIcon name="unlock" />
           {{ palStore.getTranslatedText('Editor_UnlockAllTech') }}
         </button>

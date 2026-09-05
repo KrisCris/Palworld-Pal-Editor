@@ -490,127 +490,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return translate(app.locale, translationKey, args);
     }
 
-    // ---- players -------------------------------------------------------------
-    // The store owns the player and its inventory; what stays here is the DOM
-    // events the existing controls fire and the reporting they need.
-
-    // Called straight from `@click` on the field buttons, whose `name` is the
-    // field to write and whose `value` is what to write into it. The backend's
-    // allowlist decides whether that name is writable -- it is not a method name
-    // any more.
-    function updatePlayer(e) {
-        return applyPlayerPatch({ [e.target.name]: e.target.value });
-    }
-
-    async function applyPlayerPatch(patch) {
-        try {
-            if (await players.update(patch) === null) showToast("Message_Select_Player");
-        } catch (error) {
-            reportApiFailure(error, "Operation_Update_Player");
-        }
-    }
-
-    function playerLevelDown() {
-        const player = players.selectedPlayer;
-        if (!player || player.Level <= 1) return;
-        return applyPlayerPatch({ Level: player.Level - 1 });
-    }
-
-    function playerLevelUp() {
-        const player = players.selectedPlayer;
-        const ceiling = app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL;
-        if (!player || player.Level >= ceiling) return;
-        return applyPlayerPatch({ Level: player.Level + 1 });
-    }
-
-    function playerMaxLevel() {
-        return applyPlayerPatch({
-            Level: app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL,
-        });
-    }
-
-    function setStatusPoint(name) {
-        const player = players.selectedPlayer;
-        if (!player) return;
-        let points = Number(player.StatusPointTotals[name]);
-        if (!Number.isFinite(points)) points = 0;
-        points = Math.min(
-            Math.max(Math.trunc(points), player.StatusPointMinimums[name] ?? 0),
-            player.StatusPointTotalMaximums[name] ?? 0,
-        );
-        player.StatusPointTotals[name] = points;
-        // A stat point can also be bought with an item, so it is spent against
-        // the total; every other kind is the plain allocation.
-        const field = player.StatusPointMetadata[name]?.category === "stat"
-            ? "StatusPointTotals"
-            : "StatusPoints";
-        return applyPlayerPatch({ [field]: { [name]: points } });
-    }
-
-    // The technology field takes the list the player should end up with, so both
-    // of these send one: the skill rule, applied to the same shape.
-    // Locking compares case-insensitively for the same reason the cards do --
-    // the save's spelling of a technology need not be the catalog's, and an
-    // exact filter would quietly leave it unlocked.
-    function toggleTech(tech, status) {
-        const unlocked = players.selectedPlayer?.UnlockedRecipeTechnologyNames ?? [];
-        return applyPlayerPatch({
-            UnlockedRecipeTechnologyNames: status
-                ? [...unlocked, tech]
-                : unlocked.filter(
-                    name => name.toLowerCase() !== tech.toLowerCase(),
-                ),
-        });
-    }
-
-    // The union, not the catalog: this field is a replacement, so sending the
-    // catalog alone would lock anything the save has that the catalog does not
-    // -- including everything, if the catalog were somehow empty. Unlocking all
-    // of them has never been able to take one away, and still cannot.
-    function unlockAllTechs() {
-        const unlocked = players.selectedPlayer?.UnlockedRecipeTechnologyNames ?? [];
-        const everything = Object.values(catalogs.technologiesByLevel)
-            .flat()
-            .map(tech => tech.InternalName);
-        return applyPlayerPatch({
-            UnlockedRecipeTechnologyNames: [...unlocked, ...everything],
-        });
-    }
-
-    async function loadPlayerInventory() {
-        try {
-            return await players.loadInventory() !== null;
-        } catch (error) {
-            reportApiFailure(error, "Operation_Load_Player_Data");
-            return false;
-        }
-    }
-
-    // The reply is the whole inventory, so no follow-up read is needed.
-    async function patchInventorySlot(containerKind, slotIndex, itemId, count) {
-        try {
-            return await players.updateInventorySlot(
-                containerKind,
-                slotIndex,
-                itemId,
-                count,
-                !app.HIDE_INVALID_OPTIONS,
-            ) !== null;
-        } catch (error) {
-            reportApiFailure(error, "Operation_Update_Player");
-            return false;
-        }
-    }
-
-    async function repairInventorySlot(containerKind, slotIndex) {
-        try {
-            return await players.repairInventorySlot(containerKind, slotIndex) !== null;
-        } catch (error) {
-            reportApiFailure(error, "Operation_Update_Player");
-            return false;
-        }
-    }
-
     // ---- loading -------------------------------------------------------------
 
     async function loadSaveData() {
@@ -1260,7 +1139,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             loadCreationTargets,
             loadLatestRelease,
             loadMoveTargets,
-            loadPlayerInventory,
             loadSave,
             maxFriendship,
             maxSuitabilities,
@@ -1270,17 +1148,11 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             palLevelDown,
             palLevelUp,
             palMaxLevel,
-            patchInventorySlot,
-            repairInventorySlot,
-            playerLevelDown,
-            playerLevelUp,
-            playerMaxLevel,
             removeEquipWaza,
             removeMasteredWaza,
             removePassiveSkill,
             selectPal,
             selectPlayer,
-            setStatusPoint,
             shownDonate,
             suitabilityDown,
             suitabilityUp,
@@ -1288,13 +1160,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             swapGender,
             swapRare,
             toggleAwakening,
-            toggleTech,
             unlock,
-            unlockAllTechs,
             updateConflictingPal,
             updateI18n,
             updatePal,
-            updatePlayer,
             writeSave,
         }),
     };
