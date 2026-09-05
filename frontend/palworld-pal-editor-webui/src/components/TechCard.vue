@@ -10,9 +10,11 @@ import { computed } from 'vue'
 
 import UiIcon from './modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { usePlayersStore } from '@/stores/players'
 
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const playersStore = usePlayersStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const isLocked = computed(() => !hasUnlockedTechnology(
@@ -22,7 +24,7 @@ const isLocked = computed(() => !hasUnlockedTechnology(
 const techName = computed(() => props.item.I18n.Name ?? props.item.InternalName)
 const techState = computed(() => palStore.getTranslatedText(isLocked.value ? 'Editor_Tech_Locked' : 'Editor_Tech_Unlocked'))
 const bgStyle = computed(() => ({
-  backgroundImage: `url('${palStore.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
+  backgroundImage: `url('${backend.backendAssetUrl(`/image/${props.item.InternalName.startsWith('SkillUnlock_') ? 'pals' : 'tech'}/${props.item.IconAccessKey}`)}')`
 }))
 const toggleLock = () => toggleTechnology(palStore, props.item, isLocked.value)
 </script>

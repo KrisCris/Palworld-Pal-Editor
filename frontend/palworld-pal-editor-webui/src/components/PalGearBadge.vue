@@ -3,12 +3,14 @@ import { computed } from 'vue'
 
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   item: { type: Object, required: true },
 })
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const pal = computed(() => catalogsStore.palsByName[props.item.PalGearCharacterId])
 const iconKey = computed(() => pal.value?.IconKey || pal.value?.IconAccessKey)
 const name = computed(() => pal.value?.I18n || props.item.PalGearCharacterId)
@@ -16,7 +18,7 @@ const name = computed(() => pal.value?.I18n || props.item.PalGearCharacterId)
 
 <template>
   <span v-if="iconKey" class="pal-gear-badge" :title="name" aria-hidden="true">
-    <img :src="palStore.backendAssetUrl(`/image/pals/${iconKey}`)" alt="">
+    <img :src="backend.backendAssetUrl(`/image/pals/${iconKey}`)" alt="">
   </span>
 </template>
 

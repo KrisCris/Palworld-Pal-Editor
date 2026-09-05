@@ -52,7 +52,7 @@ test("backend selector exposes an accessible, dismissible connection popover", a
     assert.match(source, /@click\.stop="removeRecent\(origin\)"/);
     assert.doesNotMatch(source, /recentActions/);
     assert.match(source, /currentTarget\.closest\('\[role="menu"\]'\)\.querySelectorAll\('\[role="menuitem"\]:not\(:disabled\)'\)/);
-    assert.match(source, /const triggerLabel = computed\([\s\S]*candidateOrigin\.value[\s\S]*palStore\.BACKEND_CONNECTED/);
+    assert.match(source, /const triggerLabel = computed\([\s\S]*candidateOrigin\.value[\s\S]*backend\.BACKEND_CONNECTED/);
     assert.match(source, /:aria-label="triggerLabel"/);
     assert.match(source, /--backend-selector-popover-top/);
     assert.match(source, /class="backend-selector__header"/);
@@ -63,7 +63,7 @@ test("backend selector exposes an accessible, dismissible connection popover", a
     assert.match(source, /if \(await palStore\.connectBackend\(origin\)\) close\(true\)[\s\S]*else errorKey\.value = 'BackendSelector_Connection_Failed'/);
     assert.doesNotMatch(source, /window\.location\.protocol/);
     assert.doesNotMatch(source, /BackendSelector_Mixed_Content/);
-    assert.match(source, /const visibleRecent = computed\(\(\) => palStore\.BACKEND_RECENT\.filter\(origin => origin !== currentOrigin\.value\)\)/);
+    assert.match(source, /const visibleRecent = computed\(\(\) => backend\.BACKEND_RECENT\.filter\(origin => origin !== currentOrigin\.value\)\)/);
     assert.doesNotMatch(source, /class="op(?:\s|"|-)/);
     assert.match(source, /@media \(max-width: 760px\)[\s\S]*\.backend-selector__popover\s*\{[^}]*position:\s*fixed;[^}]*right:\s*var\(--editor-space-3\);[^}]*width:\s*min\(44rem,/);
 });

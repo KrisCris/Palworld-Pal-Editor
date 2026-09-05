@@ -4,6 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'v
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { useTemplatesStore } from '@/stores/templates'
 
 const props = defineProps({
@@ -12,6 +13,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const templatesStore = useTemplatesStore()
 const dialog = ref(null)
 const templateName = ref('')
@@ -132,7 +134,7 @@ async function renameTemplate(template) {
                 <span v-if="template.type === 'passive'"
                   :class="['passive-tier', `passive-tier--${skill.tier}`]" aria-hidden="true"></span>
                 <img v-else-if="skill.element" class="element-icon"
-                  :src="palStore.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">
+                  :src="backend.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">
                 <span class="template-skill__copy">
                   <strong>{{ skill.name }}</strong>
                   <small>{{ skill.summary }}</small>
@@ -146,7 +148,7 @@ async function renameTemplate(template) {
                 <span v-if="template.type === 'passive'"
                   :class="['passive-tier', `passive-tier--${skill.tier}`]" aria-hidden="true"></span>
                 <img v-else-if="skill.element" class="element-icon"
-                  :src="palStore.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">
+                  :src="backend.backendAssetUrl(`/image/elements/Element_${skill.element}`)" alt="">
                 <span class="template-skill__copy">
                   <strong>{{ skill.name }}</strong>
                   <small>{{ skill.summary }}</small>

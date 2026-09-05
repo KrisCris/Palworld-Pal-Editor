@@ -7,6 +7,7 @@ import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { useRostersStore } from '@/stores/rosters'
@@ -14,6 +15,7 @@ import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -100,7 +102,7 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
       <div v-if="sessionStore.editorOpen" class="editor-app-bar__tools">
         <button v-if="hasPalToHeal" type="button" class="op op--primary" @click="palStore.healAllPals"
           :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
-          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt="">
           {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
         </button>
         <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"

@@ -56,3 +56,23 @@ export const UI_TRANSLATIONS = Object.freeze({
     "zh-TW": zhTW,
 });
 export const DEFAULT_UI_TRANSLATION = UI_TRANSLATIONS.en;
+
+// One interface string, in the locale asked for, with `{{0}}`-style placeholders
+// filled from `args`.
+//
+// A plain function rather than a store method because two stores need it and
+// neither owns the other: the app shell answers `getTranslatedText` for the
+// components (see AGENTS.md), and `stores/messages` renders queued messages.
+// English is the fallback for a key a translation has not caught up with.
+export function translate(locale, translationKey, args = []) {
+    let translation = UI_TRANSLATIONS[locale]?.[translationKey]
+        ?? DEFAULT_UI_TRANSLATION[translationKey];
+    if (!translation) {
+        console.warn(`Translation key "${translationKey}" not found.`);
+        return "I18N_MISSING";
+    }
+    args.forEach((arg, index) => {
+        translation = translation.replace(`{{${index}}}`, arg);
+    });
+    return translation;
+}

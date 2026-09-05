@@ -6,6 +6,7 @@ import PalPortrait from '@/components/PalPortrait.vue'
 import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { useRostersStore } from '@/stores/rosters'
@@ -14,6 +15,7 @@ import { useTemplatesStore } from '@/stores/templates'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -257,7 +259,7 @@ async function deleteTemplate(id) {
 
       <main>
         <section v-if="mode === 'default'" class="default-pal-panel">
-          <PalPortrait :src="palStore.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
+          <PalPortrait :src="backend.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
           <div>
             <h3>{{ palStore.getTranslatedText('AddPal_Default_Title') }}</h3>
             <p>{{ palStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
@@ -283,7 +285,7 @@ async function deleteTemplate(id) {
               @pointerenter="showTemplatePreview($event, template)" @pointerleave="hideTemplatePreview"
               @focusin="showTemplatePreview($event, template)" @focusout="hideTemplatePreview">
               <button class="template-select" @click="templateId = template.templateId">
-                <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
+                <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
                   alt="" size="3rem" />
                 <span>
                   <strong>{{ template.name }}</strong>

@@ -10,6 +10,7 @@ import { formatStorageLabel } from '@/components/pal-storage-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
@@ -17,6 +18,7 @@ import { useStoragesStore } from '@/stores/storages'
 const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const palsStore = usePalsStore()
 const storagesStore = useStoragesStore()
 // The Pal this page edits. It is the object in the Pal cache, so the `v-model`
@@ -146,7 +148,7 @@ const isMinFriendshipLv = () => {
 };
 
 const suitabilityIconSrc = key => {
-  return key ? palStore.backendAssetUrl(`/image/suitabilities/${key.split("::").pop()}`) : '';
+  return key ? backend.backendAssetUrl(`/image/suitabilities/${key.split("::").pop()}`) : '';
 };
 
 const currentPaldeck = () => pal.value.Paldeck;
@@ -155,12 +157,12 @@ const skinOptions = () => [
   {
     value: '',
     label: palStore.getTranslatedText('Editor_Skin_Default'),
-    icon: palStore.backendAssetUrl(`/image/pals/${pal.value.IconKey || 'unknown'}`),
+    icon: backend.backendAssetUrl(`/image/pals/${pal.value.IconKey || 'unknown'}`),
   },
   ...availableSkins().map(skin => ({
     value: skin.SkinName,
     label: skin.SkinName,
-    icon: palStore.backendAssetUrl(skin.Invalid
+    icon: backend.backendAssetUrl(skin.Invalid
       ? '/image/pals/unknown'
       : `/image/pals/skin-${skin.SkinName}`),
   })),
@@ -211,7 +213,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
     searchMeta: skill.Element,
     disabled: !canSelectActiveSkill(skill),
-    icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
+    icon: element ? backend.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
 
@@ -229,27 +231,27 @@ const portraitBorder = pal => pal.IsAwakening
   <div class="pal-editor">
     <section data-testid="pal-basic-info" class="pal-basic-info editor-surface">
       <header class="editor-summary">
-        <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)"
+        <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)"
           :alt="catalogsStore.palsByName[pal.DataAccessKey]?.I18n || pal.DataAccessKey"
           size="5.5rem" :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
-            <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsBOSS" :src="backend.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
             <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
-              :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
+              :src="backend.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
               @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-left>
             <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-if="pal.IsImportedCharacter" class="game-dna-icon"
-              :src="palStore.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
         </PalPortrait>
         <div class="editor-summary__identity">
@@ -264,7 +266,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="pal-basic-tags">
             <span class="editor-tag" v-if="palStore.palElementKeys(pal.DataAccessKey).length">
               <img v-for="element in palStore.palElementKeys(pal.DataAccessKey)"
-                :key="element" class="element-icon" :src="palStore.backendAssetUrl(`/image/elements/Element_${element}`)" :alt="element">
+                :key="element" class="element-icon" :src="backend.backendAssetUrl(`/image/elements/Element_${element}`)" :alt="element">
             </span>
             <span class="editor-tag" v-if="pal.Level">Lv. {{ pal.Level }}</span>
             <span class="editor-tag"
@@ -326,7 +328,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div v-if="pal.storageKind !== 'global_palbox'" class="editor-field">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
             <span class="editor-tag">
-              <img v-if="pal.IsImportedCharacter" class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
+              <img v-if="pal.IsImportedCharacter" class="game-icon" :src="backend.backendAssetUrl('/image/ui/dna')" alt="">
               <template v-else>-</template>
             </span>
             <div class="editor-field__actions">
@@ -335,7 +337,7 @@ const portraitBorder = pal => pal.IsAwakening
                 :aria-label="palStore.getTranslatedText('Editor_ImportedCharacter')"
                 :aria-pressed="pal.IsImportedCharacter"
                 @click="updateRange('IsImportedCharacter', !pal.IsImportedCharacter)">
-                <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
+                <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/dna')" alt="">
               </button>
             </div>
           </div>
@@ -357,7 +359,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="editor-field" v-if="pal.Gender || !palStore.HIDE_INVALID_OPTIONS">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
             <span class="editor-tag" v-if="palStore.genderKey(pal.Gender)">
-              <img class="game-icon" :src="palStore.backendAssetUrl(`/image/ui/gender-${palStore.genderKey(pal.Gender)}`)" alt="">
+              <img class="game-icon" :src="backend.backendAssetUrl(`/image/ui/gender-${palStore.genderKey(pal.Gender)}`)" alt="">
             </span>
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon"
@@ -375,7 +377,7 @@ const portraitBorder = pal => pal.IsAwakening
                 @click="updateRange('FavoriteIndex', priority)">
                 <span v-if="priority === 0">—</span>
                 <img v-else class="game-priority-icon"
-                  :src="palStore.backendAssetUrl(`/image/ui/priority-${priority}`)"
+                  :src="backend.backendAssetUrl(`/image/ui/priority-${priority}`)"
                   :alt="['—', 'I', 'II', 'III'][priority]">
               </button>
             </div>
@@ -386,7 +388,7 @@ const portraitBorder = pal => pal.IsAwakening
           <h3 class="editor-section__heading">{{ palStore.getTranslatedText("Editor_Growth") }}</h3>
           <div class="editor-stepper">
             <div>
-              <span class="editor-field__label"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/friendship')" alt=""> {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
+              <span class="editor-field__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/friendship')" alt=""> {{ palStore.getTranslatedText("Editor_Friendship_Level") }}</span>
               <strong class="editor-stepper__value">{{ pal.FriendshipLevel }}</strong>
             </div>
             <div class="editor-stepper__actions">
@@ -428,21 +430,21 @@ const portraitBorder = pal => pal.IsAwakening
                 @click="palStore.swapBoss" name="IsBOSS"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
                 :aria-pressed="pal.IsBOSS"
-                v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
+                v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/boss')" alt=""></button>
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': pal.IsRarePal }]"
                 @click="palStore.swapRare" name="IsRarePal"
                 :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
                 :aria-pressed="pal.IsRarePal"
-                v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
+                v-if="canToggleBossVariant(pal)"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/rare')" alt=""></button>
             </div>
           </div>
         </section>
       </div>
       <div class="editor-stat-grid">
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ pal.ComputedMaxHP / 1000 }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ pal.ComputedAttack }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ pal.ComputedDefense }}</strong></div>
-        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ pal.ComputedCraftSpeed }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_HP") }}</span><strong class="editor-stat__value">{{ pal.ComputedMaxHP / 1000 }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_ATK") }}</span><strong class="editor-stat__value">{{ pal.ComputedAttack }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_DEF") }}</span><strong class="editor-stat__value">{{ pal.ComputedDefense }}</strong></div>
+        <div class="editor-stat"><span class="editor-stat__label"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Estimated_WorkSpeed") }}</span><strong class="editor-stat__value">{{ pal.ComputedCraftSpeed }}</strong></div>
       </div>
 
       <details class="editor-disclosure"
@@ -474,11 +476,11 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="pal-health-actions" v-if="pal.HasWorkerSick || pal.IsFaintedPal">
         <button type="button" class="editor-button editor-button--primary" v-if="pal.HasWorkerSick"
           @click="palStore.healPal">
-          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Heal_Pal") }}
         </button>
         <button type="button" class="editor-button editor-button--primary" v-if="pal.IsFaintedPal"
           @click="palStore.healPal">
-          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/revive')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/revive')" alt=""> {{ palStore.getTranslatedText("Editor_Btn_Revive_Pal") }}
         </button>
       </div>
     </section>
@@ -487,19 +489,19 @@ const portraitBorder = pal => pal.IsAwakening
         <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_IV") }}</h2>
         <div class="range-grid">
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
             <strong>{{ pal.Talent_HP }}</strong>
             <SegmentedRange name="Talent_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_HP"
               @change="updateRange('Talent_HP', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
             <strong>{{ pal.Talent_Defense }}</strong>
             <SegmentedRange name="Talent_Defense" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Defense"
               @change="updateRange('Talent_Defense', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
             <strong>{{ pal.Talent_Shot }}</strong>
             <SegmentedRange name="Talent_Shot" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Shot"
               @change="updateRange('Talent_Shot', $event)" />
@@ -520,34 +522,34 @@ const portraitBorder = pal => pal.IsAwakening
       </section>
 
       <section class="pal-panel editor-surface">
-        <h2 class="pal-panel__heading"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/soul')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
+        <h2 class="pal-panel__heading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/soul')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_Upgrade") }}</h2>
         <div class="range-grid">
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
             <strong>{{ pal.Rank_HP }}</strong>
             <SegmentedRange name="Rank_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_HP"
               @change="updateRange('Rank_HP', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
             <strong>{{ pal.Rank_Attack }}</strong>
             <SegmentedRange name="Rank_Attack" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Attack"
               @change="updateRange('Rank_Attack', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
             <strong>{{ pal.Rank_Defence }}</strong>
             <SegmentedRange name="Rank_Defence" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Defence"
               @change="updateRange('Rank_Defence', $event)" />
           </label>
           <label class="range-control">
-            <span><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
+            <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
             <strong>{{ pal.Rank_CraftSpeed }}</strong>
             <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_CraftSpeed"
               @change="updateRange('Rank_CraftSpeed', $event)" />
           </label>
         </div>
-        <h3 class="pal-panel__subheading"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser") }}</h3>
+        <h3 class="pal-panel__subheading"><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/condense')" alt=""> {{ palStore.getTranslatedText("Editor_Condenser") }}</h3>
         <label class="range-control range-control--wide">
           <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ pal.Rank - 1 }}</strong>
@@ -634,7 +636,7 @@ const portraitBorder = pal => pal.IsAwakening
           <article class="skill-card" v-for="skill in pal.EquipWaza" :key="skill"
             :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
             <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
-              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
+              :src="backend.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
@@ -659,7 +661,7 @@ const portraitBorder = pal => pal.IsAwakening
             }]"
             :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
             <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
-              :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
+              :src="backend.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>

@@ -1,7 +1,9 @@
 <script setup>
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { ref } from 'vue'
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 
 const PW = ref("")
 const remember = ref(false)
@@ -16,8 +18,8 @@ const unlock = async () => {
         <br>
         <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
         <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
-        <p v-if="palStore.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
-            {{ palStore.getTranslatedText(palStore.AUTH_MESSAGE_KEY) }}
+        <p v-if="backend.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
+            {{ palStore.getTranslatedText(backend.AUTH_MESSAGE_KEY) }}
         </p>
 
         <label class="sr-only" for="password">{{ palStore.getTranslatedText('AuthView_Password_Label') }}</label>

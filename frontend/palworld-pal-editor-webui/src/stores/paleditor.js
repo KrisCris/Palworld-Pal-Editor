@@ -1,28 +1,23 @@
-import { ref, computed, watch } from "vue";
-import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { defineStore, storeToRefs } from "pinia";
 // Only `connectBackend`'s probe uses this directly: it asks a candidate origin
 // the store has not adopted yet, with no token and its own timeout, which is
 // exactly what `api/http.js` cannot express.
 import axios from "axios";
 import {
-    backendStorageKey,
     backendUrl,
     normalizeBackendOrigin,
     readRecentBackends,
     readStorage,
     rememberBackend,
-    removeStorage,
-    versionedBackendAssetUrl,
     writeStorage,
 } from "../services/backend-connection.js";
-import {
-    DEFAULT_UI_TRANSLATION,
-    UI_TRANSLATIONS,
-} from "../i18n/index.js";
+import { translate } from "../i18n/index.js";
 import { checkAuth, login } from "../api/auth.js";
-import { setBackendContext } from "../api/http.js";
 import { useAppStore } from "./app.js";
+import { BACKEND_ORIGIN_KEY, useBackendStore } from "./backend.js";
 import { useCatalogsStore } from "./catalogs.js";
+import { useMessagesStore } from "./messages.js";
 import { usePalsStore } from "./pals.js";
 import { useResearchStore } from "./research.js";
 import { usePlayersStore } from "./players.js";
@@ -30,28 +25,6 @@ import { BASE_ROSTER_KEY, useRostersStore } from "./rosters.js";
 import { useSessionStore } from "./session.js";
 import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
-
-// What the startup error screen shows for a failed request, or `null` when the
-// failure is not the screen's business: nobody is waiting on an abandoned request,
-// and an expired token is answered by asking for the password again.
-//
-// `code` and `log` are the two fields a user can paste into a bug report. They
-// reach an `ApiError` as the backend envelope's code and `details.traceback`; a
-// request that was never sent has no traceback, and carries the frontend stack
-// that explains it instead.
-//
-// `message` is passed in already translated, because the sentence around the
-// backend's own words is interface text and the backend's words are not.
-export const startupErrorDetails = (error, message) => {
-    if (error?.isAborted || error?.isAuthFailure) return null;
-    if (error?.isConnectionFailure) return { kind: "connection", message: error.message };
-    return {
-        kind: "application",
-        message,
-        code: error?.code,
-        log: error?.details?.traceback || error?.cause?.stack,
-    };
-};
 
 export function isSkillAssignable(skill = {}, isHuman = false) {
     if (skill.Disabled) return false;
@@ -163,6 +136,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     // nothing reads back into it.
     const session = useSessionStore();
     const app = useAppStore();
+    const backend = useBackendStore();
+    const messages = useMessagesStore();
     const catalogs = useCatalogsStore();
     const pals = usePalsStore();
     const research = useResearchStore();
@@ -205,193 +180,54 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const PAL_PASSIVE_SELECTED_ITEM = ref("");
     const PAL_ACTIVE_SELECTED_ITEM = ref("");
 
-    // Configs
-    const BACKEND_ORIGIN_KEY = "PAL_BACKEND_ORIGIN";
-    const normalizeStoredBackendOrigin = origin => {
-        try { return normalizeBackendOrigin(origin || "", window.location.origin); }
-        catch { return ""; }
-    };
-    const savedBackendOrigin = readStorage(localStorage, BACKEND_ORIGIN_KEY) || "";
-    const initialBackendOrigin = normalizeStoredBackendOrigin(savedBackendOrigin);
-    if (savedBackendOrigin !== initialBackendOrigin) {
-        writeStorage(localStorage, BACKEND_ORIGIN_KEY, initialBackendOrigin);
-    }
-    const BACKEND_ORIGIN = ref(initialBackendOrigin);
-    const BACKEND_CANDIDATE = ref(BACKEND_ORIGIN.value);
-    const BACKEND_REQUEST_ORIGIN = ref(BACKEND_ORIGIN.value);
-    const BACKEND_RECENT = ref(readRecentBackends(localStorage));
-    const BACKEND_CONNECTED = ref(false);
-    const backendAssetUrl = path => versionedBackendAssetUrl(BACKEND_ORIGIN.value, path, app.version);
-    const storageKey = name => backendStorageKey(name, BACKEND_ORIGIN.value);
+    // The connection, the token and what a failed request means live in
+    // `stores/backend`; the message queue in `stores/messages`. Both are read
+    // here rather than owned here, so that every other store can report through
+    // them without importing this one.
+    const {
+        BACKEND_ORIGIN,
+        BACKEND_CANDIDATE,
+        BACKEND_REQUEST_ORIGIN,
+        BACKEND_RECENT,
+        BACKEND_CONNECTED,
+        BACKEND_ERROR,
+        IS_LOCKED,
+        AUTH_MESSAGE_KEY,
+        AUTH_TOKEN,
+    } = storeToRefs(backend);
+    const {
+        normalizeStoredBackendOrigin,
+        backendAssetUrl,
+        storageKey,
+        setAuthToken,
+        rememberAuthToken,
+        reloadAuthToken,
+        setBackendError,
+        clearBackendError,
+        requireAuth,
+        reportApiFailure,
+        reportStartupFailure,
+    } = backend;
+    const {
+        MESSAGE_QUEUE,
+        CURRENT_MESSAGE,
+    } = storeToRefs(messages);
+    const {
+        getMessageText,
+        showMessage,
+        showToast,
+        confirmMessage,
+        dismissMessage,
+        respondToMessage,
+        reportOperationError,
+        reportFrontendError,
+    } = messages;
+
     // Reading the remembered path is what puts it back on `session`; the picker
     // opens on it, which is why the answer is kept.
     app.pickerPath = session.recallSavePath(localStorage, BACKEND_ORIGIN.value);
 
     const CN_WARNING_ON_LOAD = ref(true);
-
-    // auth
-    let auth_token = readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "";
-
-    // The API client holds the token and the origin so no call site has to pass
-    // them. They change here, so they are published from here.
-    function setAuthToken(token) {
-        auth_token = token;
-        setBackendContext({ token });
-    }
-    setBackendContext({ origin: BACKEND_REQUEST_ORIGIN.value, token: auth_token });
-    // Synchronous because `bootstrap` sends its first request in the same tick
-    // as it points the app at a new backend; a deferred watcher would publish the
-    // origin after that request had already gone to the old one.
-    watch(
-        BACKEND_REQUEST_ORIGIN,
-        origin => setBackendContext({ origin }),
-        { flush: "sync" },
-    );
-    const IS_LOCKED = ref(true);
-    const BACKEND_ERROR = ref(null);
-    const AUTH_MESSAGE_KEY = ref("");
-    const MESSAGE_QUEUE = ref([]);
-    const CURRENT_MESSAGE = computed(() => MESSAGE_QUEUE.value[0] ?? null);
-    let nextMessageId = 1;
-
-    function showMessage(message) {
-        const entry = { id: nextMessageId++, args: [], ...message };
-        if (entry.presentation == "dialog") {
-            const firstToast = MESSAGE_QUEUE.value.findIndex(
-                item => item.presentation == "toast"
-            );
-            MESSAGE_QUEUE.value.splice(
-                firstToast < 0 ? MESSAGE_QUEUE.value.length : firstToast,
-                0,
-                entry
-            );
-        } else {
-            MESSAGE_QUEUE.value.push(entry);
-        }
-        return entry.id;
-    }
-
-    function showToast(messageKey, severity = "warning", args = []) {
-        return showMessage({ severity, presentation: "toast", messageKey, args });
-    }
-
-    function confirmMessage(messageKey, args = []) {
-        return new Promise(resolve => {
-            showMessage({
-                severity: "warning",
-                presentation: "dialog",
-                messageKey,
-                args,
-                confirmation: true,
-                resolve,
-            });
-        });
-    }
-
-    function dismissMessage(id) {
-        const index = MESSAGE_QUEUE.value.findIndex(message => message.id == id);
-        if (index < 0) return;
-        const [message] = MESSAGE_QUEUE.value.splice(index, 1);
-        if (message.confirmation) message.resolve(false);
-    }
-
-    function respondToMessage(id, confirmed) {
-        const index = MESSAGE_QUEUE.value.findIndex(message => message.id == id);
-        if (index < 0) return;
-        const [message] = MESSAGE_QUEUE.value.splice(index, 1);
-        if (message.confirmation) message.resolve(confirmed);
-    }
-
-    function getMessageText(message) {
-        if (message?.message) return message.message;
-        const args = (message?.args || []).map(arg =>
-            arg?.translationKey ? getTranslatedText(arg.translationKey) : arg
-        );
-        return getTranslatedText(message?.messageKey, args);
-    }
-
-    function reportOperationError(operationKey, response) {
-        return showMessage({
-            severity: "error",
-            presentation: "dialog",
-            messageKey: "Message_Operation_Failed",
-            args: [{ translationKey: operationKey }],
-            code: response?.data?.error?.code || operationKey,
-            log: response?.data?.error?.log || response?.msg,
-        });
-    }
-
-    function reportFrontendError(error, context = "Frontend") {
-        const exception = error instanceof Error ? error : new Error(String(error));
-        console.error(context, exception);
-        return showMessage({
-            severity: "error",
-            presentation: "dialog",
-            messageKey: "Message_Unexpected_Frontend_Error",
-            args: [context],
-            code: exception.name,
-            log: exception.stack || exception.message,
-        });
-    }
-
-    // Every REST caller reports failures through here, so a refused token, a
-    // backend that cannot be reached and a business error keep behaving the way
-    // they always have without each caller deciding that again.
-    function reportApiFailure(error, operationKey) {
-        if (error.isAborted) return;
-        if (error.isAuthFailure) {
-            requireAuth("AuthView_Session_Expired");
-            return;
-        }
-        if (error.isConnectionFailure) {
-            setConnectionError(error);
-            return;
-        }
-        // The request was never sent, so this is our bug and is reported with the
-        // stack that shows where it is.
-        if (error.isFrontendFault) {
-            reportFrontendError(error.cause ?? error, getTranslatedText(operationKey));
-            return;
-        }
-        showMessage({
-            severity: "error",
-            presentation: "dialog",
-            messageKey: "Message_Operation_Failed",
-            args: [{ translationKey: operationKey }],
-            code: error.code,
-            log: error.details?.traceback || error.message,
-        });
-    }
-
-    // A read that fails while the save is being opened is a failure to start, so
-    // it belongs on the backend error screen rather than in a toast over an app
-    // that never finished loading.
-    function reportStartupFailure(error) {
-        const details = startupErrorDetails(
-            error,
-            getTranslatedText("BackendError_Request_Failed", [error.message]),
-        );
-        if (!details) {
-            if (error.isAuthFailure) requireAuth("AuthView_Session_Expired");
-            return;
-        }
-        if (details.kind === "connection") setConnectionError(error);
-        else setBackendError(details);
-    }
-
-    // A backend that never answered is the failure the error screen has its own
-    // shape for: the fix is choosing a different backend, not retrying this one.
-    function setConnectionError(error) {
-        BACKEND_CONNECTED.value = false;
-        setBackendError({ kind: "connection", message: error.message });
-    }
-
-    function setBackendError(error) {
-        BACKEND_ERROR.value = typeof error === "string"
-            ? { kind: "application", message: error }
-            : error;
-        if (session.appState === "connecting") session.appState = "backend-error";
-    }
 
     async function auth() {
         // The endpoint answers 200 only for a token the backend still accepts, so
@@ -405,18 +241,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         IS_LOCKED.value = false;
         return true;
-    }
-
-    function clearBackendError() {
-        BACKEND_ERROR.value = null;
-    }
-
-    function requireAuth(messageKey = "") {
-        setAuthToken("");
-        removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
-        AUTH_MESSAGE_KEY.value = messageKey;
-        IS_LOCKED.value = true;
-        session.appState = "auth-required";
     }
 
     async function unlock(password, remember = false) {
@@ -434,11 +258,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
         IS_LOCKED.value = false;
         setAuthToken(response.data.access_token);
-        if (remember) {
-            writeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"), auth_token);
-        } else {
-            removeStorage(localStorage, storageKey("PAL_AUTH_TOKEN"));
-        }
+        rememberAuthToken(remember);
         session.appState = "connecting";
         return await resumeBackendSave();
     }
@@ -454,7 +274,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             : readRecentBackends(localStorage);
         if (changed) {
             templates.clear();
-            setAuthToken(readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
+            reloadAuthToken();
             app.pickerPath = session.recallSavePath(localStorage, origin);
         }
     }
@@ -505,14 +325,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         BACKEND_CANDIDATE.value = candidate;
         BACKEND_REQUEST_ORIGIN.value = candidate;
         if (candidate !== BACKEND_ORIGIN.value) setAuthToken("");
-        else setAuthToken(auth_token || readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
+        else setAuthToken(AUTH_TOKEN.value || readStorage(localStorage, storageKey("PAL_AUTH_TOKEN")) || "");
 
         if (!await loadAppConfig(BACKEND_CANDIDATE.value)) {
             BACKEND_REQUEST_ORIGIN.value = BACKEND_ORIGIN.value;
             return false;
         }
         if (app.hasPassword) {
-            if (!auth_token) {
+            if (!AUTH_TOKEN.value) {
                 session.appState = "auth-required";
                 return true;
             }
@@ -527,7 +347,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     async function connectBackend(candidate) {
         if (session.appState === "editor") return false;
         const previousOrigin = BACKEND_ORIGIN.value;
-        const previousToken = auth_token;
+        const previousToken = AUTH_TOKEN.value;
         const wasConnected = BACKEND_CONNECTED.value;
         candidate = normalizeBackendOrigin(candidate, window.location.origin);
         try {
@@ -544,7 +364,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         session.appState = "connecting";
         await bootstrap(BACKEND_CANDIDATE.value);
         if (BACKEND_ORIGIN.value === previousOrigin && BACKEND_ORIGIN.value !== candidate) {
-            auth_token = previousToken;
+            setAuthToken(previousToken);
             BACKEND_CANDIDATE.value = previousOrigin;
             BACKEND_REQUEST_ORIGIN.value = previousOrigin;
             BACKEND_CONNECTED.value = wasConnected;
@@ -665,17 +485,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         }
     }
 
+    // The components' way in (AGENTS.md), which is why it stays on this store
+    // rather than moving with the message queue that also needs it.
     function getTranslatedText(translationKey, args = []) {
-        let translation = UI_TRANSLATIONS[app.locale]?.[translationKey]
-            ?? DEFAULT_UI_TRANSLATION[translationKey];
-        if (!translation) {
-            console.warn(`Translation key "${translationKey}" not found.`);
-            return "I18N_MISSING";
-        }
-        args.forEach((arg, index) => {
-            translation = translation.replace(`{{${index}}}`, arg);
-        });
-        return translation;
+        return translate(app.locale, translationKey, args);
     }
 
     // ---- players -------------------------------------------------------------

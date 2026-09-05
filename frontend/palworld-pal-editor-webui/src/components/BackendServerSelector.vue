@@ -6,24 +6,26 @@ import UiIcon from '@/components/modules/UiIcon.vue'
 import { normalizeBackendOrigin, readRecentBackends, writeStorage } from '@/services/backend-connection'
 import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const sessionStore = useSessionStore()
 const open = ref(false)
-const address = ref(palStore.BACKEND_CANDIDATE)
+const address = ref(backend.BACKEND_CANDIDATE)
 const errorKey = ref('')
 const trigger = ref(null)
 const root = ref(null)
 const popoverTop = ref('0px')
 const pageOrigin = window.location.origin
 const text = key => palStore.getTranslatedText(key)
-const currentOrigin = computed(() => palStore.BACKEND_ORIGIN || pageOrigin)
-const candidateOrigin = computed(() => palStore.BACKEND_CANDIDATE || pageOrigin)
-const visibleRecent = computed(() => palStore.BACKEND_RECENT.filter(origin => origin !== currentOrigin.value))
+const currentOrigin = computed(() => backend.BACKEND_ORIGIN || pageOrigin)
+const candidateOrigin = computed(() => backend.BACKEND_CANDIDATE || pageOrigin)
+const visibleRecent = computed(() => backend.BACKEND_RECENT.filter(origin => origin !== currentOrigin.value))
 const triggerLabel = computed(() => `${text('BackendSelector_Label')}: ${candidateOrigin.value}, ${text(
-  palStore.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected')}`)
+  backend.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected')}`)
 const busy = computed(() => sessionStore.operationPending)
 
 const close = focus => {
@@ -38,7 +40,7 @@ const toggle = () => {
   open.value = !open.value
   errorKey.value = ''
   if (open.value) {
-    address.value = palStore.BACKEND_CANDIDATE
+    address.value = backend.BACKEND_CANDIDATE
     positionPopover()
   }
 }
@@ -52,8 +54,8 @@ const useBackend = async value => {
   else errorKey.value = 'BackendSelector_Connection_Failed'
 }
 const removeRecent = origin => {
-  palStore.BACKEND_RECENT = palStore.BACKEND_RECENT.filter(item => item !== origin)
-  writeStorage(localStorage, 'PAL_BACKEND_RECENT', JSON.stringify(palStore.BACKEND_RECENT))
+  backend.BACKEND_RECENT = backend.BACKEND_RECENT.filter(item => item !== origin)
+  writeStorage(localStorage, 'PAL_BACKEND_RECENT', JSON.stringify(backend.BACKEND_RECENT))
 }
 const onPointerDown = event => {
   if (open.value && !root.value?.contains(event.target)) close(false)
@@ -67,7 +69,7 @@ const onResize = () => {
 const onRecentKeyDown = event => moveRecentFocus(event,
   [...event.currentTarget.closest('[role="menu"]').querySelectorAll('[role="menuitem"]:not(:disabled)')])
 
-palStore.BACKEND_RECENT = readRecentBackends(localStorage, pageOrigin)
+backend.BACKEND_RECENT = readRecentBackends(localStorage, pageOrigin)
 window.addEventListener('pointerdown', onPointerDown)
 window.addEventListener('keydown', onKeyDown)
 window.addEventListener('resize', onResize)
@@ -83,8 +85,8 @@ onBeforeUnmount(() => {
     <button ref="trigger" class="backend-selector__trigger editor-button editor-button--icon" type="button" :disabled="busy" :aria-expanded="open"
       aria-controls="backend-server-popover" :aria-label="triggerLabel" @click="toggle">
       <UiIcon name="server" />
-      <span class="backend-selector__status" :class="{ connected: palStore.BACKEND_CONNECTED }"></span>
-      <span class="backend-selector__state">{{ text(palStore.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected') }}</span>
+      <span class="backend-selector__status" :class="{ connected: backend.BACKEND_CONNECTED }"></span>
+      <span class="backend-selector__state">{{ text(backend.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected') }}</span>
       <span class="backend-selector__chevron" aria-hidden="true"></span>
     </button>
     <section v-if="open" id="backend-server-popover" class="backend-selector__popover editor-glass-surface"
@@ -94,9 +96,9 @@ onBeforeUnmount(() => {
           <h2>{{ text('BackendSelector_Title') }}</h2>
           <p>{{ text('BackendSelector_Description') }}</p>
         </div>
-        <span class="backend-selector__connection" :class="{ connected: palStore.BACKEND_CONNECTED }">
-          <span class="backend-selector__status" :class="{ connected: palStore.BACKEND_CONNECTED }"></span>
-          {{ text(palStore.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected') }}
+        <span class="backend-selector__connection" :class="{ connected: backend.BACKEND_CONNECTED }">
+          <span class="backend-selector__status" :class="{ connected: backend.BACKEND_CONNECTED }"></span>
+          {{ text(backend.BACKEND_CONNECTED ? 'BackendSelector_Connected' : 'BackendSelector_Disconnected') }}
         </span>
       </header>
 

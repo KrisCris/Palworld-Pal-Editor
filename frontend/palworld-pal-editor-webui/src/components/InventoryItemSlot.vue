@@ -5,6 +5,7 @@ import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   slot: { type: Object, required: true },
@@ -18,6 +19,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['edit', 'clear', 'repair'])
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const tooltipVisible = ref(false)
 const tooltipPoint = ref({ clientX: 0, clientY: 0 })
 
@@ -36,7 +38,7 @@ const empty = computed(() => magazineSize.value > 0
   && props.slot.ammo != null
   && props.slot.ammo < magazineSize.value)
 const repairable = computed(() => props.editable && (worn.value || empty.value))
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 
 const showTooltip = event => {
   if (!props.item) return

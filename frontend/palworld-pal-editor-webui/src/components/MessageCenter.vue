@@ -2,10 +2,12 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useMessagesStore } from '@/stores/messages'
 
 const palStore = usePalEditorStore()
-const current = computed(() => palStore.CURRENT_MESSAGE)
-const visibleText = computed(() => palStore.getMessageText(current.value))
+const messages = useMessagesStore()
+const current = computed(() => messages.CURRENT_MESSAGE)
+const visibleText = computed(() => messages.getMessageText(current.value))
 const details = computed(() => [current.value?.code, current.value?.log]
   .filter(Boolean)
   .join('\n\n'))
@@ -26,10 +28,10 @@ const clearDismissTimer = () => {
   dismissTimer = undefined
 }
 const dismiss = () => {
-  if (current.value) palStore.dismissMessage(current.value.id)
+  if (current.value) messages.dismissMessage(current.value.id)
 }
 const respond = confirmed => {
-  if (current.value) palStore.respondToMessage(current.value.id, confirmed)
+  if (current.value) messages.respondToMessage(current.value.id, confirmed)
 }
 
 watch(current, async message => {
@@ -42,7 +44,7 @@ watch(current, async message => {
     return
   }
   dismissTimer = setTimeout(
-    () => palStore.dismissMessage(message.id),
+    () => messages.dismissMessage(message.id),
     message.severity === 'success' ? 5000 : 8000,
   )
 }, { immediate: true })

@@ -17,6 +17,8 @@ globalThis.alert = () => {};
 
 const { usePalEditorStore } = await import("../src/stores/paleditor.js");
 const { useAppStore } = await import("../src/stores/app.js");
+const { useBackendStore } = await import("../src/stores/backend.js");
+const { useMessagesStore } = await import("../src/stores/messages.js");
 const { useCatalogsStore } = await import("../src/stores/catalogs.js");
 const { useSessionStore } = await import("../src/stores/session.js");
 const { usePalsStore } = await import("../src/stores/pals.js");
@@ -25,6 +27,8 @@ const { useResearchStore } = await import("../src/stores/research.js");
 const { useRostersStore } = await import("../src/stores/rosters.js");
 const { useStoragesStore } = await import("../src/stores/storages.js");
 let appState;
+let backend;
+let messages;
 let session;
 let pals;
 let players;
@@ -60,6 +64,8 @@ function newStore({ preserveStorage = false } = {}) {
     if (!preserveStorage) values.clear();
     setActivePinia(createPinia());
     appState = useAppStore();
+    messages = useMessagesStore();
+    backend = useBackendStore();
     session = useSessionStore();
     pals = usePalsStore();
     players = usePlayersStore();
@@ -249,10 +255,10 @@ test("connectBackend promotes a reachable candidate and routes its asset URLs", 
 
     assert.equal(await store.connectBackend("10.0.0.2:58081"), true);
     assert.equal(calls[0][1], "http://10.0.0.2:58081/api/app-config");
-    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
-    assert.equal(store.BACKEND_CONNECTED, true);
-    assert.deepEqual(store.BACKEND_RECENT, ["http://10.0.0.2:58081"]);
-    assert.equal(store.backendAssetUrl("/image/ui/heal"), "http://10.0.0.2:58081/image/ui/heal");
+    assert.equal(backend.BACKEND_ORIGIN, "http://10.0.0.2:58081");
+    assert.equal(backend.BACKEND_CONNECTED, true);
+    assert.deepEqual(backend.BACKEND_RECENT, ["http://10.0.0.2:58081"]);
+    assert.equal(backend.backendAssetUrl("/image/ui/heal"), "http://10.0.0.2:58081/image/ui/heal");
 });
 
 test("connectBackend keeps the persisted origin when the candidate cannot fetch config", async () => {
@@ -267,11 +273,11 @@ test("connectBackend keeps the persisted origin when the candidate cannot fetch 
     };
 
     assert.equal(await store.connectBackend("10.0.0.2:58081"), false);
-    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.1:58081");
-    assert.equal(store.BACKEND_CANDIDATE, "http://10.0.0.1:58081");
-    assert.equal(store.BACKEND_CONNECTED, true);
+    assert.equal(backend.BACKEND_ORIGIN, "http://10.0.0.1:58081");
+    assert.equal(backend.BACKEND_CANDIDATE, "http://10.0.0.1:58081");
+    assert.equal(backend.BACKEND_CONNECTED, true);
     assert.equal(session.appState, previousState);
-    assert.equal(store.BACKEND_ERROR, null);
+    assert.equal(backend.BACKEND_ERROR, null);
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.1:58081");
 });
 
@@ -287,7 +293,7 @@ test("a persisted backend is disconnected until its initial probe succeeds", asy
 
     await store.bootstrap();
 
-    assert.equal(store.BACKEND_CONNECTED, false);
+    assert.equal(backend.BACKEND_CONNECTED, false);
 });
 
 test("one Pal is one entry: a roster refresh moves it without leaving a copy behind", async () => {
@@ -476,11 +482,11 @@ test("normalizes persisted origins and bootstrap candidates", async () => {
     const store = newStore({ preserveStorage: true });
     const calls = mockBackend({ password: true });
 
-    assert.equal(store.BACKEND_ORIGIN, "http://10.0.0.2:58081");
+    assert.equal(backend.BACKEND_ORIGIN, "http://10.0.0.2:58081");
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "http://10.0.0.2:58081");
     await store.bootstrap("http://frontend.test/");
     assert.equal(calls[0][1], "/api/app-config");
-    assert.equal(store.BACKEND_ORIGIN, "");
+    assert.equal(backend.BACKEND_ORIGIN, "");
     assert.equal(localStorage.getItem("PAL_BACKEND_ORIGIN"), "");
 });
 
@@ -622,7 +628,7 @@ test("startup network failures route to the dedicated backend error state", asyn
     await store.bootstrap();
 
     assert.equal(session.appState, "backend-error");
-    assert.equal(store.BACKEND_ERROR.message, "Network Error");
+    assert.equal(backend.BACKEND_ERROR.message, "Network Error");
 });
 
 test("runtime failures preserve editor state", async () => {
@@ -655,7 +661,7 @@ test("a failed Pal detail request preserves the current complete selection", asy
     };
 
     assert.equal(await store.selectPal("world:pal-next"), false);
-    assert.equal(store.BACKEND_ERROR.kind, "connection");
+    assert.equal(backend.BACKEND_ERROR.kind, "connection");
     assert.equal(pals.selectedRecordKey, current.recordKey);
     assert.equal(pals.selectedPal.InstanceId, "pal-current");
     assert.equal(session.operationPending, false);
@@ -872,7 +878,7 @@ test("the app config publishes backend locales and switches to the translated lo
 
 test("language changes refresh only the active roster and re-fetch others lazily", async () => {
     const store = newStore();
-    store.IS_LOCKED = false;
+    backend.IS_LOCKED = false;
     session.appState = "editor";
     rosters.rosters = [
         { rosterKey: "player:player-1", kind: "player", label: "One", playerUid: "player-1" },
@@ -925,7 +931,7 @@ test("language changes refresh only the active roster and re-fetch others lazily
 
 test("language changes fail when the active roster cannot be refreshed", async () => {
     const store = newStore();
-    store.IS_LOCKED = false;
+    backend.IS_LOCKED = false;
     session.appState = "editor";
     rosters.activeRosterKey = "global-palbox";
     rosters.recordKeysByRoster.set("global-palbox", []);
@@ -996,16 +1002,16 @@ test("wrong passwords remain on the auth page with inline feedback", async () =>
     await store.unlock("wrong", false);
 
     assert.equal(session.appState, "auth-required");
-    assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Wrong_Password");
+    assert.equal(backend.AUTH_MESSAGE_KEY, "AuthView_Wrong_Password");
 });
 
 test("expired sessions retain an inline authentication explanation", () => {
     const store = newStore();
 
-    store.requireAuth("AuthView_Session_Expired");
+    backend.requireAuth("AuthView_Session_Expired");
 
     assert.equal(session.appState, "auth-required");
-    assert.equal(store.AUTH_MESSAGE_KEY, "AuthView_Session_Expired");
+    assert.equal(backend.AUTH_MESSAGE_KEY, "AuthView_Session_Expired");
 });
 
 test("missing player validation uses a nonblocking warning", async () => {
@@ -1013,9 +1019,9 @@ test("missing player validation uses a nonblocking warning", async () => {
 
     await store.updatePlayer({ target: { name: "Rank", value: 1 } });
 
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Select_Player");
-    assert.equal(store.CURRENT_MESSAGE.severity, "warning");
-    assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Select_Player");
+    assert.equal(messages.CURRENT_MESSAGE.severity, "warning");
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "toast");
     assert.equal(session.operationPending, false);
 });
 
@@ -1110,8 +1116,8 @@ test("unexpected request errors release loading before showing details", async t
     await store.writeSave();
 
     assert.equal(session.operationPending, false);
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Unexpected_Frontend_Error");
-    assert.match(store.CURRENT_MESSAGE.log, /broken request adapter/);
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Unexpected_Frontend_Error");
+    assert.match(messages.CURRENT_MESSAGE.log, /broken request adapter/);
 });
 
 test("one gate covers the whole app and is released even when an operation fails", async t => {
@@ -1152,7 +1158,7 @@ test("a failed donation dismissal is reported as an operation error", async () =
 
     await store.shownDonate();
 
-    assert.equal(store.BACKEND_ERROR.kind, "connection");
+    assert.equal(backend.BACKEND_ERROR.kind, "connection");
 });
 
 test("a save reports the path the backend says it wrote, and clears the markers", async () => {
@@ -1173,10 +1179,10 @@ test("a save reports the path the backend says it wrote, and clears the markers"
     await store.writeSave();
 
     assert.deepEqual(calls, [["/api/session/saves", { path: "C:/output" }]]);
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Save_Success");
-    assert.deepEqual(store.CURRENT_MESSAGE.args, ["C:/output"]);
-    assert.equal(store.CURRENT_MESSAGE.severity, "success");
-    assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Save_Success");
+    assert.deepEqual(messages.CURRENT_MESSAGE.args, ["C:/output"]);
+    assert.equal(messages.CURRENT_MESSAGE.severity, "success");
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "toast");
     assert.deepEqual(
         [...pals.palsByRecordKey.values()].flatMap(
             ({ summary: row, detail: full }) => [row?.changeState, full?.changeState],
@@ -1214,13 +1220,13 @@ test("a save that could not put the original files back says where they are", as
 
     assert.equal(await store.writeSave(), false);
 
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Save_Not_Restored");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Save_Not_Restored");
     assert.deepEqual(
-        store.CURRENT_MESSAGE.args,
+        messages.CURRENT_MESSAGE.args,
         ["C:/output/Palworld-Pal-Editor-Backup/2026-08-30"],
     );
-    assert.equal(store.CURRENT_MESSAGE.presentation, "dialog");
-    assert.equal(store.CURRENT_MESSAGE.code, "SAVE_FAILED");
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "dialog");
+    assert.equal(messages.CURRENT_MESSAGE.code, "SAVE_FAILED");
 });
 
 test("a save that failed but was rolled back is an ordinary operation failure", async () => {
@@ -1242,8 +1248,8 @@ test("a save that failed but was rolled back is an ordinary operation failure", 
 
     assert.equal(await store.writeSave(), false);
 
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Operation_Failed");
-    assert.equal(store.CURRENT_MESSAGE.code, "SAVE_FAILED");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Operation_Failed");
+    assert.equal(messages.CURRENT_MESSAGE.code, "SAVE_FAILED");
 });
 
 test("deleting the last Pal falls through to the player editor instead of a blank canvas", async () => {
@@ -1331,8 +1337,8 @@ test("text that is not JSON never reaches the backend", async () => {
         targetStorageKey: "world-container:palbox",
     }), false);
 
-    assert.equal(store.CURRENT_MESSAGE.presentation, "dialog");
-    assert.equal(store.CURRENT_MESSAGE.code, "PAL_JSON_INVALID");
+    assert.equal(messages.CURRENT_MESSAGE.presentation, "dialog");
+    assert.equal(messages.CURRENT_MESSAGE.code, "PAL_JSON_INVALID");
     assert.equal(session.operationPending, false);
 });
 
@@ -1393,7 +1399,7 @@ test("applying a skill template answers with the Pal and is not read back", asyn
     // The reply is the Pal, so nothing is fetched afterwards; the GET above
     // would have thrown if it were.
     assert.deepEqual(pals.selectedPal.PassiveSkillList, ["PAL_ALLAttack_up2"]);
-    assert.equal(store.CURRENT_MESSAGE.messageKey, "Message_Skill_Template_Applied");
+    assert.equal(messages.CURRENT_MESSAGE.messageKey, "Message_Skill_Template_Applied");
 });
 
 test("exporting a Pal to the Global Palbox auto-jumps to its new location and refreshes only affected rosters", async () => {

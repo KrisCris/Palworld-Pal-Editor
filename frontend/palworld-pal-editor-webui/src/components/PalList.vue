@@ -16,6 +16,7 @@ import {
 } from '@/components/pal-list-order'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
@@ -23,6 +24,7 @@ import { useSessionStore } from '@/stores/session'
 import { useStoragesStore } from '@/stores/storages'
 
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -202,7 +204,7 @@ const palWasEdited = pal => isEditedPal(pal)
                 :title="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
                 :aria-label="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
                 @click="toggleAttributeFilter(filter.key)">
-                <img v-if="filter.icon" :src="palStore.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
+                <img v-if="filter.icon" :src="backend.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
                   @error="$event.currentTarget.hidden = true">
                 <UiIcon v-else :name="filter.uiIcon" />
                 <span>{{ filter.label || palStore.getTranslatedText(filter.translation) }}</span>
@@ -249,26 +251,26 @@ const palWasEdited = pal => isEditedPal(pal)
         :value="pal.recordKey" @click="palStore.selectPal(pal.recordKey)"
         :aria-current="palsStore.selectedRecordKey == pal.recordKey ? 'true' : undefined"
         :disabled="palsStore.selectedRecordKey == pal.recordKey">
-        <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
+        <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
-            <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsBOSS" :src="backend.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
             <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
-              :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
+              :src="backend.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
               @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-left>
             <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-if="pal.IsImportedCharacter" class="game-dna-icon"
-              :src="palStore.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-right>
             <span v-if="palWasCreated(pal)" class="new-pal-marker"><UiIcon name="plus" /></span>

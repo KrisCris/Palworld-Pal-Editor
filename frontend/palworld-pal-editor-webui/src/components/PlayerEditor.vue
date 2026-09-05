@@ -34,10 +34,12 @@ import TechCard from '@/components/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 import { usePlayersStore } from '@/stores/players'
 
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const playersStore = usePlayersStore()
 const player = computed(() => playersStore.selectedPlayer)
 const activeTab = ref('character')
@@ -173,7 +175,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
           <article class="status-control" v-for="([name, metadata]) in playerStats" :key="name">
             <header>
               <span class="status-name">
-                <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
+                <img :src="backend.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
                 {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
               </span>
               <strong class="status-allocation">
@@ -206,7 +208,7 @@ const technologyRows = computed(() => Object.entries(catalogsStore.technologiesB
         <article class="status-control" v-for="([name, metadata]) in effigyAbilities" :key="name">
           <header>
             <span class="status-name">
-              <img :src="palStore.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
+              <img :src="backend.backendAssetUrl(`/image/ui/${metadata.icon}`)" alt="">
               {{ palStore.getTranslatedText(`StatusPoint_${name}`) }}
             </span>
             <strong>{{ player.StatusPointTotals[name] }} / {{ player.StatusPointTotalMaximums[name] }}</strong>

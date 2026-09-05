@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import PalPortrait from '@/components/PalPortrait.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -13,8 +14,9 @@ const props = defineProps({
 })
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const changed = key => Object.hasOwn(props.changedFields, key)
-const uiIcon = name => palStore.backendAssetUrl(`/image/ui/${name}`)
+const uiIcon = name => backend.backendAssetUrl(`/image/ui/${name}`)
 const cleanLabel = key => palStore.getTranslatedText(key).replace(/\s*[:：]\s*$/, '').trim()
 const attributeLabel = row => row.suffix
   ? `${cleanLabel(row.label)} ${cleanLabel(row.suffix)}`
@@ -48,7 +50,7 @@ const portraitBorder = computed(() => props.data.IsAwakening
   : props.data.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)')
 const elementIcon = skill => {
   const key = palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)
-  return key ? palStore.backendAssetUrl(`/image/elements/Element_${key}`) : uiIcon('stat-attack')
+  return key ? backend.backendAssetUrl(`/image/elements/Element_${key}`) : uiIcon('stat-attack')
 }
 </script>
 
@@ -56,7 +58,7 @@ const elementIcon = skill => {
   <article :class="['pal-brief', 'editor-glass-surface', `pal-brief--${tone}`]">
     <p class="pal-brief__title">{{ title }}</p>
     <header>
-      <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${data.IconKey}`)" alt="" size="4.25rem"
+      <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${data.IconKey}`)" alt="" size="4.25rem"
         :border-color="portraitBorder"
         :glow-color="data.IsAwakening ? 'var(--editor-color-awakened)' : ''">
         <template #top-left>
@@ -115,7 +117,7 @@ const elementIcon = skill => {
       <h4>{{ palStore.getTranslatedText('Editor_Suitabilities') }}</h4>
       <div class="pal-brief__suitabilities" :class="{ changed: changed('Suitabilities') }">
         <span v-for="([key, value]) in suitabilityEntries" :key="key" :title="key.split('::').pop()">
-          <img :src="palStore.backendAssetUrl(`/image/suitabilities/${key.split('::').pop()}`)" alt="">
+          <img :src="backend.backendAssetUrl(`/image/suitabilities/${key.split('::').pop()}`)" alt="">
           <b>{{ value }}</b>
         </span>
       </div>

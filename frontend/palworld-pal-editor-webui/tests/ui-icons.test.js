@@ -132,7 +132,7 @@ test("runtime game image URLs use the selected backend", async () => {
 
     for (const name of components) {
         const source = await readFile(new URL(name, componentRoot), "utf8");
-        assert.match(source, /palStore\.backendAssetUrl\(/, name);
+        assert.match(source, /backend\.backendAssetUrl\(/, name);
         assert.doesNotMatch(source, /(?:src|backgroundImage):\s*["'`]\/image\//, name);
         assert.doesNotMatch(source, /url\(["'`]\/image\//, name);
     }

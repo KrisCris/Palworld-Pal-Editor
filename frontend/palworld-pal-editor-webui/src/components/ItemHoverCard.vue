@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -11,6 +12,7 @@ const props = defineProps({
   clientY: { type: Number, required: true },
 })
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const cardRef = ref(null)
 const position = ref({ left: '0px', top: '0px' })
 
@@ -18,7 +20,7 @@ const details = computed(() => props.detailsItem || props.item)
 const rarity = computed(() => Math.max(0, Math.min(4, details.value?.Rarity ?? 0)))
 const rarityName = computed(() => palStore.getTranslatedText(`Inventory_Rarity_${rarity.value}`))
 const itemType = computed(() => palStore.getTranslatedText(`Inventory_Type_${props.item.TypeA}`))
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 const statOrder = ['PhysicalAttack', 'PhysicalDefense', 'HP', 'Shield', 'MagicAttack', 'MagicDefense', 'Weight', 'Price']
 const effectLabels = new Set([
   'AirDash', 'AvoidDurationUp_EquipSkill', 'CaptureLevel', 'CollectItemDrop_NaturalObject', 'CraftSpeed',

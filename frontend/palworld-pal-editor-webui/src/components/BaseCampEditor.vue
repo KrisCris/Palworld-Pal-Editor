@@ -4,10 +4,14 @@ import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
+import { useMessagesStore } from '@/stores/messages'
 import { useResearchStore } from '@/stores/research'
 
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
+const messages = useMessagesStore()
 const researchStore = useResearchStore()
 const selectedCategoryId = ref('Handcraft')
 const selectedResearchId = ref(null)
@@ -120,8 +124,8 @@ const allCompleted = computed(() => categories.value.length > 0 && categories.va
 ))
 
 const translated = key => palStore.getTranslatedText(key)
-const categoryIcon = category => palStore.backendAssetUrl(`/image/lab/category-${category}`)
-const researchIcon = research => palStore.backendAssetUrl(`/image/lab/${research.IconKey}`)
+const categoryIcon = category => backend.backendAssetUrl(`/image/lab/category-${category}`)
+const researchIcon = research => backend.backendAssetUrl(`/image/lab/${research.IconKey}`)
 const formatNumber = value => new Intl.NumberFormat().format(value ?? 0)
 const materialName = material => catalogsStore.itemsByName[material.ItemId]?.Name ?? material.ItemId
 
@@ -159,13 +163,13 @@ async function completeResearch() {
 
 async function completeCategory() {
   if (!selectedCategory.value || selectedCategory.value.Completed === selectedCategory.value.Total) return
-  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_Category')) return
+  if (!await messages.confirmMessage('BaseCamp_Research_Confirm_Category')) return
   await palStore.completeBaseCampResearch({ category: selectedCategory.value.Category })
 }
 
 async function completeAll() {
   if (allCompleted.value) return
-  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_All')) return
+  if (!await messages.confirmMessage('BaseCamp_Research_Confirm_All')) return
   await palStore.completeBaseCampResearch({ all: true })
 }
 

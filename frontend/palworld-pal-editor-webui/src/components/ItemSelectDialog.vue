@@ -9,6 +9,7 @@ import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-sel
 import { readStorage, writeStorage } from '@/services/backend-connection'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
 
 const TYPE_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_TYPES'
 const RARITY_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_RARITIES'
@@ -44,6 +45,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
+const backend = useBackendStore()
 const query = ref('')
 const selectedTypes = ref(readStoredArray(TYPE_FILTER_STORAGE_KEY).filter(value => typeof value === 'string'))
 const selectedRarities = ref(readStoredArray(RARITY_FILTER_STORAGE_KEY)
@@ -173,7 +175,7 @@ const save = () => emit('save', {
     ? Math.min(maximum.value, Math.max(1, Math.trunc(Number(count.value) || 1)))
     : 1,
 })
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 </script>
 
 <template>

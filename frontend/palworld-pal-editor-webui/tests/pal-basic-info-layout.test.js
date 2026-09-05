@@ -109,9 +109,9 @@ test("Pal summary uses Paldeck identity without duplicate or N/A tags", () => {
   assert.match(source, /currentPaldeck = \(\) => pal\.value\.Paldeck/);
   assert.match(source, /import PalPortrait from/);
   assert.match(panel, /<PalPortrait[^>]*size="5\.5rem"/s);
-  assert.match(panel, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
-  assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
-  assert.match(panel, /v-(?:else-)?if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="palStore\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-if="pal\.IsBOSS"[\s\S]*?:src="backend\.backendAssetUrl\('\/image\/ui\/boss'\)"/);
+  assert.match(panel, /<template #top-left>[\s\S]*?v-else-if="pal\.IsRarePal"[\s\S]*?:src="backend\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
+  assert.match(panel, /v-(?:else-)?if="pal\.IsBOSS && pal\.IsRarePal"[\s\S]*?:src="backend\.backendAssetUrl\('\/image\/ui\/rare'\)"/);
   assert.match(panel, /PAL \$\{currentPaldeck\(\)\}/);
   assert.doesNotMatch(panel.match(/<h2[\s\S]*?<\/h2>/)?.[0] || "", /displayPalElement/);
   assert.match(panel, /specialTypeKeys\(pal\)\.length/);
