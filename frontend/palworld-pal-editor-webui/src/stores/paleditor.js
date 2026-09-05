@@ -20,6 +20,8 @@ import {
     MAX_SUITABILITY_LEVEL,
 } from "../game-limits.js";
 import { translate } from "../i18n/index.js";
+import { maximumSuitabilities } from "../pal-traits.js";
+import { isSkillAssignable } from "../skill-rules.js";
 import { checkAuth, login } from "../api/auth.js";
 import { useAppStore } from "./app.js";
 import { BACKEND_ORIGIN_KEY, useBackendStore } from "./backend.js";
@@ -32,108 +34,6 @@ import { BASE_ROSTER_KEY, useRostersStore } from "./rosters.js";
 import { useSessionStore } from "./session.js";
 import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
-
-export function isSkillAssignable(skill = {}, isHuman = false) {
-    if (skill.Disabled) return false;
-    return isHuman
-        ? skill.AssignableToHumans === true
-        : skill.Assignable !== false;
-}
-
-export function skillBadges(skill = {}, isHuman = false) {
-    return [
-        skill.NonInheritable && "nonInheritable",
-        skill.Exclusive && "exclusive",
-        skill.BossSkill && "boss",
-        (skill.HasSkillFruit || skill.SkillFruit) && "fruit",
-        !isSkillAssignable(skill, isHuman) && "disabled",
-    ].filter(Boolean);
-}
-
-export function filterSkillOptions(skills, currentIds, hideInvalid, isHuman = false) {
-    const rows = Array.isArray(skills) ? skills : [];
-    if (!hideInvalid) return rows.slice();
-
-    const retainedIds = new Set(currentIds ?? []);
-    return rows.filter(
-        skill => (
-            (!skill?.Invalid && isSkillAssignable(skill, isHuman))
-            || retainedIds.has(skill?.InternalName)
-        ),
-    );
-}
-
-export const canToggleBossVariant = pal => Boolean(
-    pal?.HasBaseVariant && pal?.HasBossVariant,
-);
-
-export const maximumSuitabilities = (minimums, max) => Object.fromEntries(
-    Object.entries(minimums ?? {})
-        .filter(([, level]) => level > 0)
-        .map(([name]) => [name, max]),
-);
-
-export function filterPalSkins(skins, selectedPal, hideInvalid = false) {
-    const target = selectedPal?.FamilyID
-        || selectedPal?.DataAccessKey
-        || selectedPal?.CharacterID;
-    return (skins ?? []).filter(skin =>
-        skin?.TargetPalName === target
-        && (!hideInvalid
-            || !skin.Invalid
-            || skin.SkinName === selectedPal?.SkinName)
-    );
-}
-
-const SKILL_BADGE_TRANSLATION_KEYS = Object.freeze({
-    nonInheritable: "Editor_Skill_Badge_NonInheritable",
-    exclusive: "Editor_Skill_Badge_Exclusive",
-    boss: "Editor_Skill_Badge_Boss",
-    fruit: "Editor_Skill_Badge_Fruit",
-    disabled: "Editor_Skill_Badge_Disabled",
-});
-
-const ELEMENT_ALIASES = Object.freeze({
-    Leaf: "Grass",
-    Earth: "Ground",
-    Electricity: "Electric",
-    Normal: "Neutral",
-});
-const ELEMENT_ICON_KEYS = new Set([
-    "Water", "Fire", "Dragon", "Grass", "Ground", "Ice", "Electric", "Neutral", "Dark",
-]);
-
-export function elementIconKey(element) {
-    const key = ELEMENT_ALIASES[element] ?? element;
-    return ELEMENT_ICON_KEYS.has(key) ? key : null;
-}
-
-export function passiveTier(rating) {
-    if (rating >= 5) return "top";
-    if (rating >= 4) return "high";
-    if (rating >= 2) return "positive";
-    if (rating < 0) return "negative";
-    return "neutral";
-}
-
-export const skillBadgeTranslationKey = badge => SKILL_BADGE_TRANSLATION_KEYS[badge];
-
-export function genderKey(gender) {
-    if (gender === "EPalGenderType::Female") return "female";
-    if (gender === "EPalGenderType::Male") return "male";
-    return null;
-}
-
-export function specialTypeKeys(pal = {}) {
-    return [
-        pal.IsTower && "tower",
-        pal.IsBOSS && "boss",
-        pal.IsRarePal && "rare",
-        pal.IsRAID && "raid",
-        pal.IsPREDATOR && "predator",
-        pal.IsOilrig && "oilrig",
-    ].filter(Boolean);
-}
 
 export const usePalEditorStore = defineStore("paleditor", () => {
     // The app shell. Messages, auth, the backend connection, the static catalogs,
@@ -1054,12 +954,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return true;
     }
 
-    function palElementKeys(DataAccessKey) {
-        return (catalogs.palsByName[DataAccessKey]?.Elements ?? [])
-            .map(elementIconKey)
-            .filter(Boolean);
-    }
-
     // The prompt is dismissed per language, so the answer arrives with the app
     // config and is refreshed whenever the language changes.
     async function shownDonate() {
@@ -1094,15 +988,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         getTranslatedText,
         getMessageText,
 
-        elementIconKey,
-        palElementKeys,
-        passiveTier,
-        genderKey,
-        specialTypeKeys,
-        filterSkillOptions,
-        isSkillAssignable,
-        skillBadges,
-        skillBadgeTranslationKey,
 
         reset,
 

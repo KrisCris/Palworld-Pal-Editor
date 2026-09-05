@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 import PalPortrait from '@/components/PalPortrait.vue'
 import { MAX_FRIENDSHIP_LEVEL } from '@/game-limits'
+import { elementIconKey, passiveTier } from '@/pal-traits'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
@@ -50,7 +51,7 @@ const portraitBorder = computed(() => props.data.IsAwakening
   ? 'var(--editor-color-danger)'
   : props.data.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)')
 const elementIcon = skill => {
-  const key = palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)
+  const key = elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)
   return key ? backend.backendAssetUrl(`/image/elements/Element_${key}`) : uiIcon('stat-attack')
 }
 </script>
@@ -147,7 +148,7 @@ const elementIcon = skill => {
       <div class="pal-brief__passive-skills">
         <div v-for="skill in passiveSkills.slice(0, 4)" :key="skill"
           :title="catalogsStore.passiveSkillsByName[skill]?.I18n?.[1] || skill">
-          <i :class="`passive-tier--${palStore.passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`" />
+          <i :class="`passive-tier--${passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`" />
           <strong>{{ passiveName(skill) }}</strong>
         </div>
       </div>

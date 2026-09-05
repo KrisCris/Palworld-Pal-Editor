@@ -10,10 +10,12 @@ import { formatStorageLabel } from '@/components/pal-storage-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { MAX_FRIENDSHIP_LEVEL, MAX_INVALID_LEVEL, MAX_LEVEL, MAX_SOULS_LEVEL, MAX_SUITABILITY_LEVEL } from '@/game-limits'
+import { canToggleBossVariant, elementIconKey, filterPalSkins, genderKey, passiveTier, specialTypeKeys } from '@/pal-traits'
+import { filterSkillOptions, isSkillAssignable, skillBadgeTranslationKey, skillBadges } from '@/skill-rules'
 import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { useCatalogsStore } from '@/stores/catalogs'
-import { canToggleBossVariant, filterPalSkins, usePalEditorStore } from '@/stores/paleditor'
+import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
 import { useStoragesStore } from '@/stores/storages'
 const appStore = useAppStore()
@@ -68,14 +70,14 @@ const currentSkillIds = () => [
   ...(pal.value.MasteredWaza || []),
 ];
 
-const activeSkillOptions = () => palStore.filterSkillOptions(
+const activeSkillOptions = () => filterSkillOptions(
   catalogsStore.activeSkills,
   currentSkillIds(),
   appStore.HIDE_INVALID_OPTIONS,
   pal.value.IsHuman,
 );
 
-const canAssignActiveSkill = skill => palStore.isSkillAssignable(
+const canAssignActiveSkill = skill => isSkillAssignable(
   skill,
   pal.value.IsHuman,
 );
@@ -182,22 +184,22 @@ const passiveSkillOptions = () => catalogsStore.passiveSkills
   label: skill.I18n[0],
   description: skill.I18n[1],
   meta: appStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
-  tone: palStore.passiveTier(skill.Rating),
+  tone: passiveTier(skill.Rating),
   group: palStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
   }))
 
 function activeSkillMetadata(skill = {}) {
-  const badges = palStore.skillBadges(skill, pal.value.IsHuman)
+  const badges = skillBadges(skill, pal.value.IsHuman)
   const metadata = [
     ...badges
       .filter(badge => badge !== 'exclusive')
-      .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))),
+      .map(badge => palStore.getTranslatedText(skillBadgeTranslationKey(badge))),
     `${palStore.getTranslatedText('Editor_Skill_ATK')}${skill.Power}`,
     `${palStore.getTranslatedText('Editor_Skill_CD')}${skill.CT}`,
   ]
 
   if (badges.includes('exclusive')) {
-    metadata.push(palStore.getTranslatedText(palStore.skillBadgeTranslationKey('exclusive')))
+    metadata.push(palStore.getTranslatedText(skillBadgeTranslationKey('exclusive')))
     if (skill.LearnerNames?.length) metadata.push(skill.LearnerNames.join(' / '))
   }
 
@@ -205,7 +207,7 @@ function activeSkillMetadata(skill = {}) {
 }
 
 const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
-  const element = palStore.elementIconKey(skill.Element)
+  const element = elementIconKey(skill.Element)
   return {
     value: skill.InternalName,
     label: skill.I18n[0],
@@ -265,14 +267,14 @@ const portraitBorder = pal => pal.IsAwakening
           </h2>
           <code class="editor-summary__meta">{{ pal.InternalName }}</code>
           <div class="pal-basic-tags">
-            <span class="editor-tag" v-if="palStore.palElementKeys(pal.DataAccessKey).length">
-              <img v-for="element in palStore.palElementKeys(pal.DataAccessKey)"
+            <span class="editor-tag" v-if="catalogsStore.palElementKeys(pal.DataAccessKey).length">
+              <img v-for="element in catalogsStore.palElementKeys(pal.DataAccessKey)"
                 :key="element" class="element-icon" :src="backend.backendAssetUrl(`/image/elements/Element_${element}`)" :alt="element">
             </span>
             <span class="editor-tag" v-if="pal.Level">Lv. {{ pal.Level }}</span>
             <span class="editor-tag"
-              v-if="!pal.IsHuman && palStore.specialTypeKeys(pal).length">
-              {{ palStore.specialTypeKeys(pal).map(specialTypeLabel).join(' · ') }}
+              v-if="!pal.IsHuman && specialTypeKeys(pal).length">
+              {{ specialTypeKeys(pal).map(specialTypeLabel).join(' · ') }}
             </span>
           </div>
         </div>
@@ -359,8 +361,8 @@ const portraitBorder = pal => pal.IsAwakening
           </div>
           <div class="editor-field" v-if="pal.Gender || !appStore.HIDE_INVALID_OPTIONS">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
-            <span class="editor-tag" v-if="palStore.genderKey(pal.Gender)">
-              <img class="game-icon" :src="backend.backendAssetUrl(`/image/ui/gender-${palStore.genderKey(pal.Gender)}`)" alt="">
+            <span class="editor-tag" v-if="genderKey(pal.Gender)">
+              <img class="game-icon" :src="backend.backendAssetUrl(`/image/ui/gender-${genderKey(pal.Gender)}`)" alt="">
             </span>
             <div class="editor-field__actions">
               <button class="editor-button editor-button--primary editor-button--icon"
@@ -424,7 +426,7 @@ const portraitBorder = pal => pal.IsAwakening
           <div class="editor-field editor-field--value" v-if="!pal.IsHuman">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
             <span class="editor-tag">
-              {{ palStore.specialTypeKeys(pal).map(specialTypeLabel).join(' · ') || '-' }}
+              {{ specialTypeKeys(pal).map(specialTypeLabel).join(' · ') || '-' }}
             </span>
             <div class="editor-field__actions">
               <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': pal.IsBOSS }]"
@@ -595,7 +597,7 @@ const portraitBorder = pal => pal.IsAwakening
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in pal.PassiveSkillList" :key="skill"
             :title="catalogsStore.passiveSkillsByName[skill]?.I18n[1] || skill">
-            <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`]" aria-hidden="true"></span>
+            <span :class="['passive-tier', `passive-tier--${passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`]" aria-hidden="true"></span>
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.passiveSkillsByName[skill]?.I18n[0] || skill }}</strong>
@@ -636,8 +638,8 @@ const portraitBorder = pal => pal.IsAwakening
         <div class="skill-cards">
           <article class="skill-card" v-for="skill in pal.EquipWaza" :key="skill"
             :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
-            <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
-              :src="backend.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
+            <img v-if="elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
+              :src="backend.backendAssetUrl(`/image/elements/Element_${elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
@@ -661,8 +663,8 @@ const portraitBorder = pal => pal.IsAwakening
               'skill-card--equipable': canEquipMasteredSkill(skill),
             }]"
             :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
-            <img v-if="palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
-              :src="backend.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
+            <img v-if="elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
+              :src="backend.backendAssetUrl(`/image/elements/Element_${elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>

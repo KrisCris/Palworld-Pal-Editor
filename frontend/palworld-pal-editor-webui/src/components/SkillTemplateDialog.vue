@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { elementIconKey, passiveTier } from '@/pal-traits'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
@@ -41,8 +42,8 @@ const skillCards = template => (template.type === 'passive'
     summary: template.type === 'passive'
       ? data?.I18n?.[1] || skill
       : `${palStore.getTranslatedText('Editor_Skill_ATK')}${data?.Power ?? '-'} · ${palStore.getTranslatedText('Editor_Skill_CD')}${data?.CT ?? '-'}`,
-    tier: template.type === 'passive' ? palStore.passiveTier(data?.Rating) : '',
-    element: template.type === 'active' ? palStore.elementIconKey(data?.Element) : '',
+    tier: template.type === 'passive' ? passiveTier(data?.Rating) : '',
+    element: template.type === 'active' ? elementIconKey(data?.Element) : '',
   }
 })
 const summarySkills = template => skillCards(template).slice(0, 4)

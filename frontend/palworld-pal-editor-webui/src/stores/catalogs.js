@@ -19,6 +19,7 @@ import {
     getSkinCatalog,
     getTechnologyCatalog,
 } from "../api/catalogs.js";
+import { elementIconKey } from "../pal-traits.js";
 
 const byInternalName = rows => Object.fromEntries(
     rows.map(row => [row.InternalName, row]),
@@ -36,6 +37,12 @@ export const useCatalogsStore = defineStore("catalogs", () => {
     const itemsByName = computed(() => byInternalName(items.value));
     const passiveSkillsByName = computed(() => byInternalName(passiveSkills.value));
     const activeSkillsByName = computed(() => byInternalName(activeSkills.value));
+
+    // Which element icons a species is drawn with. The species is the catalog's
+    // to answer for; the icon each element maps to is `pal-traits`.
+    const palElementKeys = dataAccessKey => (palsByName.value[dataAccessKey]?.Elements ?? [])
+        .map(elementIconKey)
+        .filter(Boolean);
 
     // Five independent reads, so they go out together. The first failure rejects
     // for all of them, which is what the caller wants: a half-loaded catalog is
@@ -68,6 +75,7 @@ export const useCatalogsStore = defineStore("catalogs", () => {
         activeSkillsByName,
         skins,
         technologiesByLevel,
+        palElementKeys,
         load,
     };
 });

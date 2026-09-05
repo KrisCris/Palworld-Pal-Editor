@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { maximumSuitabilities } from "../src/stores/paleditor.js";
+import { maximumSuitabilities } from "../src/pal-traits.js";
 
 test("maximum suitability payload includes only work types available to this Pal", () => {
   assert.deepEqual(

@@ -15,6 +15,7 @@ import {
   sortPalList,
 } from '@/components/pal-list-order'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
+import { genderKey } from '@/pal-traits'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
@@ -247,7 +248,7 @@ const palWasEdited = pal => isEditedPal(pal)
         <small v-if="group.storage">{{ group.storage.occupied }} / {{ group.storage.capacity }}</small>
       </h3>
       <button v-for="pal in group.pals" :key="pal.recordKey"
-        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', 'out-of-container': pal.isAway }]"
+        :class="['pal-row', { male: genderKey(pal.Gender) === 'male', female: genderKey(pal.Gender) === 'female', 'out-of-container': pal.isAway }]"
         :value="pal.recordKey" @click="palStore.selectPal(pal.recordKey)"
         :aria-current="palsStore.selectedRecordKey == pal.recordKey ? 'true' : undefined"
         :disabled="palsStore.selectedRecordKey == pal.recordKey">

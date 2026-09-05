@@ -5,13 +5,13 @@ import axios from "axios";
 import { createPinia, setActivePinia } from "pinia";
 import { watch } from "vue";
 
+import { canToggleBossVariant, elementIconKey, passiveTier } from "../src/pal-traits.js";
 import {
-    canToggleBossVariant,
     filterSkillOptions,
     isSkillAssignable,
     skillBadges,
-    usePalEditorStore,
-} from "../src/stores/paleditor.js";
+} from "../src/skill-rules.js";
+import { usePalEditorStore } from "../src/stores/paleditor.js";
 import { useAppStore } from "../src/stores/app.js";
 import { useCatalogsStore } from "../src/stores/catalogs.js";
 import { usePalsStore } from "../src/stores/pals.js";
@@ -113,16 +113,13 @@ test("skill filtering is stable, exact, non-mutating, and tolerant of missing cu
 });
 
 test("game element enums and passive tiers use stable presentation keys", () => {
-    setActivePinia(createPinia());
-    const store = usePalEditorStore();
-    assert.equal(typeof store.elementIconKey, "function");
-    assert.equal(store.elementIconKey("Leaf"), "Grass");
-    assert.equal(store.elementIconKey("Earth"), "Ground");
-    assert.equal(store.elementIconKey("Electricity"), "Electric");
-    assert.equal(store.elementIconKey("Normal"), "Neutral");
-    assert.equal(store.passiveTier(5), "top");
-    assert.equal(store.passiveTier(4), "high");
-    assert.equal(store.passiveTier(2), "positive");
+    assert.equal(elementIconKey("Leaf"), "Grass");
+    assert.equal(elementIconKey("Earth"), "Ground");
+    assert.equal(elementIconKey("Electricity"), "Electric");
+    assert.equal(elementIconKey("Normal"), "Neutral");
+    assert.equal(passiveTier(5), "top");
+    assert.equal(passiveTier(4), "high");
+    assert.equal(passiveTier(2), "positive");
 });
 
 test("skill metadata labels and non-assignable warning exist in every UI locale", () => {

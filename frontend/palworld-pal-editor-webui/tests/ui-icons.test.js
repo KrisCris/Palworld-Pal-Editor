@@ -5,7 +5,13 @@ import test from "node:test";
 import { createPinia, setActivePinia } from "pinia";
 
 import { useCatalogsStore } from "../src/stores/catalogs.js";
-import { skillBadges, usePalEditorStore } from "../src/stores/paleditor.js";
+import {
+    elementIconKey,
+    genderKey,
+    passiveTier,
+    specialTypeKeys,
+} from "../src/pal-traits.js";
+import { skillBadgeTranslationKey, skillBadges } from "../src/skill-rules.js";
 
 globalThis.localStorage ??= {
     getItem: () => null,
@@ -41,41 +47,38 @@ async function frontendSources() {
 }
 
 test("presentation helpers return asset keys and CSS tiers instead of glyphs", () => {
-    setActivePinia(createPinia());
-    const store = usePalEditorStore();
-    assert.equal(typeof store.elementIconKey, "function");
-    assert.equal(store.elementIconKey("Leaf"), "Grass");
-    assert.equal(store.elementIconKey("Earth"), "Ground");
-    assert.equal(store.elementIconKey("Electricity"), "Electric");
-    assert.equal(store.elementIconKey("Normal"), "Neutral");
-    assert.equal(store.elementIconKey("Fire"), "Fire");
-    assert.equal(store.elementIconKey("None"), null);
-    assert.equal(store.elementIconKey("Unknown"), null);
+    assert.equal(elementIconKey("Leaf"), "Grass");
+    assert.equal(elementIconKey("Earth"), "Ground");
+    assert.equal(elementIconKey("Electricity"), "Electric");
+    assert.equal(elementIconKey("Normal"), "Neutral");
+    assert.equal(elementIconKey("Fire"), "Fire");
+    assert.equal(elementIconKey("None"), null);
+    assert.equal(elementIconKey("Unknown"), null);
 
-    assert.equal(store.passiveTier(5), "top");
-    assert.equal(store.passiveTier(4), "high");
-    assert.equal(store.passiveTier(2), "positive");
-    assert.equal(store.passiveTier(1), "neutral");
-    assert.equal(store.passiveTier(-1), "negative");
+    assert.equal(passiveTier(5), "top");
+    assert.equal(passiveTier(4), "high");
+    assert.equal(passiveTier(2), "positive");
+    assert.equal(passiveTier(1), "neutral");
+    assert.equal(passiveTier(-1), "negative");
     assert.deepEqual(skillBadges({ BossSkill: true }), ["boss"]);
-    assert.equal(store.skillBadgeTranslationKey("boss"), "Editor_Skill_Badge_Boss");
-    assert.equal(store.genderKey("EPalGenderType::Female"), "female");
-    assert.equal(store.genderKey("EPalGenderType::Male"), "male");
-    assert.equal(store.genderKey("NONE"), null);
+    assert.equal(skillBadgeTranslationKey("boss"), "Editor_Skill_Badge_Boss");
+    assert.equal(genderKey("EPalGenderType::Female"), "female");
+    assert.equal(genderKey("EPalGenderType::Male"), "male");
+    assert.equal(genderKey("NONE"), null);
     assert.deepEqual(
-        store.specialTypeKeys({ IsBOSS: true, IsRarePal: true }),
+        specialTypeKeys({ IsBOSS: true, IsRarePal: true }),
         ["boss", "rare"],
     );
-    assert.deepEqual(store.specialTypeKeys({}), []);
+    assert.deepEqual(specialTypeKeys({}), []);
 });
 
 test("Pal element helpers return canonical keys for image rendering", () => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
-    useCatalogsStore().pals = [{ InternalName: "TestPal", Elements: ["Leaf", "Earth"] }];
+    const catalogs = useCatalogsStore();
+    catalogs.pals = [{ InternalName: "TestPal", Elements: ["Leaf", "Earth"] }];
 
-    assert.deepEqual(store.palElementKeys("TestPal"), ["Grass", "Ground"]);
-    assert.deepEqual(store.palElementKeys("MissingPal"), []);
+    assert.deepEqual(catalogs.palElementKeys("TestPal"), ["Grass", "Ground"]);
+    assert.deepEqual(catalogs.palElementKeys("MissingPal"), []);
 });
 
 test("the complete frontend source is emoji-free", async () => {

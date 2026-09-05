@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import * as palEditor from "../src/stores/paleditor.js";
+import { filterPalSkins } from "../src/pal-traits.js";
 
 test("alpha Pals expose skins assigned to their base family", () => {
     const skins = [
@@ -24,7 +24,7 @@ test("alpha Pals expose skins assigned to their base family", () => {
     };
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(skins, selectedPal),
+        filterPalSkins(skins, selectedPal),
         [skins[0]],
     );
 });
@@ -37,7 +37,7 @@ test("legacy Pal payloads match skins by their exact data key", () => {
     }];
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(skins, { DataAccessKey: "Anubis" }),
+        filterPalSkins(skins, { DataAccessKey: "Anubis" }),
         skins,
     );
 });
@@ -60,7 +60,7 @@ test("hidden invalid skins retain the skin currently applied to the Pal", () => 
     };
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(
+        filterPalSkins(
             [current, valid, hidden],
             {
                 DataAccessKey: "IceHorse",
@@ -93,7 +93,7 @@ test("showing invalid options reveals every skin for the selected family", () =>
     ];
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(
+        filterPalSkins(
             skins,
             { FamilyID: "PinkCat", SkinName: null },
             false,
