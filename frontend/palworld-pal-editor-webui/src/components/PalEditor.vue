@@ -17,12 +17,14 @@ import { useBackendStore } from '@/stores/backend'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'
+import { useRostersStore } from '@/stores/rosters'
 import { useStoragesStore } from '@/stores/storages'
 const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const backend = useBackendStore()
 const palsStore = usePalsStore()
+const rostersStore = useRostersStore()
 const storagesStore = useStoragesStore()
 // The Pal this page edits. It is the object in the Pal cache, so the `v-model`
 // bindings below write to the same place the list reads.
@@ -293,7 +295,7 @@ const portraitBorder = pal => pal.IsAwakening
           <button id="dump_btn" class="editor-button editor-button--secondary" @click="palsStore.copyNativeRecord" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
             <UiIcon name="export" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
           </button>
-          <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
+          <button id="del_btn" class="editor-button editor-button--danger" @click="rostersStore.deletePal" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
             <UiIcon name="delete" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
           </button>
         </div>

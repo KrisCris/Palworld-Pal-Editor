@@ -30,7 +30,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
     <OverlayScrollArea>
     <div class="roster-list overlay-scroll-area__viewport">
       <button v-if="rostersStore.globalPalboxRoster" class="roster-row roster-row--global"
-        @click="palStore.selectPlayer(GLOBAL_PALBOX_ROSTER_KEY)"
+        @click="rostersStore.selectRoster(GLOBAL_PALBOX_ROSTER_KEY)"
         :aria-current="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY ? 'true' : undefined"
         :disabled="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY">
         <span class="player-avatar">GPS</span>
@@ -38,7 +38,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
       </button>
 
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
-        @click="palStore.selectPlayer(BASE_ROSTER_KEY)"
+        @click="rostersStore.selectRoster(BASE_ROSTER_KEY)"
         :aria-current="rostersStore.activeRosterKey === BASE_ROSTER_KEY ? 'true' : undefined"
         :disabled="(rostersStore.activeRosterKey === BASE_ROSTER_KEY && !palsStore.selectedRecordKey)">
         <span class="player-avatar">PAL</span>
@@ -46,7 +46,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
       </button>
 
       <button v-for="player in playersStore.players" :key="player.InstanceId"
-        class="roster-row" @click="palStore.selectPlayer(`player:${player.InstanceId}`)" :title="player.InstanceId"
+        class="roster-row" @click="rostersStore.selectRoster(`player:${player.InstanceId}`)" :title="player.InstanceId"
         :aria-current="player.InstanceId == rostersStore.activePlayerUid ? 'true' : undefined"
         :disabled="(player.InstanceId == rostersStore.activePlayerUid && playersStore.showPlayerEditor)">
         <span class="player-avatar">{{ playerInitial(player) }}</span>

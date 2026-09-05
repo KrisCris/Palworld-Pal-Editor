@@ -239,6 +239,6 @@ test("location sorting renders container headers and explicit safety markers", a
   assert.doesNotMatch(listSource, /v-if="[^"]*BASE_ROSTER_KEY"[^>]*name="add_pal"/);
 
   assert.match(editorSource, /PalContainerMoveDialog/);
-  assert.match(moveDialogSource, /palStore\.movePal\(pendingStorageKey\.value\)/);
+  assert.match(moveDialogSource, /rostersStore\.movePal\(pendingStorageKey\.value\)/);
   assert.match(editorSource, /IsExpeditionPal[\s\S]*!pal\.storageKey/);
 });

@@ -99,15 +99,15 @@ function selectStorage(storage) {
 
 async function movePal() {
   if (!pendingStorageKey.value) return;
-  if (await palStore.movePal(pendingStorageKey.value)) closeDialog();
+  if (await rostersStore.movePal(pendingStorageKey.value)) closeDialog();
 }
 
 async function updatePal() {
-  if (await palStore.updateConflictingPal()) closeDialog();
+  if (await rostersStore.overwriteConflictingPal()) closeDialog();
 }
 
 async function jumpToPal() {
-  if (await palStore.jumpToConflictingPal()) closeDialog(false);
+  if (await rostersStore.jumpToConflictingPal()) closeDialog(false);
 }
 
 function closeDialog(clearConflict = true) {
@@ -136,7 +136,7 @@ onMounted(async () => {
 // opened -- the answers are about this Pal and are kept for as long as it is the
 // one being moved.
 watch(activeGroup, group => {
-  if (group) palStore.loadMoveTargets(group.storages.map(storage => storage.storageKey));
+  if (group) storagesStore.loadMoveTargets(group.storages.map(storage => storage.storageKey));
 }, { immediate: true });
 
 watch(

@@ -22,11 +22,13 @@ import {
     getPalTransferCapability,
     listStorages,
 } from "../api/storages.js";
+import { useBackendStore } from "./backend.js";
 import { applyOperationResult } from "./operation-result.js";
 import { usePalsStore } from "./pals.js";
-import { useSessionStore } from "./session.js";
+import { gated, useSessionStore } from "./session.js";
 
 export const useStoragesStore = defineStore("storages", () => {
+    const backend = useBackendStore();
     const session = useSessionStore();
     const pals = usePalsStore();
 
@@ -88,6 +90,17 @@ export const useStoragesStore = defineStore("storages", () => {
         missing.forEach((key, index) => next.set(key, answers[index]));
         capabilities.value = next;
         return true;
+    }
+
+    // Which targets the move dialog may offer for the Pal on screen, for the one
+    // group being looked at.
+    async function loadMoveTargets(storageKeys) {
+        try {
+            return await loadCapabilities(pals.selectedRecordKey, storageKeys);
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_Move_Pal");
+            return false;
+        }
     }
 
     function clearCapabilities() {
@@ -172,6 +185,7 @@ export const useStoragesStore = defineStore("storages", () => {
         refresh,
         loadCapabilities,
         clearCapabilities,
+        ...gated(session, { loadMoveTargets }),
         clearConflict,
         movePal,
         overwriteConflictTarget,

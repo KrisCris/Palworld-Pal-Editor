@@ -367,7 +367,7 @@ test("an identity conflict is answered by overwriting the Pal the backend named"
         if (url.includes("/api/pals/")) return resource(detail({ InstanceId: "pal-id" }));
         throw new Error(`Unexpected GET ${url}`);
     };
-    await store.loadMoveTargets(["world-container:palbox"]);
+    await storages.loadMoveTargets(["world-container:palbox"]);
 
     const sent = [];
     axios.post = async (url, payload) => {
@@ -400,10 +400,10 @@ test("an identity conflict is answered by overwriting the Pal the backend named"
 
     // The move is not an error: the backend asked a question, and the dialog is
     // now showing which Pal an overwrite would land on.
-    assert.equal(await store.movePal("world-container:palbox"), false);
+    assert.equal(await rosters.movePal("world-container:palbox"), false);
     assert.equal(storages.conflictTarget.recordKey, "world:pal-id");
 
-    assert.equal(await store.updateConflictingPal(), true);
+    assert.equal(await rosters.overwriteConflictingPal(), true);
 
     // The overwrite names the Pal the user was shown, in the slot it was shown
     // in. If the save has moved on, the backend rejects it rather than writing
@@ -924,7 +924,7 @@ test("language changes refresh only the active roster and re-fetch others lazily
     assert.equal(storageReads, 1);
 
     // A different roster re-fetches in the new language once it is selected.
-    await store.selectPlayer("global-palbox");
+    await rosters.selectRoster("global-palbox");
     assert.deepEqual(requestedRosters, ["player:player-1", "global-palbox"]);
     assert.equal(pals.summary("gps:0").DisplayName, "Translated GPS Pal");
 });
@@ -1274,7 +1274,7 @@ test("deleting the last Pal falls through to the player editor instead of a blan
         throw new Error(`Unexpected GET ${url}`);
     };
 
-    await store.delPal();
+    await rosters.deletePal();
 
     assert.equal(pals.selectedRecordKey, null);
     assert.equal(rosters.activePlayerUid, "player-1");
@@ -1309,7 +1309,7 @@ test("adding a Pal from pasted JSON sends the record and follows the reply to it
         }));
     };
 
-    assert.equal(await store.addPal({
+    assert.equal(await rosters.addPal({
         mode: "json",
         palJson: '{"key": {"InstanceId": "pal-1"}}',
         targetStorageKey: "world-container:palbox",
@@ -1331,7 +1331,7 @@ test("text that is not JSON never reaches the backend", async () => {
     const store = newStore();
     axios.post = async url => { throw new Error(`Unexpected POST ${url}`); };
 
-    assert.equal(await store.addPal({
+    assert.equal(await rosters.addPal({
         mode: "json",
         palJson: "not json",
         targetStorageKey: "world-container:palbox",
@@ -1452,8 +1452,8 @@ test("exporting a Pal to the Global Palbox auto-jumps to its new location and re
         }));
     };
 
-    await store.loadMoveTargets([targetStorageKey]);
-    assert.equal(await store.movePal(targetStorageKey), true);
+    await storages.loadMoveTargets([targetStorageKey]);
+    assert.equal(await rosters.movePal(targetStorageKey), true);
     // Only the rosters the reply named are refreshed, not every player.
     assert.deepEqual(requestedRosters, ["player:player-1", "global-palbox"]);
     // Auto-jumped to the Global Palbox and selected the newly exported Pal.
@@ -1512,8 +1512,8 @@ test("resolving an update conflict auto-jumps to the updated Pal's new location"
         }));
     };
 
-    await store.loadMoveTargets(["world-container:palbox"]);
-    assert.equal(await store.updateConflictingPal(), true);
+    await storages.loadMoveTargets(["world-container:palbox"]);
+    assert.equal(await rosters.overwriteConflictingPal(), true);
     // The affected rosters are refreshed (active + target), not every player.
     assert.deepEqual(requestedRosters, ["global-palbox", "player:player-1"]);
     // Auto-jumped to the player and selected the updated Pal.

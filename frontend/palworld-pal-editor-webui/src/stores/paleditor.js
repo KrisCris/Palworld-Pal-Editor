@@ -1,3 +1,16 @@
+// Bringing the app up, and putting a save in front of the user.
+//
+// Choosing a backend, authenticating against it, opening a save and hydrating
+// everything the editor reads from one, writing it back, and running the cascade
+// a language change sets off. Every step here spans stores that know nothing of
+// each other, which is what makes it a step and not a store method.
+//
+// It owns almost nothing. The connection and the token are `stores/backend`, the
+// message queue is `stores/messages`, the save is `stores/session`, and its Pals,
+// players, rosters and storages are the stores below. This one reads them all,
+// and nothing reads back into it -- which is why every one of them can report a
+// failure without importing it.
+
 import { ref, computed } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 // Only `connectBackend`'s probe uses this directly: it asks a candidate origin
@@ -22,16 +35,11 @@ import { usePalsStore } from "./pals.js";
 import { useResearchStore } from "./research.js";
 import { usePlayersStore } from "./players.js";
 import { BASE_ROSTER_KEY, useRostersStore } from "./rosters.js";
-import { useSessionStore } from "./session.js";
+import { gated, useSessionStore } from "./session.js";
 import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
 
 export const usePalEditorStore = defineStore("paleditor", () => {
-    // The app shell. Messages, auth, the backend connection, the static catalogs,
-    // templates and the choreography around the writes -- which list to open, which Pal to select, what to say when one
-    // fails. The save itself lives in `stores/session`, and its Pals, players,
-    // rosters and storages in the stores below -- this store reads them, and
-    // nothing reads back into it.
     const session = useSessionStore();
     const app = useAppStore();
     const backend = useBackendStore();
@@ -43,18 +51,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const rosters = useRostersStore();
     const storages = useStoragesStore();
     const templates = useTemplatesStore();
-
-    // Every operation the UI can start holds the interaction gate for
-    // as long as it runs, so nothing can begin a second one or edit what the
-    // first is about to send. Applied once, to the whole surface -- the old code
-    // asked each function to remember to raise and lower a flag, and the ones
-    // that returned early down some branch simply left it raised.
-    const gated = actions => Object.fromEntries(
-        Object.entries(actions).map(([name, action]) => [
-            name,
-            (...args) => session.runOperation(() => action(...args)),
-        ]),
-    );
 
     // flags
     const SHOW_DONATE_FLAG = ref(false);
@@ -426,7 +422,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             ? BASE_ROSTER_KEY
             : firstPlayer?.rosterKey
                 ?? (HAS_WORKING_PAL_FLAG.value ? BASE_ROSTER_KEY : undefined);
-        if (defaultRoster !== undefined) await selectPlayer(defaultRoster);
+        if (defaultRoster !== undefined) await rosters.selectRoster(defaultRoster);
         IS_LOCKED.value = false;
         session.appState = "editor";
         return true;
@@ -466,181 +462,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportApiFailure(error, "Operation_Save");
     }
 
-    // ---- selection -----------------------------------------------------------
-
-    async function selectPlayer(rosterKey) {
-        try {
-            if (!await rosters.selectRoster(rosterKey)) return false;
-        } catch (error) {
-            reportApiFailure(error, "Operation_Load_Pals");
-            return false;
-        }
-        if (rosterKey === BASE_ROSTER_KEY) await research.load();
-        return true;
-    }
-
-    // ---- Pal creation, deletion and transfer ---------------------------------
-
-    // The row the list would land on once the current one is gone: the next Pal
-    // the filters still show, or the first if there is none after it.
-    function nextVisibleRecordKey(recordKey) {
-        const visible = rosters.activeRecordKeys.filter(
-            key => rosters.matchesSearch(pals.summary(key)),
-        );
-        const index = visible.indexOf(recordKey);
-        return visible.find((key, position) => position > index && key !== recordKey)
-            ?? visible.find(key => key !== recordKey)
-            ?? null;
-    }
-
-    async function delPal() {
-        const recordKey = pals.selectedRecordKey;
-        const successor = nextVisibleRecordKey(recordKey);
-        try {
-            await pals.remove(recordKey);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Delete_Pal");
-            return false;
-        }
-        if (successor && pals.summary(successor)) await pals.select(successor);
-        return true;
-    }
-
-    // Which targets the move dialog may offer for the Pal on screen. One request
-    // per target, for the group being looked at: whether a Pal may go somewhere
-    // is the backend's answer about that pair, not something a storage or a
-    // storage kind can be asked on its own.
-    async function loadMoveTargets(storageKeys) {
-        try {
-            return await storages.loadCapabilities(pals.selectedRecordKey, storageKeys);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Move_Pal");
-            return false;
-        }
-    }
-
-    // Every transfer ends the same way: the lists the reply named are already
-    // refreshed, so what is left is opening the list the Pal is now in and
-    // showing it there.
-    async function followTransfer(result, rosterKey) {
-        if (rosterKey !== rosters.activeRosterKey && !await selectPlayer(rosterKey)) {
-            return false;
-        }
-        return pals.select(result.resultRecord.recordKey);
-    }
-
-    async function movePal(targetStorageKey) {
-        // Read before the move: this is the answer the user was shown, and it
-        // names the list the Pal is about to be in.
-        const capability = storages.capability(targetStorageKey);
-        let result;
-        try {
-            result = await storages.movePal(targetStorageKey);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Move_Pal");
-            return false;
-        }
-        // The backend answered with a question rather than a result: the dialog
-        // is now showing which existing Pal an overwrite would land on.
-        if (result === null) return false;
-        await followTransfer(result, capability.resultRosterKey);
-        showToast("Message_Pal_Moved", "success");
-        return true;
-    }
-
-    async function updateConflictingPal() {
-        if (!storages.conflictTarget) return false;
-        const capability = storages.capability(storages.conflict.targetStorageKey);
-        let result;
-        try {
-            result = await storages.overwriteConflictTarget();
-        } catch (error) {
-            reportApiFailure(error, "Operation_Move_Pal");
-            return false;
-        }
-        if (result === null) return false;
-        await followTransfer(result, capability.resultRosterKey);
-        showToast("Message_Pal_Updated", "success");
-        return true;
-    }
-
-    // Go and look at the Pal that is in the way instead of overwriting it. For an
-    // overwrite the capability's result roster is the destination's, which is
-    // exactly the list that Pal is sitting in.
-    async function jumpToConflictingPal() {
-        const target = storages.conflictTarget;
-        if (!target) return false;
-        const { resultRosterKey } = storages.capability(
-            storages.conflict.targetStorageKey,
-        );
-        storages.clearConflict();
-        if (resultRosterKey !== rosters.activeRosterKey
-            && !await selectPlayer(resultRosterKey)) return false;
-        return pals.select(target.recordKey);
-    }
-
-    // Which storages the add dialog may offer, for the list that is open. The
-    // answer is the save's, so a target that would put the new Pal in a list
-    // nobody opened is never on screen.
-    async function loadCreationTargets() {
-        try {
-            return await storages.creationTargets(rosters.activeRosterKey);
-        } catch (error) {
-            reportApiFailure(error, "Operation_Add_Pal");
-            return [];
-        }
-    }
-
-    // The add dialog's three tabs are one operation with three sources: a
-    // default Pal, a saved template, or a record pasted in as JSON. Where it
-    // lands and who owns it are the same question whichever tab is open, so only
-    // `source` differs and the target storage builds the native record.
-    async function addPal({
-        mode = "default", templateId, palJson, targetStorageKey,
-    } = {}) {
-        let source;
-        if (mode === "template") {
-            source = { kind: "template", templateId };
-        } else if (mode === "json") {
-            try {
-                source = { kind: "native-record", record: JSON.parse(palJson) };
-            } catch (error) {
-                // Text that is not JSON never reaches the backend, so there is no
-                // reply for it to fail with; this says so in the dialog the same
-                // way a refused record would.
-                showMessage({
-                    severity: "error",
-                    presentation: "dialog",
-                    messageKey: "Message_Operation_Failed",
-                    args: [{ translationKey: "Operation_Add_Pal" }],
-                    code: "PAL_JSON_INVALID",
-                    log: error.message,
-                });
-                return false;
-            }
-        } else {
-            source = { kind: "default" };
-        }
-
-        let result;
-        try {
-            result = await pals.create(
-                targetStorageKey, source, rosters.activePlayerUid,
-            );
-        } catch (error) {
-            reportApiFailure(error, "Operation_Add_Pal");
-            return false;
-        }
-        // Which list the new Pal turned up in is the reply's answer, not a guess
-        // from the target container's kind and owner.
-        const [targetRoster] = result.affectedRosterKeys;
-        if (targetRoster && targetRoster !== rosters.activeRosterKey) {
-            await selectPlayer(targetRoster);
-        }
-        await pals.select(result.resultRecord.recordKey);
-        return true;
-    }
-
     // The prompt is dismissed per language, so the answer arrives with the app
     // config and is refreshed whenever the language changes.
     async function shownDonate() {
@@ -667,10 +488,8 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         MESSAGE_QUEUE,
         CURRENT_MESSAGE,
 
-
         getTranslatedText,
         getMessageText,
-
 
         reset,
 
@@ -684,25 +503,17 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportOperationError,
         reportFrontendError,
 
-        ...gated({
-            addPal,
+        ...gated(session, {
             auth,
             bootstrap,
             browseParentPath,
             browseSavePath,
             connectBackend,
-            delPal,
-            jumpToConflictingPal,
-            loadCreationTargets,
             loadLatestRelease,
-            loadMoveTargets,
             loadSave,
-            movePal,
             openFilePicker,
-            selectPlayer,
             shownDonate,
             unlock,
-            updateConflictingPal,
             updateI18n,
             writeSave,
         }),

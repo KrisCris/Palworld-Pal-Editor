@@ -178,7 +178,7 @@ onMounted(async () => {
   previousAriaHidden = appContent?.getAttribute('aria-hidden')
   appContent?.setAttribute('aria-hidden', 'true')
   await templatesStore.loadPalTemplates()
-  creationTargetKeys.value = await palStore.loadCreationTargets()
+  creationTargetKeys.value = await rostersStore.loadCreationTargets()
   // The player's own Palbox where there is one, and otherwise the first target
   // the backend offered -- which is the only base a base list has to choose from.
   targetStorageKey.value = targetStorages.value.find(
@@ -216,7 +216,7 @@ function trapFocus(event) {
 }
 
 async function createPal() {
-  if (await palStore.addPal({
+  if (await rostersStore.addPal({
     mode: mode.value,
     templateId: templateId.value,
     palJson: palJson.value,
