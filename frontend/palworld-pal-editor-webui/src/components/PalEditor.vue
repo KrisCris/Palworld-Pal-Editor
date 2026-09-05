@@ -9,6 +9,7 @@ import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import { formatStorageLabel } from '@/components/pal-storage-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { MAX_FRIENDSHIP_LEVEL, MAX_INVALID_LEVEL, MAX_LEVEL, MAX_SOULS_LEVEL, MAX_SUITABILITY_LEVEL } from '@/game-limits'
 import { useAppStore } from '@/stores/app'
 import { useBackendStore } from '@/stores/backend'
 import { useCatalogsStore } from '@/stores/catalogs'
@@ -70,7 +71,7 @@ const currentSkillIds = () => [
 const activeSkillOptions = () => palStore.filterSkillOptions(
   catalogsStore.activeSkills,
   currentSkillIds(),
-  palStore.HIDE_INVALID_OPTIONS,
+  appStore.HIDE_INVALID_OPTIONS,
   pal.value.IsHuman,
 );
 
@@ -80,7 +81,7 @@ const canAssignActiveSkill = skill => palStore.isSkillAssignable(
 );
 
 const canSelectActiveSkill = skill => (
-  !palStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
+  !appStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
 );
 
 const showEquipMasteredAction = skill => !pal.value.EquipWaza.includes(skill);
@@ -118,7 +119,7 @@ const applySkin = () => {
 };
 
 const isMaxSuit = key => {
-  return pal.value.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
+  return pal.value.Suitabilities[key] >= MAX_SUITABILITY_LEVEL;
 };
 
 const isMinSuit = key => {
@@ -128,11 +129,11 @@ const isMinSuit = key => {
 const availableSkins = () => filterPalSkins(
   catalogsStore.skins,
   pal.value,
-  palStore.HIDE_INVALID_OPTIONS,
+  appStore.HIDE_INVALID_OPTIONS,
 );
 
 const isMaxLv = () => {
-  return pal.value.Level >= (palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL);
+  return pal.value.Level >= (appStore.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL);
 };
 
 const isMinLv = () => {
@@ -140,7 +141,7 @@ const isMinLv = () => {
 };
 
 const isMaxFriendshipLv = () => {
-  return pal.value.FriendshipLevel >= palStore.MAX_FRIENDSHIP_LEVEL;
+  return pal.value.FriendshipLevel >= MAX_FRIENDSHIP_LEVEL;
 };
 
 const isMinFriendshipLv = () => {
@@ -175,12 +176,12 @@ const passiveSkillCategoryKey = group => ({
 }[group] || 'Editor_Passive_Skills')
 
 const passiveSkillOptions = () => catalogsStore.passiveSkills
-  .filter(skill => !palStore.HIDE_INVALID_OPTIONS || !skill.Invalid)
+  .filter(skill => !appStore.HIDE_INVALID_OPTIONS || !skill.Invalid)
   .map(skill => ({
   value: skill.InternalName,
   label: skill.I18n[0],
   description: skill.I18n[1],
-  meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
+  meta: appStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
   tone: palStore.passiveTier(skill.Rating),
   group: palStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
   }))
@@ -210,7 +211,7 @@ const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
     label: skill.I18n[0],
     description: activeSkillMetadata(skill),
     tooltip: skill.I18n[1],
-    meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
+    meta: appStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
     searchMeta: skill.Element,
     disabled: !canSelectActiveSkill(skill),
     icon: element ? backend.backendAssetUrl(`/image/elements/Element_${element}`) : '',
@@ -304,7 +305,7 @@ const portraitBorder = pal => pal.IsAwakening
             <PalSpeciesSelector
               v-model="speciesSelection"
               :rows="catalogsStore.pals"
-              :hide-invalid="palStore.HIDE_INVALID_OPTIONS"
+              :hide-invalid="appStore.HIDE_INVALID_OPTIONS"
               :locale="appStore.locale"
               @apply="palStore.changeSpecies"
             />
@@ -356,7 +357,7 @@ const portraitBorder = pal => pal.IsAwakening
               </template>
             </SearchSelect>
           </div>
-          <div class="editor-field" v-if="pal.Gender || !palStore.HIDE_INVALID_OPTIONS">
+          <div class="editor-field" v-if="pal.Gender || !appStore.HIDE_INVALID_OPTIONS">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
             <span class="editor-tag" v-if="palStore.genderKey(pal.Gender)">
               <img class="game-icon" :src="backend.backendAssetUrl(`/image/ui/gender-${palStore.genderKey(pal.Gender)}`)" alt="">
@@ -491,25 +492,25 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_IV_HP") }}</span>
             <strong>{{ pal.Talent_HP }}</strong>
-            <SegmentedRange name="Talent_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_HP"
+            <SegmentedRange name="Talent_HP" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_HP"
               @change="updateRange('Talent_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_IV_DEF") }}</span>
             <strong>{{ pal.Talent_Defense }}</strong>
-            <SegmentedRange name="Talent_Defense" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Defense"
+            <SegmentedRange name="Talent_Defense" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Defense"
               @change="updateRange('Talent_Defense', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_IV_ATK") }}</span>
             <strong>{{ pal.Talent_Shot }}</strong>
-            <SegmentedRange name="Talent_Shot" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Shot"
+            <SegmentedRange name="Talent_Shot" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Shot"
               @change="updateRange('Talent_Shot', $event)" />
           </label>
-          <label class="range-control" v-if="!palStore.HIDE_INVALID_OPTIONS">
+          <label class="range-control" v-if="!appStore.HIDE_INVALID_OPTIONS">
             <span>{{ palStore.getTranslatedText("Editor_IV_MELEE") }}</span>
             <strong>{{ pal.Talent_Melee }}</strong>
-            <SegmentedRange name="Talent_Melee" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Melee"
+            <SegmentedRange name="Talent_Melee" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? 100 : 255" v-model="pal.Talent_Melee"
               @change="updateRange('Talent_Melee', $event)" />
           </label>
         </div>
@@ -527,25 +528,25 @@ const portraitBorder = pal => pal.IsAwakening
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-health')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_HP") }}</span>
             <strong>{{ pal.Rank_HP }}</strong>
-            <SegmentedRange name="Rank_HP" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_HP"
+            <SegmentedRange name="Rank_HP" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_HP"
               @change="updateRange('Rank_HP', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-attack')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_ATK") }}</span>
             <strong>{{ pal.Rank_Attack }}</strong>
-            <SegmentedRange name="Rank_Attack" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Attack"
+            <SegmentedRange name="Rank_Attack" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Attack"
               @change="updateRange('Rank_Attack', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-defense')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_DEF") }}</span>
             <strong>{{ pal.Rank_Defence }}</strong>
-            <SegmentedRange name="Rank_Defence" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Defence"
+            <SegmentedRange name="Rank_Defence" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_Defence"
               @change="updateRange('Rank_Defence', $event)" />
           </label>
           <label class="range-control">
             <span><img class="game-icon" :src="backend.backendAssetUrl('/image/ui/stat-work-speed')" alt=""> {{ palStore.getTranslatedText("Editor_Souls_CraftSpeed") }}</span>
             <strong>{{ pal.Rank_CraftSpeed }}</strong>
-            <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_SOULS_LEVEL : 255" v-model="pal.Rank_CraftSpeed"
+            <SegmentedRange name="Rank_CraftSpeed" :min="0" :max="appStore.HIDE_INVALID_OPTIONS ? MAX_SOULS_LEVEL : 255" v-model="pal.Rank_CraftSpeed"
               @change="updateRange('Rank_CraftSpeed', $event)" />
           </label>
         </div>
@@ -553,7 +554,7 @@ const portraitBorder = pal => pal.IsAwakening
         <label class="range-control range-control--wide">
           <span>{{ palStore.getTranslatedText("Editor_Condenser_Rank") }}</span>
           <strong>{{ pal.Rank - 1 }}</strong>
-          <SegmentedRange name="Rank" :min="1" :max="palStore.HIDE_INVALID_OPTIONS ? 5 : 255" v-model="pal.Rank"
+          <SegmentedRange name="Rank" :min="1" :max="appStore.HIDE_INVALID_OPTIONS ? 5 : 255" v-model="pal.Rank"
             @change="updateRange('Rank', $event)" />
         </label>
       </section>
@@ -570,7 +571,7 @@ const portraitBorder = pal => pal.IsAwakening
       </div>
       <div class="suitability-grid">
         <div class="suitability-control" v-for="(value, key) in pal.Suitabilities" :key="key"
-          v-show="palStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
+          v-show="appStore.HIDE_INVALID_OPTIONS || key != 'EPalWorkSuitability::OilExtraction'">
           <img class="suitability-icon" :src="suitabilityIconSrc(key)" :alt="key.split('::').pop()" :title="key.split('::').pop()">
           <strong>{{ value }}</strong>
           <div class="suitability-control__actions">
@@ -598,7 +599,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.passiveSkillsByName[skill]?.I18n[0] || skill }}</strong>
-                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+                <small v-if="!appStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
               <small>{{ catalogsStore.passiveSkillsByName[skill]?.I18n[1] || skill }}</small>
             </div>
@@ -607,7 +608,7 @@ const portraitBorder = pal => pal.IsAwakening
               :aria-label="`${palStore.getTranslatedText('Editor_Passive_Skills')} - ${skill}`">×</button>
           </article>
         </div>
-        <div class="skill-add" v-if="!palStore.HIDE_INVALID_OPTIONS || pal.PassiveSkillList.length < 4">
+        <div class="skill-add" v-if="!appStore.HIDE_INVALID_OPTIONS || pal.PassiveSkillList.length < 4">
           <SearchSelect ref="passiveSkillSelect" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM" placement="top"
             :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
             :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
@@ -640,7 +641,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
-                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+                <small v-if="!appStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
               <small>{{ activeSkillMetadata(catalogsStore.activeSkillsByName[skill]) }}</small>
             </div>
@@ -665,7 +666,7 @@ const portraitBorder = pal => pal.IsAwakening
             <div class="skill-card__identity">
               <div class="skill-card__title">
                 <strong>{{ catalogsStore.activeSkillsByName[skill]?.I18n[0] || skill }}</strong>
-                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+                <small v-if="!appStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
               </div>
               <small>{{ activeSkillMetadata(catalogsStore.activeSkillsByName[skill]) }}</small>
             </div>

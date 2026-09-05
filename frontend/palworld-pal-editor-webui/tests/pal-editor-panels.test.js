@@ -24,9 +24,9 @@ test("range controls preserve limits and update from keyboard-friendly change ev
     assert.match(source, new RegExp(`name="${field}"[\\s\\S]*?@change="updateRange\\('${field}', \\$event\\)"`), field);
   }
   assert.doesNotMatch(source, /<input type="range"/);
-  assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? 100 : 255/);
-  assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? palStore\.MAX_SOULS_LEVEL : 255/);
-  assert.match(source, /palStore\.HIDE_INVALID_OPTIONS \? 5 : 255/);
+  assert.match(source, /appStore\.HIDE_INVALID_OPTIONS \? 100 : 255/);
+  assert.match(source, /appStore\.HIDE_INVALID_OPTIONS \? MAX_SOULS_LEVEL : 255/);
+  assert.match(source, /appStore\.HIDE_INVALID_OPTIONS \? 5 : 255/);
 });
 
 test("all Pal edit contracts and validity rules remain available", () => {
@@ -49,7 +49,7 @@ test("skill card rows stay compact and do not add a redundant warning row", () =
 });
 
 test("non-Pal passive skills stay cheat-only without a duplicate UI warning", () => {
-  assert.match(source, /catalogsStore\.passiveSkills\s*\.filter\(skill => !palStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
+  assert.match(source, /catalogsStore\.passiveSkills\s*\.filter\(skill => !appStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
   assert.doesNotMatch(source, /<UiIcon v-if="catalogsStore\.passiveSkillsByName\[skill\]\?\.Invalid" name="warning"/);
   assert.doesNotMatch(source, /skill-warning-icon/);
 });

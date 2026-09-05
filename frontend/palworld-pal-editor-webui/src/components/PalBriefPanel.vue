@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 
 import PalPortrait from '@/components/PalPortrait.vue'
+import { MAX_FRIENDSHIP_LEVEL } from '@/game-limits'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
@@ -23,7 +24,7 @@ const attributeLabel = row => row.suffix
   : cleanLabel(row.label)
 const friendshipPercent = computed(() => Math.min(
   100,
-  Math.max(0, Number(props.data.FriendshipLevel || 0) * 100 / palStore.MAX_FRIENDSHIP_LEVEL),
+  Math.max(0, Number(props.data.FriendshipLevel || 0) * 100 / MAX_FRIENDSHIP_LEVEL),
 ))
 const potentialRows = computed(() => [
   { key: 'Rank', label: 'Editor_Condenser_Rank', icon: 'condense', value: Math.max(0, Number(props.data.Rank ?? 1) - 1) },

@@ -32,11 +32,14 @@ import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import NumberStepper from '@/components/modules/NumberStepper.vue'
 import TechCard from '@/components/TechCard.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
+import { MAX_INVALID_LEVEL, MAX_LEVEL } from '@/game-limits'
+import { useAppStore } from '@/stores/app'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 import { usePlayersStore } from '@/stores/players'
 
+const appStore = useAppStore()
 const catalogsStore = useCatalogsStore()
 const palStore = usePalEditorStore()
 const backend = useBackendStore()
@@ -46,7 +49,7 @@ const activeTab = ref('character')
 const playerName = () => player.value.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = () => playerName().trim().charAt(0).toUpperCase() || '?'
 const isMaxLv = () => player.value.Level >= (
-  palStore.HIDE_INVALID_OPTIONS ? palStore.MAX_LEVEL : palStore.MAX_INVALID_LEVEL
+  appStore.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL
 )
 const isMinLv = () => player.value.Level <= 1
 const fieldActionLabel = key => `${palStore.getTranslatedText('Editor_Apply_Change')}: ${palStore.getTranslatedText(key)}`

@@ -196,7 +196,7 @@ test("toolbar distinguishes primary commands from off and on toggles", () => {
   assert.match(sources.topBar, /\.op:hover\s*\{[^}]*border-color:\s*var\(--editor-color-primary\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
   assert.match(sources.topBar, /\.op\.toggled\s*\{[^}]*border-color:\s*var\(--editor-color-success\)[^}]*color:\s*var\(--editor-color-success\)/s);
   assert.doesNotMatch(sources.topBar, /SHOW_OOB_PAL_FLAG|TopBar_Btn_Pal_OOB/);
-  assert.match(sources.topBar, /:aria-pressed="!palStore\.HIDE_INVALID_OPTIONS"/);
+  assert.match(sources.topBar, /:aria-pressed="!appStore\.HIDE_INVALID_OPTIONS"/);
 });
 
 test("loaded-editor files contain no stale local palette values", () => {

@@ -51,7 +51,7 @@ const donate = () => {
 
 const show_cheats = () => {
   donate()
-  palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
+  appStore.HIDE_INVALID_OPTIONS = !appStore.HIDE_INVALID_OPTIONS
 }
 
 const save = async () => {
@@ -105,8 +105,8 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
           <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt="">
           {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
         </button>
-        <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
-          :aria-pressed="!palStore.HIDE_INVALID_OPTIONS"
+        <button :class="['op', { toggled: !appStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
+          :aria-pressed="!appStore.HIDE_INVALID_OPTIONS"
           :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
           <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
         </button>

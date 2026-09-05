@@ -96,7 +96,7 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.match(source, /:options="activeSkillSelectOptions\(\)"/);
     assert.match(source, /tooltip:\s*skill\.I18n\[1\]/);
     assert.match(source, /skill\.LearnerNames/);
-    assert.equal((source.match(/meta: palStore\.HIDE_INVALID_OPTIONS \? '' : skill\.InternalName/g) || []).length, 2);
+    assert.equal((source.match(/meta: appStore\.HIDE_INVALID_OPTIONS \? '' : skill\.InternalName/g) || []).length, 2);
     assert.match(source, /searchMeta: skill\.Element/);
     assert.equal((source.match(/activeSkillMetadata\(/g) || []).length, 4);
     assert.match(source, /function activeSkillMetadata\(skill = \{\}\)/);
@@ -111,7 +111,7 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     // action names; they are the store actions now.
     for (const handler of ["addPassiveSkill", "addActiveSkill"]) assert.match(source, new RegExp(`@click="${handler}"`));
     assert.equal((source.match(/class="skill-card__title"/g) || []).length, 3);
-    assert.equal((source.match(/<small v-if="!palStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
+    assert.equal((source.match(/<small v-if="!appStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
     for (const locale of [en, fr, ja, zhCN]) {
         for (const key of ["Editor_Select_Search", "Editor_Select_No_Results"]) {
             assert.equal(typeof locale[key], "string", key);

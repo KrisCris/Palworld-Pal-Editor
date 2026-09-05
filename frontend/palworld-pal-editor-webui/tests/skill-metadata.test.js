@@ -12,6 +12,7 @@ import {
     skillBadges,
     usePalEditorStore,
 } from "../src/stores/paleditor.js";
+import { useAppStore } from "../src/stores/app.js";
 import { useCatalogsStore } from "../src/stores/catalogs.js";
 import { usePalsStore } from "../src/stores/pals.js";
 import { useSessionStore } from "../src/stores/session.js";
@@ -212,7 +213,7 @@ test("cheat mode allows a known skill the game would not assign", async t => {
         Assignable: false,
     }];
     selectPal({ IsHuman: false });
-    store.HIDE_INVALID_OPTIONS = false;
+    useAppStore().HIDE_INVALID_OPTIONS = false;
     const writes = recordSkillWrites(t);
 
     await learnSkill(store, skillId);
@@ -232,7 +233,7 @@ test("a skill no catalog knows is refused even in cheat mode", async t => {
     const store = usePalEditorStore();
     useCatalogsStore().activeSkills = [];
     selectPal({ IsHuman: false });
-    store.HIDE_INVALID_OPTIONS = false;
+    useAppStore().HIDE_INVALID_OPTIONS = false;
     const writes = recordSkillWrites(t);
 
     await learnSkill(store, "EPalWazaID::Unknown");

@@ -8,6 +8,7 @@ import UiIcon from '@/components/modules/UiIcon.vue'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { readStorage, writeStorage } from '@/services/backend-connection'
 import { useCatalogsStore } from '@/stores/catalogs'
+import { useAppStore } from '@/stores/app'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { useBackendStore } from '@/stores/backend'
 
@@ -44,6 +45,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'save'])
 const catalogsStore = useCatalogsStore()
+const appStore = useAppStore()
 const palStore = usePalEditorStore()
 const backend = useBackendStore()
 const query = ref('')
@@ -132,7 +134,7 @@ const selectedItem = computed(() => catalogsStore.itemsByName[selectedId.value])
 const isStackable = computed(() => (selectedItem.value?.MaxStackCount || 1) > 1)
 const maximum = computed(() => {
   if (props.equipment || !isStackable.value) return 1
-  return palStore.HIDE_INVALID_OPTIONS
+  return appStore.HIDE_INVALID_OPTIONS
     ? Math.min(999999, Math.max(1, selectedItem.value?.MaxStackCount || 1))
     : 999999
 })

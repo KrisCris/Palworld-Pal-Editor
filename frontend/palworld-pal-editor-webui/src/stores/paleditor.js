@@ -12,6 +12,13 @@ import {
     rememberBackend,
     writeStorage,
 } from "../services/backend-connection.js";
+import {
+    MAX_EQUIP_WAZA,
+    MAX_FRIENDSHIP_LEVEL,
+    MAX_INVALID_LEVEL,
+    MAX_LEVEL,
+    MAX_SUITABILITY_LEVEL,
+} from "../game-limits.js";
 import { translate } from "../i18n/index.js";
 import { checkAuth, login } from "../api/auth.js";
 import { useAppStore } from "./app.js";
@@ -158,17 +165,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         ]),
     );
 
-    const MAX_LEVEL = 80;
-    const MAX_FRIENDSHIP_LEVEL = 10;
-    const MAX_INVALID_LEVEL = 100;
-    const MAX_SOULS_LEVEL = 20;
-    const MAX_SUITABILITY_LEVEL = 10;
-    const MAX_EQUIP_WAZA = 3;
-
     // flags
     const SHOW_DONATE_FLAG = ref(false);
     const UPDATE_PAL_RESELECT_CTR = ref(0);
-    const HIDE_INVALID_OPTIONS = ref(true);
     const PAL_SAVE_DETAILS_OPEN = ref(false);
 
     // A base camp is worth listing even when nobody works in it yet, so the base
@@ -519,14 +518,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function playerLevelUp() {
         const player = players.selectedPlayer;
-        const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        const ceiling = app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL;
         if (!player || player.Level >= ceiling) return;
         return applyPlayerPatch({ Level: player.Level + 1 });
     }
 
     function playerMaxLevel() {
         return applyPlayerPatch({
-            Level: HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL,
+            Level: app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL,
         });
     }
 
@@ -595,7 +594,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 slotIndex,
                 itemId,
                 count,
-                !HIDE_INVALID_OPTIONS.value,
+                !app.HIDE_INVALID_OPTIONS,
             ) !== null;
         } catch (error) {
             reportApiFailure(error, "Operation_Update_Player");
@@ -799,14 +798,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function palLevelUp() {
         const pal = editedPal();
-        const ceiling = HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL;
+        const ceiling = app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL;
         if (pal.Level >= ceiling) return;
         return applyPalPatch({ Level: pal.Level + 1 });
     }
 
     function palMaxLevel() {
         return applyPalPatch({
-            Level: HIDE_INVALID_OPTIONS.value ? MAX_LEVEL : MAX_INVALID_LEVEL,
+            Level: app.HIDE_INVALID_OPTIONS ? MAX_LEVEL : MAX_INVALID_LEVEL,
         });
     }
 
@@ -828,7 +827,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     function swapGender() {
         const gender = editedPal().Gender;
-        let next = HIDE_INVALID_OPTIONS.value ? "NONE" : "EPalGenderType::Female";
+        let next = app.HIDE_INVALID_OPTIONS ? "NONE" : "EPalGenderType::Female";
         if (gender == "EPalGenderType::Female") next = "EPalGenderType::Male";
         if (gender == "EPalGenderType::Male") next = "EPalGenderType::Female";
         return applyPalPatch({ Gender: next });
@@ -841,7 +840,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     function assignableActiveSkill(skill) {
         const active = catalogs.activeSkillsByName[skill];
         if (!active) return false;
-        return !HIDE_INVALID_OPTIONS.value
+        return !app.HIDE_INVALID_OPTIONS
             || isSkillAssignable(active, pals.selectedPal?.IsHuman);
     }
 
@@ -858,7 +857,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             showToast("Message_Select_Skill");
             return;
         }
-        if (HIDE_INVALID_OPTIONS.value && editedPal().PassiveSkillList.length >= 4) {
+        if (app.HIDE_INVALID_OPTIONS && editedPal().PassiveSkillList.length >= 4) {
             showToast("Message_Passive_Limit");
             return;
         }
@@ -910,7 +909,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     function setSuitability(name, value) {
         const pal = editedPal();
         const min = pal.SuitabilityMinimums[name] || 0;
-        if (HIDE_INVALID_OPTIONS.value && min == 0 && value != 0) {
+        if (app.HIDE_INVALID_OPTIONS && min == 0 && value != 0) {
             showToast("Message_Invalid_Suitability");
             return;
         }
@@ -1198,7 +1197,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         PAL_ACTIVE_SELECTED_ITEM,
         SHOW_DONATE_FLAG,
         UPDATE_PAL_RESELECT_CTR,
-        HIDE_INVALID_OPTIONS,
         PAL_SAVE_DETAILS_OPEN,
         HAS_WORKING_PAL_FLAG,
 

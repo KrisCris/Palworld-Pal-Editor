@@ -29,6 +29,12 @@ export const useAppStore = defineStore("app", () => {
     const locale = ref(GAME_LANGUAGES[storedLocale] ? storedLocale : "en");
     const localeOptions = ref(GAME_LANGUAGES);
 
+    // Whether the editor holds values to what the game itself allows. Turning it
+    // off is what the top bar calls cheats: every control that has a game limit
+    // and a wider one reads this to know which it is on. It is a preference of
+    // this browser and not of the save, which is why it sits with the locale.
+    const HIDE_INVALID_OPTIONS = ref(true);
+
     const version = ref("0.0.0");
     const isOfficialBuild = ref(false);
     const hasPassword = ref(false);
@@ -104,6 +110,7 @@ export const useAppStore = defineStore("app", () => {
     return {
         locale,
         localeOptions,
+        HIDE_INVALID_OPTIONS,
         version,
         isOfficialBuild,
         hasPassword,
