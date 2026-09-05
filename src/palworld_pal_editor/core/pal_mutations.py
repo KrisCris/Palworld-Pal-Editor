@@ -12,9 +12,18 @@ answers it once, and the same answer serves both the capability the move dialog 
 before it offers a target and the transfer that follows -- so the UI cannot offer
 something the backend will refuse, and neither side re-derives the rules.
 
+Creating and deleting a Pal are here too, for the same reason: they are the other
+two things that change which Pals exist and where, and they share the payload and
+slot handling the three above use.
+
 Nothing here snapshots the session. Each executor checks everything it can before it
 writes, builds the target payload on a detached copy, and then deep-copies only the
 handful of native parents its short commit touches -- see `TouchedParents`.
+
+The primitives those executors are built out of are in this file rather than beside
+it, under the section comment below. They were their own module until it became
+clear that the split put the two exceptions in one file and all four of their
+`raise` sites in another.
 """
 
 import copy
@@ -29,16 +38,7 @@ from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
-from palworld_pal_editor.core.pal_transactions import (
-    PalIdentityConflict,
-    PalOperationRefused,
-    TouchedParents,
-    prepare_global_parameter,
-    restore_dict,
-    restore_list,
-    restore_local_parameter_envelope,
-    set_owner,
-)
+from palworld_pal_editor.core.storage_directory import StorageDescriptor
 from palworld_pal_editor.utils import LOGGER
 
 if TYPE_CHECKING:
@@ -53,21 +53,203 @@ REPLICATE = "replicate"
 UPDATE_EXISTING = "update-existing"
 
 
+# --- the primitives every operation below is built out of ----------------------
+#
+# `TouchedParents` is the whole of this codebase's transaction story: an operation
+# deep-copies the handful of native parents its commit touches, and rolling back
+# means putting those copies back. There is no journal and no global snapshot -- a
+# save is far too large to copy for every edit, and the parents a single write
+# touches are few.
+#
+# The rest is the Pal payload envelope: who owns a Pal and what its history says
+# (`set_owner`), and how a payload crossing between the world save and an external
+# storage file is dressed for its destination. None of it has an opinion about
+# creating, moving, copying or deleting anything.
 
 
+# What belongs to where a Pal is standing rather than to the Pal. A Global Palbox
+# copy comes back carrying the Global Palbox's answers for all of these, so an
+# overwrite keeps the destination's own.
+DESTINATION_OWNED_KEYS = frozenset(
+    {
+        "OwnerPlayerUId",
+        "OldOwnerPlayerUIds",
+        "SlotId",
+        "ItemContainerId",
+        "EquipItemContainerId",
+        "MapObjectConcreteInstanceIdAssignedToExpedition",
+        "BaseCampWorkerEventType",
+        "BaseCampWorkerEventProgressTime",
+        "bImportedCharacter",
+    }
+)
 
 
+class PalIdentityConflict(ValueError):
+    """The target already holds a Pal with the source's identity.
+
+    Carries every candidate rather than picking one: with two the backend has no
+    basis to choose, and with one the user still has to see what will be overwritten.
+    """
+
+    def __init__(self, candidates: list[PalRecord]):
+        super().__init__("Pal identity already exists in the destination")
+        self.candidates = candidates
 
 
+class PalOperationRefused(ValueError):
+    """A transfer the current state does not allow, named by a stable business code.
+
+    The message is for the log. What the user sees comes from `code`, which the
+    frontend looks up in its own i18n table.
+    """
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
 
 
+def set_owner(pal: PalEntity, owner_uid: UUID | str | None) -> None:
+    """Settle who owns this Pal, current owner and history together.
+
+    They are one decision, not two: the history is what the current owner used to be,
+    so a caller that could write one without the other could leave a Pal owned by
+    someone who never appears in its own provenance. An ownerless Pal -- a base
+    worker, a Pal in the Global Palbox -- keeps the history it arrived with, because
+    being put to work in a camp does not undo having been caught.
+    """
+    if owner_uid is None:
+        pal.pal_param.pop("OwnerPlayerUId", None)
+        return
+
+    owner_uid = toUUID(str(owner_uid))
+    pal.pal_param["OwnerPlayerUId"] = PalObjects.Guid(owner_uid)
+    owners = pal.OldOwnerPlayerUIds
+    if owners is None:
+        pal.pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "OldOwnerPlayerUIds",
+                "prop_type": "StructProperty",
+                "values": [owner_uid],
+                "type_name": "Guid",
+                "id": PalObjects.EMPTY_UUID,
+            },
+        )
+    elif not owners or str(owners[-1]) != str(owner_uid):
+        owners.append(owner_uid)
 
 
+def prepare_global_parameter(
+    source_parameter: dict,
+    *,
+    preserve_provenance: bool,
+) -> dict:
+    """A complete SaveParameter rewritten to the rules the Global Palbox keeps.
+
+    Takes and returns the parameter rather than a `PalEntity`, so a Pal that does not
+    exist yet -- a template, an import, a brand-new Pal -- can be normalized before
+    anything has been written for it to be an entity of.
+    """
+    save_parameter = copy.deepcopy(source_parameter)
+    parameter = save_parameter["value"]
+    parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
+    parameter["ItemContainerId"] = PalObjects.PalContainerId(PalObjects.EMPTY_UUID)
+    parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = PalObjects.Guid(
+        PalObjects.EMPTY_UUID
+    )
+    parameter["bImportedCharacter"] = PalObjects.BoolProperty(True)
+    parameter["BaseCampWorkerEventType"] = PalObjects.EnumProperty(
+        "EPalBaseCampWorkerEventType",
+        "EPalBaseCampWorkerEventType::None",
+    )
+    parameter["BaseCampWorkerEventProgressTime"] = PalObjects.FloatProperty(0.0)
+    if not preserve_provenance:
+        parameter["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
+            "StructProperty",
+            {
+                "prop_name": "OldOwnerPlayerUIds",
+                "prop_type": "StructProperty",
+                "values": [],
+                "type_name": "Guid",
+                "id": PalObjects.EMPTY_UUID,
+            },
+        )
+        parameter["SlotId"] = PalObjects.PalCharacterSlotId(-1, PalObjects.EMPTY_UUID)
+    return save_parameter
 
 
+def restore_local_parameter_envelope(
+    incoming_parameter: dict,
+    destination_parameter: dict,
+) -> dict:
+    """The incoming gameplay payload, wearing the destination's own position."""
+    merged = copy.deepcopy(incoming_parameter)
+    for key in DESTINATION_OWNED_KEYS:
+        if key in destination_parameter:
+            merged[key] = copy.deepcopy(destination_parameter[key])
+        else:
+            merged.pop(key, None)
+    return merged
 
 
+def restore_dict(parent: dict, snapshot: dict) -> None:
+    """Put a native dict's contents back, in place.
 
+    In place matters: the save file's dicts are referenced from several directions at
+    once -- a `PalEntity` binding, a parent array, an index -- so rebinding the name
+    would restore the data and leave everything pointing at the old object.
+    """
+    parent.clear()
+    parent.update(copy.deepcopy(snapshot))
+
+
+def restore_list(parent: list, snapshot: list) -> None:
+    """Put a native list's contents back, in place, for the same reason."""
+    parent[:] = copy.deepcopy(snapshot)
+
+
+class TouchedParents:
+    """Deep copies of the few native parents one short commit writes into.
+
+    This is a safety net against a bug in the lines below it, not a transaction
+    system: every failure the save file can actually produce -- a full container, a
+    stale target, a cross-guild move -- has already been answered by `plan()` before
+    an executor starts. So it stays small, and what it holds is bounded by what the
+    operation touches rather than by the size of the save.
+    """
+
+    def __init__(self) -> None:
+        self._undo: list = []
+
+    def watch_dict(self, parent: dict) -> None:
+        snapshot = copy.deepcopy(parent)
+        self._undo.append(lambda: restore_dict(parent, snapshot))
+
+    def watch_list(self, parent: list) -> None:
+        snapshot = copy.deepcopy(parent)
+        self._undo.append(lambda: restore_list(parent, snapshot))
+
+    def watch_container(self, container) -> None:
+        snapshot = container.snapshot_slots()
+        self._undo.append(lambda: container.restore_slots(snapshot))
+
+    def watch_group(self, group) -> None:
+        snapshot = group.snapshot_handles()
+        self._undo.append(lambda: group.restore_handles(snapshot))
+
+    def watch_storage_dirty(self, storage) -> None:
+        """A storage file's unsaved flag, which a rolled-back write must not leave set."""
+        dirty = storage.dirty
+        self._undo.append(lambda: setattr(storage, "dirty", dirty))
+
+    def on_undo(self, undo) -> None:
+        """A one-off reversal for something no primitive above covers."""
+        self._undo.append(undo)
+
+    def restore(self) -> None:
+        for undo in reversed(self._undo):
+            undo()
 
 
 @dataclass(slots=True)
@@ -80,7 +262,7 @@ class TransferPlan:
 
     effect: Optional[str]
     reason: Optional[str] = None
-    descriptor: Optional[dict] = None
+    descriptor: Optional[StorageDescriptor] = None
     # The logical owner the Pal ends up with. Not the storage's owner: a DPS belongs
     # to a player, but the Pals in it keep whoever owned them.
     owner_uid: Optional[str] = None
@@ -136,26 +318,26 @@ class PalMutationService:
         descriptor = manager.storage_directory.descriptor(target_storage_key)
         if descriptor is None:
             return _refused("TARGET_NOT_FOUND")
-        if descriptor["StorageKey"] == source.storage_key:
+        if descriptor.storage_key == source.storage_key:
             return _refused("ALREADY_IN_TARGET")
         if source.storage_kind == "global_palbox":
             return self._plan_out_of_global(source, descriptor)
-        if descriptor["StorageKind"] == "global_palbox":
+        if descriptor.storage_kind == "global_palbox":
             return self._plan_into_global(source, descriptor)
         return self._plan_relocate(source, descriptor)
 
     def _plan_out_of_global(self, source: PalRecord, descriptor: dict) -> TransferPlan:
         """Global Palbox to somewhere local. Only a player's own party or palbox."""
         if not (
-            descriptor["StorageKind"] == "world"
-            and descriptor["ContainerKind"] in {"party", "storage"}
-            and descriptor.get("OwnerPlayerUId")
+            descriptor.storage_kind == "world"
+            and descriptor.storage_role in {"party", "storage"}
+            and descriptor.owner_player_uid
         ):
             return _refused("GPS_PLAYER_TARGET_REQUIRED")
-        owner = self._manager.get_player(descriptor["OwnerPlayerUId"])
+        owner = self._manager.get_player(descriptor.owner_player_uid)
         if owner is None:
             return _refused("TARGET_OWNER_UNAVAILABLE")
-        if self._manager.group_data.get_group(descriptor.get("GroupId")) is None:
+        if self._manager.guild_data.get_group(descriptor.group_id) is None:
             return _refused("TARGET_GUILD_UNAVAILABLE")
 
         candidates = self._local_candidates(source)
@@ -164,7 +346,7 @@ class PalMutationService:
                 UPDATE_EXISTING, descriptor=descriptor, candidates=candidates
             )
         container = self._manager.container_data.get_container(
-            descriptor["ContainerId"]
+            descriptor.ContainerId
         )
         if container is None or container.get_free_slot_index() == -1:
             return _refused("TARGET_FULL")
@@ -172,12 +354,12 @@ class PalMutationService:
             REPLICATE,
             descriptor=descriptor,
             owner_uid=str(owner.PlayerUId),
-            group_id=descriptor["GroupId"],
+            group_id=descriptor.group_id,
         )
 
     def _plan_into_global(self, source: PalRecord, descriptor: dict) -> TransferPlan:
         """Somewhere local to the Global Palbox. The source is always kept."""
-        adapter = self._manager.storage_adapters.get(descriptor["StorageKey"])
+        adapter = self._manager.storage_adapters.get(descriptor.storage_key)
         if adapter is None:
             return _refused("GLOBAL_PALBOX_UNAVAILABLE")
         candidates = self._global_candidates(source)
@@ -194,11 +376,11 @@ class PalMutationService:
         manager = self._manager
         if source.pal.IsExpeditionPal:
             return _refused("EXPEDITION_PAL")
-        if not descriptor["MovableInto"]:
+        if not descriptor.movable_into:
             return _refused("TARGET_NOT_MOVABLE")
 
-        if descriptor["StorageKind"] == "dps":
-            adapter = manager.storage_adapters.get(descriptor["StorageKey"])
+        if descriptor.storage_kind == "dps":
+            adapter = manager.storage_adapters.get(descriptor.storage_key)
             if adapter is None:
                 return _refused("TARGET_NOT_FOUND")
             if adapter.storage.free_index() < 0:
@@ -215,9 +397,9 @@ class PalMutationService:
                 owner_uid=_uid_text(source.pal.OwnerPlayerUId),
             )
 
-        if descriptor["StorageKind"] != "world":
+        if descriptor.storage_kind != "world":
             return _refused("TARGET_NOT_MOVABLE")
-        container = manager.container_data.get_container(descriptor["ContainerId"])
+        container = manager.container_data.get_container(descriptor.ContainerId)
         if container is None or container.get_free_slot_index() == -1:
             return _refused("TARGET_FULL")
         if container.has_pal(source.pal.InstanceId):
@@ -227,9 +409,9 @@ class PalMutationService:
         ):
             return _refused("DUPLICATE_IN_TARGET")
 
-        shared = bool(descriptor.get("Shared"))
-        group_id = descriptor.get("GroupId")
-        if descriptor["ContainerKind"] == "base":
+        shared = bool(descriptor.shared)
+        group_id = descriptor.group_id
+        if descriptor.storage_role == "base":
             owner_uid = None
         elif shared:
             # A viewing cage is nobody's, so the Pal in it stays whoever's it was --
@@ -240,13 +422,13 @@ class PalMutationService:
             owner_uid = str(source.pal.OwnerPlayerUId)
             group_id = self._source_group_id(source)
         else:
-            target_owner = manager.get_player(descriptor.get("OwnerPlayerUId"))
+            target_owner = manager.get_player(descriptor.owner_player_uid)
             if target_owner is None:
                 return _refused("TARGET_OWNER_UNAVAILABLE")
             owner_uid = str(target_owner.PlayerUId)
         if not shared and str(self._source_group_id(source)) != str(group_id):
             return _refused("CROSS_GUILD_UNSUPPORTED")
-        if manager.group_data.get_group(group_id) is None:
+        if manager.guild_data.get_group(group_id) is None:
             return _refused("TARGET_GUILD_UNAVAILABLE")
         return TransferPlan(
             RELOCATE,
@@ -301,8 +483,8 @@ class PalMutationService:
             f"Pal transfer requested: effect={plan.effect} "
             f"source_record={source.record_key} source_storage={source.storage_key} "
             f"pal={source.pal.InstanceId} pal_owner={source.pal.OwnerPlayerUId} "
-            f"target_storage={plan.descriptor['StorageKey']} "
-            f"target_kind={plan.descriptor['StorageKind']}"
+            f"target_storage={plan.descriptor.storage_key} "
+            f"target_kind={plan.descriptor.storage_kind}"
         )
         if plan.effect == UPDATE_EXISTING:
             return self._update_existing(
@@ -342,9 +524,9 @@ class PalMutationService:
     # --- relocate ---------------------------------------------------------
 
     def _relocate(self, source: PalRecord, plan: TransferPlan) -> OperationOutcome:
-        if source.storage_kind == "world" and plan.descriptor["StorageKind"] == "world":
+        if source.storage_kind == "world" and plan.descriptor.storage_kind == "world":
             return self._relocate_within_world(source, plan)
-        if plan.descriptor["StorageKind"] == "dps":
+        if plan.descriptor.storage_kind == "dps":
             return self._relocate_into_storage(source, plan)
         return self._relocate_into_world(source, plan)
 
@@ -360,7 +542,7 @@ class PalMutationService:
         manager = self._manager
         pal = source.pal
         target_container = manager.container_data.get_container(
-            plan.descriptor["ContainerId"]
+            plan.descriptor.ContainerId
         )
         source_container = manager.container_data.get_container(pal.ContainerId)
         source_slot = source_container.get_slot(pal.InstanceId)
@@ -402,7 +584,7 @@ class PalMutationService:
     ) -> OperationOutcome:
         """World or DPS into a DPS. The payload converts; the record does not change."""
         manager = self._manager
-        adapter = manager.storage_adapters[plan.descriptor["StorageKey"]]
+        adapter = manager.storage_adapters[plan.descriptor.storage_key]
         save_parameter = copy.deepcopy(source.pal.save_parameter)
         instance_id = source.pal.InstanceId
         owner = manager.get_player(plan.owner_uid) if plan.owner_uid else None
@@ -445,8 +627,8 @@ class PalMutationService:
         """A DPS Pal back into a container. It becomes a World record and stops being a copy."""
         manager = self._manager
         descriptor = plan.descriptor
-        container = manager.container_data.get_container(descriptor["ContainerId"])
-        group = manager.group_data.get_group(plan.group_id)
+        container = manager.container_data.get_container(descriptor.ContainerId)
+        group = manager.guild_data.get_group(plan.group_id)
         instance_id = source.pal.InstanceId
         save_parameter = copy.deepcopy(source.pal.save_parameter)
         origin_storage_key = source.storage_key
@@ -489,7 +671,7 @@ class PalMutationService:
 
     def _replicate(self, source: PalRecord, plan: TransferPlan) -> OperationOutcome:
         """A second physical Pal. The source is untouched, and keeps its identity."""
-        if plan.descriptor["StorageKind"] == "global_palbox":
+        if plan.descriptor.storage_kind == "global_palbox":
             return self._replicate_into_global(source, plan)
         return self._replicate_into_world(source, plan)
 
@@ -497,7 +679,7 @@ class PalMutationService:
         self, source: PalRecord, plan: TransferPlan
     ) -> OperationOutcome:
         manager = self._manager
-        adapter = manager.storage_adapters[plan.descriptor["StorageKey"]]
+        adapter = manager.storage_adapters[plan.descriptor.storage_key]
         parameter = prepare_global_parameter(
             source.pal.save_parameter, preserve_provenance=True
         )
@@ -519,8 +701,8 @@ class PalMutationService:
     ) -> OperationOutcome:
         manager = self._manager
         descriptor = plan.descriptor
-        container = manager.container_data.get_container(descriptor["ContainerId"])
-        group = manager.group_data.get_group(plan.group_id)
+        container = manager.container_data.get_container(descriptor.ContainerId)
+        group = manager.guild_data.get_group(plan.group_id)
         instance_id = source.pal.InstanceId
         save_parameter = copy.deepcopy(source.pal.save_parameter)
 
@@ -648,22 +830,22 @@ class PalMutationService:
         made from a Global Palbox Pal creatable into a player Palbox.
         """
         allowed = {
-            descriptor["StorageKey"]: descriptor
+            descriptor.storage_key: descriptor
             for descriptor in self._manager.storage_directory.creation_targets(roster_key)
         }
         descriptor = allowed.get(str(target_storage_key))
         if descriptor is None:
             raise ValueError("Target storage is not valid for this roster.")
 
-        kind = descriptor["StorageKind"]
+        kind = descriptor.storage_kind
         if kind == "world":
             player_uid = (
                 roster_key
                 if roster_key != "base-workers"
-                else descriptor.get("OwnerPlayerUId")
+                else descriptor.owner_player_uid
             )
             return self.create_world_pal(
-                player_uid, save_parameter, descriptor["ContainerId"]
+                player_uid, save_parameter, descriptor.ContainerId
             )
         if kind == "global_palbox":
             return self._create_into_global(save_parameter)
@@ -721,7 +903,7 @@ class PalMutationService:
         manager = self._manager
         storage_owner = manager.get_player(roster_key)
         player = manager.get_player(pal_owner_uid) if pal_owner_uid else storage_owner
-        storage = manager.dps_storages.get(descriptor["StorageKey"])
+        storage = manager.dps_storages.get(descriptor.storage_key)
         if storage_owner is None or player is None or storage is None:
             raise ValueError("DPS owner or storage is unavailable.")
         target_index = storage.free_index()
@@ -800,15 +982,15 @@ class PalMutationService:
             )
 
         descriptor = manager.storage_directory.descriptor(target_container_id)
-        if descriptor is None or not descriptor["MovableInto"]:
+        if descriptor is None or not descriptor.movable_into:
             raise ValueError(f"Unsafe target container {target_container_id}")
         container = manager.container_data.get_container(target_container_id)
         if container is None or container.get_free_slot_index() == -1:
             raise ValueError("No empty Pal slot")
-        group_id = descriptor.get("GroupId")
-        owner_id = descriptor.get("OwnerPlayerUId")
+        group_id = descriptor.group_id
+        owner_id = descriptor.owner_player_uid
         owner_player = manager.get_player(owner_id) if owner_id else None
-        if descriptor["ContainerKind"] != "base" and owner_player is None:
+        if descriptor.storage_role != "base" and owner_player is None:
             raise ValueError("Target container owner not found")
         if requested_player and str(requested_player.group_id) != str(group_id):
             raise ValueError("Cross-guild Pal creation is unsupported")
@@ -895,7 +1077,7 @@ class PalMutationService:
         ) = self._resolve_world_creation_target(player_uid, target_container_id)
         if container is None or historical_player is None:
             raise ValueError("No valid Pal target or historical owner")
-        group = manager.group_data.get_group(group_id)
+        group = manager.guild_data.get_group(group_id)
         if group is None:
             raise ValueError(f"Group {group_id} not found")
 
@@ -981,13 +1163,13 @@ class PalMutationService:
             targets = [
                 descriptor
                 for descriptor in manager.storage_directory.creation_targets(roster_key)
-                if descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"base", "party", "storage"}
-                and descriptor["Occupied"] < descriptor["Capacity"]
+                if descriptor.storage_kind == "world"
+                and descriptor.storage_role in {"base", "party", "storage"}
+                and descriptor.occupied < descriptor.slot_count
             ]
             if not targets:
                 raise ValueError("The target Pal containers are full.")
-            clone = self.create(roster_key, targets[0]["StorageKey"], source_parameter)
+            clone = self.create(roster_key, targets[0].storage_key, source_parameter)
 
         LOGGER.info(
             "Duplicated Pal: "
@@ -1113,7 +1295,7 @@ class PalMutationService:
             return
 
         container = manager.container_data.get_container(source.pal.ContainerId)
-        group = manager.group_data.get_group(source.group_id)
+        group = manager.guild_data.get_group(source.group_id)
         if container is not None:
             touched.watch_container(container)
         if group is not None:

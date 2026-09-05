@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.pal_objects import PalObjects, dumps, toUUID
-from palworld_pal_editor.core.pal_templates import (
+from palworld_pal_editor.core.templates import (
     migrate_pal_templates,
     template_source,
 )

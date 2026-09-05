@@ -183,6 +183,14 @@ class PalFamilyProviderTests(unittest.TestCase):
         manager = Manager()
         with (
             patch("palworld_pal_editor.api.pals.SaveManager", return_value=manager),
+            patch(
+                "palworld_pal_editor.api.operations.SaveManager",
+                return_value=manager,
+            ),
+            patch(
+                "palworld_pal_editor.api.pal_serializers.SaveManager",
+                return_value=manager,
+            ),
             app.test_client() as client,
         ):
             patched = client.patch(

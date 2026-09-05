@@ -2,7 +2,7 @@ import copy
 from pathlib import Path
 import unittest
 
-from palworld_pal_editor.api.pals import pal_detail
+from palworld_pal_editor.api.pal_serializers import pal_detail
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.save_manager import SaveManager
 

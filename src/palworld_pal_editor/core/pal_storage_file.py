@@ -1,3 +1,15 @@
+"""The two Pal storage formats that are a save file of their own.
+
+A Dimensional Pal Storage (`<uid>_dps.sav`) and the Global Pal Storage
+(`GlobalPalStorage.sav`) are whole `.sav` files whose payload is a single array of
+fixed Pal slots -- unlike world Pals, which live inside Level.sav. Opening those
+files, finding a free slot, clearing one and re-serializing the result is this
+module; what an entry means is the adapters' business.
+
+`ExternalStorageKind` names only those two. The canonical `StorageKind`, which
+also covers Pals living inside Level.sav, is in `pal_record.py`.
+"""
+
 import copy
 from pathlib import Path
 from typing import Literal
@@ -11,7 +23,10 @@ from .pal_objects import PalObjects, toUUID
 from .save_codec import PAL_STORAGE_CUSTOM_PROPERTIES
 
 
-StorageKind = Literal["dps", "global_palbox"]
+# The two formats that live in a `.sav` of their own. Deliberately not named
+# `StorageKind`: that is `pal_record`'s three-value one, and a module that
+# imported this believing it canonical could not describe a world Pal.
+ExternalStorageKind = Literal["dps", "global_palbox"]
 
 # What each format calls the entries in its SaveParameterArray. This is how a DPS
 # record and a GPS record are told apart -- they are otherwise the same shape -- so
@@ -43,7 +58,7 @@ class PalStorageSaveFile:
     def __init__(
         self,
         path: Path,
-        kind: StorageKind,
+        kind: ExternalStorageKind,
         owner_uid: UUID | str | None,
         gvas_file: GvasFile,
         save_type: int,
@@ -59,7 +74,7 @@ class PalStorageSaveFile:
     def open(
         cls,
         path: Path,
-        kind: StorageKind,
+        kind: ExternalStorageKind,
         owner_uid: UUID | str | None = None,
     ) -> "PalStorageSaveFile":
         path = Path(path)
@@ -86,7 +101,7 @@ class PalStorageSaveFile:
         return f"dps:{self.owner_uid}"
 
     @property
-    def capacity(self) -> int:
+    def slot_count(self) -> int:
         return len(self.entries)
 
     @property

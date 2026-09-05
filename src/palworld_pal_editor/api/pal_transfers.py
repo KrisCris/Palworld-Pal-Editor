@@ -16,10 +16,10 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.pals import operation_result, require_record
+from palworld_pal_editor.api.operations import operation_result, require_record
 from palworld_pal_editor.api.roster_keys import roster_key_for_record
 from palworld_pal_editor.core import PalEntity, SaveManager
-from palworld_pal_editor.core.pal_transactions import (
+from palworld_pal_editor.core.pal_mutations import (
     PalIdentityConflict,
     PalOperationRefused,
 )
@@ -88,7 +88,7 @@ def _candidate(manager: SaveManager, record: PalRecord) -> dict:
         "recordKey": record.record_key,
         "storageKey": record.storage_key,
         "SlotIndex": record.slot_index,
-        "label": location["ContainerLabel"],
+        "label": location.storage_label,
     }
 
 

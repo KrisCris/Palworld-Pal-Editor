@@ -8,7 +8,7 @@ from palworld_pal_editor.webui import app
 import copy
 
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
-from palworld_pal_editor.core.pal_transactions import set_owner
+from palworld_pal_editor.core.pal_mutations import set_owner
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_storage_adapters import GpsPalAdapter
 from palworld_pal_editor.core.pal_repository import PalRepository
@@ -75,7 +75,11 @@ class PalContainerApiTests(unittest.TestCase):
         self.headers = {"Authorization": f"Bearer {token}"}
         self.patches = [
             patch(f"{module}.SaveManager", return_value=self.manager)
+            # Every module that reaches for the session, not just the route one:
+            # `require_record` and `pal_detail` each look it up in their own.
             for module in (
+                "palworld_pal_editor.api.operations",
+                "palworld_pal_editor.api.pal_serializers",
                 "palworld_pal_editor.api.pal_transfers",
                 "palworld_pal_editor.api.pals",
             )

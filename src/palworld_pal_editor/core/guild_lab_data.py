@@ -1,3 +1,11 @@
+"""Guild technology research: what a guild has unlocked, and unlocking more.
+
+The lab belongs to the guild rather than to any player, so research is read against
+a group id and the camps that group owns rather than against whoever is selected.
+`snapshot` reports the tree with the interface language applied; `complete` unlocks
+one research, one category, or all of it.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -6,7 +14,7 @@ from palworld_save_tools.gvas import GvasFile
 
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core.basecamp_data import BaseCampData
-from palworld_pal_editor.core.group_data import GroupData
+from palworld_pal_editor.core.guild_data import GuildData
 from palworld_pal_editor.utils import LOGGER
 
 
@@ -149,9 +157,9 @@ class GuildLabData:
         row = self._labels.get(kind, {}).get(lang) or {}
         return row.get(key) or key
 
-    def snapshot(self, group_data: GroupData, camp_data: BaseCampData) -> dict:
+    def snapshot(self, guild_data: GuildData, camp_data: BaseCampData) -> dict:
         group_names = {
-            str(group.group_id): group.guild_name for group in group_data.get_groups()
+            str(group.group_id): group.guild_name for group in guild_data.get_groups()
         }
         camps_by_group: dict[str, list[dict]] = {}
         for camp in camp_data.get_camps():

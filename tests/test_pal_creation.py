@@ -17,7 +17,7 @@ import unittest
 import unittest.mock
 from pathlib import Path
 
-from palworld_pal_editor.core.group_data import PalGroup
+from palworld_pal_editor.core.guild_data import Guild
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.save_manager import SaveManager
@@ -53,7 +53,7 @@ class PalCreationTests(unittest.TestCase):
         return self.manager.container_data.get_container(self.palbox_id)
 
     def group(self):
-        return self.manager.group_data.get_group(self.player.group_id)
+        return self.manager.guild_data.get_group(self.player.group_id)
 
     def source_parameter(self) -> dict:
         """A live Pal's complete payload, marked so it can be recognised again."""
@@ -92,7 +92,7 @@ class PalCreationTests(unittest.TestCase):
             len(self.manager._entities_list),
         )
 
-        with unittest.mock.patch.object(PalGroup, "add_pal", return_value=False):
+        with unittest.mock.patch.object(Guild, "add_pal", return_value=False):
             with self.assertRaises(Exception):
                 self.manager.pal_mutations.create(OWNER_UID, self.palbox)
 
@@ -207,7 +207,7 @@ class PalGroupTests(unittest.TestCase):
     def test_a_guild_handle_lookup_accepts_uuid_objects(self):
         """Create and delete both address the guild by a `UUID`, not by its text."""
         pal_id = toUUID("11111111-1111-1111-1111-111111111111")
-        group = object.__new__(PalGroup)
+        group = object.__new__(Guild)
         handle = PalObjects.individual_character_handle_id(pal_id)
         group.instance_map = {str(pal_id): handle}
         group._group_param = {

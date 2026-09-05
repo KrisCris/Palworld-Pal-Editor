@@ -29,9 +29,9 @@ def roster_key_for_target(descriptor: dict, owner_uid) -> str:
     Pal's own owner decides -- and an unowned Pal anywhere else is in no list at all,
     which is a real answer for a Pal being moved and a refusal for one being created.
     """
-    if descriptor["StorageKind"] == "global_palbox":
+    if descriptor.storage_kind == "global_palbox":
         return "global-palbox"
-    if descriptor["ContainerKind"] == "base":
+    if descriptor.storage_role == "base":
         return "base-workers"
     return f"{PLAYER_ROSTER_PREFIX}{owner_uid}" if owner_uid else UNROSTERED
 

@@ -1,3 +1,14 @@
+"""Pals that live in a storage `.sav` file: DPS and Global Pal Storage.
+
+Both formats are one array of fixed slots and differ only in which file they come
+from and what their record keys are prefixed with, so the reading and writing is
+written once here and `DpsPalAdapter`/`GpsPalAdapter` supply the prefix.
+
+A slot index is part of a record's identity in these formats
+(`dps:<owner uid>:<slot>`), unlike the world save, where the instance id is. Moving
+a Pal between slots therefore re-keys its record.
+"""
+
 import copy
 from typing import Optional
 
@@ -9,7 +20,7 @@ from palworld_pal_editor.core.pal_objects import (
     json_native,
 )
 from palworld_pal_editor.core.pal_record import PalRecord
-from palworld_pal_editor.core.pal_storage import ENTRY_TYPE_NAME, PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_file import ENTRY_TYPE_NAME, PalStorageSaveFile
 
 
 class StoragePalAdapter:

@@ -16,7 +16,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.pals import operation_result
+from palworld_pal_editor.api.operations import operation_result, require_pal_template
 from palworld_pal_editor.api.roster_keys import (
     PLAYER_ROSTER_PREFIX,
     UNROSTERED,
@@ -24,11 +24,11 @@ from palworld_pal_editor.api.roster_keys import (
     roster_key_for_record,
     roster_key_for_target,
 )
-from palworld_pal_editor.api.templates import require_pal_template
 from palworld_pal_editor.core import SaveManager
+from palworld_pal_editor.core.storage_directory import StorageDescriptor
 from palworld_pal_editor.core.pal_mutations import UPDATE_EXISTING
-from palworld_pal_editor.core.pal_sources import detach_native_record
-from palworld_pal_editor.core.pal_templates import template_source
+from palworld_pal_editor.core.pal_import import detach_native_record
+from palworld_pal_editor.core.templates import template_source
 
 storages_blueprint = Blueprint("storages", __name__)
 register_error_handlers(storages_blueprint)
@@ -43,7 +43,7 @@ BASES_GROUP = "bases"
 OTHER_GROUP = "other"
 
 # Within one group. The same order the container registry has always listed in.
-CONTAINER_ORDER = {
+ROLE_ORDER_WITHIN_GROUP = {
     "party": 0,
     "storage": 1,
     "dps": 2,
@@ -53,7 +53,7 @@ CONTAINER_ORDER = {
 }
 
 # What kind of place a storage is, as an i18n key rather than as English. The
-# registry's own `ContainerLabel` is composed in English ("Alice · Palbox"), so a
+# registry's own `storage_label` is composed in English ("Alice · Palbox"), so a
 # frontend that rendered it would show untranslated text in every other locale --
 # and one that re-derived the wording from `storageKind` would be the branching
 # this removes. So the descriptor splits the label in two: `label` is the data
@@ -67,32 +67,32 @@ CONTAINER_LABEL_KEYS = {
 }
 
 
-def _label(descriptor: dict) -> tuple:
+def _label(descriptor: StorageDescriptor) -> tuple:
     """`(label, labelKey, labelArgs)` -- the data half, then the translated half."""
-    kind = descriptor["ContainerKind"]
+    kind = descriptor.storage_role
     if kind == "base":
-        if descriptor.get("BaseOrdinal"):
-            return None, "Editor_Container_Base", [descriptor["BaseOrdinal"]]
-        return descriptor.get("BaseName") or descriptor["ContainerLabel"], None, []
+        if descriptor.base_ordinal:
+            return None, "Editor_Container_Base", [descriptor.base_ordinal]
+        return descriptor.base_name or descriptor.storage_label, None, []
     if kind == "special":
         # A viewing cage belongs to the guild rather than to a player, and is the
         # one special container with a name of its own.
-        if descriptor.get("Shared"):
+        if descriptor.shared:
             return None, "Editor_Container_ViewingCage", []
         return (
-            descriptor.get("OwnerName"),
+            descriptor.owner_name,
             "Editor_Container_Special",
-            [descriptor["Size"]],
+            [descriptor.slot_count],
         )
     if kind == "unknown":
-        return None, "Editor_Container_Unknown", [descriptor["Size"]]
+        return None, "Editor_Container_Unknown", [descriptor.slot_count]
     label_key = CONTAINER_LABEL_KEYS.get(kind)
     if label_key is None:
-        return descriptor["ContainerLabel"], None, []
-    return descriptor.get("OwnerName"), label_key, []
+        return descriptor.storage_label, None, []
+    return descriptor.owner_name, label_key, []
 
 
-def _creation_roster_key(descriptor: dict, owner_uid) -> str:
+def _creation_roster_key(descriptor: StorageDescriptor, owner_uid) -> str:
     """Which list the new Pal turns up in, and therefore whose targets are legal."""
     roster_key = roster_key_for_target(descriptor, owner_uid)
     if roster_key == UNROSTERED:
@@ -105,18 +105,18 @@ def _creation_roster_key(descriptor: dict, owner_uid) -> str:
     return roster_key
 
 
-def _navigation(descriptor: dict, order: dict) -> tuple:
-    if descriptor["StorageKind"] == "global_palbox":
+def _navigation(descriptor: StorageDescriptor, order: dict) -> tuple:
+    if descriptor.storage_kind == "global_palbox":
         # Null like the bases group: "Global Palbox" is a phrase the frontend has
         # translated, not a name this save holds.
         return GLOBAL_PALBOX_GROUP, None, 0
-    if descriptor["ContainerKind"] == "base":
+    if descriptor.storage_role == "base":
         return BASES_GROUP, None, 1
-    owner_uid = descriptor.get("OwnerPlayerUId")
+    owner_uid = descriptor.owner_player_uid
     if owner_uid in order:
         return (
             f"{PLAYER_ROSTER_PREFIX}{owner_uid}",
-            descriptor.get("OwnerName"),
+            descriptor.owner_name,
             2 + order[owner_uid],
         )
     return OTHER_GROUP, None, 99
@@ -130,7 +130,7 @@ def player_order(manager: SaveManager) -> dict:
     }
 
 
-def storage_descriptor(descriptor: dict, order: dict) -> dict:
+def storage_descriptor(descriptor: StorageDescriptor, order: dict) -> dict:
     """One place a Pal can be, as the move dialog needs it.
 
     Generated from the containers, players and repository indexes that already exist,
@@ -143,23 +143,23 @@ def storage_descriptor(descriptor: dict, order: dict) -> dict:
     group_key, group_label, group_order = _navigation(descriptor, order)
     label, label_key, label_args = _label(descriptor)
     return {
-        "storageKey": descriptor["StorageKey"],
-        "storageKind": descriptor["StorageKind"],
+        "storageKey": descriptor.storage_key,
+        "storageKind": descriptor.storage_kind,
         "label": label,
         "labelKey": label_key,
         "labelArgs": label_args,
         "navigationGroupKey": group_key,
         "navigationGroupLabel": group_label,
         "navigationGroupOrder": group_order,
-        "order": CONTAINER_ORDER.get(descriptor["ContainerKind"], 99),
-        "capacity": descriptor["Capacity"],
-        "occupied": descriptor["Occupied"],
-        "ownerPlayerUid": descriptor.get("OwnerPlayerUId"),
-        "containerId": descriptor.get("ContainerId"),
+        "order": ROLE_ORDER_WITHIN_GROUP.get(descriptor.storage_role, 99),
+        "capacity": descriptor.slot_count,
+        "occupied": descriptor.occupied,
+        "ownerPlayerUid": descriptor.owner_player_uid,
+        "containerId": descriptor.ContainerId,
     }
 
 
-def require_descriptor(manager: SaveManager, storage_key: str) -> dict:
+def require_descriptor(manager: SaveManager, storage_key: str) -> StorageDescriptor:
     descriptor = manager.storage_directory.descriptor(storage_key)
     if descriptor is None:
         raise ApiError(
@@ -295,7 +295,7 @@ def create_storage_pal(storage_key: str):
         try:
             record = manager.pal_mutations.create(
                 core_roster_key(roster_key),
-                descriptor["StorageKey"],
+                descriptor.storage_key,
                 save_parameter,
             )
         except ValueError as error:

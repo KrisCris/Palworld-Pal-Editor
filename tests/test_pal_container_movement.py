@@ -1,5 +1,6 @@
 import copy
 import unittest
+from dataclasses import replace
 
 from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
@@ -14,7 +15,10 @@ from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
 from palworld_pal_editor.core.rosters import RosterIndex
-from palworld_pal_editor.core.storage_directory import StorageDirectory
+from palworld_pal_editor.core.storage_directory import (
+    StorageDescriptor,
+    StorageDirectory,
+)
 
 
 CONTAINER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -117,8 +121,12 @@ def as_base_worker(manager, pal, container_id=CONTAINER_ID):
 
 def as_shared_cage(manager, container):
     """Make the target the one world container nobody owns: a viewing cage."""
-    manager.storage_directory._cache[str(container.ID)].update(
-        {"Shared": True, "OwnerPlayerUId": None, "GroupId": None}
+    cache = manager.storage_directory._cache
+    cache[str(container.ID)] = replace(
+        cache[str(container.ID)],
+        shared=True,
+        owner_player_uid=None,
+        group_id=None,
     )
 
 
@@ -188,7 +196,7 @@ class FakeContainerData:
         return self.container_map.values()
 
 
-class FakeGroup:
+class FakeGuild:
     def __init__(self):
         self.pals = set()
 
@@ -213,7 +221,7 @@ class FakeGroup:
         self.pals = set(snapshot)
 
 
-class FakeGroupData:
+class FakeGuildData:
     def __init__(self, group):
         self.group = group
 
@@ -280,7 +288,7 @@ def movement_manager(target_kind="base"):
     manager.storage_adapters = {}
     manager._dps_storages = {}
     manager._global_palbox = None
-    manager.group_data = FakeGroupData(FakeGroup())
+    manager.guild_data = FakeGuildData(FakeGuild())
     manager.pal_mutations = PalMutationService(manager)
     # This manager is assembled field by field rather than loaded, so it gets its
     # collaborators the same way. The cache below is then the whole directory:
@@ -288,32 +296,34 @@ def movement_manager(target_kind="base"):
     manager.storage_directory = StorageDirectory(manager)
     manager.rosters = RosterIndex(manager)
     manager.storage_directory._cache = {
-        str(source.ID): {
-            "ContainerId": str(source.ID),
-            "StorageKey": WorldPalAdapter.storage_key(source.ID),
-            "StorageKind": "world",
-            "ContainerKind": "storage",
-            "ContainerLabel": "Source · Palbox",
-            "OwnerPlayerUId": str(source_player.PlayerUId),
-            "GroupId": str(GROUP_ID),
-            "Size": source.size,
-            "Occupied": len(source.slots),
-            "Classification": "exact",
-            "MovableInto": True,
-        },
-        str(target.ID): {
-            "ContainerId": str(target.ID),
-            "StorageKey": WorldPalAdapter.storage_key(target.ID),
-            "StorageKind": "world",
-            "ContainerKind": target_kind,
-            "ContainerLabel": "Target",
-            "OwnerPlayerUId": str(target_player.PlayerUId) if target_kind != "base" else None,
-            "GroupId": str(GROUP_ID),
-            "Size": target.size,
-            "Occupied": len(target.slots),
-            "Classification": "exact",
-            "MovableInto": True,
-        },
+        str(source.ID): StorageDescriptor(
+            storage_key=WorldPalAdapter.storage_key(source.ID),
+            storage_kind="world",
+            storage_role="storage",
+            storage_label="Source · Palbox",
+            ContainerId=str(source.ID),
+            slot_count=source.SlotNum,
+            occupied=len(source.slots),
+            owner_player_uid=str(source_player.PlayerUId),
+            group_id=str(GROUP_ID),
+            classification="exact",
+            movable_into=True,
+        ),
+        str(target.ID): StorageDescriptor(
+            storage_key=WorldPalAdapter.storage_key(target.ID),
+            storage_kind="world",
+            storage_role=target_kind,
+            storage_label="Target",
+            ContainerId=str(target.ID),
+            slot_count=target.SlotNum,
+            occupied=len(target.slots),
+            owner_player_uid=(
+                str(target_player.PlayerUId) if target_kind != "base" else None
+            ),
+            group_id=str(GROUP_ID),
+            classification="exact",
+            movable_into=True,
+        ),
     }
     SaveManager._instance = manager
     return manager, pal, source, target, source_player, target_player
@@ -466,18 +476,18 @@ class SaveManagerMovementTests(unittest.TestCase):
 
     def test_40_slot_world_container_is_a_shared_viewing_cage(self):
         manager, _, source, target, source_player, _ = movement_manager()
-        target.size = 40
+        target.SlotNum = 40
         source_player.PalStorageContainerId = source.ID
         manager.camp_data = FakeCampData()
         manager.storage_directory._cache = None
 
         descriptor = manager.storage_directory._descriptor_map()[str(target.ID)]
 
-        self.assertEqual("special", descriptor["ContainerKind"])
-        self.assertEqual("Viewing Cage", descriptor["ContainerLabel"])
-        self.assertTrue(descriptor["Shared"])
-        self.assertTrue(descriptor["MovableInto"])
-        self.assertIsNone(descriptor["OwnerPlayerUId"])
+        self.assertEqual("special", descriptor.storage_role)
+        self.assertEqual("Viewing Cage", descriptor.storage_label)
+        self.assertTrue(descriptor.shared)
+        self.assertTrue(descriptor.movable_into)
+        self.assertIsNone(descriptor.owner_player_uid)
 
     def test_explicit_base_creation_uses_target_slot_and_clears_expedition(self):
         manager, _, _, target, _, _ = movement_manager()

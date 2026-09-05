@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
 from palworld_pal_editor.core.save_manager import SaveManager
 
 

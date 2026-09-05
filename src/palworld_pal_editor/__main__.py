@@ -5,7 +5,7 @@ import asyncio
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
 from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, get_new_version, CONFIG_PATH, NEXUS_URL
 
-from palworld_pal_editor.core.pal_templates import migrate_pal_templates
+from palworld_pal_editor.core.templates import migrate_pal_templates
 
 from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main

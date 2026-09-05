@@ -10,7 +10,7 @@ A skill template is a list of skill ids. Applying one replaces the whole group,
 which is why it answers with an operation result like every other Pal write: the
 Pal that comes back is the new authority for it.
 
-Templates live in `Config`, so every write here is followed by one
+Templates live in their own file, so every write here is followed by one
 `Config.save_to_file()` and undone in memory if that write fails. The stored
 entries keep their own `Id`/`Name`/`Type` spelling because they are persisted user
 data; what this module chooses is only what the API says.
@@ -22,15 +22,16 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.pals import (
-    SKILL_GROUPS,
+from palworld_pal_editor.api.operations import (
     commit_pal_edit,
-    native_record,
+    require_pal_template,
     require_record,
 )
+from palworld_pal_editor.api.pal_serializers import native_record
+from palworld_pal_editor.api.pals import SKILL_GROUPS
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import SaveManager
-from palworld_pal_editor.core.pal_templates import (
+from palworld_pal_editor.core.templates import (
     pal_templates,
     skill_templates,
     template_source,
@@ -70,8 +71,8 @@ def _commit(undo) -> None:
     """Persist the template list, or put it back the way it was.
 
     Templates are the one thing this API stores outside the save file, so every
-    write is followed by one `Config.save_to_file()`. A failed write leaves the
-    file as it was, which makes the in-memory list the only thing out of step.
+    write is followed by one `Config.save_to_file()`. A failed write leaves the file as
+    it was, which makes the in-memory list the only thing out of step.
     """
     try:
         Config.save_to_file()
@@ -120,21 +121,6 @@ def skill_template_resource(template: dict) -> dict:
         "type": template["Type"],
         field: list(template.get(field) or []),
     }
-
-
-def require_pal_template(template_id) -> dict:
-    """The saved Pal template that id names, or the 404 its two readers would share."""
-    template = next(
-        (item for item in pal_templates() if item.get("Id") == template_id),
-        None,
-    )
-    if template is None:
-        raise ApiError(
-            "PAL_TEMPLATE_NOT_FOUND",
-            f"No Pal template named {template_id}",
-            status=404,
-        )
-    return template
 
 
 def _require_skill_template(template_id) -> dict:

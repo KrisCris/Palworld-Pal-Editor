@@ -12,7 +12,7 @@ from palworld_pal_editor.core.save_codec import (
     PAL_STORAGE_CUSTOM_PROPERTIES,
     RAW_PAL_STORAGE_ENTRY,
 )
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import DpsPalAdapter
 
 

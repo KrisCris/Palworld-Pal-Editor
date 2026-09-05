@@ -9,7 +9,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.pals import (
+from palworld_pal_editor.api.operations import (
     commit_pal_edit,
     operation_result,
     require_record,

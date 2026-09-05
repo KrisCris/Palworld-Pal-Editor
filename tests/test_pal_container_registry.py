@@ -28,7 +28,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         descriptors = self.manager.storage_directory.registry()
         by_kind = {}
         for descriptor in descriptors:
-            by_kind.setdefault(descriptor["ContainerKind"], []).append(descriptor)
+            by_kind.setdefault(descriptor.storage_role, []).append(descriptor)
 
         self.assertEqual(2, len(by_kind["party"]))
         self.assertEqual(2, len(by_kind["storage"]))
@@ -36,21 +36,21 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
         self.assertEqual(1, len(by_kind["unknown"]))
         self.assertNotIn("special", by_kind)
 
-        bases = sorted(by_kind["base"], key=lambda item: item["Occupied"])
-        self.assertEqual([3, 36, 44], [item["Occupied"] for item in bases])
-        self.assertTrue(all(item["MovableInto"] for item in bases))
+        bases = sorted(by_kind["base"], key=lambda item: item.occupied)
+        self.assertEqual([3, 36, 44], [item.occupied for item in bases])
+        self.assertTrue(all(item.movable_into for item in bases))
         base_by_ordinal = {
-            item["BaseOrdinal"]: item
+            item.base_ordinal: item
             for item in by_kind["base"]
         }
         self.assertEqual({1, 2, 3}, set(base_by_ordinal))
         self.assertEqual(
             ["Base 1", "Base 2", "Base 3"],
-            [base_by_ordinal[index]["ContainerLabel"] for index in (1, 2, 3)],
+            [base_by_ordinal[index].storage_label for index in (1, 2, 3)],
         )
-        self.assertEqual(10, by_kind["unknown"][0]["Size"])
-        self.assertFalse(by_kind["unknown"][0]["MovableInto"])
-        self.assertEqual("unknown", by_kind["unknown"][0]["Classification"])
+        self.assertEqual(10, by_kind["unknown"][0].slot_count)
+        self.assertFalse(by_kind["unknown"][0].movable_into)
+        self.assertEqual("unknown", by_kind["unknown"][0].classification)
 
     def test_fixture_pals_have_one_matching_physical_slot(self):
         records = [
@@ -78,7 +78,7 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
 
     def test_duplicate_template_names_use_the_base_save_data_order(self):
         camps = list(self.manager.camp_data.get_camps())
-        group = self.manager.group_data.get_group(camps[0].owner_group_id)
+        group = self.manager.guild_data.get_group(camps[0].owner_group_id)
         original_base_ids = group._group_param["base_ids"]
         original_names = [camp._camp_param.get("name") for camp in camps]
         original_cache = self.manager.storage_directory._cache
@@ -90,14 +90,14 @@ class PalContainerRegistryFixtureTests(unittest.TestCase):
             self.manager.storage_directory._cache = None
 
             descriptors = {
-                item["BaseId"]: item
+                item.base_id: item
                 for item in self.manager.storage_directory.registry()
-                if item["ContainerKind"] == "base"
+                if item.storage_role == "base"
             }
 
             self.assertEqual(
                 [1, 2, 3],
-                [descriptors[str(camp.id)]["BaseOrdinal"] for camp in camps],
+                [descriptors[str(camp.id)].base_ordinal for camp in camps],
             )
         finally:
             group._group_param["base_ids"] = original_base_ids
@@ -117,7 +117,7 @@ class PalContainerRoundTripTests(unittest.TestCase):
                 player
                 for player in manager.get_players()
                 if len(manager.container_data.get_container(player.OtomoCharacterContainerId).slots)
-                < manager.container_data.get_container(player.OtomoCharacterContainerId).size
+                < manager.container_data.get_container(player.OtomoCharacterContainerId).SlotNum
             )
             record = next(
                 record

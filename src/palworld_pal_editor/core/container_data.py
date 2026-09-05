@@ -1,3 +1,14 @@
+"""Pal container slots in Level.sav: palboxes, party slots and base containers.
+
+`CharacterContainerSaveData` maps a container id to a fixed-length slot array, and a
+slot holds an instance id rather than a Pal -- the Pal itself is a separate entry in
+`CharacterSaveParameterMap`. The two halves have to agree, so writing here is only
+ever half of a move.
+
+What a given container is *for* -- whose palbox, which camp -- is not recorded in it
+and is answered by `storage_directory.py`.
+"""
+
 import copy
 from typing import Optional
 from palworld_save_tools.gvas import GvasFile
@@ -18,8 +29,10 @@ class PalContainer:
         if self.ID is None or self._slots_data is None:
             raise Exception("Invalid Container")
 
-        self.size: int = PalObjects.get_BaseType(self._container_obj["value"]["SlotNum"])
-        if self.size is None:
+        self.SlotNum: int = PalObjects.get_BaseType(
+            self._container_obj["value"]["SlotNum"]
+        )
+        if self.SlotNum is None:
             raise Exception(f"Container {self.ID} Size Unknown")
 
         self._rebuild_slot_state()
@@ -44,12 +57,12 @@ class PalContainer:
         alongside them, which had to be pushed and popped in step with every add and
         delete and went wrong quietly whenever one of those forgot.
         """
-        if len(self.slots) >= self.size:
+        if len(self.slots) >= self.SlotNum:
             return -1
         taken = {slot.SlotIndex for slot in self.slots}
         # -1 rather than StopIteration when a save records slot numbers outside the
         # container's own size; that is a broken save, not a full container.
-        return next((index for index in range(self.size) if index not in taken), -1)
+        return next((index for index in range(self.SlotNum) if index not in taken), -1)
 
     def add_pal(self, pal_id: UUID | str) -> int:
         if self.has_pal(pal_id):

@@ -1,3 +1,12 @@
+"""Guilds: who belongs to one, which Pals it owns, and which camps are its.
+
+`GroupSaveDataMap` holds every group the game tracks, of which only
+`EPalGroupType::Guild` is a guild; the rest are skipped. A guild's Pal list is a flat
+array of handles that has to agree with where those Pals actually are, so
+`add_pal`/`del_pal` are called by every mutation that changes a Pal's owner, and
+`snapshot_handles`/`restore_handles` let one that fails put the list back as it was.
+"""
+
 import copy
 from typing import Optional
 from palworld_save_tools.gvas import GvasFile
@@ -7,7 +16,7 @@ from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import LOGGER
 
 
-class PalGroup:
+class Guild:
     def __init__(self, group_obj: dict):
         self._group_obj: dict = group_obj
         self._group_param: dict = group_obj["value"]["RawData"]["value"]
@@ -109,7 +118,7 @@ class PalGroup:
         ]
 
 
-class GroupData:
+class GuildData:
     def __init__(self, gvas_file: GvasFile) -> None:
         self.group_map = {}
         self._wsd = gvas_file.properties["worldSaveData"]["value"]
@@ -130,18 +139,18 @@ class GroupData:
                 continue
 
             try:
-                group_entity = PalGroup(group)
+                group_entity = Guild(group)
             except Exception as e:
-                LOGGER.warning(f"Invalid PalGroup: {e}, skipping")
+                LOGGER.warning(f"Invalid Guild: {e}, skipping")
                 continue
 
             self.group_map[str(group_id)] = group_entity
             LOGGER.info(f"Guild Found: {group_entity}")
 
-    def get_group(self, group_id: UUID | str) -> Optional[PalGroup]:
+    def get_group(self, group_id: UUID | str) -> Optional[Guild]:
         return self.group_map.get(str(group_id))
 
-    def get_groups(self) -> list[PalGroup]:
+    def get_groups(self) -> list[Guild]:
         return list(self.group_map.values())
 
     def get_player_group_id(self, player_uid: UUID | str) -> Optional[UUID]:

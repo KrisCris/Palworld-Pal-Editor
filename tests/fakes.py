@@ -4,11 +4,12 @@ The routes ask SaveManager where a Pal physically is; a test that never opens a
 save has to answer that question itself rather than have the route guess.
 """
 
-from palworld_pal_editor.api.pals import pal_detail
+from palworld_pal_editor.api.pal_serializers import pal_detail
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
+from palworld_pal_editor.core.storage_directory import RecordLocation
 
 
 def world_pal(pal_obj: dict) -> PalEntity:
@@ -33,22 +34,22 @@ def world_record(
     )
 
 
-def record_location(record: PalRecord, *, container_kind: str = "world") -> dict:
+def record_location(record: PalRecord, *, storage_role: str = "world") -> RecordLocation:
     """The location a loaded session would report for a record that sits where it says."""
-    return {
-        "ContainerId": str(record.pal.ContainerId) if record.pal.ContainerId else None,
-        "SlotIndex": record.slot_index,
-        "ContainerKind": container_kind,
-        "ContainerLabel": None,
-        "StorageKey": record.storage_key,
-        "StorageKind": record.storage_kind,
-    }
+    return RecordLocation(
+        ContainerId=str(record.pal.ContainerId) if record.pal.ContainerId else None,
+        SlotIndex=record.slot_index,
+        storage_key=record.storage_key,
+        storage_kind=record.storage_kind,
+        storage_role=storage_role,
+        storage_label=None,
+    )
 
 
 class FakeStorageDirectory:
     """The one question `api/` asks the directory about a Pal outside a session."""
 
-    def resolve_record_location(self, record: PalRecord) -> dict:
+    def resolve_record_location(self, record: PalRecord) -> RecordLocation:
         return record_location(record)
 
 

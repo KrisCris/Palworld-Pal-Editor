@@ -21,7 +21,7 @@ import pytest
 from flask_jwt_extended import create_access_token
 
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_transactions import PalOperationRefused
+from palworld_pal_editor.core.pal_mutations import PalOperationRefused
 from palworld_pal_editor.core.pal_repository import PalRepository
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.webui import app
@@ -57,7 +57,7 @@ def a_movable_pal(manager, storage_key):
 
 
 def guild_of(manager, uid):
-    return manager.group_data.get_group(manager.get_player(uid).group_id)
+    return manager.guild_data.get_group(manager.get_player(uid).group_id)
 
 
 def client():
@@ -441,9 +441,9 @@ def test_capability_refuses_a_target_the_global_palbox_may_not_reach(tmp_path):
     api, headers = client()
 
     base = next(
-        descriptor["StorageKey"]
+        descriptor.storage_key
         for descriptor in manager.storage_directory.registry()
-        if descriptor["ContainerKind"] == "base"
+        if descriptor.storage_role == "base"
     )
     response = api.get(
         f"/api/storages/{base}/pal-transfer-capability",

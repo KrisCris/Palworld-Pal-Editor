@@ -107,7 +107,7 @@ def test_deleting_and_creating_in_a_dps_keep_the_locker_in_step(tmp_path):
     assert doomed_id not in locker_ids(manager)
 
     target_keys = {
-        descriptor["StorageKey"]
+        descriptor.storage_key
         for descriptor in manager.storage_directory.creation_targets(LOSSY_UID)
     }
     assert target_keys == {
@@ -161,10 +161,10 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
     base = next(
         descriptor
         for descriptor in manager.storage_directory.registry()
-        if descriptor["ContainerKind"] == "base"
+        if descriptor.storage_role == "base"
     )
 
-    for target in (f"dps:{LOSSY_UID}", base["StorageKey"]):
+    for target in (f"dps:{LOSSY_UID}", base.storage_key):
         with pytest.raises(PalOperationRefused) as refused:
             manager.pal_mutations.transfer(source.record_key, target)
         assert refused.value.code == "GPS_PLAYER_TARGET_REQUIRED"
@@ -181,7 +181,7 @@ def test_a_copy_out_of_the_global_palbox_lands_as_the_target_players_own(tmp_pat
     assert outcome.record.storage_kind == "world"
     assert outcome.record.pal.InstanceId == source.pal.InstanceId
     assert str(outcome.record.pal.OwnerPlayerUId) == LOSSY_UID
-    assert manager.group_data.get_group(lossy.group_id).has_pal(
+    assert manager.guild_data.get_group(lossy.group_id).has_pal(
         str(outcome.record.pal.InstanceId)
     )
     assert str(outcome.record.pal.InstanceId) not in locker_ids(manager)
@@ -285,7 +285,7 @@ def test_base_worker_creation_targets_and_create(tmp_path):
     manager = open_copied_world(tmp_path)
     base_targets = manager.storage_directory.creation_targets("base-workers")
     assert base_targets
-    base_key = base_targets[0]["StorageKey"]
+    base_key = base_targets[0].storage_key
 
     created = manager.pal_mutations.create("base-workers", base_key)
 

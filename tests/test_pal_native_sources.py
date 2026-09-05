@@ -12,8 +12,8 @@ from pathlib import Path
 import pytest
 
 from palworld_pal_editor.core.pal_objects import PalObjects, json_native
-from palworld_pal_editor.core.pal_sources import detach_native_record
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
+from palworld_pal_editor.core.pal_import import detach_native_record
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import (
     DpsPalAdapter,
     GpsPalAdapter,

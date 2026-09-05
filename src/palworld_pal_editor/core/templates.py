@@ -12,7 +12,7 @@ import json
 import traceback
 
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.core.pal_sources import DetachedPalSource, detach_native_record
+from palworld_pal_editor.core.pal_import import DetachedPalSource, detach_native_record
 from palworld_pal_editor.utils import LOGGER
 
 

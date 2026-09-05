@@ -12,14 +12,16 @@ moves invalidates them. `invalidate()` is what a mutation calls.
 """
 
 import re
+from dataclasses import dataclass
 from typing import Optional
 
+from palworld_pal_editor.core.pal_record import StorageKind
 from palworld_pal_editor.core.pal_repository import PalRecord
 from palworld_pal_editor.utils import DataProvider
 
 
 # The order the UI stacks storages in. Lower sorts first.
-CONTAINER_KIND_ORDER = {
+STORAGE_ROLE_ORDER = {
     "global_palbox": -1,
     "party": 0,
     "storage": 1,
@@ -34,10 +36,75 @@ CONTAINER_KIND_ORDER = {
 VIEWING_CAGE_SIZE = 40
 
 
+@dataclass(frozen=True, slots=True)
+class StorageDescriptor:
+    """One storage, as it was the last time the directory built its map.
+
+    A snapshot, not a live view: `occupied` was counted when the map was built and
+    is valid until the next `StorageDirectory.invalidate()`. Every mutation that
+    moves a Pal calls that, so a descriptor held across one is wrong about how full
+    its storage is. Being frozen makes it look more authoritative than it is -- the
+    dict this replaced was exactly as stale.
+
+    `storage_role` is the finer of the two kind fields: seven roles (`party`,
+    `storage`, `base`, `special`, `unknown`, `dps`, `global_palbox`) against
+    `storage_kind`'s three save formats.
+
+    `ContainerId` keeps the save's own spelling because it is the save's field, and
+    it is `None` on the two storages that are their own `.sav` file rather than a
+    container in Level.sav.
+    """
+
+    storage_key: str
+    storage_kind: StorageKind
+    storage_role: str
+    storage_label: str
+    ContainerId: Optional[str]
+    # One number, not the `Size`/`Capacity` pair this replaced: both were always
+    # written from the same value, and nothing ever read them apart.
+    slot_count: int
+    occupied: int
+    # Whose storage this is. Invented, not the save's `OwnerPlayerUId`: for a DPS
+    # this is the player whose file it is, which is not the same question as who
+    # owns any Pal inside it.
+    owner_player_uid: Optional[str] = None
+    owner_name: Optional[str] = None
+    group_id: Optional[str] = None
+    # Which camp this is, and how the owner above was arrived at: `exact`,
+    # `inferred`, `unknown` or `unknown_owner`. Production reads neither; they are
+    # what a maintainer looks at when a container shows the wrong owner, and
+    # `test_pal_container_registry.py` pins them.
+    base_id: Optional[str] = None
+    base_name: Optional[str] = None
+    base_ordinal: Optional[int] = None
+    classification: str = "unknown"
+    movable_into: bool = False
+    cloneable_into: bool = False
+    shared: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class RecordLocation:
+    """Where one Pal record sits, and what that place is called.
+
+    The descriptor's fields for the storage, plus the two that are about this record
+    rather than the storage. `ContainerId` and `SlotIndex` keep the save's spelling
+    because they are its fields; both are `None` for a World record that failed its
+    load-time slot check and therefore occupies nothing.
+    """
+
+    ContainerId: Optional[str]
+    SlotIndex: Optional[int]
+    storage_key: Optional[str]
+    storage_kind: StorageKind
+    storage_role: Optional[str]
+    storage_label: Optional[str]
+
+
 class StorageDirectory:
     def __init__(self, manager) -> None:
         self._manager = manager
-        self._cache: Optional[dict[str, dict]] = None
+        self._cache: Optional[dict[str, StorageDescriptor]] = None
 
     def invalidate(self) -> None:
         """Forget the cached descriptors after a Pal changed how full something is."""
@@ -45,7 +112,7 @@ class StorageDirectory:
 
     # --- the map ----------------------------------------------------------
 
-    def _descriptor_map(self) -> dict[str, dict]:
+    def _descriptor_map(self) -> dict[str, StorageDescriptor]:
         if self._cache is not None:
             return self._cache
         manager = self._manager
@@ -57,7 +124,7 @@ class StorageDirectory:
 
         # Order matters: players and camps claim their containers by id first, so
         # the sweep afterwards only sees the ones nothing has named.
-        descriptors: dict[str, dict] = {}
+        descriptors: dict[str, StorageDescriptor] = {}
         self._add_player_containers(descriptors)
         self._add_base_camps(descriptors)
         self._add_unclaimed_containers(descriptors)
@@ -71,28 +138,25 @@ class StorageDirectory:
         container = self._manager.container_data.get_container(container_id)
         if container is None:
             return
-        descriptors[str(container.ID)] = {
-            "ContainerId": str(container.ID),
-            "StorageKey": f"world-container:{container.ID}",
-            "StorageKind": "world",
-            "ContainerKind": values["kind"],
-            "ContainerLabel": values["label"],
-            "OwnerPlayerUId": values.get("owner_player_uid"),
-            "StorageOwnerPlayerUid": values.get("owner_player_uid"),
-            "OwnerName": values.get("owner_name"),
-            "BaseId": values.get("base_id"),
-            "BaseName": values.get("base_name"),
-            "BaseOrdinal": values.get("base_ordinal"),
-            "GroupId": values.get("group_id"),
-            "Size": container.size,
-            "Capacity": container.size,
-            "Occupied": len(container.slots),
-            "Classification": values["classification"],
-            "MovableInto": values["movable_into"],
-            "CloneableInto": False,
-            "Shared": values.get("shared", False),
-            "Anomaly": values.get("anomaly"),
-        }
+        descriptors[str(container.ID)] = StorageDescriptor(
+            storage_key=f"world-container:{container.ID}",
+            storage_kind="world",
+            storage_role=values["kind"],
+            storage_label=values["label"],
+            ContainerId=str(container.ID),
+            slot_count=container.SlotNum,
+            occupied=len(container.slots),
+            owner_player_uid=values.get("owner_player_uid"),
+            owner_name=values.get("owner_name"),
+            group_id=values.get("group_id"),
+            base_id=values.get("base_id"),
+            base_name=values.get("base_name"),
+            base_ordinal=values.get("base_ordinal"),
+            classification=values["classification"],
+            movable_into=values["movable_into"],
+            cloneable_into=False,
+            shared=values.get("shared", False),
+        )
 
     def _add_player_containers(self, descriptors: dict) -> None:
         for player in self._manager.get_players():
@@ -154,7 +218,7 @@ class StorageDirectory:
             if str(container.ID) in descriptors:
                 continue
 
-            if container.size == VIEWING_CAGE_SIZE:
+            if container.SlotNum == VIEWING_CAGE_SIZE:
                 self._add_world_descriptor(
                     descriptors,
                     container.ID,
@@ -166,12 +230,10 @@ class StorageDirectory:
                 )
                 continue
 
-            # Read the occupants once: both the owner inference and the anomaly
-            # below are answers about the same walk.
             owners, unresolved = self._container_owner_ids(container)
             inferred_owner = self._sole_owner_of(container, owners, unresolved)
             if inferred_owner is not None:
-                kind_label = f"Special container ({container.size} slots)"
+                kind_label = f"Special container ({container.SlotNum} slots)"
                 self._add_world_descriptor(
                     descriptors,
                     container.ID,
@@ -189,10 +251,9 @@ class StorageDirectory:
                 descriptors,
                 container.ID,
                 kind="unknown",
-                label=f"Unknown container ({container.size} slots)",
+                label=f"Unknown container ({container.SlotNum} slots)",
                 classification="unknown",
                 movable_into=False,
-                anomaly="mixed_owner" if len(set(owners)) > 1 else None,
             )
 
     def _container_owner_ids(self, container) -> tuple[list[str], bool]:
@@ -232,83 +293,68 @@ class StorageDirectory:
         for storage in self._manager.dps_storages.values():
             owner = self._manager.get_player(storage.owner_uid)
             owner_name = owner.NickName if owner else storage.owner_uid
-            descriptors[storage.storage_key] = {
-                "ContainerId": None,
-                "StorageKey": storage.storage_key,
-                "StorageKind": "dps",
-                "ContainerKind": "dps",
-                "ContainerLabel": f"{owner_name} · {dps_name}",
-                "OwnerPlayerUId": storage.owner_uid,
-                "StorageOwnerPlayerUid": storage.owner_uid,
-                "OwnerName": owner_name,
-                "BaseId": None,
-                "BaseName": None,
-                "BaseOrdinal": None,
-                "GroupId": str(owner.group_id) if owner else None,
-                "Size": storage.capacity,
-                "Capacity": storage.capacity,
-                "Occupied": storage.occupied,
-                "Classification": "exact" if owner else "unknown_owner",
-                "MovableInto": True,
-                "CloneableInto": False,
-                "Shared": True,
-                "Anomaly": None if owner else "unknown_storage_owner",
-            }
+            descriptors[storage.storage_key] = StorageDescriptor(
+                storage_key=storage.storage_key,
+                storage_kind="dps",
+                storage_role="dps",
+                storage_label=f"{owner_name} · {dps_name}",
+                ContainerId=None,
+                slot_count=storage.slot_count,
+                occupied=storage.occupied,
+                owner_player_uid=storage.owner_uid,
+                owner_name=owner_name,
+                group_id=str(owner.group_id) if owner else None,
+                classification="exact" if owner else "unknown_owner",
+                movable_into=True,
+                cloneable_into=False,
+                shared=True,
+            )
 
     def _add_global_palbox(self, descriptors: dict) -> None:
         storage = self._manager.global_palbox
         if storage is None:
             return
-        descriptors[storage.storage_key] = {
-            "ContainerId": None,
-            "StorageKey": storage.storage_key,
-            "StorageKind": "global_palbox",
-            "ContainerKind": "global_palbox",
-            "ContainerLabel": (
+        descriptors[storage.storage_key] = StorageDescriptor(
+            storage_key=storage.storage_key,
+            storage_kind="global_palbox",
+            storage_role="global_palbox",
+            storage_label=(
                 DataProvider.get_tech_name("GlobalPalStorage") or "Global Palbox"
             ),
-            "OwnerPlayerUId": None,
-            "StorageOwnerPlayerUid": None,
-            "OwnerName": None,
-            "BaseId": None,
-            "BaseName": None,
-            "BaseOrdinal": None,
-            "GroupId": None,
-            "Size": storage.capacity,
-            "Capacity": storage.capacity,
-            "Occupied": storage.occupied,
-            "Classification": "exact",
-            "MovableInto": False,
-            "CloneableInto": True,
-            "Shared": True,
-            "Anomaly": None,
-        }
+            ContainerId=None,
+            slot_count=storage.slot_count,
+            occupied=storage.occupied,
+            classification="exact",
+            movable_into=False,
+            cloneable_into=True,
+            shared=True,
+        )
 
     # --- questions callers ask -------------------------------------------
 
-    def registry(self) -> list[dict]:
+    def registry(self) -> list[StorageDescriptor]:
         return sorted(
             self._descriptor_map().values(),
             key=lambda item: (
-                item.get("GroupId") or "",
-                CONTAINER_KIND_ORDER.get(item["ContainerKind"], 99),
-                item["ContainerLabel"],
-                item["ContainerId"],
+                item.group_id or "",
+                STORAGE_ROLE_ORDER.get(item.storage_role, 99),
+                item.storage_label,
+                item.ContainerId or "",
             ),
         )
 
-    def descriptor(self, storage_key: str) -> Optional[dict]:
+    def descriptor(self, storage_key: str) -> Optional[StorageDescriptor]:
         return next(
             (
                 descriptor
                 for descriptor in self._descriptor_map().values()
-                if descriptor["StorageKey"] == str(storage_key)
-                or descriptor.get("ContainerId") == str(storage_key)
+                if descriptor.storage_key == str(storage_key)
+                or descriptor.ContainerId == str(storage_key)
             ),
             None,
         )
 
-    def resolve_record_location(self, record: PalRecord | str) -> dict:
+    def resolve_record_location(self, record: PalRecord | str) -> RecordLocation:
         """Where a record sits, and what that place is called.
 
         There is one location, and it is the one the Pal records for itself,
@@ -333,22 +379,22 @@ class StorageDirectory:
             if is_world
             else self.descriptor(record_ref.storage_key)
         )
-        return {
+        return RecordLocation(
             # The container and slot the record actually occupies. A World record that
             # failed its load-time slot check occupies neither, and says so.
-            "ContainerId": container_id,
-            "SlotIndex": record_ref.slot_index,
-            "ContainerKind": (
-                descriptor["ContainerKind"]
+            ContainerId=container_id,
+            SlotIndex=record_ref.slot_index,
+            storage_key=record_ref.storage_key,
+            storage_kind=record_ref.storage_kind,
+            storage_role=(
+                descriptor.storage_role
                 if descriptor
                 else (None if is_world else record_ref.storage_kind)
             ),
-            "ContainerLabel": descriptor["ContainerLabel"] if descriptor else None,
-            "StorageKey": record_ref.storage_key,
-            "StorageKind": record_ref.storage_kind,
-        }
+            storage_label=descriptor.storage_label if descriptor else None,
+        )
 
-    def creation_targets(self, roster_key: str) -> list[dict]:
+    def creation_targets(self, roster_key: str) -> list[StorageDescriptor]:
         """The storages a Pal added to this roster may be created in.
 
         Where a *new* Pal may go is not where an existing one may be moved, which
@@ -361,14 +407,14 @@ class StorageDirectory:
             return [
                 descriptor
                 for descriptor in descriptors
-                if descriptor["ContainerKind"] == "base" and descriptor["MovableInto"]
+                if descriptor.storage_role == "base" and descriptor.movable_into
             ]
         if roster_key == "global-palbox":
             return [
                 descriptor
                 for descriptor in descriptors
-                if descriptor["StorageKind"] == "global_palbox"
-                and descriptor["CloneableInto"]
+                if descriptor.storage_kind == "global_palbox"
+                and descriptor.cloneable_into
             ]
         if self._manager.get_player(roster_key) is None:
             return []
@@ -376,12 +422,12 @@ class StorageDirectory:
             descriptor
             for descriptor in descriptors
             if (
-                descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"party", "storage"}
-                and descriptor.get("OwnerPlayerUId") == roster_key
+                descriptor.storage_kind == "world"
+                and descriptor.storage_role in {"party", "storage"}
+                and descriptor.owner_player_uid == roster_key
             )
             or (
-                descriptor["StorageKind"] == "dps"
-                and descriptor.get("StorageOwnerPlayerUid") == roster_key
+                descriptor.storage_kind == "dps"
+                and descriptor.owner_player_uid == roster_key
             )
         ]

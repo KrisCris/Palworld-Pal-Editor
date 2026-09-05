@@ -1,3 +1,16 @@
+"""The open save: reading it, holding it, and writing it back.
+
+One session at a time. Opening means reading Level.sav and each player's `.sav`,
+decoding what this editor needs and skipping the rest, and then building everything
+else reads from -- the Pal and player repositories, containers, guilds, camps,
+lockers, rosters and the storage directory.
+
+This is the only module that writes a save file. It is also where Pals created
+during a session are settled into their owner's capture counts and paldeck flags:
+at save time, not at creation time, so a Pal that is created and then deleted again
+leaves no trace.
+"""
+
 import copy
 from pathlib import Path
 import threading
@@ -22,7 +35,7 @@ from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_record import PalRecord
 from palworld_pal_editor.core.pal_repository import PalRepository
-from palworld_pal_editor.core.pal_storage import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
 from palworld_pal_editor.core.pal_storage_adapters import (
     DpsPalAdapter,
     GpsPalAdapter,
@@ -43,7 +56,7 @@ from palworld_pal_editor.core.save_io import (
     restore_saves,
 )
 from palworld_pal_editor.utils import LOGGER, DataProvider
-from palworld_pal_editor.core.group_data import GroupData
+from palworld_pal_editor.core.guild_data import GuildData
 from palworld_pal_editor.core.guild_lab_data import GuildLabData
 
 
@@ -69,7 +82,7 @@ class SaveManager:
     
     container_data: Optional[ContainerData]
     item_container_data: Optional[ItemContainerData]
-    group_data: Optional[GroupData]
+    guild_data: Optional[GuildData]
     camp_data: Optional[BaseCampData]
     guild_lab_data: Optional[GuildLabData]
 
@@ -106,7 +119,7 @@ class SaveManager:
 
         self.container_data = None
         self.item_container_data = None
-        self.group_data = None
+        self.guild_data = None
         self.camp_data = None
         self.guild_lab_data = None
 
@@ -181,7 +194,7 @@ class SaveManager:
             except Exception as error:
                 raise _WorldDataUnreadable(f"Error parsing {label}: {error}") from error
 
-        self.group_data = parse("group data", lambda: GroupData(self.gvas_file))
+        self.guild_data = parse("group data", lambda: GuildData(self.gvas_file))
         self.camp_data = parse("base camp data", lambda: BaseCampData(self.gvas_file))
         self.guild_lab_data = parse(
             "guild laboratory data",
@@ -430,7 +443,7 @@ class SaveManager:
                     )
                     continue
 
-                group_id = self.group_data.get_player_group_id(uid_str)
+                group_id = self.guild_data.get_player_group_id(uid_str)
                 if group_id is None:
                     LOGGER.warning(f"Player {uid_str} has no guild id")
                     continue
@@ -556,7 +569,7 @@ class SaveManager:
                 self.storage_adapters[storage.storage_key] = adapter
                 LOGGER.info(
                     f"Loaded DPS: path={dps_path} owner={owner_uid} "
-                    f"occupied={storage.occupied}/{storage.capacity}"
+                    f"occupied={storage.occupied}/{storage.slot_count}"
                 )
                 for record in adapter.records():
                     self._register_external_record(record)
@@ -577,7 +590,7 @@ class SaveManager:
             LOGGER.info(
                 f"Loaded Global Palbox: path={gps_path} "
                 f"occupied={self._global_palbox.occupied}/"
-                f"{self._global_palbox.capacity}"
+                f"{self._global_palbox.slot_count}"
             )
             for record in adapter.records():
                 self.pal_repository.register(record)
@@ -621,7 +634,7 @@ class SaveManager:
     def get_lab_research(self) -> dict:
         if self.guild_lab_data is None:
             raise ValueError("Guild laboratory data is not loaded")
-        return self.guild_lab_data.snapshot(self.group_data, self.camp_data)
+        return self.guild_lab_data.snapshot(self.guild_data, self.camp_data)
 
     def complete_lab_research(
         self,

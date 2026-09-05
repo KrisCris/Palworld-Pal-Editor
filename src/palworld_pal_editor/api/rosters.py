@@ -10,7 +10,7 @@ from flask import Blueprint
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.api.pals import pal_summary
+from palworld_pal_editor.api.pal_serializers import pal_summary
 from palworld_pal_editor.api.roster_keys import (
     FIXED_ROSTERS,
     PLAYER_ROSTER_PREFIX,
@@ -117,6 +117,6 @@ def list_pal_creation_targets(roster_key: str):
     with manager.session_lock:
         require_roster(manager, roster_key)
         return [
-            descriptor["StorageKey"]
+            descriptor.storage_key
             for descriptor in manager.storage_directory.creation_targets(core_roster_key(roster_key))
         ]
