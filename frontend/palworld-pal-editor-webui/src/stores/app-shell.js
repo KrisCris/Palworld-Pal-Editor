@@ -88,7 +88,9 @@ export const useAppShellStore = defineStore("app-shell", () => {
     // opens on it, which is why the answer is kept.
     app.pickerPath = session.recallSavePath(localStorage, BACKEND_ORIGIN.value);
 
-    const CN_WARNING_ON_LOAD = ref(true);
+    // The resale warning is shown once per run of the app; this is whether it
+    // still owes the user that.
+    let antiScamWarningPending = true;
 
     async function auth() {
         // The endpoint answers 200 only for a token the backend still accepts, so
@@ -274,13 +276,30 @@ export const useAppShellStore = defineStore("app-shell", () => {
         return browseSavePath(app.pickerParentPath);
     }
 
+    // The editor is free and open source, and is resold. Anyone who paid for it
+    // is told so once per run, in every language the app speaks -- resellers are
+    // not confined to one of them.
+    //
+    // It hangs off the language cascade because that runs both when a save opens
+    // and whenever the language changes, so the warning is raised only once the
+    // user has a language and can read it.
+    function warnAboutResale() {
+        if (!antiScamWarningPending) return;
+        antiScamWarningPending = false;
+        showMessage({
+            severity: "warning",
+            presentation: "dialog",
+            messageKey: "Message_AntiScam",
+        });
+    }
+
     // `app.locale` is already the new value -- the language select writes it and
     // the app store persists it. This is the cascade that follows: tell the
     // backend, then re-read everything the backend translates.
     async function updateI18n() {
         if (IS_LOCKED.value || BACKEND_ERROR.value) return true;
 
-        sorryandfuckyou();
+        warnAboutResale();
 
         try {
             await app.pushLocale();
@@ -360,17 +379,6 @@ export const useAppShellStore = defineStore("app-shell", () => {
             showToast("Message_No_Player");
         }
         return true;
-    }
-
-    async function sorryandfuckyou() {
-        if (CN_WARNING_ON_LOAD.value) {
-            showMessage({
-                severity: "warning",
-                presentation: "dialog",
-                messageKey: "Message_AntiScam",
-            });
-            CN_WARNING_ON_LOAD.value = false;
-        }
     }
 
     async function loadSave() {

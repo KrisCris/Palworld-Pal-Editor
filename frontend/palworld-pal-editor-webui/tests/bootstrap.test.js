@@ -957,6 +957,22 @@ test("language changes fail when the active roster cannot be refreshed", async (
     assert.equal(session.operationPending, false);
 });
 
+test("the resale warning is raised once, not on every language change", async () => {
+    const store = newStore();
+    backend.IS_LOCKED = false;
+    axios.patch = async () => resource(appConfigFor("C:/save"));
+
+    // Not on screen yet: the editor is closed, so this is only the language
+    // cascade running as it does before a save is open.
+    await store.updateI18n();
+    await store.updateI18n();
+
+    assert.deepEqual(
+        messages.MESSAGE_QUEUE.map(message => message.messageKey),
+        ["Message_AntiScam"],
+    );
+});
+
 test("healing all pals does not try to reselect a missing pal", async t => {
     const store = newStore();
     const calls = mockBackend({
