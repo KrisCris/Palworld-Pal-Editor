@@ -11,7 +11,7 @@ import {
     isSkillAssignable,
     skillBadges,
 } from "../src/skill-rules.js";
-import { usePalEditorStore } from "../src/stores/paleditor.js";
+import { useAppShellStore } from "../src/stores/app-shell.js";
 import { useAppStore } from "../src/stores/app.js";
 import { useCatalogsStore } from "../src/stores/catalogs.js";
 import { usePalsStore } from "../src/stores/pals.js";

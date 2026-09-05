@@ -5,12 +5,12 @@ import { moveRecentFocus } from './backend-server-selector-keys'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { normalizeBackendOrigin, readRecentBackends, writeStorage } from '@/services/backend-connection'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useBackendStore } from '@/stores/backend'
 import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const backend = useBackendStore()
 const sessionStore = useSessionStore()
 const open = ref(false)
@@ -50,7 +50,7 @@ const useBackend = async value => {
   let origin
   try { origin = normalizeBackendOrigin(value, pageOrigin) }
   catch { errorKey.value = 'BackendSelector_Invalid_Address'; return }
-  if (await palStore.connectBackend(origin)) close(true)
+  if (await shell.connectBackend(origin)) close(true)
   else errorKey.value = 'BackendSelector_Connection_Failed'
 }
 const removeRecent = origin => {

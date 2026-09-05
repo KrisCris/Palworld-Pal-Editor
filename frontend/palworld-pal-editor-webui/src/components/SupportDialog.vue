@@ -3,11 +3,11 @@ import { computed, nextTick, ref, watch } from 'vue'
 
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const sessionStore = useSessionStore()
 const closeButton = ref()
 const openQrButton = ref()
@@ -28,8 +28,8 @@ const expandedPayment = computed(() => paymentMethods.find(method => method.id =
 
 const close = async () => {
   expandedQr.value = undefined
-  palStore.SHOW_DONATE_FLAG = false
-  if (sessionStore.editorOpen) await palStore.shownDonate()
+  shell.donationPromptOpen = false
+  if (sessionStore.editorOpen) await shell.donationPromptSeen()
 }
 
 const openQr = async method => {
@@ -44,7 +44,7 @@ const closeQr = async () => {
   openQrButton.value?.focus()
 }
 
-watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
+watch(() => shell.donationPromptOpen, async visible => {
   if (!visible) return
   selectedMethod.value = 'kofi'
   expandedQr.value = undefined
@@ -55,7 +55,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 
 <template>
   <div
-    v-show="palStore.SHOW_DONATE_FLAG"
+    v-show="shell.donationPromptOpen"
     class="support-overlay editor-modal-overlay"
     role="presentation"
     @pointerdown.self="close"

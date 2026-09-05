@@ -19,7 +19,7 @@ import TopBar from '@/components/TopBar.vue'
 import { useBackendStore } from '@/stores/backend'
 import { useMessagesStore } from '@/stores/messages'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useSessionStore } from '@/stores/session'
 import AuthView from '@/views/AuthView.vue'
 import BackendErrorView from '@/views/BackendErrorView.vue'
@@ -30,12 +30,12 @@ import uiIconSprite from '@/assets/ui-icons.svg?raw'
 const backend = useBackendStore()
 const messages = useMessagesStore()
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const sessionStore = useSessionStore()
 const runtimeError = computed(() => backend.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
 const applicationDialog = computed(() => !backend.BACKEND_ERROR && messages.CURRENT_MESSAGE?.presentation === 'dialog')
 const supportDialogVisible = computed(() =>
-  palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(sessionStore.appState)
+  shell.donationPromptOpen && ['entry', 'editor'].includes(sessionStore.appState)
 )
 const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
 const modalOverlay = computed(() => blockingOverlay.value || supportDialogVisible.value)
@@ -60,7 +60,7 @@ watch(modalOverlay, async (visible, wasVisible) => {
 }, { flush: 'sync' })
 watch(playersCollapsed, value => persistRosterCollapsed('editor.playersCollapsed', value))
 watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', value))
-onMounted(palStore.bootstrap)
+onMounted(shell.bootstrap)
 </script>
 
 <template>

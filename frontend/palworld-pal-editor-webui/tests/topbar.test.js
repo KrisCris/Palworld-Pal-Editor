@@ -15,14 +15,14 @@ after(closeVueServer);
 
 test("the loaded-save toolbar prioritizes save actions and keeps cheat options off", async () => {
   const savePath = "C:\\Pal\\Saved\\76561198000000000\\8C439FF04713B5F986F9CAB485575089";
-  const [{ default: TopBar }, { usePalEditorStore }, { useSessionStore }] = await Promise.all([
+  const [{ default: TopBar }, { useAppShellStore }, { useSessionStore }] = await Promise.all([
     loadVueModule("/src/components/TopBar.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/app-shell.js"),
     loadVueModule("/src/stores/session.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
+  const store = useAppShellStore();
   const session = useSessionStore();
   store.I18n = "en";
   // The toolbar follows the app state now: it appears when the editor is what

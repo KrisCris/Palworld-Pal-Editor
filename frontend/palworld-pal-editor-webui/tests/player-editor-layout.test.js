@@ -85,18 +85,18 @@ test("technology levels partition normal and ancient lanes without mutating stor
 
 test("technology lanes render a stable non-mutating partition", async () => {
     const [
-        { default: PlayerEditor }, { usePalEditorStore }, { usePlayersStore },
+        { default: PlayerEditor }, { useAppShellStore }, { usePlayersStore },
         { useRostersStore }, { useCatalogsStore },
     ] = await Promise.all([
         loadVueModule("/src/components/PlayerEditor.vue"),
-        loadVueModule("/src/stores/paleditor.js"),
+        loadVueModule("/src/stores/app-shell.js"),
         loadVueModule("/src/stores/players.js"),
         loadVueModule("/src/stores/rosters.js"),
         loadVueModule("/src/stores/catalogs.js"),
     ]);
     const pinia = createPinia();
     setActivePinia(pinia);
-    const store = usePalEditorStore();
+    const store = useAppShellStore();
     usePlayersStore().playersByUid = new Map([["player-1", {
         NickName: "Tester",
         Level: 1,

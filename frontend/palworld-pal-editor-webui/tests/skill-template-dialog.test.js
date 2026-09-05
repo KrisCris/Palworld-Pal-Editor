@@ -100,6 +100,6 @@ test("skill template store supports create, rename, apply, delete, and reset", a
   // answers with the Pal; nothing re-reads it afterwards.
   assert.match(pals, /applySkillTemplate\(recordKey, templateId\)/);
 
-  const editor = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+  const editor = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
   assert.ok(editor.match(/templates\.clear\(\)/g)?.length >= 2);
 });

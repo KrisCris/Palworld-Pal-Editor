@@ -1,6 +1,6 @@
 <script setup>
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useSessionStore } from '@/stores/session'
 import { computed } from '@vue/reactivity';
 import { ref, onMounted } from 'vue'
@@ -10,7 +10,7 @@ import UiIcon from './modules/UiIcon.vue';
 import InputArea from './modules/InputArea.vue'
 import BarButton from './modules/BarButton.vue'
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const sessionStore = useSessionStore()
 
 const sortedPathChildren = computed(() => {
@@ -59,15 +59,15 @@ const abort = () => {
         <div class="popup editor-glass-surface">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">
-                <IconButton icon="back" :label="appStore.getTranslatedText('PathPicker_Back')" @click="palStore.browseParentPath" />
+                <IconButton icon="back" :label="appStore.getTranslatedText('PathPicker_Back')" @click="shell.browseParentPath" />
                 <InputArea v-model="appStore.pickerPath" />
                 <IconButton icon="forward" :label="appStore.getTranslatedText('PathPicker_Open')"
-                    @click="palStore.browseSavePath(appStore.pickerPath)" />
+                    @click="shell.browseSavePath(appStore.pickerPath)" />
             </div>
 
             <ul ref="scrollElement">
                 <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
-                    @click="() => { if (value.isDir) palStore.browseSavePath(key) }" :fullpath="key">
+                    @click="() => { if (value.isDir) shell.browseSavePath(key) }" :fullpath="key">
                     <UiIcon :name="value.isDir ? 'folder' : 'file'" /> {{ value.filename }}
                 </li>
             </ul>

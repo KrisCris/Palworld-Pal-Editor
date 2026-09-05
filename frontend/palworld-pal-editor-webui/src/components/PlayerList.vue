@@ -2,13 +2,13 @@
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
 import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
 const rostersStore = useRostersStore()
@@ -39,7 +39,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
         <span class="roster-copy">{{ appStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>
 
-      <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
+      <button v-if="rostersStore.hasBaseCamp" class="roster-row roster-row--base"
         @click="rostersStore.selectRoster(BASE_ROSTER_KEY)"
         :aria-current="rostersStore.activeRosterKey === BASE_ROSTER_KEY ? 'true' : undefined"
         :disabled="(rostersStore.activeRosterKey === BASE_ROSTER_KEY && !palsStore.selectedRecordKey)">

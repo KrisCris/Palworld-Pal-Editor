@@ -11,7 +11,7 @@
 // and nothing reads back into it -- which is why every one of them can report a
 // failure without importing it.
 
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 // Only `connectBackend`'s probe uses this directly: it asks a candidate origin
 // the store has not adopted yet, with no token and its own timeout, which is
@@ -38,7 +38,7 @@ import { gated, useSessionStore } from "./session.js";
 import { useStoragesStore } from "./storages.js";
 import { useTemplatesStore } from "./templates.js";
 
-export const usePalEditorStore = defineStore("paleditor", () => {
+export const useAppShellStore = defineStore("app-shell", () => {
     const session = useSessionStore();
     const app = useAppStore();
     const backend = useBackendStore();
@@ -51,14 +51,9 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     const storages = useStoragesStore();
     const templates = useTemplatesStore();
 
-    // flags
-    const SHOW_DONATE_FLAG = ref(false);
-
-    // A base camp is worth listing even when nobody works in it yet, so the base
-    // roster button follows the storages as well as the roster listing.
-    const HAS_WORKING_PAL_FLAG = computed(
-        () => rosters.hasBaseRoster || storages.hasBaseStorage,
-    );
+    // Whether the support dialog is on screen. Whether it may be offered at all
+    // is `app.donationPromptDismissed`, which the backend remembers.
+    const donationPromptOpen = ref(false);
 
     // The connection, the token and what a failed request means live in
     // `stores/backend`; the message queue in `stores/messages`. Both are read
@@ -361,7 +356,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             return false;
         }
 
-        if (!players.players.length && !HAS_WORKING_PAL_FLAG.value) {
+        if (!players.players.length && !rosters.hasBaseCamp) {
             showToast("Message_No_Player");
         }
         return true;
@@ -400,7 +395,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         const defaultRoster = rosters.hasBaseRoster
             ? BASE_ROSTER_KEY
             : firstPlayer?.rosterKey
-                ?? (HAS_WORKING_PAL_FLAG.value ? BASE_ROSTER_KEY : undefined);
+                ?? (rosters.hasBaseCamp ? BASE_ROSTER_KEY : undefined);
         if (defaultRoster !== undefined) await rosters.selectRoster(defaultRoster);
         IS_LOCKED.value = false;
         session.appState = "editor";
@@ -443,7 +438,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
 
     // The prompt is dismissed per language, so the answer arrives with the app
     // config and is refreshed whenever the language changes.
-    async function shownDonate() {
+    async function donationPromptSeen() {
         try {
             await app.dismissDonationPrompt();
         } catch (error) {
@@ -452,8 +447,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     return {
-        SHOW_DONATE_FLAG,
-        HAS_WORKING_PAL_FLAG,
+        donationPromptOpen,
 
         reset,
 
@@ -466,7 +460,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             loadLatestRelease,
             loadSave,
             openFilePicker,
-            shownDonate,
+            donationPromptSeen,
             unlock,
             updateI18n,
             writeSave,

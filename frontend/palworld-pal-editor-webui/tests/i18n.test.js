@@ -11,7 +11,7 @@ globalThis.localStorage = {
     removeItem: key => values.delete(key),
 };
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppShellStore } = await import("../src/stores/app-shell.js");
 const { useAppStore } = await import("../src/stores/app.js");
 const { GAME_LANGUAGES, UI_TRANSLATIONS } = await import("../src/i18n/index.js");
 const locales = await Promise.all([
@@ -115,7 +115,7 @@ test("saved game-data locales use their complete frontend translation", () => {
 });
 
 test("the anti-scam warning is not restricted to Chinese", async () => {
-    const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+    const source = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
     assert.doesNotMatch(source, /app\.locale\s*==={0,1}\s*["']zh-CN["']/);
 });
 

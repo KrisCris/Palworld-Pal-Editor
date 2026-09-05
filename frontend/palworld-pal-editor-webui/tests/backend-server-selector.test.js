@@ -36,7 +36,7 @@ test("backend selector exposes an accessible, dismissible connection popover", a
         'BackendSelector_Use_Page_Server',
         'BackendSelector_Invalid_Address',
         'BackendSelector_Connection_Failed',
-        'palStore.connectBackend',
+        'shell.connectBackend',
         'keydown',
         'pointerdown',
         'onBeforeUnmount',
@@ -60,7 +60,7 @@ test("backend selector exposes an accessible, dismissible connection popover", a
     assert.match(source, /class="backend-selector__connect-row"/);
     assert.match(source, /class="editor-button editor-button--primary"/);
     assert.match(source, /class="backend-selector__page-server"/);
-    assert.match(source, /if \(await palStore\.connectBackend\(origin\)\) close\(true\)[\s\S]*else errorKey\.value = 'BackendSelector_Connection_Failed'/);
+    assert.match(source, /if \(await shell\.connectBackend\(origin\)\) close\(true\)[\s\S]*else errorKey\.value = 'BackendSelector_Connection_Failed'/);
     assert.doesNotMatch(source, /window\.location\.protocol/);
     assert.doesNotMatch(source, /BackendSelector_Mixed_Content/);
     assert.match(source, /const visibleRecent = computed\(\(\) => backend\.BACKEND_RECENT\.filter\(origin => origin !== currentOrigin\.value\)\)/);

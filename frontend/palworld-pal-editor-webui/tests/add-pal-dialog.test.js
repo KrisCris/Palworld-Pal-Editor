@@ -20,15 +20,15 @@ after(closeVueServer);
 
 test("Add Pal dialog exposes default, template, and JSON workflows", async () => {
   const [
-    { default: AddPalDialog }, { usePalEditorStore }, { useTemplatesStore },
+    { default: AddPalDialog }, { useAppShellStore }, { useTemplatesStore },
   ] = await Promise.all([
     loadVueModule("/src/components/AddPalDialog.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/app-shell.js"),
     loadVueModule("/src/stores/templates.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
+  const store = useAppShellStore();
   const templates = useTemplatesStore();
   templates.palTemplates = [{
     templateId: "worker",
@@ -75,7 +75,7 @@ test("Pal list opens the dialog instead of creating immediately", async () => {
   assert.match(source, /<AddPalDialog/);
   assert.match(source, /@click="showAddPalDialog = true"/);
   assert.doesNotMatch(source, /@click="showAddPalDialog\.value = true"/);
-  assert.doesNotMatch(source, /@click="palStore\.addPal"/);
+  assert.doesNotMatch(source, /@click="shell\.addPal"/);
 });
 
 test("Add Pal dialog traps focus and reuses the Pal brief for template previews", async () => {
@@ -93,7 +93,7 @@ test("Add Pal dialog traps focus and reuses the Pal brief for template previews"
 });
 
 test("Pal templates are cleared when the editor resets or switches backends", async () => {
-  const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
   assert.ok(source.match(/templates\.clear\(\)/g)?.length >= 2);
 });
 

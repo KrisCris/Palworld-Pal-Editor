@@ -44,17 +44,17 @@ function row(html, value) {
 
 // The roster the list renders: keys in `stores/rosters`, Pals in `stores/pals`.
 async function showRoster(rows = pals, { edited = [] } = {}) {
-  const [{ default: PalList }, { usePalEditorStore }, { usePalsStore }, { useRostersStore }, { useCatalogsStore }] =
+  const [{ default: PalList }, { useAppShellStore }, { usePalsStore }, { useRostersStore }, { useCatalogsStore }] =
     await Promise.all([
       loadVueModule("/src/components/PalList.vue"),
-      loadVueModule("/src/stores/paleditor.js"),
+      loadVueModule("/src/stores/app-shell.js"),
       loadVueModule("/src/stores/pals.js"),
       loadVueModule("/src/stores/rosters.js"),
       loadVueModule("/src/stores/catalogs.js"),
     ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
+  const store = useAppShellStore();
   const palsStore = usePalsStore();
   const rostersStore = useRostersStore();
   useCatalogsStore().pals = [{ InternalName: "TestPal", Paldeck: 1 }];

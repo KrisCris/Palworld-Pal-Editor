@@ -75,6 +75,11 @@ export const useRostersStore = defineStore("rosters", () => {
     const hasBaseRoster = computed(() => rosters.value.some(
         roster => roster.kind === "base",
     ));
+    // A base camp is worth listing even when nobody works in it yet, so the base
+    // camp button follows the storages as well as this listing.
+    const hasBaseCamp = computed(
+        () => hasBaseRoster.value || storages.hasBaseStorage,
+    );
     const globalPalboxRoster = computed(() => rosters.value.find(
         roster => roster.kind === "global_palbox",
     ) ?? null);
@@ -311,6 +316,7 @@ export const useRostersStore = defineStore("rosters", () => {
         editedOnly,
         createdOnly,
         hasBaseRoster,
+        hasBaseCamp,
         globalPalboxRoster,
         activePlayerUid,
         activeRecordKeys,

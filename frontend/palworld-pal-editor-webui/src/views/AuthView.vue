@@ -1,17 +1,17 @@
 <script setup>
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useBackendStore } from '@/stores/backend'
 import { ref } from 'vue'
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const backend = useBackendStore()
 
 const PW = ref("")
 const remember = ref(false)
 
 const unlock = async () => {
-    if (await palStore.unlock(PW.value, remember.value)) PW.value = ""
+    if (await shell.unlock(PW.value, remember.value)) PW.value = ""
 }
 </script>
 <template>

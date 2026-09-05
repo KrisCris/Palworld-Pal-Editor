@@ -6,7 +6,7 @@ import PalList from './PalList.vue'
 import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useBackendStore } from '@/stores/backend'
 import { usePalsStore } from '@/stores/pals'
 import { usePlayersStore } from '@/stores/players'
@@ -14,7 +14,7 @@ import { useRostersStore } from '@/stores/rosters'
 import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const backend = useBackendStore()
 const palsStore = usePalsStore()
 const playersStore = usePlayersStore()
@@ -46,7 +46,7 @@ watch(() => sessionStore.operationPending, newValue => {
 })
 
 const donate = () => {
-  if (!appStore.donationPromptDismissed) palStore.SHOW_DONATE_FLAG = true
+  if (!appStore.donationPromptDismissed) shell.donationPromptOpen = true
 }
 
 const show_cheats = () => {
@@ -55,10 +55,10 @@ const show_cheats = () => {
 }
 
 const save = async () => {
-  if (await palStore.writeSave()) donate()
+  if (await shell.writeSave()) donate()
 }
 
-const playerCount = computed(() => playersStore.players.length + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
+const playerCount = computed(() => playersStore.players.length + (rostersStore.hasBaseCamp ? 1 : 0))
 const palCount = computed(() => rostersStore.activeRecordKeys.length)
 const hasPalRoster = computed(() => rostersStore.activeRosterKey)
 // A pal requires "heal" exactly like the per-pal action in PalEditor: HasWorkerSick.
@@ -79,12 +79,12 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
             :aria-label="appStore.getTranslatedText('TopBar_Btn_Save')">
             <UiIcon name="save" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Save") }}</span>
           </button>
-          <button class="op" @click="palStore.loadSave"
+          <button class="op" @click="shell.loadSave"
             :title="appStore.getTranslatedText('TopBar_Btn_Reload')"
             :aria-label="appStore.getTranslatedText('TopBar_Btn_Reload')">
             <UiIcon name="refresh" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Reload") }}</span>
           </button>
-          <button class="op" @click="palStore.reset"
+          <button class="op" @click="shell.reset"
             :title="appStore.getTranslatedText('TopBar_Btn_Main_Page')"
             :aria-label="appStore.getTranslatedText('TopBar_Btn_Main_Page')">
             <UiIcon name="home" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Main_Page") }}</span>
@@ -114,13 +114,13 @@ const hasPalToHeal = computed(() => palsStore.hasSickPal)
 
       <div class="editor-app-bar__utilities">
         <button v-if="sessionStore.editorOpen" class="op support-button"
-          @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG">
+          @click="shell.donationPromptOpen = !shell.donationPromptOpen">
           <UiIcon name="heart" /> {{ appStore.getTranslatedText("TopBar_Btn_Donation") }}
         </button>
         <BackendServerSelector v-if="sessionStore.appState !== 'editor'" />
         <label class="language-control">
           <UiIcon name="language" />
-          <select id="languageSelect" v-model="appStore.locale" @change="palStore.updateI18n"
+          <select id="languageSelect" v-model="appStore.locale" @change="shell.updateI18n"
             :aria-label="appStore.getTranslatedText('TopBar_Language_Label')">
             <option :value="key" v-for="translated, key in appStore.localeOptions" :key="key">{{ translated }}</option>
           </select>

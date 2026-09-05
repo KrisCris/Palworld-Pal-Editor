@@ -4,14 +4,14 @@ import { onMounted } from 'vue'
 import PathPicker from '@/components/PathPicker.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { useAppStore } from '@/stores/app'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppShellStore } from '@/stores/app-shell'
 import { useSessionStore } from '@/stores/session'
 
 const appStore = useAppStore()
-const palStore = usePalEditorStore()
+const shell = useAppShellStore()
 const sessionStore = useSessionStore()
 
-onMounted(palStore.loadLatestRelease)
+onMounted(shell.loadLatestRelease)
 </script>
 
 <template>
@@ -40,11 +40,11 @@ onMounted(palStore.loadLatestRelease)
             type="text"
             placeholder="C:\Users\[Username]\AppData\Local\Pal\Saved\SaveGames\[SteamID]\[SaveID]"
           >
-          <button class="entry-path-button" type="button" @click="palStore.openFilePicker">
+          <button class="entry-path-button" type="button" @click="shell.openFilePicker">
             <UiIcon name="folder" />
             {{ appStore.getTranslatedText('EntryView_BTN_Path_Picker') }}
           </button>
-          <button class="entry-load-button" type="button" @click="palStore.loadSave">
+          <button class="entry-load-button" type="button" @click="shell.loadSave">
             <UiIcon name="play" />
             {{ appStore.getTranslatedText('EntryView_BTN_Load') }}
           </button>
@@ -86,7 +86,7 @@ onMounted(palStore.loadLatestRelease)
               <button
                 class="entry-action entry-action--support"
                 type="button"
-                @click="palStore.SHOW_DONATE_FLAG = true"
+                @click="shell.donationPromptOpen = true"
               >
                 <UiIcon name="heart" />
                 <span>

@@ -15,7 +15,7 @@ globalThis.localStorage = {
 globalThis.window = { location: { origin: "http://frontend.test" } };
 globalThis.alert = () => {};
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppShellStore } = await import("../src/stores/app-shell.js");
 const { useAppStore } = await import("../src/stores/app.js");
 const { useBackendStore } = await import("../src/stores/backend.js");
 const { useMessagesStore } = await import("../src/stores/messages.js");
@@ -72,7 +72,7 @@ function newStore({ preserveStorage = false } = {}) {
     research = useResearchStore();
     rosters = useRostersStore();
     storages = useStoragesStore();
-    return usePalEditorStore();
+    return useAppShellStore();
 }
 
 // A `PalSummary` with only the fields a test cares about spelled out. The rest
@@ -1156,7 +1156,7 @@ test("a failed donation dismissal is reported as an operation error", async () =
         throw error;
     };
 
-    await store.shownDonate();
+    await store.donationPromptSeen();
 
     assert.equal(backend.BACKEND_ERROR.kind, "connection");
 });
