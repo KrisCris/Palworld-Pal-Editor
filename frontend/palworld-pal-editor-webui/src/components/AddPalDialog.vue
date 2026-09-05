@@ -1,9 +1,9 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
-import PalBriefPanel from '@/components/modules/PalBriefPanel.vue'
-import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatStorageLabel } from '@/components/modules/pal-storage-label'
+import PalBriefPanel from '@/components/PalBriefPanel.vue'
+import PalPortrait from '@/components/PalPortrait.vue'
+import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'

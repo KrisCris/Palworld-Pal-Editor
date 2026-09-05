@@ -2,12 +2,12 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 import OverlayScrollArea from "@/components/modules/OverlayScrollArea.vue";
-import PalBriefPanel from "@/components/modules/PalBriefPanel.vue";
+import PalBriefPanel from "@/components/PalBriefPanel.vue";
 import {
   buildStorageMoveGroups,
   moveReasonKey,
-} from "@/components/modules/pal-storage-move";
-import { formatStorageLabel } from "@/components/modules/pal-storage-label";
+} from "@/components/pal-storage-move";
+import { formatStorageLabel } from "@/components/pal-storage-label";
 import { usePalEditorStore } from "@/stores/paleditor";
 import { usePalsStore } from "@/stores/pals";
 import { playerRosterKey, useRostersStore } from "@/stores/rosters";

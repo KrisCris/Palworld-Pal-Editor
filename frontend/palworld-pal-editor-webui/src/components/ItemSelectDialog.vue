@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
-import NumberSliderField from '@/components/NumberSliderField.vue'
+import NumberSliderField from '@/components/modules/NumberSliderField.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'

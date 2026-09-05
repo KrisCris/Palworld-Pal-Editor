@@ -9,7 +9,7 @@ import {
   matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
-} from "../src/components/modules/pal-list-order.js";
+} from "../src/components/pal-list-order.js";
 
 const pals = [
   { InstanceId: "storage-2", containerKind: "storage", SlotIndex: 2, FavoriteIndex: 1, Paldeck: "002" },

@@ -125,8 +125,8 @@ test("runtime game image URLs use the selected backend", async () => {
         "TopBar.vue",
         "PalList.vue",
         "PalEditor.vue",
-        "modules/TechCard.vue",
-        "modules/PalSpeciesSelector.vue",
+        "TechCard.vue",
+        "PalSpeciesSelector.vue",
     ];
     const componentRoot = new URL("../src/components/", import.meta.url);
 

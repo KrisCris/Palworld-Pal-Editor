@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-import PalPortrait from '@/components/modules/PalPortrait.vue'
+import PalPortrait from '@/components/PalPortrait.vue'
 import { useCatalogsStore } from '@/stores/catalogs'
 import { usePalEditorStore } from '@/stores/paleditor'
 

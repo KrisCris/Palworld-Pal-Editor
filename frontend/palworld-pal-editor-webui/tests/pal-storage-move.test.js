@@ -5,7 +5,7 @@ import {
   MOVE_REASON_FALLBACK_KEY,
   buildStorageMoveGroups,
   moveReasonKey,
-} from "../src/components/modules/pal-storage-move.js";
+} from "../src/components/pal-storage-move.js";
 import en from "../src/i18n/en.js";
 
 const storage = (storageKey, group, order, groupOrder) => ({

@@ -16,7 +16,7 @@ const [source, mainCss, editorCss, selectorSource, storeSource] = await Promise.
   readSource("../src/components/PalEditor.vue"),
   readSource("../src/assets/main.css"),
   readSource("../src/assets/editor-ui.css"),
-  readSource("../src/components/modules/PalSpeciesSelector.vue"),
+  readSource("../src/components/PalSpeciesSelector.vue"),
   readSource("../src/stores/paleditor.js"),
 ]);
 

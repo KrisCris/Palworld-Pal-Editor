@@ -3,8 +3,8 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
-import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatStorageLabel } from '@/components/modules/pal-storage-label'
+import PalPortrait from '@/components/PalPortrait.vue'
+import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import {
   groupPalList,
@@ -13,7 +13,7 @@ import {
   matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
-} from '@/components/modules/pal-list-order'
+} from '@/components/pal-list-order'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePalsStore } from '@/stores/pals'

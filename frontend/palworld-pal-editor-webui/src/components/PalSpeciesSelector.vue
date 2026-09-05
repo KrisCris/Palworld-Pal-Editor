@@ -1,13 +1,13 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue";
-import OverlayScrollArea from "./OverlayScrollArea.vue";
-import UiIcon from "./UiIcon.vue";
+import OverlayScrollArea from "./modules/OverlayScrollArea.vue";
+import UiIcon from "./modules/UiIcon.vue";
 import { usePalEditorStore } from "@/stores/paleditor";
 
-import en from "../../i18n/en.js";
-import fr from "../../i18n/fr.js";
-import ja from "../../i18n/ja.js";
-import zhCN from "../../i18n/zh-CN.js";
+import en from "../i18n/en.js";
+import fr from "../i18n/fr.js";
+import ja from "../i18n/ja.js";
+import zhCN from "../i18n/zh-CN.js";
 import {
   buildPalFamilies,
   hasVisibleVariant,

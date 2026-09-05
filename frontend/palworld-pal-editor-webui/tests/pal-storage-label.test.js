@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { formatStorageLabel } from "../src/components/modules/pal-storage-label.js";
+import { formatStorageLabel } from "../src/components/pal-storage-label.js";
 import en from "../src/i18n/en.js";
 import zhCN from "../src/i18n/zh-CN.js";
 

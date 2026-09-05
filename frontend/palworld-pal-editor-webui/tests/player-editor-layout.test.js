@@ -173,7 +173,7 @@ test("stat source labels are translated in every UI locale", () => {
 });
 
 test("technology cards preserve toggle behavior in a compact square control", async () => {
-    const source = await read("../src/components/modules/TechCard.vue");
+    const source = await read("../src/components/TechCard.vue");
     assert.match(source, /<button type="button"/);
     assert.match(source, /:aria-pressed="!isLocked"/);
     assert.match(source, /:title="`\$\{techName\}: \$\{techState\}`"/);
@@ -194,7 +194,7 @@ test("technology cards preserve toggle behavior in a compact square control", as
 });
 
 test("technology toggle dispatch preserves the item name and target lock state", async () => {
-    const { toggleTechnology } = await loadVueModule("/src/components/modules/TechCard.vue");
+    const { toggleTechnology } = await loadVueModule("/src/components/TechCard.vue");
     assert.equal(typeof toggleTechnology, "function");
     const calls = [];
     const player = { toggleTech: (...args) => calls.push(args) };
@@ -210,7 +210,7 @@ test("technology toggle dispatch preserves the item name and target lock state",
 });
 
 test("technology cards match save keys without case sensitivity", async () => {
-    const { hasUnlockedTechnology } = await loadVueModule("/src/components/modules/TechCard.vue");
+    const { hasUnlockedTechnology } = await loadVueModule("/src/components/TechCard.vue");
 
     assert.equal(hasUnlockedTechnology(["PalBox"], "PALBOX"), true);
     assert.equal(hasUnlockedTechnology(["OverHeatRifle"], "OverheatRifle"), true);

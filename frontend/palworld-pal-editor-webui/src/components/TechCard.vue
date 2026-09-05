@@ -8,7 +8,7 @@ export const hasUnlockedTechnology = (names, internalName) => names.some(
 <script setup>
 import { computed } from 'vue'
 
-import UiIcon from './UiIcon.vue'
+import UiIcon from './modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 import { usePlayersStore } from '@/stores/players'
 
