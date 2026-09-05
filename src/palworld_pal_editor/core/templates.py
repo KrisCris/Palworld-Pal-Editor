@@ -6,27 +6,59 @@ string. Reading one back is the same strict recognition an import gets, so there
 one way for a Pal to enter this editor from outside a save.
 
 Skill templates are lists of skill ids and have never been anything else.
+
+Both kinds live in one file of their own under the user data directory. They used
+to sit inside `config.json`, which meant changing the interface language rewrote
+every saved Pal: they are user data rather than configuration, and a Pal template
+carries a whole GVAS payload.
 """
 
 import json
 import traceback
 
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.config import TEMPLATES_PATH, write_json
 from palworld_pal_editor.core.pal_import import DetachedPalSource, detach_native_record
 from palworld_pal_editor.utils import LOGGER
 
 
+_store: dict[str, list[dict]] = None
+
+
+def _templates() -> dict[str, list[dict]]:
+    """The template file, read once per run and then held as the live lists.
+
+    An unreadable file is reported and treated as empty rather than raised: a user
+    can edit this one by hand, and refusing to start over it would take the rest of
+    the editor down with it. Nothing overwrites the file until a template is saved.
+    """
+    global _store
+    if _store is None:
+        _store = {"pal": [], "skill": []}
+        if TEMPLATES_PATH.exists():
+            try:
+                data = json.loads(TEMPLATES_PATH.read_text(encoding="utf-8"))
+                _store["pal"] = data.get("pal") or []
+                _store["skill"] = data.get("skill") or []
+            except Exception:
+                LOGGER.warning(
+                    f"Unable to read saved templates from {TEMPLATES_PATH}, "
+                    f"starting with none:\n{traceback.format_exc()}"
+                )
+    return _store
+
+
 def pal_templates() -> list[dict]:
     """The saved Pal templates, as a list this session can append to and reorder."""
-    if not isinstance(Config.palTemplates, list):
-        Config.palTemplates = []
-    return Config.palTemplates
+    return _templates()["pal"]
 
 
 def skill_templates() -> list[dict]:
-    if not isinstance(Config.skillTemplates, list):
-        Config.skillTemplates = []
-    return Config.skillTemplates
+    return _templates()["skill"]
+
+
+def save_templates() -> None:
+    """Write both template lists out as one file."""
+    write_json(TEMPLATES_PATH, _templates())
 
 
 def template_source(template: dict) -> DetachedPalSource:
@@ -48,9 +80,9 @@ def migrate_pal_templates() -> None:
     Recognition by shape only: an entry whose `PalData` is a string is old, an entry
     whose `PalData` is an object is current, and neither gains a format or version
     marker. The work happens on a copy and is written with one atomic
-    `Config.save_to_file()`; a failed write puts the old list back and lets the
-    exception reach the startup log, because a half-upgraded template file is worse
-    than an un-upgraded one.
+    `save_templates()`; a failed write puts the old list back and lets the exception
+    reach the startup log, because a half-upgraded template file is worse than an
+    un-upgraded one.
     """
     templates = pal_templates()
     upgraded = list(templates)
@@ -85,7 +117,7 @@ def migrate_pal_templates() -> None:
     previous = list(templates)
     templates[:] = upgraded
     try:
-        Config.save_to_file()
+        save_templates()
     except Exception:
         templates[:] = previous
         raise

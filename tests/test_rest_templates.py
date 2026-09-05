@@ -1,7 +1,8 @@
 """Saved Pal and skill templates over REST (spec §8.5, §6.2).
 
 Templates are the one thing this API stores outside the save file, so the rules
-that matter are about what reaches `Config` and what a template can do to a Pal:
+that matter are about what reaches the template file and what a template can do
+to a Pal:
 
 - a saved Pal is the native DOM, an object rather than JSON encoded twice, and it
   creates back into a different storage format than the one it came out of;
@@ -12,7 +13,7 @@ that matter are about what reaches `Config` and what a template can do to a Pal:
   touches the Pal -- templates outlive game updates.
 
 The fixture save is copied to a temp directory and mutated in memory only, and
-`Config.palTemplates` / `Config.skillTemplates` are restored around every test.
+both template lists are restored around every test.
 """
 
 import shutil
@@ -23,7 +24,7 @@ from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.config import Config
+from palworld_pal_editor.core.templates import pal_templates, skill_templates
 from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 from palworld_pal_editor.core.save_manager import SaveManager
 from palworld_pal_editor.webui import app
@@ -63,15 +64,17 @@ class TemplateApiTests(unittest.TestCase):
         self.headers = {"Authorization": f"Bearer {self.token}"}
         self.player = self.manager.get_player(LOSSY_UID)
         self.palbox = WorldPalAdapter.storage_key(self.player.PalStorageContainerId)
-        self.previous = (Config.palTemplates, Config.skillTemplates)
-        Config.palTemplates = []
-        Config.skillTemplates = []
-        self.saved_config = patch.object(Config, "save_to_file").start()
+        self.previous = (list(pal_templates()), list(skill_templates()))
+        pal_templates()[:] = []
+        skill_templates()[:] = []
+        self.saved_config = patch(
+            "palworld_pal_editor.api.templates.save_templates"
+        ).start()
         self.addCleanup(patch.stopall)
         self.addCleanup(self.restore)
 
     def restore(self):
-        Config.palTemplates, Config.skillTemplates = self.previous
+        pal_templates()[:], skill_templates()[:] = self.previous
 
     def world_records(self) -> list:
         return [
@@ -99,7 +102,7 @@ class TemplateApiTests(unittest.TestCase):
 
         # The stored payload is the native DOM, not JSON encoded a second time
         # into a string: that second encoding is what §6.2 deletes.
-        self.assertIsInstance(Config.palTemplates[0]["PalData"], dict)
+        self.assertIsInstance(pal_templates()[0]["PalData"], dict)
         listing = self.client.get("/api/pal-templates", headers=self.headers).get_json()
         self.assertEqual(["Worker"], [item["name"] for item in listing])
         self.assertNotIn("PalData", listing[0])
@@ -141,7 +144,7 @@ class TemplateApiTests(unittest.TestCase):
         self.assertEqual(500, response.status_code)
         # A template the user cannot see on the next launch must not be in the
         # list they are looking at now.
-        self.assertEqual([], Config.palTemplates)
+        self.assertEqual([], pal_templates())
 
     def test_an_active_skill_template_equips_and_learns_on_the_pal_it_is_applied_to(self):
         source, target = self.world_records()[:2]
@@ -193,12 +196,12 @@ class TemplateApiTests(unittest.TestCase):
                 f"/api/skill-templates/{template_id}", headers=self.headers
             ).status_code,
         )
-        self.assertEqual([], Config.skillTemplates)
+        self.assertEqual([], skill_templates())
 
     def test_a_template_naming_a_skill_this_game_lacks_does_not_touch_the_pal(self):
         target = self.world_records()[0]
         target.pal.replace_PassiveSkillList([KNOWN_PASSIVE])
-        Config.skillTemplates = [
+        skill_templates()[:] = [
             {
                 "Id": "stale",
                 "Name": "From a later patch",
@@ -228,7 +231,7 @@ class TemplateApiTests(unittest.TestCase):
         target = self.world_records()[0]
         target.pal.replace_EquipWaza([])
         target.pal.replace_MasteredWaza([KNOWN_ATTACK])
-        Config.skillTemplates = [
+        skill_templates()[:] = [
             {
                 "Id": "legacy",
                 "Name": "Legacy combat",
@@ -267,7 +270,7 @@ class TemplateApiTests(unittest.TestCase):
             if key in target.pal.pal_param
         }
         self.addCleanup(target.pal.pal_param.update, original)
-        Config.skillTemplates = [
+        skill_templates()[:] = [
             {
                 "Id": "passive",
                 "Name": "Worker",
@@ -312,7 +315,7 @@ class TemplateApiTests(unittest.TestCase):
                 self.assertEqual(code, response.get_json()["error"]["code"])
 
         # The list is bounded because it is written back to the config file whole.
-        Config.skillTemplates = [
+        skill_templates()[:] = [
             {"Id": str(index), "Name": str(index), "Type": "passive"}
             for index in range(50)
         ]
@@ -323,7 +326,7 @@ class TemplateApiTests(unittest.TestCase):
         )
         self.assertEqual(400, full.status_code)
         self.assertEqual("TEMPLATE_LIMIT_REACHED", full.get_json()["error"]["code"])
-        self.assertEqual(50, len(Config.skillTemplates))
+        self.assertEqual(50, len(skill_templates()))
 
         missing = self.client.post(
             f"/api/pals/{record.record_key}/skill-template-applications",
@@ -352,7 +355,7 @@ class TemplateApiTests(unittest.TestCase):
         self.assertEqual(500, response.status_code)
         # The file still has it, so the list the user is looking at must too --
         # the same rule as a failed create, in the other direction.
-        self.assertEqual([template_id], [item["Id"] for item in Config.palTemplates])
+        self.assertEqual([template_id], [item["Id"] for item in pal_templates()])
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.api.errors import ApiError, register_error_handlers
-from palworld_pal_editor.config import PROGRAM_PATH, Config
+from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import SaveManager
 from palworld_pal_editor.core.save_io import SaveFailed
 from palworld_pal_editor.utils import LOGGER
@@ -58,7 +58,7 @@ def put_session():
         )
 
     Config.path = path
-    Config.save_to_file(PROGRAM_PATH / "config.json")
+    Config.save_to_file()
     LOGGER.info(f"Session loaded from {path}")
     with manager.session_lock:
         return session_resource(manager)
