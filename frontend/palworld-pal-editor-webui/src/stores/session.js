@@ -22,6 +22,18 @@ import {
 
 const EMPTY_SESSION = Object.freeze({ loaded: false, path: null, warnings: [] });
 
+// Wraps a store's exported actions so that each one holds the interaction gate
+// for as long as it runs, and nothing anywhere can begin a second operation or
+// edit what the first is about to send. Applied once to a whole surface, because
+// the old code asked each function to raise and lower a flag and the ones that
+// returned early down some branch simply left it raised.
+export const gated = (session, actions) => Object.fromEntries(
+    Object.entries(actions).map(([name, action]) => [
+        name,
+        (...args) => session.runOperation(() => action(...args)),
+    ]),
+);
+
 export const useSessionStore = defineStore("session", () => {
     const session = ref({ ...EMPTY_SESSION });
     const appState = ref("connecting");

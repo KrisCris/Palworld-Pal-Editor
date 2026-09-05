@@ -7,11 +7,15 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 
 import { completeGuildResearch, getGuildResearch } from "../api/research.js";
-import { useSessionStore } from "./session.js";
+import { useBackendStore } from "./backend.js";
+import { useMessagesStore } from "./messages.js";
+import { gated, useSessionStore } from "./session.js";
 
 const EMPTY_RESEARCH = { CategoryOrder: [], Guilds: [] };
 
 export const useResearchStore = defineStore("research", () => {
+    const backend = useBackendStore();
+    const messages = useMessagesStore();
     const session = useSessionStore();
 
     const research = ref({ ...EMPTY_RESEARCH });
@@ -29,19 +33,34 @@ export const useResearchStore = defineStore("research", () => {
 
     async function load() {
         const epoch = session.sessionEpoch;
-        const tree = await getGuildResearch(session.readOptions());
+        let tree;
+        try {
+            tree = await getGuildResearch(session.readOptions());
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_BaseCamp_Research");
+            return false;
+        }
         if (!session.isCurrentSession(epoch)) return false;
         applyResearch(tree);
         return true;
     }
 
-    // `scope` is one of `{researchId}`, `{category}` or `{all: true}`. Answers
-    // with how many rows moved, which is what the UI reports back to the user.
+    // `scope` is one of `{researchId}`, `{category}` or `{all: true}`. The reply
+    // says how many rows moved, which is the only thing that tells the user
+    // anything -- completing a category that was already complete looks exactly
+    // like completing one that was not.
     async function complete(scope) {
-        if (!selectedGuildId.value) return null;
-        const result = await completeGuildResearch(selectedGuildId.value, scope);
+        if (!selectedGuildId.value) return false;
+        let result;
+        try {
+            result = await completeGuildResearch(selectedGuildId.value, scope);
+        } catch (error) {
+            backend.reportApiFailure(error, "Operation_BaseCamp_Research");
+            return false;
+        }
         applyResearch(result.research);
-        return result.changed;
+        messages.showToast("Message_BaseCamp_Research_Completed", "success", [result.changed]);
+        return true;
     }
 
     function clear() {
@@ -49,5 +68,11 @@ export const useResearchStore = defineStore("research", () => {
         selectedGuildId.value = null;
     }
 
-    return { research, selectedGuildId, load, complete, clear };
+    return {
+        research,
+        selectedGuildId,
+        clear,
+
+        ...gated(session, { load, complete }),
+    };
 });

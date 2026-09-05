@@ -20,8 +20,17 @@ import {
     listSkillTemplates,
     renameSkillTemplate,
 } from "../api/templates.js";
+import { useBackendStore } from "./backend.js";
+import { useMessagesStore } from "./messages.js";
+import { usePalsStore } from "./pals.js";
+import { gated, useSessionStore } from "./session.js";
 
 export const useTemplatesStore = defineStore("templates", () => {
+    const backend = useBackendStore();
+    const messages = useMessagesStore();
+    const pals = usePalsStore();
+    const session = useSessionStore();
+
     const palTemplates = ref([]);
     const skillTemplates = ref([]);
 
@@ -29,40 +38,98 @@ export const useTemplatesStore = defineStore("templates", () => {
         template => template.templateId !== templateId,
     );
 
-    async function loadPalTemplates() {
-        palTemplates.value = await listPalTemplates();
+    // Seven operations, one shape: do it, say so if it failed, and say so if it
+    // worked and the user would not otherwise see that it had.
+    async function run(action, operationKey, toastKey) {
+        try {
+            await action();
+        } catch (error) {
+            backend.reportApiFailure(error, operationKey);
+            return false;
+        }
+        if (toastKey) messages.showToast(toastKey, "success");
+        return true;
     }
 
-    async function savePalTemplate(name, recordKey) {
-        palTemplates.value = [...palTemplates.value, await createPalTemplate(name, recordKey)];
-    }
-
-    async function removePalTemplate(templateId) {
-        await deletePalTemplate(templateId);
-        palTemplates.value = without(palTemplates.value, templateId);
-    }
-
-    async function loadSkillTemplates() {
-        skillTemplates.value = await listSkillTemplates();
-    }
-
-    async function saveSkillTemplate(name, type, recordKey) {
-        skillTemplates.value = [
-            ...skillTemplates.value,
-            await createSkillTemplate(name, type, recordKey),
-        ];
-    }
-
-    async function renameTemplate(templateId, name) {
-        const renamed = await renameSkillTemplate(templateId, name);
-        skillTemplates.value = skillTemplates.value.map(
-            template => template.templateId === templateId ? renamed : template,
+    function loadPalTemplates() {
+        return run(
+            async () => { palTemplates.value = await listPalTemplates(); },
+            "Operation_Load_Pal_Templates",
         );
     }
 
-    async function removeSkillTemplate(templateId) {
-        await deleteSkillTemplate(templateId);
-        skillTemplates.value = without(skillTemplates.value, templateId);
+    // A Pal template is made from the Pal that is open, so the selection is read
+    // here rather than passed in by the dialog that has no other use for it.
+    function savePalTemplate(name) {
+        const recordKey = pals.selectedRecordKey;
+        if (!recordKey) return false;
+        return run(
+            async () => {
+                palTemplates.value = [
+                    ...palTemplates.value,
+                    await createPalTemplate(name, recordKey),
+                ];
+            },
+            "Operation_Save_Pal_Template",
+            "Message_Pal_Template_Saved",
+        );
+    }
+
+    function removePalTemplate(templateId) {
+        return run(
+            async () => {
+                await deletePalTemplate(templateId);
+                palTemplates.value = without(palTemplates.value, templateId);
+            },
+            "Operation_Delete_Pal_Template",
+            "Message_Pal_Template_Deleted",
+        );
+    }
+
+    function loadSkillTemplates() {
+        return run(
+            async () => { skillTemplates.value = await listSkillTemplates(); },
+            "Operation_Load_Skill_Templates",
+        );
+    }
+
+    function saveSkillTemplate(type, name) {
+        const recordKey = pals.selectedRecordKey;
+        if (!recordKey) return false;
+        return run(
+            async () => {
+                skillTemplates.value = [
+                    ...skillTemplates.value,
+                    await createSkillTemplate(name, type, recordKey),
+                ];
+            },
+            "Operation_Save_Skill_Template",
+            "Message_Skill_Template_Saved",
+        );
+    }
+
+    function renameTemplate(templateId, name) {
+        return run(
+            async () => {
+                const renamed = await renameSkillTemplate(templateId, name);
+                skillTemplates.value = skillTemplates.value.map(
+                    template => template.templateId === templateId ? renamed : template,
+                );
+            },
+            "Operation_Rename_Skill_Template",
+            "Message_Skill_Template_Renamed",
+        );
+    }
+
+    function removeSkillTemplate(templateId) {
+        return run(
+            async () => {
+                await deleteSkillTemplate(templateId);
+                skillTemplates.value = without(skillTemplates.value, templateId);
+            },
+            "Operation_Delete_Skill_Template",
+            "Message_Skill_Template_Deleted",
+        );
     }
 
     function clear() {
@@ -73,13 +140,16 @@ export const useTemplatesStore = defineStore("templates", () => {
     return {
         palTemplates,
         skillTemplates,
-        loadPalTemplates,
-        savePalTemplate,
-        removePalTemplate,
-        loadSkillTemplates,
-        saveSkillTemplate,
-        renameTemplate,
-        removeSkillTemplate,
         clear,
+
+        ...gated(session, {
+            loadPalTemplates,
+            savePalTemplate,
+            removePalTemplate,
+            loadSkillTemplates,
+            saveSkillTemplate,
+            renameTemplate,
+            removeSkillTemplate,
+        }),
     };
 });

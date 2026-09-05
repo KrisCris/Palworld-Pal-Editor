@@ -177,7 +177,7 @@ onMounted(async () => {
   appContent = document.querySelector('.app-content')
   previousAriaHidden = appContent?.getAttribute('aria-hidden')
   appContent?.setAttribute('aria-hidden', 'true')
-  await palStore.fetchPalTemplates()
+  await templatesStore.loadPalTemplates()
   creationTargetKeys.value = await palStore.loadCreationTargets()
   // The player's own Palbox where there is one, and otherwise the first target
   // the backend offered -- which is the only base a base list has to choose from.
@@ -225,11 +225,11 @@ async function createPal() {
 }
 
 async function saveTemplate() {
-  if (await palStore.savePalTemplate(templateName.value)) templateName.value = ''
+  if (await templatesStore.savePalTemplate(templateName.value)) templateName.value = ''
 }
 
 async function deleteTemplate(id) {
-  if (await palStore.deletePalTemplate(id) && templateId.value === id) {
+  if (await templatesStore.removePalTemplate(id) && templateId.value === id) {
     templateId.value = ''
   }
 }

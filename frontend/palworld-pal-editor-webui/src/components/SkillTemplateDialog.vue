@@ -60,7 +60,7 @@ function syncNames() {
 
 onMounted(async () => {
   previousFocus = document.activeElement
-  if (!templatesStore.skillTemplates.length) await palStore.fetchSkillTemplates()
+  if (!templatesStore.skillTemplates.length) await templatesStore.loadSkillTemplates()
   syncNames()
   await nextTick()
   dialog.value?.focus()
@@ -69,7 +69,7 @@ onMounted(async () => {
 onBeforeUnmount(() => previousFocus?.focus?.())
 
 async function saveTemplate() {
-  if (await palStore.saveSkillTemplate(props.type, templateName.value)) {
+  if (await templatesStore.saveSkillTemplate(props.type, templateName.value)) {
     templateName.value = ''
     syncNames()
   }
@@ -77,7 +77,7 @@ async function saveTemplate() {
 
 async function renameTemplate(template) {
   const name = names[template.templateId]?.trim()
-  if (name && name !== template.name) await palStore.renameSkillTemplate(template.templateId, name)
+  if (name && name !== template.name) await templatesStore.renameTemplate(template.templateId, name)
 }
 </script>
 
@@ -121,7 +121,7 @@ async function renameTemplate(template) {
             </div>
 
             <div class="template-card__actions">
-              <button class="danger-button" @click="palStore.deleteSkillTemplate(template.templateId)">
+              <button class="danger-button" @click="templatesStore.removeSkillTemplate(template.templateId)">
                 <UiIcon name="delete" /> {{ palStore.getTranslatedText('SkillTemplate_Delete') }}
               </button>
               <button class="primary-button" @click="palStore.applySkillTemplate(template.templateId)">

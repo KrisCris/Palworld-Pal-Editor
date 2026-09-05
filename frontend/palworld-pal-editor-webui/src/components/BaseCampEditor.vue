@@ -158,19 +158,19 @@ function selectResearch(research) {
 
 async function completeResearch() {
   if (!selectedResearch.value || selectedResearch.value.Completed) return
-  await palStore.completeBaseCampResearch({ researchId: selectedResearch.value.ResearchId })
+  await researchStore.complete({ researchId: selectedResearch.value.ResearchId })
 }
 
 async function completeCategory() {
   if (!selectedCategory.value || selectedCategory.value.Completed === selectedCategory.value.Total) return
   if (!await messages.confirmMessage('BaseCamp_Research_Confirm_Category')) return
-  await palStore.completeBaseCampResearch({ category: selectedCategory.value.Category })
+  await researchStore.complete({ category: selectedCategory.value.Category })
 }
 
 async function completeAll() {
   if (allCompleted.value) return
   if (!await messages.confirmMessage('BaseCamp_Research_Confirm_All')) return
-  await palStore.completeBaseCampResearch({ all: true })
+  await researchStore.complete({ all: true })
 }
 
 watch(selectedGuild, guild => {

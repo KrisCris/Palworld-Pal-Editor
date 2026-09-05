@@ -450,7 +450,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
                 }
                 refreshSucceeded = await fetchStaticData();
                 if (refreshSucceeded && research.research.Guilds?.length) {
-                    refreshSucceeded = await fetchBaseCampResearch();
+                    refreshSucceeded = await research.load();
                 }
             }
         }
@@ -704,27 +704,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         reportApiFailure(error, "Operation_Save");
     }
 
-    async function fetchBaseCampResearch() {
-        try {
-            return await research.load();
-        } catch (error) {
-            reportApiFailure(error, "Operation_BaseCamp_Research");
-            return false;
-        }
-    }
-
-    async function completeBaseCampResearch(scope) {
-        try {
-            const changed = await research.complete(scope);
-            if (changed === null) return false;
-            showToast("Message_BaseCamp_Research_Completed", "success", [changed]);
-            return true;
-        } catch (error) {
-            reportApiFailure(error, "Operation_BaseCamp_Research");
-            return false;
-        }
-    }
-
     // ---- selection -----------------------------------------------------------
 
     async function selectPlayer(rosterKey) {
@@ -734,7 +713,7 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             reportApiFailure(error, "Operation_Load_Pals");
             return false;
         }
-        if (rosterKey === BASE_ROSTER_KEY) await fetchBaseCampResearch();
+        if (rosterKey === BASE_ROSTER_KEY) await research.load();
         return true;
     }
 
@@ -1187,86 +1166,14 @@ export const usePalEditorStore = defineStore("paleditor", () => {
         return true;
     }
 
-    // ---- templates -----------------------------------------------------------
-    // The templates themselves live in `stores/templates`; what stays here is the
-    // gate, the reporting and the toast, which is the same three lines for all
-    // seven of them.
-
-    async function runTemplateAction(action, operationKey, toastKey) {
-        try {
-            await action();
-        } catch (error) {
-            reportApiFailure(error, operationKey);
-            return false;
-        }
-        if (toastKey) showToast(toastKey, "success");
-        return true;
-    }
-
-    function fetchPalTemplates() {
-        return runTemplateAction(
-            () => templates.loadPalTemplates(),
-            "Operation_Load_Pal_Templates",
-        );
-    }
-
-    function savePalTemplate(name) {
-        if (!pals.selectedRecordKey) return false;
-        return runTemplateAction(
-            () => templates.savePalTemplate(name, pals.selectedRecordKey),
-            "Operation_Save_Pal_Template",
-            "Message_Pal_Template_Saved",
-        );
-    }
-
-    function deletePalTemplate(templateId) {
-        return runTemplateAction(
-            () => templates.removePalTemplate(templateId),
-            "Operation_Delete_Pal_Template",
-            "Message_Pal_Template_Deleted",
-        );
-    }
-
-    function fetchSkillTemplates() {
-        return runTemplateAction(
-            () => templates.loadSkillTemplates(),
-            "Operation_Load_Skill_Templates",
-        );
-    }
-
-    function saveSkillTemplate(type, name) {
-        if (!pals.selectedRecordKey) return false;
-        return runTemplateAction(
-            () => templates.saveSkillTemplate(name, type, pals.selectedRecordKey),
-            "Operation_Save_Skill_Template",
-            "Message_Skill_Template_Saved",
-        );
-    }
-
-    function renameSkillTemplate(templateId, name) {
-        return runTemplateAction(
-            () => templates.renameTemplate(templateId, name),
-            "Operation_Rename_Skill_Template",
-            "Message_Skill_Template_Renamed",
-        );
-    }
-
-    // Applying one is a Pal write, not a template read: it answers with the Pal
-    // it changed, so nothing is re-read afterwards.
+    // Applying a skill template is a Pal write, not a template read: it answers
+    // with the Pal it changed, so nothing is re-read afterwards.
     async function applySkillTemplate(templateId) {
         if (!await runPalWrite(
             () => pals.applyTemplate(templateId), "Operation_Apply_Skill_Template",
         )) return false;
         showToast("Message_Skill_Template_Applied", "success");
         return true;
-    }
-
-    function deleteSkillTemplate(templateId) {
-        return runTemplateAction(
-            () => templates.removeSkillTemplate(templateId),
-            "Operation_Delete_Skill_Template",
-            "Message_Skill_Template_Deleted",
-        );
     }
 
     function palElementKeys(DataAccessKey) {
@@ -1286,11 +1193,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
     }
 
     return {
-        MAX_LEVEL,
-        MAX_INVALID_LEVEL,
-        MAX_SOULS_LEVEL,
-        MAX_SUITABILITY_LEVEL,
-        MAX_FRIENDSHIP_LEVEL,
 
         PAL_PASSIVE_SELECTED_ITEM,
         PAL_ACTIVE_SELECTED_ITEM,
@@ -1348,15 +1250,10 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             browseParentPath,
             browseSavePath,
             changeSpecies,
-            completeBaseCampResearch,
             connectBackend,
             delPal,
-            deletePalTemplate,
-            deleteSkillTemplate,
             dumpPalData,
             dupePal,
-            fetchPalTemplates,
-            fetchSkillTemplates,
             friendshipDown,
             friendshipUp,
             healAllPals,
@@ -1383,9 +1280,6 @@ export const usePalEditorStore = defineStore("paleditor", () => {
             removeEquipWaza,
             removeMasteredWaza,
             removePassiveSkill,
-            renameSkillTemplate,
-            savePalTemplate,
-            saveSkillTemplate,
             selectPal,
             selectPlayer,
             setStatusPoint,
