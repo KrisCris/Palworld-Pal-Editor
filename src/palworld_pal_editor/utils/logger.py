@@ -36,6 +36,11 @@ class ColorConsoleFormatter(logging.Formatter):
 
 class Logger:
     _instance = None
+
+    # What a mapping's entry was worth before the mapping had one. Not 0, not
+    # None: the save held no entry to read, and the log should not claim it read
+    # a value that was never there.
+    NO_RECORD = "no record"
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -70,7 +75,25 @@ class Logger:
     def newline(self):
         print("")
 
-    def _print_change(self, entity, val_name, old_val, new_val):
+    def log_change(self, entity, val_name, old_val, new_val):
+        """One edit, as `entity | field: before -> after`.
+
+        A field holding a mapping is many edits at once, so it logs one line per
+        entry that moved, keyed the way the mapping keys it. Entries neither side
+        changed say nothing: a log of what an edit did should not be padded out
+        with what it left alone.
+        """
+        if isinstance(old_val, dict) and isinstance(new_val, dict):
+            for key, new_item in new_val.items():
+                old_item = old_val.get(key, self.NO_RECORD)
+                if old_item != new_item:
+                    self.info(f"{entity} | {val_name}[{key}]: {old_item} -> {new_item}")
+            for key, old_item in old_val.items():
+                if key not in new_val:
+                    self.info(
+                        f"{entity} | {val_name}[{key}]: {old_item} -> {self.NO_RECORD}"
+                    )
+            return
         if type(old_val) == list and type(new_val) == list:
             old_set = set(old_val)
             new_set = set(new_val)
@@ -110,7 +133,7 @@ class Logger:
                 # Retrieve the updated value of the attribute
                 updated_value = getattr(instance, attr_name)
                 # Log the change using a logging mechanism (LOGGER needs to be defined)
-                self._print_change(instance, attr_name, old_value, updated_value)
+                self.log_change(instance, attr_name, old_value, updated_value)
                 return og_retval
             return wrapper
         return decorator
