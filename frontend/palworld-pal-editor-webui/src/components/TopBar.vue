@@ -48,7 +48,15 @@ const save = async () => {
 
 const playerCount = computed(() => palStore.PLAYER_MAP.size + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
 const palCount = computed(() => palStore.PAL_MAP.size)
-const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG)
+const hasPalRoster = computed(() => palStore.ACTIVE_ROSTER)
+// A pal requires "heal" exactly like the per-pal action in PalEditor: HasWorkerSick.
+const hasPalToHeal = computed(() => {
+  const palMaps = [palStore.PAL_MAP]
+  for (const player of palStore.PLAYER_MAP.values()) {
+    if (player.pals) palMaps.push(player.pals)
+  }
+  return palMaps.some(map => Array.from(map.values()).some(pal => pal.HasWorkerSick))
+})
 </script>
 
 <template>
@@ -85,18 +93,20 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
         </div>
       </div>
 
+      <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-app-bar__tools">
+        <button v-if="hasPalToHeal" class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
+          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
+          {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+        </button>
+        <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
+          :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
+          :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
+          <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
+        </button>
+      </div>
+
       <div class="editor-app-bar__utilities">
-        <details v-if="palStore.SAVE_LOADED_FLAG" class="editor-more">
-          <summary class="op"><UiIcon name="more" /> {{ palStore.getTranslatedText("TopBar_More") }}</summary>
-          <div class="editor-more__menu editor-glass-surface">
-            <button :class="['op', { toggled: palStore.SHOW_OOB_PAL_FLAG }]"
-              @click="palStore.SHOW_OOB_PAL_FLAG = !palStore.SHOW_OOB_PAL_FLAG"
-              :aria-pressed="palStore.SHOW_OOB_PAL_FLAG" :disabled="palStore.LOADING_FLAG"
-              :title="palStore.getTranslatedText('TopBar_Pal_OOB_Tooltips')">
-              <UiIcon name="eye" /> {{ palStore.getTranslatedText("TopBar_Btn_Pal_OOB") }}
-            </button>
-          </div>
-        </details>
         <button v-if="palStore.SAVE_LOADED_FLAG" class="op support-button"
           @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
           <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
@@ -111,40 +121,28 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
           </select>
         </label>
       </div>
-    </div>
 
-    <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-context-bar">
-      <div v-if="playersCollapsed" class="editor-roster-dock">
-        <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
-          :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
-          <UiIcon name="users" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
-          <small>{{ playerCount }}</small>
-        </button>
-        <aside class="editor-roster-preview editor-roster-preview--players">
-          <PlayerList preview @toggle="emit('restorePlayers')" />
-        </aside>
-      </div>
-      <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
-        <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
-          :aria-label="palStore.getTranslatedText('PalList_Restore')">
-          <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
-          <small>{{ palCount }}</small>
-        </button>
-        <aside class="editor-roster-preview editor-roster-preview--pals">
-          <PalList preview @toggle="emit('restorePals')" />
-        </aside>
-      </div>
-      <div class="editor-context-actions">
-        <button class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
-          :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
-          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
-          {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
-        </button>
-        <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
-          :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
-          :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
-          <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
-        </button>
+      <div v-if="palStore.SAVE_LOADED_FLAG && (playersCollapsed || (palsCollapsed && hasPalRoster))" class="editor-app-bar__roster">
+        <div v-if="playersCollapsed" class="editor-roster-dock">
+          <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
+            :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
+            <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
+            <small>{{ playerCount }}</small>
+          </button>
+          <aside class="editor-roster-preview editor-roster-preview--players">
+            <PlayerList preview @toggle="emit('restorePlayers')" />
+          </aside>
+        </div>
+        <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
+          <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
+            :aria-label="palStore.getTranslatedText('PalList_Restore')">
+            <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
+            <small>{{ palCount }}</small>
+          </button>
+          <aside class="editor-roster-preview editor-roster-preview--pals">
+            <PalList preview @toggle="emit('restorePals')" />
+          </aside>
+        </div>
       </div>
     </div>
   </header>
@@ -179,9 +177,9 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   transition: width 1s ease-out;
 }
 
-.editor-app-bar,
-.editor-context-bar,
+.editor-app-bar__roster,
 .editor-app-bar__primary,
+.editor-app-bar__tools,
 .editor-app-bar__utilities,
 .language-control {
   display: flex;
@@ -191,12 +189,19 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 }
 
 .editor-app-bar {
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas:
+    "primary tools utilities"
+    "roster roster roster";
+  column-gap: var(--editor-space-2);
+  align-items: center;
   padding: var(--editor-space-2) var(--editor-space-3);
 }
 
 .editor-app-bar__primary {
-  flex: 1;
+  grid-area: primary;
+  min-width: 0;
 }
 
 .entry-brand {
@@ -220,21 +225,22 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   color: var(--editor-color-muted);
 }
 
-.editor-app-bar__utilities {
-  flex: 0 0 auto;
+.editor-app-bar__tools {
+  grid-area: tools;
+  min-width: 0;
 }
 
-.editor-context-bar {
+.editor-app-bar__utilities {
+  grid-area: utilities;
+}
+
+.editor-app-bar__roster {
+  grid-area: roster;
   position: relative;
   flex-wrap: wrap;
-  padding: 0 var(--editor-space-3) var(--editor-space-2);
-}
-
-.editor-context-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--editor-space-2);
-  margin-left: auto;
+  /* Space between the main line and the capsule line; only present
+     when this row actually renders, so a single-line bar stays flush. */
+  margin-top: var(--editor-space-2);
 }
 
 .editor-roster-dock {
@@ -339,7 +345,9 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   align-items: center;
   justify-content: center;
   gap: .35rem;
+  flex: 0 0 auto;
   padding: 0 var(--editor-space-3);
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -392,6 +400,7 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
 }
 
 .savePath {
+  flex: 0 1 auto;
   width: min(26rem, 38vw);
   min-width: 8rem;
   padding: 0 var(--editor-space-3);
@@ -409,58 +418,43 @@ const hasPalRoster = computed(() => palStore.SELECTED_PLAYER_ID || palStore.BASE
   padding: 0 var(--editor-space-2);
 }
 
-.editor-more {
-  position: relative;
-}
-
-.editor-more summary {
-  list-style: none;
-}
-
-.editor-more summary::-webkit-details-marker {
-  display: none;
-}
-
-.editor-more__menu {
-  position: absolute;
-  top: calc(100% + var(--editor-space-1));
-  right: 0;
-  display: grid;
-  min-width: 12rem;
-  gap: var(--editor-space-1);
-  padding: var(--editor-space-2);
-  border: 1px solid var(--editor-color-border);
-  border-radius: var(--editor-radius-sm);
-  box-shadow: var(--editor-shadow-compact);
-}
-
-.editor-more__menu .op {
-  justify-content: flex-start;
-}
-
 .game-icon {
   width: 1.1rem;
   height: 1.1rem;
   object-fit: contain;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1180px) {
+  /* Keep the Donate + language switcher on the first line; drop the other
+     tool buttons (heal / cheats) onto the second line next to the capsules.
+     Both right-side groups stay flush right. */
   .editor-app-bar {
-    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "primary utilities"
+      "roster tools";
   }
 
-  .editor-app-bar__primary,
-  .editor-app-bar__utilities {
-    grid-column: 1 / -1;
-  }
-
-  .editor-app-bar__utilities {
+  .editor-app-bar__utilities,
+  .editor-app-bar__tools {
     justify-content: flex-end;
   }
 
+  .editor-app-bar__tools {
+    margin-top: var(--editor-space-2);
+  }
+}
+
+@media (max-width: 760px) {
+  /* Stay on two rows (matching the layout above) and just compact the
+     controls so everything still fits on narrow windows. */
   .op span {
     display: none;
+  }
+
+  .savePath {
+    width: min(16rem, 34vw);
+    min-width: 7rem;
   }
 
   .editor-roster-preview--pals { 

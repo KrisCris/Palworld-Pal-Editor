@@ -7,9 +7,9 @@
             "request": "launch",
             "module": "palworld_pal_editor",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
                 "--mode=cli",
@@ -23,9 +23,9 @@
             "request": "launch",
             "module": "palworld_pal_editor",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
                 "--mode=gui",
@@ -39,16 +39,16 @@
             "request": "launch",
             "module": "palworld_pal_editor",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}/src"
             },
             "args": [
                 "--mode=web",
                 "--lang=zh-CN",
                 "--debug",
                 "--port=58080",
-                "--password=test"
+                // "--password=test"
             ],
             "justMyCode": false
         }

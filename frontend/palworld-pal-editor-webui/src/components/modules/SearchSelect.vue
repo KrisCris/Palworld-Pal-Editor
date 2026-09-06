@@ -1,8 +1,9 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
+import OverlayScrollArea from './OverlayScrollArea.vue'
 import UiIcon from './UiIcon.vue'
-import { closeDisclosureOnOutsidePointer, filterSearchOptions } from './search-select'
+import { filterSearchOptions } from './search-select'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -13,12 +14,16 @@ const props = defineProps({
   disabled: Boolean,
   ariaLabel: { type: String, default: '' },
   placement: { type: String, default: 'bottom' },
+  closeOnSelect: { type: Boolean, default: true },
+  showTooltip: { type: Boolean, default: true },
 })
 const emit = defineEmits(['update:modelValue'])
 const disclosure = ref(null)
+const popover = ref(null)
+const open = ref(false)
+const popoverStyle = ref({})
 const query = ref('')
 const tooltip = ref('')
-let tooltipTimer
 const selected = computed(() => props.options.find(option => option.value === props.modelValue))
 const visibleOptions = computed(() => filterSearchOptions(props.options, query.value))
 
@@ -27,62 +32,128 @@ function choose(option) {
   clearTooltip()
   emit('update:modelValue', option.value)
   query.value = ''
-  disclosure.value.open = false
+  if (props.closeOnSelect) {
+    disclosure.value.open = false
+  } else if (option.tooltip) {
+    tooltip.value = option.tooltip
+  }
 }
 
-function queueTooltip(option) {
-  clearTooltip()
-  if (!option.tooltip) return
-  tooltipTimer = setTimeout(() => { tooltip.value = option.tooltip }, 1200)
+function close() {
+  if (disclosure.value) disclosure.value.open = false
+}
+
+function updatePopoverPosition() {
+  if (!open.value || !disclosure.value) return
+  const trigger = disclosure.value.querySelector('summary')
+  const rect = trigger?.getBoundingClientRect()
+  if (!rect) return
+
+  const viewportPadding = 12
+  const gap = 4
+  const width = Math.min(Math.max(rect.width, 416), window.innerWidth - viewportPadding * 2)
+  const left = Math.min(
+    Math.max(viewportPadding, rect.left),
+    window.innerWidth - viewportPadding - width,
+  )
+  popoverStyle.value = props.placement === 'top'
+    ? {
+        left: `${left}px`,
+        bottom: `${window.innerHeight - rect.top + gap}px`,
+        width: `${width}px`,
+      }
+    : {
+        left: `${left}px`,
+        top: `${rect.bottom + gap}px`,
+        width: `${width}px`,
+      }
+}
+
+function onToggle() {
+  open.value = Boolean(disclosure.value?.open)
+  if (open.value) nextTick(updatePopoverPosition)
+  else clearTooltip()
+}
+
+function showTooltip(option) {
+  tooltip.value = option.tooltip || ''
 }
 
 function clearTooltip() {
-  clearTimeout(tooltipTimer)
   tooltip.value = ''
 }
 
-const closeOnOutsidePointer = event => closeDisclosureOnOutsidePointer(disclosure.value, event.target)
-onMounted(() => window.addEventListener('pointerdown', closeOnOutsidePointer))
+const closeOnOutsidePointer = event => {
+  if (!open.value) return
+  if (disclosure.value?.contains(event.target) || popover.value?.contains(event.target)) return
+  close()
+}
+onMounted(() => {
+  window.addEventListener('pointerdown', closeOnOutsidePointer)
+  window.addEventListener('resize', updatePopoverPosition)
+  window.addEventListener('scroll', updatePopoverPosition, true)
+})
 onBeforeUnmount(() => {
   clearTooltip()
   window.removeEventListener('pointerdown', closeOnOutsidePointer)
+  window.removeEventListener('resize', updatePopoverPosition)
+  window.removeEventListener('scroll', updatePopoverPosition, true)
 })
+
+defineExpose({ close })
 </script>
 
 <template>
   <details ref="disclosure" :class="['search-select', `search-select--${placement}`, { 'search-select--disabled': disabled }]"
-    :aria-disabled="disabled" @click.capture="disabled && $event.preventDefault()">
+    :aria-disabled="disabled" @click.capture="disabled && $event.preventDefault()" @toggle="onToggle">
     <summary :aria-label="ariaLabel">
       <span :class="['search-select__tone', selected?.tone && `search-select__tone--${selected.tone}`]" aria-hidden="true"></span>
       <img v-if="selected?.icon" :src="selected.icon" alt="">
       <span>{{ selected?.label || placeholder }}</span>
       <UiIcon name="more" />
     </summary>
-    <div class="search-select__popover editor-glass-surface">
+  </details>
+  <Teleport to="body">
+    <div v-if="open" ref="popover" class="search-select__popover editor-glass-surface" :style="popoverStyle"
+      @keydown.esc.stop="close">
       <label class="search-select__search">
         <UiIcon name="search" />
         <input type="search" v-model="query" :placeholder="searchPlaceholder" :aria-label="searchPlaceholder"
-          @keydown.esc="disclosure.open = false">
+          @keydown.esc="close">
       </label>
-      <div class="search-select__options" role="listbox" :aria-label="ariaLabel">
-        <button v-for="option in visibleOptions" :key="option.value" type="button" role="option"
-          :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
-          @pointerenter="queueTooltip(option)" @pointerleave="clearTooltip"
-          @focus="queueTooltip(option)" @blur="clearTooltip">
-          <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
-          <img v-if="option.icon" :src="option.icon" alt="">
-          <span class="search-select__copy">
-            <strong>{{ option.label }}</strong>
-            <small v-if="option.description">{{ option.description }}</small>
-          </span>
-        </button>
-        <p v-if="!visibleOptions.length" class="search-select__empty">{{ noResults }}</p>
+      <OverlayScrollArea fit-content class="search-select__options-scroll">
+        <div class="search-select__options overlay-scroll-area__viewport" role="listbox" :aria-label="ariaLabel">
+          <template v-for="(option, index) in visibleOptions" :key="option.value">
+            <div v-if="option.group && (index === 0 || visibleOptions[index - 1].group !== option.group)"
+              class="search-select__group-label">{{ option.group }}</div>
+            <button type="button" role="option"
+              :aria-selected="option.value === modelValue" :disabled="option.disabled" @click="choose(option)"
+              @pointerenter="showTooltip(option)" @pointerleave="clearTooltip"
+              @focus="showTooltip(option)" @blur="clearTooltip">
+              <span :class="['search-select__tone', option.tone && `search-select__tone--${option.tone}`]" aria-hidden="true"></span>
+              <img v-if="option.icon" :src="option.icon" alt="">
+              <span class="search-select__copy">
+                <span class="search-select__title">
+                  <strong>{{ option.label }}</strong>
+                  <small v-if="option.meta" class="search-select__meta">{{ option.meta }}</small>
+                </span>
+                <small v-if="option.description">{{ option.description }}</small>
+              </span>
+            </button>
+          </template>
+          <p v-if="!visibleOptions.length" class="search-select__empty">{{ noResults }}</p>
+        </div>
+      </OverlayScrollArea>
+      <div v-if="showTooltip || $slots.actions" class="search-select__footer">
+        <p v-if="showTooltip" class="search-select__tooltip" :aria-hidden="!tooltip">
+          <span v-if="tooltip" role="tooltip">{{ tooltip }}</span>
+        </p>
+        <div v-if="$slots.actions" class="search-select__actions">
+          <slot name="actions" />
+        </div>
       </div>
-      <p class="search-select__tooltip" :aria-hidden="!tooltip">
-        <span v-if="tooltip" role="tooltip">{{ tooltip }}</span>
-      </p>
     </div>
-  </details>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -119,23 +190,16 @@ onBeforeUnmount(() => {
 .search-select__tone--negative { background: var(--editor-color-passive-negative); }
 
 .search-select__popover {
-  position: absolute;
-  z-index: 40;
-  top: calc(100% + var(--editor-space-1));
-  left: 0;
-  right: 0;
+  position: fixed;
+  z-index: 1100;
   display: grid;
+  box-sizing: border-box;
   gap: var(--editor-space-2);
-  min-width: min(26rem, 80vw);
+  min-width: 0;
   padding: var(--editor-space-2);
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   box-shadow: var(--editor-shadow-compact);
-}
-
-.search-select--top .search-select__popover {
-  top: auto;
-  bottom: calc(100% + var(--editor-space-1));
 }
 
 .search-select__search {
@@ -165,6 +229,11 @@ onBeforeUnmount(() => {
   overflow-y: auto;
 }
 
+.search-select__options-scroll {
+  height: auto;
+  max-height: min(24rem, 55vh);
+}
+
 .search-select__options button {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
@@ -180,26 +249,58 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
+.search-select__options button img {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
 .search-select__options button:hover,
 .search-select__options button[aria-selected='true'] { border-color: var(--editor-color-focus); color: var(--editor-color-background); background: var(--editor-color-primary); }
 .search-select__options button:hover .search-select__copy small,
 .search-select__options button[aria-selected='true'] .search-select__copy small { color: var(--editor-color-background); }
 .search-select__options button:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
+.search-select__group-label {
+  padding: var(--editor-space-2) var(--editor-space-2) var(--editor-space-1);
+  color: var(--editor-color-muted);
+  font-size: .7rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
 .search-select__copy { display: grid; min-width: 0; }
+.search-select__title { display: flex; min-width: 0; align-items: baseline; gap: var(--editor-space-1); }
 .search-select__copy strong,
 .search-select__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search-select__copy small { color: var(--editor-color-muted); font-size: .7rem; }
+.search-select__copy .search-select__meta { min-width: 0; flex: 1; color: var(--editor-color-muted); font-size: .62rem; line-height: 1.1; opacity: .55; }
 .search-select__empty { margin: 0; padding: var(--editor-space-3); color: var(--editor-color-muted); text-align: center; }
+.search-select__footer {
+  display: flex;
+  align-items: stretch;
+  gap: var(--editor-space-2);
+  border-top: 1px solid var(--editor-color-border);
+}
 .search-select__tooltip {
+  display: flex;
+  flex: 1;
+  min-width: 0;
   min-height: calc(1.45em + 2 * var(--editor-space-2) + 1px);
   max-height: 6rem;
   margin: 0;
   padding: var(--editor-space-2);
   overflow-y: auto;
-  border-top: 1px solid var(--editor-color-border);
   color: var(--editor-color-text);
   font-size: .8rem;
   line-height: 1.45;
+}
+.search-select__tooltip span {
+  margin: auto 0;
+}
+.search-select__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--editor-space-1);
+  padding: var(--editor-space-2);
 }
 
 .search-select summary:focus-visible,
@@ -209,7 +310,4 @@ onBeforeUnmount(() => {
   outline-offset: 2px;
 }
 
-@media (max-width: 480px) {
-  .search-select__popover { position: fixed; inset: 15vh var(--editor-space-3) auto; min-width: 0; }
-}
 </style>

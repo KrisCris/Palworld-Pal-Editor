@@ -48,12 +48,25 @@ test("dialogs interrupt toasts without reversing either queue", () => {
     assert.equal(store.CURRENT_MESSAGE.message, "second");
 });
 
+test("confirmation messages resolve through the custom dialog actions", async () => {
+    const store = newStore();
+    const confirmation = store.confirmMessage("Message_AntiScam");
+
+    assert.equal(store.CURRENT_MESSAGE.confirmation, true);
+    store.respondToMessage(store.CURRENT_MESSAGE.id, false);
+    assert.equal(await confirmation, false);
+
+    const secondConfirmation = store.confirmMessage("Message_AntiScam");
+    store.dismissMessage(store.CURRENT_MESSAGE.id);
+    assert.equal(await secondConfirmation, false);
+});
+
 test("blocking dialogs render their existing severity semantics", () => {
     const store = newStore();
     store.showMessage({
         severity: "warning",
         presentation: "dialog",
-        messageKey: "Message_CN_AntiScam",
+        messageKey: "Message_AntiScam",
     });
 
     assert.equal(store.CURRENT_MESSAGE.severity, "warning");
@@ -61,6 +74,9 @@ test("blocking dialogs render their existing severity semantics", () => {
         messageCenterSource,
         /:class="\['message-dialog', 'editor-glass-surface', current\.severity\]"/,
     );
+    assert.match(messageCenterSource, /@pointerdown\.self="dismiss"/);
+    assert.match(messageCenterSource, /cancelButton\.value\?\.focus\(\)/);
+    assert.match(messageCenterSource, /\.message-dialog button:focus-visible/);
     for (const [severity, token] of Object.entries({
         warning: "warning",
         success: "success",

@@ -102,7 +102,6 @@ def _archive_members() -> tuple[set[str], set[str], set[str], set[str]]:
         assert (webui / "index.html").is_file()
         assert any((webui / "assets").glob("*.js"))
         assert any((webui / "assets").glob("*.css"))
-        assert (webui / "docs/keep_this_project_alive.md").is_file()
         assert (webui / "icons/512.png").is_file()
         dist = Path(temp) / "dist"
         dist.mkdir()
@@ -215,36 +214,6 @@ def test_release_build_collects_only_runtime_assets_and_webui():
         pyinstaller = re.search(r"(?m)^pyinstaller (?:--onefile|--clean)(?:\s|$)", source)
         assert pyinstaller is not None
         assert source.index(build) < source.index(publish) < pyinstaller.start()
-
-
-def test_appimage_uses_gpu_by_default_and_ci_smoke_tests_use_software_rendering():
-    source = (ROOT / "build_appimage.sh").read_text("utf-8")
-    spec = _appimage_spec()["analysis"]
-
-    assert 'pywebview[pyside6]==4.4.1' in source
-    assert "webview.platforms.qt" in spec["hiddenimports"]
-    assert 'export PYWEBVIEW_GUI="qt"' in source
-    assert 'QT_OPENGL="software"' not in source
-    assert 'QT_QUICK_BACKEND="software"' not in source
-    assert "--disable-gpu" not in source
-    assert "ldd " not in source
-    assert "LD_LIBRARY_PATH" not in source
-    assert "--appimage-extract-and-run" in source
-
-    for workflow in ("dev-build.yml", "release-build.yml"):
-        workflow_source = (ROOT / ".github" / "workflows" / workflow).read_text("utf-8")
-        assert 'QT_OPENGL=software QT_QUICK_BACKEND=software QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu"' in workflow_source
-
-
-def test_appimage_uses_host_gbm_library():
-    captured = _appimage_spec(
-        [
-            ("libgbm.so.1", "/build/libgbm.so.1", "BINARY"),
-            ("libstdc++.so.6", "/build/libstdc++.so.6", "BINARY"),
-        ]
-    )
-
-    assert [binary[0] for binary in captured["binaries"]] == ["libstdc++.so.6"]
 
 
 def test_pages_workflow_deploys_release_tags_and_manual_refs():

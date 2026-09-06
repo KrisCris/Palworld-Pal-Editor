@@ -6,7 +6,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
 from palworld_pal_editor.config import Config
-from palworld_pal_editor.core import PalEntity, SaveManager
+from palworld_pal_editor.core import PalEntity, PalIdentityConflict, SaveManager
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
@@ -24,23 +24,60 @@ def list_pal_containers():
     return reply(0, SaveManager().get_container_registry())
 
 
-@pal_blueprint.route("/move", methods=["POST"])
+@pal_blueprint.route("/creation_targets/<path:roster_key>", methods=["GET"])
+@jwt_required()
+def list_pal_creation_targets(roster_key):
+    return reply(0, SaveManager().creation_targets(roster_key))
+
+
+@pal_blueprint.route("/transfer", methods=["POST"])
 @jwt_required()
 def move_pal():
     payload = request.json or {}
-    pal_guid = payload.get("PalGuid")
-    target_container_id = payload.get("TargetContainerId")
-    if not pal_guid or not target_container_id:
-        return reply(1, None, "PalGuid and TargetContainerId are required.")
+    source_record_key = payload.get("SourceRecordKey")
+    target_storage_key = payload.get("TargetStorageKey")
+    if not source_record_key or not target_storage_key:
+        return reply(
+            1,
+            None,
+            "SourceRecordKey and TargetStorageKey are required.",
+        )
     try:
-        SaveManager().move_pal(pal_guid, target_container_id)
-        pal = SaveManager().get_pal(pal_guid)
-        return reply(0, _pal_data(pal) if pal else None)
+        manager = SaveManager()
+        source = manager.get_record(source_record_key)
+        result = manager.transfer_pal(
+            source_record_key,
+            target_storage_key,
+            payload.get("Action", "move"),
+            payload.get("ExpectedTargetRecordKey"),
+        )
+        return reply(0, result)
+    except PalIdentityConflict as conflict:
+        locked = conflict.candidates[0] if len(conflict.candidates) == 1 else None
+        return reply(
+            1,
+            {
+                "Code": "PAL_IDENTITY_CONFLICT",
+                "Incoming": _pal_brief(source.pal) if source else None,
+                "Candidates": [
+                    _record_location(manager, candidate)
+                    for candidate in conflict.candidates
+                ],
+                "LockedTarget": locked.record_key if locked else None,
+                "Existing": _pal_brief(locked.pal) if locked else None,
+                "FieldChanges": (
+                    _brief_field_changes(source.pal, locked.pal)
+                    if source and locked
+                    else {}
+                ),
+            },
+            "This genetic identity already exists.",
+        )
     except ValueError as error:
         return reply(1, None, str(error))
     except Exception:
-        LOGGER.error(f"Error moving Pal: {traceback.format_exc()}")
-        return reply(1, None, "Error moving Pal. No changes were kept.")
+        LOGGER.error(f"Error transferring Pal: {traceback.format_exc()}")
+        return reply(1, None, "Error transferring Pal. No changes were kept.")
 
 
 def _pal_templates() -> list[dict]:
@@ -55,13 +92,18 @@ def _skill_templates() -> list[dict]:
     return Config.skillTemplates
 
 
+def _selected_record(payload: dict):
+    manager = SaveManager()
+    if record_key := payload.get("RecordKey"):
+        return manager.get_record(record_key)
+    return manager.get_unique_world_record(
+        payload.get("PalGuid") or payload.get("InstanceId")
+    )
+
+
 def _selected_pal(payload: dict) -> PalEntity | None:
-    pal_guid = payload.get("PalGuid")
-    player_uid = payload.get("PlayerUId")
-    if player_uid == "PAL_BASE_WORKER_BTN":
-        return SaveManager().get_working_pal(pal_guid)
-    player = SaveManager().get_player(player_uid)
-    return player.get_pal(pal_guid) if player else None
+    record = _selected_record(payload)
+    return record.pal if record else None
 
 
 def _skill_template_summary(template: dict) -> dict:
@@ -118,13 +160,23 @@ def _template_summary(template: dict) -> dict:
         "Name": template["Name"],
         "CharacterID": pal.CharacterID,
         "DisplayName": pal.DisplayName,
+        "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
         "IconAccessKey": pal.IconAccessKey,
         "Level": pal.Level or 1,
         "Rank": pal.Rank or 1,
+        "FriendshipLevel": pal.FriendshipLevel or 0,
+        "FavoriteIndex": pal.FavoriteIndex,
+        "IsBOSS": pal.IsBOSS or False,
+        "IsRarePal": bool(pal.IsRarePal),
         "IsAwakening": pal.IsAwakening,
+        "IsImportedCharacter": pal.IsImportedCharacter,
         "Talent_HP": pal.Talent_HP or 0,
         "Talent_Shot": pal.Talent_Shot or 0,
         "Talent_Defense": pal.Talent_Defense or 0,
+        "Rank_HP": pal.Rank_HP or 0,
+        "Rank_Attack": pal.Rank_Attack or 0,
+        "Rank_Defence": pal.Rank_Defence or 0,
+        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
         "PassiveSkillList": pal.PassiveSkillList or [],
         "EquipWaza": pal.EquipWaza or [],
         "MasteredWaza": pal.MasteredWaza or [],
@@ -136,18 +188,17 @@ def _template_summary(template: dict) -> dict:
 @pal_blueprint.route("/paldata", methods=["PATCH"])
 @jwt_required()
 def patch_paldata():
-    PalGuid = request.json.get("PalGuid")
-    PlayerUId = request.json.get("PlayerUId")
-    key = request.json.get("key")
-    value = request.json.get("value")
+    payload = request.json or {}
+    key = payload.get("key")
+    value = payload.get("value")
     if key == "heal_all_pals":
         SaveManager().heal_all_pals()
         return reply(0)
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        pal_entity = SaveManager().get_working_pal(PalGuid)
-    else:
-        pal_entity = SaveManager().get_player(PlayerUId).get_pal(PalGuid)
     try:
+        record = _selected_record(payload)
+        if record is None:
+            return reply(1, None, "Selected Pal not found.")
+        pal_entity = record.pal
         match key:
             case "HasWorkerSick":
                 pal_entity.heal_pal()
@@ -193,9 +244,9 @@ def patch_paldata():
                         f"Too many skills, or skill {value} already exists! Or we can't find it in database.",
                     )
             case "in_owner_palbox":
-                if PlayerUId == "PAL_BASE_WORKER_BTN":
+                if record.storage_kind != "world" or pal_entity.OwnerPlayerUId is None:
                     return reply(1, None, f"Moving pal to basecamp is unsupported.")
-                player = SaveManager().get_player(PlayerUId)
+                player = SaveManager().get_player(pal_entity.OwnerPlayerUId)
                 if not SaveManager().move_pal(
                     pal_entity.InstanceId,
                     [player.OtomoCharacterContainerId, player.PalStorageContainerId],
@@ -206,64 +257,58 @@ def patch_paldata():
                 if not isinstance(field, property) or field.fset is None:
                     return reply(1, None, f"Unsupported Pal field: {key}")
                 setattr(pal_entity, key, value)
+        SaveManager().normalize_external_record(record)
     except Exception as e:
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error in patch_paldata {stack_trace}")
         return reply(1, None, f"Error in patch_paldata {stack_trace}")
-    return reply(0)
+    return reply(0, _pal_data(pal_entity, record))
 
 
 # Get Pal Data
 @pal_blueprint.route("/paldata", methods=["POST"])
 @jwt_required()
 def paldata():
-    InstanceId = request.json.get("InstanceId")
-    PlayerUId = request.json.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        pal = SaveManager().get_working_pal(InstanceId)
-        LOGGER.info(f"Get BASE WORKER {pal}")
-    else:
-        try:
-            player = SaveManager().get_player(PlayerUId)
-            pal = player.get_pal(InstanceId)
-            LOGGER.info(f"Get {player.NickName}'s pal: {pal}")
-        except:
-            pass
-    if pal:
-        return reply(
-            0,
-            _pal_data(pal),
-        )
-    LOGGER.warning(
-        f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
-    )
-    return reply(
-        1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {InstanceId}"
-    )
+    payload = request.json or {}
+    try:
+        record = _selected_record(payload)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    if record:
+        return reply(0, _pal_data(record.pal, record))
+    return reply(1, None, "Selected Pal not found.")
 
 
 @pal_blueprint.route("/maximize", methods=["POST"])
 @jwt_required()
 def maximize_pal():
     payload = request.json or {}
-    pal = _selected_pal(payload)
-    if pal is None:
-        return reply(1, None, "Failed to find the selected Pal.")
     try:
+        record = _selected_record(payload)
+        if record is None:
+            return reply(1, None, "Failed to find the selected Pal.")
+        pal = record.pal
         pal.maximize_progression()
+        SaveManager().normalize_external_record(record)
     except (KeyError, TypeError, ValueError):
         stack_trace = traceback.format_exc()
         LOGGER.error(f"Error maximizing Pal progression {stack_trace}")
         return reply(1, None, f"Error maximizing Pal progression {stack_trace}")
-    return reply(0, _pal_data(pal))
+    return reply(0, _pal_data(pal, record))
 
 
 # Just some dumb shit
-def _pal_data(pal: PalEntity):
+def _pal_data(pal: PalEntity, pal_record=None):
     record = DataProvider.get_pal_record(pal.CharacterID) or {}
     manager = SaveManager()
+    record_resolver = getattr(manager, "resolve_record_location", None)
     resolver = getattr(manager, "resolve_pal_location", None)
-    location = resolver(pal) if resolver and getattr(manager, "container_data", None) else {
+    location = (
+        record_resolver(pal_record)
+        if pal_record is not None and record_resolver
+        else resolver(pal)
+        if resolver and getattr(manager, "container_data", None)
+        else {
         "RecordedContainerId": str(pal.ContainerId) if pal.ContainerId else None,
         "RecordedSlotIndex": pal.SlotIndex,
         "ActualContainerId": str(pal.ContainerId) if pal.ContainerId else None,
@@ -273,11 +318,19 @@ def _pal_data(pal: PalEntity):
         "LocationAnomaly": None,
         "ContainerKind": "other",
         "ContainerLabel": None,
-    }
+        }
+    )
+    owner_uid = _guid_string_or_none(pal.OwnerPlayerUId)
     return {
+        "RecordKey": pal_record.record_key if pal_record else f"world:{pal.InstanceId}",
+        "StorageKey": pal_record.storage_key if pal_record else None,
+        "StorageKind": pal_record.storage_kind if pal_record else "world",
+        "StorageOwnerPlayerUid": (
+            pal_record.storage_owner_uid if pal_record else None
+        ),
         "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
-        "OwnerPlayerUId": (str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None),
-        "group_id": str(pal.group_id) if pal.group_id else None,
+        "OwnerPlayerUId": owner_uid,
+        "group_id": _guid_string_or_none(pal.group_id),
         "ContainerId": location["RecordedContainerId"],
         "SlotIndex": location["RecordedSlotIndex"],
         "ActualContainerId": location["ActualContainerId"],
@@ -289,7 +342,7 @@ def _pal_data(pal: PalEntity):
         "ContainerLabel": location["ContainerLabel"],
         "FavoriteIndex": pal.FavoriteIndex,
         "IsImportedCharacter": pal.IsImportedCharacter,
-        "OwnerName": pal.OwnerName or None,
+        "OwnerName": pal.OwnerName if owner_uid else None,
         "CharacterID": pal.CharacterID,
         "IconAccessKey": pal.IconAccessKey or None,
         "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
@@ -354,27 +407,84 @@ def _pal_data(pal: PalEntity):
     }
 
 
+def _pal_brief(pal: PalEntity) -> dict:
+    return {
+        "CharacterID": pal.CharacterID,
+        "IconKey": DataProvider.get_pal_icon_key(pal.CharacterID),
+        "DisplayName": pal.DisplayName,
+        "NickName": pal.NickName or "",
+        "Gender": pal.Gender.value if pal.Gender else None,
+        "Level": pal.Level or 1,
+        "Exp": pal.Exp or 0,
+        "Rank": pal.Rank or 1,
+        "FriendshipLevel": pal.FriendshipLevel or 0,
+        "FavoriteIndex": pal.FavoriteIndex,
+        "IsBOSS": pal.IsBOSS,
+        "IsRarePal": bool(pal.IsRarePal),
+        "IsAwakening": pal.IsAwakening,
+        "IsImportedCharacter": pal.IsImportedCharacter,
+        "Talent_HP": pal.Talent_HP or 0,
+        "Talent_Melee": pal.Talent_Melee or 0,
+        "Talent_Shot": pal.Talent_Shot or 0,
+        "Talent_Defense": pal.Talent_Defense or 0,
+        "Rank_HP": pal.Rank_HP or 0,
+        "Rank_Attack": pal.Rank_Attack or 0,
+        "Rank_Defence": pal.Rank_Defence or 0,
+        "Rank_CraftSpeed": pal.Rank_CraftSpeed or 0,
+        "ComputedMaxHP": pal.ComputedMaxHP,
+        "ComputedAttack": pal.ComputedAttack,
+        "ComputedDefense": pal.ComputedDefense,
+        "ComputedCraftSpeed": pal.ComputedCraftSpeed,
+        "Suitabilities": pal.WorkSuitabilities or {},
+        "EquipWaza": pal.EquipWaza or [],
+        "PassiveSkillList": pal.PassiveSkillList or [],
+    }
+
+
+def _brief_field_changes(incoming: PalEntity, existing: PalEntity) -> dict:
+    incoming_data = _pal_brief(incoming)
+    existing_data = _pal_brief(existing)
+    return {
+        key: {"Incoming": value, "Existing": existing_data.get(key)}
+        for key, value in incoming_data.items()
+        if value != existing_data.get(key)
+    }
+
+
+def _record_location(manager: SaveManager, record) -> dict:
+    location = manager.resolve_record_location(record)
+    return {
+        "RecordKey": record.record_key,
+        "StorageKey": record.storage_key,
+        "StorageKind": record.storage_kind,
+        "StorageOwnerPlayerUid": record.storage_owner_uid,
+        "InstanceId": str(record.pal.InstanceId),
+        "OwnerPlayerUId": _guid_string_or_none(record.pal.OwnerPlayerUId),
+        "ContainerLabel": location["ContainerLabel"],
+        "ActualSlotIndex": location["ActualSlotIndex"],
+        "LocationStatus": location["LocationStatus"],
+    }
+
+
+def _guid_string_or_none(value) -> str | None:
+    if value is None:
+        return None
+    text = str(value)
+    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
+        return None
+    return text
+
+
 @pal_blueprint.route("/dump_data", methods=["POST"])
 @jwt_required()
 def dump_data():
-    PalGuid = request.json.get("PalGuid")
-    PlayerUId = request.json.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        pal = SaveManager().get_working_pal(PalGuid)
-        LOGGER.info(f"Get BASE WORKER {pal}")
-    else:
-        try:
-            player = SaveManager().get_player(PlayerUId)
-            pal = player.get_pal(PalGuid)
-            LOGGER.info(f"Get {player.NickName}'s pal: {pal}")
-        except:
-            pass
-    if pal:
-        return reply(0, pal.dump_obj())
-    LOGGER.warning(f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}")
-    return reply(
-        1, None, f"Failed Getting Pal with PlayerID: {PlayerUId}, PalID: {PalGuid}"
-    )
+    try:
+        record = _selected_record(request.json or {})
+    except ValueError as error:
+        return reply(1, None, str(error))
+    if record:
+        return reply(0, record.pal.dump_obj())
+    return reply(1, None, "Selected Pal not found.")
 
 
 @pal_blueprint.route("/pal/<pal_id>", methods=["DELETE"])
@@ -390,9 +500,10 @@ def delete_pal(pal_id):
 def add_pal():
     payload = request.json or {}
     PlayerUId = payload.get("PlayerUId")
-    target_container_id = payload.get("TargetContainerId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_container_id:
-        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
+    roster_key = payload.get("RosterKey")
+    target_storage_key = payload.get("TargetStorageKey")
+    if PlayerUId == "PAL_BASE_WORKER_BTN" and not target_storage_key:
+        LOGGER.warning("Base Pal creation requires an explicit target container.")
         return reply(1, None, "Choose a base container before adding a Pal.")
     try:
         mode = payload.get("Mode", "default")
@@ -411,11 +522,16 @@ def add_pal():
         elif mode != "default":
             return reply(1, None, "Unsupported Pal creation mode.")
 
-        pal_entity = (
-            SaveManager().add_pal(PlayerUId, pal_obj, target_container_id)
-            if target_container_id
-            else SaveManager().add_pal(PlayerUId, pal_obj)
+        if not roster_key or not target_storage_key:
+            return reply(
+                1,
+                None,
+                "RosterKey and TargetStorageKey are required.",
+            )
+        record = SaveManager().create_pal(
+            roster_key, target_storage_key, pal_obj
         )
+        pal_entity = record.pal
         if not pal_entity:
             return reply(
                 1,
@@ -427,7 +543,16 @@ def add_pal():
     except Exception:
         LOGGER.error(f"Error adding Pal: {traceback.format_exc()}")
         return reply(1, None, "Error adding Pal. Check the logs for details.")
-    return reply(0, _pal_data(pal_entity))
+    data = _pal_data(pal_entity)
+    if record is not None:
+        data.update(
+            {
+                "RecordKey": record.record_key,
+                "StorageKey": record.storage_key,
+                "StorageKind": record.storage_kind,
+            }
+        )
+    return reply(0, data)
 
 
 @pal_blueprint.route("/templates", methods=["GET"])
@@ -455,10 +580,13 @@ def create_pal_template():
     if len(_pal_templates()) >= MAX_PAL_TEMPLATE_COUNT:
         return reply(1, None, "At most 50 Pal templates can be saved.")
 
-    player = SaveManager().get_player(payload.get("PlayerUId"))
-    pal = player.get_pal(payload.get("PalGuid")) if player else None
-    if pal is None:
+    try:
+        record = _selected_record(payload)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    if record is None:
         return reply(1, None, "Selected Pal not found.")
+    pal = record.pal
 
     template = {
         "Id": uuid.uuid4().hex,
@@ -525,9 +653,13 @@ def create_skill_template():
     if len(_skill_templates()) >= MAX_PAL_TEMPLATE_COUNT:
         return reply(1, None, "At most 50 skill templates can be saved.")
 
-    pal = _selected_pal(payload)
-    if pal is None:
+    try:
+        record = _selected_record(payload)
+    except ValueError as error:
+        return reply(1, None, str(error))
+    if record is None:
         return reply(1, None, "Selected Pal not found.")
+    pal = record.pal
 
     template = {
         "Id": uuid.uuid4().hex,
@@ -582,11 +714,13 @@ def apply_skill_template(template_id: str):
     )
     if template is None:
         return reply(1, None, "Skill template not found.")
-    pal = _selected_pal(request.json or {})
-    if pal is None:
-        return reply(1, None, "Selected Pal not found.")
     try:
+        record = _selected_record(request.json or {})
+        if record is None:
+            return reply(1, None, "Selected Pal not found.")
+        pal = record.pal
         _replace_skill_group(pal, template)
+        SaveManager().normalize_external_record(record)
     except (AttributeError, TypeError, ValueError) as error:
         return reply(1, None, str(error))
     summary = _skill_template_summary(template)
@@ -615,27 +749,21 @@ def delete_skill_template(template_id: str):
 @pal_blueprint.route("/dupe_pal", methods=["POST"])
 @jwt_required()
 def dupe_pal():
-    PalGuid = request.json.get("PalGuid")
-    PlayerUId = request.json.get("PlayerUId")
-    if PlayerUId == "PAL_BASE_WORKER_BTN":
-        LOGGER.warning("Directly add pal to basecamp is not yet supported.")
-        return reply(1, None, f"Directly adding pal to basecamp is not yet supported.")
-    else:
-        try:
-            player = SaveManager().get_player(PlayerUId)
-            pal_obj = player.get_pal(PalGuid)._pal_obj
-
-            pal_entity = SaveManager().add_pal(PlayerUId, pal_obj)
-            if not pal_entity:
-                return reply(
-                    1,
-                    None,
-                    f"Failed duping pal, likely your pal containers are full, check logs for detail.",
-                )
-        except:
-            return reply(
-                1,
-                None,
-                f"Error happened during duping pal, check logs for detail. {traceback.format_exc()}",
-            )
-    return reply(0, _pal_data(pal_entity))
+    payload = request.json or {}
+    PlayerUId = payload.get("PlayerUId")
+    try:
+        record = SaveManager().duplicate_pal(payload.get("RecordKey"), PlayerUId)
+    except ValueError as error:
+        LOGGER.warning(
+            "Failed duplicating Pal: "
+            f"record={payload.get('RecordKey')} roster={PlayerUId} error={error}"
+        )
+        return reply(1, None, str(error))
+    except Exception:
+        LOGGER.error(
+            "Failed duplicating Pal: "
+            f"record={payload.get('RecordKey')} roster={PlayerUId}\n"
+            f"{traceback.format_exc()}"
+        )
+        return reply(1, None, "Failed duplicating Pal. Check logs for details.")
+    return reply(0, _pal_data(record.pal, record))

@@ -37,8 +37,16 @@ body {
 }
 
 
-/* Customize website's scrollbar like Mac OS
-Not supports in Firefox and IE */
+/* Keep scrollbars out of the layout until their scroll region is hovered. */
+
+* {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+}
+
+*:hover {
+  scrollbar-color: rgb(160 160 165 / 72%) transparent;
+}
 
 /* total width */
 ::-webkit-scrollbar {
@@ -50,14 +58,19 @@ Not supports in Firefox and IE */
 
 /* background of the scrollbar except button or resizer */
 ::-webkit-scrollbar-track {
-  background-color: rgba(0,0,0,0);
+  background-color: transparent;
 }
 
 /* scrollbar itself */
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0);
+  background-color: transparent;
   border-radius:8px;
-  border:0px solid #fff;
+  border:2px solid transparent;
+  background-clip: padding-box;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background-color: rgb(160 160 165 / 72%);
 }
 
 /* set button(top and bottom of the scrollbar) */
@@ -66,14 +79,8 @@ Not supports in Firefox and IE */
 }
 
 
-/* scrollbar when element is hovered */
-:hover::-webkit-scrollbar-thumb {
-  background-color: #a0a0a5;
-  border:0px solid #fff;
-}
-
 /* scrollbar when scrollbar is hovered */
 ::-webkit-scrollbar-thumb:hover {
-    background-color:#a0a0a5;
-    border:0px solid #f4f4f4
+  background-color: #c4c4ca;
+  border: 1px solid transparent;
 }

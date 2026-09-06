@@ -192,7 +192,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       <footer class="support-footer">
         <p class="support-warning">
           <UiIcon name="warning" />
-          <span>{{ palStore.getTranslatedText('Message_CN_AntiScam') }}</span>
+          <span>{{ palStore.getTranslatedText('Message_AntiScam') }}</span>
         </p>
         <div class="support-footer-actions">
           <button type="button" class="support-secondary" @click="close">

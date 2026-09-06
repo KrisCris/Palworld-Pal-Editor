@@ -42,6 +42,51 @@ def status():
     return reply(0, {"SaveLoaded": getattr(SaveManager(), "gvas_file", None) is not None})
 
 
+@save_blueprint.route("/basecamp/research", methods=["GET"])
+@jwt_required()
+def get_basecamp_research():
+    try:
+        return reply(0, SaveManager().get_lab_research())
+    except ValueError as error:
+        return reply(1, msg=str(error))
+
+
+@save_blueprint.route("/basecamp/research", methods=["PATCH"])
+@jwt_required()
+def complete_basecamp_research():
+    payload = request.get_json(silent=True) or {}
+    if not isinstance(payload, dict):
+        return reply(1, msg="Request body must be an object")
+    guild_id = payload.get("GuildId")
+    research_id = payload.get("ResearchId")
+    category = payload.get("Category")
+    all_research = payload.get("All") is True
+    if not isinstance(guild_id, str) or not guild_id:
+        return reply(1, msg="GuildId is required")
+    if sum((research_id is not None, category is not None, all_research)) != 1:
+        return reply(1, msg="Select exactly one research completion scope")
+    if research_id is not None and not isinstance(research_id, str):
+        return reply(1, msg="ResearchId must be a string")
+    if category is not None and not isinstance(category, str):
+        return reply(1, msg="Category must be a string")
+    try:
+        changed = SaveManager().complete_lab_research(
+            guild_id,
+            research_id=research_id,
+            category=category,
+            all_research=all_research,
+        )
+        return reply(
+            0,
+            {
+                "Changed": changed,
+                "Research": SaveManager().get_lab_research(),
+            },
+        )
+    except ValueError as error:
+        return reply(1, msg=str(error))
+
+
 @save_blueprint.route("/load", methods=["POST"])
 # @LOGGER.api_logger
 @jwt_required()
@@ -90,10 +135,16 @@ def get_passive_skills():
     for passive in passives_raw:
         data = {
             "InternalName": passive["InternalName"],
-            "I18n": DataProvider.get_passive_i18n(passive["InternalName"])
-            or (passive["InternalName"], passive["InternalName"]),
+            "I18n": list(
+                DataProvider.get_passive_i18n(passive["InternalName"])
+                or (passive["InternalName"], passive["InternalName"])
+            ),
             "Rating": passive["Rating"],
+            "Invalid": DataProvider.is_invalid_passive(passive["InternalName"]),
+            "Group": DataProvider.get_passive_group(passive["InternalName"]),
         }
+        if data["Invalid"]:
+            data["I18n"][0] = "⚠️ " + data["I18n"][0]
         passive_dict[passive["InternalName"]] = data
         passive_arr.append(data)
 

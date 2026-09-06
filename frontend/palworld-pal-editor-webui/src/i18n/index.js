@@ -55,4 +55,4 @@ export const UI_TRANSLATIONS = Object.freeze({
     "zh-CN": zhCN,
     "zh-TW": zhTW,
 });
-export const DEFAULT_UI_TRANSLATION = en;
+export const DEFAULT_UI_TRANSLATION = UI_TRANSLATIONS.en;

@@ -1,4 +1,5 @@
 <script setup>
+import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
@@ -8,6 +9,7 @@ const emit = defineEmits(['toggle'])
 const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
 const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
+const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind === 'global_palbox')
 </script>
 
 <template>
@@ -15,16 +17,25 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
     <header class="roster-header">
       <button class="roster-collapse-button" :title="toggleLabel()"
         :aria-label="toggleLabel()" @click="emit('toggle')">
-        <UiIcon :name="preview ? 'plus' : 'minus'" />
+        <UiIcon :name="preview ? 'panel' : 'minus'" />
       </button>
       <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
 
-    <div class="roster-list">
+    <OverlayScrollArea>
+    <div class="roster-list overlay-scroll-area__viewport">
+      <button v-if="globalRoster()" class="roster-row roster-row--global"
+        @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
+        :aria-current="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
+        :disabled="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
+        <span class="player-avatar">GPS</span>
+        <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
+      </button>
+
       <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
         @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
         :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"
-        :disabled="palStore.BASE_PAL_BTN_CLK_FLAG || palStore.LOADING_FLAG">
+        :disabled="(palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID) || palStore.LOADING_FLAG">
         <span class="player-avatar">PAL</span>
         <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
       </button>
@@ -37,6 +48,7 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
         <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
       </button>
     </div>
+    </OverlayScrollArea>
   </nav>
 </template>
 
@@ -93,6 +105,8 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
 
 .roster-list {
   display: grid;
+  width: 100%;
+  height: 100%;
   min-height: 0;
   align-content: start;
   gap: var(--editor-space-1);
@@ -148,9 +162,17 @@ const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase
   font-weight: 700;
 }
 
+.roster-row--base .player-avatar,
+.roster-row--global .player-avatar {
+  font-size: .55rem;
+}
+
 .roster-row--base .player-avatar {
   background: var(--editor-color-warning);
-  font-size: .55rem;
+}
+
+.roster-row--global .player-avatar {
+  background: var(--editor-color-dna);
 }
 
 .roster-row:focus-visible,

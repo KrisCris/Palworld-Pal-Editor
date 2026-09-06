@@ -18,6 +18,7 @@ const title = computed(() => palStore.getTranslatedText(
   titleKeys[current.value?.severity] || 'Message_Title_Warning',
 ))
 const closeButton = ref()
+const cancelButton = ref()
 let dismissTimer
 
 const clearDismissTimer = () => {
@@ -27,13 +28,17 @@ const clearDismissTimer = () => {
 const dismiss = () => {
   if (current.value) palStore.dismissMessage(current.value.id)
 }
+const respond = confirmed => {
+  if (current.value) palStore.respondToMessage(current.value.id, confirmed)
+}
 
 watch(current, async message => {
   clearDismissTimer()
   if (!message) return
   if (message.presentation === 'dialog') {
     await nextTick()
-    closeButton.value?.focus()
+    if (message.confirmation) cancelButton.value?.focus()
+    else closeButton.value?.focus()
     return
   }
   dismissTimer = setTimeout(
@@ -46,7 +51,8 @@ onBeforeUnmount(clearDismissTimer)
 </script>
 
 <template>
-  <div v-if="current?.presentation === 'dialog'" class="message-layer editor-modal-overlay">
+  <div v-if="current?.presentation === 'dialog'" class="message-layer editor-modal-overlay"
+    @pointerdown.self="dismiss" @keydown.esc="dismiss">
     <section
       :class="['message-dialog', 'editor-glass-surface', current.severity]"
       role="alertdialog"
@@ -67,7 +73,15 @@ onBeforeUnmount(clearDismissTimer)
         spellcheck="false"
         rows="12"
       />
-      <button ref="closeButton" @click="dismiss">
+      <div v-if="current.confirmation" class="message-dialog__actions">
+        <button ref="cancelButton" type="button" @click="respond(false)">
+          {{ palStore.getTranslatedText('Message_Cancel') }}
+        </button>
+        <button ref="closeButton" type="button" @click="respond(true)">
+          {{ palStore.getTranslatedText('Message_Confirm') }}
+        </button>
+      </div>
+      <button v-else ref="closeButton" type="button" @click="dismiss">
         {{ palStore.getTranslatedText('Message_Close') }}
       </button>
     </section>
@@ -153,6 +167,31 @@ onBeforeUnmount(clearDismissTimer)
   color: var(--editor-color-background);
   background: var(--editor-color-primary);
   cursor: pointer;
+}
+
+.message-dialog button:focus-visible {
+  outline: 2px solid var(--editor-color-focus);
+  outline-offset: 2px;
+}
+
+.message-dialog__actions {
+  display: flex;
+  gap: .6rem;
+  margin-top: .75rem;
+}
+
+.message-dialog__actions button {
+  margin-top: 0;
+}
+
+.message-dialog__actions button:first-child {
+  border: 1px solid var(--editor-color-border);
+  color: var(--editor-color-text);
+  background: var(--editor-color-control-hover);
+}
+
+.message-dialog__actions button:last-child {
+  background: var(--editor-color-primary);
 }
 
 .message-toast {

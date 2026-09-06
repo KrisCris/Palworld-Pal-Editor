@@ -51,7 +51,7 @@ function mockBackend({
         if (url.endsWith("players_data")) {
             return reply({ hasWorkingPal, players });
         }
-        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data")) {
+        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
             return reply({ dict: {}, arr: [] });
         }
         if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
@@ -66,9 +66,17 @@ function mockBackend({
         calls.push(["POST", url]);
         if (url.endsWith("/login")) return reply({ access_token: "token" });
         if (url.endsWith("/save/load")) return reply(null);
-        if (url.endsWith("/player_pals")) return reply(pals);
+        if (url.endsWith("/player_pals")) return reply(pals.map(pal => ({
+            ...pal,
+            RecordKey: pal.RecordKey || `world:${pal.InstanceId}`,
+        })));
         if (url.endsWith("/paldata")) {
-            return reply(pals.find(pal => pal.InstanceId === data.InstanceId));
+            const selected = data.RecordKey || data.InstanceId;
+            const pal = pals.find(row => (
+                (row.RecordKey || `world:${row.InstanceId}`) === selected
+                || row.InstanceId === selected
+            ));
+            return reply(pal && { ...pal, RecordKey: pal.RecordKey || `world:${pal.InstanceId}` });
         }
         if (url.endsWith("/player_data")) {
             return reply(players.find(player => player.InstanceId === data.PlayerUId));
@@ -142,6 +150,38 @@ test("loading Pal details preserves list-only location and priority metadata", a
 
     assert.equal(store.PAL_MAP.get(id).ContainerKind, "party");
     assert.equal(store.PAL_MAP.get(id).FavoriteIndex, 3);
+});
+
+test("GPS conflicts lock updates to the matching Pal's actual container", async () => {
+    const store = newStore();
+    store.SELECTED_PAL_ID = "gps:0";
+    store.SELECTED_PAL_DATA = { StorageKind: "global_palbox" };
+    store.PAL_CONTAINERS = [{
+        StorageKey: "world-container:palbox",
+        StorageKind: "world",
+        ContainerKind: "storage",
+    }];
+    axios.post = async (url, payload) => {
+        assert.match(url, /\/api\/pal\/transfer$/);
+        assert.equal(payload.TargetStorageKey, "world-container:palbox");
+        return {
+            data: {
+                status: 1,
+                msg: "This genetic identity already exists.",
+                data: {
+                    Code: "PAL_IDENTITY_CONFLICT",
+                    LockedTarget: "world:pal-id",
+                    Candidates: [{
+                        RecordKey: "world:pal-id",
+                        StorageKey: "world-container:party",
+                    }],
+                },
+            },
+        };
+    };
+
+    assert.equal(await store.movePal("world-container:palbox"), false);
+    assert.equal(store.PAL_TRANSFER_CONFLICT.TargetStorageKey, "world-container:party");
 });
 
 test("a failed probe preserves the active backend's ephemeral token", async () => {
@@ -505,7 +545,7 @@ test("a failed login request uses the dedicated backend error state", async () =
     assert.equal(store.LOADING_FLAG, false);
 });
 
-test("loaded-save hydration selects base camp again after reloading", async () => {
+test("loaded-save hydration opens base camp editing after reloading", async () => {
     const store = newStore();
     mockBackend({
         password: false,
@@ -518,15 +558,17 @@ test("loaded-save hydration selects base camp again after reloading", async () =
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, true);
     assert.equal(store.SELECTED_PLAYER_ID, null);
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, false);
 });
 
-test("loaded-save hydration selects the first player when there is no base camp", async () => {
+test("loaded-save hydration opens player editing when there is no base camp", async () => {
     const store = newStore();
     mockBackend({
         password: false,
@@ -538,12 +580,14 @@ test("loaded-save hydration selects the first player when there is no base camp"
     await store.bootstrap();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
 
     await store.loadSave();
     assert.equal(store.BASE_PAL_BTN_CLK_FLAG, false);
     assert.equal(store.SELECTED_PLAYER_ID, "player-1");
-    assert.equal(store.SELECTED_PAL_ID, "pal-1");
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
 });
 
 test("selected Pal data retains its game-derived family", async () => {
@@ -561,7 +605,7 @@ test("selected Pal data retains its game-derived family", async () => {
     });
 
     await store.bootstrap();
-    await store.selectPal("pal-1");
+    await store.selectPal("world:pal-1");
 
     assert.equal(store.SELECTED_PAL_DATA.FamilyID, "Anubis");
 });
@@ -576,10 +620,11 @@ test("successful Pal edits are tracked only until the next save load", async () 
     });
 
     await store.bootstrap();
+    await store.selectPal("world:pal-1");
     await store.updatePal({ target: { name: "NickName", value: "Edited" } });
 
-    assert.deepEqual([...store.EDITED_PAL_IDS], ["pal-1"]);
-    store.CREATED_PAL_IDS.add("pal-1");
+    assert.deepEqual([...store.EDITED_PAL_IDS], ["world:pal-1"]);
+    store.CREATED_PAL_IDS.add("world:pal-1");
     store.PAL_LIST_EDITED_ONLY = true;
     store.PAL_LIST_CREATED_ONLY = true;
 
@@ -605,6 +650,76 @@ test("fetch_config publishes backend locales and switches to the translated loca
     assert.deepEqual(store.I18nList, locales);
     assert.equal(store.I18n, "de");
     assert.equal(store.getTranslatedText("BackendError_Title"), "Etwas ist schiefgelaufen");
+});
+
+test("language changes refresh only the active roster and re-fetch others lazily", async () => {
+    const store = newStore();
+    store.IS_LOCKED = false;
+    store.SAVE_LOADED_FLAG = true;
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+    store.ACTIVE_ROSTER = "player-1";
+
+    const requestedRosters = [];
+    axios.patch = async url => {
+        assert.equal(url, "/api/save/i18n");
+        return reply(null);
+    };
+    axios.post = async (url, data) => {
+        assert.equal(url, "/api/player/player_pals");
+        requestedRosters.push(data.PlayerUId);
+        return reply(data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
+            ? [{ InstanceId: "gps-pal", RecordKey: "gps:0", DisplayName: "Translated GPS Pal" }]
+            : []);
+    };
+    axios.get = async url => {
+        if (url.endsWith("passive_skills") || url.endsWith("active_skills") || url.endsWith("pal_data") || url.endsWith("item_data")) {
+            return reply({ dict: {}, arr: [] });
+        }
+        if (url.endsWith("tech_data")) return reply({ techLvDict: {} });
+        if (url.endsWith("skin_data")) return reply({ arr: [] });
+        throw new Error(`Unexpected GET ${url}`);
+    };
+
+    assert.equal(await store.updateI18n(), true);
+    // Only the roster currently being viewed is refreshed eagerly; the other
+    // rosters' pal caches are invalidated instead of being fetched all at once.
+    assert.deepEqual(requestedRosters, ["player-1"]);
+
+    // A different roster re-fetches in the new language once it is selected.
+    await store.selectPlayer(store.PAL_GLOBAL_STORAGE_BTN, true);
+    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
+    assert.equal(store.PAL_MAP.get("gps:0").DisplayName, "Translated GPS Pal");
+});
+
+test("language changes fail when the active roster cannot be refreshed", async () => {
+    const store = newStore();
+    store.IS_LOCKED = false;
+    store.SAVE_LOADED_FLAG = true;
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    store.SPECIAL_ROSTERS = [{ Kind: "global_palbox" }];
+    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
+
+    let staticRequests = 0;
+    axios.patch = async () => reply(null);
+    axios.post = async (url, data) => {
+        assert.equal(url, "/api/player/player_pals");
+        return data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN
+            ? { data: { status: 1, msg: "GPS refresh failed" } }
+            : reply([]);
+    };
+    axios.get = async () => {
+        staticRequests += 1;
+        return reply({ dict: {}, arr: [] });
+    };
+
+    assert.equal(await store.updateI18n(), false);
+    assert.equal(staticRequests, 0);
+    assert.equal(store.LOADING_FLAG, false);
 });
 
 test("healing all pals does not try to reselect a missing pal", async t => {
@@ -698,4 +813,118 @@ test("successful saves use a nonblocking success message", async () => {
     assert.deepEqual(store.CURRENT_MESSAGE.args, ["C:/output"]);
     assert.equal(store.CURRENT_MESSAGE.severity, "success");
     assert.equal(store.CURRENT_MESSAGE.presentation, "toast");
+});
+
+test("deleting the last Pal falls through to the player editor instead of a blank canvas", async () => {
+    const store = newStore();
+    const player = { InstanceId: "player-1", NickName: "Player One", pals: new Map() };
+    store.PLAYER_MAP = new Map([["player-1", player]]);
+    store.ACTIVE_ROSTER = "player-1";
+    const pal = { RecordKey: "pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" };
+    player.pals.set("pal-1", pal);
+    store.PAL_MAP = player.pals;
+    store.SELECTED_PAL_ID = "pal-1";
+    store.SELECTED_PAL_DATA = pal;
+
+    axios.delete = async () => reply(null);
+
+    await store.delPal();
+
+    assert.equal(store.SELECTED_PAL_ID, null);
+    assert.equal(store.SELECTED_PLAYER_ID, "player-1");
+    assert.equal(store.SELECTED_PLAYER_DATA.InstanceId, "player-1");
+    assert.equal(store.SHOW_PLAYER_EDIT_FLAG, true);
+});
+
+test("exporting a Pal to the Global Palbox auto-jumps to its new location and refreshes only affected rosters", async () => {
+    const store = newStore();
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    const targetStorageKey = "gps-global";
+    store.PAL_CONTAINERS = [
+        { StorageKey: targetStorageKey, StorageKind: "global_palbox", ContainerKind: "global" },
+        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
+    ];
+    store.ACTIVE_ROSTER = "player-1";
+    store.SELECTED_PAL_ID = "world:pal-1";
+    store.SELECTED_PAL_DATA = { StorageKind: "world", OwnerPlayerUId: "player-1", RecordKey: "world:pal-1" };
+
+    const requestedRosters = [];
+    axios.get = async url => {
+        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async (url, data) => {
+        if (url.endsWith("/api/pal/transfer")) {
+            return reply({ RecordKey: "gps:pal-1" });
+        }
+        if (url.endsWith("/api/player/player_pals")) {
+            requestedRosters.push(data.PlayerUId);
+            if (data.PlayerUId === store.PAL_GLOBAL_STORAGE_BTN) {
+                return reply([{ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
+            }
+            return reply([]);
+        }
+        if (url.endsWith("/api/pal/paldata")) {
+            return reply({ RecordKey: "gps:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "GPS Pal" });
+        }
+        throw new Error(`Unexpected POST ${url}`);
+    };
+
+    assert.equal(await store.movePal(targetStorageKey), true);
+    // Only the source roster and the Global Palbox are refreshed, not every player.
+    assert.deepEqual(requestedRosters, ["player-1", store.PAL_GLOBAL_STORAGE_BTN]);
+    // Auto-jumped to the Global Palbox and selected the newly exported Pal.
+    assert.equal(store.ACTIVE_ROSTER, store.PAL_GLOBAL_STORAGE_BTN);
+    assert.equal(store.SELECTED_PAL_ID, "gps:pal-1");
+});
+
+test("resolving an update conflict auto-jumps to the updated Pal's new location", async () => {
+    const store = newStore();
+    store.PLAYER_MAP = new Map([
+        ["player-1", { InstanceId: "player-1", pals: new Map() }],
+    ]);
+    store.PAL_CONTAINERS = [
+        { StorageKey: "world-container:palbox", StorageKind: "world", ContainerKind: "storage", OwnerPlayerUId: "player-1" },
+    ];
+    // Looking at the Global Palbox, updating a Pal into player-1's storage.
+    store.ACTIVE_ROSTER = store.PAL_GLOBAL_STORAGE_BTN;
+    store.PAL_TRANSFER_CONFLICT = {
+        SourceRecordKey: "gps:0",
+        TargetStorageKey: "world-container:palbox",
+        LockedTarget: "world:pal-1",
+        Candidates: [{
+            RecordKey: "world:pal-1",
+            StorageKind: "world",
+            OwnerPlayerUId: "player-1",
+        }],
+    };
+
+    const requestedRosters = [];
+    axios.get = async url => {
+        if (url.endsWith("/api/pal/containers")) return reply(store.PAL_CONTAINERS);
+        throw new Error(`Unexpected GET ${url}`);
+    };
+    axios.post = async (url, data) => {
+        if (url.endsWith("/api/pal/transfer")) return reply(null);
+        if (url.endsWith("/api/player/player_pals")) {
+            requestedRosters.push(data.PlayerUId);
+            if (data.PlayerUId === "player-1") {
+                return reply([{ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall" }]);
+            }
+            return reply([]);
+        }
+        if (url.endsWith("/api/pal/paldata")) {
+            return reply({ RecordKey: "world:pal-1", InstanceId: "pal-1", CharacterID: "SheepBall", DisplayName: "Updated Pal" });
+        }
+        throw new Error(`Unexpected POST ${url}`);
+    };
+
+    assert.equal(await store.updateConflictingPal(), true);
+    // The affected rosters are refreshed (active + target), not every player.
+    assert.deepEqual(requestedRosters, [store.PAL_GLOBAL_STORAGE_BTN, "player-1"]);
+    // Auto-jumped to the player and selected the updated Pal.
+    assert.equal(store.ACTIVE_ROSTER, "player-1");
+    assert.equal(store.SELECTED_PAL_ID, "world:pal-1");
 });

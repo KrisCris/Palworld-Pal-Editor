@@ -11,6 +11,10 @@ export function formatContainerLabel(container, translate) {
       return `${ownerPrefix}${translate("Editor_Container_Party")}`;
     case "storage":
       return `${ownerPrefix}${translate("Editor_Container_Palbox")}`;
+    case "dps":
+      return `${ownerPrefix}${translate("Editor_Container_DimensionalPalStorage")}`;
+    case "global_palbox":
+      return translate("Editor_Container_GlobalPalbox");
     case "special":
       return container.Shared
         ? translate("Editor_Container_ViewingCage")

@@ -55,7 +55,6 @@ PASSIVE_FIELDS = {
     "Effects",
     "Invocation",
     "AddInvokeTriggerTypes",
-    "DescriptionSource",
 }
 INVOCATION_FIELDS = {
     "ActiveOtomo",
@@ -220,7 +219,6 @@ def test_game_derived_pal_passive_contract():
         assert set(row) == PASSIVE_FIELDS, passive_id
         assert row["InternalName"] == passive_id
         assert set(row["I18n"]) == LOCALES
-        assert set(row["DescriptionSource"]) == LOCALES
         assert set(row["Invocation"]) == INVOCATION_FIELDS
         assert all(type(value) is bool for value in row["Invocation"].values())
         assert required_buff_fields <= set(row["Buff"])
@@ -232,13 +230,52 @@ def test_game_derived_pal_passive_contract():
             for text in row["I18n"].values()
         )
         assert all(
-            source in {"explicit", "composed"}
-            for source in row["DescriptionSource"].values()
-        )
-        assert all(
             set(effect) == {"EffectType", "EffectValue", "TargetType"}
             for effect in row["Effects"]
         )
+
+
+def test_game_derived_non_pal_passive_contract():
+    passives = load("passive_skills.json")
+
+    assert passives
+    assert not set(passives) & set(load("pal_passives.json"))
+    for passive_id, row in passives.items():
+        assert set(row) == PASSIVE_FIELDS, passive_id
+        assert row["InternalName"] == passive_id
+        assert row["Category"] == "SortNotDisplayable"
+        assert set(row["I18n"]) == LOCALES
+
+    assert "MaxInventoryWeight_up_Partnerskill_PinkCat_1" not in passives
+
+
+def test_game_derived_partner_skill_contract():
+    partner = load("partner_skills.json")
+
+    assert partner
+    for passive_id, row in partner.items():
+        assert set(row) == PASSIVE_FIELDS, passive_id
+        assert row["InternalName"] == passive_id
+        assert row["Category"] == "SortNotDisplayable"
+        assert set(row["I18n"]) == LOCALES
+
+    assert (
+        partner["MaxInventoryWeight_up_Partnerskill_PinkCat_1"]["I18n"]["en"]["Name"]
+        == "Cat Helper"
+    )
+
+
+def test_game_derived_partner_and_regular_passives_are_separate():
+    partner = load("partner_skills.json")
+    regular = load("passive_skills.json")
+
+    assert partner
+    assert regular
+    assert not set(partner) & set(regular)
+    pink_cat_passive = "MaxInventoryWeight_up_Partnerskill_PinkCat_1"
+    assert pink_cat_passive in partner
+    assert pink_cat_passive not in regular
+    assert partner[pink_cat_passive]["I18n"]["en"]["Name"] == "Cat Helper"
 
 
 def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
@@ -308,3 +345,32 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
     assert weapon_use["Invalid"] is False
     assert weapon_use["Assignable"] is False
     assert weapon_use["AssignableToHumans"] is True
+
+
+def test_passive_skill_endpoint_appends_non_pal_skills_as_invalid():
+    app.config.update(
+        TESTING=True,
+        JWT_SECRET_KEY="test-secret-key-with-at-least-32-bytes",
+    )
+    with app.app_context():
+        token = create_access_token(identity="test", expires_delta=False)
+    with app.test_client() as client:
+        response = client.get(
+            "/api/save/passive_skills",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    payload = response.get_json()
+    assert response.status_code == 200
+    assert payload["status"] == 0
+    rows = payload["data"]["arr"]
+    pal = load("pal_passives.json")
+    non_pal = load("passive_skills.json")
+    partner = load("partner_skills.json")
+    assert {row["InternalName"] for row in rows[: len(pal)]} == set(pal)
+    assert {row["InternalName"] for row in rows[len(pal) :]} == set(non_pal) | set(partner)
+    assert all(row["Invalid"] is False for row in rows[: len(pal)])
+    assert all(row["Invalid"] is True for row in rows[len(pal) :])
+    assert {row["Group"] for row in rows[: len(pal)]} == {"pal"}
+    assert {row["Group"] for row in rows[len(pal) : len(pal) + len(non_pal)]} == {"passive"}
+    assert {row["Group"] for row in rows[-len(partner) :]} == {"partner"}

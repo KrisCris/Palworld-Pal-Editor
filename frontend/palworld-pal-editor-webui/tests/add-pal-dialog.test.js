@@ -65,17 +65,18 @@ test("Pal list opens the dialog instead of creating immediately", async () => {
   assert.doesNotMatch(source, /@click="palStore\.addPal"/);
 });
 
-test("Add Pal dialog traps focus and renders localized template details", async () => {
+test("Add Pal dialog traps focus and reuses the Pal brief for template previews", async () => {
   const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
   assert.match(source, /onBeforeUnmount/);
   assert.match(source, /setAttribute\('aria-hidden', 'true'\)/);
   assert.match(source, /function trapFocus/);
   assert.match(source, /dialog\.value\?\.focus/);
+  assert.match(source, /PalBriefPanel/);
+  assert.match(source, /templateBrief/);
   for (const field of ["Talent_HP", "Talent_Shot", "Talent_Defense", "MasteredWaza", "Suitabilities"]) {
     assert.match(source, new RegExp(field));
   }
-  assert.match(source, /palStore\.PASSIVE_SKILLS/);
-  assert.match(source, /palStore\.ACTIVE_SKILLS/);
+  assert.doesNotMatch(source, /template-details/);
 });
 
 test("Pal templates are cleared when the editor resets or switches backends", async () => {
@@ -88,7 +89,7 @@ test("Add Pal chooses an explicit capacity-checked container, including bases", 
   assert.match(source, /v-model="targetContainerId"/);
   assert.match(source, /container\.Occupied >= container\.Size/);
   assert.match(source, /container\.ContainerKind === 'base'/);
-  assert.match(source, /options\.TargetContainerId = targetContainerId\.value/);
+  assert.match(source, /options\.TargetStorageKey = targetContainerId\.value/);
   assert.match(source, /formatContainerLabel/);
   assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
 });

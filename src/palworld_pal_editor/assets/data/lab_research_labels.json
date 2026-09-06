@@ -1,0 +1,380 @@
+{
+  "category": {
+    "ja": {
+      "Cool": "冷却",
+      "Deforest": "伐採",
+      "EmitFlame": "火おこし",
+      "GenerateElectricity": "発電",
+      "Handcraft": "手作業",
+      "Mining": "採掘",
+      "ProductMedicine": "製薬",
+      "Seeding": "種まき",
+      "Watering": "水やり"
+    },
+    "de": {
+      "Cool": "Kühlung",
+      "Deforest": "Holzfällen",
+      "EmitFlame": "Feuererzeugung",
+      "GenerateElectricity": "Stromerzeugung",
+      "Handcraft": "Handwerk",
+      "Mining": "Bergbau",
+      "ProductMedicine": "Arzneimittelherstellung",
+      "Seeding": "Aussaat",
+      "Watering": "Bewässerung"
+    },
+    "en": {
+      "Cool": "Cooling",
+      "Deforest": "Lumbering",
+      "EmitFlame": "Kindling",
+      "GenerateElectricity": "Generating Electricity",
+      "Handcraft": "Handiwork",
+      "Mining": "Mining",
+      "ProductMedicine": "Medicine Production",
+      "Seeding": "Planting",
+      "Watering": "Watering"
+    },
+    "es": {
+      "Cool": "Enfriamiento",
+      "Deforest": "Tala",
+      "EmitFlame": "Encender fuego",
+      "GenerateElectricity": "Producción eléctrica",
+      "Handcraft": "Trabajo manual",
+      "Mining": "Minería",
+      "ProductMedicine": "Fabricación de medicinas",
+      "Seeding": "Siembra",
+      "Watering": "Riego"
+    },
+    "es-MX": {
+      "Cool": "Refrigeración",
+      "Deforest": "Tala",
+      "EmitFlame": "Encendido de fuego",
+      "GenerateElectricity": "Producción eléctrica",
+      "Handcraft": "Trabajo manual",
+      "Mining": "Minería",
+      "ProductMedicine": "Farmacología",
+      "Seeding": "Siembra",
+      "Watering": "Riego"
+    },
+    "fr": {
+      "Cool": "Réfrigération",
+      "Deforest": "Abattage",
+      "EmitFlame": "Allumage de feu",
+      "GenerateElectricity": "Génération d'énergie",
+      "Handcraft": "Artisanat",
+      "Mining": "Extraction",
+      "ProductMedicine": "Pharmacie",
+      "Seeding": "Semence",
+      "Watering": "Arrosage"
+    },
+    "id": {
+      "Cool": "Mendinginkan",
+      "Deforest": "Menebang Kayu",
+      "EmitFlame": "Menyalakan Api",
+      "GenerateElectricity": "Menghasilkan Listrik",
+      "Handcraft": "Kerajinan Tangan",
+      "Mining": "Menambang",
+      "ProductMedicine": "Memproduksi Obat",
+      "Seeding": "Menanam Bibit",
+      "Watering": "Menyiram"
+    },
+    "it": {
+      "Cool": "Refrigerazione",
+      "Deforest": "Falegnameria",
+      "EmitFlame": "Sputafuoco",
+      "GenerateElectricity": "Generazione di energia",
+      "Handcraft": "Lavoro manuale",
+      "Mining": "Attività mineraria",
+      "ProductMedicine": "Realizzazione di medicinali",
+      "Seeding": "Semina",
+      "Watering": "Irrigazione"
+    },
+    "ko": {
+      "Cool": "냉각",
+      "Deforest": "벌목",
+      "EmitFlame": "불 피우기",
+      "GenerateElectricity": "발전",
+      "Handcraft": "수작업",
+      "Mining": "채굴",
+      "ProductMedicine": "제약",
+      "Seeding": "씨뿌리기",
+      "Watering": "물 주기"
+    },
+    "pl": {
+      "Cool": "Chłodzenie",
+      "Deforest": "Ścinanie drzew",
+      "EmitFlame": "Rozpalanie ognia",
+      "GenerateElectricity": "Wytwarzanie energii",
+      "Handcraft": "Rzemiosło",
+      "Mining": "Wydobycie",
+      "ProductMedicine": "Produkcja leków",
+      "Seeding": "Sadzenie",
+      "Watering": "Podlewanie"
+    },
+    "pt-BR": {
+      "Cool": "Refrigeração",
+      "Deforest": "Cortar árvores",
+      "EmitFlame": "Acender fogo",
+      "GenerateElectricity": "Geração de energia",
+      "Handcraft": "Trabalho manual",
+      "Mining": "Garimpo",
+      "ProductMedicine": "Manipulação",
+      "Seeding": "Plantio",
+      "Watering": "Rega"
+    },
+    "ru": {
+      "Cool": "Охлаждение",
+      "Deforest": "Рубка деревьев",
+      "EmitFlame": "Разжигание огня",
+      "GenerateElectricity": "Генерация энергии",
+      "Handcraft": "Ручная работа",
+      "Mining": "Добыча",
+      "ProductMedicine": "Фармацевтика",
+      "Seeding": "Посев семян",
+      "Watering": "Полив"
+    },
+    "th": {
+      "Cool": "แช่เย็น",
+      "Deforest": "ตัดไม้",
+      "EmitFlame": "จุดไฟ",
+      "GenerateElectricity": "ผลิตไฟฟ้า",
+      "Handcraft": "งานฝีมือ",
+      "Mining": "ขุดแร่",
+      "ProductMedicine": "ผลิตยา",
+      "Seeding": "หว่านเมล็ด",
+      "Watering": "รดน้ำ"
+    },
+    "tr": {
+      "Cool": "Soğutma",
+      "Deforest": "Odunculuk",
+      "EmitFlame": "Tutuşturma",
+      "GenerateElectricity": "Elektrik Üretme",
+      "Handcraft": "El İşi",
+      "Mining": "Madencilik",
+      "ProductMedicine": "İlaç Üretimi",
+      "Seeding": "Ekim",
+      "Watering": "Sulama"
+    },
+    "vi": {
+      "Cool": "Làm Mát",
+      "Deforest": "Đốn Gỗ",
+      "EmitFlame": "Nhóm lửa",
+      "GenerateElectricity": "Phát Điện",
+      "Handcraft": "Công Việc Thủ Công",
+      "Mining": "Khai Thác",
+      "ProductMedicine": "Chế Thuốc",
+      "Seeding": "Gieo Hạt",
+      "Watering": "Tưới Nước"
+    },
+    "zh-CN": {
+      "Cool": "冷却",
+      "Deforest": "伐木",
+      "EmitFlame": "生火",
+      "GenerateElectricity": "发电",
+      "Handcraft": "手工作业",
+      "Mining": "采矿",
+      "ProductMedicine": "制药",
+      "Seeding": "播种",
+      "Watering": "浇水"
+    },
+    "zh-TW": {
+      "Cool": "冷卻",
+      "Deforest": "採伐",
+      "EmitFlame": "生火",
+      "GenerateElectricity": "發電",
+      "Handcraft": "手工作業",
+      "Mining": "挖掘",
+      "ProductMedicine": "製藥",
+      "Seeding": "播種",
+      "Watering": "澆水"
+    }
+  },
+  "item": {
+    "ja": {
+      "Dish": "料理",
+      "Ingot": "インゴット",
+      "Bullet": "弾薬",
+      "Weapon": "武器",
+      "Ore": "鉱石",
+      "Medicine": "薬",
+      "ArmorBody": "体装備",
+      "PalGear": "パルギア",
+      "CaptureBall": "スフィア"
+    },
+    "de": {
+      "Dish": "Gerichte",
+      "Ingot": "Metallbarren",
+      "Bullet": "Munition",
+      "Weapon": "Waffen",
+      "Ore": "Erze",
+      "Medicine": "Medizin",
+      "ArmorBody": "Ausrüstung (Körper)",
+      "PalGear": "Pal-Ausrüstung",
+      "CaptureBall": "Sphären"
+    },
+    "en": {
+      "Dish": "Food",
+      "Ingot": "Ingots",
+      "Bullet": "Ammo",
+      "Weapon": "Weapons",
+      "Ore": "Ores",
+      "Medicine": "Medicine",
+      "ArmorBody": "Body Armor",
+      "PalGear": "Pal Gear",
+      "CaptureBall": "Spheres"
+    },
+    "es": {
+      "Dish": "Platos",
+      "Ingot": "Lingotes",
+      "Bullet": "Munición",
+      "Weapon": "Armas",
+      "Ore": "Minerales",
+      "Medicine": "Medicinas",
+      "ArmorBody": "Armaduras",
+      "PalGear": "Equipo Pal",
+      "CaptureBall": "Esferas"
+    },
+    "es-MX": {
+      "Dish": "Cocina",
+      "Ingot": "Lingote",
+      "Bullet": "Munición",
+      "Weapon": "Armas",
+      "Ore": "Mineral",
+      "Medicine": "Medicina",
+      "ArmorBody": "Armaduras",
+      "PalGear": "Equipamiento Pal",
+      "CaptureBall": "Esfera"
+    },
+    "fr": {
+      "Dish": "Plats",
+      "Ingot": "Lingots",
+      "Bullet": "Munitions",
+      "Weapon": "Armes",
+      "Ore": "Minerais",
+      "Medicine": "Potions",
+      "ArmorBody": "Armures",
+      "PalGear": "Équipement de Pal",
+      "CaptureBall": "Sphères"
+    },
+    "id": {
+      "Dish": "Memasak",
+      "Ingot": "Batangan Logam",
+      "Bullet": "Amunisi",
+      "Weapon": "Senjata",
+      "Ore": "Bijih",
+      "Medicine": "Obat",
+      "ArmorBody": "Peralatan Badan",
+      "PalGear": "Pal Gear",
+      "CaptureBall": "Bola"
+    },
+    "it": {
+      "Dish": "Cibo",
+      "Ingot": "Lingotti",
+      "Bullet": "Proiettili",
+      "Weapon": "Armi",
+      "Ore": "Minerali",
+      "Medicine": "Medicinali",
+      "ArmorBody": "Equipaggiamenti per il corpo",
+      "PalGear": "Strumenti per Pal",
+      "CaptureBall": "Sfere"
+    },
+    "ko": {
+      "Dish": "요리",
+      "Ingot": "주괴",
+      "Bullet": "탄약",
+      "Weapon": "무기",
+      "Ore": "광석",
+      "Medicine": "약",
+      "ArmorBody": "몸체 장비",
+      "PalGear": "팰 장비",
+      "CaptureBall": "스피어"
+    },
+    "pl": {
+      "Dish": "Żywność",
+      "Ingot": "Sztabki",
+      "Bullet": "Amunicja",
+      "Weapon": "Broń",
+      "Ore": "Rudy",
+      "Medicine": "Leki",
+      "ArmorBody": "Zbroje tułowia",
+      "PalGear": "Pal Sprzęt",
+      "CaptureBall": "Sfery"
+    },
+    "pt-BR": {
+      "Dish": "Culinária",
+      "Ingot": "Lingotes",
+      "Bullet": "Munições",
+      "Weapon": "Armas",
+      "Ore": "Minérios",
+      "Medicine": "Remédios",
+      "ArmorBody": "Equipamento de corpo",
+      "PalGear": "Equipamentos de Pal",
+      "CaptureBall": "Esferas"
+    },
+    "ru": {
+      "Dish": "Готовка",
+      "Ingot": "Слитки",
+      "Bullet": "Боеприпасы",
+      "Weapon": "Оружие",
+      "Ore": "Руда",
+      "Medicine": "Снадобья",
+      "ArmorBody": "Броня для тела",
+      "PalGear": "Экипировка Палов",
+      "CaptureBall": "Сферы"
+    },
+    "th": {
+      "Dish": "อาหาร",
+      "Ingot": "ก้อนโลหะ",
+      "Bullet": "กระสุน",
+      "Weapon": "อาวุธ",
+      "Ore": "หินแร่",
+      "Medicine": "ยา",
+      "ArmorBody": "ชุด",
+      "PalGear": "พาลเกียร์",
+      "CaptureBall": "สเฟียร์"
+    },
+    "tr": {
+      "Dish": "Yiyecekler",
+      "Ingot": "Külçeler",
+      "Bullet": "Cephaneler",
+      "Weapon": "Silahlar",
+      "Ore": "Cevher",
+      "Medicine": "İlaç",
+      "ArmorBody": "Gövde Zırhı",
+      "PalGear": "Pal Teçhizatı",
+      "CaptureBall": "Küreler"
+    },
+    "vi": {
+      "Dish": "Thực Phẩm",
+      "Ingot": "Các Loại Thỏi",
+      "Bullet": "Đạn Bắn",
+      "Weapon": "Vũ Khí",
+      "Ore": "Quặng",
+      "Medicine": "Thuốc",
+      "ArmorBody": "Giáp Thân",
+      "PalGear": "Trang Bị Pal",
+      "CaptureBall": "Quả Cầu"
+    },
+    "zh-CN": {
+      "Dish": "食物",
+      "Ingot": "金属锭",
+      "Bullet": "弹药",
+      "Weapon": "武器",
+      "Ore": "矿石",
+      "Medicine": "药品",
+      "ArmorBody": "身体装备",
+      "PalGear": "帕鲁装备",
+      "CaptureBall": "帕鲁球"
+    },
+    "zh-TW": {
+      "Dish": "食物",
+      "Ingot": "金屬錠",
+      "Bullet": "彈藥",
+      "Weapon": "武器",
+      "Ore": "礦石",
+      "Medicine": "藥品",
+      "ArmorBody": "身體裝備",
+      "PalGear": "帕魯裝備",
+      "CaptureBall": "帕魯球"
+    }
+  }
+}

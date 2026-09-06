@@ -6,6 +6,7 @@ import PalPortrait from '@/components/modules/PalPortrait.vue'
 import PalSpeciesSelector from '@/components/modules/PalSpeciesSelector.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
 import SegmentedRange from '@/components/modules/SegmentedRange.vue'
+import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { paldeckForRow } from '@/components/modules/pal-species-selector'
@@ -14,8 +15,29 @@ const palStore = usePalEditorStore()
 const updateRange = (name, value) => palStore.updatePal({ target: { name, value } })
 const skillTemplateType = ref('')
 const showMoveDialog = ref(false)
+const passiveSkillSelect = ref(null)
+const activeSkillSelect = ref(null)
+const skinSelect = ref(null)
 const moveBlocked = computed(() => palStore.SELECTED_PAL_DATA.IsExpeditionPal
   || palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok')
+const externalContainerLabel = computed(() => formatContainerLabel(
+  palStore.SELECTED_PAL_DATA,
+  palStore.getTranslatedText,
+))
+const ownerLabel = computed(() => palStore.SELECTED_PAL_DATA.OwnerName
+  || (palStore.SELECTED_PAL_DATA.StorageKind !== 'world'
+    ? externalContainerLabel.value
+    : palStore.getTranslatedText('Editor_Pal_No_Owner')))
+const guildLabel = computed(() => palStore.SELECTED_PAL_DATA.group_id
+  || (palStore.SELECTED_PAL_DATA.StorageKind === 'global_palbox'
+    ? externalContainerLabel.value
+    : ''))
+const technicalContainer = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
+  ? palStore.SELECTED_PAL_DATA.ContainerId
+  : externalContainerLabel.value)
+const technicalSlot = computed(() => palStore.SELECTED_PAL_DATA.StorageKind === 'world'
+  ? palStore.SELECTED_PAL_DATA.SlotIndex
+  : palStore.SELECTED_PAL_DATA.ActualSlotIndex)
 const openSkillTemplates = type => { skillTemplateType.value = type }
 
 const currentSkillIds = () => [
@@ -38,6 +60,42 @@ const canAssignActiveSkill = skill => palStore.isSkillAssignable(
 const canSelectActiveSkill = skill => (
   !palStore.HIDE_INVALID_OPTIONS || canAssignActiveSkill(skill)
 );
+
+const showEquipMasteredAction = skill => (
+  !palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
+);
+
+const canEquipMasteredSkill = skill => (
+  showEquipMasteredAction(skill)
+  && canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])
+);
+
+const activeSkillEquipTitle = skill => {
+  if (!canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])) {
+    return palStore.getTranslatedText('Message_Skill_Not_Assignable');
+  }
+  if (palStore.SELECTED_PAL_DATA.isEquipSkillFull()) {
+    return palStore.getTranslatedText('Message_Skill_Equip_Full');
+  }
+  return '';
+};
+
+const addPassiveSkill = () => {
+  palStore.SELECTED_PAL_DATA.add_PassiveSkillList();
+  passiveSkillSelect.value?.close();
+};
+
+const addActiveSkill = () => {
+  palStore.SELECTED_PAL_DATA.add_MasteredWaza();
+  activeSkillSelect.value?.close();
+};
+
+const applySkin = () => {
+  palStore.updatePal({
+    target: { name: 'SkinName', value: palStore.SELECTED_PAL_DATA.SkinName },
+  });
+  skinSelect.value?.close();
+};
 
 const isMaxSuit = key => {
   return palStore.SELECTED_PAL_DATA.Suitabilities[key] >= palStore.MAX_SUITABILITY_LEVEL;
@@ -93,39 +151,56 @@ const skinOptions = () => [
   })),
 ]
 
-const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST.map(skill => ({
+const passiveSkillCategoryKey = group => ({
+  pal: 'Editor_Passive_Category_Pal',
+  passive: 'Editor_Passive_Category_Regular',
+  partner: 'Editor_Passive_Category_Partner',
+}[group] || 'Editor_Passive_Skills')
+
+const passiveSkillOptions = () => palStore.PASSIVE_SKILLS_LIST
+  .filter(skill => !palStore.HIDE_INVALID_OPTIONS || !skill.Invalid)
+  .map(skill => ({
   value: skill.InternalName,
   label: skill.I18n[0],
   description: skill.I18n[1],
-  meta: skill.InternalName,
+  meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
   tone: palStore.passiveTier(skill.Rating),
-}))
+  group: palStore.getTranslatedText(passiveSkillCategoryKey(skill.Group)),
+  }))
+
+function activeSkillMetadata(skill = {}) {
+  const badges = palStore.skillBadges(skill, palStore.SELECTED_PAL_DATA.IsHuman)
+  const metadata = [
+    ...badges
+      .filter(badge => badge !== 'exclusive')
+      .map(badge => palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))),
+    `${palStore.getTranslatedText('Editor_Skill_ATK')}${skill.Power}`,
+    `${palStore.getTranslatedText('Editor_Skill_CD')}${skill.CT}`,
+  ]
+
+  if (badges.includes('exclusive')) {
+    metadata.push(palStore.getTranslatedText(palStore.skillBadgeTranslationKey('exclusive')))
+    if (skill.LearnerNames?.length) metadata.push(skill.LearnerNames.join(' / '))
+  }
+
+  return metadata.join(' · ')
+}
 
 const activeSkillSelectOptions = () => activeSkillOptions().map(skill => {
   const element = palStore.elementIconKey(skill.Element)
   return {
     value: skill.InternalName,
     label: skill.I18n[0],
-    description: `${skillBadgeLabels(skill)} · ${palStore.getTranslatedText('Editor_Skill_ATK')} ${skill.Power} · ${palStore.getTranslatedText('Editor_Skill_CD')} ${skill.CT}`,
+    description: activeSkillMetadata(skill),
     tooltip: skill.I18n[1],
-    meta: `${skill.InternalName} ${skill.Element}`,
+    meta: palStore.HIDE_INVALID_OPTIONS ? '' : skill.InternalName,
+    searchMeta: skill.Element,
     disabled: !canSelectActiveSkill(skill),
     icon: element ? palStore.backendAssetUrl(`/image/elements/Element_${element}`) : '',
   }
 })
 
 const specialTypeLabel = key => palStore.getTranslatedText(`Editor_Variant_${key}`);
-const skillBadgeLabels = skill => palStore.skillBadges(
-  skill,
-  palStore.SELECTED_PAL_DATA.IsHuman,
-)
-  .map(badge => {
-    const label = palStore.getTranslatedText(palStore.skillBadgeTranslationKey(badge))
-    return badge === 'exclusive' && skill.LearnerNames?.length
-      ? `${skill.LearnerNames.join(' / ')} · ${label}`
-      : label
-  })
-  .join(' · ');
 
 const portraitBorder = pal => pal.IsAwakening
   ? 'var(--editor-color-awakened)'
@@ -191,20 +266,25 @@ const portraitBorder = pal => pal.IsAwakening
         </div>
         <div class="editor-summary__actions">
           <button id="maximize_pal_btn" class="editor-button editor-button--primary" @click="palStore.maximizePal"
-            :disabled="palStore.LOADING_FLAG">
-            <UiIcon name="maximum" /> {{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Maximize_Pal')">
+            <UiIcon name="maximum" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Maximize_Pal") }}</span>
           </button>
           <button id="dupe_btn" class="editor-button editor-button--secondary" @click="palStore.dupePal"
-            :disabled="palStore.LOADING_FLAG" v-if="!palStore.BASE_PAL_BTN_CLK_FLAG">
-            {{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}
+            :disabled="palStore.LOADING_FLAG"
+            :aria-label="palStore.getTranslatedText('Editor_Btn_Dupe_Pal')">
+            <UiIcon name="copy" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Dupe_Pal") }}</span>
+          </button>
+          <button id="move_btn" class="editor-button editor-button--secondary" @click="showMoveDialog = true"
+            :disabled="moveBlocked || palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Move_Pal')">
+            <UiIcon name="forward" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Move_Pal") }}</span>
           </button>
           <button id="dump_btn" class="editor-button editor-button--secondary" @click="palStore.dumpPalData"
-            :disabled="palStore.LOADING_FLAG">
-            {{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Export_Data')">
+            <UiIcon name="export" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Export_Data") }}</span>
           </button>
           <button id="del_btn" class="editor-button editor-button--danger" @click="palStore.delPal"
-            :disabled="palStore.LOADING_FLAG">
-            <UiIcon name="delete" /> {{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}
+            :disabled="palStore.LOADING_FLAG" :aria-label="palStore.getTranslatedText('Editor_Btn_Delete_Pal')">
+            <UiIcon name="delete" /> <span class="editor-button__label">{{ palStore.getTranslatedText("Editor_Btn_Delete_Pal") }}</span>
           </button>
         </div>
       </header>
@@ -240,7 +320,7 @@ const portraitBorder = pal => pal.IsAwakening
                 :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
             </div>
           </div>
-          <div class="editor-field">
+          <div v-if="palStore.SELECTED_PAL_DATA.StorageKind !== 'global_palbox'" class="editor-field">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_ImportedCharacter") }}</span>
             <span class="editor-tag">
               <img v-if="palStore.SELECTED_PAL_DATA.IsImportedCharacter" class="game-icon" :src="palStore.backendAssetUrl('/image/ui/dna')" alt="">
@@ -259,16 +339,19 @@ const portraitBorder = pal => pal.IsAwakening
           </div>
           <div class="editor-field" v-if="availableSkins().length || palStore.SELECTED_PAL_DATA.SkinName">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Skin") }}</span>
-            <SearchSelect v-model="palStore.SELECTED_PAL_DATA.SkinName"
+            <SearchSelect ref="skinSelect" v-model="palStore.SELECTED_PAL_DATA.SkinName"
               :options="skinOptions()" :placeholder="palStore.getTranslatedText('Editor_Skin_Default')"
               :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
               :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-              :aria-label="palStore.getTranslatedText('Editor_Skin')" :disabled="palStore.LOADING_FLAG" />
-            <div class="editor-field__actions">
-              <button class="editor-button editor-button--primary editor-button--icon" @click="palStore.updatePal"
-                name="SkinName" :aria-label="palStore.getTranslatedText('Editor_Skin')"
-                :value="palStore.SELECTED_PAL_DATA.SkinName" :disabled="palStore.LOADING_FLAG"><UiIcon name="check" /></button>
-            </div>
+              :aria-label="palStore.getTranslatedText('Editor_Skin')" :disabled="palStore.LOADING_FLAG"
+              :close-on-select="false">
+              <template #actions>
+                <button class="editor-button editor-button--icon editor-button--primary"
+                  @click="applySkin" name="SkinName"
+                  :aria-label="palStore.getTranslatedText('Editor_Skin')"
+                  :disabled="palStore.LOADING_FLAG"><UiIcon name="plus" /></button>
+              </template>
+            </SearchSelect>
           </div>
           <div class="editor-field" v-if="palStore.SELECTED_PAL_DATA.Gender || !palStore.HIDE_INVALID_OPTIONS">
             <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Gender") }}</span>
@@ -296,26 +379,6 @@ const portraitBorder = pal => pal.IsAwakening
                   :src="palStore.backendAssetUrl(`/image/ui/priority-${priority}`)"
                   :alt="['—', 'I', 'II', 'III'][priority]">
               </button>
-            </div>
-          </div>
-          <div class="editor-field" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
-            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
-            <span class="editor-tag">
-              {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') || '-' }}
-            </span>
-            <div class="editor-field__actions">
-              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsBOSS }]"
-                @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
-                :aria-pressed="palStore.SELECTED_PAL_DATA.IsBOSS"
-                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
-              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsRarePal }]"
-                @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
-                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
-                :aria-pressed="palStore.SELECTED_PAL_DATA.IsRarePal"
-                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
-                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
             </div>
           </div>
         </section>
@@ -356,6 +419,26 @@ const portraitBorder = pal => pal.IsAwakening
                 :disabled="palStore.LOADING_FLAG || isMaxLv()"><UiIcon name="maximum" /></button>
             </div>
           </div>
+          <div class="editor-field editor-field--value" v-if="!palStore.SELECTED_PAL_DATA.IsHuman">
+            <span class="editor-field__label">{{ palStore.getTranslatedText("Editor_Variant") }}</span>
+            <span class="editor-tag">
+              {{ palStore.specialTypeKeys(palStore.SELECTED_PAL_DATA).map(specialTypeLabel).join(' · ') || '-' }}
+            </span>
+            <div class="editor-field__actions">
+              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsBOSS }]"
+                @click="palStore.SELECTED_PAL_DATA.swapBoss" name="IsBOSS"
+                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Boss')"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.IsBOSS"
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
+                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/boss')" alt=""></button>
+              <button :class="['editor-button editor-button--secondary editor-button--icon editor-button--variant', { 'is-active': palStore.SELECTED_PAL_DATA.IsRarePal }]"
+                @click="palStore.SELECTED_PAL_DATA.swapRare" name="IsRarePal"
+                :aria-label="palStore.getTranslatedText('Editor_Btn_Toggle_Rare')"
+                :aria-pressed="palStore.SELECTED_PAL_DATA.IsRarePal"
+                v-if="canToggleBossVariant(palStore.SELECTED_PAL_DATA)"
+                :disabled="palStore.LOADING_FLAG"><img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/rare')" alt=""></button>
+            </div>
+          </div>
         </section>
       </div>
       <div class="editor-stat-grid">
@@ -371,14 +454,14 @@ const portraitBorder = pal => pal.IsAwakening
         <summary>{{ palStore.getTranslatedText("Editor_Save_Details") }}</summary>
         <div class="pal-technical-grid">
           <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_CharacterID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.CharacterID }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_ID }}</code></div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.group_id }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_ID") }}</span><code>{{ palStore.SELECTED_PAL_DATA.InstanceId }}</code></div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Guild_ID") }}</span><code>{{ guildLabel }}</code></div>
           <div class="pal-technical-slot">
             <span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Slot") }}</span>
             <div class="pal-technical-location__value">
               <code :class="{ 'is-location-anomaly': palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok' }"
                 :title="palStore.SELECTED_PAL_DATA.LocationAnomaly || ''">
-                {{ palStore.SELECTED_PAL_DATA.ContainerId }} @ {{ palStore.SELECTED_PAL_DATA.SlotIndex }}
+                {{ technicalContainer }} @ {{ technicalSlot }}
               </code>
             </div>
             <small v-if="palStore.SELECTED_PAL_DATA.LocationStatus !== 'ok'">
@@ -394,13 +477,7 @@ const portraitBorder = pal => pal.IsAwakening
               {{ palStore.getTranslatedText('Editor_Move_Blocked_Anomaly') }}
             </small>
           </div>
-          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ palStore.SELECTED_PAL_DATA.OwnerName || palStore.getTranslatedText("Editor_Pal_No_Owner") }}</span></div>
-          <div class="pal-technical-move">
-            <button class="editor-button pal-location-move" @click="showMoveDialog = true"
-              :disabled="moveBlocked || palStore.LOADING_FLAG">
-              {{ palStore.getTranslatedText('Editor_Move_Pal') }}
-            </button>
-          </div>
+          <div><span class="editor-disclosure__label">{{ palStore.getTranslatedText("Editor_Pal_Owner") }}</span><span>{{ ownerLabel }}</span></div>
         </div>
       </details>
 
@@ -540,7 +617,10 @@ const portraitBorder = pal => pal.IsAwakening
             :title="palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill">
             <span :class="['passive-tier', `passive-tier--${palStore.passiveTier(palStore.PASSIVE_SKILLS[skill]?.Rating)}`]" aria-hidden="true"></span>
             <div class="skill-card__identity">
-              <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+              <div class="skill-card__title">
+                <strong>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
               <small>{{ palStore.PASSIVE_SKILLS[skill]?.I18n[1] || skill }}</small>
             </div>
             <button type="button" class="skill-card__remove"
@@ -550,15 +630,21 @@ const portraitBorder = pal => pal.IsAwakening
           </article>
         </div>
         <div class="skill-add" v-if="!palStore.HIDE_INVALID_OPTIONS || palStore.SELECTED_PAL_DATA.PassiveSkillList.length < 4">
-          <SearchSelect v-model="palStore.PAL_PASSIVE_SELECTED_ITEM" placement="top"
+          <SearchSelect ref="passiveSkillSelect" v-model="palStore.PAL_PASSIVE_SELECTED_ITEM" placement="top"
             :options="passiveSkillOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
             :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
             :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG" />
-          <button class="editor-button editor-button--icon editor-button--primary"
-            @click="palStore.SELECTED_PAL_DATA.add_PassiveSkillList" name="add_PassiveSkillList"
-            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
-            :disabled="palStore.LOADING_FLAG || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
+            :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')" :disabled="palStore.LOADING_FLAG"
+            :close-on-select="false">
+            <template #actions>
+              <button class="editor-button editor-button--icon editor-button--primary"
+                @click="addPassiveSkill" name="add_PassiveSkillList"
+                :aria-label="palStore.getTranslatedText('Editor_Passive_Skills')"
+                :disabled="palStore.LOADING_FLAG
+                  || !palStore.PAL_PASSIVE_SELECTED_ITEM
+                  || palStore.SELECTED_PAL_DATA.isEquippedPassiveSkill(palStore.PAL_PASSIVE_SELECTED_ITEM)"><UiIcon name="plus" /></button>
+            </template>
+          </SearchSelect>
         </div>
       </div>
 
@@ -575,9 +661,11 @@ const portraitBorder = pal => pal.IsAwakening
             <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
               :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
-              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
-              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <div class="skill-card__title">
+                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
+              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
             <button type="button" class="skill-card__remove"
               @click="palStore.SELECTED_PAL_DATA.pop_EquipWaza" :name="skill"
@@ -590,41 +678,51 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="skill-section">
         <h2 class="pal-panel__heading">{{ palStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
         <div class="skill-cards">
-          <article class="skill-card" v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza" :key="skill"
+          <article v-for="skill in palStore.SELECTED_PAL_DATA.MasteredWaza" :key="skill"
+            :class="['skill-card', {
+              'skill-card--actionable': showEquipMasteredAction(skill),
+              'skill-card--equipable': canEquipMasteredSkill(skill),
+            }]"
             :title="palStore.ACTIVE_SKILLS[skill]?.I18n[1] || skill">
             <img v-if="palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)" class="element-icon"
               :src="palStore.backendAssetUrl(`/image/elements/Element_${palStore.elementIconKey(palStore.ACTIVE_SKILLS[skill]?.Element)}`)" alt="">
             <div class="skill-card__identity">
-              <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
-              <small>{{ palStore.getTranslatedText("Editor_Skill_ATK") }} {{ palStore.ACTIVE_SKILLS[skill]?.Power }} · {{ palStore.getTranslatedText("Editor_Skill_CD") }} {{ palStore.ACTIVE_SKILLS[skill]?.CT }} · {{ skillBadgeLabels(palStore.ACTIVE_SKILLS[skill]) }}</small>
-              <small class="skill-warning" v-if="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill])">{{ palStore.getTranslatedText("Message_Skill_Not_Assignable") }}</small>
+              <div class="skill-card__title">
+                <strong>{{ palStore.ACTIVE_SKILLS[skill]?.I18n[0] || skill }}</strong>
+                <small v-if="!palStore.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}</small>
+              </div>
+              <small>{{ activeSkillMetadata(palStore.ACTIVE_SKILLS[skill]) }}</small>
             </div>
-            <div class="skill-card__actions">
-              <button v-if="!palStore.SELECTED_PAL_DATA.isEquippedSkill(skill)
-                && (!palStore.SELECTED_PAL_DATA.isEquipSkillFull() || !palStore.HIDE_INVALID_OPTIONS)"
-                class="editor-button editor-button--icon" @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
+            <div v-if="showEquipMasteredAction(skill)" class="skill-card__actions" :title="activeSkillEquipTitle(skill)">
+              <button
+                type="button" class="editor-button editor-button--icon skill-card__equip"
+                @click="palStore.SELECTED_PAL_DATA.add_EquipWaza" :name="skill"
                 :aria-label="`${palStore.getTranslatedText('Editor_Equipped_Skills')} + ${skill}`"
-                :title="!canAssignActiveSkill(palStore.ACTIVE_SKILLS[skill]) ? palStore.getTranslatedText('Message_Skill_Not_Assignable') : ''"
-                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill])"><UiIcon name="plus" /></button>
-              <button type="button" class="skill-card__remove"
-                @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
-                :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
-                :disabled="palStore.LOADING_FLAG">×</button>
+                :disabled="palStore.LOADING_FLAG || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[skill]) || palStore.SELECTED_PAL_DATA.isEquipSkillFull()"><UiIcon name="plus" /></button>
             </div>
+            <button type="button" class="skill-card__remove"
+              @click="palStore.SELECTED_PAL_DATA.pop_MasteredWaza" :name="skill"
+              :aria-label="`${palStore.getTranslatedText('Editor_Mastered_Skills')} - ${skill}`"
+              :disabled="palStore.LOADING_FLAG">×</button>
           </article>
         </div>
         <div class="skill-add">
-          <SearchSelect v-model="palStore.PAL_ACTIVE_SELECTED_ITEM" placement="top"
+          <SearchSelect ref="activeSkillSelect" v-model="palStore.PAL_ACTIVE_SELECTED_ITEM" placement="top"
             :options="activeSkillSelectOptions()" :placeholder="palStore.getTranslatedText('Editor_Select_Skill')"
             :search-placeholder="palStore.getTranslatedText('Editor_Select_Search')"
             :no-results="palStore.getTranslatedText('Editor_Select_No_Results')"
-            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG" />
-          <button class="editor-button editor-button--icon editor-button--primary"
-            @click="palStore.SELECTED_PAL_DATA.add_MasteredWaza" name="add_MasteredWaza"
-            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
-            :disabled="palStore.LOADING_FLAG
-              || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
-              || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
+            :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')" :disabled="palStore.LOADING_FLAG"
+            :close-on-select="false">
+            <template #actions>
+              <button class="editor-button editor-button--icon editor-button--primary"
+                @click="addActiveSkill" name="add_MasteredWaza"
+                :aria-label="palStore.getTranslatedText('Editor_Mastered_Skills')"
+                :disabled="palStore.LOADING_FLAG
+                  || !palStore.PAL_ACTIVE_SELECTED_ITEM
+                  || palStore.SELECTED_PAL_DATA.isMasteredSkill(palStore.PAL_ACTIVE_SELECTED_ITEM)
+                  || !canSelectActiveSkill(palStore.ACTIVE_SKILLS[palStore.PAL_ACTIVE_SELECTED_ITEM])"><UiIcon name="plus" /></button>
+            </template>
+          </SearchSelect>
         </div>
       </div>
     </section>
@@ -710,7 +808,6 @@ const portraitBorder = pal => pal.IsAwakening
 }
 
 .pal-technical-location__value { min-width: 0; }
-.pal-location-move { justify-self: start; }
 
 @container pal-basic-info (max-width: 720px) {
   .editor-summary {
@@ -747,8 +844,14 @@ const portraitBorder = pal => pal.IsAwakening
     width: 100%;
   }
 
+  .editor-summary__actions .editor-button__label {
+    display: none;
+  }
+
   .editor-summary__actions .editor-button {
-    flex: 1;
+    flex: none;
+    width: var(--editor-control-height);
+    padding: 0;
   }
 
   .editor-field {
@@ -923,11 +1026,24 @@ const portraitBorder = pal => pal.IsAwakening
   object-fit: contain;
 }
 
-.suitability-control__actions,
-.skill-card__actions {
+.suitability-control__actions {
   display: flex;
   margin-left: auto;
   gap: var(--editor-space-1);
+}
+
+.skill-card__actions {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: 3rem;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 170ms ease, opacity 120ms ease;
 }
 
 .skill-section {
@@ -955,6 +1071,36 @@ const portraitBorder = pal => pal.IsAwakening
   border: 1px solid var(--editor-color-border);
   border-radius: var(--editor-radius-sm);
   background: var(--editor-color-surface-subtle);
+}
+
+.skill-card--actionable {
+  padding-right: var(--editor-space-2);
+  overflow: hidden;
+}
+
+.skill-card--equipable {
+  border-right-color: color-mix(in srgb, var(--editor-color-focus) 72%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--editor-color-focus) 5%, var(--editor-color-surface-subtle));
+  box-shadow: inset -2px 0 0 color-mix(in srgb, var(--editor-color-focus) 58%, transparent);
+}
+
+.skill-card--equipable:hover {
+  border-color: color-mix(in srgb, var(--editor-color-focus) 64%, var(--editor-color-border));
+  background: color-mix(in srgb, var(--editor-color-focus) 9%, var(--editor-color-surface-subtle));
+}
+
+.skill-card--actionable:is(:hover, :focus-within) .skill-card__actions {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.skill-card--actionable:is(:hover, :focus-within) .skill-card__identity {
+  padding-right: 3rem;
+}
+
+.skill-card--actionable .skill-card__remove {
+  right: calc(3rem + .16rem);
 }
 
 .skill-card__remove {
@@ -985,29 +1131,69 @@ const portraitBorder = pal => pal.IsAwakening
 .skill-card__remove:hover { color: #fca5a5; }
 .skill-card__remove:disabled { cursor: not-allowed; opacity: .35; }
 
+.skill-card__equip {
+  width: 100%;
+  min-height: 100%;
+  padding: var(--editor-space-3) var(--editor-space-2) var(--editor-space-2);
+  border: 0;
+  border-left: 1px solid color-mix(in srgb, var(--editor-color-focus) 34%, transparent);
+  border-radius: 0 var(--editor-radius-sm) var(--editor-radius-sm) 0;
+  color: var(--editor-color-background);
+  background: color-mix(in srgb, var(--editor-color-focus) 72%, var(--editor-color-border));
+}
+
+.skill-card__equip:hover,
+.skill-card__equip:focus-visible {
+  color: var(--editor-color-background);
+  background: color-mix(in srgb, var(--editor-color-focus) 86%, var(--editor-color-border));
+}
+
+.skill-card__equip:disabled {
+  border-color: var(--editor-color-border);
+  color: var(--editor-color-muted);
+  background: var(--editor-color-disabled);
+  cursor: not-allowed;
+}
+
 .skill-card__identity {
   display: grid;
-  gap: var(--editor-space-1);
+  gap: 0;
   overflow: hidden;
+  transition: padding-right 170ms ease;
+}
+
+.skill-card__title {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--editor-space-1);
 }
 
 .skill-card__identity strong,
 .skill-card__identity small {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .skill-card__identity small {
   color: var(--editor-color-muted);
+  font-size: .75rem;
+  line-height: 1.05;
+}
+
+.skill-card__identity .skill-card__internal-name {
+  min-width: 0;
+  flex: 1;
+  color: var(--editor-color-muted);
+  font-size: .62rem;
+  line-height: 1.25;
+  opacity: .55;
 }
 
 .skill-add > :first-child {
   min-width: 0;
   flex: 1;
-}
-
-.skill-warning {
-  color: var(--editor-color-warning) !important;
 }
 
 @container pal-editor (max-width: 42rem) {
@@ -1021,6 +1207,25 @@ const portraitBorder = pal => pal.IsAwakening
   .suitability-grid,
   .skill-cards {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none) {
+  .skill-card--actionable .skill-card__actions {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .skill-card--actionable .skill-card__identity {
+    padding-right: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card__actions,
+  .skill-card__identity {
+    transition: none;
   }
 }
 </style>

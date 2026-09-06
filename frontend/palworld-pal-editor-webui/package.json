@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "check:pwa": "node scripts/check-pwa.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,9 +17,8 @@
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.3",
-    "@vitejs/plugin-vue-jsx": "^3.1.0",
-    "vite": "^5.0.11",
-    "vite-plugin-pwa": "^0.19.1"
+    "@vitejs/plugin-vue": "^5.2.4",
+    "vite": "^6.4.3",
+    "vite-plugin-pwa": "^1.3.0"
   }
 }

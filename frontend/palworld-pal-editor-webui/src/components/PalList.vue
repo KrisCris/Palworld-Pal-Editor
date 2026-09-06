@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
+import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
@@ -24,6 +25,13 @@ const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Re
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
+const attemptedAutoSelectRoster = ref(null)
+const activeSpecialRoster = computed(() => {
+  const roster = palStore.ACTIVE_ROSTER
+  return (roster === palStore.PAL_BASE_WORKER_BTN || roster === palStore.PAL_GLOBAL_STORAGE_BTN)
+    ? roster
+    : null
+})
 const activePalFilterCount = computed(() => palStore.PAL_LIST_ATTRIBUTE_FILTERS.length
   + Number(palStore.PAL_LIST_EDITED_ONLY)
   + Number(palStore.PAL_LIST_CREATED_ONLY))
@@ -48,16 +56,24 @@ const closeSortMenuOnOutsidePointer = event => closeDisclosureOnOutsidePointer(s
 onMounted(() => window.addEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 onBeforeUnmount(() => window.removeEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 
-watch(async () => palStore.SELECTED_PLAYER_ID, async () => {
+watch([
+  activeSpecialRoster,
+  () => palStore.LOADING_FLAG,
+], async ([roster, loading], previous = []) => {
+  if (roster !== previous[0]) attemptedAutoSelectRoster.value = null
+  if (roster === palStore.PAL_BASE_WORKER_BTN) return
+  if (!roster || loading || palStore.SELECTED_PAL_ID || attemptedAutoSelectRoster.value === roster) return
   await nextTick()
-  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  if (palStore.LOADING_FLAG || palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return
   try {
-    if (palStore.BASE_PAL_BTN_CLK_FLAG == false) return
-    palListContainer.value.querySelector('button:not(:disabled)')?.click()
+    const button = palListContainer.value?.querySelector('button:not(:disabled)')
+    if (!button) return
+    attemptedAutoSelectRoster.value = roster
+    button.click()
   } catch (error) {
     return
   }
-})
+}, { immediate: true, flush: 'post' })
 
 watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
   await nextTick()
@@ -75,7 +91,7 @@ watch(async () => palStore.SELECTED_PAL_ID, async () => {
   try {
     const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
     if (button) {
-      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.InstanceId) {
+      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.RecordKey) {
         palStore.selectPal(palStore.SELECTED_PAL_ID, true)
       }
       button.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -105,7 +121,7 @@ const visiblePalGroups = computed(() => groupPalList(
   palStore.PAL_LIST_SORT,
 ).map(group => ({
   ...group,
-  container: palStore.PAL_CONTAINERS.find(container => container.ContainerId === group.key),
+  container: palStore.PAL_CONTAINERS.find(container => container.StorageKey === group.key),
 })))
 const containerLabel = group => formatContainerLabel(
   group.container || {
@@ -149,6 +165,8 @@ const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
 
 const palWasCreated = pal => isCreatedPal(pal, palStore.CREATED_PAL_IDS)
 const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.CREATED_PAL_IDS)
+const palKey = pal => pal.RecordKey || pal.InstanceId
+const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pal.ContainerKind === 'dps'
 </script>
 
 <template>
@@ -222,17 +240,18 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
       </label>
     </header>
 
-    <div class="roster-list" ref="palListContainer">
+    <OverlayScrollArea>
+    <div class="roster-list overlay-scroll-area__viewport" ref="palListContainer">
       <template v-for="group in visiblePalGroups" :key="group.key">
       <h3 v-if="group.label" class="container-heading">
         <span>{{ containerLabel(group) }}</span>
         <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
       </h3>
-      <button v-for="pal in group.pals" :key="pal.InstanceId"
-        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': !pal.in_owner_palbox }]"
-        :value="pal.InstanceId" @click="palStore.selectPal(pal.InstanceId)"
-        :aria-current="palStore.SELECTED_PAL_ID == pal.InstanceId ? 'true' : undefined"
-        :disabled="palStore.SELECTED_PAL_ID == pal.InstanceId || palStore.LOADING_FLAG">
+      <button v-for="pal in group.pals" :key="palKey(pal)"
+        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': isAwayPal(pal) }]"
+        :value="palKey(pal)" @click="palStore.selectPal(palKey(pal))"
+        :aria-current="palStore.SELECTED_PAL_ID == palKey(pal) ? 'true' : undefined"
+        :disabled="palStore.SELECTED_PAL_ID == palKey(pal) || palStore.LOADING_FLAG">
         <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
@@ -278,6 +297,7 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
       </button>
       </template>
     </div>
+    </OverlayScrollArea>
     <AddPalDialog v-if="showAddPalDialog" @close="showAddPalDialog = false" />
   </nav>
 </template>
@@ -517,6 +537,8 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   position: relative;
   z-index: 0;
   display: grid;
+  width: 100%;
+  height: 100%;
   min-height: 0;
   align-content: start;
   gap: var(--editor-space-1);
@@ -536,7 +558,17 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
   font-weight: 600;
 }
 
-.container-heading small { font-weight: 400; }
+.container-heading span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.container-heading small {
+  flex: none;
+  font-weight: 400;
+}
 
 .pal-row {
   --pal-row-accent: var(--editor-color-focus);
@@ -573,7 +605,6 @@ const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.C
 .pal-row.female { --pal-row-accent: var(--editor-color-female); border-left-color: var(--pal-row-accent); }
 .pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
-.pal-row[aria-current="true"] small { color: var(--editor-color-muted); }
 
 .new-pal-marker,
 .edited-pal-marker {

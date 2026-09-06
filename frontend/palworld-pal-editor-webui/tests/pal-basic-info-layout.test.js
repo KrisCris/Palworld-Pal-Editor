@@ -161,18 +161,14 @@ test("save details expansion survives Pal editor remounts", () => {
   assert.match(source, /<details class="editor-disclosure"\s+:open="palStore\.PAL_SAVE_DETAILS_OPEN"\s+@toggle="palStore\.PAL_SAVE_DETAILS_OPEN = \$event\.currentTarget\.open">/);
 });
 
-test("technical details keep compact rows and move through the modal trigger", () => {
+test("the move Pal button lives with the other summary actions", () => {
   assert.match(source, /\.pal-technical-grid\s*\{[^}]*align-items:\s*start/s);
   assert.match(source, /class="pal-technical-slot"[\s\S]*class="pal-technical-location__value"/);
-  assert.doesNotMatch(
-    source,
-    /class="pal-technical-slot"[\s\S]*?<button class="editor-button pal-location-move"[\s\S]*?<\/div>\s*<div><span class="editor-disclosure__label">\{\{ palStore\.getTranslatedText\("Editor_Pal_Owner"\)/,
-  );
   assert.match(
     source,
-    /Editor_Pal_Owner[\s\S]*?<\/div>\s*<div class="pal-technical-move">\s*<button class="editor-button pal-location-move"/,
+    /class="editor-summary__actions"[\s\S]*?id="move_btn"[\s\S]*?getTranslatedText\("Editor_Move_Pal"\)/,
   );
-  assert.match(source, /\.pal-location-move\s*\{[^}]*justify-self:\s*start/s);
+  assert.doesNotMatch(source, /pal-technical-move|pal-location-move/);
   assert.doesNotMatch(source, /pal-move-control|moveTargetContainerId|moveTargetOptions/);
 });
 

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
+import PalBriefPanel from '@/components/modules/PalBriefPanel.vue'
 import PalPortrait from '@/components/modules/PalPortrait.vue'
 import { formatContainerLabel } from '@/components/modules/pal-container-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
@@ -8,26 +9,40 @@ import { usePalEditorStore } from '@/stores/paleditor'
 
 const emit = defineEmits(['close'])
 const palStore = usePalEditorStore()
-const containerLabel = container => formatContainerLabel(container, palStore.getTranslatedText)
+const containerLabel = container => formatContainerLabel(
+  container,
+  palStore.getTranslatedText,
+)
 const mode = ref('default')
 const templateId = ref('')
 const templateName = ref('')
 const palJson = ref('')
 const targetContainerId = ref('')
 const dialog = ref(null)
+const templatePreview = ref(null)
+const previewTemplate = ref(null)
+const previewStyle = ref({})
 let previousFocus
 let appContent
 let previousAriaHidden
+let previewAnchor
+let previewFrame = 0
 
 const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
   .find(template => template.Id === templateId.value))
-const targetContainers = computed(() => palStore.PAL_CONTAINERS.filter(container => (
-  container.MovableInto
-  && (!palStore.BASE_PAL_BTN_CLK_FLAG || container.ContainerKind === 'base')
-  && (palStore.BASE_PAL_BTN_CLK_FLAG
-    || !palStore.SELECTED_PLAYER_DATA?.GroupId
-    || container.GroupId === palStore.SELECTED_PLAYER_DATA.GroupId)
-)))
+const targetContainers = computed(() => {
+  const roster = palStore.ACTIVE_ROSTER
+  return palStore.PAL_CONTAINERS.filter(container => (
+    roster === palStore.PAL_GLOBAL_STORAGE_BTN
+      ? container.StorageKind === 'global_palbox'
+      : roster === palStore.PAL_BASE_WORKER_BTN
+        ? container.ContainerKind === 'base'
+        : (container.OwnerPlayerUId === roster
+          && ['party', 'storage'].includes(container.ContainerKind))
+          || (container.StorageKind === 'dps'
+            && container.StorageOwnerPlayerUid === roster)
+  ))
+})
 const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
   || (mode.value === 'json' && palJson.value.trim())))
@@ -38,13 +53,118 @@ const tabs = [
   ['json', 'AddPal_Tab_Json'],
 ]
 
-const passiveName = skill => palStore.PASSIVE_SKILLS[skill]?.I18n?.[0] || skill
-const activeName = skill => palStore.ACTIVE_SKILLS[skill]?.I18n?.[0] || skill
-const suitabilityName = suitability => suitability.split('::').pop()
-const templateActiveSkills = template => [...new Set([
-  ...(template.EquipWaza || []),
-  ...(template.MasteredWaza || []),
-])]
+const templateBrief = template => ({
+  ...template,
+  IconKey: template.IconKey || template.IconAccessKey,
+  IsBOSS: template.IsBOSS ?? false,
+  IsRarePal: template.IsRarePal ?? false,
+  IsAwakening: template.IsAwakening ?? false,
+  IsImportedCharacter: template.IsImportedCharacter ?? false,
+  FriendshipLevel: template.FriendshipLevel ?? 0,
+  Talent_HP: template.Talent_HP ?? 0,
+  Talent_Shot: template.Talent_Shot ?? 0,
+  Talent_Defense: template.Talent_Defense ?? 0,
+  Rank_HP: template.Rank_HP ?? 0,
+  Rank_Attack: template.Rank_Attack ?? 0,
+  Rank_Defence: template.Rank_Defence ?? 0,
+  Rank_CraftSpeed: template.Rank_CraftSpeed ?? 0,
+  Suitabilities: template.Suitabilities || {},
+  MasteredWaza: template.MasteredWaza || [],
+  EquipWaza: template.EquipWaza || [],
+  PassiveSkillList: template.PassiveSkillList || [],
+})
+
+function placeTemplatePreview() {
+  previewFrame = 0
+  if (!previewAnchor || !templatePreview.value) return
+
+  const anchor = previewAnchor.getBoundingClientRect()
+  const naturalWidth = templatePreview.value.offsetWidth
+  const naturalHeight = templatePreview.value.scrollHeight
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const padding = 12
+  const gap = 12
+  const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum)
+
+  const candidates = [
+    {
+      placement: 'right',
+      maxWidth: viewportWidth - padding - anchor.right - gap,
+      maxHeight: viewportHeight - padding * 2,
+    },
+    {
+      placement: 'left',
+      maxWidth: anchor.left - gap - padding,
+      maxHeight: viewportHeight - padding * 2,
+    },
+    {
+      placement: 'below',
+      maxWidth: viewportWidth - padding * 2,
+      maxHeight: viewportHeight - padding - anchor.bottom - gap,
+    },
+    {
+      placement: 'above',
+      maxWidth: viewportWidth - padding * 2,
+      maxHeight: anchor.top - gap - padding,
+    },
+  ].map(candidate => ({
+    ...candidate,
+    scale: Math.min(
+      1,
+      Math.max(0, candidate.maxWidth) / naturalWidth,
+      Math.max(0, candidate.maxHeight) / naturalHeight,
+    ),
+  }))
+
+  const candidate = candidates.find(item => item.scale >= .999)
+    || candidates.reduce((best, item) => item.scale > best.scale ? item : best)
+  const renderedWidth = naturalWidth * candidate.scale
+  const renderedHeight = naturalHeight * candidate.scale
+  let left
+  let top
+
+  if (candidate.placement === 'right') {
+    left = anchor.right + gap
+    top = clamp(anchor.top, padding, viewportHeight - padding - renderedHeight)
+  } else if (candidate.placement === 'left') {
+    left = anchor.left - gap - renderedWidth
+    top = clamp(anchor.top, padding, viewportHeight - padding - renderedHeight)
+  } else if (candidate.placement === 'below') {
+    left = clamp(anchor.left, padding, viewportWidth - padding - renderedWidth)
+    top = anchor.bottom + gap
+  } else {
+    left = clamp(anchor.left, padding, viewportWidth - padding - renderedWidth)
+    top = anchor.top - gap - renderedHeight
+  }
+
+  previewStyle.value = {
+    left: `${left}px`,
+    top: `${top}px`,
+    '--template-preview-scale': candidate.scale,
+  }
+}
+
+function scheduleTemplatePreview() {
+  if (!previewTemplate.value) return
+  if (previewFrame) cancelAnimationFrame(previewFrame)
+  previewFrame = requestAnimationFrame(placeTemplatePreview)
+}
+
+async function showTemplatePreview(event, template) {
+  previewAnchor = event.currentTarget
+  previewTemplate.value = template
+  await nextTick()
+  scheduleTemplatePreview()
+}
+
+function hideTemplatePreview(event) {
+  if (event.type === 'focusout' && event.currentTarget.contains(event.relatedTarget)) return
+  if (event.type === 'pointerleave' && event.currentTarget.contains(document.activeElement)) return
+  previewTemplate.value = null
+  previewAnchor = null
+  previewStyle.value = {}
+}
 
 onMounted(async () => {
   previousFocus = document.activeElement
@@ -54,15 +174,20 @@ onMounted(async () => {
   await palStore.fetchPalTemplates()
   await palStore.fetchPalContainers()
   targetContainerId.value = palStore.BASE_PAL_BTN_CLK_FLAG
-    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.ContainerId || ''
+    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.StorageKey || ''
     : targetContainers.value.find(
       container => container.ContainerId === palStore.SELECTED_PLAYER_DATA?.PalStorageContainerId
-    )?.ContainerId || targetContainers.value[0]?.ContainerId || ''
+    )?.StorageKey || targetContainers.value[0]?.StorageKey || ''
   await nextTick()
   dialog.value?.focus()
+  window.addEventListener('resize', scheduleTemplatePreview)
+  window.addEventListener('scroll', scheduleTemplatePreview, true)
 })
 
 onBeforeUnmount(() => {
+  if (previewFrame) cancelAnimationFrame(previewFrame)
+  window.removeEventListener('resize', scheduleTemplatePreview)
+  window.removeEventListener('scroll', scheduleTemplatePreview, true)
   if (previousAriaHidden === null) appContent?.removeAttribute('aria-hidden')
   else if (previousAriaHidden !== undefined) appContent?.setAttribute('aria-hidden', previousAriaHidden)
   previousFocus?.focus?.()
@@ -90,7 +215,7 @@ async function createPal() {
     : mode.value === 'json'
       ? { Mode: 'json', PalJson: palJson.value }
       : { Mode: 'default' }
-  options.TargetContainerId = targetContainerId.value
+  options.TargetStorageKey = targetContainerId.value
   if (await palStore.addPal(options)) emit('close')
 }
 
@@ -132,7 +257,7 @@ async function deleteTemplate(id) {
           <PalPortrait :src="palStore.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
           <div>
             <h3>{{ palStore.getTranslatedText('AddPal_Default_Title') }}</h3>
-            <p>{{ palStore.getTranslatedText('AddPal_Default_Description') }}</p>
+            <p>{{ palStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
             <small>SheepBall</small>
           </div>
         </section>
@@ -151,9 +276,11 @@ async function deleteTemplate(id) {
 
           <div v-if="palStore.PAL_TEMPLATES.length" class="template-grid">
             <article v-for="template in palStore.PAL_TEMPLATES" :key="template.Id"
-              :class="['template-card', { selected: templateId === template.Id }]">
+              :class="['template-card', { selected: templateId === template.Id }]"
+              @pointerenter="showTemplatePreview($event, template)" @pointerleave="hideTemplatePreview"
+              @focusin="showTemplatePreview($event, template)" @focusout="hideTemplatePreview">
               <button class="template-select" @click="templateId = template.Id">
-                <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${template.IconAccessKey}`)"
+                <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
                   alt="" size="3rem" />
                 <span>
                   <strong>{{ template.Name }}</strong>
@@ -164,20 +291,6 @@ async function deleteTemplate(id) {
               <button class="template-delete"
                 :aria-label="palStore.getTranslatedText('AddPal_Delete_Template', [template.Name])"
                 @click="deleteTemplate(template.Id)"><UiIcon name="delete" /></button>
-              <div class="template-details">
-                <span>{{ palStore.getTranslatedText('Editor_Condenser_Rank') }}{{ template.Rank }}</span>
-                <span>{{ palStore.getTranslatedText('Editor_IV_HP') }}{{ template.Talent_HP }}</span>
-                <span>{{ palStore.getTranslatedText('Editor_IV_ATK') }}{{ template.Talent_Shot }}</span>
-                <span>{{ palStore.getTranslatedText('Editor_IV_DEF') }}{{ template.Talent_Defense }}</span>
-                <span v-for="(value, suitability) in template.Suitabilities" :key="suitability"
-                  :title="palStore.getTranslatedText('Editor_Suitabilities')">
-                  {{ suitabilityName(suitability) }} {{ value }}
-                </span>
-                <span v-for="skill in template.PassiveSkillList" :key="`passive-${skill}`"
-                  :title="palStore.getTranslatedText('Editor_Passive_Skills')">{{ passiveName(skill) }}</span>
-                <span v-for="skill in templateActiveSkills(template)" :key="`active-${skill}`"
-                  :title="palStore.getTranslatedText('Editor_Mastered_Skills')">{{ activeName(skill) }}</span>
-              </div>
             </article>
           </div>
           <p v-else class="empty-state">{{ palStore.getTranslatedText('AddPal_Template_Empty') }}</p>
@@ -195,8 +308,8 @@ async function deleteTemplate(id) {
         <label class="target-container">
           <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
           <select v-model="targetContainerId">
-            <option v-for="container in targetContainers" :key="container.ContainerId"
-              :value="container.ContainerId" :disabled="container.Occupied >= container.Size">
+            <option v-for="container in targetContainers" :key="container.StorageKey"
+              :value="container.StorageKey" :disabled="container.Occupied >= container.Size">
               {{ containerLabel(container) }} ({{ container.Occupied }}/{{ container.Size }})
             </option>
           </select>
@@ -211,6 +324,12 @@ async function deleteTemplate(id) {
         </div>
       </footer>
     </section>
+    </div>
+  </Teleport>
+  <Teleport to="body">
+    <div v-if="previewTemplate" ref="templatePreview" class="template-preview-popover" :style="previewStyle"
+      aria-hidden="true">
+      <PalBriefPanel :data="templateBrief(previewTemplate)" :title="previewTemplate.Name" />
     </div>
   </Teleport>
 </template>
@@ -305,10 +424,15 @@ textarea { resize: vertical; padding: var(--editor-space-3); font: .8rem/1.5 ui-
 .template-select > span { display: grid; min-width: 0; }
 .template-select small { overflow: hidden; color: var(--editor-color-muted); text-overflow: ellipsis; white-space: nowrap; }
 .template-delete { position: absolute; top: var(--editor-space-2); right: var(--editor-space-2); }
-.template-details { display: none; position: absolute; z-index: 2; right: var(--editor-space-2); left: var(--editor-space-2); top: calc(100% - .2rem); padding: var(--editor-space-3); border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); background: var(--editor-color-surface); box-shadow: var(--editor-shadow-compact); }
-.template-card:hover .template-details,
-.template-card:focus-within .template-details { display: flex; flex-wrap: wrap; gap: var(--editor-space-1); }
-.template-details span { padding: .15rem .4rem; border-radius: 999px; background: var(--editor-color-control); font-size: .7rem; }
+.template-preview-popover {
+  position: fixed;
+  z-index: 2100;
+  width: min(28rem, calc(100vw - 1.5rem));
+  transform: scale(var(--template-preview-scale, 1));
+  transform-origin: top left;
+  pointer-events: none;
+}
+.template-preview-popover :deep(.pal-brief) { width: 100%; }
 .empty-state { min-height: 10rem; display: grid; place-items: center; color: var(--editor-color-muted); }
 
 .json-panel { display: grid; gap: var(--editor-space-2); }

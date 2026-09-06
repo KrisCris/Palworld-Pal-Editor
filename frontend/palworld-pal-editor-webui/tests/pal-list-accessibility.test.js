@@ -160,6 +160,60 @@ test("collapsed Pal roster preview retains sort, filter, and add actions", async
   assert.match(source, /\.pal-roster--preview\s+\.pal-list-menu__popover\s*\{[^}]*right:\s*0[^}]*left:\s*auto[^}]*width:\s*min\(13rem,/s);
 });
 
+test("every Pal stays visible and DPS metadata is marked as away from nearby containers", async () => {
+  const [{ default: PalList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PalList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  const awayPal = {
+    ...pals[0],
+    InstanceId: "away-world",
+    RecordKey: "world:away-world",
+    DisplayName: "Away World Pal",
+    in_owner_palbox: false,
+  };
+  const dpsPal = {
+    ...pals[1],
+    InstanceId: "dps-pal",
+    RecordKey: "dps:player:dps-pal",
+    DisplayName: "DPS Pal",
+    StorageKind: "dps",
+    ContainerKind: "dps",
+    in_owner_palbox: true,
+  };
+  store.SHOW_OOB_PAL_FLAG = false;
+  store.PAL_MAP = new Map([
+    [awayPal.RecordKey, awayPal],
+    [dpsPal.RecordKey, dpsPal],
+  ]);
+  store.PAL_STATIC_DATA = { TestPal: { Paldeck: 1 } };
+
+  const html = await renderVue(PalList, { pinia });
+
+  assert.match(row(html, "world:away-world"), /Away World Pal/);
+  assert.match(html, /<button[^>]*class="[^"]*out-of-container[^"]*"[^>]*value="dps:player:dps-pal"/);
+});
+
+test("Global Palbox roster label follows frontend locale without backend translation data", async () => {
+  const [{ default: PlayerList }, { usePalEditorStore }] = await Promise.all([
+    loadVueModule("/src/components/PlayerList.vue"),
+    loadVueModule("/src/stores/paleditor.js"),
+  ]);
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const store = usePalEditorStore();
+  store.I18n = "zh-CN";
+  store.SPECIAL_ROSTERS = [{ Kind: "global_palbox", Label: "stale backend label" }];
+
+  const html = await renderVue(PlayerList, { pinia });
+
+  assert.match(html, />跨界帕鲁终端</);
+  assert.doesNotMatch(html, /stale backend label/);
+});
+
 test("Pal list exposes game-derived DNA origin markers and union filter buttons", async () => {
   const source = await readFile(new URL("../src/components/PalList.vue", import.meta.url), "utf8");
   assert.match(source, /pal\.IsImportedCharacter/);

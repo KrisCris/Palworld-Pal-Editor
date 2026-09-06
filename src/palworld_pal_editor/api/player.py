@@ -3,13 +3,22 @@ import traceback
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
-from palworld_pal_editor.core import SaveManager
+from palworld_pal_editor.core import PalRecordRef, SaveManager
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.utils import LOGGER, DataProvider
 from palworld_pal_editor.utils.util import reply
 
 player_blueprint = Blueprint("player", __name__)
+
+
+def _guid_string_or_none(value):
+    if value is None:
+        return None
+    text = str(value)
+    if getattr(value, "int", None) == 0 or not text.replace("-", "").strip("0"):
+        return None
+    return text
 
 
 def _pal_location(manager, pal, party_container_id=None, storage_container_id=None):
@@ -38,16 +47,49 @@ def _pal_location(manager, pal, party_container_id=None, storage_container_id=No
 @player_blueprint.route("/player_pals", methods=["POST"])
 @jwt_required()
 def get_player_pals():
-    id = request.json.get("PlayerUId")
+    roster_key = request.json.get("RosterKey") or request.json.get("PlayerUId")
     manager = SaveManager()
     player_entity = None
-    if id == "PAL_BASE_WORKER_BTN":
+
+    def world_record(pal):
+        getter = getattr(manager, "get_record", None)
+        record = getter(f"world:{pal.InstanceId}") if getter else None
+        if record is not None:
+            return record
+        container_id = str(pal.ContainerId) if pal.ContainerId else None
+        return PalRecordRef(
+            record_key=f"world:{pal.InstanceId}",
+            storage_key=(
+                f"world-container:{container_id}" if container_id else "world-anomaly"
+            ),
+            storage_kind="world",
+            slot_index=pal.SlotIndex if pal.SlotIndex is not None else -1,
+            pal=pal,
+            storage_owner_uid=(
+                str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
+            ),
+        )
+
+    if roster_key == "PAL_GLOBAL_STORAGE_BTN":
+        records = manager.records_for_roster(roster_key)
+    elif roster_key == "PAL_BASE_WORKER_BTN":
         pals = manager.get_working_pals()
+        records = [world_record(pal) for pal in pals]
     else:
-        player_entity = manager.get_player(id)
+        player_entity = manager.get_player(roster_key)
         if not player_entity:
-            return reply(1, None, f"Player {id} Not Found")
+            return reply(1, None, f"Player {roster_key} Not Found")
         pals = player_entity.get_sorted_pals()
+        roster_records = (
+            manager.records_for_roster(roster_key)
+            if hasattr(manager, "records_for_roster")
+            else []
+        )
+        records_by_pal = {id(record.pal): record for record in roster_records}
+        records = [
+            records_by_pal.get(id(pal)) or world_record(pal)
+            for pal in pals
+        ]
 
     party_container_id = (
         player_entity.OtomoCharacterContainerId if player_entity else None
@@ -56,12 +98,22 @@ def get_player_pals():
         player_entity.PalStorageContainerId if player_entity else None
     )
 
-    def pal_to_summary(pal):
-        location = _pal_location(
-            manager, pal, party_container_id, storage_container_id
+    def pal_to_summary(record):
+        pal = record.pal
+        location = (
+            manager.resolve_record_location(record)
+            if hasattr(manager, "resolve_record_location")
+            else _pal_location(
+                manager, pal, party_container_id, storage_container_id
+            )
         )
         return {
+            "RecordKey": record.record_key,
             "InstanceId": str(pal.InstanceId) if pal.InstanceId else None,
+            "StorageKey": record.storage_key,
+            "StorageKind": record.storage_kind,
+            "StorageOwnerPlayerUid": record.storage_owner_uid,
+            "OwnerPlayerUid": _guid_string_or_none(pal.OwnerPlayerUId),
             "IconAccessKey": pal.IconAccessKey or None,
             "DataAccessKey": pal.DataAccessKey or None,
             "I18nName": pal.I18nName or None,
@@ -91,7 +143,7 @@ def get_player_pals():
 
     return reply(
         0,
-        [pal_to_summary(pal) for pal in pals],
+        [pal_to_summary(record) for record in records if record is not None],
     )
 
 
@@ -110,6 +162,21 @@ def get_player_list():
             ],
             "hasWorkingPal": (True if len(workingpals) else False),
             "containers": SaveManager().get_container_registry(),
+            "specialRosters": (
+                [
+                    {
+                        "RosterKey": "PAL_GLOBAL_STORAGE_BTN",
+                        "Kind": "global_palbox",
+                        "Label": (
+                            DataProvider.get_tech_name("GlobalPalStorage")
+                            or "Global Palbox"
+                        ),
+                    }
+                ]
+                if SaveManager().has_global_palbox
+                else []
+            ),
+            "warnings": list(getattr(SaveManager(), "load_warnings", [])),
         },
     )
 

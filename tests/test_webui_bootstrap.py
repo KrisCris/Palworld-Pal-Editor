@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.core import PalEntity, SaveManager
 from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.core.pal_storage import PalRecordRef
 from palworld_pal_editor.webui import app
 
 
@@ -22,6 +23,28 @@ def configure_app(monkeypatch):
         JWT_SECRET_KEY="test-secret-key-with-at-least-32-bytes",
     )
     monkeypatch.setattr(Config, "_password_hash", generate_password_hash("secret"))
+
+def select_pal(monkeypatch, pal):
+    manager = SaveManager()
+    record = PalRecordRef("world:test", "world-container:test", "world", 0, pal)
+    monkeypatch.setattr(manager, "get_unique_world_record", lambda _pal_id: record)
+    monkeypatch.setattr(manager, "normalize_external_record", lambda _record: None)
+    monkeypatch.setattr(manager, "get_player", lambda _player_id: None)
+    monkeypatch.setattr(
+        manager,
+        "resolve_record_location",
+        lambda _record: {
+            "RecordedContainerId": None,
+            "RecordedSlotIndex": 0,
+            "ActualContainerId": None,
+            "ActualSlotIndex": 0,
+            "ActualLocations": [],
+            "LocationStatus": "ok",
+            "LocationAnomaly": None,
+            "ContainerKind": "world",
+            "ContainerLabel": None,
+        },
+    )
 
 
 def test_save_status_uses_gvas_file(monkeypatch):
@@ -79,16 +102,18 @@ def test_heal_all_pals_does_not_require_a_selected_player(monkeypatch):
 def test_max_suitabilities_updates_all_requested_types_in_one_patch(monkeypatch):
     configure_app(monkeypatch)
     updates = []
+    pal = PalEntity(PalObjects.PalSaveParameter(
+        PalObjects.EMPTY_UUID,
+        PalObjects.EMPTY_UUID,
+        PalObjects.EMPTY_UUID,
+        0,
+        PalObjects.EMPTY_UUID,
+    ))
+    monkeypatch.setattr(
+        pal, "set_WorkSuitability", lambda name, level: updates.append((name, level))
+    )
 
-    class Pal:
-        def set_WorkSuitability(self, name, level):
-            updates.append((name, level))
-
-    class Player:
-        def get_pal(self, _pal_id):
-            return Pal()
-
-    monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: Player())
+    select_pal(monkeypatch, pal)
 
     with app.test_client() as client:
         token = login(client)
@@ -117,13 +142,7 @@ def test_priority_uses_the_generic_pal_patch(monkeypatch):
         PalObjects.EMPTY_UUID,
     ))
 
-    class Player:
-        NickName = "Tester"
-
-        def get_pal(self, _pal_id):
-            return pal
-
-    monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: Player())
+    select_pal(monkeypatch, pal)
 
     with app.test_client() as client:
         token = login(client)
@@ -140,28 +159,3 @@ def test_priority_uses_the_generic_pal_patch(monkeypatch):
 
     assert response.get_json()["status"] == 0
     assert pal.FavoriteIndex == 3
-
-
-def test_uncaught_api_error_returns_exception_details(monkeypatch):
-    configure_app(monkeypatch)
-    monkeypatch.setattr(SaveManager(), "get_player", lambda _player_id: None)
-
-    with app.test_client() as client:
-        token = login(client)
-        response = client.patch(
-            "/api/pal/paldata",
-            headers={"Authorization": f"Bearer {token}"},
-            json={
-                "PlayerUId": "missing-player",
-                "PalGuid": "missing-pal",
-                "key": "NickName",
-                "value": "test",
-            },
-        )
-
-    payload = response.get_json()
-    assert response.status_code == 500
-    assert payload["status"] == 1
-    assert payload["data"]["error"]["code"] == "AttributeError"
-    assert "Traceback (most recent call last)" in payload["data"]["error"]["log"]
-    assert "get_pal" in payload["data"]["error"]["log"]

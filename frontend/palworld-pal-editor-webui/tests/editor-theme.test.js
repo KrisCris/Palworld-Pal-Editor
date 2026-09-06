@@ -121,11 +121,9 @@ test("floating dialogs share the restrained glass surface and overlay", () => {
 test("floating editor menus use the shared restrained glass surface", () => {
   assert.match(sources.search, /class="search-select__popover editor-glass-surface"/);
   assert.match(sources.pals, /class="pal-list-menu__popover editor-glass-surface"/);
-  assert.match(sources.topBar, /class="editor-more__menu editor-glass-surface"/);
   for (const [source, selector] of [
     [sources.search, "search-select__popover"],
     [sources.pals, "pal-list-menu__popover"],
-    [sources.topBar, "editor-more__menu"],
   ]) {
     assert.doesNotMatch(source, new RegExp(`\\.${selector}\\s*\\{[^}]*background:\\s*var\\(--editor-color-surface-raised\\)`, "s"));
   }
@@ -197,7 +195,7 @@ test("toolbar distinguishes primary commands from off and on toggles", () => {
   assert.match(sources.topBar, /\.op,\s*#languageSelect,\s*\.savePath\s*\{[^}]*background:\s*var\(--editor-color-control\)/s);
   assert.match(sources.topBar, /\.op:hover\s*\{[^}]*border-color:\s*var\(--editor-color-primary\)[^}]*background:\s*var\(--editor-color-surface-raised\)/s);
   assert.match(sources.topBar, /\.op\.toggled\s*\{[^}]*border-color:\s*var\(--editor-color-success\)[^}]*color:\s*var\(--editor-color-success\)/s);
-  assert.match(sources.topBar, /:aria-pressed="palStore\.SHOW_OOB_PAL_FLAG"/);
+  assert.doesNotMatch(sources.topBar, /SHOW_OOB_PAL_FLAG|TopBar_Btn_Pal_OOB/);
   assert.match(sources.topBar, /:aria-pressed="!palStore\.HIDE_INVALID_OPTIONS"/);
 });
 

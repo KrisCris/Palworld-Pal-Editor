@@ -2,7 +2,9 @@
 import PalEditor from '@/components/PalEditor.vue'
 import PalList from '@/components/PalList.vue'
 import PlayerEditor from '@/components/PlayerEditor.vue'
+import BaseCampEditor from '@/components/BaseCampEditor.vue'
 import PlayerList from '@/components/PlayerList.vue'
+import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import { usePalEditorStore } from '@/stores/paleditor'
 
 const palStore = usePalEditorStore()
@@ -20,11 +22,22 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
       <PlayerList @toggle="emit('collapsePlayers')" />
     </aside>
     <aside v-if="!palsCollapsed" class="editor-roster editor-roster--pals">
-      <PalList v-if="palStore.SELECTED_PLAYER_ID || palStore.BASE_PAL_BTN_CLK_FLAG" @toggle="emit('collapsePals')" />
+      <PalList v-if="palStore.ACTIVE_ROSTER" @toggle="emit('collapsePals')" />
     </aside>
-    <main class="editor-canvas">
-      <PlayerEditor v-if="palStore.SHOW_PLAYER_EDIT_FLAG" />
-      <PalEditor v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA" />
+    <main class="editor-canvas" :class="{
+      'editor-canvas--basecamp': palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID,
+    }">
+      <OverlayScrollArea v-if="palStore.SHOW_PLAYER_EDIT_FLAG">
+        <div class="editor-canvas__viewport overlay-scroll-area__viewport">
+          <PlayerEditor />
+        </div>
+      </OverlayScrollArea>
+      <BaseCampEditor v-else-if="palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID" />
+      <OverlayScrollArea v-else-if="palStore.SELECTED_PAL_ID && palStore.SELECTED_PAL_DATA">
+        <div class="editor-canvas__viewport overlay-scroll-area__viewport">
+          <PalEditor />
+        </div>
+      </OverlayScrollArea>
       <p v-else class="editor-empty">{{ palStore.getTranslatedText('Editor_Select_Prompt') }}</p>
     </main>
   </div>
@@ -93,7 +106,17 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
 
 .editor-canvas {
   position: relative;
-  overflow: auto;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.editor-canvas__viewport {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.editor-canvas--basecamp {
+  overflow: hidden;
 }
 
 @keyframes roster-rail-enter {
@@ -123,6 +146,12 @@ const emit = defineEmits(['collapsePlayers', 'collapsePals'])
   .editor-canvas {
     flex: 0 0 auto;
     overflow: visible;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .editor-canvas--basecamp {
+    overflow: auto;
   }
 }
 

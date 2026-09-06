@@ -321,9 +321,10 @@ class PalEntity:
 
     @property
     def IsExpeditionPal(self) -> bool:
-        return bool(
+        expedition_id = PalObjects.get_BaseType(
             self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition")
         )
+        return expedition_id not in (None, PalObjects.EMPTY_UUID)
 
     @property
     def IsRAID(self) -> bool:
@@ -1346,7 +1347,8 @@ class PalEntity:
 
     @property
     def SkinName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+        value = PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+        return None if not value or value == "None" else value
 
     @property
     def SkinAppliedCharacterId(self) -> Optional[UUID]:

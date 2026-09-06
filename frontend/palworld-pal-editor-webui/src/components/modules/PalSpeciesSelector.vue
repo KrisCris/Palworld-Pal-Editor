@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue";
+import OverlayScrollArea from "./OverlayScrollArea.vue";
 import UiIcon from "./UiIcon.vue";
 import { usePalEditorStore } from "@/stores/paleditor";
 
@@ -155,69 +156,73 @@ const variantTabindex = (variant, index) => (
       <div class="selector-panes">
         <div class="selector-pane">
           <p class="pane-title">{{ t("Editor_Pal_Selector_Families") }}</p>
-          <div
-            class="selector-options"
-            role="listbox"
-            data-testid="pal-family-pane"
-            :aria-label="t('Editor_Pal_Selector_Families')"
-            @keydown="navigateListbox"
-          >
-            <button
-              v-for="family in families"
-              :key="family.FamilyID"
-              type="button"
-              role="option"
-              data-testid="pal-family-option"
-              :aria-selected="family.FamilyID === activeFamily?.FamilyID"
-              :tabindex="family.FamilyID === activeFamily?.FamilyID ? 0 : -1"
-              :class="{ selected: family.FamilyID === activeFamily?.FamilyID }"
-              @click="selectedFamilyId = family.FamilyID"
+          <OverlayScrollArea class="selector-scroll-area">
+            <div
+              class="selector-options overlay-scroll-area__viewport"
+              role="listbox"
+              data-testid="pal-family-pane"
+              :aria-label="t('Editor_Pal_Selector_Families')"
+              @keydown="navigateListbox"
             >
-              <img :src="palStore.backendAssetUrl(`/image/pals/${family.IconKey}`)" alt="" loading="lazy">
-              <span>
+              <button
+                v-for="family in families"
+                :key="family.FamilyID"
+                type="button"
+                role="option"
+                data-testid="pal-family-option"
+                :aria-selected="family.FamilyID === activeFamily?.FamilyID"
+                :tabindex="family.FamilyID === activeFamily?.FamilyID ? 0 : -1"
+                :class="{ selected: family.FamilyID === activeFamily?.FamilyID }"
+                @click="selectedFamilyId = family.FamilyID"
+              >
+                <img :src="palStore.backendAssetUrl(`/image/pals/${family.IconKey}`)" alt="" loading="lazy">
                 <span>
-                  <UiIcon v-if="family.invalidOnly" class="warning" name="warning" />
-                  <span v-if="family.invalidOnly" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
-                  {{ palLabel(family, family.Name) }}
+                  <span>
+                    <UiIcon v-if="family.invalidOnly" class="warning" name="warning" />
+                    <span v-if="family.invalidOnly" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
+                    {{ palLabel(family, family.Name) }}
+                  </span>
+                  <small>{{ family.FamilyID }}</small>
                 </span>
-                <small>{{ family.FamilyID }}</small>
-              </span>
-            </button>
-          </div>
+              </button>
+            </div>
+          </OverlayScrollArea>
           <p v-if="!families.length" class="empty">{{ t("Editor_Pal_Selector_No_Results") }}</p>
         </div>
 
         <div class="selector-pane">
           <p class="pane-title">{{ t("Editor_Pal_Selector_Variants") }}</p>
-          <div
-            class="selector-options"
-            role="listbox"
-            data-testid="pal-variant-pane"
-            :aria-label="t('Editor_Pal_Selector_Variants')"
-            @keydown="navigateListbox"
-          >
-            <button
-              v-for="(variant, index) in activeFamily?.variants || []"
-              :key="variant.InternalName"
-              type="button"
-              role="option"
-              data-testid="pal-variant-option"
-              :aria-selected="variant.InternalName === pendingId"
-              :tabindex="variantTabindex(variant, index)"
-              :class="{ selected: variant.InternalName === pendingId }"
-              @click="selectVariant(variant.InternalName)"
+          <OverlayScrollArea class="selector-scroll-area">
+            <div
+              class="selector-options overlay-scroll-area__viewport"
+              role="listbox"
+              data-testid="pal-variant-pane"
+              :aria-label="t('Editor_Pal_Selector_Variants')"
+              @keydown="navigateListbox"
             >
-              <img :src="palStore.backendAssetUrl(`/image/pals/${variant.IconKey || variant.IconAccessKey || 'unknown'}`)" alt="" loading="lazy">
-              <span>
+              <button
+                v-for="(variant, index) in activeFamily?.variants || []"
+                :key="variant.InternalName"
+                type="button"
+                role="option"
+                data-testid="pal-variant-option"
+                :aria-selected="variant.InternalName === pendingId"
+                :tabindex="variantTabindex(variant, index)"
+                :class="{ selected: variant.InternalName === pendingId }"
+                @click="selectVariant(variant.InternalName)"
+              >
+                <img :src="palStore.backendAssetUrl(`/image/pals/${variant.IconKey || variant.IconAccessKey || 'unknown'}`)" alt="" loading="lazy">
                 <span>
-                  <UiIcon v-if="variant.warning" class="warning" name="warning" />
-                  <span v-if="variant.warning" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
-                  {{ palLabel(variant) }}
+                  <span>
+                    <UiIcon v-if="variant.warning" class="warning" name="warning" />
+                    <span v-if="variant.warning" class="sr-only">{{ t("Editor_Pal_Selector_Warning") }}</span>
+                    {{ palLabel(variant) }}
+                  </span>
+                  <small>{{ variant.InternalName }}</small>
                 </span>
-                <small>{{ variant.InternalName }}</small>
-              </span>
-            </button>
-          </div>
+              </button>
+            </div>
+          </OverlayScrollArea>
         </div>
       </div>
 
@@ -384,6 +389,11 @@ button:focus-visible {
   align-items: stretch;
   gap: var(--editor-space-1);
   overflow-y: auto;
+}
+
+.selector-scroll-area {
+  flex: 1;
+  min-height: 0;
 }
 
 .pane-title,

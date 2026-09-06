@@ -49,6 +49,7 @@
         "Pal/Content/Pal/DataTable/Waza/DT_WazaMasterLevel_Common",
         "Pal/Content/Pal/DataTable/Item/DT_ItemDataTable_Common",
         "Pal/Content/Pal/DataTable/PassiveSkill/DT_PassiveSkill_Main_Common",
+        "Pal/Content/Pal/DataTable/PassiveSkill/DT_PartnerSkillParameter",
         "Pal/Content/Pal/DataTable/Text/DT_SkillNameText_Common",
         "Pal/Content/L10N/de/Pal/DataTable/Text/DT_SkillNameText_Common",
         "Pal/Content/L10N/en/Pal/DataTable/Text/DT_SkillNameText_Common",

@@ -20,8 +20,8 @@ test("Pal summary exposes one legal attribute maximization action", () => {
 test("Pal summary uses formal attribute and profile terminology", () => {
   assert.equal(en.Editor_Btn_Maximize_Pal, "Maximize attributes");
   assert.equal(zhCN.Editor_Btn_Maximize_Pal, "属性最大化");
-  assert.equal(en.Editor_Identity_Appearance, "PROFILE & APPEARANCE");
-  assert.equal(zhCN.Editor_Identity_Appearance, "档案与外观");
+  assert.equal(en.Editor_Identity_Appearance, "PROFILE");
+  assert.equal(zhCN.Editor_Identity_Appearance, "档案");
 });
 
 test("maximize action atomically refreshes and marks the selected Pal", () => {

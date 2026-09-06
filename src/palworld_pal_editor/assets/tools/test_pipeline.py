@@ -242,7 +242,6 @@ def fixture_outputs() -> dict[str, dict[str, bytes]]:
                             "InBaseCamp": False,
                         },
                         "AddInvokeTriggerTypes": [],
-                        "DescriptionSource": {locale: "composed" for locale in LOCALES},
                     }
                 }
             ),
@@ -746,6 +745,15 @@ class ToolchainTests(unittest.TestCase):
             expected - requested["characters-profiles"],
             set(),
             "character exporter omitted scenario prefix roots",
+        )
+        expected_partner_text = {
+            game_data.text_table_path(game_data.PARTNER_SKILL_APPEND_TEXT, locale)
+            for locale in game_data.LOCALE_DIRECTORIES
+        }
+        self.assertEqual(
+            expected_partner_text - requested["skills-profiles"],
+            set(),
+            "skills exporter omitted Partner Skill localization",
         )
 
     def test_prefix_export_roots_are_not_rewritten_as_single_packages(self) -> None:
@@ -2682,10 +2690,6 @@ class ValidationTests(unittest.TestCase):
 
         outputs = fixture_outputs()["skills"]
         rows = json.loads(outputs["data/pal_passives.json"])
-        rows["TestPassive"]["DescriptionSource"]["en"] = "legacy"
-        outputs["data/pal_passives.json"] = json_bytes(rows)
-        cases.append((outputs, "DescriptionSource"))
-
         for outputs, field in cases:
             with self.subTest(field=field):
                 errors = fixture_errors("skills", fixture_candidate("skills", outputs))
@@ -2879,6 +2883,17 @@ class ValidationTests(unittest.TestCase):
                 for error in empty
             ),
             empty,
+        )
+
+    def test_domain_allows_non_pal_passive_output(self) -> None:
+        outputs = fixture_outputs()["skills"]
+        outputs["data/passive_skills.json"] = outputs["data/pal_passives.json"]
+
+        errors = fixture_errors("skills", fixture_candidate("skills", outputs))
+
+        self.assertFalse(
+            any("forbidden output data/passive_skills.json" in error for error in errors),
+            errors,
         )
 
     def test_domain_rejects_forbidden_wrong_domain_output(self) -> None:
@@ -4852,6 +4867,7 @@ class CharacterEvidenceTests(unittest.TestCase):
             "DT_SkillNameText_Common",
             "DT_SkillDescText_Common",
             "DT_UI_Common_Text_Common",
+            game_data.PARTNER_SKILL_APPEND_TEXT,
             *game_data.CHARACTER_TEXT_TABLES.values(),
         }:
             for locale in game_data.LOCALE_DIRECTORIES:
@@ -7446,6 +7462,7 @@ class SkillDomainTests(unittest.TestCase):
                 },
             ],
         )
+
         self.assertEqual(
             explicit["Buff"],
             {
@@ -7472,7 +7489,6 @@ class SkillDomainTests(unittest.TestCase):
             explicit["I18n"]["en"]["Description"],
             "Power 20% en attack +",
         )
-        self.assertEqual(explicit["DescriptionSource"]["en"], "explicit")
         self.assertEqual(
             rows["Composed"]["I18n"]["en"]["Description"],
             "en attack +20%",
@@ -7481,7 +7497,201 @@ class SkillDomainTests(unittest.TestCase):
             rows["Composed"]["I18n"]["zh-CN"]["Description"],
             "zh-CN attack +20%",
         )
-        self.assertEqual(rows["Composed"]["DescriptionSource"]["en"], "composed")
+
+    def test_non_pal_passives_project_sort_not_displayable_rows(self) -> None:
+        rows = {
+            "EquipmentOnly": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable"
+            ),
+            "PalVisible": self.passive_row(),
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+
+        projected, missing = game_data.build_non_pal_passive_records(
+            rows, names, descriptions, ui
+        )
+
+        self.assertEqual(set(projected), {"EquipmentOnly"})
+        self.assertEqual(missing, ())
+        self.assertEqual(
+            set(projected["EquipmentOnly"]),
+            {
+                "InternalName",
+                "Rating",
+                "I18n",
+                "Buff",
+                "Category",
+                "TargetElementType",
+                "Effects",
+                "Invocation",
+                "AddInvokeTriggerTypes",
+            },
+        )
+
+    def test_partner_skill_passive_names_are_joined_from_rank_assignments(self) -> None:
+        rows = {
+            "Attack_ACC_up1_WingGolem": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable"
+            )
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+        for locale in LOCALES:
+            del names[locale]["PASSIVE_Attack_ACC_up1_WingGolem"]
+            names[locale]["PARTNERSKILL_WingGolem"] = self.text(
+                "Steel Guardian Mode"
+            )
+        projected, missing = game_data.build_non_pal_passive_records(
+            rows,
+            names,
+            descriptions,
+            ui,
+            partner_skill_assignments={
+                "Attack_ACC_up1_WingGolem": ("PARTNERSKILL_WingGolem", 1)
+            },
+        )
+
+        self.assertEqual(missing, ())
+        self.assertEqual(
+            projected["Attack_ACC_up1_WingGolem"]["I18n"]["en"]["Name"],
+            "Steel Guardian Mode",
+        )
+
+    def test_hidden_placeholder_names_use_the_localized_effect_description(self) -> None:
+        rows = {
+            "ShotAttack_down2": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable",
+                EffectValue1=-20.0,
+            )
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+        for locale in LOCALES:
+            names[locale]["PASSIVE_ShotAttack_down2"] = self.text(
+                f"{game_data.LOCALE_DIRECTORIES[locale] or locale} Text"
+            )
+
+        projected, missing = game_data.build_non_pal_passive_records(
+            rows, names, descriptions, ui
+        )
+
+        self.assertEqual(
+            projected["ShotAttack_down2"]["I18n"]["en"]["Name"],
+            "en attack -20%",
+        )
+        self.assertEqual(
+            projected["ShotAttack_down2"]["I18n"]["zh-CN"]["Name"],
+            "zh-CN attack -20%",
+        )
+        self.assertIn(
+            "passive:ShotAttack_down2:en:Name:PASSIVE_ShotAttack_down2",
+            missing,
+        )
+
+    def test_partner_append_text_localizes_ambiguous_partner_effect_names(self) -> None:
+        rows = {
+            "LifeSteal_5": self.passive_row(
+                Category="EPalPassiveCategory::SortNotDisplayable",
+                EffectType1="EPalPassiveSkillEffectType::LifeSteal",
+                EffectValue1=9.0,
+            )
+        }
+        names, descriptions, ui = self.passive_texts(tuple(rows))
+        append_texts = {locale: {} for locale in LOCALES}
+        for locale in LOCALES:
+            del names[locale]["PASSIVE_LifeSteal_5"]
+            label = (
+                "（生命窃取效果提升：<Status_Up>特大</>）"
+                if locale == "zh-CN"
+                else "(Life Steal Up: <Status_Up>XL</>)"
+            )
+            append_texts[locale]["LifeSteal_Rank_5"] = self.text(label)
+
+        projected, _missing = game_data.build_non_pal_passive_records(
+            rows,
+            names,
+            descriptions,
+            ui,
+            partner_append_by_locale=append_texts,
+        )
+
+        self.assertEqual(
+            projected["LifeSteal_5"]["I18n"]["en"]["Name"],
+            "Life Steal Up: XL",
+        )
+        self.assertEqual(
+            projected["LifeSteal_5"]["I18n"]["zh-CN"]["Name"],
+            "生命窃取效果提升：特大",
+        )
+
+    def test_partner_skill_assignments_join_parameter_rows_to_pal_tribes(self) -> None:
+        assignments = game_data.build_partner_skill_assignments(
+            {
+                "PinkCat": {
+                    "PassiveSkills": [
+                        {
+                            "SkillAndParametersArray": [
+                                {
+                                    "SkillName": {
+                                        "Key": (
+                                            "MaxInventoryWeight_up_"
+                                            "Partnerskill_PinkCat_1"
+                                        )
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "TextReferencePassiveSkills": [],
+                }
+            },
+            {
+                "PinkCat": {
+                    "Tribe": "EPalTribeID::PinkCat",
+                    "OverridePartnerSkillNameTextID": "None",
+                }
+            },
+        )
+
+        self.assertEqual(
+            assignments,
+            {
+                "MaxInventoryWeight_up_Partnerskill_PinkCat_1": (
+                    "PARTNERSKILL_PinkCat",
+                    1,
+                )
+            },
+        )
+
+    def test_partner_skill_assignments_keep_one_owner_reused_across_ranks(self) -> None:
+        assignments = game_data.build_partner_skill_assignments(
+            {
+                "DrillPal": {
+                    "PassiveSkills": [
+                        {
+                            "SkillAndParametersArray": [
+                                {"SkillName": {"Key": "MiningPartnerSkill"}}
+                            ]
+                        },
+                        {
+                            "SkillAndParametersArray": [
+                                {"SkillName": {"Key": "MiningPartnerSkill"}}
+                            ]
+                        },
+                    ],
+                    "TextReferencePassiveSkills": [],
+                }
+            },
+            {
+                "DrillPal": {
+                    "Tribe": "EPalTribeID::DrillPal",
+                    "OverridePartnerSkillNameTextID": "None",
+                }
+            },
+        )
+
+        self.assertEqual(
+            assignments,
+            {"MiningPartnerSkill": ("PARTNERSKILL_DrillPal", 1)},
+        )
 
     def test_passive_projection_includes_self_max_hp_buff(self) -> None:
         passives = {
@@ -8112,9 +8322,10 @@ class SkillDomainTests(unittest.TestCase):
                 incomplete_acquisition,
             )
 
-    def test_skills_domain_builds_only_the_two_runtime_json_files(self) -> None:
+    def test_skills_domain_builds_runtime_skill_json_files(self) -> None:
         skill_id = "EPalWazaID::Fixture"
         passive_id = "FixturePassive"
+        partner_passive_id = "FixturePartnerPassive"
         graph = game_data.CharacterEvidenceGraph(
             {"FixturePal": self.evidence("FixturePal", {"base"}, obtainable=True)},
             (),
@@ -8141,13 +8352,36 @@ class SkillDomainTests(unittest.TestCase):
             write_table(
                 root,
                 game_data.SKILL_SOURCES["passives"],
-                {passive_id: self.passive_row(AddPal=True)},
+                {
+                    passive_id: self.passive_row(AddPal=True),
+                    partner_passive_id: self.passive_row(
+                        Category="EPalPassiveCategory::SortNotDisplayable"
+                    ),
+                },
+            )
+            write_table(
+                root,
+                game_data.SKILL_SOURCES["partner_skills"],
+                {
+                    "FixturePal": {
+                        "PassiveSkills": [
+                            {
+                                "SkillAndParametersArray": [
+                                    {"SkillName": {"Key": partner_passive_id}}
+                                ]
+                            }
+                        ],
+                        "TextReferencePassiveSkills": [],
+                    }
+                },
             )
             write_table(
                 root,
                 game_data.CHARACTER_EVIDENCE_SOURCES["monsters"],
                 {
                     "FixturePal": {
+                        "Tribe": "EPalTribeID::FixturePal",
+                        "OverridePartnerSkillNameTextID": "None",
                         "PassiveSkill1": passive_id,
                         "PassiveSkill2": "None",
                         "PassiveSkill3": "None",
@@ -8156,8 +8390,14 @@ class SkillDomainTests(unittest.TestCase):
                 },
             )
             names, descriptions = self.active_texts((skill_id,))
-            passive_names, passive_descriptions, ui = self.passive_texts((passive_id,))
+            passive_names, passive_descriptions, ui = self.passive_texts(
+                (passive_id, partner_passive_id)
+            )
             for locale in LOCALES:
+                del passive_names[locale][f"PASSIVE_{partner_passive_id}"]
+                passive_names[locale]["PARTNERSKILL_FixturePal"] = self.text(
+                    f"{locale} partner name"
+                )
                 names[locale].update(passive_names[locale])
                 descriptions[locale].update(passive_descriptions[locale])
                 write_table(
@@ -8174,6 +8414,13 @@ class SkillDomainTests(unittest.TestCase):
                     root,
                     game_data.text_table_path("DT_UI_Common_Text_Common", locale),
                     ui[locale],
+                )
+                write_table(
+                    root,
+                    game_data.text_table_path(
+                        game_data.PARTNER_SKILL_APPEND_TEXT, locale
+                    ),
+                    {},
                 )
                 write_table(
                     root,
@@ -8194,6 +8441,9 @@ class SkillDomainTests(unittest.TestCase):
                 for index in range(count):
                     write_asset(root, f"{prefix}Fixture{index}", [{"Type": "Fixture"}])
             policy = deepcopy(FIXTURE_POLICY)
+            policy["domains"]["skills"]["required_sources"].append(
+                game_data.SKILL_SOURCES["partner_skills"]
+            )
             policy["domains"]["skills"]["required_sources"].extend(
                 scenario_prefix_counts
             )
@@ -8205,10 +8455,22 @@ class SkillDomainTests(unittest.TestCase):
 
         self.assertEqual(
             set(candidate.outputs),
-            {"data/pal_attacks.json", "data/pal_passives.json"},
+            {
+                "data/pal_attacks.json",
+                "data/pal_passives.json",
+                "data/passive_skills.json",
+                "data/partner_skills.json",
+            },
         )
         self.assertEqual(candidate.output_counts["data/pal_attacks.json"], 1)
         self.assertEqual(candidate.output_counts["data/pal_passives.json"], 1)
+        non_pal = json.loads(candidate.outputs["data/passive_skills.json"])
+        partner = json.loads(candidate.outputs["data/partner_skills.json"])
+        self.assertNotIn(partner_passive_id, non_pal)
+        self.assertEqual(
+            partner[partner_passive_id]["I18n"]["en"]["Name"],
+            "en partner name",
+        )
         for prefix, count in scenario_prefix_counts.items():
             self.assertIn(prefix, candidate.source_counts)
             self.assertEqual(candidate.source_counts[prefix], count)

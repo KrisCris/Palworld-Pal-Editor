@@ -39,6 +39,32 @@ test("all Pal edit contracts and validity rules remain available", () => {
   assert.match(source, /key != 'EPalWorkSuitability::OilExtraction'/);
   assert.match(source, /canAssignActiveSkill/);
   assert.match(source, /elementIconKey/);
-  assert.match(source, /skillBadgeLabels/);
+  assert.match(source, /activeSkillMetadata/);
   assert.match(source, /canToggleBossVariant/);
+});
+
+test("skill card rows stay compact and do not add a redundant warning row", () => {
+  assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space:\s*nowrap;/);
+  assert.doesNotMatch(source, /class="skill-warning"/);
+});
+
+test("non-Pal passive skills stay cheat-only without a duplicate UI warning", () => {
+  assert.match(source, /PASSIVE_SKILLS_LIST\s*\.filter\(skill => !palStore\.HIDE_INVALID_OPTIONS \|\| !skill\.Invalid\)/);
+  assert.doesNotMatch(source, /<UiIcon v-if="palStore\.PASSIVE_SKILLS\[skill\]\?\.Invalid" name="warning"/);
+  assert.doesNotMatch(source, /skill-warning-icon/);
+});
+
+test("internal skill names keep their descenders visible", () => {
+  assert.match(source, /\.skill-card__internal-name\s*\{[\s\S]*?line-height:\s*1\.25;/);
+});
+
+test("mastered skill equip action slides out only for equipable cards", () => {
+  assert.match(source, /'skill-card--equipable':\s*canEquipMasteredSkill\(skill\)/);
+  assert.match(source, /class="editor-button editor-button--icon skill-card__equip"/);
+  assert.match(source, /\.skill-card__actions\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?transform:\s*translateX\(100%\);[\s\S]*?opacity:\s*0;[\s\S]*?pointer-events:\s*none;/);
+  assert.match(source, /\.skill-card--actionable:is\(:hover, :focus-within\) \.skill-card__actions\s*\{[\s\S]*?transform:\s*translateX\(0\);[\s\S]*?opacity:\s*1;[\s\S]*?pointer-events:\s*auto;/);
+  assert.match(source, /\.skill-card--equipable\s*\{[\s\S]*?border-right-color:[\s\S]*?box-shadow:/);
+  assert.match(source, /\.skill-card--actionable \.skill-card__remove\s*\{[\s\S]*?right:\s*calc\(3rem \+ \.16rem\);/);
+  assert.match(source, /@media \(hover:\s*none\)[\s\S]*?\.skill-card--actionable \.skill-card__actions/);
+  assert.match(source, /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.skill-card__actions/);
 });

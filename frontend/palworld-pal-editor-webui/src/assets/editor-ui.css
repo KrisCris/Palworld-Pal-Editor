@@ -21,6 +21,7 @@
   --editor-color-awakened: #f0d84b;
   --editor-color-male: #43a5ff;
   --editor-color-female: #f06aab;
+  --editor-color-dna: #d99bfb;
   --editor-color-passive-top: #a64dff;
   --editor-color-passive-high: #45dc8a;
   --editor-color-passive-positive: #f0c34b;
@@ -161,6 +162,22 @@
   min-width: 0;
 }
 
+/* Label/value rows (e.g. special species) keep the value next to the label,
+   while the trailing action buttons stay pinned to the right edge. */
+.editor-field--value {
+  grid-template-columns: auto auto minmax(0, 1fr);
+}
+
+.editor-field--value .editor-field__actions {
+  justify-self: end;
+}
+
+/* Rows without a trailing action button (e.g. appearance, priority) let their
+   control span the full field width so it doesn't stop short of the right edge. */
+.editor-field > :last-child:nth-child(2) {
+  grid-column: 2 / -1;
+}
+
 .editor-control {
   width: 100%;
   min-width: 0;
@@ -258,8 +275,6 @@
   align-items: center;
   gap: var(--editor-space-3);
   min-width: 0;
-  padding-block: var(--editor-space-2);
-  border-bottom: 1px solid var(--editor-color-border);
 }
 
 .editor-stepper__value,

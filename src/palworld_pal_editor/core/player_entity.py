@@ -28,6 +28,9 @@ class PlayerEntity:
         self._gvas_compression_times: int = compression_times
         self.group_id = group_id
 
+        for pal in self._palbox.values():
+            pal.set_owner_player_entity(self)
+
         if (
             self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"][
                 "struct_type"
@@ -471,18 +474,18 @@ class PlayerEntity:
             return None
         return self._gvas_file, self._gvas_compression_times
 
-    def add_pal(self, pal_entity: PalEntity) -> bool:
+    def add_pal(self, pal_entity: PalEntity, record_key: str | None = None) -> bool:
         """
         This method only inserts player's pals to `self.palbox`.\n
         """
-        pal_guid = str(pal_entity.InstanceId)
-        if pal_guid in self._palbox:
+        pal_key = record_key or f"world:{pal_entity.InstanceId}"
+        if pal_key in self._palbox:
             return False
         
         if pal_entity.is_new_pal:
-            self._new_palbox[pal_guid] = pal_entity
+            self._new_palbox[pal_key] = pal_entity
 
-        self._palbox[pal_guid] = pal_entity
+        self._palbox[pal_key] = pal_entity
         pal_entity.set_owner_player_entity(self)
         return True
     
@@ -600,17 +603,22 @@ class PlayerEntity:
         return self._palbox.values()
 
     def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
-        if guid in self._new_palbox:
-            self._new_palbox.pop(guid)
-        return self._palbox.pop(guid, None)
+        key = str(guid)
+        if key not in self._palbox:
+            key = f"world:{key}"
+        self._new_palbox.pop(key, None)
+        return self._palbox.pop(key, None)
 
     def get_pal(self, guid: UUID | str, disable_warning=False) -> Optional[PalEntity]:
-        guid = str(guid)
-        if guid in self._palbox:
-            return self._palbox[guid]
+        key = str(guid)
+        if key in self._palbox:
+            return self._palbox[key]
+        world_key = f"world:{key}"
+        if world_key in self._palbox:
+            return self._palbox[world_key]
         
         if not disable_warning:
-            LOGGER.warning(f"Player {self} has no pal {guid}.")
+            LOGGER.warning(f"Player {self} has no pal {key}.")
 
     def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
         match sorting_key:

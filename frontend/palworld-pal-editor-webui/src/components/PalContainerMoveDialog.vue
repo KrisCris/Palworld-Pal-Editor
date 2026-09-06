@@ -1,6 +1,8 @@
 <script setup>
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+import OverlayScrollArea from "@/components/modules/OverlayScrollArea.vue";
+import PalBriefPanel from "@/components/modules/PalBriefPanel.vue";
 import {
   buildContainerMoveGroups,
   containerMoveDisabledReason,
@@ -11,8 +13,13 @@ import { usePalEditorStore } from "@/stores/paleditor";
 const emit = defineEmits(["close"]);
 const palStore = usePalEditorStore();
 const dialog = ref(null);
+const updateAction = ref(null);
+const preview = ref(null);
+const previewScale = ref(1);
 const activeGroupKey = ref("");
 const pendingContainerId = ref("");
+const conflict = computed(() => palStore.PAL_TRANSFER_CONFLICT);
+let previewFrame = 0;
 
 const groups = computed(() => buildContainerMoveGroups(
   palStore.PAL_CONTAINERS,
@@ -28,6 +35,7 @@ const reasonKey = Object.freeze({
   unsafe: "Editor_Move_Reason_Unsafe",
   different_guild: "Editor_Move_Reason_DifferentGuild",
   owner_required: "Editor_Move_Reason_OwnerRequired",
+  gps_player_required: "Editor_Move_Reason_GpsPlayerRequired",
 });
 const groupLabel = group => group.label || palStore.getTranslatedText(
   group.kind === "bases" ? "Editor_Move_Group_Bases" : "Editor_Move_Group_Other",
@@ -40,33 +48,111 @@ const disabledReason = container => containerMoveDisabledReason(
   container,
   palStore.SELECTED_PAL_DATA,
 );
+const pendingContainer = computed(() => palStore.PAL_CONTAINERS.find(
+  container => container.StorageKey === pendingContainerId.value,
+));
+const lockedTargetContainer = computed(() => {
+  const candidate = conflict.value?.Candidates?.find(
+    item => item.RecordKey === conflict.value?.LockedTarget,
+  );
+  return palStore.PAL_CONTAINERS.find(
+    container => container.StorageKey === candidate?.StorageKey,
+  );
+});
+const lockedTargetLabel = computed(() => lockedTargetContainer.value
+  ? containerLabel(lockedTargetContainer.value)
+  : conflict.value?.Candidates?.find(
+    item => item.RecordKey === conflict.value?.LockedTarget,
+  )?.ContainerLabel || '');
+const isGlobalTransfer = computed(() => (
+  palStore.SELECTED_PAL_DATA?.StorageKind === "global_palbox"
+  || pendingContainer.value?.StorageKind === "global_palbox"
+));
+const previewStyle = computed(() => ({
+  "--move-preview-scale": previewScale.value,
+}));
+
+function updatePreviewScale() {
+  previewFrame = 0;
+  if (!preview.value || !updateAction.value) return;
+
+  const previewTop = preview.value.getBoundingClientRect().top;
+  const actionTop = updateAction.value.getBoundingClientRect().top;
+  const availableHeight = Math.max(0, actionTop - previewTop - 12);
+  const naturalHeight = preview.value.scrollHeight;
+  previewScale.value = naturalHeight > 0
+    ? Math.min(1, availableHeight / naturalHeight)
+    : 1;
+}
+
+function schedulePreviewScale() {
+  if (previewFrame) cancelAnimationFrame(previewFrame);
+  previewFrame = requestAnimationFrame(updatePreviewScale);
+}
 
 function selectContainer(container) {
   if (disabledReason(container)) return;
-  pendingContainerId.value = container.ContainerId;
+  pendingContainerId.value = container.StorageKey;
 }
 
 async function movePal() {
   if (!pendingContainerId.value) return;
-  if (await palStore.movePal(pendingContainerId.value)) emit("close");
+  if (await palStore.movePal(pendingContainerId.value)) return closeDialog();
+  if (conflict.value?.LockedTarget) {
+    pendingContainerId.value = conflict.value.Candidates?.find(
+      candidate => candidate.RecordKey === conflict.value.LockedTarget,
+    )?.StorageKey || pendingContainerId.value;
+  }
+}
+
+async function updatePal() {
+  if (await palStore.updateConflictingPal()) closeDialog();
+}
+
+async function jumpToPal() {
+  if (await palStore.jumpToConflictingPal()) closeDialog(false);
+}
+
+function closeDialog(clearConflict = true) {
+  if (clearConflict) palStore.clearPalTransferConflict();
+  emit("close");
 }
 
 onMounted(async () => {
+  palStore.clearPalTransferConflict();
   const current = palStore.PAL_CONTAINERS.find(
-    container => container.ContainerId === palStore.SELECTED_PAL_DATA.ActualContainerId,
+    container => container.StorageKey === palStore.SELECTED_PAL_DATA.StorageKey,
   );
-  activeGroupKey.value = current?.ContainerKind === "base"
-    ? "bases"
-    : current?.OwnerPlayerUId || "other";
+  activeGroupKey.value = current?.StorageKind === "global_palbox"
+    ? groups.value.find(group => group.kind === "player")?.key || "global_palbox"
+    : current?.ContainerKind === "base"
+      ? "bases"
+      : current?.OwnerPlayerUId || "other";
   await nextTick();
   dialog.value?.focus();
+  window.addEventListener("resize", schedulePreviewScale);
+});
+
+watch(
+  () => conflict.value?.LockedTarget,
+  async lockedTarget => {
+    if (!lockedTarget) return;
+    await nextTick();
+    schedulePreviewScale();
+  },
+  { flush: "post" },
+);
+
+onBeforeUnmount(() => {
+  if (previewFrame) cancelAnimationFrame(previewFrame);
+  window.removeEventListener("resize", schedulePreviewScale);
 });
 </script>
 
 <template>
   <Teleport to="body">
-    <div class="move-dialog-layer editor-modal-overlay" @pointerdown.self="emit('close')" @keydown.esc="emit('close')">
-      <section ref="dialog" class="move-dialog editor-glass-surface" role="dialog" aria-modal="true"
+    <div class="move-dialog-layer editor-modal-overlay" @pointerdown.self="closeDialog" @keydown.esc="closeDialog">
+      <section ref="dialog" :class="['move-dialog', 'editor-glass-surface', { 'has-conflict': conflict }]" role="dialog" aria-modal="true"
         aria-labelledby="move-dialog-title" tabindex="-1">
         <header>
           <div>
@@ -74,52 +160,85 @@ onMounted(async () => {
             <p>{{ palStore.getTranslatedText('Editor_Move_Dialog_Subtitle') }}</p>
           </div>
           <button type="button" class="move-dialog__close" :aria-label="palStore.getTranslatedText('Message_Close')"
-            @click="emit('close')">×</button>
+            @click="closeDialog">×</button>
         </header>
 
-        <div class="move-dialog__panes">
+        <div v-if="!conflict" class="move-dialog__panes">
           <section class="move-dialog__pane">
             <h3>{{ palStore.getTranslatedText('Editor_Move_Groups') }}</h3>
-            <div class="move-dialog__groups" role="listbox" :aria-label="palStore.getTranslatedText('Editor_Move_Groups')">
-              <button v-for="group in groups" :key="group.key" type="button" role="option"
-                :aria-selected="group.key === activeGroup?.key"
-                :class="{ 'is-active': group.key === activeGroup?.key, 'is-current-player': group.selected }"
-                @click="activeGroupKey = group.key">
-                <span>{{ groupLabel(group) }}</span>
-                <small v-if="group.selected">{{ palStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
-              </button>
-            </div>
+            <OverlayScrollArea>
+              <div class="move-dialog__groups overlay-scroll-area__viewport" role="listbox"
+                :aria-label="palStore.getTranslatedText('Editor_Move_Groups')">
+                <button v-for="group in groups" :key="group.key" type="button" role="option"
+                  :aria-selected="group.key === activeGroup?.key"
+                  :class="{ 'is-active': group.key === activeGroup?.key, 'is-current-player': group.selected }"
+                  @click="activeGroupKey = group.key">
+                  <span>{{ groupLabel(group) }}</span>
+                  <small v-if="group.selected">{{ palStore.getTranslatedText('Editor_Move_Current_Player') }}</small>
+                </button>
+              </div>
+            </OverlayScrollArea>
           </section>
 
           <section class="move-dialog__pane">
             <h3>{{ palStore.getTranslatedText('Editor_Move_Containers') }}</h3>
-            <div class="move-dialog__containers" role="listbox" :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
-              <button v-for="container in activeGroup?.containers || []" :key="container.ContainerId" type="button"
-                role="option" :aria-selected="container.ContainerId === pendingContainerId"
-                :aria-disabled="Boolean(disabledReason(container))"
-                :class="{ 'is-active': container.ContainerId === pendingContainerId }"
-                @click="selectContainer(container)">
-                <span class="move-dialog__container-copy">
-                  <strong>{{ containerLabel(container) }}</strong>
-                  <small v-if="disabledReason(container)">
-                    {{ palStore.getTranslatedText(reasonKey[disabledReason(container)]) }}
-                  </small>
-                </span>
-                <span class="move-dialog__capacity">{{ container.Occupied }}/{{ container.Size }}</span>
-              </button>
-              <p v-if="!activeGroup?.containers?.length" class="move-dialog__empty">
-                {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
-              </p>
-            </div>
+            <OverlayScrollArea>
+              <div class="move-dialog__containers overlay-scroll-area__viewport" role="listbox"
+                :aria-label="palStore.getTranslatedText('Editor_Move_Containers')">
+                <button v-for="container in activeGroup?.containers || []" :key="container.StorageKey" type="button"
+                  role="option" :aria-selected="container.StorageKey === pendingContainerId"
+                  :aria-disabled="Boolean(disabledReason(container))"
+                  :class="{ 'is-active': container.StorageKey === pendingContainerId }"
+                  @click="selectContainer(container)">
+                  <span class="move-dialog__container-copy">
+                    <strong>{{ containerLabel(container) }}</strong>
+                    <small v-if="disabledReason(container)">
+                      {{ palStore.getTranslatedText(reasonKey[disabledReason(container)]) }}
+                    </small>
+                  </span>
+                  <span class="move-dialog__capacity">{{ container.Occupied }}/{{ container.Size }}</span>
+                </button>
+                <p v-if="!activeGroup?.containers?.length" class="move-dialog__empty">
+                  {{ palStore.getTranslatedText('Editor_Move_No_Containers') }}
+                </p>
+              </div>
+            </OverlayScrollArea>
           </section>
         </div>
 
+        <section v-else class="move-dialog__conflict">
+          <h3>{{ palStore.getTranslatedText('Editor_Transfer_Conflict_Title') }}</h3>
+          <p>{{ palStore.getTranslatedText('Editor_Transfer_Conflict_Subtitle') }}</p>
+          <div class="move-dialog__locked-target">
+            <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
+            <strong>{{ lockedTargetLabel }}</strong>
+          </div>
+        </section>
+
         <footer>
-          <button type="button" @click="emit('close')">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
-          <button type="button" class="move-dialog__confirm" :disabled="!pendingContainerId || palStore.LOADING_FLAG"
-            @click="movePal">{{ palStore.getTranslatedText('Editor_Move_Pal') }}</button>
+          <button type="button" @click="closeDialog">{{ palStore.getTranslatedText('AddPal_Cancel') }}</button>
+          <template v-if="conflict">
+            <button type="button" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG" @click="jumpToPal">
+              {{ palStore.getTranslatedText('Editor_Transfer_Jump') }}
+            </button>
+            <span ref="updateAction" class="move-dialog__update-action" @pointerenter="schedulePreviewScale"
+              @focusin="schedulePreviewScale">
+              <button type="button" class="move-dialog__update" :disabled="!conflict.LockedTarget || palStore.LOADING_FLAG"
+                @click="updatePal">{{ palStore.getTranslatedText('Editor_Transfer_Update') }}</button>
+            </span>
+          </template>
+          <button v-else type="button" class="move-dialog__confirm" :disabled="!pendingContainerId || palStore.LOADING_FLAG"
+            @click="movePal">{{ palStore.getTranslatedText(isGlobalTransfer ? 'Editor_Transfer_Clone' : 'Editor_Move_Pal') }}</button>
         </footer>
       </section>
+      <div v-if="conflict?.LockedTarget" ref="preview" class="move-dialog__preview" role="tooltip"
+        :style="previewStyle">
+        <PalBriefPanel :data="conflict.Incoming" :changed-fields="conflict.FieldChanges" tone="incoming"
+          :title="palStore.getTranslatedText('Editor_Transfer_Incoming')" />
+        <span class="move-dialog__comparison-arrow" aria-hidden="true" />
+        <PalBriefPanel :data="conflict.Existing" :changed-fields="conflict.FieldChanges" tone="existing"
+          :title="palStore.getTranslatedText('Editor_Transfer_Existing')" />
+      </div>
     </div>
   </Teleport>
 </template>
@@ -136,9 +255,12 @@ onMounted(async () => {
 }
 
 .move-dialog {
+  position: relative;
   display: grid;
+  height: min(44rem, calc(100dvh - 2rem));
   width: min(52rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   box-sizing: border-box;
   gap: var(--editor-space-3);
   padding: var(--editor-space-4);
@@ -146,6 +268,7 @@ onMounted(async () => {
   border: 1px solid var(--editor-color-glass-border);
   border-radius: var(--editor-radius-md);
 }
+.move-dialog.has-conflict { height: auto; overflow: visible; }
 
 header,
 footer {
@@ -171,7 +294,7 @@ button {
 
 .move-dialog__close { min-width: var(--editor-control-height); font-size: 1.25rem; }
 .move-dialog__panes { display: grid; min-height: 0; grid-template-columns: minmax(12rem, .75fr) minmax(18rem, 1.25fr); gap: var(--editor-space-2); }
-.move-dialog__pane { display: grid; min-height: 18rem; grid-template-rows: auto minmax(0, 1fr); gap: var(--editor-space-2); padding: var(--editor-space-2); overflow: hidden; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); background: var(--editor-color-surface-subtle); }
+.move-dialog__pane { display: grid; min-height: 0; grid-template-rows: auto minmax(0, 1fr); gap: var(--editor-space-2); padding: var(--editor-space-2); overflow: hidden; border: 1px solid var(--editor-color-border); border-radius: var(--editor-radius-sm); background: var(--editor-color-surface-subtle); }
 .move-dialog__pane h3 { color: var(--editor-color-muted); font-size: .8rem; }
 .move-dialog__groups,
 .move-dialog__containers { display: flex; min-height: 0; flex-direction: column; gap: var(--editor-space-1); overflow-y: auto; }
@@ -200,16 +323,87 @@ button {
 .move-dialog__containers button[aria-disabled='true']:focus-visible { border-color: var(--editor-color-warning); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); }
 .move-dialog__containers button[aria-disabled='true'] .move-dialog__capacity { color: var(--editor-color-muted); }
 .move-dialog__empty { padding: var(--editor-space-4); color: var(--editor-color-muted); text-align: center; }
+.move-dialog__conflict { display: grid; min-height: 11rem; place-content: center; gap: var(--editor-space-2); padding: var(--editor-space-5); text-align: center; }
+.move-dialog__conflict h3 { color: var(--editor-color-warning); font-size: 1.1rem; }
+.move-dialog__conflict p { color: var(--editor-color-muted); }
+.move-dialog__locked-target { display: grid; margin-top: var(--editor-space-2); gap: .25rem; }
+.move-dialog__locked-target span { color: var(--editor-color-muted); font-size: .75rem; }
 
-footer { justify-content: flex-end; }
+footer { position: relative; justify-content: flex-end; }
 footer button { padding: 0 var(--editor-space-4); }
 .move-dialog__confirm { border-color: var(--editor-color-primary); color: var(--editor-color-background); background: var(--editor-color-primary); }
+.move-dialog__update-action { position: relative; }
+.move-dialog__update { height: 100%; padding: 0 var(--editor-space-4); border-color: var(--editor-color-danger, #dc4655); color: #fff; background: var(--editor-color-danger, #b92f3d); }
+.move-dialog-layer > .move-dialog__preview {
+  position: absolute;
+  z-index: 5;
+  top: var(--editor-space-4);
+  left: 50%;
+  display: grid;
+  width: min(66rem, calc(100vw - 3rem));
+  box-sizing: border-box;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  gap: var(--editor-space-4);
+  padding: var(--editor-space-4);
+  overflow: visible;
+  border: 1px solid var(--editor-color-glass-border);
+  border-radius: var(--editor-radius-lg);
+  background: var(--editor-color-glass-toolbar);
+  -webkit-backdrop-filter: var(--editor-glass-filter);
+  backdrop-filter: var(--editor-glass-filter);
+  box-shadow: var(--editor-glass-shadow);
+  opacity: 0;
+  transform: translateX(-50%) scale(var(--move-preview-scale, 1));
+  transform-origin: top center;
+  visibility: hidden;
+  pointer-events: none;
+}
+.move-dialog-layer:has(.move-dialog__update-action:hover) > .move-dialog__preview,
+.move-dialog-layer:has(.move-dialog__update-action:focus-within) > .move-dialog__preview {
+  opacity: 1;
+  visibility: visible;
+}
+.move-dialog__comparison-arrow {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--editor-color-primary) 55%, var(--editor-color-glass-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--editor-color-primary) 16%, var(--editor-color-control));
+  box-shadow: var(--editor-shadow-compact);
+}
+.move-dialog__comparison-arrow::before {
+  width: 1.15rem;
+  height: .12rem;
+  content: '';
+  border-radius: 999px;
+  background: var(--editor-color-primary);
+}
+.move-dialog__comparison-arrow::after {
+  position: absolute;
+  width: .5rem;
+  height: .5rem;
+  content: '';
+  border-top: .12rem solid var(--editor-color-primary);
+  border-right: .12rem solid var(--editor-color-primary);
+  transform: translateX(.32rem) rotate(45deg);
+}
 .move-dialog__confirm:disabled { border-color: var(--editor-color-disabled); color: var(--editor-color-muted); background: var(--editor-color-surface-subtle); cursor: not-allowed; }
 button:focus-visible { outline: 2px solid var(--editor-color-focus); outline-offset: 2px; }
 
 @media (max-width: 700px) {
-  .move-dialog { overflow-y: auto; }
-  .move-dialog__panes { grid-template-columns: 1fr; }
-  .move-dialog__pane { min-height: 10rem; max-height: 32vh; }
+  .move-dialog { overflow: hidden; }
+  .move-dialog__panes { grid-template-columns: 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .move-dialog__pane { min-height: 0; }
+  .move-dialog-layer > .move-dialog__preview {
+    top: var(--editor-space-2);
+    width: calc(100vw - 2rem);
+    grid-template-columns: 1fr;
+  }
+  .move-dialog__comparison-arrow { transform: rotate(90deg); }
 }
 </style>
