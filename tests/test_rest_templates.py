@@ -36,6 +36,7 @@ LOSSY_UID = "a18b721d-0000-0000-0000-000000000000"
 KNOWN_ATTACK = "EPalWazaID::FireBall"
 OTHER_ATTACK = "EPalWazaID::AirCanon"
 KNOWN_PASSIVE = "PAL_ALLAttack_up2"
+OTHER_PASSIVE = "PAL_ALLAttack_up1"
 
 
 class TemplateApiTests(unittest.TestCase):
@@ -219,6 +220,37 @@ class TemplateApiTests(unittest.TestCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual("SKILL_UNKNOWN", response.get_json()["error"]["code"])
         self.assertEqual([KNOWN_PASSIVE], target.pal.PassiveSkillList)
+
+    def test_a_template_saved_from_a_pal_with_a_repeated_skill_applies_it_once(self):
+        """A template captures a Pal's list as the save holds it, repeats and all.
+
+        A save can already name the same passive twice, and a template taken from
+        such a Pal would otherwise carry that repeat onto every Pal it is applied
+        to -- spreading the state that `PUT .../skills/{group}` exists to refuse.
+        The template is user data rather than a request just built, so the repeat
+        is dropped instead of being a 400 the user cannot act on.
+        """
+        target = self.world_records()[0]
+        target.pal.replace_PassiveSkillList([])
+        skill_templates()[:] = [
+            {
+                "Id": "duplicated",
+                "Name": "Taken from a duplicated Pal",
+                "Type": "passive",
+                "PassiveSkillList": [KNOWN_PASSIVE, OTHER_PASSIVE, KNOWN_PASSIVE],
+            }
+        ]
+
+        response = self.client.post(
+            f"/api/pals/{target.record_key}/skill-template-applications",
+            json={"templateId": "duplicated"},
+            headers=self.headers,
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            [KNOWN_PASSIVE, OTHER_PASSIVE], target.pal.PassiveSkillList
+        )
 
 
     def test_a_template_saved_before_this_release_still_equips_what_it_named(self):

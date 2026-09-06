@@ -298,3 +298,30 @@ test("removing a skill submits the list without it, and a field edit is a patch"
     ]);
 });
 
+
+test("a stored list that already repeats a skill is repaired by the next add", async t => {
+    // Saves exist whose PassiveSkillList holds the same passive twice -- the game
+    // writes them and reads them back, but the backend refuses a submitted list
+    // with a repeat in it. Sending `[...stored, chosen]` verbatim meant every add
+    // on such a Pal failed with SKILL_LIST_INVALID, whichever skill was chosen,
+    // and nothing in the editor could ever get the Pal out of that state.
+    setActivePinia(createPinia());
+    const store = usePalsStore();
+    const repeated = "ElementBoost_Earth_1_PAL";
+    const chosen = "CraftSpeed*5";
+    useCatalogsStore().passiveSkills = [
+        { InternalName: repeated, I18n: ["Earth", ""] },
+        { InternalName: chosen, I18n: ["Craft", ""] },
+    ];
+    selectPal({ PassiveSkillList: ["Legend", repeated, "Rare", repeated] });
+    useAppStore().HIDE_INVALID_OPTIONS = false;
+    const writes = recordSkillWrites(t);
+
+    store.passiveSkillChoice = chosen;
+    await store.addPassiveSkill();
+
+    assert.deepEqual(writes, [[
+        "/api/pals/world%3Aselected/skills/passive",
+        ["Legend", repeated, "Rare", chosen],
+    ]]);
+});

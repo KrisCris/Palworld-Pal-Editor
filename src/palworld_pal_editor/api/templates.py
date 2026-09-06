@@ -279,10 +279,13 @@ def apply_skill_template(record_key: str):
     """Replace one of a Pal's skill groups with a saved one.
 
     The catalog check and the entity method both come from `pals.SKILL_GROUPS`, so
-    a template applies through exactly the code path `PUT .../skills/{group}` uses
-    -- including that equipping a skill also learns it. A template saved before a
+    a template applies through the code path `PUT .../skills/{group}` uses --
+    including that equipping a skill also learns it. A template saved before a
     game update can name a skill this build has no data for, which is why the list
     is checked on the way in and not only when it was saved.
+
+    The one place the two part company is a repeat, which this drops rather than
+    refuses; the comment below the catalog check says why.
     """
     payload = request.get_json(silent=True)
     template_id = payload.get("templateId") if isinstance(payload, dict) else None
@@ -300,6 +303,16 @@ def apply_skill_template(record_key: str):
             "This template names skills the game does not have: "
             f"{', '.join(map(str, unknown))}",
         )
+
+    # A template is captured from a Pal's list as its save holds it, and a save can
+    # already name the same skill twice -- so a template taken from such a Pal would
+    # otherwise carry that repeat onto every Pal it is applied to. `PUT
+    # .../skills/{group}` answers a repeat with a 400 because the client built that
+    # list and can build it again; a template is data already on disk, and refusing
+    # it leaves the user with a template they cannot use and cannot see the fault
+    # in. Deduplicated after the catalog check so that what a mangled template is
+    # answered with is still `SKILL_UNKNOWN` rather than an unhashable entry's 500.
+    skills = list(dict.fromkeys(skills))
 
     manager = SaveManager()
     with manager.session_lock:

@@ -595,7 +595,7 @@ const portraitBorder = pal => pal.IsAwakening
           </button>
         </div>
         <div class="skill-cards">
-          <article class="skill-card" v-for="skill in pal.PassiveSkillList" :key="skill"
+          <article class="skill-card" v-for="(skill, index) in pal.PassiveSkillList" :key="`${index}:${skill}`"
             :title="catalogsStore.passiveSkillsByName[skill]?.I18n[1] || skill">
             <span :class="['passive-tier', `passive-tier--${passiveTier(catalogsStore.passiveSkillsByName[skill]?.Rating)}`]" aria-hidden="true"></span>
             <div class="skill-card__identity">
@@ -636,7 +636,7 @@ const portraitBorder = pal => pal.IsAwakening
           </button>
         </div>
         <div class="skill-cards">
-          <article class="skill-card" v-for="skill in pal.EquipWaza" :key="skill"
+          <article class="skill-card" v-for="(skill, index) in pal.EquipWaza" :key="`${index}:${skill}`"
             :title="catalogsStore.activeSkillsByName[skill]?.I18n[1] || skill">
             <img v-if="elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)" class="element-icon"
               :src="backend.backendAssetUrl(`/image/elements/Element_${elementIconKey(catalogsStore.activeSkillsByName[skill]?.Element)}`)" alt="">
@@ -657,7 +657,7 @@ const portraitBorder = pal => pal.IsAwakening
       <div class="skill-section">
         <h2 class="pal-panel__heading">{{ appStore.getTranslatedText("Editor_Mastered_Skills") }}</h2>
         <div class="skill-cards">
-          <article v-for="skill in pal.MasteredWaza" :key="skill"
+          <article v-for="(skill, index) in pal.MasteredWaza" :key="`${index}:${skill}`"
             :class="['skill-card', {
               'skill-card--actionable': showEquipMasteredAction(skill),
               'skill-card--equipable': canEquipMasteredSkill(skill),

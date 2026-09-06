@@ -182,8 +182,14 @@ export const usePalsStore = defineStore("pals", () => {
 
     // A skill group is submitted whole. The callers build the list the Pal should
     // end up with; the backend refuses one the game cannot resolve.
+    //
+    // The repeat is dropped here rather than in each caller because it is not the
+    // caller that puts it there: a save can already hold the same passive twice,
+    // and appending to that list is a request the backend refuses whichever skill
+    // was chosen -- so the Pal could never be edited out of the state it arrived
+    // in. A list the Pal should end up with never names a skill twice.
     const replaceSkills = (group, skills) => runWrite(
-        recordKey => putPalSkills(recordKey, group, skills),
+        recordKey => putPalSkills(recordKey, group, [...new Set(skills)]),
     );
 
     // Called straight from `@click`/`@change`, whose `name` is the field to write
