@@ -50,15 +50,17 @@ if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 10)) {
 
 Write-Host "Using $($PYTHON_CMD) (version $($majorVersion).$($minorVersion))"
 
-# Create and activate virtual environment
+# Create the virtual environment. Nothing is activated: naming the interpreter
+# is what says which environment a command runs in, and an activation that fails
+# would leave the rest of this script quietly building against system Python.
 & $PYTHON_CMD -m venv venv
-. .\venv\Scripts\Activate.ps1
+$VENV_PYTHON = ".\venv\Scripts\python.exe"
 
 # Install dependencies
-pip install -r requirements.txt
+& $VENV_PYTHON -m pip install -r requirements.txt
 
-pip install pyinstaller
+& $VENV_PYTHON -m pip install pyinstaller
 
 Remove-Item ".\dist" -Recurse -Force
 
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets/data;assets/data" --add-data="src/palworld_pal_editor/assets/icons;assets/icons" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO --hidden-import="pkg_resources.extern"
+& $VENV_PYTHON -m PyInstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets/data;assets/data" --add-data="src/palworld_pal_editor/assets/icons;assets/icons" --add-data="src/palworld_pal_editor/webui;webui" .\src\palworld_pal_editor\__main__.py --name palworld-pal-editor --log-level=INFO --hidden-import="pkg_resources.extern"
