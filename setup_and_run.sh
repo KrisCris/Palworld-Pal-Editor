@@ -35,12 +35,13 @@ fi
 echo "Using ${PYTHON_CMD} (version ${PYTHON_VERSION})"
 
 ${PYTHON_CMD} -m venv venv
+VENV_PYTHON="./venv/bin/python"
 
-source venv/bin/activate
+"${VENV_PYTHON}" -m pip install -r requirements.txt
 
-pip install -r requirements.txt
-pip install -e .
+# The editor runs out of the source tree, so there is nothing to install for it
+# -- `src` on PYTHONPATH is all an install was ever doing here.
+export PYTHONPATH="$(pwd)/src"
 
-launch_command="python -m palworld_pal_editor ${@}"
-echo "Launching $launch_command..."
-eval $launch_command
+echo "Launching python -m palworld_pal_editor ${@}..."
+"${VENV_PYTHON}" -m palworld_pal_editor "${@}"
