@@ -20,7 +20,7 @@
 
 
 <p align="center">
-  功能丰富的《幻兽帕鲁》存档修改器，支持玩家、帕鲁、科技、背包等内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 运行。
+  功能丰富的《幻兽帕鲁》存档修改器，支持玩家、帕鲁、帕鲁存放、基地、科技、背包等内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 运行。
 </p>
 
 ![Palworld Pal Editor](.github/assets/readme-pal-editor-zh.webp)
@@ -39,6 +39,8 @@
 - [功能](#功能)
   - [通用](#通用)
   - [帕鲁](#帕鲁)
+  - [帕鲁存放与转移](#帕鲁存放与转移)
+  - [基地与公会研究](#基地与公会研究)
   - [模板与批量操作](#模板与批量操作)
   - [玩家](#玩家)
   - [物品栏](#物品栏)
@@ -54,7 +56,7 @@
 
 **由 \_connlost 用 ❤️ 开发的《幻兽帕鲁》帕鲁修改器。**
 
-Palworld Pal Editor 是一个功能丰富的存档修改器，支持修改玩家、帕鲁、科技、背包等存档内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 容器运行。
+Palworld Pal Editor 是一个功能丰富的存档修改器，支持修改玩家、帕鲁、帕鲁存放、基地研究、科技、背包等存档内容，并可通过桌面 GUI、WebUI、CLI 或 Docker 容器运行。
 
 > [!NOTE]
 > Steam 存档根目录：`%LOCALAPPDATA%\Pal\Saved\SaveGames`
@@ -92,12 +94,12 @@ Palworld Pal Editor 完整支持 Deutsch、English、Español、Español (Méxic
 ![帕鲁列表与筛选](.github/assets/readme-features-general-zh.webp)
 
 - [x] 列出玩家及其帕鲁
-- [x] 修改基地帕鲁
 - [x] 搜索帕鲁
 - [x] 对帕鲁排序
 - [x] 筛选帕鲁
 - [x] 显示不在常规容器中的帕鲁
 - [x] 通过作弊模式启用通常不可用的选项
+- [x] 在作弊模式下显示技能与帕鲁的内部名称
 
 ### 帕鲁
 
@@ -121,11 +123,31 @@ Palworld Pal Editor 完整支持 Deutsch、English、Español、Español (Méxic
 - [x] 修改工作适应性
 - [x] 修改装备的主动技能
 - [x] 修改学会的主动技能
-- [x] 修改被动技能
+- [x] 修改被动技能，并区分帕鲁被动、普通被动与伙伴技能
 - [x] 治愈和复活帕鲁
 - [x] 治愈所有帕鲁
 - [x] 在合法范围内最大化帕鲁属性
 - [x] 删除帕鲁
+
+### 帕鲁存放与转移
+
+![帕鲁存放与转移](.github/assets/readme-features-storage-zh.webp)
+
+- [x] 浏览存档中的所有容器：队伍、帕鲁终端、基地、观赏笼、帕鲁次元仓库与跨界帕鲁终端
+- [x] 将帕鲁移动到任意玩家、基地或存放处的容器
+- [x] 修改和复制存放在帕鲁次元仓库或跨界帕鲁终端中的帕鲁
+- [x] 处理跨界帕鲁终端中已被占用的槽位：覆盖原有帕鲁，或直接跳转到该帕鲁
+- [x] 在指定的目标容器中直接创建帕鲁
+
+### 基地与公会研究
+
+![公会帕鲁工作研究所](.github/assets/readme-features-basecamp-zh.webp)
+
+- [x] 修改基地中工作的帕鲁
+- [x] 修改公会的帕鲁工作研究所
+- [x] 完成单项研究、整个类别，或一次完成全部研究
+- [x] 在包含多个公会的存档中切换公会
+- [x] 研究名称、效果与所需材料均取自游戏数据
 
 ### 模板与批量操作
 
@@ -185,6 +207,7 @@ Palworld Pal Editor 完整支持 Deutsch、English、Español、Español (Méxic
 - [x] 修改帕鲁球模块
 - [x] 修改装备的食物
 - [x] 修改物品数量
+- [x] 将磨损的物品恢复到满耐久与满弹药
 - [x] 清空物品栏槽位
 
 ## 安装与运行
@@ -230,6 +253,8 @@ palworld-pal-editor.exe --mode web --port 58080 --password "请设置强密码"
 
 使用独立部署的前端时，请通过入口页面右上角的服务器菜单选择后端。
 
+WebUI 是一个渐进式网页应用（PWA）：浏览器可以将它安装到桌面或主屏幕，界面与帕鲁图片也会在多次运行之间保留缓存。
+
 ## 命令行参数
 
 ```text
@@ -242,7 +267,7 @@ palworld-pal-editor.exe --mode web --port 58080 --password "请设置强密码"
 --nocli              在 GUI/WebUI 模式中禁用交互式 CLI
 ```
 
-运行 `palworld-pal-editor.exe --help` 可查看当前参数。命令行参数会覆盖 `config.json`；通常不需要手动编辑该文件。
+运行 `palworld-pal-editor.exe --help` 可查看当前参数。命令行参数会覆盖 `config.json`；通常不需要手动编辑该文件。设置、已保存的模板与日志存放在系统的用户数据目录中。
 
 ## 视频教程
 
