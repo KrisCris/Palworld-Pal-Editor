@@ -173,3 +173,5 @@ config.json
 *.lock
 tmp/
 .playwright-cli
+# PyInstaller writes this next to the build scripts; the AppImage spec is appimage.spec.
+/palworld-pal-editor.spec

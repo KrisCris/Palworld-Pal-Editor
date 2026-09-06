@@ -33,7 +33,7 @@ def _appimage_spec(binaries=()):
         "PYZ": lambda *args, **kwargs: None,
         "EXE": exe,
     }
-    spec = ROOT / "palworld-pal-editor.spec"
+    spec = ROOT / "appimage.spec"
     exec(compile(spec.read_bytes(), spec, "exec"), namespace)  # noqa: S102
     return captured
 

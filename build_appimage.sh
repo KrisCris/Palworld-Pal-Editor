@@ -63,7 +63,7 @@ mkdir -p "$DISTDIR"
 
 # Build with PyInstaller
 echo "📦 Building with PyInstaller..."
-"$VENV_PYTHON" -m PyInstaller --clean --noconfirm palworld-pal-editor.spec
+"$VENV_PYTHON" -m PyInstaller --clean --noconfirm appimage.spec
 
 PYINSTALLER_BINARY="$DISTDIR/$APPNAME"
 
