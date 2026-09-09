@@ -9,7 +9,7 @@ import SegmentedRange from '@/components/modules/SegmentedRange.vue'
 import { formatStorageLabel } from '@/components/pal-storage-label'
 import SkillTemplateDialog from '@/components/SkillTemplateDialog.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { MAX_FRIENDSHIP_LEVEL, MAX_INVALID_LEVEL, MAX_LEVEL, MAX_SOULS_LEVEL, MAX_SUITABILITY_LEVEL } from '@/game-limits'
+import { MAX_EQUIP_WAZA, MAX_FRIENDSHIP_LEVEL, MAX_INVALID_LEVEL, MAX_LEVEL, MAX_SOULS_LEVEL, MAX_SUITABILITY_LEVEL } from '@/game-limits'
 import { canToggleBossVariant, elementIconKey, filterPalSkins, genderKey, passiveTier, specialTypeKeys } from '@/pal-traits'
 import { filterSkillOptions, isSkillAssignable, skillBadgeTranslationKey, skillBadges } from '@/skill-rules'
 import { useAppStore } from '@/stores/app'
@@ -103,7 +103,11 @@ const activeSkillEquipTitle = skill => {
   return '';
 };
 
-const isEquipSkillFull = () => pal.value.EquipWaza.length >= 3;
+// Three equipped moves is the game's own limit, so it only holds while the
+// cheat options are hidden -- the same escape every other game limit here gets.
+const isEquipSkillFull = () => (
+  appStore.HIDE_INVALID_OPTIONS && pal.value.EquipWaza.length >= MAX_EQUIP_WAZA
+);
 
 const addPassiveSkill = () => {
   palsStore.addPassiveSkill();
