@@ -19,16 +19,20 @@ globalThis.localStorage = {
 after(closeVueServer);
 
 test("Add Pal dialog exposes default, template, and JSON workflows", async () => {
-  const [{ default: AddPalDialog }, { usePalEditorStore }] = await Promise.all([
+  const [
+    { default: AddPalDialog }, { useAppShellStore }, { useTemplatesStore },
+  ] = await Promise.all([
     loadVueModule("/src/components/AddPalDialog.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/app-shell.js"),
+    loadVueModule("/src/stores/templates.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
-  store.PAL_TEMPLATES = [{
-    Id: "worker",
-    Name: "Worker",
+  const store = useAppShellStore();
+  const templates = useTemplatesStore();
+  templates.palTemplates = [{
+    templateId: "worker",
+    name: "Worker",
     DisplayName: "Lamball",
     CharacterID: "SheepBall",
     IconAccessKey: "SheepBall",
@@ -42,6 +46,15 @@ test("Add Pal dialog exposes default, template, and JSON workflows", async () =>
     assert.match(html, new RegExp(`>${tab}<`));
   }
   assert.match(html, /Create Pal/);
+});
+
+test("the add dialog reads templates from the templates store", async () => {
+  const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
+  // The dialog names a template by the id the API gives it, so the create call
+  // can pass it straight back as a `template` source.
+  assert.match(source, /templatesStore\.palTemplates/);
+  assert.match(source, /template\.templateId/);
+  assert.doesNotMatch(source, /PAL_TEMPLATES/);
 });
 
 test("Add Pal dialog uses translated labels in every locale", () => {
@@ -62,7 +75,7 @@ test("Pal list opens the dialog instead of creating immediately", async () => {
   assert.match(source, /<AddPalDialog/);
   assert.match(source, /@click="showAddPalDialog = true"/);
   assert.doesNotMatch(source, /@click="showAddPalDialog\.value = true"/);
-  assert.doesNotMatch(source, /@click="palStore\.addPal"/);
+  assert.doesNotMatch(source, /@click="shell\.addPal"/);
 });
 
 test("Add Pal dialog traps focus and reuses the Pal brief for template previews", async () => {
@@ -80,16 +93,19 @@ test("Add Pal dialog traps focus and reuses the Pal brief for template previews"
 });
 
 test("Pal templates are cleared when the editor resets or switches backends", async () => {
-  const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
-  assert.ok(source.match(/PAL_TEMPLATES\.value = \[\]/g)?.length >= 2);
+  const source = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
+  assert.ok(source.match(/templates\.clear\(\)/g)?.length >= 2);
 });
 
-test("Add Pal chooses an explicit capacity-checked container, including bases", async () => {
+test("Add Pal offers the storages the save says a new Pal may go in", async () => {
   const source = await readFile(new URL("../src/components/AddPalDialog.vue", import.meta.url), "utf8");
-  assert.match(source, /v-model="targetContainerId"/);
-  assert.match(source, /container\.Occupied >= container\.Size/);
-  assert.match(source, /container\.ContainerKind === 'base'/);
-  assert.match(source, /options\.TargetStorageKey = targetContainerId\.value/);
-  assert.match(source, /formatContainerLabel/);
-  assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
+  // Which storages qualify is asked of the roster, not filtered out of the
+  // directory by kind -- a viewing cage or another guild's base would otherwise
+  // put the new Pal in a list nobody can open.
+  assert.match(source, /loadCreationTargets\(\)/);
+  assert.doesNotMatch(source, /ContainerKind|StorageKind/);
+  assert.match(source, /v-model="targetStorageKey"/);
+  assert.match(source, /storage\.occupied >= storage\.capacity/);
+  assert.match(source, /targetStorageKey: targetStorageKey\.value/);
+  assert.match(source, /formatStorageLabel/);
 });

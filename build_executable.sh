@@ -35,17 +35,18 @@ fi
 
 echo "Using ${PYTHON_CMD} (version ${PYTHON_VERSION})"
 
-# Create a virtual environment named 'venv' (skip if already created)
+# Create a virtual environment named 'venv' (skip if already created). Nothing
+# is activated: naming the interpreter is what says which environment a command
+# runs in, and an activation that fails would leave the rest of this script
+# quietly building against system Python.
 ${PYTHON_CMD} -m venv venv
-
-# Activate the virtual environment
-source venv/bin/activate
+VENV_PYTHON="./venv/bin/python"
 
 # Install packages from requirements.txt
-pip install -r requirements.txt
+"${VENV_PYTHON}" -m pip install -r requirements.txt
 
-pip install pyinstaller
+"${VENV_PYTHON}" -m pip install pyinstaller
 
 rm -r ./dist
 
-pyinstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets/data:assets/data" --add-data="src/palworld_pal_editor/assets/icons:assets/icons" --add-data="src/palworld_pal_editor/webui:webui"  ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor --hidden-import="pkg_resources.extern"
+"${VENV_PYTHON}" -m PyInstaller --onefile -i "./icon.ico" --add-data="src/palworld_pal_editor/assets/data:assets/data" --add-data="src/palworld_pal_editor/assets/icons:assets/icons" --add-data="src/palworld_pal_editor/webui:webui"  ./src/palworld_pal_editor/__main__.py --name palworld-pal-editor --hidden-import="pkg_resources.extern"

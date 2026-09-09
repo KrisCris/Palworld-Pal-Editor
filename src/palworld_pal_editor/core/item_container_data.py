@@ -1,3 +1,16 @@
+"""What a player is carrying: inventory and equipment slots, and the items in them.
+
+Two structures that have to be maintained together. `ItemContainerSaveData` holds
+each container's slots -- an item id and a count -- and `DynamicItemSaveData` holds
+the per-item state a stack cannot express, such as a weapon's durability and the
+rounds left in its magazine. A slot points at a dynamic entry by id, so adding,
+replacing or clearing a slot means writing both, and a dynamic entry nothing points
+at any more has to go.
+
+Only the containers a player can meaningfully edit are exposed
+(`EDITABLE_CONTAINERS`); the rest are left alone.
+"""
+
 from __future__ import annotations
 
 import copy
@@ -90,12 +103,7 @@ def _uuid_string(value: object) -> str:
 
 
 def _byte_array(value: bytes) -> dict:
-    return {
-        "array_type": "ByteProperty",
-        "id": None,
-        "value": {"values": value},
-        "type": "ArrayProperty",
-    }
+    return PalObjects.ArrayProperty("ByteProperty", {"values": value})
 
 
 class ItemContainerData:
@@ -320,10 +328,9 @@ class ItemContainerData:
     ) -> dict:
         local_id = dynamic_id or PalObjects.EMPTY_UUID
         return {
-            "RawData": {
-                "array_type": "ByteProperty",
-                "id": None,
-                "value": {
+            "RawData": PalObjects.ArrayProperty(
+                "ByteProperty",
+                {
                     "slot_index": slot_index,
                     "count": count,
                     "item": {
@@ -335,9 +342,8 @@ class ItemContainerData:
                     },
                     "trailing_bytes": bytes(20),
                 },
-                "type": "ArrayProperty",
-                "custom_type": ".worldSaveData.ItemContainerSaveData.Value.Slots.Slots.RawData",
-            },
+                ".worldSaveData.ItemContainerSaveData.Value.Slots.Slots.RawData",
+            ),
             "CustomVersionData": _byte_array(ITEM_SLOT_CUSTOM_VERSION),
         }
 
@@ -366,13 +372,11 @@ class ItemContainerData:
         elif dynamic_type != "armor":
             raise ValueError(f"Unsupported new dynamic item type: {dynamic_type}")
         return {
-            "RawData": {
-                "array_type": "ByteProperty",
-                "id": None,
-                "value": base,
-                "type": "ArrayProperty",
-                "custom_type": ".worldSaveData.DynamicItemSaveData.DynamicItemSaveData.RawData",
-            },
+            "RawData": PalObjects.ArrayProperty(
+                "ByteProperty",
+                base,
+                ".worldSaveData.DynamicItemSaveData.DynamicItemSaveData.RawData",
+            ),
             "CustomVersionData": _byte_array(DYNAMIC_ITEM_CUSTOM_VERSION),
         }
 
@@ -396,6 +400,74 @@ class ItemContainerData:
                     continue
                 count += local_id == dynamic_id
         return count
+
+    def repair_slot(
+        self, player: PlayerEntity, container_kind: str, slot_index: int
+    ) -> dict:
+        """Put one worn item back to the maxima the game data gives it.
+
+        Durability and ammunition together, because they wear out together and
+        restoring one without the other leaves the item still unusable.
+
+        This edits the dynamic entry in place rather than replacing the item.
+        Re-placing it would restore both, but it would mint a new dynamic id and
+        throw away everything else the entry holds -- a weapon's passive skills
+        above all -- which is a replacement, not a repair.
+
+        The two maxima are not equally trustworthy, which is why each is applied
+        only where it is known. `MagazineSize` is sound: across the fixture save's
+        2095 loaded weapons, not one carries more ammunition than its magazine,
+        and none carries ammunition without one. `MaxDurability` is 0 in the game
+        data for grappling guns, sphere launchers and the NPC weapons, while real
+        ones in a save carry 150 to 450, so writing "the maximum" there would
+        write a zero over a working item. An item with neither maximum known is
+        refused rather than silently left alone.
+        """
+        if container_kind not in EDITABLE_CONTAINERS:
+            raise ValueError(f"Container is not editable: {container_kind}")
+        _container_id, container = self._container_for(player, container_kind)
+        if container is None:
+            raise ValueError(f"Player {container_kind} container is missing")
+        slot_num = self._slot_num(container)
+        if type(slot_index) is not int or slot_index < 0 or slot_index >= slot_num:
+            raise ValueError(f"Slot index is outside SlotNum: {slot_index}")
+
+        slot = next(
+            (
+                candidate
+                for candidate in self._slot_values(container)
+                if candidate["RawData"]["value"]["slot_index"] == slot_index
+            ),
+            None,
+        )
+        if slot is None:
+            raise ValueError(f"Slot {slot_index} is empty")
+        local_id = _uuid_string(
+            slot["RawData"]["value"]["item"]["dynamic_id"]["local_id_in_created_world"]
+        )
+        dynamic = None if local_id == EMPTY_UUID else self.dynamic_items.get(local_id)
+        if dynamic is None:
+            raise ValueError("This item has nothing to restore")
+        dynamic_raw = dynamic["RawData"]["value"]
+
+        static_id = dynamic_raw["id"]["static_id"]
+        item = DataProvider.get_item(static_id) or {}
+        restored = []
+        maximum = item.get("MaxDurability")
+        if "durability" in dynamic_raw and maximum:
+            dynamic_raw["durability"] = float(maximum)
+            restored.append("durability")
+        magazine = item.get("MagazineSize")
+        if "remaining_bullets" in dynamic_raw and magazine:
+            dynamic_raw["remaining_bullets"] = int(magazine)
+            restored.append("ammo")
+
+        if not restored:
+            raise ValueError(
+                f"The game data gives {static_id} no maximum durability or "
+                "magazine size to restore"
+            )
+        return self._normalized_slot(slot, slot_index)
 
     def patch_slot(
         self,

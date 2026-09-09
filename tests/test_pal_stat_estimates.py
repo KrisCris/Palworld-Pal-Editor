@@ -2,6 +2,7 @@ import unittest
 
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
 
 
 class PalStatEstimateTests(unittest.TestCase):
@@ -18,7 +19,7 @@ class PalStatEstimateTests(unittest.TestCase):
         ]
         PalObjects.set_BaseType(parameter["CharacterID"], "BOSS_JetDragon")
         parameter.pop("OwnerPlayerUId", None)
-        pal = PalEntity(pal_object)
+        pal = WorldPalAdapter.entity(pal_object)
         pal.Level = 80
         pal.Rank = 5
         pal.Rank_HP = 20

@@ -1,8 +1,7 @@
 from pathlib import Path
 import re
 from functools import wraps
-import sys
-from typing import Callable, Optional, get_type_hints, Union, _GenericAlias
+from typing import get_type_hints
 import socket
 
 from palworld_pal_editor.utils import LOGGER
@@ -28,6 +27,10 @@ def get_path_context(path: Path) -> dict:
 
     return {
         "currentPath": str(current_path),
+        # So walking up needs no server-side cursor: the client asks for whatever
+        # this says. At a filesystem root it is the current path, which is how the
+        # picker knows there is nowhere further up to go.
+        "parentPath": str(current_path.parent),
         "children": children,
         "isPalDir": is_pal_dir
     }

@@ -31,7 +31,7 @@ test("normalizes backend origins and builds backend URLs", () => {
     assert.throws(() => normalizeBackendOrigin("ftp://example.test", "http://127.0.0.1:58080"), /HTTP/);
     assert.throws(() => normalizeBackendOrigin("http://user@example.test", "http://127.0.0.1:58080"), /credentials/);
     assert.throws(() => normalizeBackendOrigin("http://example.test/api", "http://127.0.0.1:58080"), /origin/);
-    assert.equal(backendUrl("", "/api/save/status"), "/api/save/status");
+    assert.equal(backendUrl("", "/api/session"), "/api/session");
     assert.equal(backendUrl("http://10.0.0.2:58080", "/image/ui/heal"), "http://10.0.0.2:58080/image/ui/heal");
 });
 

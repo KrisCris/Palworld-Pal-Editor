@@ -1,51 +1,58 @@
 <script setup>
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { BASE_ROSTER_KEY, GLOBAL_PALBOX_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
-const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
-const playerLabel = player => player.NickName || palStore.getTranslatedText('PlayerList_Unknown')
+const toggleLabel = () => appStore.getTranslatedText(props.preview ? 'PlayerList_Restore' : 'PlayerList_Collapse')
+const playerLabel = player => player.NickName || appStore.getTranslatedText('PlayerList_Unknown')
 const playerInitial = player => playerLabel(player).trim().charAt(0).toUpperCase() || '?'
-const globalRoster = () => palStore.SPECIAL_ROSTERS.find(roster => roster.Kind === 'global_palbox')
 </script>
 
 <template>
-  <nav class="player-roster" :aria-label="palStore.getTranslatedText('PlayerList_Text')">
+  <nav class="player-roster" :aria-label="appStore.getTranslatedText('PlayerList_Text')">
     <header class="roster-header">
       <button class="roster-collapse-button" :title="toggleLabel()"
         :aria-label="toggleLabel()" @click="emit('toggle')">
         <UiIcon :name="preview ? 'panel' : 'minus'" />
       </button>
-      <h2 class="roster-title">{{ palStore.getTranslatedText("PlayerList_Text") }}</h2>
+      <h2 class="roster-title">{{ appStore.getTranslatedText("PlayerList_Text") }}</h2>
     </header>
 
     <OverlayScrollArea>
     <div class="roster-list overlay-scroll-area__viewport">
-      <button v-if="globalRoster()" class="roster-row roster-row--global"
-        @click="palStore.selectPlayer(palStore.PAL_GLOBAL_STORAGE_BTN)"
-        :aria-current="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN ? 'true' : undefined"
-        :disabled="palStore.ACTIVE_ROSTER === palStore.PAL_GLOBAL_STORAGE_BTN || palStore.LOADING_FLAG">
+      <button v-if="rostersStore.globalPalboxRoster" class="roster-row roster-row--global"
+        @click="rostersStore.selectRoster(GLOBAL_PALBOX_ROSTER_KEY)"
+        :aria-current="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY ? 'true' : undefined"
+        :disabled="rostersStore.activeRosterKey === GLOBAL_PALBOX_ROSTER_KEY">
         <span class="player-avatar">GPS</span>
-        <span class="roster-copy">{{ palStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
+        <span class="roster-copy">{{ appStore.getTranslatedText('Editor_Container_GlobalPalbox') }}</span>
       </button>
 
-      <button v-if="palStore.HAS_WORKING_PAL_FLAG" class="roster-row roster-row--base"
-        @click="palStore.selectPlayer(palStore.PAL_BASE_WORKER_BTN)"
-        :aria-current="palStore.BASE_PAL_BTN_CLK_FLAG ? 'true' : undefined"
-        :disabled="(palStore.BASE_PAL_BTN_CLK_FLAG && !palStore.SELECTED_PAL_ID) || palStore.LOADING_FLAG">
+      <button v-if="rostersStore.hasBaseCamp" class="roster-row roster-row--base"
+        @click="rostersStore.selectRoster(BASE_ROSTER_KEY)"
+        :aria-current="rostersStore.activeRosterKey === BASE_ROSTER_KEY ? 'true' : undefined"
+        :disabled="(rostersStore.activeRosterKey === BASE_ROSTER_KEY && !palsStore.selectedRecordKey)">
         <span class="player-avatar">PAL</span>
-        <span class="roster-copy">{{ palStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
+        <span class="roster-copy">{{ appStore.getTranslatedText('PlayerList_Base_Pal') }}</span>
       </button>
 
-      <button v-for="player in palStore.PLAYER_MAP.values()" :key="player.InstanceId"
-        class="roster-row" @click="palStore.selectPlayer(player.InstanceId)" :title="player.InstanceId"
-        :aria-current="player.InstanceId == palStore.SELECTED_PLAYER_ID ? 'true' : undefined"
-        :disabled="(player.InstanceId == palStore.SELECTED_PLAYER_ID && palStore.SHOW_PLAYER_EDIT_FLAG) || palStore.LOADING_FLAG">
+      <button v-for="player in playersStore.players" :key="player.InstanceId"
+        class="roster-row" @click="rostersStore.selectRoster(`player:${player.InstanceId}`)" :title="player.InstanceId"
+        :aria-current="player.InstanceId == rostersStore.activePlayerUid ? 'true' : undefined"
+        :disabled="(player.InstanceId == rostersStore.activePlayerUid && playersStore.showPlayerEditor)">
         <span class="player-avatar">{{ playerInitial(player) }}</span>
-        <span class="roster-copy">{{ player.NickName || palStore.getTranslatedText('PlayerList_Unknown') }}</span>
+        <span class="roster-copy">{{ player.NickName || appStore.getTranslatedText('PlayerList_Unknown') }}</span>
       </button>
     </div>
     </OverlayScrollArea>

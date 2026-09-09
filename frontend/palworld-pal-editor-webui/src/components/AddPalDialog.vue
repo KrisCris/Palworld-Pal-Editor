@@ -1,23 +1,36 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
-import PalBriefPanel from '@/components/modules/PalBriefPanel.vue'
-import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatContainerLabel } from '@/components/modules/pal-container-label'
+import PalBriefPanel from '@/components/PalBriefPanel.vue'
+import PalPortrait from '@/components/PalPortrait.vue'
+import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { useRostersStore } from '@/stores/rosters'
+import { useStoragesStore } from '@/stores/storages'
+import { useTemplatesStore } from '@/stores/templates'
 
 const emit = defineEmits(['close'])
-const palStore = usePalEditorStore()
-const containerLabel = container => formatContainerLabel(
-  container,
-  palStore.getTranslatedText,
+const appStore = useAppStore()
+const backend = useBackendStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
+const storagesStore = useStoragesStore()
+const templatesStore = useTemplatesStore()
+const storageLabel = storage => formatStorageLabel(
+  storage,
+  appStore.getTranslatedText,
 )
 const mode = ref('default')
 const templateId = ref('')
 const templateName = ref('')
 const palJson = ref('')
-const targetContainerId = ref('')
+const targetStorageKey = ref('')
+const creationTargetKeys = ref([])
 const dialog = ref(null)
 const templatePreview = ref(null)
 const previewTemplate = ref(null)
@@ -28,22 +41,15 @@ let previousAriaHidden
 let previewAnchor
 let previewFrame = 0
 
-const selectedTemplate = computed(() => palStore.PAL_TEMPLATES
-  .find(template => template.Id === templateId.value))
-const targetContainers = computed(() => {
-  const roster = palStore.ACTIVE_ROSTER
-  return palStore.PAL_CONTAINERS.filter(container => (
-    roster === palStore.PAL_GLOBAL_STORAGE_BTN
-      ? container.StorageKind === 'global_palbox'
-      : roster === palStore.PAL_BASE_WORKER_BTN
-        ? container.ContainerKind === 'base'
-        : (container.OwnerPlayerUId === roster
-          && ['party', 'storage'].includes(container.ContainerKind))
-          || (container.StorageKind === 'dps'
-            && container.StorageOwnerPlayerUid === roster)
-  ))
-})
-const canCreate = computed(() => Boolean(targetContainerId.value) && (mode.value === 'default'
+const selectedTemplate = computed(() => templatesStore.palTemplates
+  .find(template => template.templateId === templateId.value))
+// Where a new Pal may go is the backend's answer for this list, not a filter over
+// the storage directory: creating one into a viewing cage or another guild's base
+// would put it in a list nobody opened.
+const targetStorages = computed(() => creationTargetKeys.value
+  .map(storageKey => storagesStore.storage(storageKey))
+  .filter(Boolean))
+const canCreate = computed(() => Boolean(targetStorageKey.value) && (mode.value === 'default'
   || (mode.value === 'template' && selectedTemplate.value)
   || (mode.value === 'json' && palJson.value.trim())))
 
@@ -171,13 +177,13 @@ onMounted(async () => {
   appContent = document.querySelector('.app-content')
   previousAriaHidden = appContent?.getAttribute('aria-hidden')
   appContent?.setAttribute('aria-hidden', 'true')
-  await palStore.fetchPalTemplates()
-  await palStore.fetchPalContainers()
-  targetContainerId.value = palStore.BASE_PAL_BTN_CLK_FLAG
-    ? targetContainers.value.find(container => container.ContainerKind === 'base')?.StorageKey || ''
-    : targetContainers.value.find(
-      container => container.ContainerId === palStore.SELECTED_PLAYER_DATA?.PalStorageContainerId
-    )?.StorageKey || targetContainers.value[0]?.StorageKey || ''
+  await templatesStore.loadPalTemplates()
+  creationTargetKeys.value = await rostersStore.loadCreationTargets()
+  // The player's own Palbox where there is one, and otherwise the first target
+  // the backend offered -- which is the only base a base list has to choose from.
+  targetStorageKey.value = targetStorages.value.find(
+    storage => storage.containerId === playersStore.selectedPlayer?.PalStorageContainerId,
+  )?.storageKey || targetStorages.value[0]?.storageKey || ''
   await nextTick()
   dialog.value?.focus()
   window.addEventListener('resize', scheduleTemplatePreview)
@@ -210,21 +216,20 @@ function trapFocus(event) {
 }
 
 async function createPal() {
-  const options = mode.value === 'template'
-    ? { Mode: 'template', TemplateId: templateId.value }
-    : mode.value === 'json'
-      ? { Mode: 'json', PalJson: palJson.value }
-      : { Mode: 'default' }
-  options.TargetStorageKey = targetContainerId.value
-  if (await palStore.addPal(options)) emit('close')
+  if (await rostersStore.addPal({
+    mode: mode.value,
+    templateId: templateId.value,
+    palJson: palJson.value,
+    targetStorageKey: targetStorageKey.value,
+  })) emit('close')
 }
 
 async function saveTemplate() {
-  if (await palStore.savePalTemplate(templateName.value)) templateName.value = ''
+  if (await templatesStore.savePalTemplate(templateName.value)) templateName.value = ''
 }
 
 async function deleteTemplate(id) {
-  if (await palStore.deletePalTemplate(id) && templateId.value === id) {
+  if (await templatesStore.removePalTemplate(id) && templateId.value === id) {
     templateId.value = ''
   }
 }
@@ -237,27 +242,27 @@ async function deleteTemplate(id) {
       tabindex="-1" @keydown.esc="emit('close')" @keydown.tab="trapFocus">
       <header>
         <div>
-          <p>{{ palStore.getTranslatedText('AddPal_Eyebrow') }}</p>
-          <h2 id="add-pal-title">{{ palStore.getTranslatedText('AddPal_Title') }}</h2>
-          <small>{{ palStore.getTranslatedText('AddPal_Subtitle') }}</small>
+          <p>{{ appStore.getTranslatedText('AddPal_Eyebrow') }}</p>
+          <h2 id="add-pal-title">{{ appStore.getTranslatedText('AddPal_Title') }}</h2>
+          <small>{{ appStore.getTranslatedText('AddPal_Subtitle') }}</small>
         </div>
-        <button class="icon-button" :aria-label="palStore.getTranslatedText('AddPal_Cancel')"
+        <button class="icon-button" :aria-label="appStore.getTranslatedText('AddPal_Cancel')"
           @click="emit('close')"><UiIcon name="close" /></button>
       </header>
 
       <div class="add-pal-tabs" role="tablist">
         <button v-for="tab in tabs" :key="tab[0]" role="tab"
           :aria-selected="mode === tab[0]" @click="mode = tab[0]">
-          {{ palStore.getTranslatedText(tab[1]) }}
+          {{ appStore.getTranslatedText(tab[1]) }}
         </button>
       </div>
 
       <main>
         <section v-if="mode === 'default'" class="default-pal-panel">
-          <PalPortrait :src="palStore.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
+          <PalPortrait :src="backend.backendAssetUrl('/image/pals/SheepBall')" alt="" size="5rem" />
           <div>
-            <h3>{{ palStore.getTranslatedText('AddPal_Default_Title') }}</h3>
-            <p>{{ palStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
+            <h3>{{ appStore.getTranslatedText('AddPal_Default_Title') }}</h3>
+            <p>{{ appStore.getTranslatedText('AddPal_Default_Description_Target') }}</p>
             <small>SheepBall</small>
           </div>
         </section>
@@ -265,61 +270,61 @@ async function deleteTemplate(id) {
         <section v-else-if="mode === 'template'" class="template-panel">
           <div class="template-save">
             <div>
-              <strong>{{ palStore.getTranslatedText('AddPal_Save_Template') }}</strong>
-              <small>{{ palStore.getTranslatedText('AddPal_Save_Template_Hint') }}</small>
+              <strong>{{ appStore.getTranslatedText('AddPal_Save_Template') }}</strong>
+              <small>{{ appStore.getTranslatedText('AddPal_Save_Template_Hint') }}</small>
             </div>
             <input v-model="templateName" maxlength="64"
-              :placeholder="palStore.getTranslatedText('AddPal_Template_Name')">
-            <button class="secondary-button" :disabled="!templateName.trim() || !palStore.SELECTED_PAL_ID"
-              @click="saveTemplate">{{ palStore.getTranslatedText('AddPal_Save') }}</button>
+              :placeholder="appStore.getTranslatedText('AddPal_Template_Name')">
+            <button class="secondary-button" :disabled="!templateName.trim() || !palsStore.selectedRecordKey"
+              @click="saveTemplate">{{ appStore.getTranslatedText('AddPal_Save') }}</button>
           </div>
 
-          <div v-if="palStore.PAL_TEMPLATES.length" class="template-grid">
-            <article v-for="template in palStore.PAL_TEMPLATES" :key="template.Id"
-              :class="['template-card', { selected: templateId === template.Id }]"
+          <div v-if="templatesStore.palTemplates.length" class="template-grid">
+            <article v-for="template in templatesStore.palTemplates" :key="template.templateId"
+              :class="['template-card', { selected: templateId === template.templateId }]"
               @pointerenter="showTemplatePreview($event, template)" @pointerleave="hideTemplatePreview"
               @focusin="showTemplatePreview($event, template)" @focusout="hideTemplatePreview">
-              <button class="template-select" @click="templateId = template.Id">
-                <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
+              <button class="template-select" @click="templateId = template.templateId">
+                <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${template.IconKey || template.IconAccessKey}`)"
                   alt="" size="3rem" />
                 <span>
-                  <strong>{{ template.Name }}</strong>
+                  <strong>{{ template.name }}</strong>
                   <small>{{ template.DisplayName }} · Lv. {{ template.Level }}</small>
                   <small>{{ template.CharacterID }}</small>
                 </span>
               </button>
               <button class="template-delete"
-                :aria-label="palStore.getTranslatedText('AddPal_Delete_Template', [template.Name])"
-                @click="deleteTemplate(template.Id)"><UiIcon name="delete" /></button>
+                :aria-label="appStore.getTranslatedText('AddPal_Delete_Template', [template.name])"
+                @click="deleteTemplate(template.templateId)"><UiIcon name="delete" /></button>
             </article>
           </div>
-          <p v-else class="empty-state">{{ palStore.getTranslatedText('AddPal_Template_Empty') }}</p>
+          <p v-else class="empty-state">{{ appStore.getTranslatedText('AddPal_Template_Empty') }}</p>
         </section>
 
         <section v-else class="json-panel">
-          <label for="pal-json">{{ palStore.getTranslatedText('AddPal_Json_Label') }}</label>
-          <p>{{ palStore.getTranslatedText('AddPal_Json_Hint') }}</p>
+          <label for="pal-json">{{ appStore.getTranslatedText('AddPal_Json_Label') }}</label>
+          <p>{{ appStore.getTranslatedText('AddPal_Json_Hint') }}</p>
           <textarea id="pal-json" v-model="palJson" rows="13" spellcheck="false"
-            :placeholder="palStore.getTranslatedText('AddPal_Json_Placeholder')" />
+            :placeholder="appStore.getTranslatedText('AddPal_Json_Placeholder')" />
         </section>
       </main>
 
       <footer>
         <label class="target-container">
-          <span>{{ palStore.getTranslatedText('Editor_Move_Target') }}</span>
-          <select v-model="targetContainerId">
-            <option v-for="container in targetContainers" :key="container.StorageKey"
-              :value="container.StorageKey" :disabled="container.Occupied >= container.Size">
-              {{ containerLabel(container) }} ({{ container.Occupied }}/{{ container.Size }})
+          <span>{{ appStore.getTranslatedText('Editor_Move_Target') }}</span>
+          <select v-model="targetStorageKey">
+            <option v-for="storage in targetStorages" :key="storage.storageKey"
+              :value="storage.storageKey" :disabled="storage.occupied >= storage.capacity">
+              {{ storageLabel(storage) }} ({{ storage.occupied }}/{{ storage.capacity }})
             </option>
           </select>
         </label>
         <div>
           <button class="secondary-button" @click="emit('close')">
-            {{ palStore.getTranslatedText('AddPal_Cancel') }}
+            {{ appStore.getTranslatedText('AddPal_Cancel') }}
           </button>
-          <button class="primary-button" :disabled="!canCreate || palStore.LOADING_FLAG" @click="createPal">
-            <UiIcon name="plus" /> {{ palStore.getTranslatedText('AddPal_Create') }}
+          <button class="primary-button" :disabled="!canCreate" @click="createPal">
+            <UiIcon name="plus" /> {{ appStore.getTranslatedText('AddPal_Create') }}
           </button>
         </div>
       </footer>

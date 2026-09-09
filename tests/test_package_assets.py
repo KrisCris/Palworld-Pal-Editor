@@ -11,6 +11,10 @@ from types import SimpleNamespace
 
 ROOT = Path(__file__).parents[1]
 
+# The build scripts call PyInstaller through the venv interpreter they just
+# created, so the line starts with that interpreter, not with `pyinstaller`.
+PYINSTALLER_CALL = re.compile(r"-m PyInstaller (?:--onefile|--clean)(?:\s|$)")
+
 
 def _appimage_spec(binaries=()):
     captured = {}
@@ -29,7 +33,7 @@ def _appimage_spec(binaries=()):
         "PYZ": lambda *args, **kwargs: None,
         "EXE": exe,
     }
-    spec = ROOT / "palworld-pal-editor.spec"
+    spec = ROOT / "appimage.spec"
     exec(compile(spec.read_bytes(), spec, "exec"), namespace)  # noqa: S102
     return captured
 
@@ -39,7 +43,7 @@ def _pyinstaller_add_data(script: str, separator: str) -> set[tuple[str, str]]:
         return {tuple(data) for data in _appimage_spec()["analysis"]["datas"]}
 
     lines = (ROOT / script).read_text("utf-8").splitlines()
-    start = next(i for i, line in enumerate(lines) if line.strip().startswith("pyinstaller "))
+    start = next(i for i, line in enumerate(lines) if PYINSTALLER_CALL.search(line))
     command_lines = [lines[start].strip()]
     while command_lines[-1].endswith("\\"):
         command_lines.append(lines[start + len(command_lines)].strip())
@@ -211,7 +215,7 @@ def test_release_build_collects_only_runtime_assets_and_webui():
     }
     for script, (build, publish) in release_commands.items():
         source = (ROOT / script).read_text("utf-8")
-        pyinstaller = re.search(r"(?m)^pyinstaller (?:--onefile|--clean)(?:\s|$)", source)
+        pyinstaller = PYINSTALLER_CALL.search(source)
         assert pyinstaller is not None
         assert source.index(build) < source.index(publish) < pyinstaller.start()
 

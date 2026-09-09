@@ -1,10 +1,21 @@
+"""The open save: reading it, holding it, and writing it back.
+
+One session at a time. Opening means reading Level.sav and each player's `.sav`,
+decoding what this editor needs and skipping the rest, and then building everything
+else reads from -- the Pal and player repositories, containers, guilds, camps,
+lockers, rosters and the storage directory.
+
+This is the only module that writes a save file. It is also where Pals created
+during a session are settled into their owner's capture counts and paldeck flags:
+at save time, not at creation time, so a Pal that is created and then deleted again
+leaves no trace.
+"""
+
 import copy
-from datetime import datetime
 from pathlib import Path
-import re
-import shutil
+import threading
 import traceback
-from typing import Literal, Optional
+from typing import Optional
 import uuid
 
 from palworld_save_tools.gvas import GvasFile
@@ -16,43 +27,62 @@ from palworld_pal_editor.core.basecamp_data import BaseCampData
 
 from palworld_pal_editor.core.container_data import ContainerData
 from palworld_pal_editor.core.item_container_data import ItemContainerData
+from palworld_pal_editor.core.locker import LockerIndex
 
 from palworld_pal_editor.core.pal_objects import PalObjects, UUID2HexStr, toUUID
+from palworld_pal_editor.core.pal_mutations import PalMutationService
 from palworld_pal_editor.core.player_entity import PlayerEntity
 from palworld_pal_editor.core.pal_entity import PalEntity
-from palworld_pal_editor.core.pal_storage import FixedPalStorage, PalRecordRef
+from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_adapters import (
+    DpsPalAdapter,
+    GpsPalAdapter,
+    PalAdapter,
+    WorldPalAdapter,
+)
+from palworld_pal_editor.core.player_repository import PlayerRepository
+from palworld_pal_editor.core.rosters import RosterIndex
+from palworld_pal_editor.core.storage_directory import StorageDirectory
 from palworld_pal_editor.core.save_codec import (
     MAIN_SKIP_PROPERTIES,
-    PAL_STORAGE_CUSTOM_PROPERTIES,
     PLAYER_SKIP_PROPERTIES,
 )
-from palworld_pal_editor.utils import LOGGER, DataProvider, alphanumeric_key
-from palworld_pal_editor.core.group_data import GroupData
+from palworld_pal_editor.core.save_io import (
+    GLOBAL_STORAGE_NAME,
+    SaveFailed,
+    backup_saves,
+    restore_saves,
+)
+from palworld_pal_editor.utils import LOGGER, DataProvider
+from palworld_pal_editor.core.guild_data import GuildData
 from palworld_pal_editor.core.guild_lab_data import GuildLabData
 
-class PalIdentityConflict(ValueError):
-    def __init__(self, candidates: list[PalRecordRef]):
-        self.candidates = candidates
-        super().__init__("Pal identity already exists in the destination")
+
+
+class _WorldDataUnreadable(Exception):
+    """Level.sav parsed, but something inside it did not. Never leaves `_open`."""
 
 
 class SaveManager:
     # Although these are class attrs, SaveManager itself is singleton so it should be fine?
     _instance = None
-    _file_path: Optional[Path]
+    file_path: Optional[Path]
     _raw_gvas: Optional[bytes]
     _save_type: Optional[int]
 
     gvas_file: Optional[GvasFile]
     _entities_list: Optional[list[dict]]
 
-    player_mapping: Optional[dict[str, PlayerEntity]]
-    baseworker_mapping: Optional[dict[str, PalEntity]]
-    _dangling_pals: Optional[dict[str, PalEntity]]
+    players: PlayerRepository
+    pal_repository: PalRepository
+    world_adapter: Optional[WorldPalAdapter]
+    storage_adapters: dict[str, "PalAdapter"]
     
     container_data: Optional[ContainerData]
     item_container_data: Optional[ItemContainerData]
-    group_data: Optional[GroupData]
+    guild_data: Optional[GuildData]
     camp_data: Optional[BaseCampData]
     guild_lab_data: Optional[GuildLabData]
 
@@ -64,157 +94,197 @@ class SaveManager:
     def __init__(self):
         if not hasattr(self, "initialized"):
             self.initialized = True
-                
-    def open(self, file_path: str) -> Optional[GvasFile]:
-        self._file_path = Path(file_path).resolve()
-        self._record_mapping: dict[str, PalRecordRef] = {}
-        self._records_by_instance: dict[str, list[PalRecordRef]] = {}
-        self._roster_record_keys: dict[str, list[str]] = {}
-        self._dps_storages: dict[str, FixedPalStorage] = {}
-        self._global_palbox: FixedPalStorage | None = None
+            self.session_lock = threading.RLock()
+            self.reset()
+
+    def reset(self) -> None:
+        """Drop every piece of state belonging to the currently loaded save.
+
+        open() calls this on entry and again on any failure exit, so a save that
+        fails to parse leaves an empty session instead of the half-read wreckage
+        of this attempt mixed with the previous save.
+        """
+        self.file_path = None
+        self._raw_gvas = None
+        self._save_type = None
+        self.gvas_file = None
+        self._entities_list = None
+
+        self.players = PlayerRepository()
+        self.pal_repository = PalRepository()
+        self.world_adapter = None
+        # storageKey -> the adapter that reads and writes that place. A plain
+        # routing table: it holds no Pals, no rosters and no descriptors.
+        self.storage_adapters: dict[str, PalAdapter] = {}
+
+        self.container_data = None
+        self.item_container_data = None
+        self.guild_data = None
+        self.camp_data = None
+        self.guild_lab_data = None
+
+        self._dps_storages: dict[str, PalStorageSaveFile] = {}
+        self._global_palbox: PalStorageSaveFile | None = None
+
+        # What storages this save has and what each one is. Derived, cached, and
+        # invalidated by whatever moved a Pal.
+        self.storage_directory = StorageDirectory(self)
+        # Which Pals each list shows. Derived on every call, never maintained.
+        self.rosters = RosterIndex(self)
+        # Which Pals Level.sav says are in a DPS. Maintained by the mutations
+        # that put one there or take it out.
+        self.locker = LockerIndex(self)
         self.load_warnings: list[str] = []
 
-        level_sav_path = self._file_path / "Level.sav"
+        # Relocate, replicate and update-existing. It reads this manager rather than
+        # holding anything of its own, so a reset replaces it along with everything
+        # it would have read.
+        self.pal_mutations = PalMutationService(self)
 
+    def open(self, file_path: str) -> Optional[GvasFile]:
+        with self.session_lock:
+            self.reset()
+            try:
+                gvas_file = self._open(file_path)
+            except Exception as e:
+                LOGGER.error(f"Error opening {file_path}: {e}")
+                LOGGER.debug(traceback.format_exc())
+                gvas_file = None
+
+            if gvas_file is None:
+                self.reset()
+            return gvas_file
+
+    def _read_level_sav(self, level_sav_path: Path) -> bool:
+        """Decompress and parse Level.sav into `gvas_file`. False if it will not read."""
+        LOGGER.info(f"Opening {level_sav_path}")
+        data = level_sav_path.read_bytes()
+        try:
+            LOGGER.info("Decompressing sav")
+            self._raw_gvas, self._save_type = decompress_sav_to_gvas(data)
+        except Exception as error:
+            LOGGER.error(
+                "Caught Exception: palworld_save_tools::palsav::"
+                f"decompress_sav_to_gvas: {error}"
+            )
+            return False
+
+        LOGGER.info("Reading GVAS file")
+        self.gvas_file = GvasFile.read(
+            self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
+        )
+        PalObjects.TIME = (
+            PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp"))
+            or PalObjects.TIME
+        )
+        return True
+
+    def _read_world_data(self) -> None:
+        """Build every reader over the loaded world data.
+
+        Each of these was its own try/except answering None, five times over. The
+        answer is the same for all of them -- a save whose world data will not parse
+        is a save this cannot open -- so it is said once, and what failed travels in
+        the exception instead of in a log line at each site.
+        """
+
+        def parse(label: str, build):
+            try:
+                return build()
+            except Exception as error:
+                raise _WorldDataUnreadable(f"Error parsing {label}: {error}") from error
+
+        self.guild_data = parse("group data", lambda: GuildData(self.gvas_file))
+        self.camp_data = parse("base camp data", lambda: BaseCampData(self.gvas_file))
+        self.guild_lab_data = parse(
+            "guild laboratory data",
+            lambda: GuildLabData(
+                self.gvas_file,
+                DataProvider.get_lab_research_data(),
+                DataProvider.get_lab_research_labels(),
+            ),
+        )
+        self.container_data = parse(
+            "container data", lambda: ContainerData(self.gvas_file)
+        )
+        self.item_container_data = parse(
+            "item container data", lambda: ItemContainerData(self.gvas_file)
+        )
+        self._entities_list = parse(
+            "pal data",
+            lambda: self.gvas_file.properties["worldSaveData"]["value"][
+                "CharacterSaveParameterMap"
+            ]["value"],
+        )
+
+    def _bind_world_adapter(self) -> None:
+        """Every world container reads and writes through the one world adapter."""
+        self.world_adapter = WorldPalAdapter(self._entities_list, self.container_data)
+        for container in self.container_data.get_containers():
+            self.storage_adapters[
+                WorldPalAdapter.storage_key(container.ID)
+            ] = self.world_adapter
+
+    def _open(self, file_path: str) -> Optional[GvasFile]:
+        self.file_path = Path(file_path).resolve()
+        level_sav_path = self.file_path / "Level.sav"
         if not level_sav_path.exists():
             LOGGER.error(f"Save file does not exist: {level_sav_path}.")
             return None
+        if not self._read_level_sav(level_sav_path):
+            return None
+        try:
+            self._read_world_data()
+        except _WorldDataUnreadable as failure:
+            LOGGER.error(str(failure))
+            return None
 
-        LOGGER.info(f"Opening {level_sav_path}")
-        with level_sav_path.open("rb") as file:
-            data = file.read()
-
-            try:
-                LOGGER.info("Decompressing sav")
-                self._raw_gvas, self._save_type = decompress_sav_to_gvas(data)
-            except Exception as e:
-                LOGGER.error(f"Caught Exception: palworld_save_tools::palsav::decompress_sav_to_gvas: {e}")
-                return None
-
-            LOGGER.info("Reading GVAS file")
-            self.gvas_file = GvasFile.read(
-                self._raw_gvas, PALWORLD_TYPE_HINTS, MAIN_SKIP_PROPERTIES
-            )
-
-            PalObjects.TIME = PalObjects.get_BaseType(self.gvas_file.properties.get("Timestamp")) or PalObjects.TIME
-
-            try:
-                self.group_data = GroupData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing group data: {e}")
-                return None
-            
-            try:
-                self.camp_data = BaseCampData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing base camp data: {e}")
-                return None
-
-            try:
-                self.guild_lab_data = GuildLabData(
-                    self.gvas_file,
-                    DataProvider.get_lab_research_data(),
-                    DataProvider.get_lab_research_labels(),
-                )
-            except Exception as e:
-                LOGGER.error(f"Error parsing guild laboratory data: {e}")
-                return None
-            
-            try:
-                self.container_data = ContainerData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing container data: {e}")
-                return None
-
-            try:
-                self.item_container_data = ItemContainerData(self.gvas_file)
-            except Exception as e:
-                LOGGER.error(f"Error parsing item container data: {e}")
-                return None
-
-            try:
-                self._entities_list = self.gvas_file.properties["worldSaveData"]["value"]["CharacterSaveParameterMap"]["value"]
-            except Exception as e:
-                LOGGER.error(f"Unable to retrieve pal data: {e}")
-                return None
-
-            self._load_entities()
-            self._register_world_records()
-            self._load_external_storages()
-            self._container_registry_cache = None
-
-            LOGGER.info("Done")
+        self._bind_world_adapter()
+        self._load_players()
+        self._register_world_records()
+        self._load_external_storages()
+        self.storage_directory.invalidate()
+        LOGGER.info("Done")
         return self.gvas_file
 
     def save(self, file_path: str) -> bool:
-        if self.gvas_file is None:
-            LOGGER.error("No gvas_file stored in save manager, aborting")
-            return False
-        if self._save_type is None:
-            LOGGER.warning("_save_type is None, aborting")
-            return False
+        with self.session_lock:
+            return self._save(file_path)
 
-        output_path = Path(file_path).resolve() 
+    def _serialize_session(
+        self, output_path: Path, global_storage_path: Path
+    ) -> tuple[list[tuple[Path, bytes]], list[PalStorageSaveFile]]:
+        """Every file this session would write, as bytes, and the storages that owe one.
 
-        if not output_path.exists():
-            LOGGER.warning(f"Path does not exist: {output_path}")
-            if output_path.parent.exists():
-                output_path.mkdir(parents=True, exist_ok=True)
-                LOGGER.debug(f"Path {output_path} created")
-            else:
-                LOGGER.error(f"Parent path {output_path.parent} does not exist, skipping")
-                return False
-            
-        if output_path.exists():
-            BK_FOLDER_NAME = "Palworld-Pal-Editor-Backup"
-            backup_dir = output_path / BK_FOLDER_NAME / f"{datetime.now().strftime(r'%Y-%m-%d_%H-%M-%S')}"
-            try:
-                if output_path.exists():
-                    LOGGER.info(f"Saving backup of {output_path} to {backup_dir}")
-                    shutil.copytree(self._file_path, backup_dir, 
-                                    ignore=lambda dir, files: [f for f in files if not f == "Players" and not f.endswith('.sav')])
-                    global_storage_path = output_path.parent / "GlobalPalStorage.sav"
-                    if (
-                        self._global_palbox is not None
-                        and global_storage_path.exists()
-                    ):
-                        global_storage_backup = backup_dir / global_storage_path.name
-                        LOGGER.info(
-                            "Saving Global Pal Storage backup: "
-                            f"source={global_storage_path} "
-                            f"destination={global_storage_backup}"
-                        )
-                        shutil.copy2(global_storage_path, global_storage_backup)
-                else:
-                    LOGGER.info(f"No existing directory to backup: {output_path}")
-            except Exception as e:
-                LOGGER.error(f"Error backing up directory: {e}")
-                return False
-
-        outputs: list[tuple[Path, bytes, dict]] = []
-        level_data = compress_gvas_to_sav(
-            copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
-            self._save_type,
-        )
-        outputs.append((output_path / "Level.sav", level_data, MAIN_SKIP_PROPERTIES))
-        for player in self.player_mapping.values():
+        Nothing is written here and nothing is mutated: this is the whole of what
+        the session knows about producing a save, separated from the backup and
+        restore around it. The bytes come from a deepcopy of each live GVAS so a
+        successful save leaves the session exactly as it was -- still live, still
+        the same objects the open editor is holding.
+        """
+        outputs: list[tuple[Path, bytes]] = [
+            (
+                output_path / "Level.sav",
+                compress_gvas_to_sav(
+                    copy.deepcopy(self.gvas_file).write(MAIN_SKIP_PROPERTIES),
+                    self._save_type,
+                ),
+            )
+        ]
+        for player in self.players:
             if player.PlayerGVAS is None:
                 continue
-            player.save_new_pal_records()
             player_gvas, player_save_type = player.PlayerGVAS
-            player_data = compress_gvas_to_sav(
-                copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
-                player_save_type,
-            )
             outputs.append(
                 (
-                    output_path
-                    / "Players"
-                    / f"{UUID2HexStr(player.PlayerUId)}.sav",
-                    player_data,
-                    PLAYER_SKIP_PROPERTIES,
+                    output_path / "Players" / f"{UUID2HexStr(player.PlayerUId)}.sav",
+                    compress_gvas_to_sav(
+                        copy.deepcopy(player_gvas).write(PLAYER_SKIP_PROPERTIES),
+                        player_save_type,
+                    ),
                 )
             )
+
         dirty_storages = [
             storage for storage in self._dps_storages.values() if storage.dirty
         ]
@@ -222,86 +292,124 @@ class SaveManager:
             dirty_storages.append(self._global_palbox)
         for storage in dirty_storages:
             target = (
-                output_path.parent / "GlobalPalStorage.sav"
+                global_storage_path
                 if storage.kind == "global_palbox"
                 else output_path / "Players" / storage.path.name
             )
-            outputs.append(
-                (target, storage.serialize(), PAL_STORAGE_CUSTOM_PROPERTIES)
-            )
+            outputs.append((target, storage.serialize()))
+        return outputs, dirty_storages
 
-        staged: list[tuple[Path, Path]] = []
-        backups: dict[Path, Path | None] = {}
-        replaced: list[Path] = []
-        transaction_id = uuid.uuid4().hex
+    def _save(self, file_path: str) -> bool:
+        """Write the session to `file_path`, or raise `SaveFailed` having undone it.
+
+        Nothing is staged and nothing is read back to check itself: producing bytes
+        the game can load is `palworld-save-tools`' job, and a file that decompresses
+        again proves nothing about the save inside it. What does have to hold is that
+        a half-written save never survives, and the backup taken before the first
+        write is what holds it.
+
+        The bytes come from a deepcopy of each live GVAS so that a successful save
+        leaves the session exactly as it was -- still live, still the same objects the
+        open editor is holding -- rather than swapping it for what was serialized.
+        """
+        if self.gvas_file is None or self._save_type is None:
+            raise SaveFailed("No save is loaded")
+
+        output_path = Path(file_path).resolve()
+        if not output_path.exists():
+            if not output_path.parent.exists():
+                raise SaveFailed(f"Parent path does not exist: {output_path.parent}")
+            LOGGER.info(f"Creating {output_path}")
+            output_path.mkdir(parents=True, exist_ok=True)
+
+        global_storage_path = output_path.parent / GLOBAL_STORAGE_NAME
         try:
-            for target, sav_data, custom_properties in outputs:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                staged.append(
-                    (target, self._staged_output(target, sav_data, custom_properties))
-                )
-            for target, _ in staged:
-                if target.exists():
-                    backup = target.with_name(
-                        f".{target.name}.{transaction_id}.bak"
-                    )
-                    shutil.copy2(target, backup)
-                    backups[target] = backup
-                else:
-                    backups[target] = None
-            for target, temp in staged:
-                self._replace_staged_output(temp, target)
-                replaced.append(target)
-                LOGGER.info(f"Saved verified output: file_path={target}")
-        except Exception:
-            LOGGER.error(
-                f"Save transaction failed; restoring outputs: {traceback.format_exc()}"
+            backup_dir = backup_saves(output_path, global_storage_path)
+        except Exception as error:
+            # Nothing has been written yet, so there is nothing to undo -- but there
+            # is also no safety net, and that is reason enough not to start.
+            raise SaveFailed(f"Could not back up {output_path}: {error}") from error
+
+        settled: dict[str, dict] = {}
+        created: list[Path] = []
+        dirty_storages: list[PalStorageSaveFile] = []
+        try:
+            settled = self._settle_created_records()
+            outputs, dirty_storages = self._serialize_session(
+                output_path, global_storage_path
             )
-            for target in reversed(replaced):
-                backup = backups.get(target)
-                try:
-                    if backup is None:
-                        target.unlink(missing_ok=True)
-                    else:
-                        shutil.copy2(backup, target)
-                    LOGGER.info(f"Restored output: file_path={target}")
-                except Exception:
-                    LOGGER.critical(
-                        f"Failed restoring output {target}: {traceback.format_exc()}"
-                    )
-            return False
-        finally:
-            for _, temp in staged:
-                temp.unlink(missing_ok=True)
-            for backup in backups.values():
-                if backup is not None:
-                    backup.unlink(missing_ok=True)
+            # Files this save is about to bring into existence. Putting a backup back
+            # cannot undo those, so undoing them means deleting them.
+            created = [target for target, _ in outputs if not target.exists()]
+            for target, sav_data in outputs:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(sav_data)
+                LOGGER.info(f"Saved {target}")
+        except Exception as error:
+            LOGGER.error(f"Save failed: {traceback.format_exc()}")
+            restored = True
+            try:
+                restore_saves(backup_dir, output_path, created)
+            except Exception:
+                restored = False
+                LOGGER.critical(
+                    f"Could not put {output_path} back the way it was. The save files "
+                    f"there are the half-written ones, and {backup_dir} is now the "
+                    f"only complete copy: {traceback.format_exc()}"
+                )
+            # The settlement was folded in for a save that did not happen, so the
+            # players go back to what they were and the next attempt settles once.
+            self._restore_settled_records(settled)
+            raise SaveFailed(
+                f"Could not save to {output_path}: {error}",
+                backup_path=backup_dir,
+                restored=restored,
+            ) from error
+
         for storage in dirty_storages:
             storage.dirty = False
+        # Every output file is on disk, so the settlement they contain is durable,
+        # the created set may finally be consumed, and every Pal on screen is once
+        # again what the save says it is.
+        self.pal_repository.clear_created()
+        self.pal_repository.clear_modified()
         return True
 
-    @staticmethod
-    def _staged_output(
-        path: Path,
-        sav_data: bytes,
-        custom_properties: dict,
-    ) -> Path:
-        temp = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
-        try:
-            temp.write_bytes(sav_data)
-            raw_gvas, _ = decompress_sav_to_gvas(temp.read_bytes())
-            GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, custom_properties)
-            return temp
-        except Exception:
-            temp.unlink(missing_ok=True)
-            raise
+    def _settle_created_records(self) -> dict[str, dict]:
+        """Fold this session's created Pals into their owners' capture records.
 
-    @staticmethod
-    def _replace_staged_output(temp: Path, target: Path) -> None:
-        temp.replace(target)
-    
+        Returns the pre-settlement snapshot of every player it touched. It does not
+        clear the created set: the old path cleared its tracker right here, so a save
+        that failed afterwards had already applied the capture counts and paldeck
+        flags to the in-memory player GVAS while losing the record that it had to,
+        and the retry silently under-counted. Consuming the set is `save()`'s job,
+        once every output file is written.
+        """
+        snapshots: dict[str, dict] = {}
+        for record in self.pal_repository.created_records():
+            owner = (
+                self.get_player(record.pal.OwnerPlayerUId)
+                if record.pal.OwnerPlayerUId
+                else None
+            )
+            # A created Pal with no owner -- a base worker, or a Global Palbox Pal --
+            # has no player records to settle into.
+            if owner is None:
+                continue
+            uid = str(owner.PlayerUId)
+            if uid not in snapshots:
+                snapshots[uid] = owner.snapshot_capture_records()
+            owner.settle_captured_pal(record.pal)
+        return snapshots
+
+    def _restore_settled_records(self, snapshots: dict[str, dict]) -> None:
+        for uid, snapshot in snapshots.items():
+            player = self.get_player(uid)
+            if player is not None:
+                player.restore_capture_records(snapshot)
+
     def load_player_sav(self, player_uid: str | UUID) -> GvasFile:
-        player_path: Path = self._file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
+        player_path: Path = self.file_path / "Players" / f"{UUID2HexStr(player_uid)}.sav"
         LOGGER.info(f"Loading Player SAV: {player_path}")
         if not player_path.exists():
             LOGGER.error(f"Player SAV {str(player_path.absolute())} not exist")
@@ -311,258 +419,196 @@ class SaveManager:
         raw_gvas, compression_times = decompress_sav_to_gvas(player_data)
         player_gvas_file = GvasFile.read(raw_gvas, PALWORLD_TYPE_HINTS, PLAYER_SKIP_PROPERTIES)
         return player_gvas_file, compression_times
-    
-    
-    def save_player_sav(self, player_entity: PlayerEntity, save_path: Optional[Path] = None) -> bool:
-        if player_entity.PlayerGVAS is None:
-            return False
 
-        player_entity.save_new_pal_records()
-        gvas_file, compression_times = player_entity.PlayerGVAS
-        output_path = (save_path or self._file_path) / "Players"
-        if not output_path.exists() and output_path.parent.exists():
-            LOGGER.warning(f"Player path does not exist: {output_path}")
-            output_path.mkdir(parents=True, exist_ok=True)
-            LOGGER.info(f"Player path {output_path} created")
+    def _load_players(self) -> None:
+        """Create every PlayerEntity from the World save's character array.
 
-        player_path: Path = output_path / f"{UUID2HexStr(player_entity.PlayerUId)}.sav"
-
-        LOGGER.info(f"Compressing Player {player_entity} GVAS file")
-        player_gvas_file = copy.deepcopy(gvas_file)
-        sav_data = compress_gvas_to_sav(
-            player_gvas_file.write(PLAYER_SKIP_PROPERTIES), compression_times
-        )
-
-        LOGGER.info(f"Saving to {player_path}")
-        with player_path.open("wb") as file:
-            file.write(sav_data)
-        LOGGER.info(f"Saved to {player_path}")
-        return True
-    
-    def _load_entities(self):
-        self.player_mapping = {}
-        self._dangling_pals = {}
-        self.baseworker_mapping = {}
-        base_container_ids = {
-            str(camp.container_id)
-            for camp in self.camp_data.get_camps()
-            if camp.container_id
-        }
-        temp_player_pal_mapping: dict[str, dict[str, PalEntity]] = {}
-        for entity in self._entities_list:
-            entity_struct = entity["value"]["RawData"]["value"]["object"]["SaveParameter"]
-            if entity_struct['struct_type'] != 'PalIndividualCharacterSaveParameter':
-                LOGGER.warning(f"Non-player/pal data found in CharacterSaveParameterMap, skipping {entity}")
+        Runs before any Pal is registered, so a Pal's owner either exists by the time
+        its record is built or never will.
+        """
+        for native_record in self._entities_list:
+            if not WorldPalAdapter.is_player(native_record):
                 continue
-
-            entity_param: dict = entity_struct['value']
-            try: 
-                if PalObjects.get_BaseType(entity_param.get("IsPlayer")):
-                    uid_str = str(PalObjects.get_BaseType(entity["key"].get("PlayerUId")))
-                    nickname = str(PalObjects.get_BaseType(entity_param.get("NickName")))
-                    LOGGER.info(f"Players found: {nickname} - {uid_str}")
-                    if uid_str in self.player_mapping:
-                        LOGGER.error(f"Duplicated player found: \n\t{self.player_mapping[uid_str]}, skipping...")
-                        continue
-                    
-                    group_id = self.group_data.get_player_group_id(uid_str)
-
-                    if group_id is None:
-                        LOGGER.warning(f"Player {uid_str} has no guild id")
-                        continue
-
-                    player_gvas_file, player_compress_times = self.load_player_sav(uid_str)
-
-                    if uid_str in temp_player_pal_mapping:
-                        player_entity = PlayerEntity(group_id, entity, temp_player_pal_mapping[uid_str], player_gvas_file, player_compress_times)
-                        del temp_player_pal_mapping[uid_str]
-                    else:
-                        player_entity = PlayerEntity(group_id, entity, dict(), player_gvas_file, player_compress_times)
-                
-                    self.player_mapping[uid_str] = player_entity
-                    LOGGER.info(f"Player Object Created: {player_entity}")
-                else:
-                    pal_entity = PalEntity(entity)
-                    container_id, slot_idx = pal_entity.SlotId
-                    group_id = pal_entity.group_id
-                    actual_slots = self.container_data.find_pal_slots(
-                        pal_entity.InstanceId
+            try:
+                parameter = WorldPalAdapter.save_parameter(native_record)["value"]
+                uid_str = str(
+                    PalObjects.get_BaseType(native_record["key"].get("PlayerUId"))
+                )
+                nickname = str(PalObjects.get_BaseType(parameter.get("NickName")))
+                LOGGER.info(f"Players found: {nickname} - {uid_str}")
+                if uid_str in self.players:
+                    LOGGER.error(
+                        f"Duplicated player found: \n\t{self.players.get(uid_str)}, "
+                        "skipping..."
                     )
-                    is_unref_pal = not (
-                        len(actual_slots) == 1
-                        and str(actual_slots[0][0].ID) == str(container_id)
-                        and actual_slots[0][1].inv_idx == slot_idx
-                    )
-                    if is_unref_pal:
-                        LOGGER.info(f"Likely Ghost Pal: {pal_entity}")
-                    pal_entity.is_unreferenced_pal = is_unref_pal
+                    continue
 
-                    owner = pal_entity.OwnerPlayerUId
-                    if owner:
-                        owner_str = str(owner)
-                        if owner_str in self.player_mapping:
-                            self.player_mapping[owner_str].add_pal(
-                                pal_entity, f"world:{pal_entity.InstanceId}"
-                            )
-                        else:
-                            temp_player_pal_mapping.setdefault(owner_str, dict())[
-                                f"world:{pal_entity.InstanceId}"
-                            ] = pal_entity
-                        LOGGER.info(f"Found pal: {pal_entity}")
+                group_id = self.guild_data.get_player_group_id(uid_str)
+                if group_id is None:
+                    LOGGER.warning(f"Player {uid_str} has no guild id")
+                    continue
 
-                    else:
-                        if (
-                            len(actual_slots) == 1
-                            and str(actual_slots[0][0].ID) in base_container_ids
-                        ):
-                            self.baseworker_mapping[str(pal_entity.InstanceId)] = pal_entity
-                            continue
-                        self._dangling_pals[str(pal_entity.InstanceId)] = pal_entity
-                        LOGGER.error(f"Found dangling pal object: {pal_entity}, skipping")
-                        continue
-
+                player_gvas_file, player_compress_times = self.load_player_sav(uid_str)
+                player_entity = PlayerEntity(
+                    group_id,
+                    native_record,
+                    player_gvas_file,
+                    player_compress_times,
+                )
+                self.players.register(player_entity)
+                LOGGER.info(f"Player Object Created: {player_entity}")
             except Exception as e:
                 LOGGER.error(f"Error occured while init'in object: {e}, skipping")
                 continue
-
-        
-        for player in self.player_mapping.values():
-            LOGGER.newline()
-            LOGGER.info(f"{player}")
-            sorted_palbox = player.get_sorted_pals()
-            for pal in sorted_palbox:
-                LOGGER.info(f"\t{pal}")
-        
-        LOGGER.newline()
-        LOGGER.info("Pals possibly working at the base: ")
-        for pal in self.get_working_pals():
-            LOGGER.info(f"\t{pal}")
-
-        LOGGER.newline()
-        LOGGER.info("Dangling Pals (No OwnerID and OldOwnerID): ")
-        for pal in self._dangling_pals.values():
-            LOGGER.warning(f"\t{pal}")
-
-        for uid_str in temp_player_pal_mapping:
-            pal_list = temp_player_pal_mapping[uid_str]
-            LOGGER.newline()
-            LOGGER.warning(f"Found dangling pals owned by non-existing user {uid_str}")
-            for pal in pal_list.values():
-                self._dangling_pals[str(pal.InstanceId)] = pal
-                LOGGER.warning(f"\t{pal}")
 
     @property
     def has_global_palbox(self) -> bool:
         return self._global_palbox is not None
 
-    def _register_record(self, record: PalRecordRef, roster_key: str) -> None:
-        if record.record_key in self._record_mapping:
-            raise ValueError(f"Duplicated Pal RecordKey: {record.record_key}")
-        self._record_mapping[record.record_key] = record
-        instance_id = str(record.pal.InstanceId)
-        self._records_by_instance.setdefault(instance_id, []).append(record)
-        self._roster_record_keys.setdefault(roster_key, []).append(record.record_key)
+    @property
+    def dps_storages(self) -> dict[str, PalStorageSaveFile]:
+        """Every loaded Dimensional Pal Storage, by storage key."""
+        return self._dps_storages
 
-    def _unregister_record(self, record: PalRecordRef) -> None:
-        self._record_mapping.pop(record.record_key, None)
-        instance_key = str(record.pal.InstanceId)
-        records = self._records_by_instance.get(instance_key, [])
-        records[:] = [item for item in records if item.record_key != record.record_key]
-        if not records:
-            self._records_by_instance.pop(instance_key, None)
-        for record_keys in self._roster_record_keys.values():
-            while record.record_key in record_keys:
-                record_keys.remove(record.record_key)
-        for player in self.get_players():
-            player.pop_pal(record.record_key)
-        self.baseworker_mapping.pop(instance_key, None)
-        self._dangling_pals.pop(instance_key, None)
+    @property
+    def global_palbox(self) -> Optional[PalStorageSaveFile]:
+        return self._global_palbox
 
-    def _register_external_record(self, record: PalRecordRef) -> None:
+    def _unregister_record(self, record: PalRecord) -> None:
+        self.pal_repository.unregister(record)
+
+    def _register_external_record(
+        self, record: PalRecord, *, created: bool = False
+    ) -> None:
         owner = self.get_player(record.pal.OwnerPlayerUId)
-        roster_key = "PAL_OTHER_PAL_BTN"
         if owner is not None:
-            record.pal.group_id = owner.group_id
-            owner.add_pal(record.pal, record.record_key)
-            roster_key = str(owner.PlayerUId)
-        self._register_record(record, roster_key)
+            record.group_id = owner.group_id
+        self.pal_repository.register(record, created=created)
 
     def _register_world_records(self) -> None:
-        for player in self.get_players():
-            roster_key = str(player.PlayerUId)
-            for pal in player.get_pals():
-                self._register_world_record(pal, roster_key)
-        for pal in self.baseworker_mapping.values():
-            self._register_world_record(pal, "PAL_BASE_WORKER_BTN")
-        for pal in self._dangling_pals.values():
-            self._register_world_record(pal, "PAL_OTHER_PAL_BTN")
+        """Register every World Pal and file it under the roster it belongs to.
 
-    def _register_world_record(self, pal: PalEntity, roster_key: str) -> None:
-        container_id = str(pal.ContainerId) if pal.ContainerId else None
-        self._register_record(
-            PalRecordRef(
-                record_key=f"world:{pal.InstanceId}",
-                storage_key=(
-                    f"world-container:{container_id}"
-                    if container_id
-                    else "world-anomaly"
-                ),
-                storage_kind="world",
-                slot_index=pal.SlotIndex if pal.SlotIndex is not None else -1,
-                pal=pal,
-                storage_owner_uid=(
-                    str(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
-                ),
-            ),
-            roster_key,
-        )
+        The Pal's own record decides where it belongs: an owner that exists, a base
+        container it really occupies, or neither.
+        """
+        base_container_ids = {
+            str(camp.container_id)
+            for camp in self.camp_data.get_camps()
+            if camp.container_id
+        }
+        for record in self.world_adapter.records():
+            pal = record.pal
+            owner = self.get_player(pal.OwnerPlayerUId) if pal.OwnerPlayerUId else None
+            if owner is not None:
+                self.pal_repository.register(record)
+                LOGGER.info(f"Found pal: {pal}")
+                continue
+
+            self.pal_repository.register(record)
+            if pal.OwnerPlayerUId:
+                LOGGER.warning(
+                    f"Found pal owned by non-existing user {pal.OwnerPlayerUId}: {pal}"
+                )
+
+        for player in self.players:
+            LOGGER.newline()
+            LOGGER.info(f"{player}")
+            for record in self.rosters.sorted_records_for_roster(player.PlayerUId):
+                LOGGER.info(f"\t{record.pal}")
+
+        LOGGER.newline()
+        LOGGER.info("Pals possibly working at the base: ")
+        for pal in self.get_working_pals():
+            LOGGER.info(f"\t{pal}")
+
+        self._log_location_anomalies()
+
+    def _log_location_anomalies(self) -> None:
+        """One WARNING per Pal whose recorded container slot does not hold it.
+
+        A container location anomaly gets a load log line and nothing else
+        -- no anomaly set, no query index, no UI field, no second roster. Every value
+        here is read back out of the save at the moment of logging, so the anomaly
+        outlives this call only as text.
+        """
+        for record in self.pal_repository.records():
+            if record.storage_kind != "world" or record.storage_key is not None:
+                continue
+            pal = record.pal
+            container = self.container_data.get_container(pal.ContainerId)
+            slot = (
+                None
+                if container is None
+                else next(
+                    (
+                        slot
+                        for slot in container.slots
+                        if slot.SlotIndex == pal.SlotIndex
+                    ),
+                    None,
+                )
+            )
+            LOGGER.warning(
+                "Container location anomaly: "
+                f"record_key={record.record_key} InstanceId={pal.InstanceId} "
+                f"ContainerId={pal.ContainerId} SlotIndex={pal.SlotIndex} "
+                f"container_exists={container is not None} "
+                f"slot_exists={slot is not None} "
+                f"slot_instance_id={slot.instance_id if slot is not None else None}"
+            )
 
     def _load_external_storages(self) -> None:
-        players_path = self._file_path / "Players"
+        players_path = self.file_path / "Players"
         for dps_path in sorted(players_path.glob("*_dps.sav")):
             owner_hex = dps_path.stem.removesuffix("_dps")
             try:
                 owner_uid = toUUID(str(uuid.UUID(owner_hex)))
-                storage = FixedPalStorage.open(dps_path, "dps", owner_uid)
+                storage = PalStorageSaveFile.open(dps_path, "dps", owner_uid)
                 self._dps_storages[storage.storage_key] = storage
+                adapter = DpsPalAdapter(storage)
+                self.storage_adapters[storage.storage_key] = adapter
                 LOGGER.info(
                     f"Loaded DPS: path={dps_path} owner={owner_uid} "
-                    f"occupied={storage.occupied}/{storage.capacity}"
+                    f"occupied={storage.occupied}/{storage.slot_count}"
                 )
-                for record in storage.records():
+                for record in adapter.records():
                     self._register_external_record(record)
             except Exception as error:
                 warning = f"Unable to load DPS {dps_path}: {error}"
                 self.load_warnings.append(warning)
                 LOGGER.warning(warning)
 
-        gps_path = self._file_path.parent / "GlobalPalStorage.sav"
+        gps_path = self.file_path.parent / GLOBAL_STORAGE_NAME
         if not gps_path.exists():
             return
         try:
-            self._global_palbox = FixedPalStorage.open(
+            self._global_palbox = PalStorageSaveFile.open(
                 gps_path, "global_palbox"
             )
+            adapter = GpsPalAdapter(self._global_palbox)
+            self.storage_adapters[self._global_palbox.storage_key] = adapter
             LOGGER.info(
                 f"Loaded Global Palbox: path={gps_path} "
                 f"occupied={self._global_palbox.occupied}/"
-                f"{self._global_palbox.capacity}"
+                f"{self._global_palbox.slot_count}"
             )
-            for record in self._global_palbox.records():
-                self._register_record(record, "PAL_GLOBAL_STORAGE_BTN")
+            for record in adapter.records():
+                self.pal_repository.register(record)
         except Exception as error:
             warning = f"Unable to load Global Palbox {gps_path}: {error}"
             self.load_warnings.append(warning)
             LOGGER.warning(warning)
+            if self._global_palbox is not None:
+                self.storage_adapters.pop(self._global_palbox.storage_key, None)
             self._global_palbox = None
 
-    def get_record(self, record_key: str) -> Optional[PalRecordRef]:
-        return self._record_mapping.get(str(record_key))
+    def get_record(self, record_key: str) -> Optional[PalRecord]:
+        return self.pal_repository.get(record_key)
 
     def records_by_instance(
         self, instance_id: UUID | str, domain: str = "all"
-    ) -> list[PalRecordRef]:
-        records = list(self._records_by_instance.get(str(instance_id), []))
+    ) -> list[PalRecord]:
+        records = self.pal_repository.records_by_instance(instance_id)
         if domain == "all":
             return records
         if domain == "world":
@@ -577,31 +623,18 @@ class SaveManager:
             return [record for record in records if record.storage_kind == "dps"]
         raise ValueError(f"Unknown Pal record domain: {domain}")
 
-    def get_unique_world_record(
-        self, instance_id: UUID | str | None
-    ) -> Optional[PalRecordRef]:
-        if instance_id is None:
-            return None
-        records = self.records_by_instance(instance_id, "world")
-        if len(records) > 1:
-            raise ValueError(
-                "Multiple ordinary world records share this Instance ID; use RecordKey."
-            )
-        return records[0] if records else None
 
-    def records_for_roster(self, roster_key: str) -> list[PalRecordRef]:
-        return [
-            self._record_mapping[key]
-            for key in self._roster_record_keys.get(str(roster_key), [])
-        ]
+
+
+
 
     def get_players(self) -> list[PlayerEntity]:
-        return self.player_mapping.values()
+        return self.players.all()
 
     def get_lab_research(self) -> dict:
-        if getattr(self, "guild_lab_data", None) is None:
+        if self.guild_lab_data is None:
             raise ValueError("Guild laboratory data is not loaded")
-        return self.guild_lab_data.snapshot(self.group_data, self.camp_data)
+        return self.guild_lab_data.snapshot(self.guild_data, self.camp_data)
 
     def complete_lab_research(
         self,
@@ -611,7 +644,7 @@ class SaveManager:
         category: str | None = None,
         all_research: bool = False,
     ) -> int:
-        if getattr(self, "guild_lab_data", None) is None:
+        if self.guild_lab_data is None:
             raise ValueError("Guild laboratory data is not loaded")
         return self.guild_lab_data.complete(
             guild_id,
@@ -621,1648 +654,36 @@ class SaveManager:
         )
     
     def get_player(self, guid: UUID | str) -> Optional[PlayerEntity]:
-        if guid is None: return
-        guid = str(guid)
-        if guid in self.player_mapping:
-            player = self.player_mapping[guid]
-            return player
-        # LOGGER.warning(f"Player {guid} not exist")
+        return self.players.get(guid)
 
     def get_players_by_name(self, name: str) -> list[PlayerEntity]:
-        return [player for player in self.get_players() if player.NickName == name]
+        return self.players.by_name(name)
     
-    def get_working_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        return self.baseworker_mapping.get(str(guid), None)
-
     def get_pal(self, guid: UUID | str) -> Optional[PalEntity]:
-        guid = str(guid)
-        if guid in self.baseworker_mapping:
-            return self.baseworker_mapping[guid]
-        if guid in self._dangling_pals:
-            return self._dangling_pals[guid]
-        for player in self.get_players():
-            if pal := player.get_pal(guid, disable_warning=True):
-                return pal
-
-        LOGGER.warning(f"Can't find pal {guid}")
+        records = self.records_by_instance(guid)
+        if not records:
+            LOGGER.warning(f"Can't find pal {guid}")
+            return None
+        # A World copy wins over a DPS/GPS one sharing the Instance ID, which is the
+        # order the old baseworker-then-dangling-then-palbox scan happened to produce.
+        world = [record for record in records if record.storage_kind == "world"]
+        return (world[0] if world else records[0]).pal
 
     def get_working_pals(self) -> list[PalEntity]:
-        return sorted(self.baseworker_mapping.values(), key=lambda pal: (alphanumeric_key(pal.PalDeckID), pal.Level or 1))
+        return [record.pal for record in self.rosters.working_records()]
 
-    def _container_descriptor_map(self) -> dict[str, dict]:
-        cached = getattr(self, "_container_registry_cache", None)
-        if cached is not None:
-            return cached
-        descriptors = {}
 
-        def add_descriptor(container_id, **values):
-            container = self.container_data.get_container(container_id)
-            if container is None:
-                return
-            descriptors[str(container.ID)] = {
-                "ContainerId": str(container.ID),
-                "StorageKey": f"world-container:{container.ID}",
-                "StorageKind": "world",
-                "ContainerKind": values["kind"],
-                "ContainerLabel": values["label"],
-                "OwnerPlayerUId": values.get("owner_player_uid"),
-                "StorageOwnerPlayerUid": values.get("owner_player_uid"),
-                "OwnerName": values.get("owner_name"),
-                "BaseId": values.get("base_id"),
-                "BaseName": values.get("base_name"),
-                "BaseOrdinal": values.get("base_ordinal"),
-                "GroupId": values.get("group_id"),
-                "Size": container.size,
-                "Capacity": container.size,
-                "Occupied": len(container.slots),
-                "Classification": values["classification"],
-                "MovableInto": values["movable_into"],
-                "CloneableInto": False,
-                "Shared": values.get("shared", False),
-                "Anomaly": values.get("anomaly"),
-            }
 
-        for player in self.get_players():
-            owner_id = str(player.PlayerUId)
-            group_id = str(player.group_id) if player.group_id else None
-            add_descriptor(
-                player.OtomoCharacterContainerId,
-                kind="party",
-                label=f"{player.NickName} · Party",
-                owner_player_uid=owner_id,
-                owner_name=player.NickName,
-                group_id=group_id,
-                classification="exact",
-                movable_into=True,
-            )
-            add_descriptor(
-                player.PalStorageContainerId,
-                kind="storage",
-                label=f"{player.NickName} · Palbox",
-                owner_player_uid=owner_id,
-                owner_name=player.NickName,
-                group_id=group_id,
-                classification="exact",
-                movable_into=True,
-            )
 
-        for base_ordinal, camp in enumerate(self.camp_data.get_camps(), start=1):
-            template_match = re.fullmatch(
-                r"新規生成拠点テンプレート名(\d+)\(仮\)", camp.name or ""
-            )
-            display_ordinal = base_ordinal if template_match else None
-            add_descriptor(
-                camp.container_id,
-                kind="base",
-                label=(
-                    f"Base {display_ordinal}"
-                    if display_ordinal is not None
-                    else camp.name or f"Base {str(camp.id)[:8]}"
-                ),
-                base_id=str(camp.id),
-                base_name=camp.name,
-                base_ordinal=display_ordinal,
-                group_id=str(camp.owner_group_id),
-                classification="exact",
-                movable_into=True,
-            )
 
-        for container in self.container_data.get_containers():
-            container_id = str(container.ID)
-            if container_id in descriptors:
-                continue
 
-            if container.size == 40:
-                add_descriptor(
-                    container.ID,
-                    kind="special",
-                    label="Viewing Cage",
-                    classification="inferred",
-                    movable_into=True,
-                    shared=True,
-                )
-                continue
 
-            owners = []
-            unresolved = False
-            for slot in container.slots:
-                pal = self.get_pal(slot.instance_id)
-                if pal is None or pal.OwnerPlayerUId is None:
-                    unresolved = True
-                    continue
-                owners.append(str(pal.OwnerPlayerUId))
 
-            unique_owners = set(owners)
-            if (
-                container.slots
-                and not unresolved
-                and len(owners) == len(container.slots)
-                and len(unique_owners) == 1
-            ):
-                owner_id = owners[0]
-                owner = self.get_player(owner_id)
-                if owner is not None:
-                    kind_label = f"Special container ({container.size} slots)"
-                    add_descriptor(
-                        container.ID,
-                        kind="special",
-                        label=f"{owner.NickName} · {kind_label}",
-                        owner_player_uid=owner_id,
-                        owner_name=owner.NickName,
-                        group_id=str(owner.group_id),
-                        classification="inferred",
-                        movable_into=True,
-                    )
-                    continue
 
-            anomaly = "mixed_owner" if len(unique_owners) > 1 else None
-            add_descriptor(
-                container.ID,
-                kind="unknown",
-                label=f"Unknown container ({container.size} slots)",
-                classification="unknown",
-                movable_into=False,
-                anomaly=anomaly,
-            )
 
-        dps_name = DataProvider.get_tech_name("DimensionPalStorage") or (
-            "Dimensional Pal Storage"
-        )
-        for storage in getattr(self, "_dps_storages", {}).values():
-            owner = self.get_player(storage.owner_uid)
-            owner_name = owner.NickName if owner else storage.owner_uid
-            descriptors[storage.storage_key] = {
-                "ContainerId": None,
-                "StorageKey": storage.storage_key,
-                "StorageKind": "dps",
-                "ContainerKind": "dps",
-                "ContainerLabel": f"{owner_name} · {dps_name}",
-                "OwnerPlayerUId": storage.owner_uid,
-                "StorageOwnerPlayerUid": storage.owner_uid,
-                "OwnerName": owner_name,
-                "BaseId": None,
-                "BaseName": None,
-                "BaseOrdinal": None,
-                "GroupId": str(owner.group_id) if owner else None,
-                "Size": storage.capacity,
-                "Capacity": storage.capacity,
-                "Occupied": storage.occupied,
-                "Classification": "exact" if owner else "unknown_owner",
-                "MovableInto": True,
-                "CloneableInto": False,
-                "Shared": True,
-                "Anomaly": None if owner else "unknown_storage_owner",
-            }
 
-        global_palbox = getattr(self, "_global_palbox", None)
-        if global_palbox is not None:
-            storage = global_palbox
-            descriptors[storage.storage_key] = {
-                "ContainerId": None,
-                "StorageKey": storage.storage_key,
-                "StorageKind": "global_palbox",
-                "ContainerKind": "global_palbox",
-                "ContainerLabel": (
-                    DataProvider.get_tech_name("GlobalPalStorage")
-                    or "Global Palbox"
-                ),
-                "OwnerPlayerUId": None,
-                "StorageOwnerPlayerUid": None,
-                "OwnerName": None,
-                "BaseId": None,
-                "BaseName": None,
-                "BaseOrdinal": None,
-                "GroupId": None,
-                "Size": storage.capacity,
-                "Capacity": storage.capacity,
-                "Occupied": storage.occupied,
-                "Classification": "exact",
-                "MovableInto": False,
-                "CloneableInto": True,
-                "Shared": True,
-                "Anomaly": None,
-            }
 
-        self._container_registry_cache = descriptors
-        return descriptors
 
-    def get_container_registry(self) -> list[dict]:
-        order = {
-            "global_palbox": -1,
-            "party": 0,
-            "storage": 1,
-            "dps": 2,
-            "special": 3,
-            "base": 4,
-            "unknown": 5,
-        }
-        return sorted(
-            self._container_descriptor_map().values(),
-            key=lambda item: (
-                item.get("GroupId") or "",
-                order.get(item["ContainerKind"], 99),
-                item["ContainerLabel"],
-                item["ContainerId"],
-            ),
-        )
 
-    def get_storage_descriptor(self, storage_key: str) -> Optional[dict]:
-        return next(
-            (
-                descriptor
-                for descriptor in self._container_descriptor_map().values()
-                if descriptor["StorageKey"] == str(storage_key)
-                or descriptor.get("ContainerId") == str(storage_key)
-            ),
-            None,
-        )
-
-    def resolve_record_location(self, record: PalRecordRef | str) -> dict:
-        record_ref = record if isinstance(record, PalRecordRef) else self.get_record(record)
-        if record_ref is None:
-            raise ValueError("Pal record not found")
-        if record_ref.storage_kind == "world":
-            location = self.resolve_pal_location(record_ref.pal)
-            location["StorageKey"] = record_ref.storage_key
-            location["StorageKind"] = "world"
-            return location
-        descriptor = self.get_storage_descriptor(record_ref.storage_key)
-        return {
-            "RecordedContainerId": (
-                str(record_ref.pal.ContainerId)
-                if record_ref.pal.ContainerId
-                else None
-            ),
-            "RecordedSlotIndex": record_ref.pal.SlotIndex,
-            "ActualContainerId": None,
-            "ActualSlotIndex": record_ref.slot_index,
-            "ActualLocations": [
-                {
-                    "StorageKey": record_ref.storage_key,
-                    "SlotIndex": record_ref.slot_index,
-                }
-            ],
-            "LocationStatus": "ok",
-            "LocationAnomaly": None,
-            "ContainerKind": record_ref.storage_kind,
-            "ContainerLabel": (
-                descriptor["ContainerLabel"] if descriptor else record_ref.storage_key
-            ),
-            "StorageKey": record_ref.storage_key,
-            "StorageKind": record_ref.storage_kind,
-        }
-
-    def resolve_pal_location(self, pal: PalEntity | UUID | str) -> dict:
-        pal_entity = pal if isinstance(pal, PalEntity) else self.get_pal(pal)
-        if pal_entity is None:
-            raise ValueError("Pal not found")
-
-        recorded_container_id = (
-            str(pal_entity.ContainerId) if pal_entity.ContainerId else None
-        )
-        recorded_slot_index = pal_entity.SlotIndex
-        actual_slots = self.container_data.find_pal_slots(pal_entity.InstanceId)
-        actual_locations = [
-            {"ContainerId": str(container.ID), "SlotIndex": slot.inv_idx}
-            for container, slot in actual_slots
-        ]
-
-        if recorded_container_id and self.container_data.get_container(pal_entity.ContainerId) is None:
-            status = "unknown_container"
-        elif not actual_slots:
-            status = "missing"
-        elif len(actual_slots) > 1:
-            status = "duplicate"
-        elif (
-            str(actual_slots[0][0].ID) != recorded_container_id
-            or actual_slots[0][1].inv_idx != recorded_slot_index
-        ):
-            status = "slot_mismatch"
-        else:
-            status = "ok"
-
-        actual_container_id = actual_locations[0]["ContainerId"] if len(actual_locations) == 1 else None
-        actual_slot_index = actual_locations[0]["SlotIndex"] if len(actual_locations) == 1 else None
-        descriptor = self._container_descriptor_map().get(actual_container_id or recorded_container_id)
-        messages = {
-            "missing": "Pal is not present in any decoded container slot.",
-            "slot_mismatch": "Pal SlotId does not match its actual container slot.",
-            "duplicate": "Pal appears in multiple container slots.",
-            "unknown_container": "Pal SlotId refers to an unknown container.",
-        }
-        return {
-            "RecordedContainerId": recorded_container_id,
-            "RecordedSlotIndex": recorded_slot_index,
-            "ActualContainerId": actual_container_id,
-            "ActualSlotIndex": actual_slot_index,
-            "ActualLocations": actual_locations,
-            "LocationStatus": status,
-            "LocationAnomaly": messages.get(status),
-            "ContainerKind": descriptor["ContainerKind"] if status == "ok" and descriptor else "anomaly",
-            "ContainerLabel": descriptor["ContainerLabel"] if status == "ok" and descriptor else "Location anomaly",
-        }
-
-    def _locker_entries(self) -> list[dict]:
-        world_data = self.gvas_file.properties["worldSaveData"]["value"]
-        locker = world_data.get("InLockerCharacterInstanceIDArray")
-        if locker is None:
-            locker = {
-                "set_type": "StructProperty",
-                "id": None,
-                "struct_type": "StructProperty",
-                "type": "SetProperty",
-                "value": [],
-            }
-            world_data["InLockerCharacterInstanceIDArray"] = locker
-        return locker["value"]
-
-    @staticmethod
-    def _locker_instance_id(entry: dict) -> Optional[UUID]:
-        return PalObjects.get_BaseType(entry.get("InstanceId"))
-
-    def _add_locker_id(self, instance_id: UUID | str) -> None:
-        instance_id = toUUID(str(instance_id))
-        if any(
-            self._locker_instance_id(entry) == instance_id
-            for entry in self._locker_entries()
-        ):
-            return
-        self._locker_entries().append(
-            {
-                "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
-                "InstanceId": PalObjects.Guid(instance_id),
-                "DebugName": PalObjects.StrProperty(""),
-            }
-        )
-
-    def _remove_locker_id(self, instance_id: UUID | str) -> None:
-        instance_id = toUUID(str(instance_id))
-        entries = self._locker_entries()
-        entries[:] = [
-            entry
-            for entry in entries
-            if self._locker_instance_id(entry) != instance_id
-        ]
-
-    @staticmethod
-    def _save_parameter(pal: PalEntity) -> dict:
-        return pal._pal_obj["value"]["RawData"]["value"]["object"][
-            "SaveParameter"
-        ]
-
-    def _snapshot_external_mutation(
-        self,
-        external_slots: list[tuple[FixedPalStorage, int]],
-        containers: list,
-    ) -> dict:
-        unique_storages = {storage.storage_key: storage for storage, _ in external_slots}
-        unique_containers = {str(container.ID): container for container in containers}
-        return {
-            "external_slots": [
-                (storage, index, copy.deepcopy(storage._entries[index]))
-                for storage, index in external_slots
-            ],
-            "storage_dirty": {
-                key: storage.dirty for key, storage in unique_storages.items()
-            },
-            "containers": [
-                (container, container.snapshot_slots())
-                for container in unique_containers.values()
-            ],
-            "entities": list(self._entities_list),
-            "players": {
-                str(player.PlayerUId): (dict(player._palbox), dict(player._new_palbox))
-                for player in self.get_players()
-            },
-            "baseworker": dict(self.baseworker_mapping),
-            "dangling": dict(self._dangling_pals),
-            "groups": [
-                (group, copy.deepcopy(group.individual_character_handle_ids))
-                for group in self.group_data.get_groups()
-            ],
-            "locker": copy.deepcopy(self._locker_entries()),
-            "record_mapping": dict(self._record_mapping),
-            "records_by_instance": {
-                key: list(records) for key, records in self._records_by_instance.items()
-            },
-            "roster_record_keys": {
-                key: list(record_keys)
-                for key, record_keys in self._roster_record_keys.items()
-            },
-            "registry": getattr(self, "_container_registry_cache", None),
-        }
-
-    def _restore_external_mutation(self, snapshot: dict) -> None:
-        for storage, index, entry_snapshot in snapshot["external_slots"]:
-            entry = storage._entries[index]
-            entry.clear()
-            entry.update(copy.deepcopy(entry_snapshot))
-        for storage, _ in {
-            (storage, storage.storage_key)
-            for storage, _, _ in snapshot["external_slots"]
-        }:
-            storage.dirty = snapshot["storage_dirty"][storage.storage_key]
-        for container, slot_snapshot in snapshot["containers"]:
-            container.restore_slots(slot_snapshot)
-        self._entities_list[:] = snapshot["entities"]
-        for player in self.get_players():
-            palbox, new_palbox = snapshot["players"][str(player.PlayerUId)]
-            player._palbox.clear()
-            player._palbox.update(palbox)
-            player._new_palbox.clear()
-            player._new_palbox.update(new_palbox)
-        self.baseworker_mapping.clear()
-        self.baseworker_mapping.update(snapshot["baseworker"])
-        self._dangling_pals.clear()
-        self._dangling_pals.update(snapshot["dangling"])
-        for group, handles in snapshot["groups"]:
-            if handles is None:
-                group._group_param.pop("individual_character_handle_ids", None)
-                group.instance_map = {}
-            else:
-                group._group_param["individual_character_handle_ids"] = handles
-                group.instance_map = {
-                    str(handle["instance_id"]): handle for handle in handles
-                }
-        self._locker_entries()[:] = snapshot["locker"]
-        self._record_mapping = snapshot["record_mapping"]
-        self._records_by_instance = snapshot["records_by_instance"]
-        self._roster_record_keys = snapshot["roster_record_keys"]
-        self._container_registry_cache = snapshot["registry"]
-
-    def _world_roster_key(self, descriptor: dict, pal: PalEntity) -> str:
-        if descriptor["ContainerKind"] == "base":
-            return "PAL_BASE_WORKER_BTN"
-        if pal.OwnerPlayerUId and self.get_player(pal.OwnerPlayerUId):
-            return str(pal.OwnerPlayerUId)
-        return "PAL_OTHER_PAL_BTN"
-
-    def _make_world_pal(
-        self,
-        source: PalEntity,
-        descriptor: dict,
-        container,
-        slot_index: int,
-    ) -> tuple[PalEntity, object]:
-        source_owner = self.get_player(source.OwnerPlayerUId)
-        target_kind = descriptor["ContainerKind"]
-        target_owner = self.get_player(descriptor.get("OwnerPlayerUId"))
-        if target_kind == "base":
-            owner = None
-            group_id = descriptor["GroupId"]
-        elif descriptor.get("Shared"):
-            owner = source_owner
-            group_id = source_owner.group_id if source_owner else source.group_id
-        else:
-            owner = target_owner
-            group_id = descriptor["GroupId"]
-        group = self.group_data.get_group(group_id)
-        if group is None:
-            raise ValueError("Target guild is unavailable.")
-
-        pal_obj = PalObjects.PalSaveParameter(
-            source.InstanceId,
-            source.OwnerPlayerUId or PalObjects.EMPTY_UUID,
-            container.ID,
-            slot_index,
-            group_id,
-        )
-        pal_obj["value"]["RawData"]["value"]["object"]["SaveParameter"] = (
-            copy.deepcopy(self._save_parameter(source))
-        )
-        pal = PalEntity(pal_obj)
-        pal.InstanceId = source.InstanceId
-        pal.PlayerUId = PalObjects.EMPTY_UUID
-        pal.SlotId = (container.ID, slot_index)
-        pal.group_id = group_id
-        if owner is None:
-            pal.set_owner_player_uid(None)
-        else:
-            pal.set_owner_player_uid(owner.PlayerUId, owner)
-        return pal, group
-
-    def _validate_world_target(self, source: PalEntity, descriptor: dict) -> None:
-        source_owner = self.get_player(source.OwnerPlayerUId)
-        source_group_id = source_owner.group_id if source_owner else source.group_id
-        if descriptor.get("Shared"):
-            if source.OwnerPlayerUId is None:
-                raise ValueError("A shared container requires a Pal with an owner.")
-            return
-        if str(source_group_id) != str(descriptor.get("GroupId")):
-            raise ValueError("Cross-guild Pal movement is not supported.")
-
-    def _prepare_global_parameter(
-        self,
-        source: PalEntity,
-        *,
-        preserve_provenance: bool,
-    ) -> tuple[dict, dict]:
-        save_parameter = copy.deepcopy(self._save_parameter(source))
-        parameter = save_parameter["value"]
-        parameter["OwnerPlayerUId"] = PalObjects.Guid(PalObjects.EMPTY_UUID)
-        parameter["ItemContainerId"] = PalObjects.PalContainerId(
-            PalObjects.EMPTY_UUID
-        )
-        parameter["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
-            PalObjects.Guid(PalObjects.EMPTY_UUID)
-        )
-        parameter["bImportedCharacter"] = PalObjects.BoolProperty(True)
-        parameter["BaseCampWorkerEventType"] = PalObjects.EnumProperty(
-            "EPalBaseCampWorkerEventType",
-            "EPalBaseCampWorkerEventType::None",
-        )
-        parameter["BaseCampWorkerEventProgressTime"] = PalObjects.FloatProperty(0.0)
-        if not preserve_provenance:
-            parameter["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-                "StructProperty",
-                {
-                    "prop_name": "OldOwnerPlayerUIds",
-                    "prop_type": "StructProperty",
-                    "values": [],
-                    "type_name": "Guid",
-                    "id": PalObjects.EMPTY_UUID,
-                },
-            )
-            parameter["SlotId"] = PalObjects.PalCharacterSlotId(
-                -1, PalObjects.EMPTY_UUID
-            )
-        outer_instance = {
-            "PlayerUId": PalObjects.Guid(PalObjects.EMPTY_UUID),
-            "InstanceId": PalObjects.Guid(source.InstanceId),
-            "DebugName": PalObjects.StrProperty(""),
-        }
-        return save_parameter, outer_instance
-
-    def normalize_external_record(self, record: PalRecordRef) -> None:
-        if record.storage_kind == "global_palbox":
-            save_parameter, _ = self._prepare_global_parameter(
-                record.pal, preserve_provenance=True
-            )
-            record.pal._pal_param.clear()
-            record.pal._pal_param.update(save_parameter["value"])
-            self._global_palbox.dirty = True
-        elif record.storage_kind == "dps":
-            self._add_locker_id(record.pal.InstanceId)
-            storage = self._dps_storages.get(record.storage_key)
-            if storage is not None:
-                storage.dirty = True
-
-    def _global_collision_candidates(self, source: PalRecordRef) -> list[PalRecordRef]:
-        records = self.records_by_instance(source.pal.InstanceId)
-        if source.storage_kind == "global_palbox":
-            return [
-                record
-                for record in records
-                if record.storage_kind in {"world", "dps"}
-            ]
-        return [
-            record
-            for record in records
-            if record.storage_kind == "global_palbox"
-        ]
-
-    @staticmethod
-    def _restore_local_parameter_envelope(
-        incoming_parameter: dict,
-        destination_parameter: dict,
-    ) -> dict:
-        local_keys = {
-            "OwnerPlayerUId",
-            "OldOwnerPlayerUIds",
-            "SlotId",
-            "ItemContainerId",
-            "EquipItemContainerId",
-            "MapObjectConcreteInstanceIdAssignedToExpedition",
-            "BaseCampWorkerEventType",
-            "BaseCampWorkerEventProgressTime",
-            "bImportedCharacter",
-        }
-        merged = copy.deepcopy(incoming_parameter)
-        for key in local_keys:
-            if key in destination_parameter:
-                merged[key] = copy.deepcopy(destination_parameter[key])
-            else:
-                merged.pop(key, None)
-        return merged
-
-    def _transfer_global(
-        self,
-        source: PalRecordRef,
-        descriptor: dict,
-        action: str,
-        expected_target_record_key: str | None,
-    ) -> dict:
-        is_import = source.storage_kind == "global_palbox"
-        if is_import:
-            if not (
-                descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"party", "storage"}
-                and descriptor.get("OwnerPlayerUId")
-            ):
-                raise ValueError(
-                    "Global Palbox imports must target a player Party or Palbox."
-                )
-        elif descriptor["StorageKind"] != "global_palbox":
-            raise ValueError("Global Palbox exports must target Global Palbox.")
-
-        candidates = self._global_collision_candidates(source)
-        if action == "clone" and candidates:
-            raise PalIdentityConflict(candidates)
-        if action == "update":
-            if len(candidates) != 1:
-                if candidates:
-                    raise PalIdentityConflict(candidates)
-                raise ValueError("No matching destination identity exists.")
-            destination = candidates[0]
-            if (
-                destination.record_key != expected_target_record_key
-                or destination.storage_key != descriptor["StorageKey"]
-            ):
-                raise ValueError("The locked update target is stale or changed.")
-            external_slots = []
-            destination_storage = None
-            if destination.storage_kind == "dps":
-                destination_storage = self._dps_storages[destination.storage_key]
-            elif destination.storage_kind == "global_palbox":
-                destination_storage = self._global_palbox
-            if destination_storage is not None:
-                external_slots.append(
-                    (destination_storage, destination.slot_index)
-                )
-            snapshot = self._snapshot_external_mutation(external_slots, [])
-            try:
-                if destination.storage_kind == "global_palbox":
-                    updated_parameter, _ = self._prepare_global_parameter(
-                        source.pal, preserve_provenance=True
-                    )
-                    destination.pal._pal_param.clear()
-                    destination.pal._pal_param.update(
-                        copy.deepcopy(updated_parameter["value"])
-                    )
-                else:
-                    incoming = copy.deepcopy(
-                        self._save_parameter(source.pal)["value"]
-                    )
-                    merged = self._restore_local_parameter_envelope(
-                        incoming, destination.pal._pal_param
-                    )
-                    destination.pal._pal_param.clear()
-                    destination.pal._pal_param.update(merged)
-                destination.pal._display_name_cache = {}
-                if destination_storage is not None:
-                    destination_storage.dirty = True
-                LOGGER.info(
-                    "Global Palbox update succeeded: "
-                    f"source_record={source.record_key} "
-                    f"target_record={destination.record_key} "
-                    f"target_storage={destination.storage_key} "
-                    f"target_slot={destination.slot_index} "
-                    f"pal={destination.pal.InstanceId}"
-                )
-                return {
-                    "RecordKey": destination.record_key,
-                    "StorageKey": destination.storage_key,
-                    "InstanceId": str(destination.pal.InstanceId),
-                }
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Global Palbox update rolled back: {traceback.format_exc()}"
-                )
-                raise
-
-        if action != "clone":
-            raise ValueError(f"Unsupported Global Palbox action: {action}")
-        if is_import:
-            target_container = self.container_data.get_container(
-                descriptor["ContainerId"]
-            )
-            if target_container is None or target_container.get_empty_slot() == -1:
-                raise ValueError("Target world container is full or unavailable.")
-            snapshot = self._snapshot_external_mutation([], [target_container])
-            try:
-                target_slot = target_container.add_pal(source.pal.InstanceId)
-                target_pal, target_group = self._make_world_pal(
-                    source.pal, descriptor, target_container, target_slot
-                )
-                target_pal._pal_param.pop(
-                    "MapObjectConcreteInstanceIdAssignedToExpedition", None
-                )
-                if not target_group.add_pal(target_pal.InstanceId):
-                    raise ValueError("Pal already exists in the target guild.")
-                self._entities_list.append(target_pal._pal_obj)
-                target_record = PalRecordRef(
-                    record_key=f"world:{target_pal.InstanceId}",
-                    storage_key=descriptor["StorageKey"],
-                    storage_kind="world",
-                    slot_index=target_slot,
-                    pal=target_pal,
-                    storage_owner_uid=descriptor.get("StorageOwnerPlayerUid"),
-                )
-                owner = self.get_player(target_pal.OwnerPlayerUId)
-                owner.add_pal(target_pal, target_record.record_key)
-                self._register_record(
-                    target_record, str(target_pal.OwnerPlayerUId)
-                )
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Global Palbox import rolled back: {traceback.format_exc()}"
-                )
-                raise
-        else:
-            global_storage = self._global_palbox
-            if global_storage is None:
-                raise ValueError("Global Palbox is unavailable.")
-            target_index = global_storage.free_index()
-            if target_index < 0:
-                raise ValueError("Global Palbox is full.")
-            snapshot = self._snapshot_external_mutation(
-                [(global_storage, target_index)], []
-            )
-            try:
-                save_parameter, _ = self._prepare_global_parameter(
-                    source.pal, preserve_provenance=True
-                )
-                target_record = global_storage.allocate(
-                    save_parameter, source.pal.InstanceId
-                )
-                self._register_record(
-                    target_record, "PAL_GLOBAL_STORAGE_BTN"
-                )
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Global Palbox export rolled back: {traceback.format_exc()}"
-                )
-                raise
-        self._container_registry_cache = None
-        LOGGER.info(
-            "Global Palbox clone succeeded: "
-            f"source_record={source.record_key} "
-            f"target_record={target_record.record_key} "
-            f"target_storage={target_record.storage_key} "
-            f"target_slot={target_record.slot_index} "
-            f"pal={target_record.pal.InstanceId}"
-        )
-        return {
-            "RecordKey": target_record.record_key,
-            "StorageKey": target_record.storage_key,
-            "InstanceId": str(target_record.pal.InstanceId),
-        }
-
-    def transfer_pal(
-        self,
-        source_record_key: str,
-        target_storage_key: str,
-        action: Literal["move", "clone", "update"],
-        expected_target_record_key: str | None = None,
-    ) -> dict:
-        source = self.get_record(source_record_key)
-        if source is None:
-            raise ValueError("Source Pal record not found.")
-        if source.pal.IsExpeditionPal and action == "move":
-            raise ValueError("Expedition Pals must be recalled in-game before moving.")
-        descriptor = self.get_storage_descriptor(target_storage_key)
-        if descriptor is None:
-            raise ValueError("Target storage is unknown or unsafe.")
-        if (
-            source.storage_kind == "global_palbox"
-            or descriptor["StorageKind"] == "global_palbox"
-            or action in {"clone", "update"}
-        ):
-            return self._transfer_global(
-                source, descriptor, action, expected_target_record_key
-            )
-        if action != "move":
-            raise ValueError(f"Unsupported transfer action: {action}")
-        if not descriptor["MovableInto"]:
-            raise ValueError("Target storage is unknown or unsafe.")
-        target_storage_key = descriptor["StorageKey"]
-        if source.storage_key == target_storage_key:
-            raise ValueError("Pal is already in the target storage.")
-        if source.storage_kind == "world":
-            location = self.resolve_record_location(source)
-            if location["LocationStatus"] != "ok":
-                raise ValueError(
-                    f"Pal location is {location['LocationStatus']}; repair it before moving."
-                )
-
-        LOGGER.info(
-            "Transfer Pal requested: "
-            f"action={action} source_record={source.record_key} "
-            f"source_storage={source.storage_key} source_slot={source.slot_index} "
-            f"pal={source.pal.InstanceId} pal_owner={source.pal.OwnerPlayerUId} "
-            f"target_storage={target_storage_key} "
-            f"target_kind={descriptor['StorageKind']} "
-            f"storage_owner={descriptor.get('StorageOwnerPlayerUid')}"
-        )
-
-        if source.storage_kind == "world" and descriptor["StorageKind"] == "world":
-            self.move_pal(source.pal.InstanceId, descriptor["ContainerId"])
-            source.storage_key = target_storage_key
-            source.slot_index = source.pal.SlotIndex
-            for record_keys in self._roster_record_keys.values():
-                while source.record_key in record_keys:
-                    record_keys.remove(source.record_key)
-            self._roster_record_keys.setdefault(
-                self._world_roster_key(descriptor, source.pal), []
-            ).append(source.record_key)
-            return {
-                "RecordKey": source.record_key,
-                "StorageKey": source.storage_key,
-                "InstanceId": str(source.pal.InstanceId),
-            }
-
-        target_storage = None
-        target_container = None
-        target_index = -1
-        if descriptor["StorageKind"] == "dps":
-            target_storage = self._dps_storages.get(target_storage_key)
-            if target_storage is None:
-                raise ValueError("Target DPS is unavailable.")
-            target_index = target_storage.free_index()
-            if target_index < 0:
-                raise ValueError("Target DPS is full.")
-            if any(
-                record.pal.InstanceId == source.pal.InstanceId
-                for record in target_storage.records()
-            ):
-                raise ValueError("Pal already exists in the target DPS.")
-        elif descriptor["StorageKind"] == "world":
-            target_container = self.container_data.get_container(
-                descriptor["ContainerId"]
-            )
-            if target_container is None or target_container.get_empty_slot() == -1:
-                raise ValueError("Target world container is full or unavailable.")
-            self._validate_world_target(source.pal, descriptor)
-        else:
-            raise ValueError("Target storage does not support movement.")
-
-        source_storage = (
-            self._dps_storages.get(source.storage_key)
-            if source.storage_kind == "dps"
-            else None
-        )
-        source_container = None
-        if source.storage_kind == "world":
-            source_container = self.container_data.get_container(
-                self.resolve_record_location(source)["ActualContainerId"]
-            )
-        external_slots = []
-        if source_storage is not None:
-            external_slots.append((source_storage, source.slot_index))
-        if target_storage is not None:
-            external_slots.append((target_storage, target_index))
-        snapshot = self._snapshot_external_mutation(
-            external_slots,
-            [
-                container
-                for container in (source_container, target_container)
-                if container is not None
-            ],
-        )
-
-        try:
-            if target_storage is not None:
-                target_record = target_storage.allocate(
-                    self._save_parameter(source.pal),
-                    source.pal.InstanceId,
-                )
-            else:
-                target_slot = target_container.add_pal(source.pal.InstanceId)
-                if target_slot < 0:
-                    raise ValueError("Target world container is full.")
-                target_pal, target_group = self._make_world_pal(
-                    source.pal, descriptor, target_container, target_slot
-                )
-                if not target_group.add_pal(target_pal.InstanceId):
-                    raise ValueError("Pal already exists in the target guild.")
-                self._entities_list.append(target_pal._pal_obj)
-                target_record = PalRecordRef(
-                    record_key=f"world:{target_pal.InstanceId}",
-                    storage_key=target_storage_key,
-                    storage_kind="world",
-                    slot_index=target_slot,
-                    pal=target_pal,
-                    storage_owner_uid=descriptor.get("StorageOwnerPlayerUid"),
-                )
-
-            if source.storage_kind == "world":
-                source_container.del_pal(source.pal.InstanceId)
-                source_group = self.group_data.get_group(source.pal.group_id)
-                if source_group:
-                    source_group.del_pal(source.pal.InstanceId)
-                self._entities_list.remove(source.pal._pal_obj)
-                self._add_locker_id(source.pal.InstanceId)
-            else:
-                source_storage.clear(source.record_key)
-                if descriptor["StorageKind"] == "world":
-                    self._remove_locker_id(source.pal.InstanceId)
-
-            self._unregister_record(source)
-            if target_record.storage_kind == "dps":
-                self._register_external_record(target_record)
-            else:
-                owner = self.get_player(target_record.pal.OwnerPlayerUId)
-                if descriptor["ContainerKind"] == "base":
-                    self.baseworker_mapping[str(target_record.pal.InstanceId)] = (
-                        target_record.pal
-                    )
-                elif owner is not None:
-                    owner.add_pal(target_record.pal, target_record.record_key)
-                self._register_record(
-                    target_record,
-                    self._world_roster_key(descriptor, target_record.pal),
-                )
-            self._container_registry_cache = None
-            locker_action = (
-                "add"
-                if source.storage_kind == "world"
-                else "remove" if descriptor["StorageKind"] == "world" else "unchanged"
-            )
-            LOGGER.info(
-                "Transfer Pal succeeded: "
-                f"source_record={source.record_key} "
-                f"target_record={target_record.record_key} "
-                f"target_storage={target_record.storage_key} "
-                f"target_slot={target_record.slot_index} "
-                f"pal={target_record.pal.InstanceId} "
-                f"pal_owner={target_record.pal.OwnerPlayerUId} "
-                f"locker_action={locker_action}"
-            )
-            return {
-                "RecordKey": target_record.record_key,
-                "StorageKey": target_record.storage_key,
-                "InstanceId": str(target_record.pal.InstanceId),
-            }
-        except Exception as error:
-            self._restore_external_mutation(snapshot)
-            LOGGER.error(
-                "Transfer Pal rolled back: "
-                f"source_record={source.record_key} "
-                f"target_storage={target_storage_key} "
-                f"pal={source.pal.InstanceId}; error={error}\n"
-                f"{traceback.format_exc()}"
-            )
-            raise
-
-    def move_pal(
-        self,
-        pal_id: UUID | str,
-        target_container_ids: UUID | str | list[UUID | str],
-    ) -> bool:
-        candidate_ids = (
-            target_container_ids
-            if isinstance(target_container_ids, list)
-            else [target_container_ids]
-        )
-        target_ids_text = ",".join(
-            str(candidate_id) for candidate_id in candidate_ids
-        )
-
-        def reject(reason: str, details: str = "") -> None:
-            suffix = f"; {details}" if details else ""
-            LOGGER.warning(
-                f"Move Pal rejected: pal={pal_id} targets=[{target_ids_text}]"
-                f"{suffix}; reason={reason}"
-            )
-            raise ValueError(reason)
-
-        pal_entity = self.get_pal(pal_id)
-        if pal_entity is None:
-            reject("Pal not found.")
-        if pal_entity.IsExpeditionPal:
-            reject("Expedition Pals must be recalled in-game before moving.")
-
-        location = self.resolve_pal_location(pal_entity)
-        if location["LocationStatus"] != "ok":
-            reject(
-                f"Pal location is {location['LocationStatus']}; repair it before moving."
-            )
-
-        source_text = (
-            f"{location['ActualContainerId']}@{location['ActualSlotIndex']}"
-        )
-        LOGGER.info(
-            f"Move Pal requested: pal={pal_entity.InstanceId} source={source_text} "
-            f"owner={pal_entity.OwnerPlayerUId} targets=[{target_ids_text}]"
-        )
-
-        registry = self._container_descriptor_map()
-        target_descriptor = None
-        target_container = None
-        candidate_statuses = []
-        for candidate_id in candidate_ids:
-            descriptor = registry.get(str(candidate_id))
-            container = self.container_data.get_container(candidate_id)
-            exists = container is not None
-            occupied = len(container.slots) if exists else None
-            size = container.size if exists else None
-            movable = bool(descriptor and descriptor["MovableInto"])
-            candidate_statuses.append(
-                f"container={candidate_id} exists={exists} "
-                f"kind={descriptor['ContainerKind'] if descriptor else 'unknown'} "
-                f"occupied={occupied}/{size} movable={movable}"
-            )
-            if (
-                descriptor
-                and descriptor["MovableInto"]
-                and container is not None
-                and len(container.slots) < container.size
-            ):
-                target_descriptor = descriptor
-                target_container = container
-                break
-        if target_descriptor is None or target_container is None:
-            reject(
-                "Target container is unknown, unsafe, or full.",
-                f"candidates=[{'; '.join(candidate_statuses)}]",
-            )
-
-        source_container = self.container_data.get_container(
-            location["ActualContainerId"]
-        )
-        if source_container is None:
-            reject("Source container is unavailable.", f"source={source_text}")
-        if str(source_container.ID) == str(target_container.ID):
-            reject("Pal is already in the target container.", f"source={source_text}")
-        if target_container.has_pal(pal_entity.InstanceId):
-            reject("Pal already exists in the target container.")
-        target_is_shared = target_descriptor.get("Shared", False)
-        if target_is_shared and pal_entity.OwnerPlayerUId is None:
-            reject("A shared container requires a Pal with an owner.")
-        if (
-            not target_is_shared
-            and str(pal_entity.group_id) != str(target_descriptor.get("GroupId"))
-        ):
-            reject("Cross-guild Pal movement is not supported.")
-
-        source_slot = source_container.get_slot(pal_entity.InstanceId)
-        if source_slot is None:
-            reject("Source slot is unavailable.", f"source={source_text}")
-
-        source_snapshot = source_container.snapshot_slots()
-        target_snapshot = target_container.snapshot_slots()
-        pal_param_snapshot = copy.deepcopy(pal_entity._pal_param)
-        owner_entity_snapshot = pal_entity.owner_player_entity
-        player_palbox_snapshots = {
-            str(player.PlayerUId): (
-                dict(player._palbox),
-                dict(player._new_palbox),
-            )
-            for player in self.get_players()
-        }
-        baseworker_snapshot = dict(self.baseworker_mapping)
-        registry_snapshot = getattr(self, "_container_registry_cache", None)
-
-        try:
-            target_slot_index = target_container.add_slot_copy(source_slot)
-            if target_slot_index == -1:
-                raise ValueError("Target container has no free slot.")
-            source_container.del_pal(pal_entity.InstanceId)
-            if source_container.has_pal(pal_entity.InstanceId):
-                raise RuntimeError("Failed removing the source slot.")
-            pal_entity.SlotId = (target_container.ID, target_slot_index)
-
-            pal_key = str(pal_entity.InstanceId)
-            old_owner_id = (
-                str(pal_entity.OwnerPlayerUId) if pal_entity.OwnerPlayerUId else None
-            )
-            target_owner_id = target_descriptor.get("OwnerPlayerUId")
-            if target_descriptor["ContainerKind"] == "base":
-                if old_owner_id:
-                    old_owner = self.get_player(old_owner_id)
-                    if old_owner:
-                        old_owner.pop_pal(pal_key)
-                pal_entity.set_owner_player_uid(None)
-                self.baseworker_mapping[pal_key] = pal_entity
-            elif target_is_shared:
-                self.baseworker_mapping.pop(pal_key, None)
-            else:
-                target_owner = self.get_player(target_owner_id)
-                if target_owner is None:
-                    raise ValueError("Target container owner is unavailable.")
-                if old_owner_id and old_owner_id != str(target_owner.PlayerUId):
-                    old_owner = self.get_player(old_owner_id)
-                    if old_owner:
-                        old_owner.pop_pal(pal_key)
-                self.baseworker_mapping.pop(pal_key, None)
-                if target_owner.get_pal(pal_key, disable_warning=True) is None:
-                    if not target_owner.add_pal(pal_entity):
-                        raise RuntimeError("Failed updating the target player's Pal list.")
-                pal_entity.set_owner_player_uid(target_owner.PlayerUId, target_owner)
-
-            self._container_registry_cache = None
-            LOGGER.info(
-                f"Move Pal succeeded: pal={pal_entity.InstanceId} "
-                f"source={source_text} target={target_container.ID}@{target_slot_index} "
-                f"owner={old_owner_id}->{pal_entity.OwnerPlayerUId}"
-            )
-            return True
-        except Exception as error:
-            source_container.restore_slots(source_snapshot)
-            target_container.restore_slots(target_snapshot)
-            pal_entity._pal_param.clear()
-            pal_entity._pal_param.update(pal_param_snapshot)
-            pal_entity.owner_player_entity = owner_entity_snapshot
-            for player in self.get_players():
-                palbox, new_palbox = player_palbox_snapshots[str(player.PlayerUId)]
-                player._palbox.clear()
-                player._palbox.update(palbox)
-                player._new_palbox.clear()
-                player._new_palbox.update(new_palbox)
-            self.baseworker_mapping.clear()
-            self.baseworker_mapping.update(baseworker_snapshot)
-            self._container_registry_cache = registry_snapshot
-            LOGGER.error(
-                f"Move Pal rolled back: pal={pal_entity.InstanceId} "
-                f"source={source_text} target={target_container.ID} "
-                f"owner={pal_entity.OwnerPlayerUId}; error={error}\n"
-                f"{traceback.format_exc()}"
-            )
-            raise
     
-    def delete_pal(self, guid: str | UUID) -> bool:
-        guid = str(guid)
-        record = self.get_record(guid)
-        if record is not None and record.storage_kind == "global_palbox":
-            storage = self._global_palbox
-            snapshot = self._snapshot_external_mutation(
-                [(storage, record.slot_index)], []
-            )
-            try:
-                storage.clear(record.record_key)
-                self._unregister_record(record)
-                self._container_registry_cache = None
-                LOGGER.info(
-                    "Deleted Global Palbox Pal: "
-                    f"record={record.record_key} slot={record.slot_index} "
-                    f"pal={record.pal.InstanceId}"
-                )
-                return True
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Failed deleting Global Palbox Pal {record.record_key}: "
-                    f"{traceback.format_exc()}"
-                )
-                return False
-        if record is not None and record.storage_kind == "dps":
-            storage = self._dps_storages.get(record.storage_key)
-            if storage is None:
-                return False
-            snapshot = self._snapshot_external_mutation(
-                [(storage, record.slot_index)], []
-            )
-            try:
-                storage.clear(record.record_key)
-                self._remove_locker_id(record.pal.InstanceId)
-                self._unregister_record(record)
-                self._container_registry_cache = None
-                LOGGER.info(
-                    "Deleted DPS Pal: "
-                    f"record={record.record_key} storage={record.storage_key} "
-                    f"slot={record.slot_index} pal={record.pal.InstanceId} "
-                    "locker_action=remove"
-                )
-                return True
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Failed deleting DPS Pal {record.record_key}: "
-                    f"{traceback.format_exc()}"
-                )
-                return False
-
-        world_record = record
-        if world_record is None and not guid.startswith(("dps:", "gps:")):
-            world_record = self.get_record(f"world:{guid}")
-        popped_pal = None
-        # baseworker/dangling pals are addressed by their "world:<InstanceId>"
-        # RecordKey but stored in maps keyed by the bare InstanceId, so strip the
-        # prefix before looking them up; player pals are handled by pop_pal below.
-        lookup_key = guid
-        prefix = "world:"
-        if lookup_key.startswith(prefix) and not guid.startswith(("dps:", "gps:")):
-            lookup_key = lookup_key[len(prefix):]
-        if lookup_key in self.baseworker_mapping:
-            popped_pal = self.baseworker_mapping.pop(lookup_key)
-        elif lookup_key in self._dangling_pals:
-            popped_pal = self._dangling_pals.pop(lookup_key)
-        else:
-            for player in self.get_players():
-                if popped_pal := player.pop_pal(guid):
-                    break
-        if not popped_pal:
-            LOGGER.warning(f"Can't find pal {guid}")
-            return False
-        try:
-            if pal_group := self.group_data.get_group(popped_pal.group_id):
-                pal_group.del_pal(popped_pal.InstanceId)
-            if (
-                pal_container := self.container_data.get_container(popped_pal.ContainerId)
-            ) is not None:
-                pal_container.del_pal(popped_pal.InstanceId)
-            self._entities_list.remove(popped_pal._pal_obj)
-        except:
-            LOGGER.warning(f"Error Deleting PAL {guid}: {traceback.format_exc()}")
-            return False
-        if world_record is not None:
-            self._unregister_record(world_record)
-        self._container_registry_cache = None
-        LOGGER.info(f"DELETED PAL {guid}")
-        return True
-
-    def creation_targets(self, roster_key: str) -> list[dict]:
-        roster_key = str(roster_key)
-        descriptors = self.get_container_registry()
-        if roster_key == "PAL_BASE_WORKER_BTN":
-            return [
-                descriptor
-                for descriptor in descriptors
-                if descriptor["ContainerKind"] == "base"
-                and descriptor["MovableInto"]
-            ]
-        if roster_key == "PAL_GLOBAL_STORAGE_BTN":
-            return [
-                descriptor
-                for descriptor in descriptors
-                if descriptor["StorageKind"] == "global_palbox"
-                and descriptor["CloneableInto"]
-            ]
-        player = self.get_player(roster_key)
-        if player is None:
-            return []
-        return [
-            descriptor
-            for descriptor in descriptors
-            if (
-                descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"party", "storage"}
-                and descriptor.get("OwnerPlayerUId") == roster_key
-            )
-            or (
-                descriptor["StorageKind"] == "dps"
-                and descriptor.get("StorageOwnerPlayerUid") == roster_key
-            )
-        ]
-
-    def create_pal(
-        self,
-        roster_key: str,
-        target_storage_key: str,
-        pal_obj: dict | None = None,
-        pal_owner_uid: str | UUID | None = None,
-    ) -> PalRecordRef:
-        allowed = {
-            descriptor["StorageKey"]: descriptor
-            for descriptor in self.creation_targets(roster_key)
-        }
-        descriptor = allowed.get(str(target_storage_key))
-        if descriptor is None:
-            raise ValueError("Target storage is not valid for this roster.")
-        if descriptor["StorageKind"] == "world":
-            player_uid = (
-                roster_key
-                if roster_key != "PAL_BASE_WORKER_BTN"
-                else descriptor.get("OwnerPlayerUId")
-            )
-            pal = self.add_pal(
-                player_uid,
-                pal_obj,
-                descriptor["ContainerId"],
-            )
-            if pal is None:
-                raise ValueError("Unable to create Pal in target container.")
-            roster = self._world_roster_key(descriptor, pal)
-            record = PalRecordRef(
-                record_key=f"world:{pal.InstanceId}",
-                storage_key=descriptor["StorageKey"],
-                storage_kind="world",
-                slot_index=pal.SlotIndex,
-                pal=pal,
-                storage_owner_uid=descriptor.get("StorageOwnerPlayerUid"),
-            )
-            self._register_record(record, roster)
-            return record
-        if descriptor["StorageKind"] == "global_palbox":
-            storage = self._global_palbox
-            if storage is None:
-                raise ValueError("Global Palbox is unavailable.")
-            target_index = storage.free_index()
-            if target_index < 0:
-                raise ValueError("Global Palbox is full.")
-            snapshot = self._snapshot_external_mutation(
-                [(storage, target_index)], []
-            )
-            try:
-                instance_id = toUUID(str(uuid.uuid4()))
-                while self.records_by_instance(instance_id):
-                    instance_id = toUUID(str(uuid.uuid4()))
-                new_pal_obj = (
-                    PalObjects.PalSaveParameter(
-                        instance_id,
-                        PalObjects.EMPTY_UUID,
-                        PalObjects.EMPTY_UUID,
-                        -1,
-                        PalObjects.EMPTY_UUID,
-                    )
-                    if pal_obj is None
-                    else copy.deepcopy(pal_obj)
-                )
-                pal = PalEntity(new_pal_obj)
-                pal.InstanceId = instance_id
-                pal.PlayerUId = PalObjects.EMPTY_UUID
-                pal.SlotId = (PalObjects.EMPTY_UUID, -1)
-                save_parameter, _ = self._prepare_global_parameter(
-                    pal, preserve_provenance=False
-                )
-                record = storage.allocate(save_parameter, instance_id)
-                self._register_record(record, "PAL_GLOBAL_STORAGE_BTN")
-                self._container_registry_cache = None
-                LOGGER.info(
-                    "Created Global Palbox Pal: "
-                    f"record={record.record_key} slot={record.slot_index} "
-                    f"pal={record.pal.InstanceId}"
-                )
-                return record
-            except Exception:
-                self._restore_external_mutation(snapshot)
-                LOGGER.error(
-                    f"Failed creating Global Palbox Pal: {traceback.format_exc()}"
-                )
-                raise
-        if descriptor["StorageKind"] != "dps":
-            raise ValueError("Creation for this storage is not implemented yet.")
-
-        storage_owner = self.get_player(roster_key)
-        player = self.get_player(pal_owner_uid) if pal_owner_uid else storage_owner
-        storage = self._dps_storages.get(descriptor["StorageKey"])
-        if storage_owner is None or player is None or storage is None:
-            raise ValueError("DPS owner or storage is unavailable.")
-        target_index = storage.free_index()
-        if target_index < 0:
-            raise ValueError("Target DPS is full.")
-        snapshot = self._snapshot_external_mutation(
-            [(storage, target_index)], []
-        )
-        try:
-            instance_id = toUUID(str(uuid.uuid4()))
-            while self.records_by_instance(instance_id):
-                instance_id = toUUID(str(uuid.uuid4()))
-            if pal_obj is None:
-                new_pal_obj = PalObjects.PalSaveParameter(
-                    instance_id,
-                    player.PlayerUId,
-                    PalObjects.EMPTY_UUID,
-                    -1,
-                    player.group_id,
-                )
-            else:
-                new_pal_obj = copy.deepcopy(pal_obj)
-            pal = PalEntity(new_pal_obj)
-            pal.InstanceId = instance_id
-            pal.PlayerUId = PalObjects.EMPTY_UUID
-            pal.SlotId = (PalObjects.EMPTY_UUID, -1)
-            pal.group_id = player.group_id
-            pal.set_owner_player_uid(player.PlayerUId, player)
-            pal._pal_param.pop(
-                "MapObjectConcreteInstanceIdAssignedToExpedition", None
-            )
-            record = storage.allocate(
-                self._save_parameter(pal), instance_id
-            )
-            record.pal.is_new_pal = True
-            self._add_locker_id(instance_id)
-            self._register_external_record(record)
-            self._container_registry_cache = None
-            LOGGER.info(
-                "Created DPS Pal: "
-                f"record={record.record_key} storage={record.storage_key} "
-                f"slot={record.slot_index} pal={record.pal.InstanceId} "
-                f"pal_owner={record.pal.OwnerPlayerUId} locker_action=add"
-            )
-            return record
-        except Exception:
-            self._restore_external_mutation(snapshot)
-            LOGGER.error(f"Failed creating DPS Pal: {traceback.format_exc()}")
-            raise
-
-    def duplicate_pal(self, record_key: str, roster_key: str) -> PalRecordRef:
-        source = self.get_record(record_key)
-        if source is None:
-            raise ValueError("Selected Pal not found.")
-
-        if source.storage_kind == "global_palbox":
-            clone = self.create_pal(
-                "PAL_GLOBAL_STORAGE_BTN",
-                source.storage_key,
-                source.pal._pal_obj,
-            )
-        elif source.storage_kind == "dps":
-            storage = self._dps_storages.get(source.storage_key)
-            if storage is None:
-                raise ValueError("Source DPS is unavailable.")
-            clone = self.create_pal(
-                str(storage.owner_uid),
-                source.storage_key,
-                source.pal._pal_obj,
-                pal_owner_uid=source.pal.OwnerPlayerUId,
-            )
-        else:
-            targets = [
-                descriptor
-                for descriptor in self.creation_targets(roster_key)
-                if descriptor["StorageKind"] == "world"
-                and descriptor["ContainerKind"] in {"base", "party", "storage"}
-                and descriptor["Occupied"] < descriptor["Capacity"]
-            ]
-            if not targets:
-                raise ValueError("The target Pal containers are full.")
-            clone = self.create_pal(
-                roster_key,
-                targets[0]["StorageKey"],
-                source.pal._pal_obj,
-            )
-
-        LOGGER.info(
-            "Duplicated Pal: "
-            f"source_record={source.record_key} "
-            f"source_storage={source.storage_key} "
-            f"source_pal={source.pal.InstanceId} "
-            f"target_record={clone.record_key} "
-            f"target_storage={clone.storage_key} "
-            f"target_slot={clone.slot_index} "
-            f"target_pal={clone.pal.InstanceId} "
-            f"owner={clone.pal.OwnerPlayerUId}"
-        )
-        return clone
     
-    def heal_all_pals(self):
-        for pal in self.baseworker_mapping.values():
-            pal.heal_pal()
-        for pal in self._dangling_pals.values():
-            pal.heal_pal()
-        for player in self.get_players():
-            for pal in player._palbox.values():
-                pal.heal_pal() 
-    
-    def add_pal(
-        self,
-        player_uid: str | UUID,
-        pal_obj: dict = None,
-        target_container_id: str | UUID = None,
-    ) -> Optional[PalEntity]:
-        requested_player = self.get_player(player_uid)
-        owner_player = requested_player
-        historical_player = requested_player
-        target_descriptor = None
-
-        if target_container_id is not None:
-            target_descriptor = self._container_descriptor_map().get(
-                str(target_container_id)
-            )
-            if target_descriptor is None or not target_descriptor["MovableInto"]:
-                LOGGER.warning(f"Unsafe target container {target_container_id}")
-                return None
-            pal_container = self.container_data.get_container(target_container_id)
-            if pal_container is None or pal_container.get_empty_slot() == -1:
-                LOGGER.info("No Empty Pal Slot")
-                return None
-            group_id = target_descriptor.get("GroupId")
-            owner_id = target_descriptor.get("OwnerPlayerUId")
-            owner_player = self.get_player(owner_id) if owner_id else None
-            if target_descriptor["ContainerKind"] != "base" and owner_player is None:
-                LOGGER.warning("Target container owner not found")
-                return None
-            if requested_player and str(requested_player.group_id) != str(group_id):
-                LOGGER.warning("Cross-guild Pal creation is unsupported")
-                return None
-            historical_player = owner_player or (
-                requested_player
-                if requested_player and str(requested_player.group_id) == str(group_id)
-                else next(
-                    (
-                        player
-                        for player in self.get_players()
-                        if str(player.group_id) == str(group_id)
-                    ),
-                    None,
-                )
-            )
-        else:
-            if requested_player is None:
-                LOGGER.warning(f"Player {player_uid} not found")
-                return None
-            group_id = requested_player.group_id
-            pal_container = next(
-                (
-                    container
-                    for container_id in (
-                        requested_player.OtomoCharacterContainerId,
-                        requested_player.PalStorageContainerId,
-                    )
-                    if (
-                        container := self.container_data.get_container(container_id)
-                    ) is not None
-                    and container.get_empty_slot() != -1
-                ),
-                None,
-            )
-
-        if pal_container is None or historical_player is None:
-            LOGGER.info("No valid Pal target or historical owner")
-            return None
-
-        group = self.group_data.get_group(group_id)
-        if group is None:
-            LOGGER.warning(f"Group {group_id} not found")
-            return None
-
-        pal_instanceId = toUUID(str(uuid.uuid4()))
-
-        while pal_container.has_pal(pal_instanceId) or group.has_pal(pal_instanceId):
-            pal_instanceId = toUUID(str(uuid.uuid4()))
-
-        container_id = pal_container.ID
-        container_added = group_added = player_added = False
-        try:
-            slot_idx = pal_container.add_pal(pal_instanceId)
-            if slot_idx == -1:
-                return None
-            container_added = True
-            if not pal_obj:
-                pal_obj = PalObjects.PalSaveParameter(
-                    pal_instanceId,
-                    historical_player.PlayerUId,
-                    container_id,
-                    slot_idx,
-                    group_id,
-                )
-                pal_entity = PalEntity(pal_obj)
-            else:
-                pal_obj = copy.deepcopy(pal_obj)
-                pal_entity = PalEntity(pal_obj)
-                pal_entity.InstanceId = pal_instanceId
-                pal_entity.SlotId = (container_id, slot_idx)
-                # I don't know why some captured pals have PlayerUId, 
-                # But having non-empty ID will cause the game to hide the duped pal
-                pal_entity.PlayerUId = PalObjects.EMPTY_UUID
-                pal_entity.group_id = group_id
-                # It seems the item container id is not necessarily referenced in the ItemContainerSaveData
-                # so just assign a randomly for now.
-                pal_entity._pal_param["EquipItemContainerId"] = (
-                    PalObjects.PalContainerId(str(uuid.uuid4()))
-                )
-
-            historical_uid = historical_player.PlayerUId
-            pal_entity._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-                "StructProperty",
-                {
-                    "prop_name": "OldOwnerPlayerUIds",
-                    "prop_type": "StructProperty",
-                    "values": [toUUID(historical_uid)],
-                    "type_name": "Guid",
-                    "id": PalObjects.EMPTY_UUID,
-                },
-            )
-            pal_entity._pal_param["LastNickNameModifierPlayerUid"] = (
-                PalObjects.Guid(historical_uid)
-            )
-            if owner_player is None:
-                pal_entity.set_owner_player_uid(None)
-            else:
-                pal_entity.set_owner_player_uid(owner_player.PlayerUId, owner_player)
-            pal_entity._pal_param.pop(
-                "MapObjectConcreteInstanceIdAssignedToExpedition", None
-            )
-
-            pal_entity.is_new_pal = True
-
-            if not group.add_pal(pal_instanceId):
-                raise ValueError("Duplicated Pal ID in group")
-            group_added = True
-            if owner_player is None:
-                if not hasattr(self, "baseworker_mapping"):
-                    self.baseworker_mapping = {}
-                self.baseworker_mapping[str(pal_instanceId)] = pal_entity
-            else:
-                if not owner_player.add_pal(pal_entity):
-                    raise ValueError("Duplicated Pal ID, Try Again!")
-                player_added = True
-            self._entities_list.append(pal_obj)
-        except Exception:
-            if player_added:
-                owner_player.pop_pal(str(pal_instanceId))
-            elif owner_player is None and hasattr(self, "baseworker_mapping"):
-                self.baseworker_mapping.pop(str(pal_instanceId), None)
-            if group_added:
-                group.del_pal(pal_instanceId)
-            if container_added:
-                pal_container.del_pal(pal_instanceId)
-            LOGGER.error(f"Failed adding pal: {traceback.format_exc()}")
-            return None
-        self._container_registry_cache = None
-        LOGGER.info(f"Added Pal {pal_entity} to container {pal_container.ID}")
-        return pal_entity

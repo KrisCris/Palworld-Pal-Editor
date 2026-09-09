@@ -1,3 +1,18 @@
+"""What this editor decodes out of a save, and what it copies through untouched.
+
+`palworld_save_tools` decodes a save according to per-path handlers, and two kinds
+of override live here.
+
+`skip_decode`/`skip_encode` and the two skip lists cover the properties this editor
+never reads -- foliage, dungeons, map objects. They are kept as raw bytes and
+written back byte for byte, which is both much faster and safer than re-encoding
+something nothing here understands.
+
+`decode_save_parameter_array` is the opposite case: the external Pal storage array
+*is* the Pals, so an occupied entry is decoded properly. An empty slot still keeps
+its original bytes, because there is nothing in it worth rebuilding.
+"""
+
 import copy
 
 from palworld_save_tools.archive import FArchiveReader, FArchiveWriter

@@ -1,8 +1,15 @@
+"""The base camps in a save, and the Pal container each one works out of.
+
+Read-only. Camps matter here for two reasons: a camp belongs to a guild, and a
+camp's `WorkerDirector` names the container holding the Pals assigned to it. That
+name is how a container in `CharacterContainerSaveData` is recognised as a base
+camp's rather than as somebody's palbox.
+"""
+
 from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
 
-from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import LOGGER
 
 
@@ -65,11 +72,6 @@ class BaseCampData:
             self.camp_map[str(camp_id)] = camp_entity
             LOGGER.info(f"BaseCamp found: {camp_entity}")
 
-    def get_camp(self, camp_id: UUID | str) -> Optional[PalBaseCamp]:
-        return self.camp_map.get(str(camp_id))
-
     def get_camps(self) -> list[PalBaseCamp]:
         return self.camp_map.values()
 
-    def get_owned_camp(self, group_id: UUID | str) -> list[PalBaseCamp]:
-        return [camp for camp in self.get_camps() if camp.owner_group_id == group_id]

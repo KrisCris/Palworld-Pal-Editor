@@ -1,7 +1,8 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
 
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -10,15 +11,16 @@ const props = defineProps({
   clientX: { type: Number, required: true },
   clientY: { type: Number, required: true },
 })
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const backend = useBackendStore()
 const cardRef = ref(null)
 const position = ref({ left: '0px', top: '0px' })
 
 const details = computed(() => props.detailsItem || props.item)
 const rarity = computed(() => Math.max(0, Math.min(4, details.value?.Rarity ?? 0)))
-const rarityName = computed(() => palStore.getTranslatedText(`Inventory_Rarity_${rarity.value}`))
-const itemType = computed(() => palStore.getTranslatedText(`Inventory_Type_${props.item.TypeA}`))
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+const rarityName = computed(() => appStore.getTranslatedText(`Inventory_Rarity_${rarity.value}`))
+const itemType = computed(() => appStore.getTranslatedText(`Inventory_Type_${props.item.TypeA}`))
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 const statOrder = ['PhysicalAttack', 'PhysicalDefense', 'HP', 'Shield', 'MagicAttack', 'MagicDefense', 'Weight', 'Price']
 const effectLabels = new Set([
   'AirDash', 'AvoidDurationUp_EquipSkill', 'CaptureLevel', 'CollectItemDrop_NaturalObject', 'CraftSpeed',
@@ -35,12 +37,12 @@ const effectLabels = new Set([
 const statValue = key => (key === 'Weight' || key === 'Price' ? props.item : details.value)?.Stats?.[key]
 const statRows = computed(() => statOrder
   .filter(key => statValue(key))
-  .map(key => ({ key, label: palStore.getTranslatedText(`Inventory_Stat_${key}`), value: statValue(key) })))
+  .map(key => ({ key, label: appStore.getTranslatedText(`Inventory_Stat_${key}`), value: statValue(key) })))
 const humanize = value => value.replaceAll('_', ' ').replace(/([a-z])([A-Z])/g, '$1 $2')
 const effectRows = computed(() => (details.value?.Effects || []).map(effect => ({
   ...effect,
   label: effectLabels.has(effect.EffectType)
-    ? palStore.getTranslatedText(`Inventory_Effect_${effect.EffectType}`)
+    ? appStore.getTranslatedText(`Inventory_Effect_${effect.EffectType}`)
     : humanize(effect.EffectType),
 })))
 const signed = value => `${value > 0 ? '+' : ''}${Number(value).toLocaleString()}`
@@ -84,7 +86,7 @@ watch(() => [props.clientX, props.clientY, props.item, props.detailsItem, props.
           <img v-if="item.OverlayIconKey" class="item-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
         </span>
         <span v-if="count != null" class="tooltip-count">
-          <small>{{ palStore.getTranslatedText('Inventory_Count') }}</small>
+          <small>{{ appStore.getTranslatedText('Inventory_Count') }}</small>
           <strong>{{ count }}</strong>
         </span>
       </section>

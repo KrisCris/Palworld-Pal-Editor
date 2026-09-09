@@ -23,10 +23,18 @@ mimetypes.add_type('image/png', '.png')
 mimetypes.add_type('text/html', '.html')
 
 app = Flask(__name__, static_folder=ASSETS_PATH / "webui", static_url_path='/')
-app.register_blueprint(player_blueprint, url_prefix='/api/player')
-app.register_blueprint(pal_blueprint, url_prefix='/api/pal')
-app.register_blueprint(save_blueprint, url_prefix='/api/save')
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
+app.register_blueprint(session_blueprint, url_prefix='/api/session')
+app.register_blueprint(players_blueprint, url_prefix='/api/players')
+app.register_blueprint(rosters_blueprint, url_prefix='/api/rosters')
+app.register_blueprint(pals_blueprint, url_prefix='/api/pals')
+app.register_blueprint(application_blueprint, url_prefix='/api')
+app.register_blueprint(research_blueprint, url_prefix='/api/guild-research')
+app.register_blueprint(catalogs_blueprint, url_prefix='/api/catalogs')
+app.register_blueprint(pal_heals_blueprint, url_prefix='/api/pal-heals')
+app.register_blueprint(storages_blueprint, url_prefix='/api/storages')
+app.register_blueprint(pal_transfers_blueprint, url_prefix='/api/pal-transfers')
+app.register_blueprint(templates_blueprint, url_prefix='/api')
 
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 jwt = JWTManager(app)
@@ -84,7 +92,14 @@ def cors_response(response):
         elif "origin" not in {value.strip().lower() for value in vary.split(",")}:
             response.headers["Vary"] = f"{vary}, Origin"
         if request.method == "OPTIONS" and request.headers.get("Access-Control-Request-Method"):
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
+            # Every method the API actually routes. PUT was missing, so a
+            # cross-origin `PUT /api/session` -- Load and Reload Save -- failed its
+            # preflight and never left the browser, which reaches the user as a
+            # network error with no status behind it. `test_webui_cors` derives this
+            # list from `app.url_map` so it cannot drift from the routes again.
+            response.headers["Access-Control-Allow-Methods"] = (
+                "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+            )
             response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
     return response
 

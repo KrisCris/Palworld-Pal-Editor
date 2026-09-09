@@ -1,18 +1,20 @@
+import threading
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.api.pal import _pal_data
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
-from palworld_pal_editor.core.pal_storage import PalRecordRef
+from fakes import FakeStorageDirectory, pal_payload, world_pal, world_record
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
 from palworld_pal_editor.webui import app
+from palworld_pal_editor.core.pal_repository import PalRepository
 
 
-def make_pal(character_id: str) -> PalEntity:
+def make_pal_obj(character_id: str) -> dict:
     pal_obj = PalObjects.PalSaveParameter(
         PalObjects.EMPTY_UUID,
         PalObjects.EMPTY_UUID,
@@ -25,7 +27,11 @@ def make_pal(character_id: str) -> PalEntity:
     ]["value"]
     PalObjects.set_BaseType(parameter["CharacterID"], character_id)
     parameter.pop("OwnerPlayerUId", None)
-    return PalEntity(pal_obj)
+    return pal_obj
+
+
+def make_pal(character_id: str) -> PalEntity:
+    return world_pal(make_pal_obj(character_id))
 
 
 class PalFamilyProviderTests(unittest.TestCase):
@@ -115,21 +121,20 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertIsNone(DataProvider.get_pal_paldeck_record_id("Hunter_Rifle"))
         self.assertIsNone(DataProvider.get_pal_paldeck_record_id("UnknownPal"))
 
-    def test_pal_data_api_includes_exact_boss_rows_and_metadata(self):
+    def test_pal_catalog_includes_exact_boss_rows_and_metadata(self):
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():
             token = create_access_token(identity="test", expires_delta=False)
         with app.test_client() as client:
             response = client.get(
-                "/api/save/pal_data",
+                "/api/catalogs/pals",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
-        payload = response.get_json()["data"]
-        self.assertEqual(len(data_provider.PAL_DATA), len(payload["dict"]))
-        self.assertIn("Boss_Anubis", payload["dict"])
-        row = payload["dict"]["BOSS_KingWhale_otomo"]
-        self.assertIn(row, payload["arr"])
+        rows = {row["InternalName"]: row for row in response.get_json()["pals"]}
+        self.assertEqual(len(data_provider.PAL_DATA), len(rows))
+        self.assertIn("Boss_Anubis", rows)
+        row = rows["BOSS_KingWhale_otomo"]
         self.assertEqual("KingWhale", row["FamilyID"])
         self.assertEqual("boss", row["VariantKind"])
         self.assertEqual(["boss", "otomo"], row["VariantTags"])
@@ -137,13 +142,10 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertEqual("KingWhale", row["PaldeckRecordID"])
         self.assertTrue(row["RegularlyObtainable"])
         self.assertEqual(["capture-replace"], row["ObtainMethods"])
-        self.assertEqual(
-            payload["dict"]["PinkCat"]["I18n"],
-            payload["dict"]["BOSS_PinkCat"]["I18n"],
-        )
+        self.assertEqual(rows["PinkCat"]["I18n"], rows["BOSS_PinkCat"]["I18n"])
 
     def test_selected_pal_payload_contains_exact_metadata(self):
-        payload = _pal_data(make_pal("BOSS_KingWhale_otomo"))
+        payload = pal_payload(world_record(make_pal_obj("BOSS_KingWhale_otomo")))
         self.assertEqual("BOSS_KingWhale_otomo", payload["CharacterID"])
         self.assertEqual("KingWhale", payload["FamilyID"])
         self.assertEqual("boss", payload["VariantKind"])
@@ -152,48 +154,58 @@ class PalFamilyProviderTests(unittest.TestCase):
         self.assertTrue(payload["RegularlyObtainable"])
 
     def test_character_patch_and_refresh_keep_exact_variant(self):
-        pal = make_pal("SheepBall")
+        record = world_record(make_pal_obj("SheepBall"))
 
         class Manager:
-            def get_unique_world_record(self, _instance_id):
-                return PalRecordRef(
-                    f"world:{pal.InstanceId}", "world-container:test", "world", 0, pal
-                )
+            pal_repository = PalRepository()
+            session_lock = threading.RLock()
 
-            def normalize_external_record(self, _record):
-                pass
+            def get_record(self, _record_key):
+                return record
+
+            def get_player(self, _player_uid):
+                return None
+
+            @property
+            def storage_directory(self):
+                return FakeStorageDirectory()
+
+            @property
+            def pal_mutations(self):
+                # A world record needs no normalizing; this Pal is not in an
+                # external storage, so the call is a no-op either way.
+                return SimpleNamespace(normalize_external_record=lambda _record: None)
 
         app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
         with app.app_context():
             token = create_access_token(identity="test", expires_delta=False)
         headers = {"Authorization": f"Bearer {token}"}
+        manager = Manager()
         with (
-            patch("palworld_pal_editor.api.pal.SaveManager", return_value=Manager()),
+            patch("palworld_pal_editor.api.pals.SaveManager", return_value=manager),
+            patch(
+                "palworld_pal_editor.api.operations.SaveManager",
+                return_value=manager,
+            ),
+            patch(
+                "palworld_pal_editor.api.pal_serializers.SaveManager",
+                return_value=manager,
+            ),
             app.test_client() as client,
         ):
             patched = client.patch(
-                "/api/pal/paldata",
+                f"/api/pals/{record.record_key}",
                 headers=headers,
-                json={
-                    "PalGuid": str(PalObjects.EMPTY_UUID),
-                    "PlayerUId": "player",
-                    "key": "CharacterID",
-                    "value": "BOSS_KingWhale_otomo",
-                },
+                json={"CharacterID": "BOSS_KingWhale_otomo"},
             )
-            refreshed = client.post(
-                "/api/pal/paldata",
-                headers=headers,
-                json={
-                    "InstanceId": str(PalObjects.EMPTY_UUID),
-                    "PlayerUId": "player",
-                },
+            refreshed = client.get(
+                f"/api/pals/{record.record_key}", headers=headers
             )
 
-        self.assertEqual(0, patched.get_json()["status"])
+        self.assertEqual(200, patched.status_code)
         self.assertEqual(
             "BOSS_KingWhale_otomo",
-            refreshed.get_json()["data"]["CharacterID"],
+            refreshed.get_json()["CharacterID"],
         )
 
 

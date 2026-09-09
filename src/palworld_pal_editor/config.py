@@ -3,7 +3,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import ClassVar, Optional
+from typing import Optional
 
 import aiohttp
 
@@ -26,7 +26,83 @@ if hasattr(sys, 'frozen'):
 else:
     ASSETS_PATH = get_program_path()
 
-CONFIG_PATH = PROGRAM_PATH / 'config.json'
+APP_NAME = "Palworld-Pal-Editor"
+
+
+def _user_dir(xdg_variable: str, xdg_default: str) -> Path:
+    """This program's own directory under whatever the platform calls that.
+
+    Windows and macOS keep configuration and data together; the freedesktop
+    convention separates them, so the caller says which one it wants and only the
+    Linux branch reads it.
+    """
+    system = platform.system()
+    if system == "Windows":
+        base = os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local"
+    elif system == "Darwin":
+        base = Path.home() / "Library" / "Application Support"
+    else:
+        base = os.environ.get(xdg_variable) or Path.home() / xdg_default
+    return Path(base) / APP_NAME
+
+
+def user_config_dir() -> Path:
+    """Where this program's settings belong."""
+    return _user_dir("XDG_CONFIG_HOME", ".config")
+
+
+def user_data_dir() -> Path:
+    """Where the files this program writes for itself belong -- templates, logs."""
+    return _user_dir("XDG_DATA_HOME", ".local/share")
+
+
+CONFIG_PATH = user_config_dir() / "config.json"
+TEMPLATES_PATH = user_data_dir() / "templates.json"
+LOG_DIR = user_data_dir() / "logs"
+
+# Where a pre-1.1 install kept its config: beside the program itself. Under a
+# normal install that directory is not writable -- Program Files needs elevation
+# and silently redirects the write, a signed .app must not be modified, and
+# site-packages is usually root-owned -- which is why nothing is written there any
+# more. Kept only so the one-time move below can find the old file.
+LEGACY_CONFIG_PATH = PROGRAM_PATH / "config.json"
+
+
+def write_json(path: Path, data) -> None:
+    """Write JSON through a temporary file, so a failed write keeps the old one."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_suffix(f"{path.suffix}.tmp")
+    try:
+        with temporary_path.open("w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+        temporary_path.replace(path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def migrate_legacy_user_data() -> None:
+    """Move a pre-1.1 config out of the program directory, once.
+
+    Two things happen at the same time because they were the same file: the
+    settings move to the platform's config location, and the templates -- which
+    are user data rather than configuration, and large enough that keeping them
+    inline rewrote every one of them whenever a setting changed -- move to their
+    own file under the data location.
+
+    The old file is deliberately left exactly where it is. This runs on a user's
+    only copy of their templates, so it reads, writes elsewhere, and touches
+    nothing else.
+    """
+    if CONFIG_PATH.exists() or not LEGACY_CONFIG_PATH.exists():
+        return
+    data = json.loads(LEGACY_CONFIG_PATH.read_text(encoding="utf-8"))
+    templates = {
+        "pal": data.pop("palTemplates", None) or [],
+        "skill": data.pop("skillTemplates", None) or [],
+    }
+    write_json(CONFIG_PATH, data)
+    if templates["pal"] or templates["skill"]:
+        write_json(TEMPLATES_PATH, templates)
 
 VERSION = "0.0.0"
 RELEASE_TYPE = "NIGHTLY"
@@ -106,15 +182,13 @@ class Config:
     _password_hash: str = None
     JWT_SECRET_KEY: str = "X2Nvbm5sb3N0"
     shownDonateInfo: dict[str, bool] = {}
-    palTemplates: ClassVar[list[dict]] = []
-    skillTemplates: ClassVar[list[dict]] = []
 
     @classmethod
     def load_from_file(cls, file_path: str=CONFIG_PATH):
         """Load configuration values from a JSON file using pathlib."""
         path = Path(file_path)
         if path.exists():
-            with path.open("r") as file:
+            with path.open("r", encoding="utf-8") as file:
                 data = json.load(file)
                 for key, value in data.items():
                     if hasattr(cls, key):
@@ -138,22 +212,9 @@ class Config:
         Config.save_to_file()
 
     @classmethod
-    def set_shown_donate_info(cls):
-        cls.shownDonateInfo[Config.i18n] = True
-        Config.save_to_file()
-
-    @classmethod
     def save_to_file(cls, file_path: str=CONFIG_PATH):
         """Save current configuration values to a JSON file using the to_dict method and pathlib."""
-        config_data = cls.to_dict()
-        path = Path(file_path)
-        temporary_path = path.with_suffix(f"{path.suffix}.tmp")
-        try:
-            with temporary_path.open("w") as file:
-                json.dump(config_data, file, indent=4)
-            temporary_path.replace(path)
-        finally:
-            temporary_path.unlink(missing_ok=True)
+        write_json(Path(file_path), cls.to_dict())
 
     @classmethod
     def __str__(cls):
@@ -171,7 +232,5 @@ class Config:
             'password': Config.password,
             'JWT_SECRET_KEY': Config.JWT_SECRET_KEY,
             'shownDonateInfo': Config.shownDonateInfo,
-            'palTemplates': Config.palTemplates,
-            'skillTemplates': Config.skillTemplates,
         }
 

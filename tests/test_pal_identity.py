@@ -5,7 +5,8 @@ from uuid import UUID
 
 from flask_jwt_extended import create_access_token
 
-from palworld_pal_editor.api.pal import _pal_brief, _pal_data
+from fakes import pal_payload, world_pal, world_record
+from palworld_pal_editor.api.pal_transfers import pal_brief
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects
 from palworld_pal_editor.utils import data_provider
@@ -14,7 +15,7 @@ from palworld_pal_editor.webui import app
 
 class PalIdentityTests(unittest.TestCase):
     @staticmethod
-    def make_pal(character_id: str) -> PalEntity:
+    def make_pal_obj(character_id: str) -> dict:
         pal_obj = PalObjects.PalSaveParameter(
             PalObjects.EMPTY_UUID,
             PalObjects.EMPTY_UUID,
@@ -27,7 +28,11 @@ class PalIdentityTests(unittest.TestCase):
         ]["value"]
         PalObjects.set_BaseType(parameter["CharacterID"], character_id)
         parameter.pop("OwnerPlayerUId", None)
-        return PalEntity(pal_obj)
+        return pal_obj
+
+    @classmethod
+    def make_pal(cls, character_id: str) -> PalEntity:
+        return world_pal(cls.make_pal_obj(character_id))
 
     def test_special_suffixes_resolve_without_replacing_internal_name(self):
         for character_id, raw_key, data_key, icon_key in (
@@ -67,7 +72,7 @@ class PalIdentityTests(unittest.TestCase):
 
     def test_external_no_skin_sentinel_uses_the_species_icon(self):
         pal = self.make_pal("BlackMetalDragon")
-        pal._pal_param["SkinName"] = PalObjects.NameProperty("None")
+        pal.pal_param["SkinName"] = PalObjects.NameProperty("None")
 
         self.assertIsNone(pal.SkinName)
         self.assertEqual("BlackMetalDragon", pal.IconAccessKey)
@@ -115,34 +120,20 @@ class PalIdentityTests(unittest.TestCase):
         self.assertEqual("Boss_Anubis", pal.CharacterID)
         self.assertTrue(pal.IsBOSS)
 
-    def test_ordinary_alpha_list_name_uses_base_species_localization(self):
-        pal = self.make_pal("BOSS_GhostRabbit_Grass")
-        pal.NickName = ""
-
-        self.assertEqual(
-            data_provider.DataProvider.get_pal_i18n("GhostRabbit_Grass"),
-            pal.DisplayName,
-        )
-
-        scenario = self.make_pal("BOSS_KingWhale_otomo")
-        scenario.NickName = ""
-        self.assertEqual(
-            data_provider.DataProvider.get_pal_i18n("BOSS_KingWhale_otomo"),
-            scenario.DisplayName,
-        )
-
-    def test_regular_alpha_localization_uses_base_species_name_everywhere(self):
-        base_name = data_provider.DataProvider.get_pal_i18n("PinkCat")
-        self.assertEqual(
-            base_name,
-            data_provider.DataProvider.get_pal_i18n("BOSS_PinkCat"),
-        )
-
-        pal = self.make_pal("BOSS_PinkCat")
-        pal.NickName = ""
-        self.assertEqual(base_name, pal.I18nName)
-        self.assertEqual(base_name, pal.DisplayName)
-        self.assertEqual(base_name, _pal_data(pal)["I18nName"])
+    def test_alpha_display_name_uses_the_base_species_localization(self):
+        """An alpha is named after its species, unless the suffix is the species."""
+        for character_id, localization_key in (
+            ("BOSS_GhostRabbit_Grass", "GhostRabbit_Grass"),
+            ("BOSS_PinkCat", "PinkCat"),
+            # No plain KingWhale_otomo exists, so the suffixed id is the species.
+            ("BOSS_KingWhale_otomo", "BOSS_KingWhale_otomo"),
+        ):
+            with self.subTest(character_id=character_id):
+                pal = self.make_pal(character_id)
+                pal.NickName = ""
+                expected = data_provider.DataProvider.get_pal_i18n(localization_key)
+                self.assertEqual(expected, pal.I18nName)
+                self.assertEqual(expected, pal.DisplayName)
 
     def test_owner_name_uuid_fallback_is_json_serializable(self):
         owner_id = UUID("23d87046-27f9-4399-9269-c7e9b4bac864")
@@ -153,7 +144,7 @@ class PalIdentityTests(unittest.TestCase):
             0,
             PalObjects.EMPTY_UUID,
         )
-        pal = PalEntity(pal_obj)
+        record = world_record(pal_obj)
 
         class Player:
             NickName = None
@@ -166,109 +157,33 @@ class PalIdentityTests(unittest.TestCase):
             "palworld_pal_editor.core.save_manager.SaveManager",
             return_value=Manager(),
         ):
-            payload = _pal_data(pal)
+            payload = pal_payload(record)
 
         self.assertEqual(str(owner_id), payload["OwnerName"])
         json.dumps(payload)
 
     def test_api_marks_new_pals_until_the_save_is_written(self):
-        pal = self.make_pal("SheepBall")
-        pal.is_new_pal = True
+        record = world_record(self.make_pal_obj("SheepBall"))
 
-        payload = _pal_data(pal)
+        payload = pal_payload(record, created=True)
 
-        self.assertTrue(payload["IsNewPal"])
-
-    def test_pal_list_includes_awakened_and_new_state_before_selection(self):
-        pal = self.make_pal("SheepBall")
-        pal.IsAwakening = True
-        pal.IsImportedCharacter = True
-        pal.is_new_pal = True
-
-        class Manager:
-            @staticmethod
-            def get_working_pals():
-                return [pal]
-
-        app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
-        with app.app_context():
-            token = create_access_token(identity="test", expires_delta=False)
-        with (
-            patch("palworld_pal_editor.api.player.SaveManager", return_value=Manager()),
-            app.test_client() as client,
-        ):
-            response = client.post(
-                "/api/player/player_pals",
-                json={"PlayerUId": "PAL_BASE_WORKER_BTN"},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-
-        pal_summary = response.get_json()["data"][0]
-        self.assertTrue(pal_summary["IsAwakening"])
-        self.assertTrue(pal_summary["IsImportedCharacter"])
-        self.assertFalse(pal_summary["IsHuman"])
-        self.assertTrue(pal_summary["IsNewPal"])
-
-    def test_pal_list_includes_verified_location_and_priority_fields(self):
-        party_id = UUID("11111111-1111-1111-1111-111111111111")
-        storage_id = UUID("22222222-2222-2222-2222-222222222222")
-        pal = self.make_pal("SheepBall")
-        pal.InstanceId = "33333333-3333-3333-3333-333333333333"
-        pal.SlotId = (str(party_id), 4)
-        pal._pal_param["FavoriteIndex"] = PalObjects.IntProperty(3)
-
-        class Player:
-            OtomoCharacterContainerId = party_id
-            PalStorageContainerId = storage_id
-
-            @staticmethod
-            def get_sorted_pals():
-                return [pal]
-
-        pal.set_owner_player_entity(Player())
-
-        class Manager:
-            @staticmethod
-            def get_player(_player_id):
-                return Player()
-
-        app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
-        with app.app_context():
-            token = create_access_token(identity="test", expires_delta=False)
-        with (
-            patch("palworld_pal_editor.api.player.SaveManager", return_value=Manager()),
-            app.test_client() as client,
-        ):
-            response = client.post(
-                "/api/player/player_pals",
-                json={"PlayerUId": "player"},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-
-        pal_summary = response.get_json()["data"][0]
-        self.assertEqual(str(party_id), pal_summary["ContainerId"])
-        self.assertEqual(4, pal_summary["SlotIndex"])
-        self.assertEqual("party", pal_summary["ContainerKind"])
-        self.assertEqual(3, pal_summary["FavoriteIndex"])
-
-        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
-        self.assertEqual(2, pal.FavoriteIndex)
+        self.assertEqual("created", payload["changeState"])
 
     def test_priority_setter_preserves_save_property_shape(self):
         pal = self.make_pal("SheepBall")
 
         pal.FavoriteIndex = 1
-        self.assertEqual("ByteProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual("ByteProperty", pal.pal_param["FavoriteIndex"]["type"])
         self.assertEqual(1, pal.FavoriteIndex)
 
-        pal._pal_param["FavoriteIndex"] = PalObjects.IntProperty(2)
+        pal.pal_param["FavoriteIndex"] = PalObjects.IntProperty(2)
         pal.FavoriteIndex = 3
-        self.assertEqual("IntProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual("IntProperty", pal.pal_param["FavoriteIndex"]["type"])
         self.assertEqual(3, pal.FavoriteIndex)
 
-        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(3)
+        pal.pal_param["FavoriteIndex"] = PalObjects.ByteProperty(3)
         pal.FavoriteIndex = 0
-        self.assertEqual("ByteProperty", pal._pal_param["FavoriteIndex"]["type"])
+        self.assertEqual("ByteProperty", pal.pal_param["FavoriteIndex"]["type"])
         self.assertEqual(0, pal.FavoriteIndex)
 
     def test_priority_setter_rejects_invalid_values(self):
@@ -277,11 +192,6 @@ class PalIdentityTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 pal.FavoriteIndex = value
 
-    def test_pal_detail_includes_priority(self):
-        pal = self.make_pal("SheepBall")
-        pal._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(2)
-        self.assertEqual(2, _pal_data(pal)["FavoriteIndex"])
-
     def test_pal_conflict_brief_includes_portrait_status_flags(self):
         pal = self.make_pal("SheepBall")
         pal.IsBOSS = True
@@ -289,7 +199,7 @@ class PalIdentityTests(unittest.TestCase):
         pal.IsImportedCharacter = True
         pal.FavoriteIndex = 2
 
-        brief = _pal_brief(pal)
+        brief = pal_brief(pal)
 
         self.assertTrue(brief["IsBOSS"])
         self.assertFalse(brief["IsRarePal"])
@@ -298,21 +208,22 @@ class PalIdentityTests(unittest.TestCase):
         self.assertEqual(2, brief["FavoriteIndex"])
 
     def test_imported_character_flag_round_trips_and_reaches_api_payloads(self):
-        pal = self.make_pal("SheepBall")
+        record = world_record(self.make_pal_obj("SheepBall"))
+        pal = record.pal
 
         self.assertFalse(pal.IsImportedCharacter)
-        self.assertFalse(_pal_data(pal)["IsImportedCharacter"])
+        self.assertFalse(pal_payload(record)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = True
         self.assertTrue(pal.IsImportedCharacter)
         self.assertEqual(
-            "BoolProperty", pal._pal_param["bImportedCharacter"]["type"]
+            "BoolProperty", pal.pal_param["bImportedCharacter"]["type"]
         )
-        self.assertTrue(_pal_data(pal)["IsImportedCharacter"])
+        self.assertTrue(pal_payload(record)["IsImportedCharacter"])
 
         pal.IsImportedCharacter = False
         self.assertFalse(pal.IsImportedCharacter)
-        self.assertNotIn("bImportedCharacter", pal._pal_param)
+        self.assertNotIn("bImportedCharacter", pal.pal_param)
 
     def test_rare_toggle_uses_primary_alpha_not_other_boss_tagged_variants(self):
         for character_id in ("ElecPanda", "GYM_ElecPanda"):
@@ -367,13 +278,13 @@ class PalIdentityTests(unittest.TestCase):
             token = create_access_token(identity="test", expires_delta=False)
         with app.test_client() as client:
             response = client.get(
-                "/api/save/tech_data",
+                "/api/catalogs/technologies",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
         items = [
             item
-            for level in response.get_json()["data"]["techLvDict"].values()
+            for level in response.get_json()["byLevel"].values()
             for item in level
         ]
         item = next(

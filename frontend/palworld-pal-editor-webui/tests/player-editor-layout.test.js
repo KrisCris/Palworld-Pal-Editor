@@ -84,14 +84,20 @@ test("technology levels partition normal and ancient lanes without mutating stor
 });
 
 test("technology lanes render a stable non-mutating partition", async () => {
-    const [{ default: PlayerEditor }, { usePalEditorStore }] = await Promise.all([
+    const [
+        { default: PlayerEditor }, { useAppShellStore }, { usePlayersStore },
+        { useRostersStore }, { useCatalogsStore },
+    ] = await Promise.all([
         loadVueModule("/src/components/PlayerEditor.vue"),
-        loadVueModule("/src/stores/paleditor.js"),
+        loadVueModule("/src/stores/app-shell.js"),
+        loadVueModule("/src/stores/players.js"),
+        loadVueModule("/src/stores/rosters.js"),
+        loadVueModule("/src/stores/catalogs.js"),
     ]);
     const pinia = createPinia();
     setActivePinia(pinia);
-    const store = usePalEditorStore();
-    store.PLAYER_MAP = new Map([["player-1", {
+    const store = useAppShellStore();
+    usePlayersStore().playersByUid = new Map([["player-1", {
         NickName: "Tester",
         Level: 1,
         Exp: 0,
@@ -107,18 +113,16 @@ test("technology lanes render a stable non-mutating partition", async () => {
         StatusPointMetadata: {
             "最大HP": { category: "stat", icon: "stat-health", unit: "flat", values: Array.from({ length: 51 }, (_, rank) => rank * 100) },
         },
-        setStatusPoint: () => {},
         UnlockedRecipeTechnologyNames: [],
-        toggleTech: () => {},
     }]]);
-    store.ACTIVE_ROSTER = "player-1";
+    useRostersStore().activeRosterKey = "player:player-1";
     const items = [
         { InternalName: "NormalOne", IconAccessKey: "n1", I18n: { Name: "Normal One", Type: "Normal" }, BossTechnology: false },
         { InternalName: "AncientOne", IconAccessKey: "a1", I18n: { Name: "Ancient One", Type: "Ancient" }, BossTechnology: true },
         { InternalName: "NormalTwo", IconAccessKey: "n2", I18n: { Name: "Normal Two", Type: "Normal" }, BossTechnology: false },
     ];
     const originalOrder = items.map(item => item.InternalName);
-    store.TECH_LV_DICT = { 1: items };
+    useCatalogsStore().technologiesByLevel = { 1: items };
 
     const html = await renderVue(PlayerEditor, { pinia });
     const normal = html.match(/technology-lane--normal[^>]*>([\s\S]*?)<\/div><div class="technology-lane technology-lane--ancient/)[1];
@@ -140,22 +144,22 @@ test("player controls preserve every update contract", async () => {
         assert.match(source, new RegExp(`name="${field}"`), field);
     }
     for (const handler of [
-        "palStore.updatePlayer", "levelDown", "levelUp", "maxLevel",
-        "setStatusPoint(name)", "unlock_all_techs",
+        "playersStore.updateField", "playersStore.levelDown", "playersStore.levelUp",
+        "playersStore.maxLevel", "setStatusPoint(name)", "playersStore.unlockAllTechs",
     ]) assert.match(source, new RegExp(handler.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), handler);
     assert.match(source, /<SegmentedRange/);
     assert.doesNotMatch(source, /<input[^>]+type="range"/);
     assert.match(source, /StatusPointTotalMaximums\[name\]/);
     assert.match(source, /StatusPointTotals\[name\]/);
-    assert.match(source, /@change="palStore\.SELECTED_PLAYER_DATA\.setStatusPoint\(name\)"/);
+    assert.match(source, /@change="playersStore\.setStatusPoint\(name\)"/);
     assert.match(source, /:aria-label="fieldActionLabel/);
 });
 
 test("status sliders dispatch stat totals separately from effigy ranks", async () => {
-    const source = await read("../src/stores/paleditor.js");
-    assert.match(source, /this\.ExStatusPoints = obj\.ExStatusPoints \|\| \{\}/);
-    assert.match(source, /category === "stat"[\s\S]*\? "set_TotalStatusPoint"[\s\S]*: "set_StatusPoint"/);
-    assert.match(source, /Math\.min\(Math\.max\(Math\.trunc\(points\), minimum\), maximum\)/);
+    const source = await read("../src/stores/players.js");
+    assert.match(source, /category === "stat"[\s\S]*\? "StatusPointTotals"[\s\S]*: "StatusPoints"/);
+    assert.match(source, /Math\.max\(Math\.trunc\(points\), player\.StatusPointMinimums\[name\] \?\? 0\)/);
+    assert.match(source, /player\.StatusPointTotalMaximums\[name\] \?\? 0/);
 });
 
 test("stat source labels are translated in every UI locale", () => {
@@ -169,11 +173,10 @@ test("stat source labels are translated in every UI locale", () => {
 });
 
 test("technology cards preserve toggle behavior in a compact square control", async () => {
-    const source = await read("../src/components/modules/TechCard.vue");
+    const source = await read("../src/components/TechCard.vue");
     assert.match(source, /<button type="button"/);
     assert.match(source, /:aria-pressed="!isLocked"/);
     assert.match(source, /:title="`\$\{techName\}: \$\{techState\}`"/);
-    assert.match(source, /:disabled="palStore\.LOADING_FLAG"/);
     assert.match(source, /class="[^"]*tech-type/);
     assert.match(source, /class="[^"]*tech-lock/);
     assert.doesNotMatch(source, /\.tech-lock\s*\{[^}]*width:\s*2rem/s);
@@ -191,7 +194,7 @@ test("technology cards preserve toggle behavior in a compact square control", as
 });
 
 test("technology toggle dispatch preserves the item name and target lock state", async () => {
-    const { toggleTechnology } = await loadVueModule("/src/components/modules/TechCard.vue");
+    const { toggleTechnology } = await loadVueModule("/src/components/TechCard.vue");
     assert.equal(typeof toggleTechnology, "function");
     const calls = [];
     const player = { toggleTech: (...args) => calls.push(args) };
@@ -207,7 +210,7 @@ test("technology toggle dispatch preserves the item name and target lock state",
 });
 
 test("technology cards match save keys without case sensitivity", async () => {
-    const { hasUnlockedTechnology } = await loadVueModule("/src/components/modules/TechCard.vue");
+    const { hasUnlockedTechnology } = await loadVueModule("/src/components/TechCard.vue");
 
     assert.equal(hasUnlockedTechnology(["PalBox"], "PALBOX"), true);
     assert.equal(hasUnlockedTechnology(["OverHeatRifle"], "OverheatRifle"), true);

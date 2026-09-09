@@ -5,6 +5,7 @@ import test from "node:test";
 import {
     closeDisclosureOnOutsidePointer,
     filterSearchOptions,
+    scrollOffsetForOption,
 } from "../src/components/modules/search-select.js";
 import en from "../src/i18n/en.js";
 import fr from "../src/i18n/fr.js";
@@ -96,7 +97,7 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.match(source, /:options="activeSkillSelectOptions\(\)"/);
     assert.match(source, /tooltip:\s*skill\.I18n\[1\]/);
     assert.match(source, /skill\.LearnerNames/);
-    assert.equal((source.match(/meta: palStore\.HIDE_INVALID_OPTIONS \? '' : skill\.InternalName/g) || []).length, 2);
+    assert.equal((source.match(/meta: appStore\.HIDE_INVALID_OPTIONS \? '' : skill\.InternalName/g) || []).length, 2);
     assert.match(source, /searchMeta: skill\.Element/);
     assert.equal((source.match(/activeSkillMetadata\(/g) || []).length, 4);
     assert.match(source, /function activeSkillMetadata\(skill = \{\}\)/);
@@ -107,13 +108,44 @@ test("Pal editor routes every ordinary dropdown through the searchable selector"
     assert.match(source, /\.skill-card__identity strong,[\s\S]*?white-space: nowrap;/);
     assert.doesNotMatch(source, /class="skill-warning"/);
     assert.match(editorCss, /\.editor-surface:has\(\.search-select\[open\]\)/);
-    for (const handler of ["add_PassiveSkillList", "add_MasteredWaza"]) assert.match(source, new RegExp(handler));
+    // Both pickers keep an add button in the slot. Their names used to be RPC
+    // action names; they are the store actions now.
+    for (const handler of ["addPassiveSkill", "addActiveSkill"]) assert.match(source, new RegExp(`@click="${handler}"`));
     assert.equal((source.match(/class="skill-card__title"/g) || []).length, 3);
-    assert.equal((source.match(/<small v-if="!palStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
+    assert.equal((source.match(/<small v-if="!appStore\.HIDE_INVALID_OPTIONS" class="skill-card__internal-name">{{ skill }}<\/small>/g) || []).length, 3);
     for (const locale of [en, fr, ja, zhCN]) {
         for (const key of ["Editor_Select_Search", "Editor_Select_No_Results"]) {
             assert.equal(typeof locale[key], "string", key);
             assert.ok(locale[key].trim(), key);
         }
     }
+});
+
+test("reopening a selector scrolls the chosen option back into view", () => {
+    // 40px rows in a 100px window: the option at index 20 sits far below the fold,
+    // and a dropdown that reopens at the top does not show what it is set to.
+    const viewport = { clientHeight: 100, scrollHeight: 1200 };
+    const option = { offsetTop: 800, offsetHeight: 40 };
+
+    // Centred, so the neighbours either side are visible too.
+    assert.equal(scrollOffsetForOption(viewport, option), 770);
+
+    // An option already inside the window is left where it is: reopening must not
+    // shuffle the list under a pointer that is about to click.
+    assert.equal(scrollOffsetForOption({ ...viewport, scrollTop: 760 }, option), 760);
+
+    // Neither end can be overshot.
+    assert.equal(scrollOffsetForOption(viewport, { offsetTop: 0, offsetHeight: 40 }), 0);
+    assert.equal(scrollOffsetForOption(viewport, { offsetTop: 1160, offsetHeight: 40 }), 1100);
+
+    // Nothing selected, or nothing to scroll: no answer to give.
+    assert.equal(scrollOffsetForOption(viewport, null), null);
+    assert.equal(scrollOffsetForOption(null, option), null);
+    assert.equal(scrollOffsetForOption({ clientHeight: 1200, scrollHeight: 1200 }, option), null);
+});
+
+test("the selector scrolls to its selection when the popover opens", async () => {
+    const source = await read("../src/components/modules/SearchSelect.vue");
+    assert.match(source, /scrollOffsetForOption/);
+    assert.match(source, /aria-selected="true"/);
 });

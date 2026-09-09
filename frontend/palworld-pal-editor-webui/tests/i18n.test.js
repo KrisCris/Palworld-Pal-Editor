@@ -11,7 +11,8 @@ globalThis.localStorage = {
     removeItem: key => values.delete(key),
 };
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useAppShellStore } = await import("../src/stores/app-shell.js");
+const { useAppStore } = await import("../src/stores/app.js");
 const { GAME_LANGUAGES, UI_TRANSLATIONS } = await import("../src/i18n/index.js");
 const locales = await Promise.all([
     import("../src/i18n/en.js"),
@@ -64,11 +65,11 @@ test("Pal upgrade section titles match the game UI terminology", () => {
 
 test("startup translations are available synchronously without the backend", () => {
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = useAppStore();
 
     assert.equal(typeof store.getTranslatedText("BackendError_Title"), "string");
     assert.notEqual(store.getTranslatedText("BackendError_Title"), "I18N_MISSING");
-    assert.deepEqual(store.I18nList, {
+    assert.deepEqual(useAppStore().localeOptions, {
         en: "English",
         de: "Deutsch",
         es: "Español",
@@ -107,15 +108,15 @@ test("offline and backend game-data locale maps stay identical", async () => {
 test("saved game-data locales use their complete frontend translation", () => {
     values.set("PAL_I18n", "zh-TW");
     setActivePinia(createPinia());
-    const store = usePalEditorStore();
+    const store = useAppStore();
 
-    assert.equal(store.I18n, "zh-TW");
+    assert.equal(store.locale, "zh-TW");
     assert.equal(store.getTranslatedText("BackendError_Title"), UI_TRANSLATIONS["zh-TW"].BackendError_Title);
 });
 
 test("the anti-scam warning is not restricted to Chinese", async () => {
-    const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
-    assert.doesNotMatch(source, /I18n\.value\s*==={0,1}\s*["']zh-CN["']/);
+    const source = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
+    assert.doesNotMatch(source, /app\.locale\s*==={0,1}\s*["']zh-CN["']/);
 });
 
 test("bootstrap, authentication, and error controls are translated in every locale", () => {
@@ -165,7 +166,6 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "BackendSelector_Use_Page_Server",
         "BackendSelector_Remove",
         "BackendSelector_Invalid_Address",
-        "BackendSelector_Mixed_Content",
         "BackendSelector_Connection_Failed",
         "SkillTemplate_Expand",
         "SkillTemplate_Collapse",
@@ -194,7 +194,6 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "SupportDialog_Financial_Description",
         "SupportDialog_Other_Title",
         "SupportDialog_Other_Description",
-        "SupportDialog_QR_Instruction",
         "SupportDialog_QR_Alt",
         "SupportDialog_Payment_Title",
         "SupportDialog_Online_Description",
@@ -206,7 +205,6 @@ test("bootstrap, authentication, and error controls are translated in every loca
         "SupportDialog_View_Project",
         "Operation_Select_Path",
         "Operation_Update_Player",
-        "Operation_Load_Player",
         "Operation_Save",
         "Operation_Load_Pals",
         "Operation_Load_Player_Data",
@@ -226,6 +224,34 @@ test("bootstrap, authentication, and error controls are translated in every loca
         for (const key of keys) {
             assert.equal(typeof locale[key], "string", key);
             assert.notEqual(locale[key], "", key);
+        }
+    }
+});
+
+// Carried over from the deleted `test_entry_view_ui.py`, which checked these in
+// four locales by reading the .js files as text. The entry page is the first
+// thing anyone sees, so an untranslated string there is the most visible kind.
+test("the entry page is translated in every locale", () => {
+    const keys = [
+        "Entry_Title", "Entry_Intro", "Entry_Help",
+        "Entry_Support_Title", "Entry_Support_Subtitle",
+        "Entry_Support_Community_Title", "Entry_Support_Community_Description",
+        "Entry_Support_Code_Title", "Entry_Support_Code_Description",
+        "Entry_Support_Issue_Title", "Entry_Support_Issue_Description",
+        "Entry_Support_Author_Title", "Entry_Support_Author_Description",
+        "Entry_Downloads_Title", "Entry_Downloads_Subtitle",
+        "Entry_Download_GitHub_Description", "Entry_Download_Nexus_Description",
+        "Entry_Download_Bilibili_Description",
+        "Entry_Load_Title", "Entry_Load_Subtitle", "Entry_Path_Label",
+        "Entry_Instructions_Title", "Entry_Instructions_Subtitle",
+        "Entry_Instruction_First_Title", "Entry_Instruction_First_Description",
+        "Entry_Instruction_WebUI_Title", "Entry_Instruction_WebUI_Description",
+        "Entry_Instruction_Docker_Title", "Entry_Instruction_Docker_Description",
+    ];
+    for (const locale of Object.values(UI_TRANSLATIONS)) {
+        for (const key of keys) {
+            assert.equal(typeof locale[key], "string", key);
+            assert.ok(locale[key].trim(), key);
         }
     }
 });

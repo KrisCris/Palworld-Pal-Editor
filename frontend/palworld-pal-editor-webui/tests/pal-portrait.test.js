@@ -9,7 +9,7 @@ import { closeVueServer, loadVueModule, renderVue } from "./vue-render.js";
 after(closeVueServer);
 
 test("PalPortrait renders caller sizing and all four marker slots", async () => {
-  const { default: PalPortrait } = await loadVueModule("/src/components/modules/PalPortrait.vue");
+  const { default: PalPortrait } = await loadVueModule("/src/components/PalPortrait.vue");
   const html = await renderVue(PalPortrait, {
     props: {
       src: "/image/pals/TestPal",
@@ -33,7 +33,7 @@ test("PalPortrait renders caller sizing and all four marker slots", async () => 
 });
 
 test("PalPortrait scales markers and supports the awakened glow", async () => {
-  const source = await readFile(new URL("../src/components/modules/PalPortrait.vue", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/components/PalPortrait.vue", import.meta.url), "utf8");
   assert.match(source, /clamp\(\.9rem,\s*36%,\s*2rem\)/);
   assert.match(source, /game-lucky-icon[\s\S]*scale\(1\.2\)/);
   assert.match(source, /game-dna-icon[\s\S]*scale\(1\.2\)/);
@@ -51,7 +51,7 @@ test("PalPortrait scales markers and supports the awakened glow", async () => {
 });
 
 test("PalPortrait uses the compact default size", async () => {
-  const { default: PalPortrait } = await loadVueModule("/src/components/modules/PalPortrait.vue");
+  const { default: PalPortrait } = await loadVueModule("/src/components/PalPortrait.vue");
   const html = await renderVue(PalPortrait, { props: { src: "/image/pals/TestPal" } });
   assert.match(html, /--pal-portrait-size:2\.5rem/);
 });

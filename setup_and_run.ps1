@@ -51,8 +51,11 @@ if ($majorVersion -lt 3 -or ($majorVersion -eq 3 -and $minorVersion -lt 11)) {
 Write-Host "Using $($PYTHON_CMD) (version $($majorVersion).$($minorVersion))"
 
 & $PYTHON_CMD -m venv venv
-. .\venv\Scripts\Activate.ps1
+$VENV_PYTHON = ".\venv\Scripts\python.exe"
 
-pip install -r requirements.txt
-pip install -e .
-python -m palworld_pal_editor $args
+& $VENV_PYTHON -m pip install -r requirements.txt
+
+# The editor runs out of the source tree, so there is nothing to install for it
+# -- `src` on PYTHONPATH is all an install was ever doing here.
+$env:PYTHONPATH = (Resolve-Path .\src).Path
+& $VENV_PYTHON -m palworld_pal_editor $args

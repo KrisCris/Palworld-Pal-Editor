@@ -1,5 +1,7 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { useSessionStore } from '@/stores/session'
 import { computed } from '@vue/reactivity';
 import { ref, onMounted } from 'vue'
 
@@ -7,10 +9,12 @@ import IconButton from './modules/IconButton.vue';
 import UiIcon from './modules/UiIcon.vue';
 import InputArea from './modules/InputArea.vue'
 import BarButton from './modules/BarButton.vue'
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const sessionStore = useSessionStore()
 
 const sortedPathChildren = computed(() => {
-    return Array.from(palStore.PATH_CONTEXT.entries()).sort((a, b) => {
+    return Array.from(appStore.pickerEntries.entries()).sort((a, b) => {
         if (a[1].isDir && !b[1].isDir) {
             return -1;
         } else if (!a[1].isDir && b[1].isDir) {
@@ -22,8 +26,8 @@ const sortedPathChildren = computed(() => {
 })
 
 const savePickerResult = () => {
-    palStore.SHOW_FILE_PICKER = false
-    palStore.PAL_GAME_SAVE_PATH = palStore.PAL_FILE_PICKER_PATH
+    appStore.closePicker()
+    sessionStore.savePath = appStore.pickerPath
 
 }
 
@@ -46,28 +50,28 @@ const savePickerResult = () => {
 //     }
 // });
 const abort = () => {
-    palStore.SHOW_FILE_PICKER = false
+    appStore.closePicker()
 }
 </script>
 
 <template>
-    <div class="modal-overlay editor-modal-overlay" v-if="palStore.SHOW_FILE_PICKER" @pointerdown.self="abort">
+    <div class="modal-overlay editor-modal-overlay" v-if="appStore.pickerOpen" @pointerdown.self="abort">
         <div class="popup editor-glass-surface">
             <button class="close-btn" @click="abort">×</button>
             <div class="currentPath">
-                <IconButton icon="back" :label="palStore.getTranslatedText('PathPicker_Back')" @click="palStore.path_back" />
-                <InputArea v-model="palStore.PAL_FILE_PICKER_PATH" />
-                <IconButton icon="forward" :label="palStore.getTranslatedText('PathPicker_Open')"
-                    @click="palStore.update_picker_result(palStore.PAL_FILE_PICKER_PATH)" />
+                <IconButton icon="back" :label="appStore.getTranslatedText('PathPicker_Back')" @click="shell.browseParentPath" />
+                <InputArea v-model="appStore.pickerPath" />
+                <IconButton icon="forward" :label="appStore.getTranslatedText('PathPicker_Open')"
+                    @click="shell.browseSavePath(appStore.pickerPath)" />
             </div>
 
             <ul ref="scrollElement">
                 <li v-for="([key, value], index) of sortedPathChildren" :key="index" :isdir="value.isDir"
-                    @click="() => { if (value.isDir) palStore.update_picker_result(key) }" :fullpath="key">
+                    @click="() => { if (value.isDir) shell.browseSavePath(key) }" :fullpath="key">
                     <UiIcon :name="value.isDir ? 'folder' : 'file'" /> {{ value.filename }}
                 </li>
             </ul>
-            <BarButton @click="savePickerResult" content="OK" :disabled="!palStore.IS_PAL_SAVE_PATH" />
+            <BarButton @click="savePickerResult" content="OK" :disabled="!appStore.pickerIsSaveDir" />
         </div>
     </div>
 </template>

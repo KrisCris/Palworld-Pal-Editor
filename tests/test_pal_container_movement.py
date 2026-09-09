@@ -1,11 +1,24 @@
 import copy
 import unittest
+from dataclasses import replace
 
 from palworld_pal_editor.core.basecamp_data import PalBaseCamp
 from palworld_pal_editor.core.container_data import PalContainer
-from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, toUUID
+from palworld_pal_editor.core.pal_mutations import (
+    PalOperationRefused,
+    PalMutationService,
+    set_owner,
+)
+from palworld_pal_editor.core.pal_repository import PalRepository
+from palworld_pal_editor.core.pal_storage_adapters import WorldPalAdapter
+from palworld_pal_editor.core.player_repository import PlayerRepository
 from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.core.rosters import RosterIndex
+from palworld_pal_editor.core.storage_directory import (
+    StorageDescriptor,
+    StorageDirectory,
+)
 
 
 CONTAINER_ID = toUUID("11111111-1111-1111-1111-111111111111")
@@ -14,7 +27,6 @@ BASE_ID = toUUID("33333333-3333-3333-3333-333333333333")
 GROUP_ID = toUUID("44444444-4444-4444-4444-444444444444")
 TARGET_CONTAINER_ID = toUUID("66666666-6666-6666-6666-666666666666")
 TARGET_PLAYER_ID = toUUID("77777777-7777-7777-7777-777777777777")
-OTHER_GROUP_ID = toUUID("88888888-8888-8888-8888-888888888888")
 
 
 def container_object(size=3, slots=None):
@@ -39,7 +51,9 @@ class PalContainerMutationTests(unittest.TestCase):
         slot_index = container.add_pal(new_id)
 
         self.assertEqual(0, slot_index)
-        self.assertEqual((0, new_id), (container.slots[-1].inv_idx, container.slots[-1].instance_id))
+        self.assertEqual(
+            (0, new_id), (container.slots[-1].SlotIndex, container.slots[-1].instance_id)
+        )
 
     def test_transferred_slot_preserves_raw_fields_and_does_not_alias_source(self):
         source_slot = PalObjects.ContainerSlotData(1)
@@ -92,22 +106,80 @@ class FakePlayer:
         self.NickName = name
         self.OtomoCharacterContainerId = None
         self.PalStorageContainerId = None
-        self._palbox = {}
-        self._new_palbox = {}
 
-    def get_pal(self, pal_id, disable_warning=False):
-        return self._palbox.get(str(pal_id))
 
-    def add_pal(self, pal):
-        if str(pal.InstanceId) in self._palbox:
-            return False
-        self._palbox[str(pal.InstanceId)] = pal
-        pal.set_owner_player_entity(self)
-        return True
+def as_base_worker(manager, pal, container_id=CONTAINER_ID):
+    """Turn the fixture's owned Pal into an ownerless base worker.
 
-    def pop_pal(self, pal_id):
-        self._new_palbox.pop(str(pal_id), None)
-        return self._palbox.pop(str(pal_id), None)
+    There is no base-worker collection to add it to any more, so this sets up what
+    actually makes one: no owner, standing in a container a camp owns.
+    """
+    set_owner(pal, None)
+    manager.camp_data.add_camp(container_id)
+    manager.pal_repository.reindex()
+
+
+def as_shared_cage(manager, container):
+    """Make the target the one world container nobody owns: a viewing cage."""
+    cache = manager.storage_directory._cache
+    cache[str(container.ID)] = replace(
+        cache[str(container.ID)],
+        shared=True,
+        owner_player_uid=None,
+        group_id=None,
+    )
+
+
+def unchanged_state(source, target, pal):
+    """What a refused transfer must leave exactly as it found it."""
+    return (
+        copy.deepcopy(source._slots_data),
+        copy.deepcopy(target._slots_data),
+        copy.deepcopy(pal.pal_param),
+    )
+
+
+def refusal(manager, target):
+    """The capability's answer, checked against the transfer that follows it.
+
+    They are the same decision: what the move dialog greys out is what the POST
+    would have refused, and a test that asked only one of them could not tell.
+    """
+    target_key = WorldPalAdapter.storage_key(target.ID)
+    capability = manager.pal_mutations.capability("world:" + str(PAL_ID), target_key)
+    try:
+        manager.pal_mutations.transfer("world:" + str(PAL_ID), target_key)
+    except PalOperationRefused as refused:
+        assert refused.code == capability.reason, (refused.code, capability.reason)
+    return capability.allowed, capability.reason
+
+
+def sole_world_record(manager):
+    """The record the World adapter yields for this fixture's one Pal.
+
+    Reading it back through a fresh adapter is how the load path decides whether a
+    Pal occupies the slot it records, so a test can mutate the containers and ask
+    the same question the load asks.
+    """
+    native = manager.pal_repository.get("world:" + str(PAL_ID)).native_record
+    [record] = list(WorldPalAdapter([native], manager.container_data).records())
+    return record
+
+
+def in_roster(manager, roster_key, pal_id):
+    """Whether the roster the old UI asks for lists this Pal."""
+    return any(
+        str(record.pal.InstanceId) == str(pal_id)
+        for record in manager.rosters.records_for_roster(roster_key)
+    )
+
+
+def rosters_of(manager, pal_id):
+    """Every roster listing this Pal -- what the roster dict used to record."""
+    keys = ["base-workers", "unrostered"] + [
+        str(player.PlayerUId) for player in manager.players.all()
+    ]
+    return sorted(key for key in keys if in_roster(manager, key, pal_id))
 
 
 class FakeContainerData:
@@ -123,16 +195,8 @@ class FakeContainerData:
     def get_containers(self):
         return self.container_map.values()
 
-    def find_pal_slots(self, pal_id):
-        return [
-            (container, slot)
-            for container in self.get_containers()
-            for slot in container.slots
-            if str(slot.instance_id) == str(pal_id)
-        ]
 
-
-class FakeGroup:
+class FakeGuild:
     def __init__(self):
         self.pals = set()
 
@@ -148,8 +212,16 @@ class FakeGroup:
     def del_pal(self, pal_id):
         self.pals.discard(str(pal_id))
 
+    # Creation goes through the same `TouchedParents` transaction as relocation
+    # now, so the fake answers the same two snapshot calls the real group does.
+    def snapshot_handles(self):
+        return set(self.pals)
 
-class FakeGroupData:
+    def restore_handles(self, snapshot):
+        self.pals = set(snapshot)
+
+
+class FakeGuildData:
     def __init__(self, group):
         self.group = group
 
@@ -157,13 +229,23 @@ class FakeGroupData:
         return self.group if str(group_id) == str(GROUP_ID) else None
 
 
+class FakeCamp:
+    def __init__(self, container_id):
+        self.container_id = container_id
+
+
 class FakeCampData:
-    @staticmethod
-    def get_camps():
-        return []
+    def __init__(self, *container_ids):
+        self.camps = [FakeCamp(container_id) for container_id in container_ids]
+
+    def add_camp(self, container_id):
+        self.camps.append(FakeCamp(container_id))
+
+    def get_camps(self):
+        return self.camps
 
 
-def movement_manager(target_kind="base", target_group=GROUP_ID):
+def movement_manager(target_kind="base"):
     source_slot = PalObjects.ContainerSlotData(1)
     source_slot["RawData"]["value"].update(
         {"instance_id": PAL_ID, "permission_tribe_id": 17, "unknown_bytes": [1, 2, 3]}
@@ -179,45 +261,69 @@ def movement_manager(target_kind="base", target_group=GROUP_ID):
     target = PalContainer(target_obj)
 
     source_player = FakePlayer(toUUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), GROUP_ID, "Source")
-    target_player = FakePlayer(TARGET_PLAYER_ID, target_group, "Target")
-    pal = PalEntity(
+    target_player = FakePlayer(TARGET_PLAYER_ID, GROUP_ID, "Target")
+    pal_record = WorldPalAdapter.record(
         PalObjects.PalSaveParameter(
             PAL_ID, source_player.PlayerUId, source.ID, 1, GROUP_ID
-        )
+        ),
+        storage_key=WorldPalAdapter.storage_key(source.ID),
+        slot_index=1,
+        storage_owner_uid=str(source_player.PlayerUId),
     )
-    source_player.add_pal(pal)
+    pal = pal_record.pal
 
     manager = object.__new__(SaveManager)
-    manager.player_mapping = {
-        str(source_player.PlayerUId): source_player,
-        str(target_player.PlayerUId): target_player,
-    }
-    manager.baseworker_mapping = {}
-    manager._dangling_pals = {}
+    manager.players = PlayerRepository()
+    manager.players.register(source_player)
+    manager.players.register(target_player)
+    manager.pal_repository = PalRepository()
+    manager.pal_repository.register(pal_record)
+    # A "base" target means the target container is some camp's worker container;
+    # that is the whole of what makes the Pals inside it base workers.
+    manager.camp_data = FakeCampData(
+        *([TARGET_CONTAINER_ID] if target_kind == "base" else [])
+    )
     manager.container_data = FakeContainerData(source, target)
-    manager._container_registry_cache = {
-        str(source.ID): {
-            "ContainerId": str(source.ID),
-            "ContainerKind": "storage",
-            "ContainerLabel": "Source · Palbox",
-            "OwnerPlayerUId": str(source_player.PlayerUId),
-            "GroupId": str(GROUP_ID),
-            "Size": source.size,
-            "Occupied": len(source.slots),
-            "Classification": "exact",
-            "MovableInto": True,
-        },
-        str(target.ID): {
-            "ContainerId": str(target.ID),
-            "ContainerKind": target_kind,
-            "ContainerLabel": "Target",
-            "OwnerPlayerUId": str(target_player.PlayerUId) if target_kind != "base" else None,
-            "GroupId": str(target_group),
-            "Size": target.size,
-            "Occupied": len(target.slots),
-            "Classification": "exact",
-            "MovableInto": True,
-        },
+    manager.world_adapter = WorldPalAdapter([], manager.container_data)
+    manager.storage_adapters = {}
+    manager._dps_storages = {}
+    manager._global_palbox = None
+    manager.guild_data = FakeGuildData(FakeGuild())
+    manager.pal_mutations = PalMutationService(manager)
+    # This manager is assembled field by field rather than loaded, so it gets its
+    # collaborators the same way. The cache below is then the whole directory:
+    # these fakes have no real containers for it to derive descriptors from.
+    manager.storage_directory = StorageDirectory(manager)
+    manager.rosters = RosterIndex(manager)
+    manager.storage_directory._cache = {
+        str(source.ID): StorageDescriptor(
+            storage_key=WorldPalAdapter.storage_key(source.ID),
+            storage_kind="world",
+            storage_role="storage",
+            storage_label="Source · Palbox",
+            ContainerId=str(source.ID),
+            slot_count=source.SlotNum,
+            occupied=len(source.slots),
+            owner_player_uid=str(source_player.PlayerUId),
+            group_id=str(GROUP_ID),
+            classification="exact",
+            movable_into=True,
+        ),
+        str(target.ID): StorageDescriptor(
+            storage_key=WorldPalAdapter.storage_key(target.ID),
+            storage_kind="world",
+            storage_role=target_kind,
+            storage_label="Target",
+            ContainerId=str(target.ID),
+            slot_count=target.SlotNum,
+            occupied=len(target.slots),
+            owner_player_uid=(
+                str(target_player.PlayerUId) if target_kind != "base" else None
+            ),
+            group_id=str(GROUP_ID),
+            classification="exact",
+            movable_into=True,
+        ),
     }
     SaveManager._instance = manager
     return manager, pal, source, target, source_player, target_player
@@ -230,221 +336,197 @@ class SaveManagerMovementTests(unittest.TestCase):
     def tearDown(self):
         SaveManager._instance = self.previous_manager
 
-    def test_player_to_base_move_uses_sparse_slot_and_removes_current_owner(self):
-        manager, pal, source, target, source_player, _ = movement_manager()
+    def test_a_world_record_is_located_only_by_the_slot_it_records(self):
+        """Container location validation in full: one container, one slot, one id.
 
-        result = manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
+        What the old resolver split into `missing`, `slot_mismatch` and
+        `unknown_container` is one answer now -- the record occupies nothing, so it
+        gets no storage key. `duplicate` is not looked for at all: finding it needed
+        a scan of every container, which is exactly the scan the Pal's own recorded
+        position makes unnecessary.
+        """
+        manager, _, _, _, _, _ = movement_manager()
+        self.assertIsNotNone(sole_world_record(manager).storage_key)
 
-        self.assertTrue(result)
-        self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
-        self.assertIsNone(pal.OwnerPlayerUId)
-        self.assertIsNone(source_player.get_pal(PAL_ID))
-        self.assertIs(pal, manager.baseworker_mapping[str(PAL_ID)])
-        self.assertFalse(source.has_pal(PAL_ID))
-        self.assertTrue(target.has_pal(PAL_ID))
-        self.assertEqual(17, target.get_slot(PAL_ID)._slot_raw_data["permission_tribe_id"])
-        self.assertEqual([1, 2, 3], target.get_slot(PAL_ID)._slot_raw_data["unknown_bytes"])
+        with self.subTest("the recorded container does not exist"):
+            manager, pal, _, _, _, _ = movement_manager()
+            pal.SlotId = (toUUID("cccccccc-cccc-cccc-cccc-cccccccccccc"), 0)
+            self.assertIsNone(sole_world_record(manager).storage_key)
 
-    def test_location_resolver_reports_every_slot_anomaly(self):
-        manager, pal, source, target, _, _ = movement_manager()
-        self.assertEqual("ok", manager.resolve_pal_location(pal)["LocationStatus"])
+        with self.subTest("the recorded slot is not in the container"):
+            manager, _, source, _, _, _ = movement_manager()
+            source.del_pal(PAL_ID)
+            self.assertIsNone(sole_world_record(manager).storage_key)
 
+        with self.subTest("the recorded slot holds a different Pal"):
+            manager, _, source, _, _, _ = movement_manager()
+            source.get_slot(PAL_ID).instance_id = toUUID(
+                "dddddddd-dddd-dddd-dddd-dddddddddddd"
+            )
+            self.assertIsNone(sole_world_record(manager).storage_key)
+
+    def test_load_logs_one_warning_per_container_location_anomaly(self):
+        """Spec §9: the anomaly is a load log line, and nothing else survives it."""
+        manager, _, source, _, _, _ = movement_manager()
         source.del_pal(PAL_ID)
-        self.assertEqual("missing", manager.resolve_pal_location(pal)["LocationStatus"])
-
-        manager, pal, _, _, _, _ = movement_manager()
-        pal.SlotId = (TARGET_CONTAINER_ID, 0)
-        self.assertEqual(
-            "slot_mismatch", manager.resolve_pal_location(pal)["LocationStatus"]
-        )
-
-        manager, pal, source, target, _, _ = movement_manager()
-        target.add_slot_copy(source.get_slot(PAL_ID))
-        self.assertEqual("duplicate", manager.resolve_pal_location(pal)["LocationStatus"])
-
-        manager, pal, _, _, _, _ = movement_manager()
-        pal.SlotId = (
-            toUUID("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-            0,
-        )
-        self.assertEqual(
-            "unknown_container", manager.resolve_pal_location(pal)["LocationStatus"]
-        )
-
-    def test_player_to_player_move_changes_owner_and_history(self):
-        manager, pal, _, _, source_player, target_player = movement_manager("storage")
-
-        self.assertTrue(manager.move_pal(PAL_ID, TARGET_CONTAINER_ID))
-
-        self.assertEqual(TARGET_PLAYER_ID, pal.OwnerPlayerUId)
-        self.assertEqual(TARGET_PLAYER_ID, pal.OldOwnerPlayerUIds[-1])
-        self.assertIsNone(source_player.get_pal(PAL_ID))
-        self.assertIs(pal, target_player.get_pal(PAL_ID))
-
-    def test_move_accepts_a_completely_empty_party_container_and_logs_the_route(self):
-        manager, pal, source, target, _, _ = movement_manager("party")
-        target.restore_slots([])
-        manager._container_registry_cache[str(target.ID)]["Occupied"] = 0
-
-        with self.assertLogs("Palworld-Pal-Editor", level="INFO") as captured:
-            result = manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
-
-        self.assertTrue(result)
-        self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
-        self.assertFalse(source.has_pal(PAL_ID))
-        self.assertTrue(target.has_pal(PAL_ID))
-        log_text = "\n".join(captured.output)
-        self.assertIn(f"pal={PAL_ID}", log_text)
-        self.assertIn(f"source={CONTAINER_ID}@1", log_text)
-        self.assertIn(f"target={TARGET_CONTAINER_ID}@0", log_text)
-
-    def test_rejected_move_logs_each_target_status_and_reason(self):
-        manager, _, _, target, _, _ = movement_manager("storage")
-        target.size = 1
-        descriptor = manager._container_registry_cache[str(target.ID)]
-        descriptor.update({"Size": 1, "Occupied": 1})
+        record = sole_world_record(manager)
+        manager.pal_repository = PalRepository()
+        manager.pal_repository.register(record)
 
         with self.assertLogs("Palworld-Pal-Editor", level="WARNING") as captured:
-            with self.assertRaisesRegex(ValueError, "unknown, unsafe, or full"):
-                manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
+            manager._log_location_anomalies()
 
-        log_text = "\n".join(captured.output)
-        self.assertIn(f"pal={PAL_ID}", log_text)
-        self.assertIn(f"container={TARGET_CONTAINER_ID}", log_text)
-        self.assertIn("exists=True", log_text)
-        self.assertIn("kind=storage", log_text)
-        self.assertIn("occupied=1/1", log_text)
-        self.assertIn("movable=True", log_text)
-        self.assertIn("reason=Target container is unknown, unsafe, or full.", log_text)
+        logged = "\n".join(captured.output)
+        for field in (
+            f"record_key={record.record_key}",
+            f"InstanceId={PAL_ID}",
+            f"ContainerId={CONTAINER_ID}",
+            "SlotIndex=1",
+            "container_exists=True",
+            "slot_exists=False",
+            "slot_instance_id=None",
+        ):
+            self.assertIn(field, logged)
 
-    def test_base_to_player_and_base_to_base_moves_keep_mappings_consistent(self):
-        manager, pal, _, _, source_player, target_player = movement_manager("storage")
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
+    def test_a_relocate_into_a_camp_hands_the_pal_over_to_the_camp(self):
+        """World to World, into a base's worker container (spec §7).
 
-        self.assertTrue(manager.move_pal(PAL_ID, TARGET_CONTAINER_ID))
-        self.assertEqual(TARGET_PLAYER_ID, pal.OwnerPlayerUId)
-        self.assertIs(pal, target_player.get_pal(PAL_ID))
-        self.assertNotIn(str(PAL_ID), manager.baseworker_mapping)
+        Two things settle at once: the Pal stops being anybody's, and the roster
+        that lists it becomes the base-worker one. The slot it lands in is a copy of
+        the slot it left, so the fields this editor has never heard of travel with
+        it instead of being rebuilt from the ones it has.
+        """
+        manager, pal, source, target, _, _ = movement_manager("base")
+        record = manager.get_record("world:" + str(PAL_ID))
 
-        manager, pal, _, target, source_player, _ = movement_manager("base")
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
+        outcome = manager.pal_mutations.transfer(
+            record.record_key, WorldPalAdapter.storage_key(target.ID)
+        )
 
-        self.assertTrue(manager.move_pal(PAL_ID, target.ID))
+        # A relocate is the same Pal in a new place: one record, still this one.
+        self.assertIs(record, outcome.record)
+        self.assertEqual([], outcome.deleted_record_keys)
+        self.assertEqual((TARGET_CONTAINER_ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
-        self.assertIs(pal, manager.baseworker_mapping[str(PAL_ID)])
+        self.assertEqual(["base-workers"], rosters_of(manager, PAL_ID))
+        self.assertFalse(source.has_pal(PAL_ID))
+        self.assertTrue(target.has_pal(PAL_ID))
+        slot = target.get_slot(PAL_ID)
+        self.assertEqual(17, slot._slot_raw_data["permission_tribe_id"])
+        self.assertEqual([1, 2, 3], slot._slot_raw_data["unknown_bytes"])
 
-    def test_rejected_expedition_and_cross_guild_moves_are_unchanged(self):
-        for expedition, target_group in ((True, GROUP_ID), (False, OTHER_GROUP_ID)):
-            with self.subTest(expedition=expedition, target_group=target_group):
-                manager, pal, source, target, source_player, _ = movement_manager(
-                    "storage", target_group
+    def test_a_relocate_into_a_players_container_hands_the_pal_over(self):
+        """The target container's owner wins, whoever the Pal belonged to before.
+
+        Ownership settles once, current owner and history together, so a Pal that
+        arrives in someone's Palbox is theirs and says so in its own provenance
+        (spec §7.1).
+        """
+        for source_state in ("an owned Pal", "an ownerless base worker"):
+            with self.subTest(source_state):
+                manager, pal, _, target, _, _ = movement_manager("storage")
+                if source_state == "an ownerless base worker":
+                    as_base_worker(manager, pal)
+
+                manager.pal_mutations.transfer(
+                    "world:" + str(PAL_ID), WorldPalAdapter.storage_key(target.ID)
                 )
-                if expedition:
-                    pal._pal_param["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
-                        PalObjects.Guid(CONTAINER_ID)
-                    )
-                before = (
-                    copy.deepcopy(source._slots_data),
-                    copy.deepcopy(target._slots_data),
-                    copy.deepcopy(pal._pal_param),
-                    dict(source_player._palbox),
-                )
 
-                with self.assertRaises(ValueError):
-                    manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
+                self.assertEqual(TARGET_PLAYER_ID, pal.OwnerPlayerUId)
+                self.assertEqual(TARGET_PLAYER_ID, pal.OldOwnerPlayerUIds[-1])
+                self.assertEqual([str(TARGET_PLAYER_ID)], rosters_of(manager, PAL_ID))
 
-                self.assertEqual(before[0], source._slots_data)
-                self.assertEqual(before[1], target._slots_data)
-                self.assertEqual(before[2], pal._pal_param)
-                self.assertEqual(before[3], source_player._palbox)
+    def test_a_shared_cage_keeps_the_pals_own_owner_and_needs_it_to_have_one(self):
+        """A viewing cage is nobody's, so it decides nothing about the Pal in it.
+
+        It has no guild either, which is why it is the one world target a Pal may
+        enter without matching guilds: the Pal stays in the guild it was already in.
+        An ownerless base worker has no owner to keep, and is refused.
+        """
+        manager, pal, _, target, source_player, _ = movement_manager("special")
+        as_shared_cage(manager, target)
+
+        manager.pal_mutations.transfer(
+            "world:" + str(PAL_ID), WorldPalAdapter.storage_key(target.ID)
+        )
+
+        self.assertEqual(source_player.PlayerUId, pal.OwnerPlayerUId)
+        self.assertEqual([str(source_player.PlayerUId)], rosters_of(manager, PAL_ID))
+
+        manager, pal, source, target, _, _ = movement_manager("special")
+        as_shared_cage(manager, target)
+        as_base_worker(manager, pal)
+        before = unchanged_state(source, target, pal)
+
+        self.assertEqual(
+            (False, "OWNER_REQUIRED"), refusal(manager, target)
+        )
+        self.assertEqual(before, unchanged_state(source, target, pal))
+
+    def test_an_expedition_pal_goes_nowhere_and_nothing_moves(self):
+        """The one refusal that is about the Pal rather than the target (spec §8.2)."""
+        manager, pal, source, target, _, _ = movement_manager("storage")
+        pal.pal_param["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
+            PalObjects.Guid(CONTAINER_ID)
+        )
+        before = unchanged_state(source, target, pal)
+
+        self.assertEqual((False, "EXPEDITION_PAL"), refusal(manager, target))
+        self.assertEqual(before, unchanged_state(source, target, pal))
 
     def test_40_slot_world_container_is_a_shared_viewing_cage(self):
         manager, _, source, target, source_player, _ = movement_manager()
-        target.size = 40
+        target.SlotNum = 40
         source_player.PalStorageContainerId = source.ID
         manager.camp_data = FakeCampData()
-        manager._container_registry_cache = None
+        manager.storage_directory._cache = None
 
-        descriptor = manager._container_descriptor_map()[str(target.ID)]
+        descriptor = manager.storage_directory._descriptor_map()[str(target.ID)]
 
-        self.assertEqual("special", descriptor["ContainerKind"])
-        self.assertEqual("Viewing Cage", descriptor["ContainerLabel"])
-        self.assertTrue(descriptor["Shared"])
-        self.assertTrue(descriptor["MovableInto"])
-        self.assertIsNone(descriptor["OwnerPlayerUId"])
-
-    def test_shared_cage_preserves_player_owner_and_rejects_ownerless_base_pal(self):
-        manager, pal, source, target, source_player, _ = movement_manager("special")
-        manager._container_registry_cache[str(target.ID)].update(
-            {"Shared": True, "OwnerPlayerUId": None, "GroupId": None}
-        )
-
-        self.assertTrue(manager.move_pal(PAL_ID, TARGET_CONTAINER_ID))
-        self.assertEqual(source_player.PlayerUId, pal.OwnerPlayerUId)
-        self.assertIs(pal, source_player.get_pal(PAL_ID))
-
-        manager, pal, source, target, source_player, _ = movement_manager("special")
-        manager._container_registry_cache[str(target.ID)].update(
-            {"Shared": True, "OwnerPlayerUId": None, "GroupId": None}
-        )
-        source_player.pop_pal(PAL_ID)
-        pal.set_owner_player_uid(None)
-        manager.baseworker_mapping[str(PAL_ID)] = pal
-        before = (
-            copy.deepcopy(source._slots_data),
-            copy.deepcopy(target._slots_data),
-            copy.deepcopy(pal._pal_param),
-        )
-
-        with self.assertRaisesRegex(ValueError, "owner"):
-            manager.move_pal(PAL_ID, TARGET_CONTAINER_ID)
-
-        self.assertEqual(before[0], source._slots_data)
-        self.assertEqual(before[1], target._slots_data)
-        self.assertEqual(before[2], pal._pal_param)
+        self.assertEqual("special", descriptor.storage_role)
+        self.assertEqual("Viewing Cage", descriptor.storage_label)
+        self.assertTrue(descriptor.shared)
+        self.assertTrue(descriptor.movable_into)
+        self.assertIsNone(descriptor.owner_player_uid)
 
     def test_explicit_base_creation_uses_target_slot_and_clears_expedition(self):
         manager, _, _, target, _, _ = movement_manager()
-        manager.group_data = FakeGroupData(FakeGroup())
         manager._entities_list = []
-        template = PalObjects.PalSaveParameter(
-            toUUID("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-            TARGET_PLAYER_ID,
-            CONTAINER_ID,
-            2,
-            GROUP_ID,
+        # What a creation is handed is the payload, not a record: where it used to
+        # sit and who used to own it are the target container's to decide.
+        template = PalObjects.DefaultPalSaveParameter(
+            TARGET_PLAYER_ID, CONTAINER_ID, 2
         )
-        template["value"]["RawData"]["value"]["object"]["SaveParameter"]["value"][
-            "MapObjectConcreteInstanceIdAssignedToExpedition"
-        ] = PalObjects.Guid(CONTAINER_ID)
-
-        pal = manager.add_pal(
-            "PAL_BASE_WORKER_BTN", template, target_container_id=target.ID
+        template["value"]["MapObjectConcreteInstanceIdAssignedToExpedition"] = (
+            PalObjects.Guid(CONTAINER_ID)
         )
 
-        self.assertIsNotNone(pal)
+        record = manager.pal_mutations.create_world_pal(
+            "base-workers", template, target_container_id=target.ID
+        )
+
+        self.assertIsNotNone(record)
+        pal = record.pal
         self.assertEqual((target.ID, 0), pal.SlotId)
         self.assertIsNone(pal.OwnerPlayerUId)
         self.assertNotIn(
-            "MapObjectConcreteInstanceIdAssignedToExpedition", pal._pal_param
+            "MapObjectConcreteInstanceIdAssignedToExpedition", pal.pal_param
         )
-        self.assertIs(pal, manager.baseworker_mapping[str(pal.InstanceId)])
+        self.assertEqual(
+            ["base-workers"], rosters_of(manager, pal.InstanceId)
+        )
 
     def test_default_creation_prefers_an_empty_party_over_pal_storage(self):
         manager, _, party, storage, player, _ = movement_manager("storage")
         party.restore_slots([])
         player.OtomoCharacterContainerId = party.ID
         player.PalStorageContainerId = storage.ID
-        manager.group_data = FakeGroupData(FakeGroup())
         manager._entities_list = []
 
-        pal = manager.add_pal(player.PlayerUId)
+        record = manager.pal_mutations.create_world_pal(player.PlayerUId)
 
-        self.assertIsNotNone(pal)
+        self.assertIsNotNone(record)
+        pal = record.pal
         self.assertEqual((party.ID, 0), pal.SlotId)
         self.assertTrue(party.has_pal(pal.InstanceId))
         self.assertFalse(storage.has_pal(pal.InstanceId))

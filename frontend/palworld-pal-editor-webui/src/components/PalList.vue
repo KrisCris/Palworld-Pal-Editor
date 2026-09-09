@@ -3,8 +3,8 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import AddPalDialog from '@/components/AddPalDialog.vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
-import PalPortrait from '@/components/modules/PalPortrait.vue'
-import { formatContainerLabel } from '@/components/modules/pal-container-label'
+import PalPortrait from '@/components/PalPortrait.vue'
+import { formatStorageLabel } from '@/components/pal-storage-label'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import {
   groupPalList,
@@ -13,28 +13,39 @@ import {
   matchesPalAttributeFilters,
   matchesPalSessionFilter,
   sortPalList,
-} from '@/components/modules/pal-list-order'
-import { paldeckForRow } from '@/components/modules/pal-species-selector'
+} from '@/components/pal-list-order'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { genderKey } from '@/pal-traits'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { BASE_ROSTER_KEY, useRostersStore } from '@/stores/rosters'
+import { useSessionStore } from '@/stores/session'
+import { useStoragesStore } from '@/stores/storages'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const backend = useBackendStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
+const sessionStore = useSessionStore()
+const storagesStore = useStoragesStore()
 const props = defineProps({ preview: Boolean })
 const emit = defineEmits(['toggle'])
-const toggleLabel = () => palStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
+const toggleLabel = () => appStore.getTranslatedText(props.preview ? 'PalList_Restore' : 'PalList_Collapse')
 const palListContainer = ref(null)
 const sortMenu = ref(null)
 const showAddPalDialog = ref(false)
 const attemptedAutoSelectRoster = ref(null)
-const activeSpecialRoster = computed(() => {
-  const roster = palStore.ACTIVE_ROSTER
-  return (roster === palStore.PAL_BASE_WORKER_BTN || roster === palStore.PAL_GLOBAL_STORAGE_BTN)
-    ? roster
-    : null
-})
-const activePalFilterCount = computed(() => palStore.PAL_LIST_ATTRIBUTE_FILTERS.length
-  + Number(palStore.PAL_LIST_EDITED_ONLY)
-  + Number(palStore.PAL_LIST_CREATED_ONLY))
+// The rosters that are a place rather than a player. Their canvas has nothing to
+// show until a Pal is picked, so the list picks the first one for you.
+const activeFixedRoster = computed(() => (
+  rostersStore.activePlayerUid === null ? rostersStore.activeRosterKey : null
+))
+const activePalFilterCount = computed(() => rostersStore.attributeFilters.length
+  + Number(rostersStore.editedOnly)
+  + Number(rostersStore.createdOnly))
 const attributeFilters = Object.freeze([
   { key: 'priority-1', icon: 'priority-1', label: 'I' },
   { key: 'priority-2', icon: 'priority-2', label: 'II' },
@@ -46,8 +57,8 @@ const attributeFilters = Object.freeze([
 ])
 
 const toggleAttributeFilter = key => {
-  const filters = palStore.PAL_LIST_ATTRIBUTE_FILTERS
-  palStore.PAL_LIST_ATTRIBUTE_FILTERS = filters.includes(key)
+  const filters = rostersStore.attributeFilters
+  rostersStore.attributeFilters = filters.includes(key)
     ? filters.filter(filter => filter !== key)
     : [...filters, key]
 }
@@ -57,14 +68,14 @@ onMounted(() => window.addEventListener('pointerdown', closeSortMenuOnOutsidePoi
 onBeforeUnmount(() => window.removeEventListener('pointerdown', closeSortMenuOnOutsidePointer))
 
 watch([
-  activeSpecialRoster,
-  () => palStore.LOADING_FLAG,
+  activeFixedRoster,
+  () => sessionStore.operationPending,
 ], async ([roster, loading], previous = []) => {
   if (roster !== previous[0]) attemptedAutoSelectRoster.value = null
-  if (roster === palStore.PAL_BASE_WORKER_BTN) return
-  if (!roster || loading || palStore.SELECTED_PAL_ID || attemptedAutoSelectRoster.value === roster) return
+  if (roster === BASE_ROSTER_KEY) return
+  if (!roster || loading || palsStore.selectedRecordKey || attemptedAutoSelectRoster.value === roster) return
   await nextTick()
-  if (palStore.LOADING_FLAG || palStore.SELECTED_PAL_ID || activeSpecialRoster.value !== roster) return
+  if (palsStore.selectedRecordKey || activeFixedRoster.value !== roster) return
   try {
     const button = palListContainer.value?.querySelector('button:not(:disabled)')
     if (!button) return
@@ -75,82 +86,74 @@ watch([
   }
 }, { immediate: true, flush: 'post' })
 
-watch(async () => palStore.UPDATE_PAL_RESELECT_CTR, async () => {
+watch(async () => palsStore.writeCount, async () => {
   await nextTick()
   try {
-    const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
+    const button = palListContainer.value.querySelector(`button[value="${palsStore.selectedRecordKey}"]`)
     button?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } catch (error) {
     return
   }
 })
 
-watch(async () => palStore.SELECTED_PAL_ID, async () => {
+watch(async () => palsStore.selectedRecordKey, async () => {
   await nextTick()
-  if (palStore.SHOW_PLAYER_EDIT_FLAG && !palStore.BASE_PAL_BTN_CLK_FLAG) return
+  if (playersStore.showPlayerEditor && rostersStore.activeRosterKey !== BASE_ROSTER_KEY) return
   try {
-    const button = palListContainer.value.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
-    if (button) {
-      if (palStore.SELECTED_PAL_ID != palStore.SELECTED_PAL_DATA?.RecordKey) {
-        palStore.selectPal(palStore.SELECTED_PAL_ID, true)
-      }
-      button.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    }
+    palListContainer.value
+      .querySelector(`button[value="${palsStore.selectedRecordKey}"]`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } catch (error) {
     return
   }
 })
 
 const visiblePals = computed(() => sortPalList(
-  Array.from(palStore.PAL_MAP.values())
-    .filter(pal => !palStore.isFilteredPal(pal))
-    .filter(pal => matchesPalAttributeFilters(pal, palStore.PAL_LIST_ATTRIBUTE_FILTERS))
+  rostersStore.activePals
+    .filter(pal => rostersStore.matchesSearch(pal))
+    .filter(pal => matchesPalAttributeFilters(pal, rostersStore.attributeFilters))
     .filter(pal => matchesPalSessionFilter(
       pal,
-      palStore.PAL_LIST_EDITED_ONLY,
-      palStore.PAL_LIST_CREATED_ONLY,
-      palStore.EDITED_PAL_IDS,
-      palStore.CREATED_PAL_IDS,
+      rostersStore.editedOnly,
+      rostersStore.createdOnly,
     )),
-  palStore.PAL_LIST_SORT,
-  pal => paldeckForRow(palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]),
+  rostersStore.sortMode,
 ))
 
 const visiblePalGroups = computed(() => groupPalList(
   visiblePals.value,
-  palStore.PAL_LIST_SORT,
+  rostersStore.sortMode,
 ).map(group => ({
   ...group,
-  container: palStore.PAL_CONTAINERS.find(container => container.StorageKey === group.key),
+  storage: storagesStore.storage(group.key),
 })))
-const containerLabel = group => formatContainerLabel(
-  group.container || {
-    ContainerKind: group.key === 'anomaly' ? 'anomaly' : 'other',
-    ContainerLabel: group.label,
-  },
-  palStore.getTranslatedText,
-)
+// A group whose key names a storage is titled by the directory. One that does not
+// is a Pal reporting a place the save has no entry for, and keeps the name it
+// reported.
+const containerLabel = group => (group.storage
+  ? formatStorageLabel(group.storage, appStore.getTranslatedText)
+  : group.label)
 
 watch(
   [
-    () => palStore.PAL_LIST_SORT,
-    () => palStore.PAL_LIST_ATTRIBUTE_FILTERS,
-    () => palStore.PAL_LIST_EDITED_ONLY,
-    () => palStore.PAL_LIST_CREATED_ONLY,
+    () => rostersStore.sortMode,
+    () => rostersStore.attributeFilters,
+    () => rostersStore.editedOnly,
+    () => rostersStore.createdOnly,
   ],
   async () => {
     await nextTick()
     palListContainer.value
-      ?.querySelector(`button[value="${palStore.SELECTED_PAL_ID}"]`)
+      ?.querySelector(`button[value="${palsStore.selectedRecordKey}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   },
 )
 
+// The summary carries its own Paldeck number, so the list does not look the
+// species up in the static catalog to say what a row is.
 function palMetadata(pal) {
-  const row = palStore.PAL_STATIC_DATA[pal.DataAccessKeyOG]
-  const paldeck = paldeckForRow(row)
-  const id = pal.CharacterID || pal.DataAccessKeyOG
-  return paldeck ? `PAL ${paldeck} · ${id}` : id
+  const id = pal.CharacterID || pal.DataAccessKey
+  return pal.Paldeck ? `PAL ${pal.Paldeck} · ${id}` : id
 }
 
 const portraitBorder = pal => pal.IsAwakening
@@ -159,84 +162,81 @@ const portraitBorder = pal => pal.IsAwakening
   ? 'var(--editor-color-danger)'
   : pal.IsRarePal ? 'var(--editor-color-lucky)' : 'var(--editor-color-border)'
 
-const palStatus = pal => palStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
+const palStatus = pal => appStore.getTranslatedText(`PalList_Status_${pal.IsBOSS
   ? pal.IsRarePal ? 'AlphaLucky' : 'Alpha'
   : pal.IsRarePal ? 'Lucky' : 'Ordinary'}`)
 
-const palWasCreated = pal => isCreatedPal(pal, palStore.CREATED_PAL_IDS)
-const palWasEdited = pal => isEditedPal(pal, palStore.EDITED_PAL_IDS, palStore.CREATED_PAL_IDS)
-const palKey = pal => pal.RecordKey || pal.InstanceId
-const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pal.ContainerKind === 'dps'
+const palWasCreated = pal => isCreatedPal(pal)
+const palWasEdited = pal => isEditedPal(pal)
 </script>
 
 <template>
   <nav :class="['pal-roster', { 'pal-roster--preview': preview }]"
-    :aria-label="palStore.getTranslatedText('PalList_Text')">
+    :aria-label="appStore.getTranslatedText('PalList_Text')">
     <header class="roster-header">
       <div class="roster-heading-row">
         <button class="roster-collapse-button" :title="toggleLabel()"
           :aria-label="toggleLabel()" @click="emit('toggle')">
           <UiIcon :name="preview ? 'panel' : 'minus'" />
         </button>
-        <h2 class="roster-title">{{ palStore.getTranslatedText("PalList_Text") }}</h2>
+        <h2 class="roster-title">{{ appStore.getTranslatedText("PalList_Text") }}</h2>
         <div class="roster-actions">
           <details ref="sortMenu" class="pal-list-menu">
           <summary class="roster-icon-button" :class="{ 'is-active': activePalFilterCount > 0 }"
-            :title="palStore.getTranslatedText('PalList_SortFilter')"
-            :aria-label="palStore.getTranslatedText('PalList_SortFilter')">
+            :title="appStore.getTranslatedText('PalList_SortFilter')"
+            :aria-label="appStore.getTranslatedText('PalList_SortFilter')">
             <UiIcon name="filter" />
             <span v-if="activePalFilterCount" class="filter-count">{{ activePalFilterCount }}</span>
           </summary>
           <div class="pal-list-menu__popover editor-glass-surface">
             <label>
-              <span>{{ palStore.getTranslatedText('PalList_Sort') }}</span>
-              <select v-model="palStore.PAL_LIST_SORT">
-                <option value="paldeck">{{ palStore.getTranslatedText('PalList_Sort_Paldeck') }}</option>
-                <option value="location">{{ palStore.getTranslatedText('PalList_Sort_Location') }}</option>
-                <option value="priority">{{ palStore.getTranslatedText('PalList_Sort_Priority') }}</option>
+              <span>{{ appStore.getTranslatedText('PalList_Sort') }}</span>
+              <select v-model="rostersStore.sortMode">
+                <option value="paldeck">{{ appStore.getTranslatedText('PalList_Sort_Paldeck') }}</option>
+                <option value="location">{{ appStore.getTranslatedText('PalList_Sort_Location') }}</option>
+                <option value="priority">{{ appStore.getTranslatedText('PalList_Sort_Priority') }}</option>
               </select>
             </label>
             <fieldset class="pal-list-menu__attribute-filters">
-              <legend>{{ palStore.getTranslatedText('PalList_Filter_Attributes') }}</legend>
+              <legend>{{ appStore.getTranslatedText('PalList_Filter_Attributes') }}</legend>
               <button v-for="filter in attributeFilters" :key="filter.key" type="button"
-                :class="['pal-list-menu__attribute-button', { 'is-active': palStore.PAL_LIST_ATTRIBUTE_FILTERS.includes(filter.key) }]"
-                :aria-pressed="palStore.PAL_LIST_ATTRIBUTE_FILTERS.includes(filter.key)"
-                :title="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
-                :aria-label="filter.translation ? palStore.getTranslatedText(filter.translation) : filter.label"
+                :class="['pal-list-menu__attribute-button', { 'is-active': rostersStore.attributeFilters.includes(filter.key) }]"
+                :aria-pressed="rostersStore.attributeFilters.includes(filter.key)"
+                :title="filter.translation ? appStore.getTranslatedText(filter.translation) : filter.label"
+                :aria-label="filter.translation ? appStore.getTranslatedText(filter.translation) : filter.label"
                 @click="toggleAttributeFilter(filter.key)">
-                <img v-if="filter.icon" :src="palStore.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
+                <img v-if="filter.icon" :src="backend.backendAssetUrl(`/image/ui/${filter.icon}`)" alt=""
                   @error="$event.currentTarget.hidden = true">
                 <UiIcon v-else :name="filter.uiIcon" />
-                <span>{{ filter.label || palStore.getTranslatedText(filter.translation) }}</span>
+                <span>{{ filter.label || appStore.getTranslatedText(filter.translation) }}</span>
               </button>
             </fieldset>
             <div class="pal-list-menu__session-buttons">
               <button class="pal-list-menu__session-button" type="button"
-                :aria-pressed="palStore.PAL_LIST_EDITED_ONLY"
-                @click="palStore.PAL_LIST_EDITED_ONLY = !palStore.PAL_LIST_EDITED_ONLY">
+                :aria-pressed="rostersStore.editedOnly"
+                @click="rostersStore.editedOnly = !rostersStore.editedOnly">
                 <UiIcon name="edit" />
-                <span>{{ palStore.getTranslatedText('PalList_Filter_Edited') }}</span>
+                <span>{{ appStore.getTranslatedText('PalList_Filter_Edited') }}</span>
               </button>
               <button class="pal-list-menu__session-button" type="button"
-                :aria-pressed="palStore.PAL_LIST_CREATED_ONLY"
-                @click="palStore.PAL_LIST_CREATED_ONLY = !palStore.PAL_LIST_CREATED_ONLY">
+                :aria-pressed="rostersStore.createdOnly"
+                @click="rostersStore.createdOnly = !rostersStore.createdOnly">
                 <UiIcon name="plus" />
-                <span>{{ palStore.getTranslatedText('PalList_Filter_Created') }}</span>
+                <span>{{ appStore.getTranslatedText('PalList_Filter_Created') }}</span>
               </button>
             </div>
           </div>
           </details>
           <button class="roster-icon-button"
-            :title="palStore.getTranslatedText('PalList_Add')" :aria-label="palStore.getTranslatedText('PalList_Add')"
-            :disabled="palStore.LOADING_FLAG" @click="showAddPalDialog = true" name="add_pal">
+            :title="appStore.getTranslatedText('PalList_Add')" :aria-label="appStore.getTranslatedText('PalList_Add')" @click="showAddPalDialog = true" name="add_pal">
             <UiIcon name="plus" />
           </button>
         </div>
       </div>
       <label class="pal-search">
         <UiIcon name="search" />
-        <input type="search" v-model="palStore.PAL_LIST_SEARCH_KEYWORD"
-          :placeholder="palStore.getTranslatedText('PalList_Search')" :disabled="palStore.LOADING_FLAG">
+        <input type="search" v-model="rostersStore.searchKeyword"
+          :placeholder="appStore.getTranslatedText('PalList_Search')">
       </label>
     </header>
 
@@ -245,33 +245,33 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
       <template v-for="group in visiblePalGroups" :key="group.key">
       <h3 v-if="group.label" class="container-heading">
         <span>{{ containerLabel(group) }}</span>
-        <small v-if="group.container">{{ group.container.Occupied }} / {{ group.container.Size }}</small>
+        <small v-if="group.storage">{{ group.storage.occupied }} / {{ group.storage.capacity }}</small>
       </h3>
-      <button v-for="pal in group.pals" :key="palKey(pal)"
-        :class="['pal-row', { male: palStore.genderKey(pal.Gender) === 'male', female: palStore.genderKey(pal.Gender) === 'female', unref: pal.Is_Unref_Pal, 'out-of-container': isAwayPal(pal) }]"
-        :value="palKey(pal)" @click="palStore.selectPal(palKey(pal))"
-        :aria-current="palStore.SELECTED_PAL_ID == palKey(pal) ? 'true' : undefined"
-        :disabled="palStore.SELECTED_PAL_ID == palKey(pal) || palStore.LOADING_FLAG">
-        <PalPortrait :src="palStore.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
+      <button v-for="pal in group.pals" :key="pal.recordKey"
+        :class="['pal-row', { male: genderKey(pal.Gender) === 'male', female: genderKey(pal.Gender) === 'female', 'out-of-container': pal.isAway }]"
+        :value="pal.recordKey" @click="palsStore.select(pal.recordKey)"
+        :aria-current="palsStore.selectedRecordKey == pal.recordKey ? 'true' : undefined"
+        :disabled="palsStore.selectedRecordKey == pal.recordKey">
+        <PalPortrait :src="backend.backendAssetUrl(`/image/pals/${pal.IconAccessKey}`)" alt="" size="2.5rem"
           :border-color="portraitBorder(pal)"
           :glow-color="pal.IsAwakening ? 'var(--editor-color-awakened)' : ''">
           <template #top-left>
-            <img v-if="pal.IsBOSS" :src="palStore.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
+            <img v-if="pal.IsBOSS" :src="backend.backendAssetUrl('/image/ui/boss')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #top-right>
             <img v-if="pal.FavoriteIndex > 0" class="game-priority-icon"
-              :src="palStore.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
+              :src="backend.backendAssetUrl(`/image/ui/priority-${pal.FavoriteIndex}`)" alt=""
               @error="$event.currentTarget.hidden = true">
             <img v-else-if="pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-left>
             <img v-if="pal.FavoriteIndex > 0 && pal.IsBOSS && pal.IsRarePal" class="game-lucky-icon"
-              :src="palStore.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/rare')" alt="" @error="$event.currentTarget.hidden = true">
             <img v-if="pal.IsImportedCharacter" class="game-dna-icon"
-              :src="palStore.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
+              :src="backend.backendAssetUrl('/image/ui/dna')" alt="" @error="$event.currentTarget.hidden = true">
           </template>
           <template #bottom-right>
             <span v-if="palWasCreated(pal)" class="new-pal-marker"><UiIcon name="plus" /></span>
@@ -282,17 +282,13 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
           <strong class="pal-name">
             <span>{{ pal.DisplayName }}</span>
             <span v-if="pal.IsExpeditionPal" class="pal-location-badge pal-location-badge--expedition">
-              {{ palStore.getTranslatedText('PalList_Expedition') }}
-            </span>
-            <span v-if="pal.LocationStatus && pal.LocationStatus !== 'ok'"
-              class="pal-location-badge pal-location-badge--anomaly" :title="pal.LocationAnomaly">
-              {{ palStore.getTranslatedText('PalList_Location_Anomaly') }}
+              {{ appStore.getTranslatedText('PalList_Expedition') }}
             </span>
           </strong>
           <small>{{ palMetadata(pal) }}</small>
           <span class="sr-only">{{ palStatus(pal) }}</span>
-          <span v-if="palWasCreated(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
-          <span v-else-if="palWasEdited(pal)" class="sr-only">{{ palStore.getTranslatedText('PalList_Status_Edited') }}</span>
+          <span v-if="palWasCreated(pal)" class="sr-only">{{ appStore.getTranslatedText('PalList_Status_Unsaved') }}</span>
+          <span v-else-if="palWasEdited(pal)" class="sr-only">{{ appStore.getTranslatedText('PalList_Status_Edited') }}</span>
         </span>
       </button>
       </template>
@@ -603,7 +599,6 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
 
 .pal-row.male { --pal-row-accent: var(--editor-color-male); border-left-color: var(--pal-row-accent); }
 .pal-row.female { --pal-row-accent: var(--editor-color-female); border-left-color: var(--pal-row-accent); }
-.pal-row.unref { filter: grayscale(1); }
 .pal-row.out-of-container small { color: var(--editor-color-success); }
 
 .new-pal-marker,
@@ -650,7 +645,6 @@ const isAwayPal = pal => !pal.in_owner_palbox || pal.StorageKind === 'dps' || pa
 }
 
 .pal-location-badge--expedition { background: var(--editor-color-primary); }
-.pal-location-badge--anomaly { background: var(--editor-color-danger); }
 
 .pal-copy strong,
 .pal-copy small {

@@ -25,21 +25,25 @@ test("Pal movement uses a glass two-pane confirmation dialog", async () => {
   assert.match(source, /role="dialog"/);
   assert.match(source, /move-dialog__groups/);
   assert.match(source, /move-dialog__containers/);
-  assert.match(source, /formatContainerLabel/);
-  assert.doesNotMatch(source, /\{\{\s*container\.ContainerLabel\s*\}\}/);
+  assert.match(source, /formatStorageLabel/);
+  assert.doesNotMatch(source, /\{\{\s*storage\.label\s*\}\}/);
   assert.match(source, /aria-disabled/);
-  assert.match(source, /Editor_Move_Reason_Full/);
   assert.match(source, /Editor_Move_Pal/);
+  // Whether a target is offered and why not is the backend's answer for this
+  // source-and-target pair, not a rule the dialog re-derives from the kind.
+  assert.match(source, /moveReasonKey/);
+  assert.match(source, /storagesStore\.capability/);
+  assert.doesNotMatch(source, /MovableInto|ContainerKind/);
 });
 
 test("Pal update comparison is a centered directional glass layer", async () => {
-  const [{ default: PalContainerMoveDialog }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: PalContainerMoveDialog }, { useStoragesStore }] = await Promise.all([
     loadVueModule("/src/components/PalContainerMoveDialog.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/storages.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
+  const storages = useStoragesStore();
   const pal = {
     CharacterID: "JetDragon",
     DisplayName: "Jetragon",
@@ -52,16 +56,18 @@ test("Pal update comparison is a centered directional glass layer", async () => 
     IsAwakening: true,
     IsImportedCharacter: true,
   };
-  store.PAL_TRANSFER_CONFLICT = {
-    LockedTarget: "world:pal-1",
-    Incoming: pal,
-    Existing: { ...pal, Level: 71 },
-    FieldChanges: { Level: true },
-    Candidates: [{
-      RecordKey: "world:pal-1",
-      StorageKey: "container-1",
-      ContainerLabel: "Player · Palbox",
+  storages.conflict = {
+    incoming: pal,
+    existing: { ...pal, Level: 71 },
+    fieldChanges: { Level: { Incoming: 62, Existing: 71 } },
+    candidates: [{
+      recordKey: "world:pal-1",
+      storageKey: "world-container:1",
+      SlotIndex: 3,
+      label: "Player · Palbox",
     }],
+    sourceRecordKey: "world:pal-2",
+    targetStorageKey: "global-palbox",
   };
 
   const html = await renderVue(PalContainerMoveDialog, { pinia });
@@ -100,9 +106,11 @@ test("every locale defines the movement dialog and disabled-reason labels", asyn
     "Editor_Move_No_Containers",
     "Editor_Move_Reason_Current",
     "Editor_Move_Reason_Full",
+    "Editor_Move_Reason_Duplicate",
     "Editor_Move_Reason_Unsafe",
     "Editor_Move_Reason_DifferentGuild",
     "Editor_Move_Reason_OwnerRequired",
+    "Editor_Move_Reason_GpsPlayerRequired",
     "Editor_Container_Base",
     "Editor_Container_Party",
     "Editor_Container_Palbox",
@@ -114,6 +122,6 @@ test("every locale defines the movement dialog and disabled-reason labels", asyn
 
   for (const file of files) {
     const source = await readFile(new URL(file, localeDirectory), "utf8");
-    for (const key of keys) assert.match(source, new RegExp(`\\b${key}\\s*:`), `${file}: ${key}`);
+    for (const key of keys) assert.ok(source.includes(`${key}:`), `${file}: ${key}`);
   }
 });

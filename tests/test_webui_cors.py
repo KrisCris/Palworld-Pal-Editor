@@ -59,7 +59,9 @@ def test_password_protected_backend_allows_public_preflight(monkeypatch):
 
     assert response.status_code == 204
     assert_allowed(response, PUBLIC_ORIGIN)
-    assert response.headers["Access-Control-Allow-Methods"] == "GET, POST, PATCH, DELETE, OPTIONS"
+    assert response.headers["Access-Control-Allow-Methods"] == (
+        "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    )
     assert response.headers["Access-Control-Allow-Headers"] == "Authorization, Content-Type"
 
 
@@ -77,14 +79,14 @@ def test_password_protected_backend_allows_public_get(monkeypatch):
     ("password", "expected"),
     [(None, False), ("", False), ("secret", True)],
 )
-def test_fetch_config_reports_only_nonempty_passwords(monkeypatch, password, expected):
+def test_app_config_reports_only_nonempty_passwords(monkeypatch, password, expected):
     monkeypatch.setattr(Config, "password", password)
 
     with app.test_client() as client:
-        response = client.get("/api/save/fetch_config")
+        response = client.get("/api/app-config")
 
     assert response.status_code == 200
-    assert response.get_json()["data"]["HasPassword"] is expected
+    assert response.get_json()["hasPassword"] is expected
 
 
 def test_empty_password_does_not_enable_public_cors(monkeypatch):
@@ -209,3 +211,40 @@ def test_unprotected_backend_rejects_missing_or_invalid_remote_address(remote_ad
 
     assert response.status_code == 200
     assert "Access-Control-Allow-Origin" not in response.headers
+
+
+def test_the_preflight_allows_every_method_the_api_routes(monkeypatch):
+    """The allow-list is a promise about the route table, so read the route table.
+
+    It was written out by hand and fell behind: PUT was never added, so the two
+    routes that use it -- `PUT /api/session`, which is Load and Reload Save, and
+    `PUT /api/pals/<key>/skills/<group>` -- failed their preflight for any page not
+    served from the backend's own origin. The browser blocks such a request before
+    sending it, so the frontend sees no status at all and reports the backend as
+    unreachable. Same-origin requests skip preflight entirely, which is why the
+    packaged UI never showed it and only a separate dev server did.
+    """
+    monkeypatch.setattr(Config, "password", "secret")
+
+    routed = {
+        method
+        for rule in app.url_map.iter_rules() if str(rule).startswith("/api")
+        for method in rule.methods - {"HEAD", "OPTIONS"}
+    }
+
+    with app.test_client() as client:
+        response = client.options(
+            "/api/ready",
+            headers={
+                "Origin": PUBLIC_ORIGIN,
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers": "Authorization, Content-Type",
+            },
+        )
+
+    allowed = {
+        value.strip()
+        for value in response.headers["Access-Control-Allow-Methods"].split(",")
+    }
+    assert routed, "the app registered no /api routes to check"
+    assert routed <= allowed, f"routed but not allowed: {sorted(routed - allowed)}"

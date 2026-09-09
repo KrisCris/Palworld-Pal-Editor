@@ -3,7 +3,18 @@ import traceback
 import asyncio
 
 from palworld_pal_editor.utils import LOGGER, DataProvider, check_or_generate_port
-from palworld_pal_editor.config import PROGRAM_PATH, Config, version_info, is_gh_build, get_new_version, CONFIG_PATH, NEXUS_URL
+from palworld_pal_editor.config import (
+    Config,
+    CONFIG_PATH,
+    LOG_DIR,
+    NEXUS_URL,
+    get_new_version,
+    is_gh_build,
+    migrate_legacy_user_data,
+    version_info,
+)
+
+from palworld_pal_editor.core.templates import migrate_pal_templates
 
 from palworld_pal_editor.cli import InteractThread, main as cli_main
 from palworld_pal_editor.gui import main as gui_main
@@ -11,10 +22,25 @@ from palworld_pal_editor.webui import main as webui_main
 
 
 def setup_config_from_args():
-    try: 
+    try:
+        migrate_legacy_user_data()
+    except Exception:
+        # The old file is still where it was, so this run continues on defaults
+        # rather than refusing to start; the next launch tries the move again.
+        LOGGER.warning(f"Failed moving the old config to {CONFIG_PATH}: {traceback.format_exc()}")
+
+    try:
         Config.load_from_file()
     except:
         LOGGER.warning(f"Failed Loading Config from {CONFIG_PATH}: {traceback.format_exc()}")
+
+    try:
+        migrate_pal_templates()
+    except Exception:
+        # The templates are still in memory exactly as they were read, so the run
+        # continues with the old ones rather than refusing to start over a file the
+        # user can only fix by hand.
+        LOGGER.warning(f"Failed upgrading saved Pal templates: {traceback.format_exc()}")
 
     parser = argparse.ArgumentParser(description="Palworld Pal Editor, developed by _connlost with ❤.")
 
@@ -55,7 +81,7 @@ def setup_config_from_args():
                 LOGGER.warning(f"Port {Config.port} not available, use {port} instead.")
             Config._runtime_port = port
 
-        LOGGER.info(f"Config file written to {PROGRAM_PATH / 'config.json'}")
+        LOGGER.info(f"Config file written to {CONFIG_PATH}")
     except:
         LOGGER.warning(f"Failed Saving Config {str(Config.__str__())} to {CONFIG_PATH}: {traceback.format_exc()}")
 
@@ -89,7 +115,7 @@ def main():
             webui_main()
 
 if __name__ == "__main__":
-    LOGGER.info(f"Logs written to {PROGRAM_PATH / 'logs'}")
+    LOGGER.info(f"Logs written to {LOG_DIR}")
     
     try:
         main()
