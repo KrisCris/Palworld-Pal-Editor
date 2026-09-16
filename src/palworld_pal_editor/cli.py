@@ -2,9 +2,15 @@ import sys
 import threading
 import traceback
 from typing import Optional
-from palworld_pal_editor.core import *
-from palworld_pal_editor.utils import *
-from palworld_pal_editor.config import *
+from palworld_pal_editor.config import Config
+from palworld_pal_editor.core.pal_entity import PalEntity
+from palworld_pal_editor.core.pal_objects import isUUIDStr
+from palworld_pal_editor.core.pal_record import PalRecord
+from palworld_pal_editor.core.player_entity import PlayerEntity
+from palworld_pal_editor.core.save_manager import SaveManager
+from palworld_pal_editor.utils import LOGGER
+from palworld_pal_editor.utils.data_provider import DataProvider
+from palworld_pal_editor.utils.logger import ColorConsoleFormatter
 
 # InteractThread: Credit to MagicBear. I was just too lazy to write it, lol.
 class InteractThread(threading.Thread):
@@ -93,7 +99,10 @@ def list_player_pals(player: PlayerEntity | str) -> list[PalEntity]:
         player = players[0]
     elif isUUIDStr(player):
         player = get_player(player)
-    pals = player.get_sorted_pals()
+    pals = [
+        record.pal
+        for record in SaveManager().rosters.sorted_records_for_roster(player.PlayerUId)
+    ]
     for pal in pals:
         LOGGER.info(f" - {pal}")
     return pals
@@ -104,23 +113,25 @@ def get_pal(guid: str) -> Optional[PalEntity]:
     return pal
 
 def delete_pal(guid: str):
-    SaveManager().delete_pal(guid)
+    # The CLI names a Pal by its InstanceId; every world Pal's record key is that
+    # id with the storage it lives in in front.
+    SaveManager().pal_mutations.delete(f"world:{guid}")
 
 def batch_pal_delete(guid_list: list[str]):
     for guid in guid_list:
-        delete_pal(guid, yes=True)
+        delete_pal(guid)
 
-def add_pal(player_uid: str) -> Optional[PalEntity]:
-    return SaveManager().add_pal(player_uid)
+def add_pal(player_uid: str) -> Optional[PalRecord]:
+    return SaveManager().pal_mutations.create_world_pal(player_uid)
 
-def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]:
-    player = SaveManager().get_player(player_uid)
-    pal_obj = player.get_pal(pal_guid)._pal_obj
-    if not pal_obj:
-        LOGGER.warning("Unable to find the target pal.")
-        return
-
-    return SaveManager().add_pal(player_uid, pal_obj)
+def dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]:
+    # The service raises; the CLI reports and answers None rather than letting a
+    # refusal escape into an interactive session.
+    try:
+        return SaveManager().pal_mutations.duplicate(f"world:{pal_guid}", player_uid)
+    except ValueError as error:
+        LOGGER.warning(f"Unable to duplicate the target pal: {error}")
+        return None
 
 
 def list_attacks():
@@ -154,7 +165,7 @@ def lang(i18n_code):
         LOGGER.warning(f"I18n code {i18n_code} not available. Select from {DataProvider.get_i18n_options()}")
 
 def save():
-    SaveManager().save(SaveManager()._file_path)
+    SaveManager().save(SaveManager().file_path)
 
 def print_example():
     msg = r"""
@@ -200,8 +211,8 @@ def pal_help():
         - list_player_pals(player: PlayerEntity | str) -> list[PalEntity]
         - get_pal(guid: str) -> Optional[PalEntity]
 
-        - add_pal(player_uid: str) -> Optional[PalEntity]
-        - dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalEntity]
+        - add_pal(player_uid: str) -> Optional[PalRecord]
+        - dupe_pal(player_uid: str, pal_guid: str) -> Optional[PalRecord]
         - delete_pal(guid: str)
         - batch_pal_delete(guid_list: list[str])
 

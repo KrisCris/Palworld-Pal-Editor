@@ -33,7 +33,7 @@ test("editor workspace uses bounded three-column rails and a scrolling canvas", 
 
 test("new workspace labels are translated", () => {
     for (const locale of [en, fr, ja, zhCN]) {
-        for (const key of ["TopBar_More", "PlayerList_Unknown", "PalList_Search", "PalList_Add", "Editor_Select_Prompt", "PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {
+        for (const key of ["PlayerList_Unknown", "PalList_Search", "PalList_Add", "Editor_Select_Prompt", "PlayerList_Collapse", "PlayerList_Restore", "PalList_Collapse", "PalList_Restore"]) {
             assert.equal(typeof locale[key], "string", key);
             assert.ok(locale[key].trim(), key);
         }

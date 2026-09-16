@@ -7,12 +7,12 @@ import zhCN from "../src/i18n/zh-CN.js";
 
 const [editorSource, storeSource] = await Promise.all([
   readFile(new URL("../src/components/PalEditor.vue", import.meta.url), "utf8"),
-  readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8"),
+  readFile(new URL("../src/stores/pals.js", import.meta.url), "utf8"),
 ]);
 
 test("Pal summary exposes one legal attribute maximization action", () => {
   assert.match(editorSource, /id="maximize_pal_btn"/);
-  assert.match(editorSource, /@click="palStore\.maximizePal"/);
+  assert.match(editorSource, /@click="palsStore\.maximize"/);
   assert.match(editorSource, /<UiIcon name="maximum"/);
   assert.match(editorSource, /Editor_Btn_Maximize_Pal/);
 });
@@ -24,12 +24,11 @@ test("Pal summary uses formal attribute and profile terminology", () => {
   assert.equal(zhCN.Editor_Identity_Appearance, "档案");
 });
 
-test("maximize action atomically refreshes and marks the selected Pal", () => {
-  assert.match(storeSource, /async function maximizePal\(\)/);
-  assert.match(storeSource, /POST\("\/api\/pal\/maximize"/);
-  assert.match(storeSource, /new PalData\(\{[\s\S]*\.\.\.response\.data[\s\S]*\}\)/);
-  assert.match(storeSource, /EDITED_PAL_IDS\.value\.add\(SELECTED_PAL_ID\.value\)/);
+test("maximize is one operation resource and reports its own success", () => {
+  assert.match(storeSource, /async function maximize\(\)/);
+  // The resource answers with the maximized Pal, so nothing re-reads it and
+  // nothing marks it edited by hand.
+  assert.match(storeSource, /runWrite\(maximizePal, "Operation_Maximize_Pal"\)/);
   assert.match(storeSource, /Message_Pal_Maximized/);
-  assert.match(storeSource, /Operation_Maximize_Pal/);
-  assert.match(storeSource, /\n\s*maximizePal,/);
+  assert.match(storeSource, /\n\s*maximize,/);
 });

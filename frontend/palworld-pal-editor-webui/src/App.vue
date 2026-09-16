@@ -16,21 +16,33 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import MessageCenter from '@/components/MessageCenter.vue'
 import SupportDialog from '@/components/SupportDialog.vue'
 import TopBar from '@/components/TopBar.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useBackendStore } from '@/stores/backend'
+import { useMessagesStore } from '@/stores/messages'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { useSessionStore } from '@/stores/session'
 import AuthView from '@/views/AuthView.vue'
 import BackendErrorView from '@/views/BackendErrorView.vue'
 import EditorView from '@/views/EditorView.vue'
 import EntryView from '@/views/EntryView.vue'
 import uiIconSprite from '@/assets/ui-icons.svg?raw'
 
-const palStore = usePalEditorStore()
-const runtimeError = computed(() => palStore.BACKEND_ERROR && palStore.APP_STATE !== 'backend-error')
-const applicationDialog = computed(() => !palStore.BACKEND_ERROR && palStore.CURRENT_MESSAGE?.presentation === 'dialog')
+const backend = useBackendStore()
+const messages = useMessagesStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const sessionStore = useSessionStore()
+const runtimeError = computed(() => backend.BACKEND_ERROR && sessionStore.appState !== 'backend-error')
+const applicationDialog = computed(() => !backend.BACKEND_ERROR && messages.CURRENT_MESSAGE?.presentation === 'dialog')
 const supportDialogVisible = computed(() =>
-  palStore.SHOW_DONATE_FLAG && ['entry', 'editor'].includes(palStore.APP_STATE)
+  shell.donationPromptOpen && ['entry', 'editor'].includes(sessionStore.appState)
 )
 const blockingOverlay = computed(() => runtimeError.value || applicationDialog.value)
 const modalOverlay = computed(() => blockingOverlay.value || supportDialogVisible.value)
+// Spec 8.8: while an operation is running nothing in the app may start a second
+// one or edit what the first is about to send. One region, one gate -- so a new
+// control is covered by existing here rather than by remembering to disable itself.
+const interactionBlocked = computed(() => modalOverlay.value || sessionStore.operationPending)
 const playersCollapsed = ref(readRosterCollapsed('editor.playersCollapsed'))
 const palsCollapsed = ref(readRosterCollapsed('editor.palsCollapsed'))
 const refreshPage = () => window.location.reload()
@@ -48,53 +60,53 @@ watch(modalOverlay, async (visible, wasVisible) => {
 }, { flush: 'sync' })
 watch(playersCollapsed, value => persistRosterCollapsed('editor.playersCollapsed', value))
 watch(palsCollapsed, value => persistRosterCollapsed('editor.palsCollapsed', value))
-onMounted(palStore.bootstrap)
+onMounted(shell.bootstrap)
 </script>
 
 <template>
   <div class="ui-icon-sprite" aria-hidden="true" v-html="uiIconSprite"></div>
   <div
     :class="['app-content', { obscured: modalOverlay }]"
-    :inert="modalOverlay || undefined"
+    :inert="interactionBlocked || undefined"
     @focusin="rememberFocus"
   >
     <TopBar :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
       @restore-players="playersCollapsed = false" @restore-pals="palsCollapsed = false" />
 
-    <p v-if="palStore.APP_STATE === 'connecting'" role="status">
-      {{ palStore.getTranslatedText('App_Connecting') }}
+    <p v-if="sessionStore.appState === 'connecting'" role="status">
+      {{ appStore.getTranslatedText('App_Connecting') }}
     </p>
     <BackendErrorView
-      v-else-if="palStore.APP_STATE === 'backend-error'"
+      v-else-if="sessionStore.appState === 'backend-error'"
       startup
-      :kind="palStore.BACKEND_ERROR?.kind"
-      :message="palStore.BACKEND_ERROR?.message"
-      :code="palStore.BACKEND_ERROR?.code"
-      :log="palStore.BACKEND_ERROR?.log"
-      :loading="palStore.LOADING_FLAG"
+      :kind="backend.BACKEND_ERROR?.kind"
+      :message="backend.BACKEND_ERROR?.message"
+      :code="backend.BACKEND_ERROR?.code"
+      :log="backend.BACKEND_ERROR?.log"
+      :loading="sessionStore.operationPending"
       @retry="refreshPage"
     />
-    <AuthView v-else-if="palStore.APP_STATE === 'auth-required'" />
-    <EntryView v-else-if="palStore.APP_STATE === 'entry'" />
-    <EditorView v-else-if="palStore.APP_STATE === 'editor'"
+    <AuthView v-else-if="sessionStore.appState === 'auth-required'" />
+    <EntryView v-else-if="sessionStore.appState === 'entry'" />
+    <EditorView v-else-if="sessionStore.appState === 'editor'"
       :players-collapsed="playersCollapsed" :pals-collapsed="palsCollapsed"
       @collapse-players="playersCollapsed = true" @collapse-pals="palsCollapsed = true" />
 
   </div>
 
-  <SupportDialog v-if="palStore.APP_STATE === 'entry' || palStore.APP_STATE === 'editor'" />
+  <SupportDialog v-if="sessionStore.appState === 'entry' || sessionStore.appState === 'editor'" />
 
   <BackendErrorView
     v-if="runtimeError"
-    :kind="palStore.BACKEND_ERROR.kind"
-    :message="palStore.BACKEND_ERROR.message"
-    :code="palStore.BACKEND_ERROR.code"
-    :log="palStore.BACKEND_ERROR.log"
-    :loading="palStore.LOADING_FLAG"
+    :kind="backend.BACKEND_ERROR.kind"
+    :message="backend.BACKEND_ERROR.message"
+    :code="backend.BACKEND_ERROR.code"
+    :log="backend.BACKEND_ERROR.log"
+    :loading="sessionStore.operationPending"
     @retry="refreshPage"
-    @dismiss="palStore.clearBackendError"
+    @dismiss="backend.clearBackendError"
   />
-  <MessageCenter v-if="!palStore.BACKEND_ERROR" />
+  <MessageCenter v-if="!backend.BACKEND_ERROR" />
 </template>
 
 <style scoped>

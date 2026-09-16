@@ -145,19 +145,6 @@ class DataProvider:
     def get_i18n_map() -> dict[str, str]:
         return I18N_LIST
 
-    # @staticmethod
-    # def get_pal_icon(key: str) -> Optional[Any]:
-    #     if key not in PAL_ICONS:
-    #         LOGGER.warning(f"Pal icon {key} doesn't exist.")
-    #         return
-    #     return PAL_ICONS[key]
-    @staticmethod
-    def in_pal_data(key: str) -> bool:
-        """
-        Checks if the key exists in the PAL_DATA dictionary.
-        """
-        return key in PAL_DATA
-
     @staticmethod
     def resolve_pal_key(key: Optional[str]) -> Optional[str]:
         if not key or key in PAL_DATA:
@@ -264,25 +251,12 @@ class DataProvider:
         return record.get("Human", False) if record else None
 
     @staticmethod
-    def has_human_icon(key: str) -> bool:
-        record = DataProvider.get_pal_record(key)
-        return record.get("HasIcon", False) if record else False
-
-    @staticmethod
     def get_skin_data() -> dict[str, dict]:
         return SKIN_DATA
 
     @staticmethod
     def get_skin(key: str) -> Optional[dict]:
         return SKIN_DATA.get(key)
-
-    @staticmethod
-    def get_skins_for_pal(key: str) -> list[dict]:
-        return [
-            skin
-            for skin in SKIN_DATA.values()
-            if skin.get("TargetPalName") == key
-        ]
 
     @staticmethod
     def is_pal_invalid(key: str) -> bool:
@@ -470,17 +444,6 @@ class DataProvider:
         if attacks is None:
             return []
         return [attack for attack in attacks if attacks[attack] <= (level or 1)]
-
-    @staticmethod
-    def get_attacks_to_forget(pal: str, level: int) -> list[str]:
-        attacks = DataProvider.get_pal_attacks(pal)
-        if attacks is None:
-            return []
-        return [
-            attack
-            for attack in attacks
-            if attacks[attack] > level and not DataProvider.has_skill_fruit(attack)
-        ]
 
     @staticmethod
     def is_valid_i18n(key: str):

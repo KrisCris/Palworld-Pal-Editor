@@ -15,19 +15,22 @@ globalThis.localStorage = {
 after(closeVueServer);
 
 test("skill templates keep overflow hidden until its card is explicitly expanded", async () => {
-  const [{ default: SkillTemplateDialog }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: SkillTemplateDialog }, { useTemplatesStore }, { useCatalogsStore }] = await Promise.all([
     loadVueModule("/src/components/SkillTemplateDialog.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/templates.js"),
+    loadVueModule("/src/stores/catalogs.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
   const skills = Array.from({ length: 6 }, (_, index) => `Passive${index + 1}`);
-  store.SKILL_TEMPLATES = [{ Id: "worker", Name: "Worker passives", Type: "passive", PassiveSkillList: skills }];
-  store.PASSIVE_SKILLS = Object.fromEntries(skills.map((skill, index) => [skill, {
+  useTemplatesStore().skillTemplates = [{
+    templateId: "worker", name: "Worker passives", type: "passive", PassiveSkillList: skills,
+  }];
+  useCatalogsStore().passiveSkills = skills.map((skill, index) => ({
+    InternalName: skill,
     I18n: [`Passive ${index + 1}`, `Effect ${index + 1}`],
     Rating: index + 1,
-  }]));
+  }));
 
   const html = await renderVue(SkillTemplateDialog, { pinia, props: { type: "passive" } });
   assert.match(html, /role="dialog"/);
@@ -52,22 +55,22 @@ test("skill templates keep overflow hidden until its card is explicitly expanded
 });
 
 test("active template cards only render equipped skills with compact combat metadata", async () => {
-  const [{ default: SkillTemplateDialog }, { usePalEditorStore }] = await Promise.all([
+  const [{ default: SkillTemplateDialog }, { useTemplatesStore }, { useCatalogsStore }] = await Promise.all([
     loadVueModule("/src/components/SkillTemplateDialog.vue"),
-    loadVueModule("/src/stores/paleditor.js"),
+    loadVueModule("/src/stores/templates.js"),
+    loadVueModule("/src/stores/catalogs.js"),
   ]);
   const pinia = createPinia();
   setActivePinia(pinia);
-  const store = usePalEditorStore();
-  store.SKILL_TEMPLATES = [{
-    Id: "combat", Name: "Combat", Type: "active",
+  useTemplatesStore().skillTemplates = [{
+    templateId: "combat", name: "Combat", type: "active",
     EquipWaza: ["EPalWazaID::AirCanon"],
     MasteredWaza: ["EPalWazaID::PowerShot"],
   }];
-  store.ACTIVE_SKILLS = {
-    "EPalWazaID::AirCanon": { I18n: ["Air Cannon", "Air"], Element: "Neutral", Power: 25, CT: 2 },
-    "EPalWazaID::PowerShot": { I18n: ["Power Shot", "Power"], Element: "Neutral", Power: 35, CT: 4 },
-  };
+  useCatalogsStore().activeSkills = [
+    { InternalName: "EPalWazaID::AirCanon", I18n: ["Air Cannon", "Air"], Element: "Neutral", Power: 25, CT: 2 },
+    { InternalName: "EPalWazaID::PowerShot", I18n: ["Power Shot", "Power"], Element: "Neutral", Power: 35, CT: 4 },
+  ];
 
   const html = await renderVue(SkillTemplateDialog, { pinia, props: { type: "active" } });
   assert.match(html, /Air Cannon/);
@@ -84,13 +87,19 @@ test("Pal editor opens templates from both skill group headers", async () => {
 });
 
 test("skill template store supports create, rename, apply, delete, and reset", async () => {
-  const source = await readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/stores/templates.js", import.meta.url), "utf8");
   for (const method of [
-    "fetchSkillTemplates",
+    "loadSkillTemplates",
     "saveSkillTemplate",
-    "renameSkillTemplate",
-    "applySkillTemplate",
-    "deleteSkillTemplate",
-  ]) assert.match(source, new RegExp(`async function ${method}\\(`));
-  assert.ok(source.match(/SKILL_TEMPLATES\.value = \[\]/g)?.length >= 2);
+    "renameTemplate",
+    "removeSkillTemplate",
+  ]) assert.match(source, new RegExp(`function ${method}\\(`));
+
+  const pals = await readFile(new URL("../src/stores/pals.js", import.meta.url), "utf8");
+  // Applying one changes a Pal, so it goes through the Pal write path and
+  // answers with the Pal; nothing re-reads it afterwards.
+  assert.match(pals, /applySkillTemplate\(recordKey, templateId\)/);
+
+  const editor = await readFile(new URL("../src/stores/app-shell.js", import.meta.url), "utf8");
+  assert.ok(editor.match(/templates\.clear\(\)/g)?.length >= 2);
 });

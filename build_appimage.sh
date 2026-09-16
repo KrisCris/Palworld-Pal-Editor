@@ -47,12 +47,15 @@ fi
 echo "🐍 Using $PYTHON_CMD (version $PYTHON_VERSION)"
 
 # Set up Python venv and install the Linux GUI backend only for this artifact.
+# Nothing is activated: naming the interpreter is what says which environment a
+# command runs in, and an activation that fails would leave the rest of this
+# script quietly building against system Python.
 rm -rf venv
 $PYTHON_CMD -m venv venv
-source venv/bin/activate
+VENV_PYTHON="./venv/bin/python"
 
-python -m pip install -r requirements.txt
-python -m pip install "pywebview[pyside6]==4.4.1"
+"$VENV_PYTHON" -m pip install -r requirements.txt
+"$VENV_PYTHON" -m pip install "pywebview[pyside6]==4.4.1"
 
 # Clean previous build
 rm -rf "$DISTDIR"
@@ -60,7 +63,7 @@ mkdir -p "$DISTDIR"
 
 # Build with PyInstaller
 echo "📦 Building with PyInstaller..."
-pyinstaller --clean --noconfirm palworld-pal-editor.spec
+"$VENV_PYTHON" -m PyInstaller --clean --noconfirm appimage.spec
 
 PYINSTALLER_BINARY="$DISTDIR/$APPNAME"
 

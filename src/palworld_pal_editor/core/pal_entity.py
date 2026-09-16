@@ -1,3 +1,15 @@
+"""One Pal: its names, stats, skills, species and the flags the game keeps on it.
+
+A wide reader-writer over a single Pal's `SaveParameter`. Each property reads and
+writes the native dict in place, so there is no copy to sync back, plus the derived
+values the UI needs -- display name, computed stats, work suitability after
+condensation.
+
+Deliberately not the place for anything involving a second Pal, a container or a
+save file. Where a Pal is, and whether it may go somewhere else, are `pal_record.py`
+and `pal_mutations.py`.
+"""
+
 import math
 from typing import Optional
 from palworld_save_tools.archive import UUID
@@ -8,7 +20,6 @@ from palworld_pal_editor.core.pal_objects import (
     PalObjects,
     PalGender,
     PalSuitability,
-    get_nested_attr,
     dumps,
     toUUID,
 )
@@ -75,31 +86,28 @@ class PalEntity:
     MAX_SOUL_RANK = 20
     MAX_TALENT = 100
 
-    def __init__(self, pal_obj: dict) -> None:
-        self._pal_obj: dict = pal_obj
+    def __init__(self, pal_key: dict, save_parameter_owner: dict) -> None:
+        # The two stable parent dicts, handed over by the storage adapter that found
+        # them in its own native format: the identity struct's value, and the dict
+        # that owns the SaveParameter property. Everything else is read through them
+        # on demand so that replacing a whole native property (e.g. overwriting
+        # SaveParameter from another source) stays visible to this entity.
+        self._pal_key: dict = pal_key
+        self._save_parameter_owner: dict = save_parameter_owner
 
-        if (
-            self._pal_obj["value"]["RawData"]["value"]["object"]["SaveParameter"][
-                "struct_type"
-            ]
-            != "PalIndividualCharacterSaveParameter"
-        ):
+        if self.save_parameter["struct_type"] != "PalIndividualCharacterSaveParameter":
             raise Exception(
-                f"{self._pal_obj}'s save param is not PalIndividualCharacterSaveParameter"
+                f"{dumps(save_parameter_owner)}'s save param is not "
+                "PalIndividualCharacterSaveParameter"
             )
-
-        self._pal_key: dict = self._pal_obj["key"]
-        self._pal_param: dict = self._pal_obj["value"]["RawData"]["value"]["object"][
-            "SaveParameter"
-        ]["value"]
 
         if self.InstanceId is None:
             raise Exception(f"No GUID, skipping {self}")
 
         if self.CharacterID is None:
-            raise Exception(f"No CharacterID, skipping {dumps(pal_obj)}")
+            raise Exception(f"No CharacterID, skipping {dumps(save_parameter_owner)}")
 
-        if PalObjects.get_BaseType(self._pal_param.get("IsPlayer")):
+        if PalObjects.get_BaseType(self.pal_param.get("IsPlayer")):
             raise TypeError(
                 "Expecting pal_obj, received player_obj: {} - {} - {}".format(
                     self.NickName, self.PlayerUId, self.InstanceId
@@ -107,65 +115,40 @@ class PalEntity:
             )
 
         self._display_name_cache = {}
-        self.owner_player_entity = None
-        self.is_unreferenced_pal = False
-        self.is_new_pal = False
 
     def __str__(self) -> str:
-        return "{} - {} - {}".format(self.DisplayName, self.OwnerName, self.InstanceId)
-
-    def __hash__(self) -> int:
-        return self.InstanceId.__hash__()
-
-    def __eq__(self, __value: object) -> bool:
-        return isinstance(__value, PalEntity) and self.InstanceId == __value.InstanceId
-
-    def set_owner_player_entity(self, player):
-        self.owner_player_entity = player
-
-    def set_owner_player_uid(self, player_uid: UUID | str | None, player=None):
-        if player_uid is None:
-            self._pal_param.pop("OwnerPlayerUId", None)
-            self.owner_player_entity = None
-            return
-
-        player_uid = toUUID(str(player_uid))
-        self._pal_param["OwnerPlayerUId"] = PalObjects.Guid(player_uid)
-        owners = self.OldOwnerPlayerUIds
-        if owners is None:
-            self._pal_param["OldOwnerPlayerUIds"] = PalObjects.ArrayProperty(
-                "StructProperty",
-                {
-                    "prop_name": "OldOwnerPlayerUIds",
-                    "prop_type": "StructProperty",
-                    "values": [player_uid],
-                    "type_name": "Guid",
-                    "id": PalObjects.EMPTY_UUID,
-                },
-            )
-        elif not owners or str(owners[-1]) != str(player_uid):
-            owners.append(player_uid)
-        self.owner_player_entity = player
+        return f"{self.DisplayName} - {self.InstanceId}"
 
     @property
-    def in_owner_palbox(self) -> bool:
-        # base pal, no owner
-        if not self.owner_player_entity:
-            return True
-        if (
-            self.ContainerId == self.owner_player_entity.OtomoCharacterContainerId
-            or self.ContainerId == self.owner_player_entity.PalStorageContainerId
-        ):
-            return True
-        return False
+    def save_parameter(self) -> dict:
+        """The whole native SaveParameter property, read live from its parent."""
+        return self._save_parameter_owner["SaveParameter"]
 
     @property
-    def group_id(self) -> Optional[UUID]:
-        return get_nested_attr(self._pal_obj, ["value", "RawData", "value", "group_id"])
+    def pal_param(self) -> dict:
+        """The SaveParameter value dict — the Pal's own native fields."""
+        return self._save_parameter_owner["SaveParameter"]["value"]
 
-    @group_id.setter
-    def group_id(self, id: UUID | str):
-        self._pal_obj["value"]["RawData"]["value"]["group_id"] = id
+    def _set_key_guid(self, field: str, id: UUID | str) -> None:
+        """Write a Guid on the outer identity key in place.
+
+        Replacing the whole property dict would detach any native reference the
+        save file already holds to it, so an existing property is mutated and
+        only a missing one is built from the factory.
+        """
+        existing = self._pal_key.get(field)
+        if existing is None:
+            self._pal_key[field] = PalObjects.Guid(id)
+        else:
+            PalObjects.set_BaseType(existing, toUUID(str(id)))
+
+    def reset_display_name_cache(self) -> None:
+        """Forget the cached display names after the payload is replaced wholesale.
+
+        Every other edit goes through a setter that knows what it invalidated; an
+        overwrite swaps the whole `SaveParameter` value at once and cannot.
+        """
+        self._display_name_cache = {}
 
     @property
     def PlayerUId(self) -> Optional[UUID]:
@@ -174,7 +157,7 @@ class PalEntity:
 
     @PlayerUId.setter
     def PlayerUId(self, id: UUID | str) -> Optional[UUID]:
-        self._pal_key["PlayerUId"] = PalObjects.Guid(id)
+        self._set_key_guid("PlayerUId", id)
 
     @property
     def InstanceId(self) -> Optional[UUID]:
@@ -182,11 +165,11 @@ class PalEntity:
 
     @InstanceId.setter
     def InstanceId(self, id: UUID | str):
-        self._pal_key["InstanceId"] = PalObjects.Guid(id)
+        self._set_key_guid("InstanceId", id)
 
     @property
     def OwnerPlayerUId(self) -> Optional[UUID]:
-        return PalObjects.get_BaseType(self._pal_param.get("OwnerPlayerUId"))
+        return PalObjects.get_BaseType(self.pal_param.get("OwnerPlayerUId"))
 
     @property
     def LastOwnerPlayerUId(self) -> Optional[UUID]:
@@ -204,16 +187,16 @@ class PalEntity:
 
     @property
     def OldOwnerPlayerUIds(self) -> Optional[list[UUID]]:
-        return PalObjects.get_ArrayProperty(self._pal_param.get("OldOwnerPlayerUIds"))
+        return PalObjects.get_ArrayProperty(self.pal_param.get("OldOwnerPlayerUIds"))
 
     @property
     def SlotId(self) -> Optional[tuple[UUID, int]]:
-        return PalObjects.get_PalCharacterSlotId(self._pal_param.get("SlotId"))
+        return PalObjects.get_PalCharacterSlotId(self.pal_param.get("SlotId"))
 
     @SlotId.setter
     @LOGGER.change_logger("SlotId")
     def SlotId(self, slot_id: tuple[UUID | str, int]):
-        self._pal_param["SlotId"] = PalObjects.PalCharacterSlotId(
+        self.pal_param["SlotId"] = PalObjects.PalCharacterSlotId(
             slot_id[1], slot_id[0]
         )
 
@@ -231,7 +214,7 @@ class PalEntity:
 
     @property
     def CharacterID(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("CharacterID"))
+        return PalObjects.get_BaseType(self.pal_param.get("CharacterID"))
 
     @CharacterID.setter
     @LOGGER.change_logger("CharacterID")
@@ -240,9 +223,9 @@ class PalEntity:
         og_specie = self.RawSpecieKey
 
         if self.CharacterID is None:
-            self._pal_param["CharacterID"] = PalObjects.NameProperty(value)
+            self.pal_param["CharacterID"] = PalObjects.NameProperty(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["CharacterID"], value)
+            PalObjects.set_BaseType(self.pal_param["CharacterID"], value)
 
         self.update_UniqueNPCID()
         if DataProvider.get_pal_variant_kind(self.CharacterID) not in (
@@ -322,7 +305,7 @@ class PalEntity:
     @property
     def IsExpeditionPal(self) -> bool:
         expedition_id = PalObjects.get_BaseType(
-            self._pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition")
+            self.pal_param.get("MapObjectConcreteInstanceIdAssignedToExpedition")
         )
         return expedition_id not in (None, PalObjects.EMPTY_UUID)
 
@@ -385,20 +368,20 @@ class PalEntity:
 
     @property
     def IsFavoritePal(self) -> Optional[bool]:
-        return PalObjects.get_BaseType(self._pal_param.get("IsFavoritePal"))
+        return PalObjects.get_BaseType(self.pal_param.get("IsFavoritePal"))
 
     @IsFavoritePal.setter
     @LOGGER.change_logger("IsFavoritePal")
     @type_guard
     def IsFavoritePal(self, value: bool) -> None:
         if self.IsFavoritePal is None:
-            self._pal_param["IsFavoritePal"] = PalObjects.BoolProperty(value)
+            self.pal_param["IsFavoritePal"] = PalObjects.BoolProperty(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["IsFavoritePal"], value)
+            PalObjects.set_BaseType(self.pal_param["IsFavoritePal"], value)
 
     @property
     def FavoriteIndex(self) -> int:
-        favorite = self._pal_param.get("FavoriteIndex")
+        favorite = self.pal_param.get("FavoriteIndex")
         value = PalObjects.get_ByteProperty(favorite)
         if value is None:
             value = PalObjects.get_BaseType(favorite)
@@ -410,9 +393,9 @@ class PalEntity:
     def FavoriteIndex(self, value: int) -> None:
         if isinstance(value, bool) or not 0 <= value <= 3:
             raise ValueError("FavoriteIndex must be an integer from 0 to 3")
-        favorite = self._pal_param.get("FavoriteIndex")
+        favorite = self.pal_param.get("FavoriteIndex")
         if favorite is None:
-            self._pal_param["FavoriteIndex"] = PalObjects.ByteProperty(value)
+            self.pal_param["FavoriteIndex"] = PalObjects.ByteProperty(value)
         elif favorite.get("type") == "ByteProperty":
             PalObjects.set_ByteProperty(favorite, value)
         else:
@@ -422,7 +405,7 @@ class PalEntity:
     def IsImportedCharacter(self) -> bool:
         """Whether the game marks this Pal as imported from Global Pal Storage."""
         return bool(
-            PalObjects.get_BaseType(self._pal_param.get("bImportedCharacter"))
+            PalObjects.get_BaseType(self.pal_param.get("bImportedCharacter"))
         )
 
     @IsImportedCharacter.setter
@@ -430,9 +413,9 @@ class PalEntity:
     @type_guard
     def IsImportedCharacter(self, value: bool) -> None:
         if value:
-            self._pal_param["bImportedCharacter"] = PalObjects.BoolProperty(True)
+            self.pal_param["bImportedCharacter"] = PalObjects.BoolProperty(True)
         else:
-            self._pal_param.pop("bImportedCharacter", None)
+            self.pal_param.pop("bImportedCharacter", None)
 
     @property
     def IsInvalid(self) -> bool:
@@ -454,7 +437,7 @@ class PalEntity:
     @property
     def Gender(self) -> Optional[PalGender]:
         return PalGender.from_value(
-            PalObjects.get_EnumProperty(self._pal_param.get("Gender"))
+            PalObjects.get_EnumProperty(self.pal_param.get("Gender"))
         )
 
     @Gender.setter
@@ -462,7 +445,7 @@ class PalEntity:
     @type_guard
     def Gender(self, gender: PalGender | str) -> None:
         if gender == "NONE":
-            self._pal_param.pop("Gender", None)
+            self.pal_param.pop("Gender", None)
         if self.IsHuman or self.IsOtomoTower:
             LOGGER.warning(f"Pal {self.CharacterID} has no gender by default!!")
             # return
@@ -473,16 +456,16 @@ class PalEntity:
             if not pal_gender:
                 return
         if self.Gender is None:
-            self._pal_param["Gender"] = PalObjects.EnumProperty(
+            self.pal_param["Gender"] = PalObjects.EnumProperty(
                 "EPalGenderType", pal_gender.value
             )
         else:
-            PalObjects.set_EnumProperty(self._pal_param["Gender"], pal_gender.value)
+            PalObjects.set_EnumProperty(self.pal_param["Gender"], pal_gender.value)
 
     @LOGGER.change_logger("Gender")
     def del_Gender(self):
         if self.IsHuman or self.IsOtomoTower:
-            self._pal_param.pop("Gender", None)
+            self.pal_param.pop("Gender", None)
             return
         LOGGER.info("Only human or otomo tower can have no gender.")
 
@@ -548,13 +531,13 @@ class PalEntity:
 
     @property
     def IsRarePal(self) -> Optional[bool]:
-        return PalObjects.get_BaseType(self._pal_param.get("IsRarePal"))
+        return PalObjects.get_BaseType(self.pal_param.get("IsRarePal"))
 
     def _set_rare_flag(self, value: bool) -> None:
         if self.IsRarePal is None:
-            self._pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
+            self.pal_param["IsRarePal"] = PalObjects.BoolProperty(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["IsRarePal"], value)
+            PalObjects.set_BaseType(self.pal_param["IsRarePal"], value)
 
     @IsRarePal.setter
     @LOGGER.change_logger("IsRarePal")
@@ -579,19 +562,19 @@ class PalEntity:
 
     @property
     def FilteredNickName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("FilteredNickName"))
+        return PalObjects.get_BaseType(self.pal_param.get("FilteredNickName"))
 
     @FilteredNickName.setter
     @LOGGER.change_logger("FilteredNickName")
     @type_guard
     def FilteredNickName(self, value: str) -> None:
         if self.FilteredNickName is None:
-            self._pal_param["FilteredNickName"] = PalObjects.StrProperty(value)
+            self.pal_param["FilteredNickName"] = PalObjects.StrProperty(value)
         else:
-            self._pal_param["FilteredNickName"]["value"] = value
+            self.pal_param["FilteredNickName"]["value"] = value
 
         if not self.FilteredNickName:
-            self._pal_param.pop("FilteredNickName", None)
+            self.pal_param.pop("FilteredNickName", None)
 
     @property
     def NickName(self) -> Optional[str]:
@@ -605,23 +588,23 @@ class PalEntity:
 
     @property
     def _NickName(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("NickName"))
+        return PalObjects.get_BaseType(self.pal_param.get("NickName"))
 
     @_NickName.setter
     @LOGGER.change_logger("NickName")
     @type_guard
     def _NickName(self, value: str) -> None:
         if self._NickName is None:
-            self._pal_param["NickName"] = PalObjects.StrProperty(value)
+            self.pal_param["NickName"] = PalObjects.StrProperty(value)
         else:
-            self._pal_param["NickName"]["value"] = value
+            self.pal_param["NickName"]["value"] = value
 
         if not self._NickName:
-            self._pal_param.pop("NickName", None)
+            self.pal_param.pop("NickName", None)
 
     @property
     def Level(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Level"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Level"))
 
     @Level.setter
     @LOGGER.change_logger("Level")
@@ -631,9 +614,9 @@ class PalEntity:
         if self.Level == value:
             return
         if self.Level is None:
-            self._pal_param["Level"] = PalObjects.ByteProperty(value)
+            self.pal_param["Level"] = PalObjects.ByteProperty(value)
         else:
-            PalObjects.set_ByteProperty(self._pal_param["Level"], value)
+            PalObjects.set_ByteProperty(self.pal_param["Level"], value)
         self.Exp = DataProvider.get_pal_level_xp(self.Level)
 
         if maxHP := self.ComputedMaxHP:
@@ -643,16 +626,16 @@ class PalEntity:
 
     @property
     def Exp(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("Exp"))
+        return PalObjects.get_BaseType(self.pal_param.get("Exp"))
 
     @Exp.setter
     @LOGGER.change_logger("Exp")
     @type_guard
     def Exp(self, value: int) -> None:
         if self.Exp is None:
-            self._pal_param["Exp"] = PalObjects.Int64Property(value)
+            self.pal_param["Exp"] = PalObjects.Int64Property(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["Exp"], value)
+            PalObjects.set_BaseType(self.pal_param["Exp"], value)
 
     @property
     def FriendshipLevel(self) -> Optional[int]:
@@ -665,23 +648,23 @@ class PalEntity:
 
     @property
     def FriendshipPoint(self) -> Optional[int]:
-        return PalObjects.get_BaseType(self._pal_param.get("FriendshipPoint"))
+        return PalObjects.get_BaseType(self.pal_param.get("FriendshipPoint"))
 
     @FriendshipPoint.setter
     @LOGGER.change_logger("FriendshipPoint")
     @type_guard
     def FriendshipPoint(self, value: int) -> None:
         if self.FriendshipPoint is None:
-            self._pal_param["FriendshipPoint"] = PalObjects.IntProperty(value)
+            self.pal_param["FriendshipPoint"] = PalObjects.IntProperty(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["FriendshipPoint"], value)
+            PalObjects.set_BaseType(self.pal_param["FriendshipPoint"], value)
 
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
 
     @property
     def Rank(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Rank"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Rank"))
 
     @Rank.setter
     @LOGGER.change_logger("Rank")
@@ -691,63 +674,63 @@ class PalEntity:
         previous_rank = self.Rank or 1
         rank = clamp(1, 255, rank)
         if self.Rank is None:
-            self._pal_param["Rank"] = PalObjects.ByteProperty(rank)
+            self.pal_param["Rank"] = PalObjects.ByteProperty(rank)
         else:
-            PalObjects.set_ByteProperty(self._pal_param.get("Rank"), rank)
+            PalObjects.set_ByteProperty(self.pal_param.get("Rank"), rank)
 
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
 
         if self.Rank == 1:
-            self._pal_param.pop("Rank", None)
+            self.pal_param.pop("Rank", None)
 
         if rank != previous_rank:
             self.RankUpExp = 0
 
     @property
     def RankUpExp(self) -> int:
-        return PalObjects.get_BaseType(self._pal_param.get("RankUpExp")) or 0
+        return PalObjects.get_BaseType(self.pal_param.get("RankUpExp")) or 0
 
     @RankUpExp.setter
     @type_guard
     def RankUpExp(self, value: int) -> None:
         value = clamp(PalObjects.UInt16Min, PalObjects.UInt16Max, value)
         if value == 0:
-            self._pal_param.pop("RankUpExp", None)
+            self.pal_param.pop("RankUpExp", None)
         elif self.RankUpExp == 0:
-            self._pal_param["RankUpExp"] = PalObjects.UInt16Property(value)
+            self.pal_param["RankUpExp"] = PalObjects.UInt16Property(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["RankUpExp"], value)
+            PalObjects.set_BaseType(self.pal_param["RankUpExp"], value)
 
     @property
     def IsAwakening(self) -> bool:
-        return bool(PalObjects.get_BaseType(self._pal_param.get("bIsAwakening")))
+        return bool(PalObjects.get_BaseType(self.pal_param.get("bIsAwakening")))
 
     @IsAwakening.setter
     @type_guard
     def IsAwakening(self, value: bool) -> None:
         if value:
-            self._pal_param["bIsAwakening"] = PalObjects.BoolProperty(True)
+            self.pal_param["bIsAwakening"] = PalObjects.BoolProperty(True)
         else:
-            self._pal_param.pop("bIsAwakening", None)
+            self.pal_param.pop("bIsAwakening", None)
         if maxHP := self.ComputedMaxHP:
             self.Hp = maxHP
 
     @property
     def Rank_HP(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_HP"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Rank_HP"))
 
     @property
     def Rank_Attack(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_Attack"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Rank_Attack"))
 
     @property
     def Rank_Defence(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_Defence"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Rank_Defence"))
 
     @property
     def Rank_CraftSpeed(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Rank_CraftSpeed"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Rank_CraftSpeed"))
 
     @Rank_HP.setter
     @LOGGER.change_logger("Rank_HP")
@@ -855,20 +838,20 @@ class PalEntity:
 
     @property
     def Hp(self) -> Optional[int]:
-        return PalObjects.get_FixedPoint64(self._pal_param.get("Hp"))
+        return PalObjects.get_FixedPoint64(self.pal_param.get("Hp"))
 
     @Hp.setter
     @LOGGER.change_logger("Hp")
     @type_guard
     def Hp(self, value: int) -> None:
         if self.Hp is None:
-            self._pal_param["Hp"] = PalObjects.FixedPoint64(value)
+            self.pal_param["Hp"] = PalObjects.FixedPoint64(value)
         else:
-            PalObjects.set_FixedPoint64(self._pal_param["Hp"], value)
+            PalObjects.set_FixedPoint64(self.pal_param["Hp"], value)
 
     @property
     def PassiveSkillList(self) -> Optional[list[str]]:
-        return PalObjects.get_ArrayProperty(self._pal_param.get("PassiveSkillList"))
+        return PalObjects.get_ArrayProperty(self.pal_param.get("PassiveSkillList"))
 
     @LOGGER.change_logger("PassiveSkillList")
     @type_guard
@@ -878,7 +861,7 @@ class PalEntity:
             return False
 
         if self.PassiveSkillList is None:
-            self._pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
+            self.pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
                 "NameProperty", {"values": []}
             )
 
@@ -917,13 +900,13 @@ class PalEntity:
 
     @LOGGER.change_logger("PassiveSkillList")
     def replace_PassiveSkillList(self, skills: list[str]) -> None:
-        self._pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
+        self.pal_param["PassiveSkillList"] = PalObjects.ArrayProperty(
             "NameProperty", {"values": list(skills)}
         )
 
     @property
     def EquipWaza(self) -> Optional[list[str]]:
-        return PalObjects.get_ArrayProperty(self._pal_param.get("EquipWaza"))
+        return PalObjects.get_ArrayProperty(self.pal_param.get("EquipWaza"))
 
     @LOGGER.change_logger("EquipWaza")
     @type_guard
@@ -936,7 +919,7 @@ class PalEntity:
             return False
 
         if self.EquipWaza is None:
-            self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
+            self.pal_param["EquipWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
         if waza in self.EquipWaza:
@@ -980,7 +963,7 @@ class PalEntity:
 
     @property
     def MasteredWaza(self) -> Optional[list[str]]:
-        return PalObjects.get_ArrayProperty(self._pal_param.get("MasteredWaza"))
+        return PalObjects.get_ArrayProperty(self.pal_param.get("MasteredWaza"))
 
     @LOGGER.change_logger("MasteredWaza")
     @type_guard
@@ -993,7 +976,7 @@ class PalEntity:
             return False
 
         if self.MasteredWaza is None:
-            self._pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+            self.pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
 
@@ -1030,21 +1013,36 @@ class PalEntity:
     def replace_EquipWaza(self, equipped: list[str]) -> None:
         old_equipped = list(self.EquipWaza or [])
         if self.MasteredWaza is None:
-            self._pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+            self.pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
                 "EnumProperty", {"values": []}
             )
         for skill in equipped:
             if skill not in self.MasteredWaza:
                 self.MasteredWaza.append(skill)
-        self._pal_param["EquipWaza"] = PalObjects.ArrayProperty(
+        self.pal_param["EquipWaza"] = PalObjects.ArrayProperty(
             "EnumProperty", {"values": list(equipped)}
         )
         LOGGER.info(f"{self} | EquipWaza: {old_equipped} -> {equipped}")
 
+    @LOGGER.change_logger("MasteredWaza")
+    def replace_MasteredWaza(self, mastered: list[str]) -> None:
+        """Learn exactly this list, and unequip whatever is no longer on it.
+
+        `pop_MasteredWaza` already refuses to leave an equipped skill unlearned;
+        replacing the whole list has to keep the same invariant, or the save ends
+        up with a Pal whose active slots hold skills it has not mastered.
+        """
+        self.pal_param["MasteredWaza"] = PalObjects.ArrayProperty(
+            "EnumProperty", {"values": list(mastered)}
+        )
+        for waza in list(self.EquipWaza or []):
+            if waza not in mastered:
+                self.pop_EquipWaza(item=waza)
+
     @property
     def AddedWorkSuitabilities(self) -> Optional[dict[PalSuitability, int]]:
         return PalObjects.get_WorkSuitabilities(
-            self._pal_param.get("GotWorkSuitabilityAddRankList")
+            self.pal_param.get("GotWorkSuitabilityAddRankList")
         )
 
     @property
@@ -1084,7 +1082,7 @@ class PalEntity:
     @type_guard
     def set_WorkSuitability(self, suit: PalSuitability | str, rank: int) -> None:
         if self.AddedWorkSuitabilities is None:
-            self._pal_param["GotWorkSuitabilityAddRankList"] = (
+            self.pal_param["GotWorkSuitabilityAddRankList"] = (
                 PalObjects.GotWorkSuitabilityAddRankList()
             )
 
@@ -1096,7 +1094,7 @@ class PalEntity:
 
         if rank <= 0:
             PalObjects.pop_WorkSuitability(
-                self._pal_param["GotWorkSuitabilityAddRankList"], suit
+                self.pal_param["GotWorkSuitabilityAddRankList"], suit
             )
         else:
             suits = DataProvider.get_pal_suitabilities(self.DataAccessKey)
@@ -1113,31 +1111,31 @@ class PalEntity:
             )
             if added_rank <= 0:
                 PalObjects.pop_WorkSuitability(
-                    self._pal_param["GotWorkSuitabilityAddRankList"], suit
+                    self.pal_param["GotWorkSuitabilityAddRankList"], suit
                 )
             else:
                 PalObjects.set_WorkSuitability(
-                    self._pal_param["GotWorkSuitabilityAddRankList"], suit, added_rank
+                    self.pal_param["GotWorkSuitabilityAddRankList"], suit, added_rank
                 )
 
         if not self.AddedWorkSuitabilities:
-            self._pal_param.pop("GotWorkSuitabilityAddRankList", None)
+            self.pal_param.pop("GotWorkSuitabilityAddRankList", None)
 
     @property
     def Talent_HP(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Talent_HP"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Talent_HP"))
 
     @property
     def Talent_Melee(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Talent_Melee"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Talent_Melee"))
 
     @property
     def Talent_Shot(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Talent_Shot"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Talent_Shot"))
 
     @property
     def Talent_Defense(self) -> Optional[int]:
-        return PalObjects.get_ByteProperty(self._pal_param.get("Talent_Defense"))
+        return PalObjects.get_ByteProperty(self.pal_param.get("Talent_Defense"))
 
     @Talent_HP.setter
     @LOGGER.change_logger("Talent_HP")
@@ -1168,33 +1166,33 @@ class PalEntity:
 
     # @property
     # def CraftSpeed(self) -> Optional[int]:
-    #     return PalObjects.get_BaseType(self._pal_param.get("CraftSpeed"))
+    #     return PalObjects.get_BaseType(self.pal_param.get("CraftSpeed"))
 
     @property
     def SanityValue(self) -> Optional[float]:
-        return PalObjects.get_BaseType(self._pal_param.get("SanityValue"))
+        return PalObjects.get_BaseType(self.pal_param.get("SanityValue"))
 
     @SanityValue.setter
     @LOGGER.change_logger("SanityValue")
     @type_guard
     def SanityValue(self, val: float):
         if self.SanityValue is None:
-            self._pal_param["SanityValue"] = PalObjects.FloatProperty(val)
+            self.pal_param["SanityValue"] = PalObjects.FloatProperty(val)
         else:
-            PalObjects.set_BaseType(self._pal_param.get("SanityValue"), val)
+            PalObjects.set_BaseType(self.pal_param.get("SanityValue"), val)
 
     @property
     def FullStomach(self) -> Optional[float]:
-        return PalObjects.get_BaseType(self._pal_param.get("FullStomach"))
+        return PalObjects.get_BaseType(self.pal_param.get("FullStomach"))
 
     @FullStomach.setter
     @LOGGER.change_logger("FullStomach")
     @type_guard
     def FullStomach(self, val: float):
         if self.FullStomach is None:
-            self._pal_param["FullStomach"] = PalObjects.FloatProperty(val)
+            self.pal_param["FullStomach"] = PalObjects.FloatProperty(val)
         else:
-            PalObjects.set_BaseType(self._pal_param["FullStomach"], val)
+            PalObjects.set_BaseType(self.pal_param["FullStomach"], val)
 
     @property
     def WorkerSick(self) -> Optional[str]:
@@ -1211,15 +1209,15 @@ class PalEntity:
         },
         ```
         """
-        return PalObjects.get_EnumProperty(self._pal_param.get("WorkerSick"))
+        return PalObjects.get_EnumProperty(self.pal_param.get("WorkerSick"))
 
     @property
     def HungerType(self) -> Optional[str]:
-        return PalObjects.get_EnumProperty(self._pal_param.get("HungerType"))
+        return PalObjects.get_EnumProperty(self.pal_param.get("HungerType"))
 
     @property
     def UniqueNPCID(self) -> str:
-        return PalObjects.get_BaseType(self._pal_param.get("UniqueNPCID"))
+        return PalObjects.get_BaseType(self.pal_param.get("UniqueNPCID"))
 
     @LOGGER.change_logger("UniqueNPCID")
     def update_UniqueNPCID(self) -> None:
@@ -1235,16 +1233,16 @@ class PalEntity:
             LOGGER.info(
                 f"Pal {self.CharacterID} is not a Tower Human, UniqueNPCID will be unset."
             )
-            self._pal_param.pop("UniqueNPCID", None)
+            self.pal_param.pop("UniqueNPCID", None)
             return
 
         if self.UniqueNPCID is None:
-            self._pal_param["UniqueNPCID"] = PalObjects.NameProperty(self.CharacterID)
+            self.pal_param["UniqueNPCID"] = PalObjects.NameProperty(self.CharacterID)
         else:
-            PalObjects.set_BaseType(self._pal_param["UniqueNPCID"], self.CharacterID)
+            PalObjects.set_BaseType(self.pal_param["UniqueNPCID"], self.CharacterID)
 
         if not self.UniqueNPCID:
-            self._pal_param.pop("UniqueNPCID", None)
+            self.pal_param.pop("UniqueNPCID", None)
 
     @property
     def HasWorkerSick(self) -> bool:
@@ -1261,14 +1259,14 @@ class PalEntity:
         }
         ```
         """
-        return PalObjects.get_BaseType(self._pal_param.get("PalReviveTimer"))
+        return PalObjects.get_BaseType(self.pal_param.get("PalReviveTimer"))
 
     # @PalReviveTimer.setter
     # @LOGGER.change_logger("PalReviveTimer")
     # def PalReviveTimer(self, val: float) -> Optional[float]:
     #     if self.PalReviveTimer is None:
     #         return
-    #     PalObjects.set_BaseType(self._pal_param.get("PalReviveTimer"), val)
+    #     PalObjects.set_BaseType(self.pal_param.get("PalReviveTimer"), val)
 
     @property
     def PhysicalHealth(self) -> Optional[str]:
@@ -1284,7 +1282,7 @@ class PalEntity:
         },
         ```
         """
-        return PalObjects.get_EnumProperty(self._pal_param.get("PhysicalHealth"))
+        return PalObjects.get_EnumProperty(self.pal_param.get("PhysicalHealth"))
 
     @property
     def IsFaintedPal(self) -> bool:
@@ -1300,10 +1298,10 @@ class PalEntity:
     @LOGGER.change_logger("HungerType")
     @LOGGER.change_logger("PalReviveTimer")
     def heal_pal(self):
-        self._pal_param.pop("PalReviveTimer", None)
-        self._pal_param.pop("PhysicalHealth", None)
-        self._pal_param.pop("WorkerSick", None)
-        self._pal_param.pop("HungerType", None)
+        self.pal_param.pop("PalReviveTimer", None)
+        self.pal_param.pop("PhysicalHealth", None)
+        self.pal_param.pop("WorkerSick", None)
+        self.pal_param.pop("HungerType", None)
 
         if maxFullStomach := DataProvider.get_pal_stats(self.DataAccessKey, "FOOD"):
             self.FullStomach = maxFullStomach
@@ -1316,7 +1314,7 @@ class PalEntity:
 
     @property
     def FoodWithStatusEffect(self) -> Optional[str]:
-        return PalObjects.get_BaseType(self._pal_param.get("FoodWithStatusEffect"))
+        return PalObjects.get_BaseType(self.pal_param.get("FoodWithStatusEffect"))
 
     @property
     def Timer_FoodWithStatusEffect(self) -> Optional[int]:
@@ -1331,7 +1329,7 @@ class PalEntity:
         ```
         """
         return PalObjects.get_BaseType(
-            self._pal_param.get("Tiemr_FoodWithStatusEffect")
+            self.pal_param.get("Tiemr_FoodWithStatusEffect")
         )
 
     @Timer_FoodWithStatusEffect.setter
@@ -1343,17 +1341,17 @@ class PalEntity:
                 "Trying to set food effect timer when there is no food eaten."
             )
             return False
-        PalObjects.set_BaseType(self._pal_param["Tiemr_FoodWithStatusEffect"], val)
+        PalObjects.set_BaseType(self.pal_param["Tiemr_FoodWithStatusEffect"], val)
 
     @property
     def SkinName(self) -> Optional[str]:
-        value = PalObjects.get_BaseType(self._pal_param.get("SkinName"))
+        value = PalObjects.get_BaseType(self.pal_param.get("SkinName"))
         return None if not value or value == "None" else value
 
     @property
     def SkinAppliedCharacterId(self) -> Optional[UUID]:
         return PalObjects.get_BaseType(
-            self._pal_param.get("SkinAppliedCharacterId")
+            self.pal_param.get("SkinAppliedCharacterId")
         )
 
     @SkinName.setter
@@ -1361,8 +1359,8 @@ class PalEntity:
     @type_guard
     def SkinName(self, value: str | None) -> None:
         if not value or value == "None":
-            self._pal_param.pop("SkinName", None)
-            self._pal_param.pop("SkinAppliedCharacterId", None)
+            self.pal_param.pop("SkinName", None)
+            self.pal_param.pop("SkinAppliedCharacterId", None)
             return
         skin = DataProvider.get_skin(value)
         if skin is None or DataProvider.get_pal_family_id(
@@ -1375,10 +1373,10 @@ class PalEntity:
                 "A Pal must have an owner or previous owner before a skin can be applied"
             )
         if self.SkinName is None:
-            self._pal_param["SkinName"] = PalObjects.NameProperty(value)
+            self.pal_param["SkinName"] = PalObjects.NameProperty(value)
         else:
-            PalObjects.set_BaseType(self._pal_param["SkinName"], value)
-        self._pal_param["SkinAppliedCharacterId"] = PalObjects.Guid(
+            PalObjects.set_BaseType(self.pal_param["SkinName"], value)
+        self.pal_param["SkinAppliedCharacterId"] = PalObjects.Guid(
             skin_applier
         )
 
@@ -1435,30 +1433,24 @@ class PalEntity:
         for suitability in tuple(self.MinimumWorkSuitabilities or {}):
             self.set_WorkSuitability(suitability, MAX_WORK_SUITABILITY)
 
-    def print_obj(self):
-        print(self.dump_obj())
-
-    def dump_obj(self) -> str:
-        return dumps(self._pal_obj)
-
     def _set_soul_rank(self, property_name: str, rank: int):
         # valid option is rank = clamp(0, 20, rank)
         rank = clamp(0, 255, rank)
         if getattr(self, property_name) is None:
-            self._pal_param[property_name] = PalObjects.ByteProperty(rank)
+            self.pal_param[property_name] = PalObjects.ByteProperty(rank)
         else:
-            PalObjects.set_ByteProperty(self._pal_param.get(property_name), rank)
+            PalObjects.set_ByteProperty(self.pal_param.get(property_name), rank)
 
         if getattr(self, property_name) == 0:
-            self._pal_param.pop(property_name, None)
+            self.pal_param.pop(property_name, None)
 
     def _set_iv(self, property_name: str, value: int):
         # valid option is value = clamp(0, 100, value)
         iv = clamp(0, 255, value)
         if getattr(self, property_name) is None:
-            self._pal_param[property_name] = PalObjects.ByteProperty(iv)
+            self.pal_param[property_name] = PalObjects.ByteProperty(iv)
         else:
-            PalObjects.set_ByteProperty(self._pal_param[property_name], iv)
+            PalObjects.set_ByteProperty(self.pal_param[property_name], iv)
 
     def _get_display_name(self) -> str:
         cache_key = (

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
 
 const props = defineProps({
   startup: Boolean,
@@ -12,7 +12,7 @@ const props = defineProps({
 })
 defineEmits(['retry', 'dismiss'])
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
 const connectionError = computed(() => props.kind === 'connection')
 const descriptionKey = computed(() => connectionError.value
   ? props.startup ? 'BackendError_Startup' : 'BackendError_Connection_Runtime'
@@ -34,12 +34,12 @@ onMounted(() => refreshButton.value?.focus())
       aria-describedby="backend-error-description"
       aria-live="assertive"
     >
-      <img v-if="startup" :alt="palStore.getTranslatedText('BackendError_Logo_Alt')" class="logo" src="@/assets/logo.ico" width="125" height="125" />
-      <h1 id="backend-error-title">{{ palStore.getTranslatedText(connectionError ? 'BackendError_Connection_Title' : 'BackendError_Title') }}</h1>
-      <p id="backend-error-description">{{ palStore.getTranslatedText(descriptionKey) }}</p>
+      <img v-if="startup" :alt="appStore.getTranslatedText('BackendError_Logo_Alt')" class="logo" src="@/assets/logo.ico" width="125" height="125" />
+      <h1 id="backend-error-title">{{ appStore.getTranslatedText(connectionError ? 'BackendError_Connection_Title' : 'BackendError_Title') }}</h1>
+      <p id="backend-error-description">{{ appStore.getTranslatedText(descriptionKey) }}</p>
       <code v-if="message && !details">{{ message }}</code>
       <label v-if="details" for="backend-error-details">
-        {{ palStore.getTranslatedText('BackendError_Details') }}
+        {{ appStore.getTranslatedText('BackendError_Details') }}
       </label>
       <textarea
         v-if="details"
@@ -51,10 +51,10 @@ onMounted(() => refreshButton.value?.focus())
       />
       <div class="actions">
         <button ref="refreshButton" @click="$emit('retry')" :disabled="loading">
-          {{ palStore.getTranslatedText('BackendError_Refresh') }}
+          {{ appStore.getTranslatedText('BackendError_Refresh') }}
         </button>
         <button v-if="!startup" class="secondary" @click="$emit('dismiss')" :disabled="loading">
-          {{ palStore.getTranslatedText('BackendError_Dismiss') }}
+          {{ appStore.getTranslatedText('BackendError_Dismiss') }}
         </button>
       </div>
     </section>

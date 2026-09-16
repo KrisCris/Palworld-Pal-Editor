@@ -10,7 +10,7 @@ import {
     moveListboxIndex,
     paldeckForRow,
     palLabel,
-} from "../src/components/modules/pal-species-selector.js";
+} from "../src/components/pal-species-selector.js";
 
 const locales = await Promise.all([
     import("../src/i18n/en.js"),
@@ -231,7 +231,7 @@ test("selector UI labels exist in every supported UI locale", () => {
 
 test("species selector is centered in a dismissible viewport overlay", async () => {
     const source = await readFile(
-        new URL("../src/components/modules/PalSpeciesSelector.vue", import.meta.url),
+        new URL("../src/components/PalSpeciesSelector.vue", import.meta.url),
         "utf8",
     );
 

@@ -278,7 +278,7 @@ def test_game_derived_partner_and_regular_passives_are_separate():
     assert partner[pink_cat_passive]["I18n"]["en"]["Name"] == "Cat Helper"
 
 
-def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
+def test_active_skill_catalog_preserves_shape_and_exposes_game_metadata():
     app.config.update(
         TESTING=True,
         JWT_SECRET_KEY="test-secret-key-with-at-least-32-bytes",
@@ -287,15 +287,15 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         token = create_access_token(identity="test", expires_delta=False)
     with app.test_client() as client:
         response = client.get(
-            "/api/save/active_skills",
+            "/api/catalogs/skills",
             headers={"Authorization": f"Bearer {token}"},
         )
 
     payload = response.get_json()
     assert response.status_code == 200
-    assert payload["status"] == 0
-    assert set(payload["data"]) == {"dict", "arr"}
-    assert len(payload["data"]["dict"]) == len(payload["data"]["arr"]) == 384
+    assert set(payload) == {"passive", "active"}
+    rows = {row["InternalName"]: row for row in payload["active"]}
+    assert len(payload["active"]) == len(rows) == 384
 
     expected_fields = {
         "InternalName",
@@ -314,11 +314,10 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         "LearnerNames",
     }
     attacks = load("pal_attacks.json")
-    for row in payload["data"]["arr"]:
+    for row in payload["active"]:
         skill_id = row["InternalName"]
         source = attacks[skill_id]
         assert set(row) == expected_fields
-        assert payload["data"]["dict"][skill_id] == row
         assert row["HasSkillFruit"] == source["SkillFruit"]
         assert row["IsUniqueSkill"] == source["UniqueSkill"]
         assert row["NonInheritable"] == source["NonInheritable"]
@@ -327,7 +326,7 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         assert row["Assignable"] == source["Assignable"]
         assert row["AssignableToHumans"] == source["AssignableToHumans"]
 
-    comet_barrage = payload["data"]["dict"]["EPalWazaID::ThreeCommet"]
+    comet_barrage = rows["EPalWazaID::ThreeCommet"]
     assert comet_barrage["LearnerNames"] == [
         "Eidrolon",
         "Wistella",
@@ -336,18 +335,18 @@ def test_active_skill_endpoint_preserves_shape_and_exposes_game_metadata():
         "Blazamut Ryu",
     ]
 
-    human_punch = payload["data"]["dict"]["EPalWazaID::Human_Punch"]
+    human_punch = rows["EPalWazaID::Human_Punch"]
     assert human_punch["Invalid"] is False
     assert human_punch["Assignable"] is False
     assert human_punch["AssignableToHumans"] is True
 
-    weapon_use = payload["data"]["dict"]["EPalWazaID::Weapon_Use"]
+    weapon_use = rows["EPalWazaID::Weapon_Use"]
     assert weapon_use["Invalid"] is False
     assert weapon_use["Assignable"] is False
     assert weapon_use["AssignableToHumans"] is True
 
 
-def test_passive_skill_endpoint_appends_non_pal_skills_as_invalid():
+def test_passive_skill_catalog_appends_non_pal_skills_as_invalid():
     app.config.update(
         TESTING=True,
         JWT_SECRET_KEY="test-secret-key-with-at-least-32-bytes",
@@ -356,14 +355,12 @@ def test_passive_skill_endpoint_appends_non_pal_skills_as_invalid():
         token = create_access_token(identity="test", expires_delta=False)
     with app.test_client() as client:
         response = client.get(
-            "/api/save/passive_skills",
+            "/api/catalogs/skills",
             headers={"Authorization": f"Bearer {token}"},
         )
 
-    payload = response.get_json()
     assert response.status_code == 200
-    assert payload["status"] == 0
-    rows = payload["data"]["arr"]
+    rows = response.get_json()["passive"]
     pal = load("pal_passives.json")
     non_pal = load("passive_skills.json")
     partner = load("partner_skills.json")

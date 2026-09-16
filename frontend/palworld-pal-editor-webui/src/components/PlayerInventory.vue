@@ -3,9 +3,15 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import InventoryItemSlot from '@/components/InventoryItemSlot.vue'
 import ItemSelectDialog from '@/components/ItemSelectDialog.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useCatalogsStore } from '@/stores/catalogs'
+import { useAppStore } from '@/stores/app'
+import { usePlayersStore } from '@/stores/players'
+import { useRostersStore } from '@/stores/rosters'
 
-const palStore = usePalEditorStore()
+const catalogsStore = useCatalogsStore()
+const appStore = useAppStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
 const bagTab = ref('common')
 const editing = ref(null)
 const inventoryEditor = ref(null)
@@ -21,17 +27,17 @@ let observedLayoutWidth = 0
 const armorLabels = ['Inventory_Head', 'Inventory_Body', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Shield', 'Inventory_Glider', 'Inventory_Accessory', 'Inventory_Accessory', 'Inventory_Sphere_Module']
 const armorGroups = ['Head', 'Body', 'Accessory', 'Accessory', 'Shield', 'Glider', 'Accessory', 'Accessory', 'SphereModule']
 
-watch(() => palStore.SELECTED_PLAYER_ID, () => palStore.loadPlayerInventory(), { immediate: true })
+watch(() => rostersStore.activePlayerUid, () => playersStore.loadInventory(), { immediate: true })
 
-const containers = computed(() => palStore.PLAYER_INVENTORY?.containers || {})
+const containers = computed(() => playersStore.inventory?.containers || {})
 const currentBag = computed(() => containers.value[bagTab.value])
 const armorSlots = computed(() => containers.value.armor?.slots || [])
 const primaryArmorSlots = computed(() => armorSlots.value.filter(slot => [0, 1, 4, 5, 8].includes(slot.slot_index)))
 const accessorySlots = computed(() => armorSlots.value.filter(slot => [2, 3, 6, 7].includes(slot.slot_index)))
-const itemFor = slot => palStore.ITEM_STATIC_DATA[slot?.static_id]
-const detailsItemFor = slot => palStore.ITEM_STATIC_DATA[slot?.effective_static_id] || itemFor(slot)
-const slotName = slot => itemFor(slot)?.Name || slot?.static_id || palStore.getTranslatedText('Inventory_Empty')
-const armorLabel = slot => palStore.getTranslatedText(armorLabels[slot.slot_index] || 'Inventory_Accessory')
+const itemFor = slot => catalogsStore.itemsByName[slot?.static_id]
+const detailsItemFor = slot => catalogsStore.itemsByName[slot?.effective_static_id] || itemFor(slot)
+const slotName = slot => itemFor(slot)?.Name || slot?.static_id || appStore.getTranslatedText('Inventory_Empty')
+const armorLabel = slot => appStore.getTranslatedText(armorLabels[slot.slot_index] || 'Inventory_Accessory')
 const isEditable = kind => containers.value[kind]?.editable !== false
 const candidates = computed(() => {
   if (!editing.value) return []
@@ -40,7 +46,7 @@ const candidates = computed(() => {
     : kind === 'weapons' ? 'Weapon'
       : kind === 'food' ? 'Food'
         : kind === 'key_items' ? 'KeyItem' : null
-  return palStore.ITEM_STATIC_DATA_LIST.filter(item => {
+  return catalogsStore.items.filter(item => {
     if (!item.Legal || item.Disabled || item.MonsterOnly || item.Group === 'None' || item.DynamicType === 'egg') return false
     if (kind === 'common') return item.Group !== 'KeyItem'
     return item.Group === required
@@ -53,9 +59,10 @@ const openSlot = (kind, slot) => {
 const applySlot = async ({ itemId, count }) => {
   const target = editing.value
   if (!target) return
-  if (await palStore.patchInventorySlot(target.kind, target.slot.slot_index, itemId, count)) editing.value = null
+  if (await playersStore.updateInventorySlot(target.kind, target.slot.slot_index, itemId, count)) editing.value = null
 }
-const clearSlot = (kind, slot) => palStore.patchInventorySlot(kind, slot.slot_index, null, 0)
+const clearSlot = (kind, slot) => playersStore.updateInventorySlot(kind, slot.slot_index, null, 0)
+const repairSlot = (kind, slot) => playersStore.repairInventorySlot(kind, slot.slot_index)
 
 const updateBagLayout = () => {
   if (!inventoryLayout.value || !bagPanel.value || !bagScroll.value || !bagGrid.value) return
@@ -109,53 +116,57 @@ onBeforeUnmount(() => {
   <section ref="inventoryEditor" class="inventory-editor">
     <div ref="inventoryLayout" class="inventory-layout" :style="{ '--bag-panel-width': bagPanelWidth, '--bag-columns': bagColumnCount }">
       <section ref="bagPanel" class="inventory-panel bag-panel">
-        <nav class="bag-tabs" :aria-label="palStore.getTranslatedText('Inventory_Containers')">
-          <button type="button" :class="{ active: bagTab === 'common' }" @click="bagTab = 'common'">{{ palStore.getTranslatedText('Inventory_Backpack') }}</button>
-          <button type="button" :class="{ active: bagTab === 'key_items' }" @click="bagTab = 'key_items'">{{ palStore.getTranslatedText('Inventory_Key_Items') }}</button>
+        <nav class="bag-tabs" :aria-label="appStore.getTranslatedText('Inventory_Containers')">
+          <button type="button" :class="{ active: bagTab === 'common' }" @click="bagTab = 'common'">{{ appStore.getTranslatedText('Inventory_Backpack') }}</button>
+          <button type="button" :class="{ active: bagTab === 'key_items' }" @click="bagTab = 'key_items'">{{ appStore.getTranslatedText('Inventory_Key_Items') }}</button>
         </nav>
         <div ref="bagScroll" class="bag-scroll">
           <p v-if="currentBag?.warning" class="container-warning">{{ currentBag.warning }}</p>
           <div ref="bagGrid" class="slot-grid slot-grid--bag">
             <InventoryItemSlot v-for="slot in currentBag?.slots" :key="slot.slot_index"
               :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable(bagTab)" square
-              @edit="openSlot(bagTab, slot)" @clear="clearSlot(bagTab, slot)" />
+              show-durability @edit="openSlot(bagTab, slot)" @clear="clearSlot(bagTab, slot)"
+              @repair="repairSlot(bagTab, slot)" />
           </div>
         </div>
       </section>
 
       <section class="inventory-panel equipment-panel">
         <header class="panel-heading">
-          <h2>{{ palStore.getTranslatedText('Inventory_Equipment') }}</h2>
-          <span v-if="palStore.PLAYER_INVENTORY?.warnings?.length" class="warning-chip" :title="palStore.PLAYER_INVENTORY.warnings.join('\n')">!</span>
+          <h2>{{ appStore.getTranslatedText('Inventory_Equipment') }}</h2>
+          <span v-if="playersStore.inventory?.warnings?.length" class="warning-chip" :title="playersStore.inventory.warnings.join('\n')">!</span>
         </header>
 
-        <div v-if="!palStore.PLAYER_INVENTORY" class="inventory-loading">{{ palStore.getTranslatedText('Inventory_Loading') }}</div>
+        <div v-if="!playersStore.inventory" class="inventory-loading">{{ appStore.getTranslatedText('Inventory_Loading') }}</div>
         <div v-else class="equipment-layout">
           <section class="equipment-group weapons-group">
-            <h3>{{ palStore.getTranslatedText('Inventory_Weapons') }}</h3>
+            <h3>{{ appStore.getTranslatedText('Inventory_Weapons') }}</h3>
             <div class="slot-grid slot-grid--equipment">
               <InventoryItemSlot v-for="slot in containers.weapons?.slots" :key="slot.slot_index"
                 :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable('weapons')"
-                show-name show-durability @edit="openSlot('weapons', slot)" @clear="clearSlot('weapons', slot)" />
+                show-name show-durability @edit="openSlot('weapons', slot)" @clear="clearSlot('weapons', slot)"
+                @repair="repairSlot('weapons', slot)" />
             </div>
           </section>
 
           <section class="equipment-group armor-group">
-            <h3>{{ palStore.getTranslatedText('Inventory_Armor') }}</h3>
+            <h3>{{ appStore.getTranslatedText('Inventory_Armor') }}</h3>
             <div class="armor-slots">
               <div class="armor-main-slots">
                 <div v-for="slot in primaryArmorSlots" :key="slot.slot_index" class="equipment-slot-field">
                   <span>{{ armorLabel(slot) }}</span>
                   <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
-                    :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
+                    :editable="isEditable('armor')" show-name show-durability @edit="openSlot('armor', slot)"
+                    @clear="clearSlot('armor', slot)" @repair="repairSlot('armor', slot)" />
                 </div>
               </div>
               <section class="accessory-group">
-                <span>{{ palStore.getTranslatedText('Inventory_Accessories') }}</span>
+                <span>{{ appStore.getTranslatedText('Inventory_Accessories') }}</span>
                 <div class="accessory-grid">
                   <div v-for="slot in accessorySlots" :key="slot.slot_index" class="equipment-slot-field accessory-slot-field">
                     <InventoryItemSlot :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)"
-                      :editable="isEditable('armor')" show-name @edit="openSlot('armor', slot)" @clear="clearSlot('armor', slot)" />
+                      :editable="isEditable('armor')" show-name show-durability @edit="openSlot('armor', slot)"
+                    @clear="clearSlot('armor', slot)" @repair="repairSlot('armor', slot)" />
                   </div>
                 </div>
               </section>
@@ -163,7 +174,7 @@ onBeforeUnmount(() => {
           </section>
 
           <section class="equipment-group food-group">
-            <h3>{{ palStore.getTranslatedText('Inventory_Food') }}</h3>
+            <h3>{{ appStore.getTranslatedText('Inventory_Food') }}</h3>
             <div class="slot-grid slot-grid--food">
               <InventoryItemSlot v-for="slot in containers.food?.slots" :key="slot.slot_index"
                 :slot="slot" :item="itemFor(slot)" :details-item="detailsItemFor(slot)" :label="slotName(slot)" :editable="isEditable('food')"

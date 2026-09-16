@@ -2,9 +2,17 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import OverlayScrollArea from '@/components/modules/OverlayScrollArea.vue'
 import SearchSelect from '@/components/modules/SearchSelect.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useCatalogsStore } from '@/stores/catalogs'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
+import { useMessagesStore } from '@/stores/messages'
+import { useResearchStore } from '@/stores/research'
 
-const palStore = usePalEditorStore()
+const catalogsStore = useCatalogsStore()
+const appStore = useAppStore()
+const backend = useBackendStore()
+const messages = useMessagesStore()
+const researchStore = useResearchStore()
 const selectedCategoryId = ref('Handcraft')
 const selectedResearchId = ref(null)
 const researchScroll = ref(null)
@@ -19,13 +27,13 @@ const graphMetrics = Object.freeze({
   railWidth: 68,
 })
 
-const guilds = computed(() => palStore.BASE_CAMP_RESEARCH?.Guilds ?? [])
+const guilds = computed(() => researchStore.research?.Guilds ?? [])
 const guildOptions = computed(() => guilds.value.map(guild => ({
   value: guild.GuildId,
   label: guild.GuildName,
 })))
 const selectedGuild = computed(() => guilds.value.find(
-  guild => guild.GuildId === palStore.SELECTED_RESEARCH_GUILD_ID,
+  guild => guild.GuildId === researchStore.selectedGuildId,
 ) ?? guilds.value[0] ?? null)
 const categories = computed(() => selectedGuild.value?.Categories ?? [])
 const selectedCategory = computed(() => categories.value.find(
@@ -115,11 +123,11 @@ const allCompleted = computed(() => categories.value.length > 0 && categories.va
   category => category.Completed === category.Total,
 ))
 
-const translated = key => palStore.getTranslatedText(key)
-const categoryIcon = category => palStore.backendAssetUrl(`/image/lab/category-${category}`)
-const researchIcon = research => palStore.backendAssetUrl(`/image/lab/${research.IconKey}`)
+const translated = key => appStore.getTranslatedText(key)
+const categoryIcon = category => backend.backendAssetUrl(`/image/lab/category-${category}`)
+const researchIcon = research => backend.backendAssetUrl(`/image/lab/${research.IconKey}`)
 const formatNumber = value => new Intl.NumberFormat().format(value ?? 0)
-const materialName = material => palStore.ITEM_STATIC_DATA[material.ItemId]?.Name ?? material.ItemId
+const materialName = material => catalogsStore.itemsByName[material.ItemId]?.Name ?? material.ItemId
 
 const updateResearchScale = async () => {
   await nextTick()
@@ -150,19 +158,19 @@ function selectResearch(research) {
 
 async function completeResearch() {
   if (!selectedResearch.value || selectedResearch.value.Completed) return
-  await palStore.completeBaseCampResearch({ ResearchId: selectedResearch.value.ResearchId })
+  await researchStore.complete({ researchId: selectedResearch.value.ResearchId })
 }
 
 async function completeCategory() {
   if (!selectedCategory.value || selectedCategory.value.Completed === selectedCategory.value.Total) return
-  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_Category')) return
-  await palStore.completeBaseCampResearch({ Category: selectedCategory.value.Category })
+  if (!await messages.confirmMessage('BaseCamp_Research_Confirm_Category')) return
+  await researchStore.complete({ category: selectedCategory.value.Category })
 }
 
 async function completeAll() {
   if (allCompleted.value) return
-  if (!await palStore.confirmMessage('BaseCamp_Research_Confirm_All')) return
-  await palStore.completeBaseCampResearch({ All: true })
+  if (!await messages.confirmMessage('BaseCamp_Research_Confirm_All')) return
+  await researchStore.complete({ all: true })
 }
 
 watch(selectedGuild, guild => {
@@ -206,20 +214,19 @@ onBeforeUnmount(() => {
       <div class="lab-header__actions">
         <div v-if="guilds.length > 1" class="guild-select">
           <span>{{ translated('BaseCamp_Research_Guild') }}</span>
-          <SearchSelect v-model="palStore.SELECTED_RESEARCH_GUILD_ID"
+          <SearchSelect v-model="researchStore.selectedGuildId"
             :options="guildOptions"
             :placeholder="translated('BaseCamp_Research_Guild')"
             :search-placeholder="translated('Editor_Select_Search')"
             :no-results="translated('Editor_Select_No_Results')"
             :aria-label="translated('BaseCamp_Research_Guild')"
-            :show-tooltip="false"
-            :disabled="palStore.LOADING_FLAG" />
+            :show-tooltip="false" />
         </div>
         <div v-else-if="selectedGuild" class="guild-name">
           <span>{{ translated('BaseCamp_Research_Guild') }}</span>
           <strong>{{ selectedGuild.GuildName }}</strong>
         </div>
-        <button class="editor-button editor-button--danger" :disabled="allCompleted || palStore.LOADING_FLAG" @click="completeAll">
+        <button class="editor-button editor-button--danger" :disabled="allCompleted" @click="completeAll">
           {{ translated('BaseCamp_Research_Complete_All') }}
         </button>
       </div>
@@ -254,7 +261,7 @@ onBeforeUnmount(() => {
             </div>
             <strong>{{ selectedCategory.Completed }}<small>/{{ selectedCategory.Total }}</small></strong>
           </div>
-          <button class="editor-button" :disabled="selectedCategory.Completed === selectedCategory.Total || palStore.LOADING_FLAG"
+          <button class="editor-button" :disabled="selectedCategory.Completed === selectedCategory.Total"
             @click="completeCategory">
             {{ translated('BaseCamp_Research_Complete_Category') }}
           </button>
@@ -336,7 +343,7 @@ onBeforeUnmount(() => {
               : 'BaseCamp_Research_Locked') }}
           </p>
 
-          <button class="editor-button editor-button--primary" :disabled="selectedResearch.Completed || palStore.LOADING_FLAG"
+          <button class="editor-button editor-button--primary" :disabled="selectedResearch.Completed"
             @click="completeResearch">
             {{ translated('BaseCamp_Research_Complete_Node') }}
           </button>

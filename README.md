@@ -20,7 +20,7 @@
 
 
 <p align="center">
-  A feature-rich Palworld save editor for players, Pals, Technology, inventories, and more — available as a desktop GUI, WebUI, CLI, and Docker container.
+  A feature-rich Palworld save editor for players, Pals, Pal storage, base camps, Technology, inventories, and more — available as a desktop GUI, WebUI, CLI, and Docker container.
 </p>
 
 ![Palworld Pal Editor](.github/assets/readme-pal-editor-en.webp)
@@ -41,6 +41,8 @@
 - [Features](#features)
   - [General](#general)
   - [Pals](#pals)
+  - [Pal storage and transfers](#pal-storage-and-transfers)
+  - [Base camp and guild research](#base-camp-and-guild-research)
   - [Templates and bulk operations](#templates-and-bulk-operations)
   - [Players](#players)
   - [Inventory](#inventory)
@@ -56,7 +58,7 @@
 
 **A Palworld Pal Editor developed by \_connlost with ❤️.**
 
-Palworld Pal Editor is a feature-rich save editor that supports player, Pal, Technology, inventory, and other save modifications. Run it as a desktop GUI, WebUI, CLI, or Docker container.
+Palworld Pal Editor is a feature-rich save editor that supports player, Pal, Pal storage, base-camp research, Technology, inventory, and other save modifications. Run it as a desktop GUI, WebUI, CLI, or Docker container.
 
 > [!NOTE]
 > Steam save root: `%LOCALAPPDATA%\Pal\Saved\SaveGames`
@@ -94,12 +96,12 @@ For most users, the pre-built desktop application is recommended. It does not re
 ![Pal lists and filters](.github/assets/readme-features-general-en.webp)
 
 - [x] List players and their Pals
-- [x] Edit base-camp Pals
 - [x] Search Pals
 - [x] Sort Pals
 - [x] Filter Pals
 - [x] Show Pals outside their normal containers
 - [x] Enable normally unavailable options through cheat mode
+- [x] Show skill and Pal internal names in cheat mode
 
 ### Pals
 
@@ -123,11 +125,31 @@ For most users, the pre-built desktop application is recommended. It does not re
 - [x] Edit work suitability
 - [x] Edit equipped active skills
 - [x] Edit learned active skills
-- [x] Edit passive skills
+- [x] Edit passive skills, listed separately as Pal, regular, and Partner skills
 - [x] Heal and revive Pals
 - [x] Heal all Pals
 - [x] Maximize Pal progression within legal limits
 - [x] Delete Pals
+
+### Pal storage and transfers
+
+![Pal storage and transfers](.github/assets/readme-features-storage-en.webp)
+
+- [x] Browse every container a save has: party, Palbox, base camp, viewing cage, Dimensional Pal Storage, and Global Pal Storage
+- [x] Move a Pal to any container of any player, base camp, or storage
+- [x] Edit and clone Pals that live in Dimensional Pal Storage or Global Pal Storage
+- [x] Resolve a Global Pal Storage slot that is already taken, by overwriting it or by jumping to the Pal holding it
+- [x] Create a Pal directly in a chosen destination container
+
+### Base camp and guild research
+
+![Guild laboratory research](.github/assets/readme-features-basecamp-en.webp)
+
+- [x] Edit the base camp's worker Pals
+- [x] Edit the guild's Pal Labor Research Laboratory
+- [x] Complete a single research node, a whole category, or every category at once
+- [x] Switch between guilds in a save that holds more than one
+- [x] Read research names, effects, and material costs from the game's own data
 
 ### Templates and bulk operations
 
@@ -187,6 +209,7 @@ For most users, the pre-built desktop application is recommended. It does not re
 - [x] Edit Pal Sphere modules
 - [x] Edit equipped food
 - [x] Edit item quantities
+- [x] Restore a worn item to full durability and a full magazine
 - [x] Clear inventory slots
 
 ## Installation and Running
@@ -232,6 +255,8 @@ palworld-pal-editor.exe --mode web --port 58080 --password "choose-a-strong-pass
 
 When using a separately hosted frontend, choose the backend from the server menu at the top-right of the entry page.
 
+The WebUI is a progressive web app: a browser can install it to the desktop or home screen, and it keeps its interface and Pal images cached between runs.
+
 ## Command-line Options
 
 ```text
@@ -244,7 +269,7 @@ When using a separately hosted frontend, choose the backend from the server menu
 --nocli              Disable the interactive CLI in GUI/WebUI mode
 ```
 
-Run `palworld-pal-editor.exe --help` for the current list. Command-line values override `config.json`; the application manages that file automatically.
+Run `palworld-pal-editor.exe --help` for the current list. Command-line values override `config.json`; the application manages that file automatically. Settings, saved templates, and logs are kept in the platform's user data directory.
 
 ## Guides
 

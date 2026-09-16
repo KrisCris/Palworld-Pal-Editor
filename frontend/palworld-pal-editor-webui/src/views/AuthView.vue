@@ -1,34 +1,38 @@
 <script setup>
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { useBackendStore } from '@/stores/backend'
 import { ref } from 'vue'
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const backend = useBackendStore()
 
 const PW = ref("")
 const remember = ref(false)
 
 const unlock = async () => {
-    if (await palStore.unlock(PW.value, remember.value)) PW.value = ""
+    if (await shell.unlock(PW.value, remember.value)) PW.value = ""
 }
 </script>
 <template>
     <form id="authDiv" @submit.prevent="unlock">
         <img alt="Vue logo" class="logo" src="@/assets/logo.ico" width="125" height="125" />
         <br>
-        <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
-        <p>{{ palStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
-        <p v-if="palStore.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
-            {{ palStore.getTranslatedText(palStore.AUTH_MESSAGE_KEY) }}
+        <p>{{ appStore.getTranslatedText("AuthView_PW_Prompt_1") }}</p>
+        <p>{{ appStore.getTranslatedText("AuthView_PW_Prompt_2") }}</p>
+        <p v-if="backend.AUTH_MESSAGE_KEY" class="auth-error" role="alert">
+            {{ appStore.getTranslatedText(backend.AUTH_MESSAGE_KEY) }}
         </p>
 
-        <label class="sr-only" for="password">{{ palStore.getTranslatedText('AuthView_Password_Label') }}</label>
+        <label class="sr-only" for="password">{{ appStore.getTranslatedText('AuthView_Password_Label') }}</label>
         <input id="password" type="password" v-model="PW" autocomplete="current-password"
-                :placeholder="palStore.getTranslatedText('AuthView_Password_Label')" :disabled="palStore.LOADING_FLAG">
+                :placeholder="appStore.getTranslatedText('AuthView_Password_Label')">
         <label class="remember">
-            <input type="checkbox" v-model="remember" :disabled="palStore.LOADING_FLAG">
-            {{ palStore.getTranslatedText('AuthView_Remember_7_Days') }}
+            <input type="checkbox" v-model="remember">
+            {{ appStore.getTranslatedText('AuthView_Remember_7_Days') }}
         </label>
-        <button type="submit" :disabled="palStore.LOADING_FLAG">
-            {{ palStore.getTranslatedText("AuthView_BTN_Unlock") }}
+        <button type="submit">
+            {{ appStore.getTranslatedText("AuthView_BTN_Unlock") }}
         </button>
     </form>
 </template>

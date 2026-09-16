@@ -1,8 +1,18 @@
-from typing import Any, Optional
+"""One player: their name, level, status points, technology and container ids.
+
+The same shape as `pal_entity.py` and for the same reason -- properties reading and
+writing the player's own `SaveParameter` in place. The container ids are the link
+outward: `PalStorageContainerId` and `OtomoCharacterContainerId` say which Pal
+containers are this player's, and `InventoryContainerIds` is how
+`item_container_data.py` finds what they are carrying.
+"""
+
+import copy
+from typing import Optional
 from palworld_save_tools.archive import UUID
 from palworld_save_tools.gvas import GvasFile
 
-from palworld_pal_editor.utils import LOGGER, alphanumeric_key
+from palworld_pal_editor.utils import LOGGER
 from palworld_pal_editor.core.pal_entity import PalEntity
 from palworld_pal_editor.core.pal_objects import PalObjects, StatusName
 from palworld_pal_editor.utils.data_provider import DataProvider
@@ -17,19 +27,13 @@ class PlayerEntity:
         self,
         group_id: UUID | str,
         player_obj: dict,
-        palbox: dict[str, PalEntity],
         gvas_file: GvasFile,
         compression_times: int,
     ) -> None:
         self._player_obj: dict = player_obj
-        self._palbox: dict[str, PalEntity] = palbox
-        self._new_palbox: dict[str, PalEntity] = {}
         self._gvas_file: GvasFile = gvas_file
         self._gvas_compression_times: int = compression_times
         self.group_id = group_id
-
-        for pal in self._palbox.values():
-            pal.set_owner_player_entity(self)
 
         if (
             self._player_obj["value"]["RawData"]["value"]["object"]["SaveParameter"][
@@ -447,26 +451,8 @@ class PlayerEntity:
                 return
             self.UnlockedRecipeTechnologyNames.remove(unlocked)
 
-    @LOGGER.change_logger("UnlockedRecipeTechnologyNames")
-    def unlock_all_techs(self):
-        if self.UnlockedRecipeTechnologyNames is None:
-            self._player_save_data["UnlockedRecipeTechnologyNames"] = (
-                PalObjects.ArrayProperty("NameProperty", {"values": []})
-            )
-        unlocked = {
-            tech.casefold() for tech in self.UnlockedRecipeTechnologyNames
-        }
-        for tech in DataProvider.get_tech_data():
-            if tech.casefold() not in unlocked:
-                self.UnlockedRecipeTechnologyNames.append(tech)
-                unlocked.add(tech.casefold())
-        LOGGER.info(f"Unlocked all techs for {self}")
-
     def has_viewing_cage(self) -> bool:
         return self._unlocked_technology_name("DisplayCharacter") is not None
-
-    def unlock_viewing_cage(self):
-        self.toggle_UnlockedRecipeTechnologyNames("DisplayCharacter", True)
 
     @property
     def PlayerGVAS(self) -> Optional[tuple[GvasFile, int]]:
@@ -474,21 +460,6 @@ class PlayerEntity:
             return None
         return self._gvas_file, self._gvas_compression_times
 
-    def add_pal(self, pal_entity: PalEntity, record_key: str | None = None) -> bool:
-        """
-        This method only inserts player's pals to `self.palbox`.\n
-        """
-        pal_key = record_key or f"world:{pal_entity.InstanceId}"
-        if pal_key in self._palbox:
-            return False
-        
-        if pal_entity.is_new_pal:
-            self._new_palbox[pal_key] = pal_entity
-
-        self._palbox[pal_key] = pal_entity
-        pal_entity.set_owner_player_entity(self)
-        return True
-    
     @property
     def TechnologyPoint(self) -> Optional[int]:
         return PalObjects.get_BaseType(self._player_save_data.get("TechnologyPoint"))
@@ -569,68 +540,49 @@ class PlayerEntity:
             'value': True
         })
 
-    def save_new_pal_records(self):
-        """
-        This should only be called on save
-        """
-        for guid in self._new_palbox:
-            pal_entity = self._new_palbox[guid]
-            if DataProvider.is_pal_invalid(pal_entity.DataAccessKey):
-                LOGGER.info(f"Skip player records update for invalid pal: {pal_entity}")
-                continue
-            if pal_entity.IsHuman or not DataProvider.get_pal_sorting_key(pal_entity.DataAccessKey):
-                LOGGER.info(f"Skip player records update for pal: {pal_entity}")
-                continue
+    def settle_captured_pal(self, pal_entity: PalEntity) -> None:
+        """Apply one Pal created this session to this player's capture records.
 
-            key = DataProvider.get_pal_paldeck_record_id(pal_entity.CharacterID)
-            if key is None:
-                LOGGER.info(f"Skip player records update for pal: {pal_entity}")
-                continue
-            self.unlock_paldeck(key)
-            self.inc_pal_capture_count(key)
+        Every rule here came out of the old save-time settlement unchanged: skip invalid
+        Pals, skip Humans and Pals with no sorting key, skip a Pal with no paldeck
+        record id, and treat a missing `SkillUnlock_<Pal>` as a warning rather than an
+        error. Only the tracking moved out -- which Pals are new is `PalRepository`'s
+        question now, and this settles exactly the one it is handed.
+        """
+        if DataProvider.is_pal_invalid(pal_entity.DataAccessKey):
+            LOGGER.info(f"Skip player records update for invalid pal: {pal_entity}")
+            return
+        if pal_entity.IsHuman or not DataProvider.get_pal_sorting_key(pal_entity.DataAccessKey):
+            LOGGER.info(f"Skip player records update for pal: {pal_entity}")
+            return
 
-            tech_key = "SkillUnlock_" + key
-            if DataProvider.get_tech_i18n(tech_key) is None:
-                LOGGER.warning(f"Technology {tech_key} not found, which may or may not be a bug. If you are unsure please report to the dev.")
+        key = DataProvider.get_pal_paldeck_record_id(pal_entity.CharacterID)
+        if key is None:
+            LOGGER.info(f"Skip player records update for pal: {pal_entity}")
+            return
+        self.unlock_paldeck(key)
+        self.inc_pal_capture_count(key)
+
+        tech_key = "SkillUnlock_" + key
+        if DataProvider.get_tech_i18n(tech_key) is None:
+            LOGGER.warning(f"Technology {tech_key} not found, which may or may not be a bug. If you are unsure please report to the dev.")
+        else:
+            self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
+
+    # The two player-file properties `settle_captured_pal` writes into. A save that
+    # settles and then fails to write every output restores them, so a retry does not
+    # count the same capture twice.
+    _SETTLED_PROPERTIES = ("RecordData", "UnlockedRecipeTechnologyNames")
+
+    def snapshot_capture_records(self) -> dict:
+        return {
+            name: copy.deepcopy(self._player_save_data.get(name))
+            for name in self._SETTLED_PROPERTIES
+        }
+
+    def restore_capture_records(self, snapshot: dict) -> None:
+        for name, value in snapshot.items():
+            if value is None:
+                self._player_save_data.pop(name, None)
             else:
-                self.toggle_UnlockedRecipeTechnologyNames(tech_key, True)
-
-            pal_entity.is_new_pal = False
-
-        self._new_palbox.clear()
-
-    def get_pals(self) -> list[PalEntity]:
-        return self._palbox.values()
-
-    def pop_pal(self, guid: str | UUID) -> Optional[PalEntity]:
-        key = str(guid)
-        if key not in self._palbox:
-            key = f"world:{key}"
-        self._new_palbox.pop(key, None)
-        return self._palbox.pop(key, None)
-
-    def get_pal(self, guid: UUID | str, disable_warning=False) -> Optional[PalEntity]:
-        key = str(guid)
-        if key in self._palbox:
-            return self._palbox[key]
-        world_key = f"world:{key}"
-        if world_key in self._palbox:
-            return self._palbox[world_key]
-        
-        if not disable_warning:
-            LOGGER.warning(f"Player {self} has no pal {key}.")
-
-    def get_sorted_pals(self, sorting_key="paldeck") -> list[PalEntity]:
-        match sorting_key:
-            case "paldeck":
-                return sorted(
-                    self.get_pals(),
-                    key=lambda pal: (
-                        pal.IsHuman or False,
-                        alphanumeric_key(pal.PalDeckID),
-                        pal.IsTower,
-                        pal.IsBOSS,
-                        pal.IsRarePal or False,
-                        pal.Level or 1,
-                    ),
-                )
+                self._player_save_data[name] = value

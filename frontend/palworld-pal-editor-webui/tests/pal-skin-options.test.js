@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import * as palEditor from "../src/stores/paleditor.js";
+import { filterPalSkins } from "../src/pal-traits.js";
 
 test("alpha Pals expose skins assigned to their base family", () => {
     const skins = [
@@ -19,12 +19,12 @@ test("alpha Pals expose skins assigned to their base family", () => {
     ];
     const selectedPal = {
         CharacterID: "Boss_Anubis",
-        DataAccessKeyOG: "Boss_Anubis",
+        DataAccessKey: "Boss_Anubis",
         FamilyID: "Anubis",
     };
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(skins, selectedPal),
+        filterPalSkins(skins, selectedPal),
         [skins[0]],
     );
 });
@@ -37,7 +37,7 @@ test("legacy Pal payloads match skins by their exact data key", () => {
     }];
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(skins, { DataAccessKeyOG: "Anubis" }),
+        filterPalSkins(skins, { DataAccessKey: "Anubis" }),
         skins,
     );
 });
@@ -60,10 +60,10 @@ test("hidden invalid skins retain the skin currently applied to the Pal", () => 
     };
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(
+        filterPalSkins(
             [current, valid, hidden],
             {
-                DataAccessKeyOG: "IceHorse",
+                DataAccessKey: "IceHorse",
                 FamilyID: "IceHorse",
                 SkinName: "IceHorse_Skin001",
             },
@@ -93,7 +93,7 @@ test("showing invalid options reveals every skin for the selected family", () =>
     ];
 
     assert.deepEqual(
-        palEditor.filterPalSkins?.(
+        filterPalSkins(
             skins,
             { FamilyID: "PinkCat", SkinName: null },
             false,
@@ -103,12 +103,11 @@ test("showing invalid options reveals every skin for the selected family", () =>
 });
 
 test("the skin selector supplies previews and an unknown fallback to SearchSelect", async () => {
-    const [source, storeSource] = await Promise.all([
-        readFile(new URL("../src/components/PalEditor.vue", import.meta.url), "utf8"),
-        readFile(new URL("../src/stores/paleditor.js", import.meta.url), "utf8"),
-    ]);
+    const source = await readFile(
+        new URL("../src/components/PalEditor.vue", import.meta.url), "utf8",
+    );
     assert.match(source, /`\/image\/pals\/skin-\$\{skin\.SkinName\}`/);
     assert.match(source, /skin\.Invalid[\s\S]*\/image\/pals\/unknown/);
     assert.match(source, /Editor_Skin_Default[\s\S]*icon:/);
-    assert.match(storeSource, /this\.IconKey\s*=\s*obj\.IconKey/);
+    assert.match(source, /pal\.value\.IconKey \|\| 'unknown'/);
 });

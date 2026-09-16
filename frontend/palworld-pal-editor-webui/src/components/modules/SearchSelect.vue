@@ -3,7 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import OverlayScrollArea from './OverlayScrollArea.vue'
 import UiIcon from './UiIcon.vue'
-import { filterSearchOptions } from './search-select'
+import { filterSearchOptions, scrollOffsetForOption } from './search-select'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -69,10 +69,34 @@ function updatePopoverPosition() {
       }
 }
 
+// The option list is scrolled from the rendered rows rather than from the index
+// of the selection, because the rows are not all one height and the group headers
+// between them are not rows at all. Offsets are measured against the scrolling
+// viewport, not the page: the popover is teleported to the body, so asking the
+// button to scroll itself into view would move whatever is behind it instead.
+function scrollToSelection() {
+  const viewport = popover.value?.querySelector('.overlay-scroll-area__viewport')
+  const option = popover.value?.querySelector('[role="option"][aria-selected="true"]')
+  if (!viewport || !option) return
+
+  const top = option.getBoundingClientRect().top
+    - viewport.getBoundingClientRect().top
+    + viewport.scrollTop
+  const offset = scrollOffsetForOption(viewport, { offsetTop: top, offsetHeight: option.offsetHeight })
+  if (offset !== null) viewport.scrollTop = offset
+}
+
 function onToggle() {
   open.value = Boolean(disclosure.value?.open)
-  if (open.value) nextTick(updatePopoverPosition)
-  else clearTooltip()
+  if (open.value) {
+    // Positioning first, and measuring only once it has been applied: the width
+    // this sets is what decides how many lines a row wraps to, and so how far
+    // down the list the selected one starts.
+    nextTick(() => {
+      updatePopoverPosition()
+      nextTick(scrollToSelection)
+    })
+  } else clearTooltip()
 }
 
 function showTooltip(option) {

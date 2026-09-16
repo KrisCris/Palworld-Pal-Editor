@@ -190,191 +190,191 @@
   },
   "item": {
     "ja": {
+      "ArmorBody": "体装備",
+      "Bullet": "弾薬",
+      "CaptureBall": "スフィア",
       "Dish": "料理",
       "Ingot": "インゴット",
-      "Bullet": "弾薬",
-      "Weapon": "武器",
-      "Ore": "鉱石",
       "Medicine": "薬",
-      "ArmorBody": "体装備",
+      "Ore": "鉱石",
       "PalGear": "パルギア",
-      "CaptureBall": "スフィア"
+      "Weapon": "武器"
     },
     "de": {
+      "ArmorBody": "Ausrüstung (Körper)",
+      "Bullet": "Munition",
+      "CaptureBall": "Sphären",
       "Dish": "Gerichte",
       "Ingot": "Metallbarren",
-      "Bullet": "Munition",
-      "Weapon": "Waffen",
-      "Ore": "Erze",
       "Medicine": "Medizin",
-      "ArmorBody": "Ausrüstung (Körper)",
+      "Ore": "Erze",
       "PalGear": "Pal-Ausrüstung",
-      "CaptureBall": "Sphären"
+      "Weapon": "Waffen"
     },
     "en": {
+      "ArmorBody": "Body Armor",
+      "Bullet": "Ammo",
+      "CaptureBall": "Spheres",
       "Dish": "Food",
       "Ingot": "Ingots",
-      "Bullet": "Ammo",
-      "Weapon": "Weapons",
-      "Ore": "Ores",
       "Medicine": "Medicine",
-      "ArmorBody": "Body Armor",
+      "Ore": "Ores",
       "PalGear": "Pal Gear",
-      "CaptureBall": "Spheres"
+      "Weapon": "Weapons"
     },
     "es": {
+      "ArmorBody": "Armaduras",
+      "Bullet": "Munición",
+      "CaptureBall": "Esferas",
       "Dish": "Platos",
       "Ingot": "Lingotes",
-      "Bullet": "Munición",
-      "Weapon": "Armas",
-      "Ore": "Minerales",
       "Medicine": "Medicinas",
-      "ArmorBody": "Armaduras",
+      "Ore": "Minerales",
       "PalGear": "Equipo Pal",
-      "CaptureBall": "Esferas"
+      "Weapon": "Armas"
     },
     "es-MX": {
+      "ArmorBody": "Armaduras",
+      "Bullet": "Munición",
+      "CaptureBall": "Esfera",
       "Dish": "Cocina",
       "Ingot": "Lingote",
-      "Bullet": "Munición",
-      "Weapon": "Armas",
-      "Ore": "Mineral",
       "Medicine": "Medicina",
-      "ArmorBody": "Armaduras",
+      "Ore": "Mineral",
       "PalGear": "Equipamiento Pal",
-      "CaptureBall": "Esfera"
+      "Weapon": "Armas"
     },
     "fr": {
+      "ArmorBody": "Armures",
+      "Bullet": "Munitions",
+      "CaptureBall": "Sphères",
       "Dish": "Plats",
       "Ingot": "Lingots",
-      "Bullet": "Munitions",
-      "Weapon": "Armes",
-      "Ore": "Minerais",
       "Medicine": "Potions",
-      "ArmorBody": "Armures",
+      "Ore": "Minerais",
       "PalGear": "Équipement de Pal",
-      "CaptureBall": "Sphères"
+      "Weapon": "Armes"
     },
     "id": {
+      "ArmorBody": "Peralatan Badan",
+      "Bullet": "Amunisi",
+      "CaptureBall": "Bola",
       "Dish": "Memasak",
       "Ingot": "Batangan Logam",
-      "Bullet": "Amunisi",
-      "Weapon": "Senjata",
-      "Ore": "Bijih",
       "Medicine": "Obat",
-      "ArmorBody": "Peralatan Badan",
+      "Ore": "Bijih",
       "PalGear": "Pal Gear",
-      "CaptureBall": "Bola"
+      "Weapon": "Senjata"
     },
     "it": {
+      "ArmorBody": "Equipaggiamenti per il corpo",
+      "Bullet": "Proiettili",
+      "CaptureBall": "Sfere",
       "Dish": "Cibo",
       "Ingot": "Lingotti",
-      "Bullet": "Proiettili",
-      "Weapon": "Armi",
-      "Ore": "Minerali",
       "Medicine": "Medicinali",
-      "ArmorBody": "Equipaggiamenti per il corpo",
+      "Ore": "Minerali",
       "PalGear": "Strumenti per Pal",
-      "CaptureBall": "Sfere"
+      "Weapon": "Armi"
     },
     "ko": {
+      "ArmorBody": "몸체 장비",
+      "Bullet": "탄약",
+      "CaptureBall": "스피어",
       "Dish": "요리",
       "Ingot": "주괴",
-      "Bullet": "탄약",
-      "Weapon": "무기",
-      "Ore": "광석",
       "Medicine": "약",
-      "ArmorBody": "몸체 장비",
+      "Ore": "광석",
       "PalGear": "팰 장비",
-      "CaptureBall": "스피어"
+      "Weapon": "무기"
     },
     "pl": {
+      "ArmorBody": "Zbroje tułowia",
+      "Bullet": "Amunicja",
+      "CaptureBall": "Sfery",
       "Dish": "Żywność",
       "Ingot": "Sztabki",
-      "Bullet": "Amunicja",
-      "Weapon": "Broń",
-      "Ore": "Rudy",
       "Medicine": "Leki",
-      "ArmorBody": "Zbroje tułowia",
+      "Ore": "Rudy",
       "PalGear": "Pal Sprzęt",
-      "CaptureBall": "Sfery"
+      "Weapon": "Broń"
     },
     "pt-BR": {
+      "ArmorBody": "Equipamento de corpo",
+      "Bullet": "Munições",
+      "CaptureBall": "Esferas",
       "Dish": "Culinária",
       "Ingot": "Lingotes",
-      "Bullet": "Munições",
-      "Weapon": "Armas",
-      "Ore": "Minérios",
       "Medicine": "Remédios",
-      "ArmorBody": "Equipamento de corpo",
+      "Ore": "Minérios",
       "PalGear": "Equipamentos de Pal",
-      "CaptureBall": "Esferas"
+      "Weapon": "Armas"
     },
     "ru": {
+      "ArmorBody": "Броня для тела",
+      "Bullet": "Боеприпасы",
+      "CaptureBall": "Сферы",
       "Dish": "Готовка",
       "Ingot": "Слитки",
-      "Bullet": "Боеприпасы",
-      "Weapon": "Оружие",
-      "Ore": "Руда",
       "Medicine": "Снадобья",
-      "ArmorBody": "Броня для тела",
+      "Ore": "Руда",
       "PalGear": "Экипировка Палов",
-      "CaptureBall": "Сферы"
+      "Weapon": "Оружие"
     },
     "th": {
+      "ArmorBody": "ชุด",
+      "Bullet": "กระสุน",
+      "CaptureBall": "สเฟียร์",
       "Dish": "อาหาร",
       "Ingot": "ก้อนโลหะ",
-      "Bullet": "กระสุน",
-      "Weapon": "อาวุธ",
-      "Ore": "หินแร่",
       "Medicine": "ยา",
-      "ArmorBody": "ชุด",
+      "Ore": "หินแร่",
       "PalGear": "พาลเกียร์",
-      "CaptureBall": "สเฟียร์"
+      "Weapon": "อาวุธ"
     },
     "tr": {
+      "ArmorBody": "Gövde Zırhı",
+      "Bullet": "Cephaneler",
+      "CaptureBall": "Küreler",
       "Dish": "Yiyecekler",
       "Ingot": "Külçeler",
-      "Bullet": "Cephaneler",
-      "Weapon": "Silahlar",
-      "Ore": "Cevher",
       "Medicine": "İlaç",
-      "ArmorBody": "Gövde Zırhı",
+      "Ore": "Cevher",
       "PalGear": "Pal Teçhizatı",
-      "CaptureBall": "Küreler"
+      "Weapon": "Silahlar"
     },
     "vi": {
+      "ArmorBody": "Giáp Thân",
+      "Bullet": "Đạn Bắn",
+      "CaptureBall": "Quả Cầu",
       "Dish": "Thực Phẩm",
       "Ingot": "Các Loại Thỏi",
-      "Bullet": "Đạn Bắn",
-      "Weapon": "Vũ Khí",
-      "Ore": "Quặng",
       "Medicine": "Thuốc",
-      "ArmorBody": "Giáp Thân",
+      "Ore": "Quặng",
       "PalGear": "Trang Bị Pal",
-      "CaptureBall": "Quả Cầu"
+      "Weapon": "Vũ Khí"
     },
     "zh-CN": {
+      "ArmorBody": "身体装备",
+      "Bullet": "弹药",
+      "CaptureBall": "帕鲁球",
       "Dish": "食物",
       "Ingot": "金属锭",
-      "Bullet": "弹药",
-      "Weapon": "武器",
-      "Ore": "矿石",
       "Medicine": "药品",
-      "ArmorBody": "身体装备",
+      "Ore": "矿石",
       "PalGear": "帕鲁装备",
-      "CaptureBall": "帕鲁球"
+      "Weapon": "武器"
     },
     "zh-TW": {
+      "ArmorBody": "身體裝備",
+      "Bullet": "彈藥",
+      "CaptureBall": "帕魯球",
       "Dish": "食物",
       "Ingot": "金屬錠",
-      "Bullet": "彈藥",
-      "Weapon": "武器",
-      "Ore": "礦石",
       "Medicine": "藥品",
-      "ArmorBody": "身體裝備",
+      "Ore": "礦石",
       "PalGear": "帕魯裝備",
-      "CaptureBall": "帕魯球"
+      "Weapon": "武器"
     }
   }
 }

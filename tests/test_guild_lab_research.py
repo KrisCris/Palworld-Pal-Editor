@@ -189,6 +189,56 @@ class GuildLabResearchTests(unittest.TestCase):
                 ),
             )
 
+    def test_completion_logs_each_research_amount_before_and_after(self):
+        manager = SaveManager()
+        self.assertIsNotNone(manager.open(str(SAVE)))
+        snapshot = manager.get_lab_research()
+        target = max(
+            snapshot["Guilds"],
+            key=lambda guild: sum(
+                category["Completed"] for category in guild["Categories"]
+            ),
+        )
+        handcraft = next(
+            category
+            for category in target["Categories"]
+            if category["Category"] == "Handcraft"
+        )
+        lowered, dropped = handcraft["Research"][0], handcraft["Research"][1]
+        target_raw = _lab_raw(_guild_extra_entries(manager)[target["GuildId"]])
+        rows = {
+            row["research_id"]: row
+            for row in target_raw["research_info"]
+            if isinstance(row, dict)
+        }
+        rows[lowered["ResearchId"]]["work_amount"] = 1.0
+        target_raw["research_info"].remove(rows[dropped["ResearchId"]])
+
+        with self.assertLogs("Palworld-Pal-Editor", level="INFO") as captured:
+            changed = manager.complete_lab_research(
+                target["GuildId"], category="Handcraft"
+            )
+
+        logged = " ".join(captured.output)
+        self.assertIn(
+            f"Guild {target['GuildId']} Lab | "
+            f"research_work_amount[{lowered['ResearchId']} ({lowered['Name']})]: "
+            f"1.0 -> {float(lowered['RequiredWorkAmount'])}",
+            logged,
+        )
+        self.assertIn(
+            f"research_work_amount[{dropped['ResearchId']} ({dropped['Name']})]: "
+            f"no record -> {float(dropped['RequiredWorkAmount'])}",
+            logged,
+        )
+        # One line per row moved, and the summary of what the request asked for.
+        self.assertEqual(changed + 1, len(captured.output))
+        self.assertIn(
+            f"guild={target['GuildId']} research=None category=Handcraft "
+            f"all=False changed={changed}",
+            captured.output[-1],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

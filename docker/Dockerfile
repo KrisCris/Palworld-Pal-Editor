@@ -1,6 +1,8 @@
 FROM nikolaik/python-nodejs:python3.12-nodejs21-slim
 
 ENV PATH=/usr/local/nginx/bin:$PATH
+# The editor runs out of the source tree copied to /app, not from an install.
+ENV PYTHONPATH=/app/src
 EXPOSE 58888
 VOLUME [ "/mnt/gamesave" ]
 
@@ -20,8 +22,7 @@ RUN cd "/app/frontend/palworld-pal-editor-webui" \
     && npm run build \
     && mv "/app/frontend/palworld-pal-editor-webui/dist" "/app/src/palworld_pal_editor/webui" 
 
-RUN pip install --no-cache-dir --force-reinstall --upgrade -r requirements.txt \
-    && pip install -e .  --no-cache-dir --force-reinstall --upgrade
+RUN pip install --no-cache-dir --force-reinstall --upgrade -r requirements.txt
 
 RUN chmod +x /app/docker/app.sh
 

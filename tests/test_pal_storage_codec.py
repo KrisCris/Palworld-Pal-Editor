@@ -12,7 +12,8 @@ from palworld_pal_editor.core.save_codec import (
     PAL_STORAGE_CUSTOM_PROPERTIES,
     RAW_PAL_STORAGE_ENTRY,
 )
-from palworld_pal_editor.core.pal_storage import FixedPalStorage
+from palworld_pal_editor.core.pal_storage_file import PalStorageSaveFile
+from palworld_pal_editor.core.pal_storage_adapters import DpsPalAdapter
 
 
 OCCUPIED_DPS = Path(
@@ -47,15 +48,18 @@ def test_sparse_codec_preserves_empty_slots_as_raw_bytes_and_round_trips():
     generic_entries = generic.properties["SaveParameterArray"]["value"]["values"]
     sparse_entries = sparse.properties["SaveParameterArray"]["value"]["values"]
 
+    # Slot 0 of this fixture is empty and slot 1 holds the first Pal. The
+    # generic decoder is the reference for that, and the sparse one has to agree
+    # with it exactly rather than with a hardcoded shape.
     expected_occupied = occupied_indices(generic_entries)
-    assert expected_occupied == [0, 9, 24]
+    assert expected_occupied == [1, 9, 24]
     assert occupied_indices(sparse_entries) == expected_occupied
     assert len(sparse_entries) == len(generic_entries) == 9600
 
-    assert "_raw_entry" not in sparse_entries[0]
-    assert "SaveParameter" in sparse_entries[0]
-    assert isinstance(sparse_entries[1]["_raw_entry"], bytes)
-    assert "SaveParameter" not in sparse_entries[1]
+    assert "_raw_entry" not in sparse_entries[1]
+    assert "SaveParameter" in sparse_entries[1]
+    assert isinstance(sparse_entries[0]["_raw_entry"], bytes)
+    assert "SaveParameter" not in sparse_entries[0]
 
     assert sparse.write(PAL_STORAGE_CUSTOM_PROPERTIES) == raw_gvas
 
@@ -63,36 +67,41 @@ def test_sparse_codec_preserves_empty_slots_as_raw_bytes_and_round_trips():
 def test_fixed_storage_allocates_and_clears_sparse_slots_after_reopen(tmp_path):
     storage_path = tmp_path / OCCUPIED_DPS.name
     shutil.copy2(OCCUPIED_DPS, storage_path)
-    storage = FixedPalStorage.open(
+    storage = PalStorageSaveFile.open(
         storage_path,
         "dps",
         "a18b721d-0000-0000-0000-000000000000",
     )
-    assert RAW_PAL_STORAGE_ENTRY in storage._entries[1]
+    assert RAW_PAL_STORAGE_ENTRY in storage.entries[0]
 
     new_instance_id = str(uuid.uuid4())
-    record = storage.allocate(
-        copy.deepcopy(storage._entries[0]["SaveParameter"]),
+    record = DpsPalAdapter(storage).allocate(
+        copy.deepcopy(storage.entries[1]["SaveParameter"]),
         new_instance_id,
     )
-    assert record.slot_index == 1
-    assert RAW_PAL_STORAGE_ENTRY not in storage._entries[record.slot_index]
+    # The first free slot, which for this fixture is the one before the first Pal.
+    assert record.slot_index == 0
+    assert RAW_PAL_STORAGE_ENTRY not in storage.entries[record.slot_index]
     storage_path.write_bytes(storage.serialize())
 
-    reopened = FixedPalStorage.open(
-        storage_path,
-        "dps",
-        "a18b721d-0000-0000-0000-000000000000",
+    reopened = DpsPalAdapter(
+        PalStorageSaveFile.open(
+            storage_path,
+            "dps",
+            "a18b721d-0000-0000-0000-000000000000",
+        )
     )
     reopened_record = reopened.get(record.record_key)
     assert reopened_record is not None
     assert str(reopened_record.pal.InstanceId) == new_instance_id
 
     reopened.clear(record.record_key)
-    storage_path.write_bytes(reopened.serialize())
-    cleared = FixedPalStorage.open(
-        storage_path,
-        "dps",
-        "a18b721d-0000-0000-0000-000000000000",
+    storage_path.write_bytes(reopened.storage.serialize())
+    cleared = DpsPalAdapter(
+        PalStorageSaveFile.open(
+            storage_path,
+            "dps",
+            "a18b721d-0000-0000-0000-000000000000",
+        )
     )
     assert cleared.get(record.record_key) is None

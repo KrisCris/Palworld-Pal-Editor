@@ -5,16 +5,28 @@ import BackendServerSelector from './BackendServerSelector.vue'
 import PalList from './PalList.vue'
 import PlayerList from './PlayerList.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { useBackendStore } from '@/stores/backend'
+import { usePalsStore } from '@/stores/pals'
+import { usePlayersStore } from '@/stores/players'
+import { useRostersStore } from '@/stores/rosters'
+import { useSessionStore } from '@/stores/session'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const backend = useBackendStore()
+const palsStore = usePalsStore()
+const playersStore = usePlayersStore()
+const rostersStore = useRostersStore()
+const sessionStore = useSessionStore()
 defineProps({ playersCollapsed: Boolean, palsCollapsed: Boolean })
 const emit = defineEmits(['restorePlayers', 'restorePals'])
 const loadingWidth = ref(0)
 const showLoading = ref(false)
 const interval = ref(null)
 
-watch(() => palStore.LOADING_FLAG, newValue => {
+watch(() => sessionStore.operationPending, newValue => {
   if (newValue) {
     interval.value = setInterval(() => {
       if (loadingWidth.value < 20) loadingWidth.value += Math.random() * 8
@@ -33,30 +45,24 @@ watch(() => palStore.LOADING_FLAG, newValue => {
   }, 250)
 })
 
-const donate = async () => {
-  if (await palStore.showDonate()) palStore.SHOW_DONATE_FLAG = true
+const donate = () => {
+  if (!appStore.donationPromptDismissed) shell.donationPromptOpen = true
 }
 
-const show_cheats = async () => {
-  await donate()
-  palStore.HIDE_INVALID_OPTIONS = !palStore.HIDE_INVALID_OPTIONS
+const show_cheats = () => {
+  donate()
+  appStore.HIDE_INVALID_OPTIONS = !appStore.HIDE_INVALID_OPTIONS
 }
 
 const save = async () => {
-  if (await palStore.writeSave()) await donate()
+  if (await shell.writeSave()) donate()
 }
 
-const playerCount = computed(() => palStore.PLAYER_MAP.size + (palStore.HAS_WORKING_PAL_FLAG ? 1 : 0))
-const palCount = computed(() => palStore.PAL_MAP.size)
-const hasPalRoster = computed(() => palStore.ACTIVE_ROSTER)
+const playerCount = computed(() => playersStore.players.length + (rostersStore.hasBaseCamp ? 1 : 0))
+const palCount = computed(() => rostersStore.activeRecordKeys.length)
+const hasPalRoster = computed(() => rostersStore.activeRosterKey)
 // A pal requires "heal" exactly like the per-pal action in PalEditor: HasWorkerSick.
-const hasPalToHeal = computed(() => {
-  const palMaps = [palStore.PAL_MAP]
-  for (const player of palStore.PLAYER_MAP.values()) {
-    if (player.pals) palMaps.push(player.pals)
-  }
-  return palMaps.some(map => Array.from(map.values()).some(pal => pal.HasWorkerSick))
-})
+const hasPalToHeal = computed(() => palsStore.hasSickPal)
 </script>
 
 <template>
@@ -64,24 +70,24 @@ const hasPalToHeal = computed(() => {
     <div v-if="showLoading" class="loading-bar" :style="{ width: loadingWidth + '%' }"></div>
     <div class="editor-app-bar">
       <div class="editor-app-bar__primary">
-        <template v-if="palStore.SAVE_LOADED_FLAG">
+        <template v-if="sessionStore.editorOpen">
           <UiIcon name="save" />
-          <input class="savePath" type="text" :value="palStore.PAL_WRITE_BACK_PATH || palStore.PAL_GAME_SAVE_PATH"
-            :title="palStore.PAL_WRITE_BACK_PATH || palStore.PAL_GAME_SAVE_PATH" readonly>
-          <button class="op op--primary" @click="save" :disabled="palStore.LOADING_FLAG"
-            :title="palStore.getTranslatedText('TopBar_Btn_Save')"
-            :aria-label="palStore.getTranslatedText('TopBar_Btn_Save')">
-            <UiIcon name="save" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Save") }}</span>
+          <input class="savePath" type="text" :value="sessionStore.writeBackPath || sessionStore.savePath"
+            :title="sessionStore.writeBackPath || sessionStore.savePath" readonly>
+          <button class="op op--primary" @click="save"
+            :title="appStore.getTranslatedText('TopBar_Btn_Save')"
+            :aria-label="appStore.getTranslatedText('TopBar_Btn_Save')">
+            <UiIcon name="save" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Save") }}</span>
           </button>
-          <button class="op" @click="palStore.loadSave" :disabled="palStore.LOADING_FLAG"
-            :title="palStore.getTranslatedText('TopBar_Btn_Reload')"
-            :aria-label="palStore.getTranslatedText('TopBar_Btn_Reload')">
-            <UiIcon name="refresh" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Reload") }}</span>
+          <button class="op" @click="shell.loadSave"
+            :title="appStore.getTranslatedText('TopBar_Btn_Reload')"
+            :aria-label="appStore.getTranslatedText('TopBar_Btn_Reload')">
+            <UiIcon name="refresh" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Reload") }}</span>
           </button>
-          <button class="op" @click="palStore.reset" :disabled="palStore.LOADING_FLAG"
-            :title="palStore.getTranslatedText('TopBar_Btn_Main_Page')"
-            :aria-label="palStore.getTranslatedText('TopBar_Btn_Main_Page')">
-            <UiIcon name="home" /> <span>{{ palStore.getTranslatedText("TopBar_Btn_Main_Page") }}</span>
+          <button class="op" @click="shell.reset"
+            :title="appStore.getTranslatedText('TopBar_Btn_Main_Page')"
+            :aria-label="appStore.getTranslatedText('TopBar_Btn_Main_Page')">
+            <UiIcon name="home" /> <span>{{ appStore.getTranslatedText("TopBar_Btn_Main_Page") }}</span>
           </button>
         </template>
         <div v-else class="entry-brand">
@@ -93,40 +99,39 @@ const hasPalToHeal = computed(() => {
         </div>
       </div>
 
-      <div v-if="palStore.SAVE_LOADED_FLAG" class="editor-app-bar__tools">
-        <button v-if="hasPalToHeal" class="op op--primary" @click="palStore.updatePal" name="heal_all_pals" :disabled="palStore.LOADING_FLAG"
-          :title="palStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
-          <img class="game-icon" :src="palStore.backendAssetUrl('/image/ui/heal')" alt="">
-          {{ palStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
+      <div v-if="sessionStore.editorOpen" class="editor-app-bar__tools">
+        <button v-if="hasPalToHeal" type="button" class="op op--primary" @click="palsStore.healAll"
+          :title="appStore.getTranslatedText('TopBar_Btn_HealAllPals_Tooltips')">
+          <img class="game-icon" :src="backend.backendAssetUrl('/image/ui/heal')" alt="">
+          {{ appStore.getTranslatedText("TopBar_Btn_HealAllPals") }}
         </button>
-        <button :class="['op', { toggled: !palStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
-          :aria-pressed="!palStore.HIDE_INVALID_OPTIONS" :disabled="palStore.LOADING_FLAG"
-          :title="palStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
-          <UiIcon name="warning" /> {{ palStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
+        <button :class="['op', { toggled: !appStore.HIDE_INVALID_OPTIONS }]" @click="show_cheats"
+          :aria-pressed="!appStore.HIDE_INVALID_OPTIONS"
+          :title="appStore.getTranslatedText('TopBar_Invalid_Options_Tooltips')">
+          <UiIcon name="warning" /> {{ appStore.getTranslatedText("TopBar_Btn_Invalid_Options") }}
         </button>
       </div>
 
       <div class="editor-app-bar__utilities">
-        <button v-if="palStore.SAVE_LOADED_FLAG" class="op support-button"
-          @click="palStore.SHOW_DONATE_FLAG = !palStore.SHOW_DONATE_FLAG" :disabled="palStore.LOADING_FLAG">
-          <UiIcon name="heart" /> {{ palStore.getTranslatedText("TopBar_Btn_Donation") }}
+        <button v-if="sessionStore.editorOpen" class="op support-button"
+          @click="shell.donationPromptOpen = !shell.donationPromptOpen">
+          <UiIcon name="heart" /> {{ appStore.getTranslatedText("TopBar_Btn_Donation") }}
         </button>
-        <BackendServerSelector v-if="palStore.APP_STATE !== 'editor'" />
+        <BackendServerSelector v-if="sessionStore.appState !== 'editor'" />
         <label class="language-control">
           <UiIcon name="language" />
-          <select id="languageSelect" v-model="palStore.I18n" @change="palStore.updateI18n"
-            :aria-label="palStore.getTranslatedText('TopBar_Language_Label')"
-            :disabled="palStore.LOADING_FLAG">
-            <option :value="key" v-for="translated, key in palStore.I18nList" :key="key">{{ translated }}</option>
+          <select id="languageSelect" v-model="appStore.locale" @change="shell.updateI18n"
+            :aria-label="appStore.getTranslatedText('TopBar_Language_Label')">
+            <option :value="key" v-for="translated, key in appStore.localeOptions" :key="key">{{ translated }}</option>
           </select>
         </label>
       </div>
 
-      <div v-if="palStore.SAVE_LOADED_FLAG && (playersCollapsed || (palsCollapsed && hasPalRoster))" class="editor-app-bar__roster">
+      <div v-if="sessionStore.editorOpen && (playersCollapsed || (palsCollapsed && hasPalRoster))" class="editor-app-bar__roster">
         <div v-if="playersCollapsed" class="editor-roster-dock">
-          <button class="editor-roster-pill" :title="palStore.getTranslatedText('PlayerList_Restore')"
-            :aria-label="palStore.getTranslatedText('PlayerList_Restore')">
-            <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PlayerList_Text') }}</span>
+          <button class="editor-roster-pill" :title="appStore.getTranslatedText('PlayerList_Restore')"
+            :aria-label="appStore.getTranslatedText('PlayerList_Restore')">
+            <UiIcon name="paw" /> <span>{{ appStore.getTranslatedText('PlayerList_Text') }}</span>
             <small>{{ playerCount }}</small>
           </button>
           <aside class="editor-roster-preview editor-roster-preview--players">
@@ -134,9 +139,9 @@ const hasPalToHeal = computed(() => {
           </aside>
         </div>
         <div v-if="palsCollapsed && hasPalRoster" class="editor-roster-dock">
-          <button class="editor-roster-pill" :title="palStore.getTranslatedText('PalList_Restore')"
-            :aria-label="palStore.getTranslatedText('PalList_Restore')">
-            <UiIcon name="paw" /> <span>{{ palStore.getTranslatedText('PalList_Text') }}</span>
+          <button class="editor-roster-pill" :title="appStore.getTranslatedText('PalList_Restore')"
+            :aria-label="appStore.getTranslatedText('PalList_Restore')">
+            <UiIcon name="paw" /> <span>{{ appStore.getTranslatedText('PalList_Text') }}</span>
             <small>{{ palCount }}</small>
           </button>
           <aside class="editor-roster-preview editor-roster-preview--pals">

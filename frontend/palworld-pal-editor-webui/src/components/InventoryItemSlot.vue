@@ -3,7 +3,9 @@ import { computed, ref } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import UiIcon from '@/components/modules/UiIcon.vue'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
 
 const props = defineProps({
   slot: { type: Object, required: true },
@@ -15,13 +17,28 @@ const props = defineProps({
   showDurability: { type: Boolean, default: false },
   square: { type: Boolean, default: false },
 })
-const emit = defineEmits(['edit', 'clear'])
-const palStore = usePalEditorStore()
+const emit = defineEmits(['edit', 'clear', 'repair'])
+const appStore = useAppStore()
+const backend = useBackendStore()
 const tooltipVisible = ref(false)
 const tooltipPoint = ref({ clientX: 0, clientY: 0 })
 
 const rarity = computed(() => Math.max(0, Math.min(4, props.item?.Rarity ?? 0)))
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+// Restorable only where the game data actually gives a maximum. It leaves
+// MaxDurability at 0 for some real items -- grappling guns, sphere launchers --
+// so for those there is nothing to restore to and nothing to offer.
+const maxDurability = computed(
+  () => props.detailsItem?.MaxDurability || props.item?.MaxDurability || 0)
+const magazineSize = computed(
+  () => props.detailsItem?.MagazineSize || props.item?.MagazineSize || 0)
+const worn = computed(() => maxDurability.value > 0
+  && props.slot.durability != null
+  && props.slot.durability < maxDurability.value)
+const empty = computed(() => magazineSize.value > 0
+  && props.slot.ammo != null
+  && props.slot.ammo < magazineSize.value)
+const repairable = computed(() => props.editable && (worn.value || empty.value))
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 
 const showTooltip = event => {
   if (!props.item) return
@@ -45,11 +62,15 @@ const hideTooltip = () => { tooltipVisible.value = false }
       <strong v-if="slot.count > 1" class="slot-count">{{ slot.count }}</strong>
       <span v-if="slot.warning" class="slot-warning">!</span>
       <span v-if="showDurability && slot.durability != null" class="durability">
-        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (detailsItem?.MaxDurability || item?.MaxDurability || 1))}%` }"></i>
+        <i :style="{ width: `${Math.min(100, 100 * slot.durability / (maxDurability || 1))}%` }"></i>
       </span>
     </button>
+    <button v-if="repairable" type="button" class="slot-repair"
+      :title="appStore.getTranslatedText('Inventory_Repair')"
+      :aria-label="appStore.getTranslatedText('Inventory_Repair')"
+      @click.stop="emit('repair')"><UiIcon name="maximum" /></button>
     <button v-if="item && editable" type="button" class="slot-clear"
-      :aria-label="palStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
+      :aria-label="appStore.getTranslatedText('Inventory_Clear')" @click.stop="emit('clear')">×</button>
   </div>
 
   <ItemHoverCard v-if="tooltipVisible && item" :item="item" :details-item="detailsItem" :count="slot.count"
@@ -111,6 +132,15 @@ const hideTooltip = () => { tooltipVisible.value = false }
 .slot-clear:hover { color: #fca5a5; }
 .durability { position: absolute; right: 0; bottom: 0; left: 0; height: .2rem; overflow: hidden; border-radius: 0 0 .5rem .5rem; background: rgb(255 255 255 / .15); }
 .durability i { display: block; height: 100%; background: #dbeafe; }
+.slot-repair {
+  position: absolute; top: -.35rem; left: -.35rem;
+  display: grid; place-items: center; width: 1.15rem; height: 1.15rem; padding: 0;
+  border: 1px solid var(--editor-color-border); border-radius: 50%;
+  background: var(--editor-color-control); color: var(--editor-color-text);
+  cursor: pointer; line-height: 1;
+}
+.slot-repair:hover { background: var(--editor-color-control-hover); }
+.slot-repair :deep(svg) { width: .7rem; height: .7rem; }
 .rarity-1 .item-slot-button { background: linear-gradient(145deg, rgb(36 118 74 / .36), rgb(12 28 25 / .45)); }
 .rarity-2 .item-slot-button { background: linear-gradient(145deg, rgb(33 101 166 / .4), rgb(13 27 47 / .48)); }
 .rarity-3 .item-slot-button { background: linear-gradient(145deg, rgb(111 63 162 / .44), rgb(35 20 53 / .5)); }

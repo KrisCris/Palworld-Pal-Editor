@@ -2,12 +2,14 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import ItemHoverCard from '@/components/ItemHoverCard.vue'
-import NumberSliderField from '@/components/NumberSliderField.vue'
+import NumberSliderField from '@/components/modules/NumberSliderField.vue'
 import PalGearBadge from '@/components/PalGearBadge.vue'
 import UiIcon from '@/components/modules/UiIcon.vue'
 import { closeDisclosureOnOutsidePointer } from '@/components/modules/search-select'
 import { readStorage, writeStorage } from '@/services/backend-connection'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useCatalogsStore } from '@/stores/catalogs'
+import { useAppStore } from '@/stores/app'
+import { useBackendStore } from '@/stores/backend'
 
 const TYPE_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_TYPES'
 const RARITY_FILTER_STORAGE_KEY = 'PAL_ITEM_FILTER_RARITIES'
@@ -41,7 +43,9 @@ const props = defineProps({
   equipment: Boolean,
 })
 const emit = defineEmits(['close', 'save'])
-const palStore = usePalEditorStore()
+const catalogsStore = useCatalogsStore()
+const appStore = useAppStore()
+const backend = useBackendStore()
 const query = ref('')
 const selectedTypes = ref(readStoredArray(TYPE_FILTER_STORAGE_KEY).filter(value => typeof value === 'string'))
 const selectedRarities = ref(readStoredArray(RARITY_FILTER_STORAGE_KEY)
@@ -85,8 +89,8 @@ watch(() => props.open, async value => {
 })
 
 const availableTypes = computed(() => [...new Set(props.items.map(item => item.TypeA).filter(Boolean))]
-  .sort((left, right) => palStore.getTranslatedText(`Inventory_Type_${left}`)
-    .localeCompare(palStore.getTranslatedText(`Inventory_Type_${right}`))))
+  .sort((left, right) => appStore.getTranslatedText(`Inventory_Type_${left}`)
+    .localeCompare(appStore.getTranslatedText(`Inventory_Type_${right}`))))
 const availableRarities = computed(() => [...new Set(props.items.map(item => Math.max(0, Math.min(4, item.Rarity || 0))))]
   .sort((left, right) => left - right))
 const effectiveTypes = computed(() => selectedTypes.value.filter(type => availableTypes.value.includes(type)))
@@ -124,11 +128,11 @@ const clearFilters = () => {
 }
 watch(selectedTypes, value => writeStorage(localStorage, TYPE_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
 watch(selectedRarities, value => writeStorage(localStorage, RARITY_FILTER_STORAGE_KEY, JSON.stringify(value)), { deep: true })
-const selectedItem = computed(() => palStore.ITEM_STATIC_DATA[selectedId.value])
+const selectedItem = computed(() => catalogsStore.itemsByName[selectedId.value])
 const isStackable = computed(() => (selectedItem.value?.MaxStackCount || 1) > 1)
 const maximum = computed(() => {
   if (props.equipment || !isStackable.value) return 1
-  return palStore.HIDE_INVALID_OPTIONS
+  return appStore.HIDE_INVALID_OPTIONS
     ? Math.min(999999, Math.max(1, selectedItem.value?.MaxStackCount || 1))
     : 999999
 })
@@ -171,98 +175,104 @@ const save = () => emit('save', {
     ? Math.min(maximum.value, Math.max(1, Math.trunc(Number(count.value) || 1)))
     : 1,
 })
-const iconUrl = key => palStore.backendAssetUrl(`/image/items/${key}`)
+const iconUrl = key => backend.backendAssetUrl(`/image/items/${key}`)
 </script>
 
 <template>
-  <div v-if="open" class="item-dialog-backdrop" role="presentation" @pointerdown.self="emit('close')">
-    <section class="item-dialog" role="dialog" aria-modal="true" aria-labelledby="item-dialog-title">
-      <header>
-        <div>
-          <small>{{ palStore.getTranslatedText('Inventory_Select_Hint') }}</small>
-          <h2 id="item-dialog-title">{{ palStore.getTranslatedText('Inventory_Select_Item') }}</h2>
+  <!-- Every other overlay in this app teleports to the body, and this one has to
+  for the same reason: `.editor-canvas` sets `isolation: isolate`, so a backdrop
+  left inside it opens a stacking context the roster rails -- siblings of the
+  canvas, not descendants -- sit above however high its z-index goes. -->
+  <Teleport to="body">
+    <div v-if="open" class="item-dialog-backdrop" role="presentation" @pointerdown.self="emit('close')">
+      <section class="item-dialog" role="dialog" aria-modal="true" aria-labelledby="item-dialog-title">
+        <header>
+          <div>
+            <small>{{ appStore.getTranslatedText('Inventory_Select_Hint') }}</small>
+            <h2 id="item-dialog-title">{{ appStore.getTranslatedText('Inventory_Select_Item') }}</h2>
+          </div>
+          <div class="dialog-header-actions">
+            <details ref="filterMenu" class="item-filter-menu">
+              <summary class="icon-button filter-button" :class="{ 'is-active': activeFilterCount > 0 }"
+                :title="appStore.getTranslatedText('Inventory_Filter')"
+                :aria-label="appStore.getTranslatedText('Inventory_Filter')">
+                <UiIcon name="filter" />
+                <span v-if="activeFilterCount" class="filter-count">{{ activeFilterCount }}</span>
+              </summary>
+              <div class="item-filter-popover editor-glass-surface">
+                <fieldset>
+                  <legend>{{ appStore.getTranslatedText('Inventory_Filter_Type') }}</legend>
+                  <div class="type-filter-grid">
+                    <button v-for="type in availableTypes" :key="type" type="button" class="filter-option type-filter-option"
+                      :class="{ 'is-active': selectedTypes.includes(type) }"
+                      :aria-pressed="selectedTypes.includes(type)"
+                      @click="toggleType(type)">
+                      <img v-if="typeIcon(type)" :src="iconUrl(typeIcon(type))" alt=""
+                        @error="$event.currentTarget.hidden = true">
+                      <span>{{ appStore.getTranslatedText(`Inventory_Type_${type}`) }}</span>
+                    </button>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>{{ appStore.getTranslatedText('Inventory_Filter_Rarity') }}</legend>
+                  <div class="rarity-filter-grid">
+                    <button v-for="rarity in availableRarities" :key="rarity" type="button"
+                      class="filter-option rarity-filter-option" :class="[`rarity-${rarity}`, { 'is-active': selectedRarities.includes(rarity) }]"
+                      :aria-pressed="selectedRarities.includes(rarity)"
+                      @click="toggleRarity(rarity)">
+                      <i></i>
+                      <span>{{ appStore.getTranslatedText(`Inventory_Rarity_${rarity}`) }}</span>
+                    </button>
+                  </div>
+                </fieldset>
+                <button type="button" class="clear-filter-button" :disabled="!selectedTypes.length && !selectedRarities.length"
+                  @click="clearFilters">
+                  <UiIcon name="close" />
+                  {{ appStore.getTranslatedText('Inventory_Filter_Clear') }}
+                </button>
+              </div>
+            </details>
+            <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
+          </div>
+        </header>
+
+        <input ref="searchInput" v-model="query" class="item-search" type="search"
+          :placeholder="appStore.getTranslatedText('Inventory_Search')">
+
+        <div class="item-results">
+          <button v-for="item in visibleItems" :key="item.InternalName"
+            :ref="element => setOptionRef(item.InternalName, element)" type="button"
+            class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
+            @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
+            @click="selectItem(item)">
+            <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
+              <img :src="iconUrl(item.IconKey)" alt="">
+              <img v-if="item.OverlayIconKey" class="option-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
+              <PalGearBadge :item="item" />
+            </span>
+            <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
+          </button>
+          <p v-if="!visibleItems.length" class="empty-results">{{ appStore.getTranslatedText('Inventory_No_Results') }}</p>
         </div>
-        <div class="dialog-header-actions">
-          <details ref="filterMenu" class="item-filter-menu">
-            <summary class="icon-button filter-button" :class="{ 'is-active': activeFilterCount > 0 }"
-              :title="palStore.getTranslatedText('Inventory_Filter')"
-              :aria-label="palStore.getTranslatedText('Inventory_Filter')">
-              <UiIcon name="filter" />
-              <span v-if="activeFilterCount" class="filter-count">{{ activeFilterCount }}</span>
-            </summary>
-            <div class="item-filter-popover editor-glass-surface">
-              <fieldset>
-                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Type') }}</legend>
-                <div class="type-filter-grid">
-                  <button v-for="type in availableTypes" :key="type" type="button" class="filter-option type-filter-option"
-                    :class="{ 'is-active': selectedTypes.includes(type) }"
-                    :aria-pressed="selectedTypes.includes(type)"
-                    @click="toggleType(type)">
-                    <img v-if="typeIcon(type)" :src="iconUrl(typeIcon(type))" alt=""
-                      @error="$event.currentTarget.hidden = true">
-                    <span>{{ palStore.getTranslatedText(`Inventory_Type_${type}`) }}</span>
-                  </button>
-                </div>
-              </fieldset>
-              <fieldset>
-                <legend>{{ palStore.getTranslatedText('Inventory_Filter_Rarity') }}</legend>
-                <div class="rarity-filter-grid">
-                  <button v-for="rarity in availableRarities" :key="rarity" type="button"
-                    class="filter-option rarity-filter-option" :class="[`rarity-${rarity}`, { 'is-active': selectedRarities.includes(rarity) }]"
-                    :aria-pressed="selectedRarities.includes(rarity)"
-                    @click="toggleRarity(rarity)">
-                    <i></i>
-                    <span>{{ palStore.getTranslatedText(`Inventory_Rarity_${rarity}`) }}</span>
-                  </button>
-                </div>
-              </fieldset>
-              <button type="button" class="clear-filter-button" :disabled="!selectedTypes.length && !selectedRarities.length"
-                @click="clearFilters">
-                <UiIcon name="close" />
-                {{ palStore.getTranslatedText('Inventory_Filter_Clear') }}
-              </button>
-            </div>
-          </details>
-          <button type="button" class="icon-button" @click="emit('close')" aria-label="Close">×</button>
-        </div>
-      </header>
 
-      <input ref="searchInput" v-model="query" class="item-search" type="search"
-        :placeholder="palStore.getTranslatedText('Inventory_Search')">
-
-      <div class="item-results">
-        <button v-for="item in visibleItems" :key="item.InternalName"
-          :ref="element => setOptionRef(item.InternalName, element)" type="button"
-          class="item-option" :class="[`rarity-${Math.min(4, item.Rarity || 0)}`, { selected: selectedId === item.InternalName }]"
-          @pointerenter="startHover($event, item)" @pointermove="moveHover" @pointerleave="clearHover"
-          @click="selectItem(item)">
-          <span v-if="item.IconKey" class="option-icon" :class="{ layered: item.OverlayIconKey }">
-            <img :src="iconUrl(item.IconKey)" alt="">
-            <img v-if="item.OverlayIconKey" class="option-icon-overlay" :src="iconUrl(item.OverlayIconKey)" alt="">
-            <PalGearBadge :item="item" />
-          </span>
-          <span><strong>{{ item.Name }}</strong><small>{{ item.InternalName }}</small></span>
-        </button>
-        <p v-if="!visibleItems.length" class="empty-results">{{ palStore.getTranslatedText('Inventory_No_Results') }}</p>
-      </div>
-
-      <footer>
-        <NumberSliderField v-if="canAdjustCount" v-model="count" class="quantity-control"
-          :label="palStore.getTranslatedText('Inventory_Count')" :min="1" :max="maximum" :step="1" />
-        <span v-else class="dialog-spacer"></span>
-        <button type="button" class="editor-button editor-button--danger danger-button"
-          @click="emit('save', { itemId: null, count: 0 })">
-          {{ palStore.getTranslatedText('Inventory_Clear') }}
-        </button>
-        <button type="button" class="primary-button" :disabled="!selectedId || palStore.LOADING_FLAG" @click="save">
-          {{ palStore.getTranslatedText('Inventory_Apply') }}
-        </button>
-      </footer>
-    </section>
-    <ItemHoverCard v-if="hoveredItem" :item="hoveredItem"
-      :count="hoveredItem.InternalName === selectedId ? count : null"
-      :client-x="hoverPoint.clientX" :client-y="hoverPoint.clientY" />
-  </div>
+        <footer>
+          <NumberSliderField v-if="canAdjustCount" v-model="count" class="quantity-control"
+            :label="appStore.getTranslatedText('Inventory_Count')" :min="1" :max="maximum" :step="1" />
+          <span v-else class="dialog-spacer"></span>
+          <button type="button" class="editor-button editor-button--danger danger-button"
+            @click="emit('save', { itemId: null, count: 0 })">
+            {{ appStore.getTranslatedText('Inventory_Clear') }}
+          </button>
+          <button type="button" class="primary-button" :disabled="!selectedId" @click="save">
+            {{ appStore.getTranslatedText('Inventory_Apply') }}
+          </button>
+        </footer>
+      </section>
+      <ItemHoverCard v-if="hoveredItem" :item="hoveredItem"
+        :count="hoveredItem.InternalName === selectedId ? count : null"
+        :client-x="hoverPoint.clientX" :client-y="hoverPoint.clientY" />
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>

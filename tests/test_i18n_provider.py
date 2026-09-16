@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from flask_jwt_extended import create_access_token
+
 from palworld_pal_editor.config import Config
 from palworld_pal_editor.utils import data_provider
 from palworld_pal_editor.utils.data_provider import DataProvider
@@ -40,19 +42,28 @@ def test_default_locale_does_not_depend_on_json_key_order():
         assert DataProvider.default_i18n() == "en"
 
 
-def test_fetch_config_publishes_all_locales_and_current_untranslated_locale():
+def test_app_config_publishes_all_locales_and_current_untranslated_locale():
     with patch.object(Config, "i18n", "de"), app.test_client() as client:
-        payload = client.get("/api/save/fetch_config").get_json()
+        payload = client.get("/api/app-config").get_json()
 
-    assert payload["status"] == 0
-    assert payload["data"]["I18n"] == "de"
-    assert payload["data"]["I18nList"] == EXPECTED_LOCALES
+    assert payload["i18n"] == "de"
+    assert payload["i18nOptions"] == EXPECTED_LOCALES
 
 
 def test_i18n_api_and_data_provider_accept_generated_locales():
-    with patch.object(Config, "i18n", "en"), app.test_client() as client:
-        response = client.patch("/api/save/i18n", json={"I18n": "zh-TW"})
+    app.config["JWT_SECRET_KEY"] = "test-secret-key-with-at-least-32-bytes"
+    with app.app_context():
+        token = create_access_token(identity="test", expires_delta=False)
+
+    # `save_to_file` is patched because the route persists what it writes, and no
+    # test may reach the developer's own config.json.
+    with patch.object(Config, "i18n", "en"), patch.object(Config, "save_to_file"),             app.test_client() as client:
+        response = client.patch(
+            "/api/app-config",
+            json={"i18n": "zh-TW"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
         localized_name = DataProvider.get_pal_i18n("Anubis")
 
-    assert response.get_json()["status"] == 0
+    assert response.get_json()["i18n"] == "zh-TW"
     assert localized_name == "阿努比斯"

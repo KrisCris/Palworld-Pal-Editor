@@ -1,6 +1,16 @@
+"""Pal container slots in Level.sav: palboxes, party slots and base containers.
+
+`CharacterContainerSaveData` maps a container id to a fixed-length slot array, and a
+slot holds an instance id rather than a Pal -- the Pal itself is a separate entry in
+`CharacterSaveParameterMap`. The two halves have to agree, so writing here is only
+ever half of a move.
+
+What a given container is *for* -- whose palbox, which camp -- is not recorded in it
+and is answered by `storage_directory.py`.
+"""
+
 import copy
-import heapq
-from typing import Optional, overload
+from typing import Optional
 from palworld_save_tools.gvas import GvasFile
 from palworld_save_tools.archive import UUID
 
@@ -19,20 +29,16 @@ class PalContainer:
         if self.ID is None or self._slots_data is None:
             raise Exception("Invalid Container")
 
-        self.size: int = PalObjects.get_BaseType(self._container_obj["value"]["SlotNum"])
-        if self.size is None:
+        self.SlotNum: int = PalObjects.get_BaseType(
+            self._container_obj["value"]["SlotNum"]
+        )
+        if self.SlotNum is None:
             raise Exception(f"Container {self.ID} Size Unknown")
 
         self._rebuild_slot_state()
 
     def _rebuild_slot_state(self):
         self.slots = [ContainerSlot(slot_dict) for slot_dict in self._slots_data]
-        self.available_inv_idx_set = set(range(0, self.size))
-        for slot in self.slots:
-            self.available_inv_idx_set.discard(slot.inv_idx)
-        self.available_inv_idx_set = list(self.available_inv_idx_set)
-        heapq.heapify(self.available_inv_idx_set)
-
 
     def __len__(self):
         return len(self.slots)
@@ -44,52 +50,52 @@ class PalContainer:
     def ID(self) -> Optional[UUID]:
         return PalObjects.get_BaseType(self._container_obj.get("key", {}).get("ID"))
 
-    def _new_slot(self) -> Optional[int]:
-        slotidx = self.get_empty_slot()
-        if slotidx == -1:
-            return
-        inv_slot = self.get_empty_inv_slot()
-        if inv_slot == -1:
-            return
-        self._slots_data.append(PalObjects.ContainerSlotData(inv_slot))
-        return slotidx
+    def get_free_slot_index(self) -> int:
+        """The lowest game ``SlotIndex`` this container has room for, or -1 if full.
 
-    def _del_slot(self, slotidx: int):
-        if slotidx >= len(self._slots_data):
-            return
-        slot = self._slots_data.pop(slotidx)
-        heapq.heappush(self.available_inv_idx_set, PalObjects.get_BaseType(slot.get("SlotIndex")))
+        Derived from the slots themselves on every call. It used to be a heap kept
+        alongside them, which had to be pushed and popped in step with every add and
+        delete and went wrong quietly whenever one of those forgot.
+        """
+        if len(self.slots) >= self.SlotNum:
+            return -1
+        taken = {slot.SlotIndex for slot in self.slots}
+        # -1 rather than StopIteration when a save records slot numbers outside the
+        # container's own size; that is a broken save, not a full container.
+        return next((index for index in range(self.SlotNum) if index not in taken), -1)
 
     def add_pal(self, pal_id: UUID | str) -> int:
         if self.has_pal(pal_id):
             return -1
-        
-        if (slot_idx := self._new_slot()) is None:
+
+        slot_index = self.get_free_slot_index()
+        if slot_index == -1:
             return -1
-        
-        slot = ContainerSlot(self._slots_data[slot_idx])
+
+        self._slots_data.append(PalObjects.ContainerSlotData(slot_index))
+        slot = ContainerSlot(self._slots_data[-1])
         slot.instance_id = pal_id
         self.slots.append(slot)
 
-        LOGGER.info(f"Pal {pal_id} add to container {self.ID} @ {slot.inv_idx} ")
-        return slot.inv_idx
+        LOGGER.info(f"Pal {pal_id} add to container {self.ID} @ {slot_index}")
+        return slot_index
 
     def get_slot(self, pal_id: UUID | str) -> Optional["ContainerSlot"]:
-        slot_idx = self.get_pal_idx(pal_id)
-        return self.slots[slot_idx] if slot_idx is not None else None
+        entry_index = self._find_entry_index(pal_id)
+        return self.slots[entry_index] if entry_index is not None else None
 
     def add_slot_copy(self, source_slot: "ContainerSlot") -> int:
         if source_slot is None or self.has_pal(source_slot.instance_id):
             return -1
-        inv_idx = self.get_empty_inv_slot()
-        if inv_idx == -1:
+        slot_index = self.get_free_slot_index()
+        if slot_index == -1:
             return -1
 
         slot_data = copy.deepcopy(source_slot._slot_data)
-        PalObjects.set_BaseType(slot_data["SlotIndex"], inv_idx)
+        PalObjects.set_BaseType(slot_data["SlotIndex"], slot_index)
         self._slots_data.append(slot_data)
         self.slots.append(ContainerSlot(slot_data))
-        return inv_idx
+        return slot_index
 
     def snapshot_slots(self) -> list[dict]:
         return copy.deepcopy(self._slots_data)
@@ -99,40 +105,28 @@ class PalContainer:
         self._rebuild_slot_state()
 
     def del_pal(self, pal_id: UUID):
-        slot_idx = self.get_pal_idx(pal_id)
-        if slot_idx is None or slot_idx < 0:
-            LOGGER.warning(
-                    f"Can't find PalID on del_pal: {str(pal_id)}."
-                )
-            return
-        if not self.has_pal(pal_id, slot_idx):
-            if slot_idx < len(self.slots):
-                LOGGER.warning(
-                    f"Unmatched Pal Guid on del_pal: expect {str(self.slots[slot_idx].instance_id)} got {str(pal_id)}."
-                )
+        entry_index = self._find_entry_index(pal_id)
+        if entry_index is None:
+            LOGGER.warning(f"Can't find PalID on del_pal: {str(pal_id)}.")
             return
 
-        self.slots[slot_idx].clear() # unnecessary since 0.3.3
-        self.slots.pop(slot_idx)
-        self._del_slot(slot_idx)
-        
+        self.slots[entry_index].clear()  # unnecessary since 0.3.3
+        self.slots.pop(entry_index)
+        self._slots_data.pop(entry_index)
 
-    def get_pal_idx(self, pal_id: UUID | str) -> Optional[int]:
-        for i in range(0, len(self.slots)):
-            if self.slots[i].instance_id == pal_id:
-                return i
+    def _find_entry_index(self, pal_id: UUID | str) -> Optional[int]:
+        """Where this Pal's slot entry sits in the Python lists, for delete/replace.
+
+        This is not a game ``SlotIndex``: `slots` and `_slots_data` hold one entry
+        per occupied slot in save order, and the game index lives on the entry.
+        """
+        for index, slot in enumerate(self.slots):
+            if str(slot.instance_id) == str(pal_id):
+                return index
         return None
 
-    def has_pal(self, pal_id: UUID | str, slot_idx: Optional[int] = None) -> bool:
-        if slot_idx is not None:
-            if slot_idx >= len(self.slots):
-                return False
-            return self.slots[slot_idx].instance_id == pal_id
-        else:
-            for slot in self.slots:
-                if str(slot.instance_id) == str(pal_id):
-                    return True
-            return False
+    def has_pal(self, pal_id: UUID | str) -> bool:
+        return self._find_entry_index(pal_id) is not None
 
     # def reorder_pals(self, pal_ids: list[UUID | str]):
     #     id_num = len(pal_ids)
@@ -143,50 +137,20 @@ class PalContainer:
     #         else:
     #             slot.clear()
 
-    def get_empty_slot(self) -> int:
-        """
-        Return: slot idx, or -1 if full
-        """
-        # for i in range(0, len(self.slots)):
-        #     if self.slots[i].isEmpty:
-        #         return i
-        # return -1
-        if len(self.slots) < self.size:
-            return len(self.slots)
-        return -1
-    
-    def get_empty_inv_slot(self) -> int:
-        if self.available_inv_idx_set:
-            return heapq.heappop(self.available_inv_idx_set)
-        else:
-            return -1
-
 
 class ContainerSlot:
     def __init__(self, slot_data: dict) -> None:
         self._slot_data: dict = slot_data
         self._slot_raw_data: dict = slot_data["RawData"]["value"]
 
-    # def __eq__(self, __value: object) -> bool:
-    #     if not isinstance(__value, ContainerSlot):
-    #         return False
-    #     return UUID.__eq__(self.instance_id, __value.instance_id)
-
-    # def __hash__(self) -> int:
-    #     return hash(str(self.instance_id))
-
-    @property
-    def isEmpty(self) -> bool:
-        id = self.instance_id or PalObjects.EMPTY_UUID
-        return id == PalObjects.EMPTY_UUID
-
     @property
     def instance_id(self) -> Optional[UUID]:
         return self._slot_raw_data.get("instance_id")
 
     @property
-    def inv_idx(self) -> int:
-        return PalObjects.get_BaseType(self._slot_data.get('SlotIndex'))
+    def SlotIndex(self) -> int:
+        """The game slot number this entry occupies, same name as PalEntity's."""
+        return PalObjects.get_BaseType(self._slot_data.get("SlotIndex"))
 
     @instance_id.setter
     def instance_id(self, id: UUID | str):
@@ -229,13 +193,3 @@ class ContainerData:
 
     def get_containers(self) -> list[PalContainer]:
         return self.container_map.values()
-
-    def find_pal_slots(
-        self, pal_id: UUID | str
-    ) -> list[tuple[PalContainer, ContainerSlot]]:
-        matches = []
-        for container in self.get_containers():
-            for slot in container.slots:
-                if str(slot.instance_id) == str(pal_id):
-                    matches.append((container, slot))
-        return matches

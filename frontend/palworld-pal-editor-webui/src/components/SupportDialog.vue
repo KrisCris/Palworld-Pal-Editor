@@ -2,9 +2,13 @@
 import { computed, nextTick, ref, watch } from 'vue'
 
 import UiIcon from '@/components/modules/UiIcon.vue'
-import { usePalEditorStore } from '@/stores/paleditor'
+import { useAppStore } from '@/stores/app'
+import { useAppShellStore } from '@/stores/app-shell'
+import { useSessionStore } from '@/stores/session'
 
-const palStore = usePalEditorStore()
+const appStore = useAppStore()
+const shell = useAppShellStore()
+const sessionStore = useSessionStore()
 const closeButton = ref()
 const openQrButton = ref()
 const qrCloseButton = ref()
@@ -24,8 +28,8 @@ const expandedPayment = computed(() => paymentMethods.find(method => method.id =
 
 const close = async () => {
   expandedQr.value = undefined
-  palStore.SHOW_DONATE_FLAG = false
-  if (palStore.SAVE_LOADED_FLAG) await palStore.shownDonate()
+  shell.donationPromptOpen = false
+  if (sessionStore.editorOpen) await shell.donationPromptSeen()
 }
 
 const openQr = async method => {
@@ -40,7 +44,7 @@ const closeQr = async () => {
   openQrButton.value?.focus()
 }
 
-watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
+watch(() => shell.donationPromptOpen, async visible => {
   if (!visible) return
   selectedMethod.value = 'kofi'
   expandedQr.value = undefined
@@ -51,7 +55,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 
 <template>
   <div
-    v-show="palStore.SHOW_DONATE_FLAG"
+    v-show="shell.donationPromptOpen"
     class="support-overlay editor-modal-overlay"
     role="presentation"
     @pointerdown.self="close"
@@ -69,14 +73,14 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       <header class="support-header">
         <img :src="publicAsset('icons/512.png')" alt="" class="support-logo">
         <div>
-          <h2 id="support-dialog-title">{{ palStore.getTranslatedText('SupportDialog_Title') }}</h2>
-          <p id="support-dialog-intro">{{ palStore.getTranslatedText('SupportDialog_Intro') }}</p>
+          <h2 id="support-dialog-title">{{ appStore.getTranslatedText('SupportDialog_Title') }}</h2>
+          <p id="support-dialog-intro">{{ appStore.getTranslatedText('SupportDialog_Intro') }}</p>
         </div>
         <button
           ref="closeButton"
           type="button"
           class="support-close"
-          :aria-label="palStore.getTranslatedText('Message_Close')"
+          :aria-label="appStore.getTranslatedText('Message_Close')"
           @click="close"
         >
           <UiIcon name="close" />
@@ -87,8 +91,8 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
         <section class="support-panel support-financial">
           <div class="support-section-heading">
             <div>
-              <h3>{{ palStore.getTranslatedText('SupportDialog_Financial_Title') }}</h3>
-              <p>{{ palStore.getTranslatedText('SupportDialog_Financial_Description') }}</p>
+              <h3>{{ appStore.getTranslatedText('SupportDialog_Financial_Title') }}</h3>
+              <p>{{ appStore.getTranslatedText('SupportDialog_Financial_Description') }}</p>
             </div>
             <UiIcon name="heart" />
           </div>
@@ -111,9 +115,9 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
 
           <article id="support-payment-detail" class="support-payment-detail">
             <div class="support-payment-copy">
-              <h4>{{ palStore.getTranslatedText('SupportDialog_Payment_Title', [selectedPayment.label]) }}</h4>
+              <h4>{{ appStore.getTranslatedText('SupportDialog_Payment_Title', [selectedPayment.label]) }}</h4>
               <p>
-                {{ palStore.getTranslatedText(
+                {{ appStore.getTranslatedText(
                   selectedPayment.href ? 'SupportDialog_Online_Description' : 'SupportDialog_QR_Description',
                   [selectedPayment.label],
                 ) }}
@@ -126,7 +130,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
                 class="support-primary support-detail-action"
               >
                 <UiIcon name="external-link" />
-                {{ palStore.getTranslatedText('SupportDialog_Open_Payment', [selectedPayment.label]) }}
+                {{ appStore.getTranslatedText('SupportDialog_Open_Payment', [selectedPayment.label]) }}
               </a>
               <button
                 v-else
@@ -136,7 +140,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
                 @click="openQr(selectedPayment)"
               >
                 <UiIcon name="external-link" />
-                {{ palStore.getTranslatedText('SupportDialog_Open_QR') }}
+                {{ appStore.getTranslatedText('SupportDialog_Open_QR') }}
               </button>
             </div>
             <div
@@ -146,7 +150,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
             >
               <img
                 :src="selectedPayment.qr"
-                :alt="palStore.getTranslatedText('SupportDialog_QR_Alt', [selectedPayment.label])"
+                :alt="appStore.getTranslatedText('SupportDialog_QR_Alt', [selectedPayment.label])"
               >
             </div>
           </article>
@@ -155,33 +159,33 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
         <section class="support-panel">
           <div class="support-section-heading">
             <div>
-              <h3>{{ palStore.getTranslatedText('SupportDialog_Other_Title') }}</h3>
-              <!-- <p>{{ palStore.getTranslatedText('SupportDialog_Other_Description') }}</p> -->
+              <h3>{{ appStore.getTranslatedText('SupportDialog_Other_Title') }}</h3>
+              <!-- <p>{{ appStore.getTranslatedText('SupportDialog_Other_Description') }}</p> -->
             </div>
           </div>
 
-          <nav class="support-action-list" :aria-label="palStore.getTranslatedText('SupportDialog_Other_Title')">
+          <nav class="support-action-list" :aria-label="appStore.getTranslatedText('SupportDialog_Other_Title')">
             <a href="https://discord.gg/FnuA95nMJ8" target="_blank" rel="noopener noreferrer">
               <UiIcon name="message" />
               <span>
-                <strong>{{ palStore.getTranslatedText('Entry_Support_Community_Title') }}</strong>
-                <small>{{ palStore.getTranslatedText('Entry_Support_Community_Description') }}</small>
+                <strong>{{ appStore.getTranslatedText('Entry_Support_Community_Title') }}</strong>
+                <small>{{ appStore.getTranslatedText('Entry_Support_Community_Description') }}</small>
               </span>
               <UiIcon name="external-link" />
             </a>
             <a href="https://github.com/KrisCris/Palworld-Pal-Editor" target="_blank" rel="noopener noreferrer">
               <UiIcon name="pull-request" />
               <span>
-                <strong>{{ palStore.getTranslatedText('Entry_Support_Code_Title') }}</strong>
-                <small>{{ palStore.getTranslatedText('Entry_Support_Code_Description') }}</small>
+                <strong>{{ appStore.getTranslatedText('Entry_Support_Code_Title') }}</strong>
+                <small>{{ appStore.getTranslatedText('Entry_Support_Code_Description') }}</small>
               </span>
               <UiIcon name="external-link" />
             </a>
             <a href="https://github.com/KrisCris/Palworld-Pal-Editor/issues" target="_blank" rel="noopener noreferrer">
               <UiIcon name="bug" />
               <span>
-                <strong>{{ palStore.getTranslatedText('Entry_Support_Issue_Title') }}</strong>
-                <small>{{ palStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
+                <strong>{{ appStore.getTranslatedText('Entry_Support_Issue_Title') }}</strong>
+                <small>{{ appStore.getTranslatedText('Entry_Support_Issue_Description') }}</small>
               </span>
               <UiIcon name="external-link" />
             </a>
@@ -192,11 +196,11 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       <footer class="support-footer">
         <p class="support-warning">
           <UiIcon name="warning" />
-          <span>{{ palStore.getTranslatedText('Message_AntiScam') }}</span>
+          <span>{{ appStore.getTranslatedText('Message_AntiScam') }}</span>
         </p>
         <div class="support-footer-actions">
           <button type="button" class="support-secondary" @click="close">
-            {{ palStore.getTranslatedText('SupportDialog_Not_Now') }}
+            {{ appStore.getTranslatedText('SupportDialog_Not_Now') }}
           </button>
           <a
             href="https://github.com/KrisCris/Palworld-Pal-Editor"
@@ -205,7 +209,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
             class="support-primary"
           >
             <UiIcon name="branch" />
-            {{ palStore.getTranslatedText('SupportDialog_View_Project') }}
+            {{ appStore.getTranslatedText('SupportDialog_View_Project') }}
           </a>
         </div>
       </footer>
@@ -226,13 +230,13 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
       >
         <header>
           <h3 id="support-qr-title">
-            {{ palStore.getTranslatedText('SupportDialog_QR_Title', [expandedPayment.label]) }}
+            {{ appStore.getTranslatedText('SupportDialog_QR_Title', [expandedPayment.label]) }}
           </h3>
           <button
             ref="qrCloseButton"
             type="button"
             class="support-close"
-            :aria-label="palStore.getTranslatedText('Message_Close')"
+            :aria-label="appStore.getTranslatedText('Message_Close')"
             @click="closeQr"
           >
             <UiIcon name="close" />
@@ -241,7 +245,7 @@ watch(() => palStore.SHOW_DONATE_FLAG, async visible => {
         <div class="support-qr-crop support-qr-crop--large" :class="`support-qr-crop--${expandedPayment.id}`">
           <img
             :src="expandedPayment.qr"
-            :alt="palStore.getTranslatedText('SupportDialog_QR_Alt', [expandedPayment.label])"
+            :alt="appStore.getTranslatedText('SupportDialog_QR_Alt', [expandedPayment.label])"
           >
         </div>
       </section>

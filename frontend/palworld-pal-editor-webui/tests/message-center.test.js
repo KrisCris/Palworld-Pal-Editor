@@ -10,7 +10,9 @@ globalThis.localStorage = {
     removeItem: () => {},
 };
 
-const { usePalEditorStore } = await import("../src/stores/paleditor.js");
+const { useMessagesStore } = await import("../src/stores/messages.js");
+const { useAppStore } = await import("../src/stores/app.js");
+const { useSessionStore } = await import("../src/stores/session.js");
 const messageCenterSource = await readFile(
     new URL("../src/components/MessageCenter.vue", import.meta.url),
     "utf8",
@@ -18,7 +20,7 @@ const messageCenterSource = await readFile(
 
 function newStore() {
     setActivePinia(createPinia());
-    return usePalEditorStore();
+    return useMessagesStore();
 }
 
 test("dialogs interrupt toasts without reversing either queue", () => {
@@ -119,22 +121,22 @@ test("operation errors retain backend diagnostics and translatable context", () 
     assert.equal(store.CURRENT_MESSAGE.code, "InvalidPal");
     assert.equal(store.CURRENT_MESSAGE.log, "invalid Pal state");
 
-    store.I18n = "en";
+    useAppStore().locale = "en";
     assert.equal(store.getMessageText(store.CURRENT_MESSAGE), "updating the Pal failed.");
-    store.I18n = "zh-CN";
+    useAppStore().locale = "zh-CN";
     assert.equal(store.getMessageText(store.CURRENT_MESSAGE), "更新帕鲁失败。");
 });
 
 test("frontend errors retain editor state and expose their stack", t => {
     const store = newStore();
-    const originalState = store.APP_STATE;
+    const originalState = useSessionStore().appState;
     const originalConsoleError = console.error;
     console.error = () => {};
     t.after(() => { console.error = originalConsoleError; });
 
     store.reportFrontendError(new TypeError("broken renderer"), "Vue render");
 
-    assert.equal(store.APP_STATE, originalState);
+    assert.equal(useSessionStore().appState, originalState);
     assert.equal(store.CURRENT_MESSAGE.code, "TypeError");
     assert.match(store.CURRENT_MESSAGE.log, /broken renderer/);
 });
